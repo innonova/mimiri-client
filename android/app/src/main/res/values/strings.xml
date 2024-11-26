@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Mimiri Notes</string>
+    <string name="title_activity_main">Mimiri Notes</string>
+    <string name="package_name">io.mimiri.app</string>
+    <string name="custom_url_scheme">io.mimiri.app</string>
+</resources>

@@ -1,0 +1,132 @@
+import type { DateTime } from './date-time'
+import type { Guid } from './guid'
+import type { NoteItem } from './note'
+
+export interface BasicRequest {
+	username: string
+	signatures: {
+		name: string
+		signature: string
+	}[]
+	timestamp: DateTime
+	requestId: Guid
+}
+
+export interface CreateKeyRequest extends BasicRequest {
+	id: Guid
+	name: Guid
+	algorithm: string
+	keyData: string
+	asymmetricAlgorithm: string
+	publicKey: string
+	privateKey: string
+	metadata: string
+}
+
+export interface CreateUserRequest extends BasicRequest {
+	publicKey: string
+	privateKey: string
+	asymmetricAlgorithm: string
+	salt: string
+	iterations: number
+	algorithm: string
+	password: {
+		salt: string
+		hash: string
+		iterations: number
+		algorithm: string
+	}
+	symmetricAlgorithm: string
+	symmetricKey: string
+	data: string
+}
+
+export interface DeleteKeyRequest extends BasicRequest {
+	id: Guid
+}
+
+export interface DeleteNoteRequest extends BasicRequest {
+	id: Guid
+}
+
+export interface DeleteShareRequest extends BasicRequest {
+	id: Guid
+}
+
+export interface LoginRequest {
+	username: string
+	response: string
+}
+
+export interface PublicKeyRequest extends BasicRequest {
+	keyOwnerName: string
+}
+
+export interface ReadKeyRequest extends BasicRequest {
+	id: Guid
+}
+
+export interface NoteItemVersion {
+	type: string
+	version: number
+}
+
+export interface ReadNoteRequest extends BasicRequest {
+	id: Guid
+	include: string
+	versions?: NoteItemVersion[]
+}
+
+export interface ShareNoteRequest extends BasicRequest {
+	recipient: string
+	keyName: Guid
+	data: string
+}
+
+export interface UpdateUserDataRequest extends BasicRequest {
+	data: string
+}
+
+export interface UpdateUserRequest extends BasicRequest {
+	oldUsername: string
+	publicKey: string
+	privateKey: string
+	asymmetricAlgorithm: string
+	salt: string
+	iterations: number
+	algorithm: string
+	password: {
+		salt: string
+		hash: string
+		iterations: number
+		algorithm: string
+	}
+	symmetricAlgorithm: string
+	symmetricKey: string
+	data: string
+}
+
+export interface WriteNoteRequest extends BasicRequest {
+	keyName: Guid
+	oldKeyName?: Guid
+	id: Guid
+	items: Omit<NoteItem, 'changed' | 'isCache'>[]
+}
+
+export enum NoteActionType {
+	Create = 'create',
+	Delete = 'delete',
+	Update = 'update',
+}
+
+export interface NoteAction {
+	type: NoteActionType
+	id: Guid
+	keyName: Guid
+	oldKeyName?: Guid
+	items: Omit<NoteItem, 'changed' | 'isCache'>[]
+}
+
+export interface MultiNoteRequest extends BasicRequest {
+	actions: NoteAction[]
+}

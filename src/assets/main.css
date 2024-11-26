@@ -1,0 +1,148 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+	html[data-theme='light'] {
+		--color-back: #e3e3e3;
+		--color-backdrop: rgba(0, 0, 0, 0.2);
+		--color-text: #000;
+		--color-logo: #000;
+		--color-title-bar: #f4f4f4;
+		--color-title-text: #000;
+		--color-title-text-blur: #000;
+		--color-title-hover: #dfecf9;
+		--color-menu: #f4f4f4;
+		--color-menu-text: #000;
+		--color-menu-disabled: #b7b7b7;
+		--color-menu-hover: #d2dfec;
+		--color-menu-separator: #d8d8d8;
+		--color-item-selected: #cce8ff;
+		--color-drop-indicator: #000;
+		--color-shared: #d78af6;
+		--color-search-parent: #888;
+		--color-error: red;
+		--color-online: green;
+		--color-offline: red;
+		--color-warning: #f6ba00;
+		--color-button-primary: #4381c1;
+		--color-button-primary-text: #fff;
+		--color-button-secondary: #d8d8d8;
+		--color-button-secondary-text: #000;
+		--color-dialog: #f4f4f4;
+		--color-dialog-border: #000;
+		--color-input: #fff;
+		--color-input-text: #000;
+		--color-input-selection: #0078d7;
+		--color-input-selected-text: #fff;
+		--color-toolbar: #f4f4f4;
+		--color-toolbar-separator: #555;
+		--color-toolbar-disabled: #b7b7b7;
+		--color-toolbar-hover: #dfecf9;
+		--color-progress-indicator: green;
+		--color-search-highlight: #ffc147;
+		--color-info-bar: #ffc147;
+	}
+
+	html[data-theme='dark'] {
+		--color-back: #3f3f3f;
+		--color-backdrop: rgba(255, 255, 255, 0.1);
+		--color-text: #d4d4d4;
+		--color-logo: #fff;
+		--color-title-bar: #323233;
+		--color-title-text: #ccc;
+		--color-title-text-blur: #8e8e8e;
+		--color-title-hover: #454646;
+		--color-menu: #252526;
+		--color-menu-text: #ccc;
+		--color-menu-disabled: #555;
+		--color-menu-hover: #555;
+		--color-menu-separator: #333;
+		--color-item-selected: #555;
+		--color-drop-indicator: #fff;
+		--color-shared: #d78af6;
+		--color-search-parent: #888;
+		--color-error: red;
+		--color-online: green;
+		--color-offline: red;
+		--color-warning: #f6ba00;
+		--color-button-primary: #666;
+		--color-button-primary-text: #fff;
+		--color-button-secondary: #333;
+		--color-button-secondary-text: #fff;
+		--color-dialog: #3f3f3f;
+		--color-dialog-border: #8e8e8e;
+		--color-input: #1e1e1e;
+		--color-input-text: #d4d4d4;
+		--color-input-selection: #a8c7fa;
+		--color-input-selected-text: #000;
+		--color-toolbar: #323233;
+		--color-toolbar-separator: #555;
+		--color-toolbar-disabled: #666;
+		--color-toolbar-hover: #454646;
+		--color-progress-indicator: #8e8e8e;
+		--color-search-highlight: #bf5116;
+		--color-info-bar: #bf5116;
+	}
+
+	html {
+		--sa-support: env(safe-area-inset-top);
+	}
+
+	html[data-env-support='true'] {
+		--safe-area-top: env(safe-area-inset-top);
+	}
+
+	html[data-env-support='false'] {
+		--safe-area-top: 25px;
+	}
+}
+
+.unexpected-closing-bracket {
+	color: inherit !important;
+}
+
+h1,
+h2 {
+	@apply font-display text-size-header;
+}
+
+html,
+body,
+#app {
+	@apply font-display text-size-base;
+	@apply overflow-hidden h-full w-full font-display;
+}
+
+body {
+	@apply rounded-lg;
+}
+
+button {
+	@apply font-display text-size-base;
+	@apply w-24 h-8 cursor-default;
+}
+
+input {
+	@apply bg-input text-input-text text-size-input;
+}
+
+input::selection {
+	@apply bg-input-selection text-input-selected-text;
+}
+
+div {
+	box-sizing: border-box;
+}
+
+.search-highlight {
+	background-color: var(--color-search-highlight);
+}
+
+.drag {
+	-webkit-app-region: drag;
+}
+
+.no-drag {
+	-webkit-app-region: no-drag;
+}

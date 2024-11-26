@@ -1,0 +1,122 @@
+<template>
+	<div ref="containerElement" class="relative">
+		<div ref="menuElement" class="menu-pos bg-toolbar w-full h-30 absolute flex flex-col">
+			<div class="text-center p-3 active:bg-toolbar-hover" @click="selectAll">Select All</div>
+			<div class="text-center p-3 active:bg-toolbar-hover" @click="cut">Cut</div>
+			<div class="text-center p-3 active:bg-toolbar-hover" @click="copy">Copy</div>
+			<div class="text-center p-3 active:bg-toolbar-hover" @click="paste">Paste</div>
+		</div>
+		<div ref="toolbarElement" class="toolbar-pos bg-toolbar flex justify-between w-full absolute h-14">
+			<LineUp @click="lineUp" class="active:bg-toolbar-hover"></LineUp>
+			<ExpandLeft @click="expandLeft" class="active:bg-toolbar-hover"></ExpandLeft>
+			<ShrinkLeft @click="shrinkLeft" class="active:bg-toolbar-hover"></ShrinkLeft>
+			<MenuIcon @click="menu" class="active:bg-toolbar-hover"></MenuIcon>
+			<ShrinkRight @click="shrinkRight" class="active:bg-toolbar-hover"></ShrinkRight>
+			<ExpandRight @click="expandRight" class="active:bg-toolbar-hover"></ExpandRight>
+			<LineDown @click="lineDown" class="active:bg-toolbar-hover"></LineDown>
+		</div>
+	</div>
+</template>
+
+<script setup lang="ts">
+import LineUp from '../icons/arrow/arrow_up.vue'
+import ExpandLeft from '../icons/arrow/arrow_left.vue'
+import ShrinkLeft from '../icons/arrow/arrow_right.vue'
+import MenuIcon from '../icons/editor/menu.vue'
+import ShrinkRight from '../icons/arrow/arrow_left.vue'
+import ExpandRight from '../icons/arrow/arrow_right.vue'
+import LineDown from '../icons/arrow/arrow_down.vue'
+import { mimiriEditor } from '../global'
+import { SelectionExpansion } from '../services/editor/mimiri-editor'
+import { ref } from 'vue'
+import { mimiriPlatform } from '../services/mimiri-platform'
+
+const containerElement = ref(null)
+const menuElement = ref(null)
+const toolbarElement = ref(null)
+const menuTop = ref('0px')
+const toolbarTop = ref('0px')
+const menuVisibility = ref('hidden')
+const toolbarVisibility = ref('hidden')
+
+if (!mimiriPlatform.isPc) {
+	visualViewport.addEventListener('resize', e => {
+		const isPortrait = window.innerHeight > window.innerWidth
+		const viewPortHeight = visualViewport.height * visualViewport.scale
+		const screenHeight = isPortrait || mimiriPlatform.isAndroid ? window.screen.availHeight : window.screen.availWidth
+		if (viewPortHeight < screenHeight * 0.85) {
+			toolbarVisibility.value = 'visible'
+			const rect = containerElement.value.getBoundingClientRect()
+			toolbarTop.value = `${visualViewport.height - toolbarElement.value.offsetHeight - rect.top}px`
+		} else {
+			toolbarVisibility.value = 'hidden'
+		}
+	})
+}
+
+const lineUp = () => {
+	mimiriEditor.expandSelection(SelectionExpansion.LineUp)
+}
+
+const expandLeft = () => {
+	mimiriEditor.expandSelection(SelectionExpansion.ExpandLeft)
+}
+
+const shrinkLeft = () => {
+	mimiriEditor.expandSelection(SelectionExpansion.ShrinkLeft)
+}
+
+const shrinkRight = () => {
+	mimiriEditor.expandSelection(SelectionExpansion.ShrinkRight)
+}
+
+const expandRight = () => {
+	mimiriEditor.expandSelection(SelectionExpansion.ExpandRight)
+}
+
+const lineDown = () => {
+	mimiriEditor.expandSelection(SelectionExpansion.LineDown)
+}
+
+const selectAll = () => {
+	menuVisibility.value = 'hidden'
+	mimiriEditor.selectAll()
+}
+
+const cut = () => {
+	menuVisibility.value = 'hidden'
+	mimiriEditor.cut()
+}
+
+const copy = () => {
+	menuVisibility.value = 'hidden'
+	mimiriEditor.copy()
+}
+
+const paste = () => {
+	menuVisibility.value = 'hidden'
+	mimiriEditor.paste()
+}
+
+const menu = () => {
+	if (menuVisibility.value === 'hidden') {
+		menuVisibility.value = 'visible'
+		menuTop.value = `${toolbarElement.value.offsetTop - menuElement.value.offsetHeight}px`
+	} else {
+		menuVisibility.value = 'hidden'
+	}
+	mimiriEditor.focus()
+}
+</script>
+<style scoped>
+.menu-pos {
+	top: v-bind(menuTop);
+	left: 0;
+	visibility: v-bind(menuVisibility);
+}
+.toolbar-pos {
+	top: v-bind(toolbarTop);
+	left: 0;
+	visibility: v-bind(toolbarVisibility);
+}
+</style>

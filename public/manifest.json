@@ -1,0 +1,16 @@
+{
+	"name": "Mimiri Notes",
+	"short_name": "Mimiri Notes",
+	"theme_color": "#4381c1",
+	"background_color": "#4381c1",
+	"display": "standalone",
+	"scope": "https://app.mimiri.io",
+	"start_url": "/",
+	"icons": [
+		{
+			"src": "favicon.ico",
+			"sizes": "128x128",
+			"type": "image/icon"
+		}
+	]
+}
