@@ -18,7 +18,7 @@
 		"cap-sync": "npx cap sync",
 		"sync": "run-s build cap-sync",
 		"sync-dev": "NODE_ENV=development npx cap sync",
-		"make-bundle": "node ./scripts/make-bundle 2024101797F6C918",
+		"make-bundle": "node ./scripts/make-bundle",
 		"create-key": "node ./scripts/create-key",
 		"update-electron": "rm -rf ../client.electron/mimernotes/app/* && cp -R ./dist/* ../client.electron/mimernotes/app",
 		"build-version": "node ./scripts/build-version",

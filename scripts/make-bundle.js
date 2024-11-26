@@ -102,4 +102,10 @@ writeFileSync(`./bundles/${keyName}.${bundle.version}.json`, output)
 writeFileSync(`./bundles/${keyName}.${bundle.version}.info.json`, JSON.stringify(info))
 writeFileSync(`./bundles/${keyName}.latest.json`, JSON.stringify(info))
 
+writeFileSync('./artifacts.json', JSON.stringify([
+	`./bundles/${keyName}.${bundle.version}.json`,
+	`./bundles/${keyName}.${bundle.version}.info.json`,
+	`./bundles/${keyName}.latest.json`,
+], undefined, '  '))
+
 console.log(`Bundle Created ${pack.version} ${`./bundles/${keyName}.${bundle.version}.json`}`)
