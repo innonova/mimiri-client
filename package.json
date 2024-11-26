@@ -25,7 +25,7 @@
 		"deploy-version": "node ./scripts/deploy-version",
 		"build-linux": "node ./scripts/build-linux",
 		"enable-gpl-icons": "node ./scripts/set-icons.js gpl_icons",
-		"enable-prop-icons": "node ./scripts/set-icons.js prop_icons"
+		"enable-prop-icons": "node ./scripts/set-icons.js ../../mimiri-icons"
 	},
 	"dependencies": {
 		"@capacitor/android": "^6.1.2",
