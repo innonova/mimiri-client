@@ -13,6 +13,7 @@
 				<div class="p-1 pl-4 pt-2">Note Size: {{ currentNoteSize }} / {{ maxNoteSize }} ({{ currentNotePercent }})</div>
 				<div class="pt-6 pl-4"><a href="https://mimiri.io" target="_blank">https://mimiri.io</a></div>
 				<div class="pt-3 pl-4"><a href="https://discord.gg/pg69qPAVZR" target="_blank">Join us on Discord</a></div>
+				<div class="pt-6 pl-4">TEST</div>
 				<div class="pt-6 pl-4">Copyright &copy;2024 innonova GmbH</div>
 			</main>
 			<footer class="flex justify-end gap-2 pt-3">
