@@ -48,9 +48,9 @@ export const mimiriEditor = new MimiriEditor()
 
 export const updateKeys = [
 	{
-		name: env.UPDATE_NAME,
-		algorithm: env.UPDATE_ALGORITM,
-		key: env.UPDATE_PUBLIC_KEY,
+		name: env.VITE_UPDATE_NAME,
+		algorithm: env.VITE_UPDATE_ALGORITHM,
+		key: env.VITE_UPDATE_PUBLIC_KEY,
 		current: true,
 	},
 ]
