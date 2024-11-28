@@ -1,22 +1,25 @@
 <template>
 	<div
 		id="title-bar"
-		class="w-full pl-px hidden md:flex flex-row items-center select-none bg-title-bar text-size-menu"
+		class="w-full hidden md:flex flex-row items-center select-none bg-title-bar text-size-menu"
 		:class="{
 			'text-title-text': hasFocus,
 			'text-title-text-blur': !hasFocus,
 			drag: !menuManager.state.menuShowing,
-			'h-[36px] pr-[138px]': mimiriPlatform.isWindows,
-			'h-[36px] pr-[95px]': mimiriPlatform.isLinux,
-			'h-[36px] pr-[5px]': mimiriPlatform.isMac,
+			'h-[36px] pr-[138px] pl-px': mimiriPlatform.isWindows,
+			'h-[36px] pr-[95px] pl-px': mimiriPlatform.isLinux,
+			'h-[36px] pr-[5px] pl-[65px]': mimiriPlatform.isMac,
 			'h-14': !mimiriPlatform.isPc,
 		}"
 		@click="titleBarClick"
 	>
-		<!-- <LogoIcon class="mx-1 p-1 min-w-7 w-7 h-7 text-logo"></LogoIcon> -->
-		<img v-if="mimiriPlatform.isPc" class="ml-1.5 mr-1 mt-px p-1 min-w-7 w-7 h-7" src="/img/logo.png" />
+		<img
+			v-if="mimiriPlatform.isPc && !mimiriPlatform.isMac"
+			class="ml-1.5 mr-1 mt-px p-1 min-w-7 w-7 h-7"
+			src="/img/logo.png"
+		/>
 		<div
-			v-if="mimiriPlatform.isPc"
+			v-if="mimiriPlatform.isPc && !mimiriPlatform.isMac"
 			class="hover:bg-title-hover cursor-default rounded px-2 no-drag"
 			@click="menuClick($event, 'file')"
 			@mouseenter="menuHover($event, 'file')"
@@ -24,7 +27,7 @@
 			File
 		</div>
 		<div
-			v-if="mimiriPlatform.isPc"
+			v-if="mimiriPlatform.isPc && !mimiriPlatform.isMac"
 			class="hover:bg-title-hover cursor-default rounded px-2 no-drag"
 			@click="menuClick($event, 'edit')"
 			@mouseenter="menuHover($event, 'edit')"
@@ -32,7 +35,7 @@
 			Edit
 		</div>
 		<div
-			v-if="mimiriPlatform.isPc"
+			v-if="mimiriPlatform.isPc && !mimiriPlatform.isMac"
 			class="hover:bg-title-hover cursor-default rounded px-2 no-drag"
 			@click="menuClick($event, 'view')"
 			@mouseenter="menuHover($event, 'view')"
@@ -40,7 +43,7 @@
 			View
 		</div>
 		<div
-			v-if="mimiriPlatform.isPc"
+			v-if="mimiriPlatform.isPc && !mimiriPlatform.isMac"
 			class="hover:bg-title-hover cursor-default rounded px-2 no-drag"
 			@click="menuClick($event, 'help')"
 			@mouseenter="menuHover($event, 'help')"
@@ -216,43 +219,16 @@ const titleBarClick = () => {
 
 const showMenu = (rect, menu) => {
 	if (menu === 'file') {
-		menuManager.showMenu({ x: rect.left, y: rect.bottom - 30, backdropTop: 32 }, [
-			MenuItems.NewRootNote,
-			MenuItems.NewNote,
-			MenuItems.Separator,
-			MenuItems.Logout,
-			MenuItems.Quit,
-		])
+		menuManager.showMenu({ x: rect.left, y: rect.bottom - 30, backdropTop: 32 }, menuManager.fileMenu)
 	}
 	if (menu === 'edit') {
-		menuManager.showMenu({ x: rect.left, y: rect.bottom - 30, backdropTop: 32 }, [
-			MenuItems.FindInNotes,
-			MenuItems.Find,
-			MenuItems.Separator,
-			MenuItems.Duplicate,
-			MenuItems.Cut,
-			MenuItems.Copy,
-			MenuItems.Paste,
-			MenuItems.Separator,
-			MenuItems.Share,
-			MenuItems.Rename,
-			MenuItems.Delete,
-		])
+		menuManager.showMenu({ x: rect.left, y: rect.bottom - 30, backdropTop: 32 }, menuManager.editMenu)
 	}
 	if (menu === 'view') {
-		menuManager.showMenu({ x: rect.left, y: rect.bottom - 30, backdropTop: 32 }, [
-			MenuItems.History,
-			MenuItems.Share,
-			MenuItems.Separator,
-			MenuItems.WordWrap,
-			MenuItems.DarkMode,
-		])
+		menuManager.showMenu({ x: rect.left, y: rect.bottom - 30, backdropTop: 32 }, menuManager.viewMenu)
 	}
 	if (menu === 'help') {
-		menuManager.showMenu({ x: rect.left, y: rect.bottom - 30, backdropTop: 32 }, [
-			MenuItems.About,
-			...(ipcClient.isAvailable ? [MenuItems.CheckForUpdate, MenuItems.ShowDevTools] : []),
-		])
+		menuManager.showMenu({ x: rect.left, y: rect.bottom - 30, backdropTop: 32 }, menuManager.helpMenu)
 	}
 	if (menu === 'account') {
 		menuManager.showMenu({ x: rect.right, y: rect.bottom - 30, backdropTop: 32, alignRight: true }, [

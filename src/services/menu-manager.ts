@@ -20,6 +20,7 @@ import {
 } from '../global'
 import type { ContextMenuItem, ContextMenuPosition } from './types/context-menu'
 import { settingsManager } from './settings-manager'
+import { mimiriPlatform } from './mimiri-platform'
 
 export enum MenuItems {
 	Separator = 'separator',
@@ -57,6 +58,8 @@ class MenuManager {
 		menuShowing: false,
 	})
 
+	constructor() {}
+
 	private async menuActivated(item: ContextMenuItem) {
 		this.state.menuShowing = false
 		if (!item) {
@@ -65,61 +68,73 @@ class MenuManager {
 		if (item.enabled === false || item.visible === false) {
 			return
 		}
-		if (item.id === 'change-password') {
+		await this.menuIdActivated(item.id)
+	}
+
+	public async menuIdActivated(itemId: string) {
+		if (itemId === 'change-password') {
 			changePasswordDialog.value.show()
-		} else if (item.id === 'delete-account') {
+		} else if (itemId === 'delete-account') {
 			showDeleteAccount.value = true
-		} else if (item.id === 'logout') {
+		} else if (itemId === 'tray-double-click') {
+			ipcClient.menu.show()
+		} else if (itemId === 'tray-click') {
+			ipcClient.menu.show()
+		} else if (itemId === 'logout') {
 			noteManager.logout()
 			window.location.reload()
-		} else if (item.id === 'quit') {
+		} else if (itemId === 'toggle-screen-sharing') {
+			settingsManager.allowScreenSharing = !settingsManager.allowScreenSharing
+		} else if (itemId === 'show') {
+			ipcClient.menu.show()
+		} else if (itemId === 'quit') {
 			ipcClient.menu.quit()
-		} else if (item.id === 'find-in-notes') {
+		} else if (itemId === 'find-in-notes') {
 			searchInput.value.focus()
-		} else if (item.id === 'find') {
+		} else if (itemId === 'find') {
 			noteEditor.value.find()
-		} else if (item.id === 'history') {
+		} else if (itemId === 'history') {
 			noteEditor.value.showHistory()
-		} else if (item.id === 'share-offers') {
+		} else if (itemId === 'share-offers') {
 			showShareOffers.value = !showShareOffers.value
-		} else if (item.id === 'dark-mode') {
+		} else if (itemId === 'dark-mode') {
 			settingsManager.darkMode = !settingsManager.darkMode
 			void settingsManager.save()
-		} else if (item.id === 'word-wrap') {
+		} else if (itemId === 'word-wrap') {
 			settingsManager.wordwrap = !settingsManager.wordwrap
 			void settingsManager.save()
-		} else if (item.id === 'about') {
+		} else if (itemId === 'about') {
 			aboutDialog.value.show()
-		} else if (item.id === 'show-dev-tools') {
+		} else if (itemId === 'show-dev-tools') {
 			ipcClient.menu.showDevTools()
 		}
-		if (item.id === 'new-note') {
+		if (itemId === 'new-note') {
 			noteManager.newNote()
-		} else if (item.id === 'new-root-note') {
+		} else if (itemId === 'new-root-note') {
 			noteManager.newRootNote()
-		} else if (item.id === 'share') {
+		} else if (itemId === 'share') {
 			shareDialog.value.show()
-		} else if (item.id === 'refresh') {
+		} else if (itemId === 'refresh') {
 			if (noteManager.selectedNote) {
 				await noteManager.selectedNote.refresh()
 			}
-		} else if (item.id === 'refresh-root') {
+		} else if (itemId === 'refresh-root') {
 			await noteManager.root.refresh()
-		} else if (item.id === 'rename') {
+		} else if (itemId === 'rename') {
 			if (noteManager.selectedNote) {
 				noteManager.selectedNote.viewModel.renaming = true
 			}
-		} else if (item.id === 'delete') {
+		} else if (itemId === 'delete') {
 			if (noteManager.selectedNote) {
 				deleteNodeDialog.value.show()
 			}
-		} else if (item.id === 'copy') {
+		} else if (itemId === 'copy') {
 			clipboardNote.value = noteManager.selectedNote
 			isCut.value = false
-		} else if (item.id === 'cut') {
+		} else if (itemId === 'cut') {
 			clipboardNote.value = noteManager.selectedNote
 			isCut.value = true
-		} else if (item.id === 'paste') {
+		} else if (itemId === 'paste') {
 			if (clipboardNote.value && noteManager.selectedNote) {
 				noteManager.selectedNote.expand()
 				if (isCut.value) {
@@ -128,16 +143,16 @@ class MenuManager {
 					await clipboardNote.value.copy(noteManager.selectedNote)
 				}
 			}
-		} else if (item.id === 'duplicate') {
+		} else if (itemId === 'duplicate') {
 			if (noteManager.selectedNote) {
 				const index = noteManager.selectedNote.parent.childIds.indexOf(noteManager.selectedNote.id)
 				await noteManager.selectedNote.copy(noteManager.selectedNote.parent, index + 1)
 			}
-		} else if (item.id === 'mark-as-read') {
+		} else if (itemId === 'mark-as-read') {
 			notificationManager.markAllAsRead()
-		} else if (item.id === 'update-available') {
+		} else if (itemId === 'update-available') {
 			showUpdate.value = true
-		} else if (item.id === 'check-for-update') {
+		} else if (itemId === 'check-for-update') {
 			updateManager.check()
 		}
 	}
@@ -154,13 +169,21 @@ class MenuManager {
 		contextMenu.value.close()
 	}
 
-	private toItems(items: MenuItems[]) {
+	private toItems(items: MenuItems[], includeSeparators = false) {
 		const result: ContextMenuItem[] = []
 		for (const item of items) {
 			switch (item) {
 				case MenuItems.Separator:
-					if (result.length > 0) {
-						result[result.length - 1].separatorAfter = true
+					if (includeSeparators) {
+						if (result.length > 0) {
+							result[result.length - 1].separatorAfter = true
+						}
+					} else {
+						result.push({
+							id: undefined,
+							title: undefined,
+							type: 'separator',
+						})
 					}
 					break
 				case MenuItems.NewNote:
@@ -292,6 +315,8 @@ class MenuManager {
 					result.push({
 						id: 'dark-mode',
 						title: 'Dark Mode',
+						type: 'checkbox',
+						checked: settingsManager.darkMode,
 						icon: settingsManager.darkMode ? 'checkmark' : '',
 					})
 					break
@@ -350,6 +375,8 @@ class MenuManager {
 					result.push({
 						id: 'word-wrap',
 						title: 'Word Wrap',
+						type: 'checkbox',
+						checked: settingsManager.wordwrap,
 						icon: settingsManager.wordwrap ? 'checkmark' : '',
 						enabled: noteManager.isLoggedIn,
 					})
@@ -375,6 +402,99 @@ class MenuManager {
 			}
 		}
 		return result
+	}
+
+	public updateTrayMenu() {
+		if (ipcClient.isAvailable) {
+			ipcClient.menu.seTrayMenu([
+				{
+					id: 'show',
+					title: 'Show',
+				},
+				{
+					id: 'show-dev-tools',
+					title: 'Dev Tools',
+				},
+				{
+					id: 'toggle-screen-sharing',
+					title: 'Allow Screen Sharing',
+					type: 'checkbox',
+					checked: settingsManager.allowScreenSharing,
+				},
+				{
+					id: 'open-at-login',
+					title: 'Launch on Startup',
+					type: 'checkbox',
+					checked: settingsManager.openAtLogin,
+				},
+				{ type: 'separator' },
+				{
+					id: 'quit',
+					title: 'Quit',
+				},
+			])
+		}
+	}
+	public get appleMenu() {
+		return [MenuItems.About, MenuItems.Separator, MenuItems.Logout, MenuItems.Quit]
+	}
+
+	public get fileMenu() {
+		if (mimiriPlatform.isMac) {
+			return [MenuItems.NewRootNote, MenuItems.NewNote]
+		}
+		return [MenuItems.NewRootNote, MenuItems.NewNote, MenuItems.Separator, MenuItems.Logout, MenuItems.Quit]
+	}
+
+	public get editMenu() {
+		return [
+			MenuItems.FindInNotes,
+			MenuItems.Find,
+			MenuItems.Separator,
+			MenuItems.Duplicate,
+			MenuItems.Cut,
+			MenuItems.Copy,
+			MenuItems.Paste,
+			MenuItems.Separator,
+			MenuItems.Share,
+			MenuItems.Rename,
+			MenuItems.Delete,
+		]
+	}
+
+	public get viewMenu() {
+		return [MenuItems.History, MenuItems.Share, MenuItems.Separator, MenuItems.WordWrap, MenuItems.DarkMode]
+	}
+
+	public get helpMenu() {
+		return [MenuItems.About, ...(ipcClient.isAvailable ? [MenuItems.CheckForUpdate, MenuItems.ShowDevTools] : [])]
+	}
+
+	public updateAppMenu() {
+		if (ipcClient.isAvailable && mimiriPlatform.isMac) {
+			ipcClient.menu.setAppMenu([
+				{
+					title: 'Mimiri Notes',
+					submenu: this.toItems(this.appleMenu),
+				},
+				{
+					title: 'File',
+					submenu: this.toItems(this.fileMenu),
+				},
+				{
+					title: 'Edit',
+					submenu: this.toItems(this.editMenu),
+				},
+				{
+					title: 'View',
+					submenu: this.toItems(this.viewMenu),
+				},
+				{
+					title: 'Help',
+					submenu: this.toItems(this.helpMenu),
+				},
+			])
+		}
 	}
 }
 

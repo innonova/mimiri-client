@@ -12,10 +12,14 @@ import type { MimerConfiguration } from './settings-manager'
 import type { Bundle } from './update-manger'
 
 class NoOpMenu implements IpcMenuApi {
+	show() {}
 	quit() {}
 	showDevTools() {}
 	onToggleScreenSharing(callback: () => void) {}
 	onToggleOpenAtLogin(callback: () => void) {}
+	setAppMenu(value: any) {}
+	seTrayMenu(value: any) {}
+	onMenuItemActivated(callback: (menuItemIdd: string) => void) {}
 }
 
 interface CachePlugin {

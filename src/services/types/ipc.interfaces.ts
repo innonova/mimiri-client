@@ -17,9 +17,13 @@ export interface IpcSettingsApi {
 
 export interface IpcMenuApi {
 	quit()
+	show()
 	showDevTools()
 	onToggleScreenSharing(callback: () => void)
 	onToggleOpenAtLogin(callback: () => void)
+	setAppMenu(value: any)
+	seTrayMenu(value: any)
+	onMenuItemActivated(callback: (menuItemIdd: string) => void)
 }
 
 export interface IpcCacheApi {

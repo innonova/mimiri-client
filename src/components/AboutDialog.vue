@@ -68,19 +68,21 @@ const toPercent = (used, max) => {
 }
 
 const show = () => {
-	usedBytes.value = toMB(noteManager.usedBytes)
-	maxBytes.value = toMB(noteManager.maxBytes)
-	bytesPercent.value = toPercent(noteManager.usedBytes, noteManager.maxBytes)
-	noteCount.value = noteManager.noteCount
-	maxNoteCount.value = noteManager.maxNoteCount
-	notesPercent.value = toPercent(noteManager.noteCount, noteManager.maxNoteCount)
-	maxNoteSize.value = toMB(noteManager.maxNoteSize)
-	if (noteManager.selectedNote) {
-		currentNoteSize.value = toMB(noteManager.selectedNote.size)
-		currentNotePercent.value = toPercent(noteManager.selectedNote.size, noteManager.maxNoteSize)
-	} else {
-		currentNoteSize.value = '0 MB'
-		currentNotePercent.value = '0 %'
+	if (noteManager.isLoggedIn) {
+		usedBytes.value = toMB(noteManager.usedBytes)
+		maxBytes.value = toMB(noteManager.maxBytes)
+		bytesPercent.value = toPercent(noteManager.usedBytes, noteManager.maxBytes)
+		noteCount.value = noteManager.noteCount
+		maxNoteCount.value = noteManager.maxNoteCount
+		notesPercent.value = toPercent(noteManager.noteCount, noteManager.maxNoteCount)
+		maxNoteSize.value = toMB(noteManager.maxNoteSize)
+		if (noteManager.selectedNote) {
+			currentNoteSize.value = toMB(noteManager.selectedNote.size)
+			currentNotePercent.value = toPercent(noteManager.selectedNote.size, noteManager.maxNoteSize)
+		} else {
+			currentNoteSize.value = '0 MB'
+			currentNotePercent.value = '0 %'
+		}
 	}
 	dialog.value.showModal()
 }

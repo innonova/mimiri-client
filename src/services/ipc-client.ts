@@ -5,6 +5,7 @@ import type { AllKeysResponse, KeyResponse, LoginResponse, PreLoginResponse, Rea
 import type { InstalledBundleInfo, IpcApi } from './types/ipc.interfaces'
 import { capacitorClient } from './capacitor-client'
 import type { Bundle } from './update-manger'
+import { menuManager } from './menu-manager'
 
 export class MimerCache implements ICacheManager {
 	constructor(private api: IpcApi) {}
@@ -74,14 +75,29 @@ export class MimerMenu {
 		this.api?.menu?.onToggleOpenAtLogin(() => {
 			settingsManager.openAtLogin = !settingsManager.openAtLogin
 		})
+		this.api?.menu?.onMenuItemActivated((menuItemId: string) => {
+			menuManager.menuIdActivated(menuItemId)
+		})
 	}
 
 	public quit() {
 		this.api.menu.quit()
 	}
 
+	public show() {
+		this.api.menu.show()
+	}
+
 	public showDevTools() {
 		this.api.menu.showDevTools()
+	}
+
+	public setAppMenu(value: any) {
+		this.api.menu.setAppMenu(value)
+	}
+
+	public seTrayMenu(value: any) {
+		this.api.menu.seTrayMenu(value)
 	}
 }
 

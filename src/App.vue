@@ -98,6 +98,7 @@ import { settingsManager } from './services/settings-manager'
 import LoadingIcon from './icons/system/loading_3.vue'
 import { mimiriPlatform } from './services/mimiri-platform'
 import DeleteAccount from './components/DeleteAccount.vue'
+import { menuManager } from './services/menu-manager'
 
 const colorScheme = ref('only light')
 
@@ -147,6 +148,11 @@ if (!mimiriPlatform.isElectron) {
 
 watch(settingsManager.state, () => {
 	updateTheme()
+	menuManager.updateAppMenu()
+})
+
+watch(noteManager.state, () => {
+	menuManager.updateAppMenu()
 })
 
 window.addEventListener('resize', onResize)
@@ -155,6 +161,8 @@ document.addEventListener('contextmenu', e => e.preventDefault(), false)
 
 if (ipcClient.isAvailable) {
 	noteManager.setCacheManager(ipcClient.cache)
+	menuManager.updateTrayMenu()
+	menuManager.updateAppMenu()
 }
 
 // noteManager.beginTest('import-test')
@@ -164,7 +172,9 @@ const handleShortcut = event => {
 		(document.activeElement.tagName === 'BODY' || !noteEditor.value?.$el.contains(document.activeElement)) &&
 		event.target.tagName === 'BODY'
 
-	if (event.key === 'd' && event.ctrlKey) {
+	const ctrlActive = (event.ctrlKey && !mimiriPlatform.isMac) || (event.metaKey && mimiriPlatform.isMac)
+
+	if (event.key === 'd' && ctrlActive) {
 		if (treeViewShortCutsActive) {
 			event.preventDefault()
 			event.stopPropagation()
@@ -173,7 +183,7 @@ const handleShortcut = event => {
 			}
 		}
 	}
-	if (event.key === 'x' && event.ctrlKey) {
+	if (event.key === 'x' && ctrlActive) {
 		if (treeViewShortCutsActive) {
 			event.preventDefault()
 			event.stopPropagation()
@@ -182,7 +192,7 @@ const handleShortcut = event => {
 			}
 		}
 	}
-	if (event.key === 'c' && event.ctrlKey) {
+	if (event.key === 'c' && ctrlActive) {
 		if (treeViewShortCutsActive) {
 			event.preventDefault()
 			event.stopPropagation()
@@ -191,7 +201,7 @@ const handleShortcut = event => {
 			}
 		}
 	}
-	if (event.key === 'v' && event.ctrlKey) {
+	if (event.key === 'v' && ctrlActive) {
 		if (treeViewShortCutsActive) {
 			event.preventDefault()
 			event.stopPropagation()
@@ -254,22 +264,22 @@ const handleShortcut = event => {
 			}
 		}
 	}
-	if (event.key === 's' && event.ctrlKey) {
+	if (event.key === 's' && ctrlActive) {
 		event.preventDefault()
 		noteEditor.value.save()
 	}
-	if (event.key === 'C' && event.ctrlKey) {
+	if (event.key === 'C' && ctrlActive) {
 		event.preventDefault()
 		mimiriEditor.markSelectionAsPassword()
 	}
-	if (event.key === 'n' && event.ctrlKey) {
+	if (event.key === 'n' && ctrlActive) {
 		if (treeViewShortCutsActive) {
 			event.preventDefault()
 			event.stopPropagation()
 			noteManager.newNote()
 		}
 	}
-	if (event.key === 'F3' || (event.key === 'F' && event.ctrlKey)) {
+	if (event.key === 'F3' || (event.key === 'F' && ctrlActive)) {
 		event.preventDefault()
 		if (titleBar.value) {
 			titleBar.value.searchAllNotes()

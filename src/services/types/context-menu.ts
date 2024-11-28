@@ -1,11 +1,13 @@
 export interface ContextMenuItem {
 	id: string
 	title: string
+	type?: string
 	icon?: string
 	shortcut?: string
 	separatorAfter?: boolean
 	enabled?: boolean
 	visible?: boolean
+	checked?: boolean
 }
 
 export interface ContextMenu {

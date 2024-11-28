@@ -1,5 +1,6 @@
 import { reactive } from 'vue'
 import { ipcClient } from '../global'
+import { menuManager } from './menu-manager'
 
 export interface MimerConfiguration {
 	openAtLogin: boolean
@@ -58,6 +59,7 @@ class SettingsManager {
 	public async save() {
 		if (ipcClient.isAvailable) {
 			await ipcClient.settings.save({ ...this.state })
+			menuManager.updateTrayMenu()
 		} else if (localStorage) {
 			localStorage.setItem('mimer-settings', JSON.stringify({ ...this.state }))
 		}

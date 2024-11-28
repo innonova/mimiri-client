@@ -6,13 +6,13 @@
 		</div>
 		<form v-on:submit.prevent="login">
 			<div class="p-1 m-auto">
-				<div class="inline-block w-20">Username:</div>
+				<div class="inline-block w-24">Username:</div>
 				<div class="inline-block w-52 text-right">
 					<input v-model="username" tabindex="1" type="text" class="bg-input text-input-text" autofocus />
 				</div>
 			</div>
 			<div class="p-1 m-auto">
-				<div class="inline-block w-20">Password:</div>
+				<div class="inline-block w-24">Password:</div>
 				<div class="inline-block w-52 text-right">
 					<input v-model="password" tabindex="2" type="password" class="bg-input text-input-text" />
 				</div>
@@ -21,7 +21,7 @@
 				<div class="text-error w-64 py-2.5 text-right">Incorrect username or password</div>
 			</div>
 			<div class="p-1 m-auto">
-				<div class="inline-block w-20"></div>
+				<div class="inline-block w-24"></div>
 				<div class="inline-block w-52 text-right">
 					<div v-if="loading" class="flex items-center justify-end">
 						<LoadingIcon class="animate-spin w-8 h-8 mr-2 inline-block"></LoadingIcon>
