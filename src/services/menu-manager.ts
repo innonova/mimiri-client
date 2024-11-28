@@ -89,6 +89,8 @@ class MenuManager {
 			ipcClient.menu.show()
 		} else if (itemId === 'quit') {
 			ipcClient.menu.quit()
+		} else if (itemId === 'open-at-login') {
+			settingsManager.openAtLogin = !settingsManager.openAtLogin
 		} else if (itemId === 'find-in-notes') {
 			searchInput.value.focus()
 		} else if (itemId === 'find') {
