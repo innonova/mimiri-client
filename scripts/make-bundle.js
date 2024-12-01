@@ -54,58 +54,68 @@ const privateKey = await crypto.subtle.importKey(
 
 const pack = JSON.parse(readFileSync('./package.json'))
 
-console.log(`Creating Bundle ${pack.version}`)
+const bundleRes = await fetch(`https://update.mimiri.io/${keyName}.${pack.version}.json`)
+const infoRes = await fetch(`https://update.mimiri.io/${keyName}.${pack.version}.info.json`)
 
-const bundle = { files: [] }
-const recurseDir = async (dir, current) => {
-	for (const sub of readdirSync(dir)) {
-		const path = Path.join(dir, sub)
-		if (lstatSync(path).isDirectory()) {
-			const files = []
-			current.push({ name: sub, files })
-			await recurseDir(path, files)
-		} else {
-			current.push({ name: sub, content: await zip(readFileSync(path)) })
+if (bundleRes.status !== 200 || infoRes.status !== 200) {
+
+	console.log(`Creating Bundle ${pack.version}`)
+
+	const bundle = { files: [] }
+	const recurseDir = async (dir, current) => {
+		for (const sub of readdirSync(dir)) {
+			const path = Path.join(dir, sub)
+			if (lstatSync(path).isDirectory()) {
+				const files = []
+				current.push({ name: sub, files })
+				await recurseDir(path, files)
+			} else {
+				current.push({ name: sub, content: await zip(readFileSync(path)) })
+			}
 		}
 	}
+	await recurseDir('./dist', bundle.files)
+	bundle.version = pack.version
+	bundle.description = ''
+	bundle.releaseDate = new Date()
+
+
+	const payload = new TextEncoder().encode(JSON.stringify(bundle));
+	bundle.signatures = [{
+		name: keyName,
+		signature: toBase64(await crypto.subtle.sign('RSASSA-PKCS1-v1_5', privateKey, payload))
+	}]
+
+
+	try {
+		mkdirSync('./bundles')
+	} catch { }
+
+	const output = JSON.stringify(bundle);
+
+	const info = {
+		...bundle,
+		files: undefined,
+		signatures: undefined,
+		size: output.length,
+		minElectronVersion: pack.minElectronVersion,
+		minIosVersion: pack.minIosVersion,
+		minAndroidVersion: pack.minAndroidVersion
+	}
+
+	writeFileSync(`./bundles/${keyName}.${bundle.version}.json`, output)
+	writeFileSync(`./bundles/${keyName}.${bundle.version}.info.json`, JSON.stringify(info))
+	writeFileSync(`./bundles/${keyName}.latest.json`, JSON.stringify(info))
+
+
+	writeFileSync('./artifacts.json', JSON.stringify([
+		`./bundles/${keyName}.${bundle.version}.json`,
+		`./bundles/${keyName}.${bundle.version}.info.json`,
+		`./bundles/${keyName}.latest.json`,
+	], undefined, '  '))
+
+	console.log(`Bundle Created ${pack.version} ${`./bundles/${keyName}.${bundle.version}.json`}`)
+} else {
+	writeFileSync('./artifacts.json', JSON.stringify([]))
+	console.log(`Bundle Already Exists ${pack.version}`)
 }
-await recurseDir('./dist', bundle.files)
-bundle.version = pack.version
-bundle.description = ''
-bundle.releaseDate = new Date()
-
-
-const payload = new TextEncoder().encode(JSON.stringify(bundle));
-bundle.signatures = [{
-	name: keyName,
-	signature: toBase64(await crypto.subtle.sign('RSASSA-PKCS1-v1_5', privateKey, payload))
-}]
-
-
-try {
-	mkdirSync('./bundles')
-} catch { }
-
-const output = JSON.stringify(bundle);
-
-const info = {
-	...bundle,
-	files: undefined,
-	signatures: undefined,
-	size: output.length,
-	minElectronVersion: pack.minElectronVersion,
-	minIosVersion: pack.minIosVersion,
-	minAndroidVersion: pack.minAndroidVersion
-}
-
-writeFileSync(`./bundles/${keyName}.${bundle.version}.json`, output)
-writeFileSync(`./bundles/${keyName}.${bundle.version}.info.json`, JSON.stringify(info))
-writeFileSync(`./bundles/${keyName}.latest.json`, JSON.stringify(info))
-
-writeFileSync('./artifacts.json', JSON.stringify([
-	`./bundles/${keyName}.${bundle.version}.json`,
-	`./bundles/${keyName}.${bundle.version}.info.json`,
-	`./bundles/${keyName}.latest.json`,
-], undefined, '  '))
-
-console.log(`Bundle Created ${pack.version} ${`./bundles/${keyName}.${bundle.version}.json`}`)
