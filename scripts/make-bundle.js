@@ -57,7 +57,7 @@ const pack = JSON.parse(readFileSync('./package.json'))
 const bundleRes = await fetch(`https://update.mimiri.io/${keyName}.${pack.version}.json`)
 const infoRes = await fetch(`https://update.mimiri.io/${keyName}.${pack.version}.info.json`)
 
-if (bundleRes.status !== 888 || infoRes.status !== 200) {
+if (bundleRes.status !== 200 || infoRes.status !== 200) {
 
 	console.log(`Creating Bundle ${pack.version}`)
 
