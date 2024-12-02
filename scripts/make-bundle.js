@@ -58,7 +58,7 @@ const pack = JSON.parse(readFileSync('./package.json'))
 const bundleRes = await fetch(`https://update.mimiri.io/${keyName}.${pack.version}.json`)
 const infoRes = await fetch(`https://update.mimiri.io/${keyName}.${pack.version}.info.json`)
 
-if (bundleRes.status !== 777 || infoRes.status !== 200) {
+if (bundleRes.status !== 200 || infoRes.status !== 200) {
 
 	console.log(`Creating Bundle ${pack.version}`)
 
@@ -108,13 +108,13 @@ if (bundleRes.status !== 777 || infoRes.status !== 200) {
 
 	await writeFile(`./bundles/${keyName}.${bundle.version}.json`, output)
 	await writeFile(`./bundles/${keyName}.${bundle.version}.info.json`, JSON.stringify(info))
-	await writeFile(`./bundles/${keyName}.latest.json`, JSON.stringify(info))
+	await writeFile(`./bundles/${keyName}.canary.json`, JSON.stringify(info))
 
 
 	await writeFile('./artifacts.json', JSON.stringify([
 		`./bundles/${keyName}.${bundle.version}.json`,
 		`./bundles/${keyName}.${bundle.version}.info.json`,
-		`./bundles/${keyName}.latest.json`,
+		`./bundles/${keyName}.canary.json`,
 	], undefined, '  '))
 
 	console.log(`Bundle Created ${pack.version} ${`./bundles/${keyName}.${bundle.version}.json`}`)
