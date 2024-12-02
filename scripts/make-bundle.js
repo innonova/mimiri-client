@@ -1,4 +1,5 @@
 import { readFileSync, readdirSync, writeFileSync, lstatSync, mkdirSync } from 'fs';
+import { writeFile } from 'fs:promises';
 import { fromUint8Array } from 'js-base64'
 import Path from 'path';
 
@@ -103,12 +104,14 @@ if (bundleRes.status !== 777 || infoRes.status !== 200) {
 		minAndroidVersion: pack.minAndroidVersion
 	}
 
-	writeFileSync(`./bundles/${keyName}.${bundle.version}.json`, output)
-	writeFileSync(`./bundles/${keyName}.${bundle.version}.info.json`, JSON.stringify(info))
-	writeFileSync(`./bundles/${keyName}.latest.json`, JSON.stringify(info))
+	console.log(output)
+
+	await writeFile(`./bundles/${keyName}.${bundle.version}.json`, output)
+	await writeFile(`./bundles/${keyName}.${bundle.version}.info.json`, JSON.stringify(info))
+	await writeFile(`./bundles/${keyName}.latest.json`, JSON.stringify(info))
 
 
-	writeFileSync('./artifacts.json', JSON.stringify([
+	await writeFile('./artifacts.json', JSON.stringify([
 		`./bundles/${keyName}.${bundle.version}.json`,
 		`./bundles/${keyName}.${bundle.version}.info.json`,
 		`./bundles/${keyName}.latest.json`,
@@ -116,6 +119,6 @@ if (bundleRes.status !== 777 || infoRes.status !== 200) {
 
 	console.log(`Bundle Created ${pack.version} ${`./bundles/${keyName}.${bundle.version}.json`}`)
 } else {
-	writeFileSync('./artifacts.json', JSON.stringify([]))
+	await writeFile('./artifacts.json', JSON.stringify([]))
 	console.log(`Bundle Already Exists ${pack.version}`)
 }
