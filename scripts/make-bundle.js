@@ -1,5 +1,5 @@
 import { readFileSync, readdirSync, writeFileSync, lstatSync, mkdirSync } from 'fs';
-import { writeFile } from 'fs:promises';
+import { writeFile } from 'fs/promises';
 import { fromUint8Array } from 'js-base64'
 import Path from 'path';
 
