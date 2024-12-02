@@ -35,3 +35,4 @@ certs/
 prop_icons/
 icons/
 .env
+artifacts.json

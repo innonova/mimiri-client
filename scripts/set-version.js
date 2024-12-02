@@ -3,7 +3,7 @@ import Path from 'path';
 
 
 const pack = JSON.parse(readFileSync('./package.json'))
-const versionTsPath = Path.join(vuePath, 'src/version.ts');
+const versionTsPath = './src/version.ts'
 
 const releaseDate = new Date().toISOString();
 
