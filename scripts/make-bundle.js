@@ -104,8 +104,6 @@ if (bundleRes.status !== 200 || infoRes.status !== 200) {
 		minAndroidVersion: pack.minAndroidVersion
 	}
 
-	console.log(output)
-
 	await writeFile(`./bundles/${keyName}.${bundle.version}.json`, output)
 	await writeFile(`./bundles/${keyName}.${bundle.version}.info.json`, JSON.stringify(info))
 	await writeFile(`./bundles/${keyName}.canary.json`, JSON.stringify(info))
