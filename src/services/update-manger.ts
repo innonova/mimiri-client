@@ -198,6 +198,11 @@ export class UpdateManager {
 						electronInfo = await this.get<ElectronInfo>(`/electron-win.${version}.json`)
 						bundlePath = `/mimiri_notes-${version}-full.nupkg`
 					}
+					if (mimiriPlatform.isMac) {
+						this.installingElectronUpdate = true
+						electronInfo = await this.get<ElectronInfo>(`/electron-darwin.${version}.json`)
+						bundlePath = `/${electronInfo.release}`
+					}
 				}
 			}
 
