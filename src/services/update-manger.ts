@@ -4,6 +4,7 @@ import { version, releaseDate } from '../version'
 import { CryptSignature } from './crypt-signature'
 import type { InstalledBundleInfo } from './types/ipc.interfaces'
 import { mimiriPlatform } from './mimiri-platform'
+import { settingsManager } from './settings-manager'
 
 export interface BundleInfo {
 	version: string
@@ -125,7 +126,10 @@ export class UpdateManager {
 				const installedVersions = await ipcClient.bundle.getInstalledVersions()
 				this.state.activeVersion = installedVersions.find(ver => ver.active)
 				const currentKey = updateKeys.find(item => item.current)
-				const bundleInfo = await this.get<BundleInfo>(`/${currentKey.name}.latest.json?r=${Date.now()}`)
+
+				const bundleInfo = await this.get<BundleInfo>(
+					`/${currentKey.name}.${settingsManager.channel}.json?r=${Date.now()}`,
+				)
 				if (bundleInfo.version !== this.state.activeVersion.version) {
 					const newerVersionExists = this.compareVersions(bundleInfo.version, this.state.activeVersion.version) > 0
 					if (newerVersionExists) {

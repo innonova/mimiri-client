@@ -10,6 +10,7 @@ export interface MimerConfiguration {
 	titleBarSymbolColor: string
 	titleBarHeight: number
 	wordwrap: boolean
+	channel: string
 }
 
 class SettingsManager {
@@ -23,6 +24,7 @@ class SettingsManager {
 		titleBarSymbolColor: '#000',
 		titleBarHeight: 36,
 		wordwrap: false,
+		channel: 'stable',
 	})
 
 	constructor() {
@@ -108,6 +110,15 @@ class SettingsManager {
 
 	public set wordwrap(value: boolean) {
 		this.state.wordwrap = value
+		void this.save()
+	}
+
+	public get channel() {
+		return this.state.channel
+	}
+
+	public set channel(value: string) {
+		this.state.channel = value
 		void this.save()
 	}
 }
