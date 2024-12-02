@@ -1,4 +1,4 @@
-import { editor, KeyCode, languages, Position, type CancellationToken } from 'monaco-editor'
+import { editor, KeyCode, languages } from 'monaco-editor'
 import type { MimerNote } from '../types/mimer-note'
 import { settingsManager } from '../settings-manager'
 import { reactive } from 'vue'

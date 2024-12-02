@@ -213,15 +213,14 @@ const onBack = () => {
 
 const save = async () => {
 	if (activeViewModel && saveEnabled) {
-		const note = noteManager.getNoteById(activeViewModel.id)
-		if (note && note.text !== mimiriEditor.state.text) {
-			const textValue = mimiriEditor.state.text
-			while (true) {
-				try {
-					const note = noteManager.getNoteById(activeViewModel.id)
-					if (note.text.length > 5 && textValue.length === 0) {
-						saveEmptyNodeDialog.value.show(note)
-					} else {
+		const note = mimiriEditor.note
+		const textValue = mimiriEditor.state.text
+		if (note && note.text !== textValue) {
+			if (note.text.length > 5 && textValue.length === 0) {
+				saveEmptyNodeDialog.value.show(note)
+			} else {
+				while (true) {
+					try {
 						const sizeBefore = note.size
 						note.text = textValue
 						const sizeAfter = note.size
@@ -232,16 +231,18 @@ const save = async () => {
 							noteManager.select(activeViewModel.id)
 							limitDialog.value.show('save-total-size')
 						} else {
-							mimiriEditor.resetChanged()
 							await note.save()
+							if (note.id === mimiriEditor.note.id) {
+								mimiriEditor.resetChanged()
+							}
 						}
+						break
+					} catch (ex) {
+						if (ex instanceof VersionConflictError) {
+							continue
+						}
+						break
 					}
-					break
-				} catch (ex) {
-					if (ex instanceof VersionConflictError) {
-						continue
-					}
-					break
 				}
 			}
 		}
