@@ -1,5 +1,9 @@
 <template>
-	<div class="flex flex-col h-full bg-back text-text dark-mode safe-area-padding">
+	<div v-if="loading" class="h-full">
+		<div id="title-bar" class="w-full h-[36px] pl-px select-none drag"></div>
+		<div class="flex items-center justify-center h-full text-text pb-10">Loading...</div>
+	</div>
+	<div v-if="!loading" class="flex flex-col h-full bg-back text-text dark-mode safe-area-padding">
 		<TitleBar v-if="authenticated && !showUpdate && !showDeleteAccount" ref="titleBar"></TitleBar>
 		<Login v-if="!authenticated && !showCreateAccount && !showConvertAccount"></Login>
 		<CreateAccount v-if="!authenticated && showCreateAccount"></CreateAccount>
@@ -93,6 +97,7 @@ import {
 	saveEmptyNodeDialog,
 	limitDialog,
 	showDeleteAccount,
+	updateManager,
 } from './global'
 import { settingsManager } from './services/settings-manager'
 import LoadingIcon from './icons/system/loading_3.vue'
@@ -101,6 +106,7 @@ import DeleteAccount from './components/DeleteAccount.vue'
 import { menuManager } from './services/menu-manager'
 
 const colorScheme = ref('only light')
+const loading = ref(true)
 
 const authenticated = computed(() => noteManager.state.authenticated)
 
@@ -122,13 +128,6 @@ const onResize = () => {
 }
 
 checkIsMobile()
-
-const loadSettings = async () => {
-	await settingsManager.load()
-	await settingsManager.save()
-}
-
-loadSettings()
 
 const updateTheme = () => {
 	document.documentElement.setAttribute('data-theme', settingsManager.darkMode ? 'dark' : 'light')
@@ -292,6 +291,13 @@ const handleShortcut = event => {
 	}
 }
 document.addEventListener('keydown', handleShortcut, false)
+;(async () => {
+	await settingsManager.load()
+	updateTheme()
+	await updateManager.checkUpdateInitial()
+	loading.value = false
+	await settingsManager.save()
+})()
 
 const handleDragging = e => {
 	let pos = e.pageX

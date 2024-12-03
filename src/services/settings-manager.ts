@@ -11,6 +11,7 @@ export interface MimerConfiguration {
 	titleBarHeight: number
 	wordwrap: boolean
 	channel: string
+	lastRunHostVersion: string
 }
 
 class SettingsManager {
@@ -25,6 +26,7 @@ class SettingsManager {
 		titleBarHeight: 36,
 		wordwrap: false,
 		channel: 'stable',
+		lastRunHostVersion: '0.0.0',
 	})
 
 	constructor() {
@@ -119,6 +121,15 @@ class SettingsManager {
 
 	public set channel(value: string) {
 		this.state.channel = value
+		void this.save()
+	}
+
+	public get lastRunHostVersion() {
+		return this.state.lastRunHostVersion
+	}
+
+	public set lastRunHostVersion(value: string) {
+		this.state.lastRunHostVersion = value
 		void this.save()
 	}
 }

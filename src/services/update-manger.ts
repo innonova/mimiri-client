@@ -142,6 +142,26 @@ export class UpdateManager {
 		}
 	}
 
+	public async checkUpdateInitial() {
+		try {
+			const lastRunHostVersion = settingsManager.lastRunHostVersion
+			await this.check()
+			if (
+				this.compareVersions(this.state.activeVersion.hostVersion, lastRunHostVersion) &&
+				this.state.latestVersion &&
+				!this.state.isHostUpdate
+			) {
+				await this.download(this.state.latestVersion)
+				await this.use(this.state.latestVersion)
+				return true
+			}
+			if (settingsManager.lastRunHostVersion !== this.state.activeVersion.hostVersion) {
+				settingsManager.lastRunHostVersion = this.state.activeVersion.hostVersion
+			}
+		} catch (ex) {}
+		return false
+	}
+
 	public async check() {
 		if (ipcClient.isAvailable) {
 			try {

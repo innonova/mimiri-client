@@ -99,6 +99,7 @@ if (bundleRes.status !== 200 || infoRes.status !== 200) {
 		files: undefined,
 		signatures: undefined,
 		size: output.length,
+		minElectronVersion: pack.minElectronVersionWin32, // only windows installs really exist prior to this point
 		minElectronVersionWin32: pack.minElectronVersionWin32,
 		minElectronVersionDarwin: pack.minElectronVersionDarwin,
 		minElectronVersionLinux: pack.minElectronVersionLinux,
