@@ -261,15 +261,23 @@ export class UpdateManager {
 				const hostSupportsVersion =
 					this.compareVersions(info.minElectronVersion, this.state.activeVersion.hostVersion) <= 0
 				if (!hostSupportsVersion) {
+					const channel = settingsManager.channel === 'stable' ? 'links' : settingsManager.channel
+					const latest = await this.get<any>(`/latest.json`)
 					if (mimiriPlatform.isWindows) {
+						const links = latest.systems.find(s => s.name === 'Windows')?.[channel]
+						const jsonUrl = links.find(l => l.url.endsWith('.json')).url.split('/')
+						const nupkgUrl = links.find(l => l.url.endsWith('.nupkg')).url.split('/')
 						this.installingElectronUpdate = true
-						electronInfo = await this.get<ElectronInfo>(`/electron-win.${version}.json`)
-						bundlePath = `/mimiri_notes-${version}-full.nupkg`
+						electronInfo = await this.get<ElectronInfo>(`/${jsonUrl[jsonUrl.length - 1]}`)
+						bundlePath = `/${nupkgUrl[nupkgUrl.length - 1]}`
 					}
 					if (mimiriPlatform.isMac) {
+						const links = latest.systems.find(s => s.name === 'MacOS')?.[channel]
+						const jsonUrl = links.find(l => l.url.endsWith('.json')).url.split('/')
+						const zipUrl = links.find(l => l.url.endsWith('.zip')).url.split('/')
 						this.installingElectronUpdate = true
-						electronInfo = await this.get<ElectronInfo>(`/electron-darwin.${version}.json`)
-						bundlePath = `/${electronInfo.release}`
+						electronInfo = await this.get<ElectronInfo>(`/${jsonUrl[jsonUrl.length - 1]}`)
+						bundlePath = `/${zipUrl[zipUrl.length - 1]}`
 					}
 				}
 			}
