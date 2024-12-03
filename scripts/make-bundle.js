@@ -99,7 +99,9 @@ if (bundleRes.status !== 200 || infoRes.status !== 200) {
 		files: undefined,
 		signatures: undefined,
 		size: output.length,
-		minElectronVersion: pack.minElectronVersion,
+		minElectronVersionWin32: pack.minElectronVersionWin32,
+		minElectronVersionDarwin: pack.minElectronVersionDarwin,
+		minElectronVersionLinux: pack.minElectronVersionLinux,
 		minIosVersion: pack.minIosVersion,
 		minAndroidVersion: pack.minAndroidVersion
 	}

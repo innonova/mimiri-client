@@ -9,6 +9,9 @@ import { settingsManager } from './settings-manager'
 export interface BundleInfo {
 	version: string
 	minElectronVersion: string
+	minElectronVersionWin32: string
+	minElectronVersionDarwin: string
+	minElectronVersionLinux: string
 	minIosVersion: string
 	minAndroidVersion: string
 	releaseDate: string
@@ -34,6 +37,10 @@ export interface UpdateManagerState {
 	activeVersion?: InstalledBundleInfo
 	version: string
 	releaseDate: Date
+	latestVersion: string | undefined
+	isHostUpdate: boolean
+	downloadUrl: string
+	downloadName: string
 }
 
 export interface ElectronInfo {
@@ -47,8 +54,11 @@ export class UpdateManager {
 	private state: UpdateManagerState = reactive({
 		version,
 		releaseDate,
+		latestVersion: undefined,
+		isHostUpdate: false,
+		downloadUrl: undefined,
+		downloadName: undefined,
 	})
-	private updateAvailable: BundleInfo = undefined
 	private installingElectronUpdate = false
 
 	constructor(private host: string) {}
@@ -120,6 +130,18 @@ export class UpdateManager {
 		return 0
 	}
 
+	private updateMinElectronVersion(info: BundleInfo) {
+		if (mimiriPlatform.isWindows && info.minElectronVersionWin32) {
+			info.minElectronVersion = info.minElectronVersionWin32
+		}
+		if (mimiriPlatform.isMac && info.minElectronVersionDarwin) {
+			info.minElectronVersion = info.minElectronVersionDarwin
+		}
+		if (mimiriPlatform.isLinux && info.minElectronVersionLinux) {
+			info.minElectronVersion = info.minElectronVersionLinux
+		}
+	}
+
 	public async check() {
 		if (ipcClient.isAvailable) {
 			try {
@@ -130,6 +152,7 @@ export class UpdateManager {
 				const bundleInfo = await this.get<BundleInfo>(
 					`/${currentKey.name}.${settingsManager.channel}.json?r=${Date.now()}`,
 				)
+				this.updateMinElectronVersion(bundleInfo)
 				if (bundleInfo.version !== this.state.activeVersion.version) {
 					const newerVersionExists = this.compareVersions(bundleInfo.version, this.state.activeVersion.version) > 0
 					if (newerVersionExists) {
@@ -137,33 +160,48 @@ export class UpdateManager {
 							const hostSupportsVersion =
 								this.compareVersions(bundleInfo.minElectronVersion, this.state.activeVersion.hostVersion) <= 0
 							if (hostSupportsVersion) {
-								this.updateAvailable = bundleInfo
+								this.state.latestVersion = bundleInfo.version
+								this.state.isHostUpdate = false
 								notificationManager.updateAvailable(bundleInfo.version, new Date(bundleInfo.releaseDate))
-							} else {
-								this.updateAvailable = bundleInfo
+							} else if (!mimiriPlatform.isHostUpdateManaged) {
+								this.state.latestVersion = bundleInfo.version
+								this.state.isHostUpdate = true
+								if (mimiriPlatform.isLinux) {
+									const channel = settingsManager.channel === 'stable' ? 'links' : settingsManager.channel
+									const latest = await this.get<any>(`/latest.json`)
+									const links = latest.systems.find(s => s.name === 'Linux')?.[channel]
+									this.state.downloadUrl = undefined
+									this.state.downloadName = undefined
+									let link: any
+									if (mimiriPlatform.isFlatpak) {
+										link = links.find(l => l.url.endsWith('.flatpak'))
+									} else if (mimiriPlatform.isSnap) {
+										link = links.find(l => l.url.endsWith('.snap'))
+									} else if (mimiriPlatform.isAppImage) {
+										link = links.find(l => l.url.endsWith('.AppImage'))
+									} else if (mimiriPlatform.isTarGz) {
+										link = links.find(l => l.url.endsWith('.tar.gz'))
+									}
+									this.state.downloadUrl = link?.url
+									this.state.downloadName = link?.name
+								}
 								notificationManager.updateAvailable(bundleInfo.version, new Date(bundleInfo.releaseDate))
-								// TODO notify new host available
-								// TODO if base version greater than active version make base active
 							}
 						} else if (mimiriPlatform.isIos) {
 							const hostSupportsVersion =
 								this.compareVersions(bundleInfo.minIosVersion, this.state.activeVersion.hostVersion) <= 0
 							if (hostSupportsVersion) {
-								this.updateAvailable = bundleInfo
+								this.state.latestVersion = bundleInfo.version
+								this.state.isHostUpdate = false
 								notificationManager.updateAvailable(bundleInfo.version, new Date(bundleInfo.releaseDate))
-							} else {
-								// TODO consider if we should notify user, maybe keep track of if ios version is available on store yet
-								// TODO if base version greater than active version make base active
 							}
 						} else if (mimiriPlatform.isAndroid) {
 							const hostSupportsVersion =
 								this.compareVersions(bundleInfo.minAndroidVersion, this.state.activeVersion.hostVersion) <= 0
 							if (hostSupportsVersion) {
-								this.updateAvailable = bundleInfo
+								this.state.latestVersion = bundleInfo.version
+								this.state.isHostUpdate = false
 								notificationManager.updateAvailable(bundleInfo.version, new Date(bundleInfo.releaseDate))
-							} else {
-								// TODO consider if we should notify user, maybe keep track of if android version is available on store yet
-								// TODO if base version greater than active version make base active
 							}
 						}
 					}
@@ -182,6 +220,7 @@ export class UpdateManager {
 			this.installingElectronUpdate = false
 			const currentKey = updateKeys.find(item => item.current)
 			const info = await this.get<BundleInfo>(`/${currentKey.name}.${version}.info.json`)
+			this.updateMinElectronVersion(info)
 			let bundlePath = `/${currentKey.name}.${version}.json`
 			let electronInfo: ElectronInfo = undefined
 
@@ -291,14 +330,26 @@ export class UpdateManager {
 	}
 
 	public get latestVersion() {
-		return this.updateAvailable.version
+		return this.state.latestVersion
 	}
 
 	public get currentVersion() {
 		return this.state.version
 	}
 
+	public get isHostUpdate() {
+		return this.state.isHostUpdate
+	}
+
 	public get releaseDate() {
 		return this.state.releaseDate
+	}
+
+	public get downloadUrl() {
+		return this.state.downloadUrl
+	}
+
+	public get downloadName() {
+		return this.state.downloadName
 	}
 }

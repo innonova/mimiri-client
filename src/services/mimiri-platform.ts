@@ -36,6 +36,13 @@ class MimiriPlatform {
 	private _isMac = false
 	private _isWindows = false
 	private _isLinux = false
+	private _isFlatpak = false
+	private _isSnap = false
+	private _isAppImage = false
+	private _isTarGz = false
+	private _isSnapStore = false
+	private _isFlatHub = false
+	private _isMacAppStore = false
 
 	constructor() {
 		if (Capacitor.isPluginAvailable('MimiriPlatform')) {
@@ -50,6 +57,12 @@ class MimiriPlatform {
 			this._isMac = platform === 'darwin'
 			this._isWindows = platform === 'win32'
 			this._isLinux = platform === 'linux'
+			this._isFlatpak = (window as any).mimiri.isFlatpak
+			this._isSnap = (window as any).mimiri.isSnap
+			this._isAppImage = (window as any).mimiri.isAppImage
+			this._isTarGz = (window as any).mimiri.isTarGz
+			this._isFlatHub = (window as any).mimiri.isFlatHub
+			this._isSnapStore = (window as any).mimiri.isSnapStore
 		} else {
 			this._isWeb = true
 		}
@@ -174,6 +187,34 @@ class MimiriPlatform {
 
 	public get isLinux() {
 		return this._isLinux
+	}
+
+	public get isFlatpak() {
+		return this._isFlatpak
+	}
+
+	public get isSnap() {
+		return this._isSnap
+	}
+
+	public get isAppImage() {
+		return this._isAppImage
+	}
+
+	public get isTarGz() {
+		return this._isTarGz
+	}
+
+	public get isSnapStore() {
+		return this._isSnapStore
+	}
+
+	public get isFlatHub() {
+		return this._isFlatHub
+	}
+
+	public get isHostUpdateManaged() {
+		return this.isIos || this.isAndroid || this.isSnapStore || this.isFlatHub || this._isMacAppStore
 	}
 
 	public get isLocked() {

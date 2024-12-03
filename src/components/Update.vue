@@ -3,8 +3,18 @@
 	<div class="m-auto p-1">
 		<div class="mb-14">
 			<h1 class="text-center font-bold text-size-header">Mimiri Update</h1>
+			<div class="flex flex-col w-full items-center">
+				<div class="pb-1 pt-4 flex">
+					<div class="w-32">Current Version:</div>
+					<div class="w-16 text-right">{{ updateManager.currentVersion }}</div>
+				</div>
+				<div class="py-1 flex">
+					<div class="w-32">New Version:</div>
+					<div class="w-16 text-right">{{ updateManager.latestVersion }}</div>
+				</div>
+			</div>
 		</div>
-		<div class="w-[300px] m-auto">
+		<div v-if="!updateManager.isHostUpdate || !mimiriPlatform.isLinux" class="w-[300px] m-auto">
 			<div class="relative w-[300px] h-[30px] border border-solid border-dialog-border">
 				<div class="h-[30px] bg-progress-indicator progress"></div>
 				<div
@@ -30,7 +40,7 @@
 				</div>
 			</div>
 		</div>
-		<div class="mt-2 m-auto flex justify-end">
+		<div v-if="!updateManager.isHostUpdate || !mimiriPlatform.isLinux" class="mt-2 m-auto flex justify-end">
 			<button class="bg-button-primary text-button-primary-text mr-2 hover:opacity-80" v-if="!running" @click="update">
 				Update
 			</button>
@@ -56,12 +66,20 @@
 				Cancel
 			</button>
 		</div>
+		<div v-if="updateManager.isHostUpdate && mimiriPlatform.isLinux">
+			<div class="py-3">An update of the Electron Client is available here:</div>
+			<div class="py-2">
+				Direct download: <a :href="updateManager.downloadUrl" target="_blank">{{ updateManager.downloadName }}</a>
+			</div>
+			<div class="py-2"><a href="https://mimiri.io/#downloads" target="_blank">Other download options</a></div>
+		</div>
 	</div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
 import { showUpdate, updateManager } from '../global'
+import { mimiriPlatform } from '../services/mimiri-platform'
 
 const running = ref(false)
 const stage = ref('')
