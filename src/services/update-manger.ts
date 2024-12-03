@@ -125,7 +125,15 @@ export class UpdateManager {
 			return labelTypeA === 'rc' ? 1 : -1
 		}
 		if (labelA !== labelB) {
-			return labelA - labelB
+			if (!isNaN(labelA) && !isNaN(labelA)) {
+				return labelA - labelB
+			}
+			if (!isNaN(labelA) && isNaN(labelA)) {
+				return 1
+			}
+			if (isNaN(labelA) && !isNaN(labelA)) {
+				return -1
+			}
 		}
 		return 0
 	}
@@ -258,8 +266,13 @@ export class UpdateManager {
 					const installedVersions = await ipcClient.bundle.getInstalledVersions()
 					this.state.activeVersion = installedVersions.find(ver => ver.active)
 				}
+				console.log('check')
+				console.log(info.minElectronVersion)
+				console.log(this.state.activeVersion.hostVersion)
 				const hostSupportsVersion =
 					this.compareVersions(info.minElectronVersion, this.state.activeVersion.hostVersion) <= 0
+
+				console.log(this.compareVersions(info.minElectronVersion, this.state.activeVersion.hostVersion))
 				if (!hostSupportsVersion) {
 					const channel = settingsManager.channel === 'stable' ? 'links' : settingsManager.channel
 					const latest = await this.get<any>(`/latest.json`)
