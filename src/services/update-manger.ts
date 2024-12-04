@@ -204,9 +204,8 @@ export class UpdateManager {
 								this.state.latestVersion = bundleInfo.version
 								this.state.isHostUpdate = true
 								if (mimiriPlatform.isLinux) {
-									const channel = settingsManager.channel === 'stable' ? 'links' : settingsManager.channel
 									const latest = await this.get<any>(`/latest.json`)
-									const links = latest.systems.find(s => s.name === 'Linux')?.[channel]
+									const links = latest.systems.find(s => s.name === 'Linux')?.[settingsManager.channel]
 									this.state.downloadUrl = undefined
 									this.state.downloadName = undefined
 									let link: any
@@ -266,18 +265,14 @@ export class UpdateManager {
 					const installedVersions = await ipcClient.bundle.getInstalledVersions()
 					this.state.activeVersion = installedVersions.find(ver => ver.active)
 				}
-				console.log('check')
-				console.log(info.minElectronVersion)
-				console.log(this.state.activeVersion.hostVersion)
 				const hostSupportsVersion =
 					this.compareVersions(info.minElectronVersion, this.state.activeVersion.hostVersion) <= 0
 
 				console.log(this.compareVersions(info.minElectronVersion, this.state.activeVersion.hostVersion))
 				if (!hostSupportsVersion) {
-					const channel = settingsManager.channel === 'stable' ? 'links' : settingsManager.channel
 					const latest = await this.get<any>(`/latest.json`)
 					if (mimiriPlatform.isWindows) {
-						const links = latest.systems.find(s => s.name === 'Windows')?.[channel]
+						const links = latest.systems.find(s => s.name === 'Windows')?.[settingsManager.channel]
 						const jsonUrl = links.find(l => l.url.endsWith('.json')).url.split('/')
 						const nupkgUrl = links.find(l => l.url.endsWith('.nupkg')).url.split('/')
 						this.installingElectronUpdate = true
@@ -285,7 +280,7 @@ export class UpdateManager {
 						bundlePath = `/${nupkgUrl[nupkgUrl.length - 1]}`
 					}
 					if (mimiriPlatform.isMac) {
-						const links = latest.systems.find(s => s.name === 'MacOS')?.[channel]
+						const links = latest.systems.find(s => s.name === 'MacOS')?.[settingsManager.channel]
 						const jsonUrl = links.find(l => l.url.endsWith('.json')).url.split('/')
 						const zipUrl = links.find(l => l.url.endsWith('.zip')).url.split('/')
 						this.installingElectronUpdate = true
