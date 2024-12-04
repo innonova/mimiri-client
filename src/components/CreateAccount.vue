@@ -1,6 +1,6 @@
 <template>
 	<div id="title-bar" class="w-full h-[36px] pl-px select-none drag"></div>
-	<div class="m-auto p-10">
+	<div v-if="!mimiriPlatform.isWeb" class="m-auto p-10">
 		<div class="mb-14">
 			<h1 class="text-center font-bold text-size-header">Create Mimiri Account</h1>
 		</div>
@@ -49,6 +49,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { noteManager, showCreateAccount } from '../global'
+import { mimiriPlatform } from '../services/mimiri-platform'
 
 const disallowString = '!"#$%&@\'()*/=?[]{}~^`'
 const disallowRegex = /[!"#$%&@'()*/=?[\]{}~\^\\`]/
