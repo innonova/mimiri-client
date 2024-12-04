@@ -10,6 +10,7 @@ import { HubConnectionBuilder } from '@microsoft/signalr'
 import { type NoteAction } from './types/requests'
 import { browserHistory, createNewNode, createNewRootNode, ipcClient, limitDialog, updateManager } from '../global'
 import { Capacitor } from '@capacitor/core'
+import { mimiriPlatform } from './mimiri-platform'
 
 export enum ActionType {
 	Save,
@@ -251,34 +252,45 @@ export class NoteManager {
 	}
 
 	public async connectForNotifications() {
-		if (!this.client.testId) {
-			try {
-				const response = await this.client.createNotificationUrl()
-				const connection = new HubConnectionBuilder()
-					.withUrl(response.url, { accessTokenFactory: () => response.token })
-					// .configureLogging(LogLevel.Warning)
-					.withAutomaticReconnect()
-					.build()
-				connection.on('notification', async (sender, type, payload) => {
-					if (type === 'note-update') {
-						const json = JSON.parse(payload)
-						const note = this.notes[json.id]
-						if (note) {
-							for (const version of json.versions) {
-								if (version.version > note.note.getVersion(version.type)) {
-									await note.refresh()
-									break
+		if (mimiriPlatform.isElectron || mimiriPlatform.isWeb) {
+			if (!this.client.testId) {
+				try {
+					const response = await this.client.createNotificationUrl()
+					const connection = new HubConnectionBuilder()
+						.withUrl(response.url, { accessTokenFactory: () => response.token })
+						// .configureLogging(LogLevel.Warning)
+						.withAutomaticReconnect()
+						.build()
+					connection.on('notification', async (sender, type, payload) => {
+						if (type === 'note-update') {
+							const json = JSON.parse(payload)
+							const note = this.notes[json.id]
+							if (note) {
+								for (const version of json.versions) {
+									if (version.version > note.note.getVersion(version.type)) {
+										await note.refresh()
+										break
+									}
 								}
 							}
 						}
-					}
-					if (type === 'bundle-update') {
-						void updateManager.check()
-					}
-				})
-				await connection.start()
-			} catch (ex) {
-				console.log('Failed to set up for notifications', ex)
+						if (type === 'bundle-update') {
+							void updateManager.check()
+						}
+					})
+					connection.onreconnecting(error => {
+						console.log('SignalR Reconnecting', error)
+					})
+					connection.onreconnected(() => {
+						console.log('SignalR Reconnected')
+					})
+					connection.onclose(error => {
+						console.log('SignalR Closed', error)
+					})
+					await connection.start()
+				} catch (ex) {
+					console.log('Failed to set up for notifications', ex)
+				}
 			}
 		}
 	}

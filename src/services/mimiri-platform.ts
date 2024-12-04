@@ -79,25 +79,32 @@ class MimiriPlatform {
 
 		if (Capacitor.isPluginAvailable('App')) {
 			App.addListener('resume', async () => {
-				if (this.isLocked) {
-					if (noteManager.isLoggedIn) {
-						if (Date.now() - this._lockTime < 60000) {
-							this.state.locked = false
-							updateManager.check()
-						} else if (this._platformInfo?.biometrics) {
-							const result = await this._nativePlatform.verifyBiometry()
-							if (result.verified) {
+				try {
+					if (this.isLocked) {
+						if (noteManager.isLoggedIn) {
+							if (Date.now() - this._lockTime < 60000) {
 								this.state.locked = false
 								updateManager.check()
+							} else if (this._platformInfo?.biometrics) {
+								const result = await this._nativePlatform.verifyBiometry()
+								if (result.verified) {
+									this.state.locked = false
+									updateManager.check()
+									await noteManager.selectedNote?.refresh()
+								}
+							} else {
+								// TODO consider what to do
+								this.state.locked = false
+								updateManager.check()
+								await noteManager.selectedNote?.refresh()
 							}
 						} else {
-							// TODO consider what to do
 							this.state.locked = false
-							updateManager.check()
 						}
-					} else {
-						this.state.locked = false
 					}
+				} catch (ex) {
+					// Do something better
+					this.state.locked = false
 				}
 			})
 			App.addListener('pause', () => {
