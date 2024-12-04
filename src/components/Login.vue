@@ -44,11 +44,12 @@
 			</div>
 		</form>
 	</div>
+	<div class="absolute bottom-5 w-full pr-5 text-right">v {{ updateManager.currentVersion }}</div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { noteManager, showConvertAccount, showCreateAccount, conversionData } from '../global'
+import { noteManager, showConvertAccount, showCreateAccount, conversionData, updateManager } from '../global'
 import { PossibleConversionError } from '../services/mimer-client'
 import LoadingIcon from '../icons/system/loading_3.vue'
 

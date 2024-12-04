@@ -6,7 +6,8 @@
 				<button class="cursor-default w-8 outline-none" @click="close">X</button>
 			</header>
 			<main>
-				<div class="p-1 pl-4">Version: {{ updateManager.currentVersion }}</div>
+				<div class="p-1 pl-4">Bundle Version: {{ updateManager.currentVersion }}</div>
+				<div class="p-1 pl-4 pt-2">Host Version: {{ updateManager.hostVersion }}</div>
 				<div class="p-1 pl-4 pt-2">Released: {{ formatDate(updateManager.releaseDate) }}</div>
 				<div class="p-1 pl-4 pt-6">Notes: {{ noteCount }} / {{ maxNoteCount }} ({{ notesPercent }})</div>
 				<div class="p-1 pl-4 pt-2">Space Used: {{ usedBytes }} / {{ maxBytes }} ({{ bytesPercent }})</div>
