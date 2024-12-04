@@ -139,10 +139,16 @@ updateTheme()
 if (!mimiriPlatform.isElectron) {
 	if (mimiriPlatform.isIos) {
 		document.documentElement.setAttribute('data-env-support', 'true')
-	} else {
+	} else if (mimiriPlatform.isAndroid || mimiriPlatform.isPhone) {
 		const saSupport = getComputedStyle(document.documentElement).getPropertyValue('--sa-support')
 		document.documentElement.setAttribute('data-env-support', saSupport !== '0px' ? 'true' : 'false')
+	} else {
+		document.documentElement.setAttribute('data-env-support', 'off')
 	}
+}
+
+if (mimiriPlatform.isElectron && mimiriPlatform.isLinux) {
+	document.body.classList.add('rounded-lg')
 }
 
 watch(settingsManager.state, () => {

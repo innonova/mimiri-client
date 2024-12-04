@@ -84,18 +84,22 @@
 		--color-search-highlight: #bf5116;
 		--color-info-bar: #bf5116;
 	}
+}
 
-	html {
-		--sa-support: env(safe-area-inset-top);
-	}
+html {
+	--sa-support: env(safe-area-inset-top);
+}
 
-	html[data-env-support='true'] {
-		--safe-area-top: env(safe-area-inset-top);
-	}
+html[data-env-support='true'] {
+	--safe-area-top: env(safe-area-inset-top);
+}
 
-	html[data-env-support='false'] {
-		--safe-area-top: 25px;
-	}
+html[data-env-support='false'] {
+	--safe-area-top: 25px;
+}
+
+html[data-env-support='false'] {
+	--safe-area-top: 25px;
 }
 
 .unexpected-closing-bracket {
@@ -112,10 +116,6 @@ body,
 #app {
 	@apply font-display text-size-base;
 	@apply overflow-hidden h-full w-full font-display;
-}
-
-body {
-	@apply rounded-lg;
 }
 
 button {
