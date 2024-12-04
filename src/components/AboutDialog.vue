@@ -1,6 +1,6 @@
 <template>
 	<dialog class="w-96 bg-dialog text-text border border-solid border-dialog-border" ref="dialog">
-		<div class="grid grid-rows-[auto_1fr_auto] gap-6">
+		<div v-if="!showLog" class="grid grid-rows-[auto_1fr_auto] gap-6" @click="boxClicked">
 			<header class="flex gap-8 justify-between items-center py-0.5 bg-title-bar">
 				<div class="pl-2">Mimiri Notes</div>
 				<button class="cursor-default w-8 outline-none" @click="close">X</button>
@@ -22,12 +22,22 @@
 				</button>
 			</footer>
 		</div>
+		<div v-if="showLog" class="flex flex-col">
+			<div class="h-[600px] overflow-y-scroll p-2">
+				<template v-for="message of mobileLog.messages">
+					<div>{{ message }}</div>
+				</template>
+			</div>
+			<div class="text-center">
+				<button class="bg-button-primary text-button-primary-text hover:opacity-80" @click="closeLog">Close Log</button>
+			</div>
+		</div>
 	</dialog>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { noteManager, updateManager } from '../global'
+import { noteManager, updateManager, mobileLog } from '../global'
 const dialog = ref(null)
 
 const usedBytes = ref('0 MB')
@@ -39,6 +49,7 @@ const notesPercent = ref('0 %')
 const maxNoteSize = ref('1 MB')
 const currentNoteSize = ref('0 MB')
 const currentNotePercent = ref('0 %')
+const showLog = ref(false)
 
 const biCif = value => {
 	if (value < 10) {
@@ -90,6 +101,27 @@ const show = () => {
 
 const close = () => {
 	dialog.value.close()
+}
+
+let clickCount = 0
+let firstClick = Date.now() - 60000
+const boxClicked = () => {
+	if (mobileLog.enabled) {
+		if (Date.now() - firstClick > 60000) {
+			clickCount = 0
+			firstClick = Date.now()
+		}
+		if (++clickCount >= 10) {
+			clickCount = 0
+			firstClick = Date.now() - 60000
+			mobileLog.log('log opened')
+			showLog.value = true
+		}
+	}
+}
+
+const closeLog = () => {
+	showLog.value = false
 }
 
 defineExpose({

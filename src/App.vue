@@ -98,12 +98,15 @@ import {
 	limitDialog,
 	showDeleteAccount,
 	updateManager,
+	mobileLog,
 } from './global'
 import { settingsManager } from './services/settings-manager'
 import LoadingIcon from './icons/system/loading_3.vue'
 import { mimiriPlatform } from './services/mimiri-platform'
 import DeleteAccount from './components/DeleteAccount.vue'
 import { menuManager } from './services/menu-manager'
+
+mobileLog.log('App Loading')
 
 const colorScheme = ref('only light')
 const loading = ref(true)

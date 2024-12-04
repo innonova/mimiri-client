@@ -8,7 +8,15 @@ import type { NoteShareInfo } from './types/note-share-info'
 import type { ICacheManager } from './types/cache-manager'
 import { HubConnectionBuilder } from '@microsoft/signalr'
 import { type NoteAction } from './types/requests'
-import { browserHistory, createNewNode, createNewRootNode, ipcClient, limitDialog, updateManager } from '../global'
+import {
+	browserHistory,
+	createNewNode,
+	createNewRootNode,
+	ipcClient,
+	limitDialog,
+	mobileLog,
+	updateManager,
+} from '../global'
 import { Capacitor } from '@capacitor/core'
 import { mimiriPlatform } from './mimiri-platform'
 
@@ -174,6 +182,7 @@ export class NoteManager {
 	}
 
 	public async login(username: string, password: string) {
+		mobileLog.log('Logging In')
 		this.state.busy = true
 		this.state.spinner = false
 		this.state.busyLong = false
@@ -219,6 +228,7 @@ export class NoteManager {
 	}
 
 	public async goOnline(password?: string) {
+		mobileLog.log('Going online')
 		this.beginAction()
 		try {
 			await this.client.goOnline(password)
@@ -241,6 +251,7 @@ export class NoteManager {
 	}
 
 	public logout() {
+		mobileLog.log('Logging out')
 		this.root = undefined
 		this.client.logout()
 		this.emitStatusUpdated()

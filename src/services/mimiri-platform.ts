@@ -2,7 +2,7 @@ import { Capacitor, registerPlugin } from '@capacitor/core'
 import { Keyboard } from '@capacitor/keyboard'
 import { App } from '@capacitor/app'
 import { reactive } from 'vue'
-import { noteManager, updateManager } from '../global'
+import { mobileLog, noteManager, updateManager } from '../global'
 
 interface PlatformInfo {
 	mode: string
@@ -80,12 +80,14 @@ class MimiriPlatform {
 		if (Capacitor.isPluginAvailable('App')) {
 			App.addListener('resume', async () => {
 				try {
+					mobileLog.log('App Resuming')
 					if (this.isLocked) {
 						if (noteManager.isLoggedIn) {
 							if (Date.now() - this._lockTime < 60000) {
 								this.state.locked = false
 								updateManager.check()
 							} else if (this._platformInfo?.biometrics) {
+								mobileLog.log('Requesting Biometrics')
 								const result = await this._nativePlatform.verifyBiometry()
 								if (result.verified) {
 									this.state.locked = false
@@ -93,6 +95,7 @@ class MimiriPlatform {
 									await noteManager.selectedNote?.refresh()
 								}
 							} else {
+								mobileLog.log('Biometrics not available')
 								// TODO consider what to do
 								this.state.locked = false
 								updateManager.check()
@@ -103,11 +106,13 @@ class MimiriPlatform {
 						}
 					}
 				} catch (ex) {
+					mobileLog.log('Error during resume: ' + ex.message)
 					// Do something better
 					this.state.locked = false
 				}
 			})
 			App.addListener('pause', () => {
+				mobileLog.log('App Pausing')
 				if (this._platformInfo?.biometrics) {
 					this.state.locked = true
 					this._lockTime = Date.now()

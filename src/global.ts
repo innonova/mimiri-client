@@ -8,6 +8,7 @@ import { BrowserHistory } from './services/browser-history'
 import { UpdateManager } from './services/update-manger'
 import { NotificationManager } from './services/notification-manager'
 import { MimiriEditor } from './services/editor/mimiri-editor'
+import { MobileLog } from './services/mobile-log'
 
 export const env = import.meta.env
 const host = env.VITE_MIMER_API_HOST
@@ -36,6 +37,7 @@ export const conversionData = ref({ username: '', password: '' })
 export const createNewNode = ref(false)
 export const createNewRootNode = ref(false)
 export const searchInput = ref(null)
+export const mobileLog = new MobileLog()
 
 export const clipboardNote = ref<MimerNote>(undefined)
 export const isCut = ref(false)
