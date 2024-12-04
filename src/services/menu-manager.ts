@@ -163,7 +163,7 @@ class MenuManager {
 
 	public showMenu(position: ContextMenuPosition, items: MenuItems[]) {
 		this.state.menuShowing = true
-		contextMenu.value.show(position, { items: this.toItems(items) }, item => {
+		contextMenu.value.show(position, { items: this.toItems(items, false) }, item => {
 			this.menuActivated(item)
 		})
 	}
@@ -173,12 +173,12 @@ class MenuManager {
 		contextMenu.value.close()
 	}
 
-	private toItems(items: MenuItems[], includeSeparators = false) {
+	private toItems(items: MenuItems[], separatorAsItem = true) {
 		const result: ContextMenuItem[] = []
 		for (const item of items) {
 			switch (item) {
 				case MenuItems.Separator:
-					if (includeSeparators) {
+					if (!separatorAsItem) {
 						if (result.length > 0) {
 							result[result.length - 1].separatorAfter = true
 						}
