@@ -2,6 +2,7 @@ import { reactive } from 'vue'
 import {
 	aboutDialog,
 	changePasswordDialog,
+	checkUpdateDialog,
 	clipboardNote,
 	contextMenu,
 	deleteNodeDialog,
@@ -155,7 +156,8 @@ class MenuManager {
 		} else if (itemId === 'update-available') {
 			showUpdate.value = true
 		} else if (itemId === 'check-for-update') {
-			updateManager.check()
+			await updateManager.check()
+			checkUpdateDialog.value.show()
 		}
 	}
 

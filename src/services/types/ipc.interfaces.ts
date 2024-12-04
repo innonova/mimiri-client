@@ -53,9 +53,15 @@ export interface IpcBundleApi {
 	updateElectron(): Promise<void>
 }
 
+export interface IpcWindowApi {
+	setMainWindowSize(value: { width: number; height: number }): Promise<void>
+	getMainWindowSize(): Promise<{ width: number; height: number }>
+}
+
 export interface IpcApi {
 	cache: IpcCacheApi
 	menu: IpcMenuApi
 	settings: IpcSettingsApi
 	bundle: IpcBundleApi
+	window: IpcWindowApi
 }

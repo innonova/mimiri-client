@@ -42,6 +42,7 @@
 		<DeleteNodeDialog ref="deleteNodeDialog"></DeleteNodeDialog>
 		<ShareDialog ref="shareDialog"></ShareDialog>
 		<AboutDialog ref="aboutDialog"></AboutDialog>
+		<CheckUpdateDialog ref="checkUpdateDialog"></CheckUpdateDialog>
 		<ChangePasswordDialog ref="changePasswordDialog"></ChangePasswordDialog>
 		<SaveEmptyNodeDialog ref="saveEmptyNodeDialog"></SaveEmptyNodeDialog>
 		<LimitDialog ref="limitDialog"></LimitDialog>
@@ -70,6 +71,7 @@ import DeleteNodeDialog from './components/DeleteNodeDialog.vue'
 import ShareDialog from './components/ShareDialog.vue'
 import ShareOfferView from './components/ShareOfferView.vue'
 import AboutDialog from './components/AboutDialog.vue'
+import CheckUpdateDialog from './components/CheckUpdateDialog.vue'
 import ChangePasswordDialog from './components/ChangePasswordDialog.vue'
 import SaveEmptyNodeDialog from './components/SaveEmptyNodeDialog.vue'
 import LimitDialog from './components/LimitDialog.vue'
@@ -89,6 +91,7 @@ import {
 	mainToolbar,
 	noteEditor,
 	aboutDialog,
+	checkUpdateDialog,
 	noteTreeView,
 	notificationList,
 	titleBar,
@@ -298,10 +301,42 @@ const handleShortcut = event => {
 			showSearchBox.value = false
 		}
 	}
+
+	if (!ctrlActive && !event.altKey) {
+		if (event.key.length === 1 && event.key === event.key.toLowerCase() && noteTreeView.value?.hasFocus()) {
+			noteManager.findNextNoteStartingWith(event.key)
+		}
+	}
 }
 document.addEventListener('keydown', handleShortcut, false)
+
+let lastWindowSizeUpdate = Date.now()
+let sizeInterval = undefined
+const windowSizeUpdate = () => {
+	lastWindowSizeUpdate = Date.now()
+	if (!sizeInterval) {
+		sizeInterval = setInterval(() => checkWindowSizeStable(), 100)
+	}
+}
+
+const checkWindowSizeStable = async () => {
+	if (Date.now() - lastWindowSizeUpdate > 250) {
+		clearInterval(sizeInterval)
+		sizeInterval = undefined
+		const size = await ipcClient.window.getMainWindowSize()
+		settingsManager.mainWindowSize = size
+	}
+}
+
+window.addEventListener('resize', async () => {
+	windowSizeUpdate()
+})
 ;(async () => {
 	await settingsManager.load()
+	if (settingsManager.mainWindowSize.width > 100 && settingsManager.mainWindowSize.height > 100) {
+		await ipcClient.window.setMainWindowSize(settingsManager.mainWindowSize)
+	}
+
 	updateTheme()
 	await updateManager.checkUpdateInitial()
 	loading.value = false

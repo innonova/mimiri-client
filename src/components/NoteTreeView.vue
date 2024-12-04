@@ -130,6 +130,10 @@ const showContextMenu = async e => {
 	menuManager.showMenu({ x: e.x, y: e.y }, [MenuItems.NewRootNote, MenuItems.RefreshRoot])
 }
 
+const hasFocus = () => {
+	return document.activeElement.tagName === 'BODY'
+}
+
 defineExpose({
 	duplicateActiveNote,
 	copyActiveNote,
@@ -141,5 +145,6 @@ defineExpose({
 	moveSelectionDown,
 	moveSelectionLeft,
 	moveSelectionRight,
+	hasFocus,
 })
 </script>

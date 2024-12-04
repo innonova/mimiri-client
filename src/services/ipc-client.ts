@@ -6,6 +6,7 @@ import type { InstalledBundleInfo, IpcApi } from './types/ipc.interfaces'
 import { capacitorClient } from './capacitor-client'
 import type { Bundle } from './update-manger'
 import { menuManager } from './menu-manager'
+import { toRaw } from 'vue'
 
 export class MimerCache implements ICacheManager {
 	constructor(private api: IpcApi) {}
@@ -139,12 +140,23 @@ export class MimerBundle {
 	}
 }
 
+export class MimerWindow {
+	constructor(private api: IpcApi) {}
+	public getMainWindowSize() {
+		return this.api.window.getMainWindowSize()
+	}
+	public setMainWindowSize(value: { width: number; height: number }) {
+		return this.api.window.setMainWindowSize(toRaw(value))
+	}
+}
+
 export class IpcClient {
 	private api: IpcApi
 	public readonly cache: MimerCache
 	public readonly menu: MimerMenu
 	public readonly settings: MimerSettings
 	public readonly bundle: MimerBundle
+	public readonly window: MimerWindow
 
 	constructor() {
 		if (capacitorClient.available) {
@@ -156,6 +168,7 @@ export class IpcClient {
 		this.menu = new MimerMenu(this.api)
 		this.settings = new MimerSettings(this.api)
 		this.bundle = new MimerBundle(this.api)
+		this.window = new MimerWindow(this.api)
 	}
 
 	public get isAvailable() {

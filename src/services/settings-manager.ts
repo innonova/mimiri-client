@@ -1,6 +1,7 @@
 import { reactive } from 'vue'
 import { ipcClient } from '../global'
 import { menuManager } from './menu-manager'
+import { toRaw } from 'vue'
 
 export interface MimerConfiguration {
 	openAtLogin: boolean
@@ -12,6 +13,7 @@ export interface MimerConfiguration {
 	wordwrap: boolean
 	channel: string
 	lastRunHostVersion: string
+	mainWindowSize: { width: number; height: number }
 }
 
 class SettingsManager {
@@ -27,6 +29,7 @@ class SettingsManager {
 		wordwrap: false,
 		channel: 'stable',
 		lastRunHostVersion: '0.0.0',
+		mainWindowSize: { width: 0, height: 0 },
 	})
 
 	constructor() {
@@ -62,10 +65,10 @@ class SettingsManager {
 
 	public async save() {
 		if (ipcClient.isAvailable) {
-			await ipcClient.settings.save({ ...this.state })
+			await ipcClient.settings.save(toRaw(this.state))
 			menuManager.updateTrayMenu()
 		} else if (localStorage) {
-			localStorage.setItem('mimer-settings', JSON.stringify({ ...this.state }))
+			localStorage.setItem('mimer-settings', JSON.stringify(toRaw(this.state)))
 		}
 	}
 
@@ -131,6 +134,17 @@ class SettingsManager {
 	public set lastRunHostVersion(value: string) {
 		this.state.lastRunHostVersion = value
 		void this.save()
+	}
+
+	public get mainWindowSize() {
+		return this.state.mainWindowSize
+	}
+
+	public set mainWindowSize(value: { width: number; height: number }) {
+		if (this.state.mainWindowSize.width !== value.width || this.state.mainWindowSize.height !== value.height) {
+			this.state.mainWindowSize = { width: value.width, height: value.height }
+			void this.save()
+		}
 	}
 }
 

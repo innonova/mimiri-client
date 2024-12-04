@@ -6,6 +6,7 @@ import type {
 	IpcCacheApi,
 	IpcMenuApi,
 	IpcSettingsApi,
+	IpcWindowApi,
 } from './types/ipc.interfaces'
 import type { Guid } from './types/guid'
 import type { MimerConfiguration } from './settings-manager'
@@ -20,6 +21,13 @@ class NoOpMenu implements IpcMenuApi {
 	setAppMenu(value: any) {}
 	seTrayMenu(value: any) {}
 	onMenuItemActivated(callback: (menuItemIdd: string) => void) {}
+}
+
+class NoOpWindow implements IpcWindowApi {
+	async setMainWindowSize(value: { width: number; height: number }): Promise<void> {}
+	getMainWindowSize(): Promise<{ width: number; height: number }> {
+		return Promise.resolve({ width: 0, height: 0 })
+	}
 }
 
 interface CachePlugin {
@@ -153,6 +161,7 @@ class CapacitorClient implements IpcApi {
 	public menu: IpcMenuApi
 	public settings: IpcSettingsApi
 	public bundle: IpcBundleApi
+	public window: IpcWindowApi
 
 	constructor() {
 		this.available = false
@@ -167,6 +176,7 @@ class CapacitorClient implements IpcApi {
 			this.bundle = new MimiriBundle(registerPlugin<MimiriUpdatePlugin>('MimiriUpdate'))
 		}
 		this.menu = new NoOpMenu()
+		this.window = new NoOpWindow()
 	}
 }
 

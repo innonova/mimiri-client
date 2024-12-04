@@ -357,6 +357,10 @@ export class MimiriEditor {
 	}
 
 	public open(note: MimerNote) {
+		if (this.note) {
+			this.note.scrollTop = this.monacoEditor.getScrollTop()
+		}
+
 		if (!note) {
 			this._note = undefined
 			this.history.reset()
@@ -380,6 +384,7 @@ export class MimiriEditor {
 			this.state.initialText = note.text
 			this.state.text = note.text
 			this.monacoEditorModel.setValue(note.text)
+			this.monacoEditor.setScrollTop(this.note.scrollTop, editor.ScrollType.Immediate)
 		} else {
 			this.state.initialText = note.text
 			this.state.text = note.text

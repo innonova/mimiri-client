@@ -810,6 +810,36 @@ export class NoteManager {
 		createNewNode.value = true
 	}
 
+	private recurseExpandedNotes(note: MimerNote, check: (note: MimerNote) => boolean) {
+		if (check(note)) {
+			return note
+		}
+		if (note.expanded) {
+			const result = this.recurseExpandedNotes(note.children[0], check)
+			if (result) {
+				return result
+			}
+		}
+		if (note.nextSibling) {
+			return this.recurseExpandedNotes(note.nextSibling, check)
+		}
+		return undefined
+	}
+
+	public findNextNoteStartingWith(text: string) {
+		let current = this.selectedNote
+		let note: MimerNote | undefined = undefined
+		if (current) {
+			note = this.recurseExpandedNotes(current, note => note !== current && note.title.toLowerCase().startsWith(text))
+		}
+		if (!note && this.root.children.length > 0) {
+			note = this.recurseExpandedNotes(this.root.children[0], note => note.title.toLowerCase().startsWith(text))
+		}
+		if (note) {
+			note.select()
+		}
+	}
+
 	public newRootNote() {
 		if (this.noteCount >= this.maxNoteCount) {
 			limitDialog.value.show('create-note-count')

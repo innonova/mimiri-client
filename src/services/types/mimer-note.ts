@@ -65,6 +65,7 @@ export class MimerNote {
 	private _children: MimerNote[] = []
 	private isUpdatingChildren: boolean = false
 	private shouldRerunChildren: boolean = false
+	private _scrollTop = 0
 
 	constructor(
 		private owner: NoteManager,
@@ -591,5 +592,13 @@ export class MimerNote {
 
 	public get size() {
 		return this.note.size
+	}
+
+	public get scrollTop() {
+		return this._scrollTop
+	}
+
+	public set scrollTop(value: number) {
+		this._scrollTop = value
 	}
 }
