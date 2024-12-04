@@ -2,7 +2,7 @@ import { Capacitor, registerPlugin } from '@capacitor/core'
 import { Keyboard } from '@capacitor/keyboard'
 import { App } from '@capacitor/app'
 import { reactive } from 'vue'
-import { noteManager } from '../global'
+import { noteManager, updateManager } from '../global'
 
 interface PlatformInfo {
 	mode: string
@@ -83,14 +83,17 @@ class MimiriPlatform {
 					if (noteManager.isLoggedIn) {
 						if (Date.now() - this._lockTime < 60000) {
 							this.state.locked = false
+							updateManager.check()
 						} else if (this._platformInfo?.biometrics) {
 							const result = await this._nativePlatform.verifyBiometry()
 							if (result.verified) {
 								this.state.locked = false
+								updateManager.check()
 							}
 						} else {
 							// TODO consider what to do
 							this.state.locked = false
+							updateManager.check()
 						}
 					} else {
 						this.state.locked = false

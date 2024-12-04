@@ -92,7 +92,8 @@ const notificationsClick = () => {
 	}
 }
 const accountClick = () => {
-	menuManager.showMenu({ x: screen.width, y: toolbar.value.offsetHeight, alignRight: true }, [
+	const rect = toolbar.value.getBoundingClientRect()
+	menuManager.showMenu({ x: screen.width, y: rect.bottom, alignRight: true }, [
 		MenuItems.ChangePassword,
 		MenuItems.DeleteAccount,
 		MenuItems.Separator,
@@ -129,9 +130,6 @@ const toggleSearchAllNotes = () => {
 
 const showMobileMenu = () => {
 	const whenSelectedNote = [
-		// MenuItems.CheckForUpdate,
-		// MenuItems.UpdateAvailable,
-		// MenuItems.Separator,
 		MenuItems.About,
 		MenuItems.Separator,
 		MenuItems.NewNote,
@@ -148,11 +146,11 @@ const showMobileMenu = () => {
 		MenuItems.Rename,
 		MenuItems.Delete,
 	]
-	const always = [MenuItems.Separator, MenuItems.DarkMode]
+	const whenNoSelectedNote = [MenuItems.About, MenuItems.DarkMode]
 
 	const rect = toolbar.value.getBoundingClientRect()
 
-	menuManager.showMenu({ x: 10, y: rect.bottom }, [...(noteManager.selectedNote ? whenSelectedNote : []), ...always])
+	menuManager.showMenu({ x: 10, y: rect.bottom }, noteManager.selectedNote ? whenSelectedNote : whenNoSelectedNote)
 }
 
 defineExpose({

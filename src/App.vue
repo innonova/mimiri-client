@@ -139,7 +139,7 @@ updateTheme()
 if (!mimiriPlatform.isElectron) {
 	if (mimiriPlatform.isIos) {
 		document.documentElement.setAttribute('data-env-support', 'true')
-	} else if (mimiriPlatform.isAndroid || mimiriPlatform.isPhone) {
+	} else if (!mimiriPlatform.isWeb) {
 		const saSupport = getComputedStyle(document.documentElement).getPropertyValue('--sa-support')
 		document.documentElement.setAttribute('data-env-support', saSupport !== '0px' ? 'true' : 'false')
 	} else {
