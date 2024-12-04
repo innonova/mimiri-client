@@ -1,6 +1,6 @@
 <template>
 	<div id="title-bar" class="w-full h-[36px] pl-px select-none drag"></div>
-	<div class="m-auto p-1">
+	<div class="mx-auto p-1 mt-20 md:my-auto">
 		<div class="mb-14">
 			<h1 class="text-center font-bold text-size-header">Mimiri Login</h1>
 		</div>

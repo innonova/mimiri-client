@@ -1,6 +1,6 @@
 <template>
 	<div id="title-bar" class="w-full h-[36px] pl-px select-none drag"></div>
-	<div v-if="!mimiriPlatform.isWeb" class="m-auto p-10">
+	<div v-if="!mimiriPlatform.isWeb" class="mx-auto p-10 mt-20 md:my-auto">
 		<div class="mb-14">
 			<h1 class="text-center font-bold text-size-header">Create Mimiri Account</h1>
 		</div>
