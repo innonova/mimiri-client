@@ -25,6 +25,7 @@ interface MimiriPlatformState {
 class MimiriPlatform {
 	private state: MimiriPlatformState = reactive({ locked: false })
 	private _lockTime = Date.now()
+	private _lastUpdateCheck = Date.now()
 	private _nativePlatform: MimiriPlatform
 	private _platformInfo: PlatformInfo
 	private _displayMode = 'browser'
@@ -92,6 +93,7 @@ class MimiriPlatform {
 								if (result.verified) {
 									this.state.locked = false
 									updateManager.check()
+									noteManager.loadShareOffers()
 									await noteManager.selectedNote?.refresh()
 								}
 							} else {
@@ -99,11 +101,16 @@ class MimiriPlatform {
 								// TODO consider what to do
 								this.state.locked = false
 								updateManager.check()
+								noteManager.loadShareOffers()
 								await noteManager.selectedNote?.refresh()
 							}
 						} else {
 							this.state.locked = false
 						}
+					} else if (mimiriPlatform.isElectron && Date.now() - this._lastUpdateCheck > 20 * 60000) {
+						this._lastUpdateCheck = Date.now()
+						updateManager.check()
+						noteManager.loadShareOffers()
 					}
 				} catch (ex) {
 					mobileLog.log('Error during resume: ' + ex.message)

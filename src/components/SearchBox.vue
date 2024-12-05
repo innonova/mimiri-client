@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<div class="flex flex-col md:hidden">
+		<div class="flex flex-col md:hidden relative">
 			<div class="flex p-px" tabindex="2">
 				<input
 					ref="searchInput"
@@ -11,6 +11,10 @@
 				/>
 				<button class="cursor-default w-8" @click="close">X</button>
 			</div>
+			<div
+				v-if="searchManager.state.searchRunning"
+				class="progress-bar-value absolute left-0 bottom-0 w-full h-1"
+			></div>
 		</div>
 		<div class="hidden md:block bg-info-bar h-7 relative">
 			<div

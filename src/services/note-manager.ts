@@ -330,6 +330,8 @@ export class NoteManager {
 					})
 					connection.onreconnected(() => {
 						console.log('SignalR Reconnected')
+						updateManager.check()
+						this.loadShareOffers()
 					})
 					connection.onclose(error => {
 						console.log('SignalR Closed', error)

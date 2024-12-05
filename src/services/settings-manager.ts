@@ -2,6 +2,7 @@ import { reactive } from 'vue'
 import { ipcClient } from '../global'
 import { menuManager } from './menu-manager'
 import { toRaw } from 'vue'
+import { mimiriPlatform } from './mimiri-platform'
 
 export interface MimerConfiguration {
 	openAtLogin: boolean
@@ -27,7 +28,7 @@ class SettingsManager {
 		titleBarColor: '#f4f4f4',
 		titleBarSymbolColor: '#000',
 		titleBarHeight: 36,
-		wordwrap: false,
+		wordwrap: mimiriPlatform.isPhone,
 		channel: 'stable',
 		lastRunHostVersion: '0.0.0',
 		mainWindowSize: { width: 0, height: 0 },
