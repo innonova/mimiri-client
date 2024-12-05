@@ -47,7 +47,7 @@ describe('Note Manager', () => {
 
 	test('Alice_Login', async () => {
 		_managerAlice.logout()
-		await _managerAlice.login('alice', 'secret')
+		await _managerAlice.login({ username: 'alice', password: 'secret' })
 		expect(_managerAlice.isLoggedIn).toBeTruthy()
 	})
 
@@ -229,7 +229,7 @@ describe('Note Manager', () => {
 	test('Bob_ContinueToUseShare', async () => {
 		_managerBob.logout()
 		_managerBob.setCacheManager(undefined)
-		await _managerBob.login('bob', 'secret')
+		await _managerBob.login({ username: 'bob', password: 'secret' })
 		await _managerBob.root.ensureChildren()
 		expect(_managerBob.root.children.length).toBe(1)
 		expect(_managerBob.root.children[0].title).toBe('note3_1')

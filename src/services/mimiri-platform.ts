@@ -235,6 +235,10 @@ class MimiriPlatform {
 	public get isLocked() {
 		return this.state.locked
 	}
+
+	public get supportsBiometry() {
+		return this._platformInfo?.biometrics ?? false
+	}
 }
 
 export const mimiriPlatform = new MimiriPlatform()

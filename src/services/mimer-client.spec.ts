@@ -31,7 +31,7 @@ describe('MimerClient', () => {
 
 	test('Alice Login', async () => {
 		_clientAlice.logout()
-		const didLogin = await _clientAlice.login('alice', 'secret')
+		const didLogin = await _clientAlice.login({ username: 'alice', password: 'secret' })
 		expect(didLogin).toBeTruthy()
 		expect(_clientAlice.userData).toBeDefined()
 	})
@@ -153,10 +153,10 @@ describe('MimerClient', () => {
 		await _clientAlice.updateUser(_clientAlice.username, 'new-secret', _clientAlice.userData)
 		_clientAlice.logout()
 		_clientAlice.suppressErrorLog = true
-		const loginSuccess = await _clientAlice.login('alice', 'secret')
+		const loginSuccess = await _clientAlice.login({ username: 'alice', password: 'secret' })
 		_clientAlice.suppressErrorLog = false
 		expect(loginSuccess).toBeFalsy()
-		await _clientAlice.login('alice', 'new-secret')
+		await _clientAlice.login({ username: 'alice', password: 'new-secret' })
 		const rootNote = await _clientAlice.readNote(_clientAlice.userData.rootNote)
 		expect(rootNote).toBeDefined()
 	}, 15000)

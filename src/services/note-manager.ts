@@ -1,5 +1,5 @@
 import { reactive, ref } from 'vue'
-import { MimerClient, VersionConflictError } from './mimer-client'
+import { MimerClient, VersionConflictError, type LoginData } from './mimer-client'
 import { dateTimeNow } from './types/date-time'
 import { newGuid, type Guid } from './types/guid'
 import { MimerNote } from './types/mimer-note'
@@ -89,6 +89,7 @@ export class NoteManager {
 			}
 		})
 		setTimeout(() => this.checkBusyLength(), 100)
+		setTimeout(() => this.recoverLogin(), 100)
 	}
 
 	private checkBusyLength() {
@@ -181,8 +182,16 @@ export class NoteManager {
 		}
 	}
 
-	public async login(username: string, password: string) {
-		mobileLog.log('Logging In')
+	private async recoverLogin() {
+		const loginData = await this.client.getPersistedLogin()
+		if (loginData) {
+			if (await this.login(loginData)) {
+				this.root.ensureChildren()
+			}
+		}
+	}
+
+	public async login(data: LoginData) {
 		this.state.busy = true
 		this.state.spinner = false
 		this.state.busyLong = false
@@ -191,7 +200,7 @@ export class NoteManager {
 		browserHistory.openTree(ipcClient.isAvailable && Capacitor.getPlatform() === 'web')
 		this.busyStart = Date.now()
 		try {
-			await this.client.login(username, password, this.cacheEnabled)
+			await this.client.login({ ...data, preferOffline: this.cacheEnabled })
 			while (true) {
 				if (this.client.isLoggedIn) {
 					const note = await this.client.readNote(this.client.userData.rootNote, true)
@@ -206,7 +215,7 @@ export class NoteManager {
 					}
 					if (!this.client.isOnline && !this.workOffline) {
 						setTimeout(() => {
-							void this.goOnline(password)
+							void this.goOnline(data.password)
 						}, 1000)
 					} else {
 						await this.connectForNotifications()
@@ -215,7 +224,7 @@ export class NoteManager {
 					}
 					return true
 				} else {
-					await this.client.login(username, password, false)
+					await this.client.login({ ...data, preferOffline: false })
 					if (!this.client.isLoggedIn) {
 						return false
 					}

@@ -69,7 +69,7 @@ const changelogToggled = ref(false)
 const login = async () => {
 	loading.value = true
 	try {
-		await noteManager.login(username.value, password.value)
+		await noteManager.login({ username: username.value, password: password.value })
 	} catch (ex) {
 		if (ex instanceof PossibleConversionError) {
 			conversionData.value = {

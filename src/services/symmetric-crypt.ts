@@ -84,4 +84,8 @@ export class SymmetricCrypt {
 	async getKey(): Promise<ArrayBuffer> {
 		return await crypto.subtle.exportKey('raw', this.key)
 	}
+
+	async getKeyString(): Promise<string> {
+		return toBase64(await crypto.subtle.exportKey('raw', this.key))
+	}
 }
