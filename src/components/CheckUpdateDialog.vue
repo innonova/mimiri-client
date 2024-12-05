@@ -8,7 +8,7 @@
 			<main>
 				<div class="p-2">
 					<div v-if="!updateManager.latestVersion">No update found</div>
-					<div v-if="updateManager.latestVersion">Update found: updateManager.latestVersion</div>
+					<div v-if="updateManager.latestVersion">Update found: {{ updateManager.latestVersion }}</div>
 				</div>
 			</main>
 			<footer class="flex justify-end gap-2 pt-3">

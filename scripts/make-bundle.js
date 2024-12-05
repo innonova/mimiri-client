@@ -55,11 +55,17 @@ const privateKey = await crypto.subtle.importKey(
 
 const pack = JSON.parse(readFileSync('./package.json'))
 
-const bundleRes = await fetch(`https://update.mimiri.io/${keyName}.${pack.version}.json`)
-const infoRes = await fetch(`https://update.mimiri.io/${keyName}.${pack.version}.info.json`)
+let alreadyOnStable = false
 
-if (bundleRes.status !== 200 || infoRes.status !== 200) {
+const stableRes = await fetch(`https://update.mimiri.io/${keyName}.stable.json`)
+if (stableRes.status === 200) {
+	const stableInfo = await stableRes.json()
+	if (stableInfo.version === pack.version) {
+		alreadyOnStable = true
+	}
+}
 
+if (!alreadyOnStable) {
 	console.log(`Creating Bundle ${pack.version}`)
 
 	const bundle = { files: [] }
