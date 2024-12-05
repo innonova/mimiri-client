@@ -4,6 +4,7 @@ import { dateTimeNow, type DateTime } from './date-time'
 import type { Guid } from './guid'
 import type { Note } from './note'
 import { fromBase64, toBase64 } from '../hex-base64'
+import { persistedState } from '../persisted-state'
 
 const zip = async (text: string) => {
 	return toBase64(
@@ -65,7 +66,6 @@ export class MimerNote {
 	private _children: MimerNote[] = []
 	private isUpdatingChildren: boolean = false
 	private shouldRerunChildren: boolean = false
-	private _scrollTop = 0
 
 	constructor(
 		private owner: NoteManager,
@@ -316,6 +316,7 @@ export class MimerNote {
 	public async expand() {
 		if (this.childIds.length > 0) {
 			this.viewModel.expanded = true
+			persistedState.expand(this)
 			if (!this.childrenPopulated) {
 				await this.ensureChildren()
 			}
@@ -324,18 +325,20 @@ export class MimerNote {
 
 	public async collapse() {
 		this.viewModel.expanded = false
+		persistedState.collapse(this)
 	}
 
 	public select() {
 		this.owner.select(this.id)
 		let current = this.parent
 		while (current) {
-			current.viewModel.expanded = true
+			current.expand()
 			current = current.parent
 		}
 		if (this.owner.isOnline) {
 			void this.refresh()
 		}
+		persistedState.storeSelectedNote(this)
 	}
 
 	public async addChild(name: string = 'New Note') {
@@ -595,11 +598,11 @@ export class MimerNote {
 	}
 
 	public get scrollTop() {
-		return this._scrollTop
+		return persistedState.getScrollTop(this)
 	}
 
 	public set scrollTop(value: number) {
-		this._scrollTop = value
+		persistedState.setScrollTop(this, value)
 	}
 
 	public get path() {

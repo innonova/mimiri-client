@@ -5,6 +5,7 @@ import { reactive } from 'vue'
 import { NoteHistory } from './note-history'
 import { Capacitor, registerPlugin } from '@capacitor/core'
 import { mimiriPlatform } from '../mimiri-platform'
+import { Debounce } from '../helpers'
 
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms))
 
@@ -299,6 +300,16 @@ export class MimiriEditor {
 			this.updateAbilities()
 		})
 
+		const resizeDebounce = new Debounce(async () => {
+			if (this.note) {
+				this.note.scrollTop = this.monacoEditor.getScrollTop()
+			}
+		}, 250)
+
+		this.monacoEditor.onDidScrollChange(() => {
+			resizeDebounce.activate()
+		})
+
 		const mouseInfo = {
 			line: -1,
 			column: -1,
@@ -423,6 +434,7 @@ export class MimiriEditor {
 			this.state.text = note.text
 			this.state.changed = false
 			this.monacoEditorModel.setValue(note.text)
+			console.log('set scroll')
 			this.monacoEditor.setScrollTop(this.note.scrollTop, editor.ScrollType.Immediate)
 		} else {
 			this.state.initialText = note.text

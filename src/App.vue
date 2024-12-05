@@ -108,6 +108,7 @@ import LoadingIcon from './icons/system/loading_3.vue'
 import { mimiriPlatform } from './services/mimiri-platform'
 import DeleteAccount from './components/DeleteAccount.vue'
 import { menuManager } from './services/menu-manager'
+import { Debounce } from './services/helpers'
 
 mobileLog.log('App Loading')
 
@@ -310,30 +311,15 @@ const handleShortcut = event => {
 }
 document.addEventListener('keydown', handleShortcut, false)
 
-let lastWindowSizeUpdate = Date.now()
-let sizeInterval = undefined
-const windowSizeUpdate = () => {
+const resizeDebounce = new Debounce(async () => {
 	if (ipcClient.isAvailable) {
-		lastWindowSizeUpdate = Date.now()
-		if (!sizeInterval) {
-			sizeInterval = setInterval(() => checkWindowSizeStable(), 100)
-		}
+		const size = await ipcClient.window.getMainWindowSize()
+		settingsManager.mainWindowSize = size
 	}
-}
-
-const checkWindowSizeStable = async () => {
-	if (Date.now() - lastWindowSizeUpdate > 250) {
-		clearInterval(sizeInterval)
-		sizeInterval = undefined
-		if (ipcClient.isAvailable) {
-			const size = await ipcClient.window.getMainWindowSize()
-			settingsManager.mainWindowSize = size
-		}
-	}
-}
+}, 250)
 
 window.addEventListener('resize', async () => {
-	windowSizeUpdate()
+	resizeDebounce.activate()
 })
 ;(async () => {
 	await settingsManager.load()

@@ -19,6 +19,7 @@ import {
 } from '../global'
 import { Capacitor } from '@capacitor/core'
 import { mimiriPlatform } from './mimiri-platform'
+import { persistedState } from './persisted-state'
 
 export enum ActionType {
 	Save,
@@ -186,7 +187,7 @@ export class NoteManager {
 		const loginData = await this.client.getPersistedLogin()
 		if (loginData) {
 			if (await this.login(loginData)) {
-				this.root.ensureChildren()
+				this.loadState()
 			}
 		}
 	}
@@ -264,6 +265,32 @@ export class NoteManager {
 		this.root = undefined
 		this.client.logout()
 		this.emitStatusUpdated()
+	}
+
+	public async loadState() {
+		const selectedList = persistedState.readSelectedNote()
+		const expanded = persistedState.expanded
+		await this.root.ensureChildren()
+
+		let maxIterations = 1000
+		while (expanded.length > 0 && --maxIterations > 0) {
+			for (let i = 0; i < expanded.length; i++) {
+				const note = this.getNoteById(expanded[i])
+				if (note) {
+					await note.expand()
+					expanded.splice(i, 1)
+					break
+				}
+			}
+		}
+
+		maxIterations = 1000
+		while (selectedList.length > 0 && --maxIterations > 0) {
+			const note = this.getNoteById(selectedList.pop())
+			if (selectedList.length === 0) {
+				note?.select()
+			}
+		}
 	}
 
 	public async deleteAccount(deleteLocal: boolean) {

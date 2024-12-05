@@ -217,7 +217,8 @@ const toggleNode = async e => {
 			const note = noteManager.getNoteById(props.node.id)
 			note.expand()
 		} else {
-			props.node.expanded = false
+			const note = noteManager.getNoteById(props.node.id)
+			note.collapse()
 		}
 	}
 }

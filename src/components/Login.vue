@@ -85,7 +85,7 @@ const login = async () => {
 	if (!noteManager.isLoggedIn) {
 		error.value = true
 	} else {
-		await noteManager.root.ensureChildren()
+		await noteManager.loadState()
 	}
 }
 
