@@ -15,6 +15,7 @@ export interface EditorState {
 	canRedo: boolean
 	changed: boolean
 	canMarkAsPassword: boolean
+	canUnMarkAsPassword: boolean
 }
 
 export enum SelectionExpansion {
@@ -61,6 +62,7 @@ export class MimiriEditor {
 			changed: false,
 			selectedHistoryIndex: 0,
 			canMarkAsPassword: false,
+			canUnMarkAsPassword: false,
 		})
 
 		if (Capacitor.isPluginAvailable('MimiriClipboard')) {
@@ -350,10 +352,52 @@ export class MimiriEditor {
 
 	private updateAbilities() {
 		const selection = this.monacoEditor.getSelection()
-		this.state.canMarkAsPassword =
-			!selection.isEmpty() &&
-			selection.startLineNumber === selection.endLineNumber &&
-			selection.startColumn !== selection.endColumn
+
+		let canUnMarkAsPassword = false
+		let canMarkAsPassword = false
+
+		if (selection.startLineNumber === selection.endLineNumber) {
+			const lineContent = this.monacoEditorModel.getLineContent(selection.startLineNumber)
+
+			if (lineContent.includes('p`')) {
+				const startIndex = selection.startColumn - 1
+				const endIndex = selection.endColumn - 1
+				const selectedText = lineContent.substring(startIndex, endIndex)
+				if (!selectedText.includes('`')) {
+					let afterPwStart = false
+					for (let s = startIndex; s > 0; s--) {
+						if (lineContent[s] === '`') {
+							if (lineContent[s - 1] === 'p') {
+								afterPwStart = true
+							}
+							break
+						}
+					}
+					let beforeTagEnd = false
+					for (let e = endIndex; e < lineContent.length; e++) {
+						if (lineContent[e] === '`') {
+							beforeTagEnd = true
+							break
+						}
+					}
+					if (afterPwStart && beforeTagEnd) {
+						canUnMarkAsPassword = true
+					}
+				}
+			}
+
+			canMarkAsPassword =
+				!canUnMarkAsPassword &&
+				!lineContent.includes('`') &&
+				!selection.isEmpty() &&
+				selection.startColumn !== selection.endColumn
+		}
+		if (this.state.canMarkAsPassword !== canMarkAsPassword) {
+			this.state.canMarkAsPassword = canMarkAsPassword
+		}
+		if (this.state.canUnMarkAsPassword !== canUnMarkAsPassword) {
+			this.state.canUnMarkAsPassword = canUnMarkAsPassword
+		}
 	}
 
 	public open(note: MimerNote) {
@@ -372,17 +416,12 @@ export class MimiriEditor {
 			this.monacoEditor.updateOptions({ readOnly: true })
 			return
 		}
-		if (this.state.changed) {
-			if (note.id !== this.note.id) {
-				throw new Error('Trying to switch note while current note has unsaved changes')
-			}
-			return
-		}
 		if (note.id !== this.note?.id) {
 			this._note = note
 			this.history.reset()
 			this.state.initialText = note.text
 			this.state.text = note.text
+			this.state.changed = false
 			this.monacoEditorModel.setValue(note.text)
 			this.monacoEditor.setScrollTop(this.note.scrollTop, editor.ScrollType.Immediate)
 		} else {
@@ -577,12 +616,66 @@ export class MimiriEditor {
 		this.monacoEditor.focus()
 	}
 
+	public toggleSelectionAsPassword() {
+		if (this.canUnMarkAsPassword) {
+			this.unMarkSelectionAsPassword()
+		} else if (this.canMarkAsPassword) {
+			this.markSelectionAsPassword()
+		}
+	}
+
 	public markSelectionAsPassword() {
 		const selection = this.monacoEditor.getSelection()
 		const text = this.monacoEditor.getModel().getValueInRange(selection)
 		const action = { range: selection, text: 'p`' + text + '`', forceMoveMarkers: true }
 		this.monacoEditor.executeEdits(undefined, [action])
+		this.monacoEditor.setSelection({
+			startLineNumber: selection.startLineNumber,
+			startColumn: selection.startColumn + 2,
+			endLineNumber: selection.startLineNumber,
+			endColumn: selection.endColumn + 2,
+		})
 		this.monacoEditor.focus()
+	}
+
+	public unMarkSelectionAsPassword() {
+		const selection = this.monacoEditor.getSelection()
+		const lineContent = this.monacoEditor.getModel().getLineContent(selection.startLineNumber)
+
+		let start = -1
+		let end = -1
+		for (let s = selection.startColumn - 1; s > 0; s--) {
+			if (lineContent[s] === '`') {
+				if (lineContent[s - 1] === 'p') {
+					start = s - 1
+				}
+				break
+			}
+		}
+		for (let e = selection.endColumn - 1; e < lineContent.length; e++) {
+			if (lineContent[e] === '`') {
+				end = e + 1
+				break
+			}
+		}
+		if (start >= 0 && end >= 0) {
+			this.monacoEditor.setSelection({
+				startLineNumber: selection.startLineNumber,
+				startColumn: start + 1,
+				endLineNumber: selection.startLineNumber,
+				endColumn: end + 1,
+			})
+			const editSelection = this.monacoEditor.getSelection()
+			const text = this.monacoEditor.getModel().getValueInRange(editSelection)
+			const action = { range: editSelection, text: text.substring(2, text.length - 1), forceMoveMarkers: true }
+			this.monacoEditor.executeEdits(undefined, [action])
+			this.monacoEditor.setSelection({
+				startLineNumber: selection.startLineNumber,
+				startColumn: editSelection.startColumn,
+				endLineNumber: selection.startLineNumber,
+				endColumn: editSelection.endColumn - 3,
+			})
+		}
 	}
 
 	public focus() {
@@ -599,5 +692,9 @@ export class MimiriEditor {
 
 	public get canMarkAsPassword() {
 		return this.state.canMarkAsPassword
+	}
+
+	public get canUnMarkAsPassword() {
+		return this.state.canUnMarkAsPassword
 	}
 }

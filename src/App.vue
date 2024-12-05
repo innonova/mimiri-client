@@ -281,7 +281,7 @@ const handleShortcut = event => {
 	}
 	if (event.key === 'C' && ctrlActive) {
 		event.preventDefault()
-		mimiriEditor.markSelectionAsPassword()
+		mimiriEditor.toggleSelectionAsPassword()
 	}
 	if (event.key === 'n' && ctrlActive) {
 		if (treeViewShortCutsActive) {
@@ -313,9 +313,11 @@ document.addEventListener('keydown', handleShortcut, false)
 let lastWindowSizeUpdate = Date.now()
 let sizeInterval = undefined
 const windowSizeUpdate = () => {
-	lastWindowSizeUpdate = Date.now()
-	if (!sizeInterval) {
-		sizeInterval = setInterval(() => checkWindowSizeStable(), 100)
+	if (ipcClient.isAvailable) {
+		lastWindowSizeUpdate = Date.now()
+		if (!sizeInterval) {
+			sizeInterval = setInterval(() => checkWindowSizeStable(), 100)
+		}
 	}
 }
 
@@ -323,8 +325,10 @@ const checkWindowSizeStable = async () => {
 	if (Date.now() - lastWindowSizeUpdate > 250) {
 		clearInterval(sizeInterval)
 		sizeInterval = undefined
-		const size = await ipcClient.window.getMainWindowSize()
-		settingsManager.mainWindowSize = size
+		if (ipcClient.isAvailable) {
+			const size = await ipcClient.window.getMainWindowSize()
+			settingsManager.mainWindowSize = size
+		}
 	}
 }
 

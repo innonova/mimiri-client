@@ -601,4 +601,11 @@ export class MimerNote {
 	public set scrollTop(value: number) {
 		this._scrollTop = value
 	}
+
+	public get path() {
+		if (this.parent && !this.parent.isRoot) {
+			return `${this.parent.path}/${this.title}`
+		}
+		return `/${this.title}`
+	}
 }

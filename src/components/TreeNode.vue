@@ -270,6 +270,7 @@ const showContextMenu = async e => {
 		MenuItems.Cut,
 		MenuItems.Copy,
 		MenuItems.Paste,
+		MenuItems.CopyPath,
 		MenuItems.Separator,
 		MenuItems.Share,
 		MenuItems.Refresh,

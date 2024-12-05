@@ -31,6 +31,7 @@ export enum MenuItems {
 	Cut = 'cut',
 	Copy = 'copy',
 	Paste = 'paste',
+	CopyPath = 'copy-path',
 	Share = 'share',
 	Refresh = 'refresh',
 	RefreshRoot = 'refresh-root',
@@ -146,6 +147,10 @@ class MenuManager {
 					await clipboardNote.value.copy(noteManager.selectedNote)
 				}
 			}
+		} else if (itemId === 'copy-path') {
+			if (noteManager.selectedNote) {
+				navigator.clipboard.writeText(noteManager.selectedNote.path)
+			}
 		} else if (itemId === 'duplicate') {
 			if (noteManager.selectedNote) {
 				const index = noteManager.selectedNote.parent.childIds.indexOf(noteManager.selectedNote.id)
@@ -236,6 +241,14 @@ class MenuManager {
 						id: 'paste',
 						title: 'Paste',
 						shortcut: 'Ctrl+V',
+						enabled: noteManager.isLoggedIn && !!noteManager.selectedNote,
+					})
+					break
+					break
+				case MenuItems.CopyPath:
+					result.push({
+						id: 'copy-path',
+						title: 'Copy Path',
 						enabled: noteManager.isLoggedIn && !!noteManager.selectedNote,
 					})
 					break

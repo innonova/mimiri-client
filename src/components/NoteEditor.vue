@@ -36,7 +36,7 @@
 			<ToolbarIcon
 				icon="hide"
 				:hoverEffect="true"
-				:disabled="!mimiriEditor.canMarkAsPassword"
+				:disabled="!mimiriEditor.canMarkAsPassword && !mimiriEditor.canUnMarkAsPassword"
 				title="Mark as Password Ctrl+Shift+C"
 				@click="markAsPassword"
 			></ToolbarIcon>
@@ -115,7 +115,7 @@ const checkLoadHistory = async () => {
 }
 
 const markAsPassword = () => {
-	mimiriEditor.markSelectionAsPassword()
+	mimiriEditor.toggleSelectionAsPassword()
 }
 
 watch(historyVisible, (newVal, _) => {
