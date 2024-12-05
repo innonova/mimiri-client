@@ -14,6 +14,7 @@ export interface MimerConfiguration {
 	channel: string
 	lastRunHostVersion: string
 	mainWindowSize: { width: number; height: number }
+	keepTrayIconVisible: boolean
 }
 
 class SettingsManager {
@@ -30,6 +31,7 @@ class SettingsManager {
 		channel: 'stable',
 		lastRunHostVersion: '0.0.0',
 		mainWindowSize: { width: 0, height: 0 },
+		keepTrayIconVisible: true,
 	})
 
 	constructor() {
@@ -97,6 +99,15 @@ class SettingsManager {
 
 	public set allowScreenSharing(value: boolean) {
 		this.state.allowScreenSharing = value
+		void this.save()
+	}
+
+	public get keepTrayIconVisible() {
+		return this.state.keepTrayIconVisible
+	}
+
+	public set keepTrayIconVisible(value: boolean) {
+		this.state.keepTrayIconVisible = value
 		void this.save()
 	}
 

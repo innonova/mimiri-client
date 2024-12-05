@@ -87,6 +87,8 @@ class MenuManager {
 			window.location.reload()
 		} else if (itemId === 'toggle-screen-sharing') {
 			settingsManager.allowScreenSharing = !settingsManager.allowScreenSharing
+		} else if (itemId === 'toggle-notify-promoted') {
+			settingsManager.keepTrayIconVisible = !settingsManager.keepTrayIconVisible
 		} else if (itemId === 'show') {
 			ipcClient.menu.show()
 		} else if (itemId === 'quit') {
@@ -438,6 +440,16 @@ class MenuManager {
 					type: 'checkbox',
 					checked: settingsManager.allowScreenSharing,
 				},
+				...(mimiriPlatform.isWindows
+					? [
+							{
+								id: 'toggle-notify-promoted',
+								title: 'Keep Tray Icon Visible',
+								type: 'checkbox',
+								checked: settingsManager.keepTrayIconVisible,
+							},
+						]
+					: []),
 				{
 					id: 'open-at-login',
 					title: 'Launch on Startup',
