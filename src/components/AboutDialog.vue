@@ -28,8 +28,17 @@
 					<div>{{ message }}</div>
 				</template>
 			</div>
-			<div class="text-center">
-				<button class="bg-button-primary text-button-primary-text hover:opacity-80" @click="closeLog">Close Log</button>
+			<div class="flex justify-around">
+				<div class="text-center">
+					<button class="bg-button-primary text-button-primary-text hover:opacity-80" @click="closeLog">
+						Close Log
+					</button>
+				</div>
+				<div class="text-center">
+					<button class="bg-button-primary text-button-primary-text hover:opacity-80" @click="changeChannel">
+						{{ settingsManager.channel }}
+					</button>
+				</div>
 			</div>
 		</div>
 	</dialog>
@@ -38,6 +47,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { noteManager, updateManager, mobileLog } from '../global'
+import { settingsManager } from '../services/settings-manager'
 const dialog = ref(null)
 
 const usedBytes = ref('0 MB')
@@ -122,6 +132,14 @@ const boxClicked = () => {
 
 const closeLog = () => {
 	showLog.value = false
+}
+
+const changeChannel = () => {
+	if (settingsManager.channel === 'stable') {
+		settingsManager.channel = 'canary'
+	} else {
+		settingsManager.channel = 'stable'
+	}
 }
 
 defineExpose({

@@ -13,6 +13,14 @@ export class MobileLog {
 		this._enabled = !!(mimiriPlatform.isIos && localStorage)
 		// this._enabled = true
 		if (this._enabled) {
+			if (sessionStorage) {
+				let sessionStart = sessionStorage.getItem('mimiri-session-start')
+				if (!sessionStart) {
+					sessionStart = new Date().toISOString()
+					sessionStorage.setItem('mimiri-session-start', sessionStart)
+				}
+				this.log(`session ${sessionStart}`)
+			}
 			window.onerror = (errorMsg, url, lineNumber) => {
 				this.log(`Unhandled Error: ${errorMsg} ${url} ${lineNumber}`)
 			}
