@@ -130,3 +130,10 @@ export interface NoteAction {
 export interface MultiNoteRequest extends BasicRequest {
 	actions: NoteAction[]
 }
+
+export interface CheckUsernameRequest {
+	username: string
+	pow: string
+	timestamp: DateTime
+	requestId: Guid
+}

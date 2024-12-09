@@ -7,6 +7,7 @@ import { newGuid, type Guid } from './types/guid'
 import type {
 	AllKeysResponse,
 	BasicResponse,
+	CheckUsernameResponse,
 	KeyResponse,
 	LoginResponse,
 	NotificationUrlResponse,
@@ -20,6 +21,7 @@ import type {
 import {
 	NoteActionType,
 	type BasicRequest,
+	type CheckUsernameRequest,
 	type CreateKeyRequest,
 	type CreateUserRequest,
 	type DeleteKeyRequest,
@@ -381,6 +383,16 @@ export class MimerClient {
 		this.online = false
 		this.workOffline = false
 		sessionStorage.removeItem('mimiri-login-data')
+	}
+
+	public async checkUsername(username: string, pow: string) {
+		const request: CheckUsernameRequest = {
+			username,
+			pow,
+			timestamp: dateTimeNow(),
+			requestId: newGuid(),
+		}
+		return await this.post<CheckUsernameResponse>('/user/available', request)
 	}
 
 	public async createUser(username: string, password: string, userData: any) {

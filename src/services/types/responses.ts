@@ -82,3 +82,10 @@ export interface UpdateNoteResponse {
 	size: number
 	noteCount: number
 }
+
+export interface CheckUsernameResponse {
+	username: string
+	available: boolean
+	proofAccepted: boolean
+	bitsExpected: number
+}

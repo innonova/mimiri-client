@@ -20,6 +20,7 @@ import {
 import { Capacitor } from '@capacitor/core'
 import { mimiriPlatform } from './mimiri-platform'
 import { persistedState } from './persisted-state'
+import { ProofOfWork } from './proof-of-work'
 
 export enum ActionType {
 	Save,
@@ -66,6 +67,7 @@ export class NoteManager {
 	private whenOnlineCallbacks: (() => void)[] = []
 	private _isMobile = false
 	private _ensureWhenOnline: Note[] = []
+	private _proofBits = 15
 
 	constructor(host: string) {
 		this.state = reactive({
@@ -143,33 +145,42 @@ export class NoteManager {
 		}
 	}
 
+	public async checkUsername(username: string) {
+		while (true) {
+			const pow = await ProofOfWork.compute(username, this._proofBits)
+			const res = await this.client.checkUsername(username, pow)
+			if (res.bitsExpected) {
+				this._proofBits = res.bitsExpected
+			}
+			if (!res.proofAccepted) {
+				continue
+			}
+			return res.available
+		}
+	}
+
 	public async createAccount(username: string, password: string) {
 		const userData = {
 			rootNote: newGuid(),
 			rootKey: newGuid(),
-			walNote: newGuid(),
+			createComplete: false,
 		}
 		await this.client.createUser(username, password, userData)
 
-		const keyMetadata = {
-			shared: false,
-			root: true,
-		}
-		await this.client.createKey(this.client.userData.rootKey, keyMetadata)
+		// const keyMetadata = {
+		// 	shared: false,
+		// 	root: true,
+		// }
+		// await this.client.createKey(this.client.userData.rootKey, keyMetadata)
 
-		const rootNote = new Note()
-		rootNote.id = userData.rootNote
-		rootNote.keyName = this.client.getKeyById(this.client.userData.rootKey).name
-		rootNote.changeItem('metadata').notes = []
+		// const rootNote = new Note()
+		// rootNote.id = userData.rootNote
+		// rootNote.keyName = this.client.getKeyById(this.client.userData.rootKey).name
+		// rootNote.changeItem('metadata').notes = []
 
-		await this.client.createNote(rootNote)
+		// await this.client.createNote(rootNote)
 
-		const walNote = new Note()
-		walNote.id = userData.walNote
-		walNote.keyName = this.client.getKeyById(this.client.userData.rootKey).name
-		walNote.changeItem('metadata').notes = []
-
-		await this.client.createNote(walNote)
+		await this.ensureCreateComplete()
 
 		const note = await this.client.readNote(this.client.userData.rootNote)
 		if (note) {
@@ -192,6 +203,31 @@ export class NoteManager {
 		}
 	}
 
+	private async ensureCreateComplete() {
+		if (!this.client.userData.createComplete) {
+			if (!this.client.keyWithIdExists(this.client.userData.rootKey)) {
+				const keyMetadata = {
+					shared: false,
+					root: true,
+				}
+				await this.client.createKey(this.client.userData.rootKey, keyMetadata)
+			}
+			let rootNote
+			try {
+				rootNote = await this.client.readNote(this.client.userData.rootNote, false)
+			} catch {}
+			if (!rootNote) {
+				const rootNote = new Note()
+				rootNote.id = this.client.userData.rootNote
+				rootNote.keyName = this.client.getKeyById(this.client.userData.rootKey).name
+				rootNote.changeItem('metadata').notes = []
+				await this.client.createNote(rootNote)
+			}
+			this.client.userData.createComplete = true
+			await this.client.updateUserData()
+		}
+	}
+
 	public async login(data: LoginData) {
 		this.state.busy = true
 		this.state.spinner = false
@@ -204,6 +240,7 @@ export class NoteManager {
 			await this.client.login({ ...data, preferOffline: this.cacheEnabled })
 			while (true) {
 				if (this.client.isLoggedIn) {
+					await this.ensureCreateComplete()
 					const note = await this.client.readNote(this.client.userData.rootNote, true)
 					if (note) {
 						this.root = new MimerNote(this, undefined, note)

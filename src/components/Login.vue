@@ -40,7 +40,7 @@
 				<div class="flex mt-5 w-full justify-between items-center">
 					<a class="invisible md:visible hover:underline" href="https://mimiri.io" target="_blank">What is Mimiri?</a>
 					<div
-						v-if="!loading && !mimiriPlatform.isWeb"
+						v-if="(!loading && !mimiriPlatform.isWeb) || env.DEV"
 						class="mr-1 cursor-pointer hover:underline"
 						@click="createAccount"
 					>
@@ -55,7 +55,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { noteManager, showConvertAccount, showCreateAccount, conversionData, updateManager } from '../global'
+import { env, noteManager, showConvertAccount, showCreateAccount, conversionData, updateManager } from '../global'
 import { PossibleConversionError } from '../services/mimer-client'
 import LoadingIcon from '../icons/system/loading_3.vue'
 import { mimiriPlatform } from '../services/mimiri-platform'
