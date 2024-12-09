@@ -1,9 +1,9 @@
 {
 	"name": "webclient-vue",
-	"version": "2.1.25",
-	"minElectronVersionWin32": "2.1.22",
-	"minElectronVersionDarwin": "2.1.22",
-	"minElectronVersionLinux": "2.1.22",
+	"version": "2.1.26",
+	"minElectronVersionWin32": "2.1.26",
+	"minElectronVersionDarwin": "2.1.26",
+	"minElectronVersionLinux": "2.1.26",
 	"minIosVersion": "2.0.1",
 	"minAndroidVersion": "2.0.1",
 	"private": true,
@@ -40,7 +40,8 @@
 		"monaco-editor": "^0.51.0",
 		"uuid": "^10.0.0",
 		"vue": "3.3.11",
-		"vue-router": "4.2.5"
+		"vue-router": "4.2.5",
+		"zxcvbn": "^4.4.2"
 	},
 	"devDependencies": {
 		"@capacitor/assets": "^3.0.5",

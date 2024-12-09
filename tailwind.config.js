@@ -42,6 +42,7 @@ export default {
 			warning: 'var(--color-warning)',
 			'button-primary': 'var(--color-button-primary)',
 			'button-primary-text': 'var(--color-button-primary-text)',
+			'button-disabled-text': 'var(--color-button-disabled-text)',
 			'dialog': 'var(--color-dialog)',
 			'dialog-border': 'var(--color-dialog-border)',
 			'button-secondary': 'var(--color-button-secondary)',

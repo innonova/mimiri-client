@@ -6,6 +6,7 @@ import type {
 	IpcCacheApi,
 	IpcMenuApi,
 	IpcSettingsApi,
+	IpcWatchDog,
 	IpcWindowApi,
 } from './types/ipc.interfaces'
 import type { Guid } from './types/guid'
@@ -28,6 +29,11 @@ class NoOpWindow implements IpcWindowApi {
 	getMainWindowSize(): Promise<{ width: number; height: number }> {
 		return Promise.resolve({ width: 0, height: 0 })
 	}
+}
+
+class NoOpWatchDog implements IpcWatchDog {
+	async ok(): Promise<void> {}
+	onCheck(callback: () => void) {}
 }
 
 interface CachePlugin {
@@ -162,6 +168,7 @@ class CapacitorClient implements IpcApi {
 	public settings: IpcSettingsApi
 	public bundle: IpcBundleApi
 	public window: IpcWindowApi
+	public watchDog: IpcWatchDog
 
 	constructor() {
 		this.available = false
@@ -177,6 +184,7 @@ class CapacitorClient implements IpcApi {
 		}
 		this.menu = new NoOpMenu()
 		this.window = new NoOpWindow()
+		this.watchDog = new NoOpWatchDog()
 	}
 }
 

@@ -160,17 +160,7 @@ export class UpdateManager {
 				!this.state.isHostUpdate
 			) {
 				await this.download(this.state.latestVersion)
-				for (let i = 0; i < 10; i++) {
-					const installedVersions = await ipcClient.bundle.getInstalledVersions()
-					if (installedVersions.find(ver => ver.version === this.state.latestVersion)) {
-						await new Promise(resolve => setTimeout(resolve, 500))
-						await this.use(this.state.latestVersion)
-						return true
-					} else {
-						await new Promise(resolve => setTimeout(resolve, 500))
-					}
-				}
-				return false
+				await this.use(this.state.latestVersion)
 			}
 			if (settingsManager.lastRunHostVersion !== this.state.activeVersion.hostVersion) {
 				settingsManager.lastRunHostVersion = this.state.activeVersion.hostVersion

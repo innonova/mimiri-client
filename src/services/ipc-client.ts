@@ -7,6 +7,7 @@ import { capacitorClient } from './capacitor-client'
 import type { Bundle } from './update-manger'
 import { menuManager } from './menu-manager'
 import { toRaw } from 'vue'
+import { watchDog } from './watch-dog'
 
 export class MimerCache implements ICacheManager {
 	constructor(private api: IpcApi) {}
@@ -150,6 +151,17 @@ export class MimerWindow {
 	}
 }
 
+export class WatchDog {
+	constructor(private api: IpcApi) {
+		this.api?.watchDog?.onCheck(() => {
+			watchDog.check()
+		})
+	}
+	public ok() {
+		return this.api.watchDog.ok()
+	}
+}
+
 export class IpcClient {
 	private api: IpcApi
 	public readonly cache: MimerCache
@@ -157,6 +169,7 @@ export class IpcClient {
 	public readonly settings: MimerSettings
 	public readonly bundle: MimerBundle
 	public readonly window: MimerWindow
+	public readonly watchDog: WatchDog
 
 	constructor() {
 		if (capacitorClient.available) {
@@ -169,6 +182,7 @@ export class IpcClient {
 		this.settings = new MimerSettings(this.api)
 		this.bundle = new MimerBundle(this.api)
 		this.window = new MimerWindow(this.api)
+		this.watchDog = new WatchDog(this.api)
 	}
 
 	public get isAvailable() {

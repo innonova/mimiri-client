@@ -58,10 +58,16 @@ export interface IpcWindowApi {
 	getMainWindowSize(): Promise<{ width: number; height: number }>
 }
 
+export interface IpcWatchDog {
+	ok(): Promise<void>
+	onCheck(callback: () => void)
+}
+
 export interface IpcApi {
 	cache: IpcCacheApi
 	menu: IpcMenuApi
 	settings: IpcSettingsApi
 	bundle: IpcBundleApi
 	window: IpcWindowApi
+	watchDog: IpcWatchDog
 }

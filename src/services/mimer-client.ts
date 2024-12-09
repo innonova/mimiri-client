@@ -380,6 +380,7 @@ export class MimerClient {
 		this.userData = undefined
 		this.online = false
 		this.workOffline = false
+		sessionStorage.removeItem('mimiri-login-data')
 	}
 
 	public async createUser(username: string, password: string, userData: any) {
