@@ -258,7 +258,6 @@ export class UpdateManager {
 				const hostSupportsVersion =
 					this.compareVersions(info.minElectronVersion, this.state.activeVersion.hostVersion) <= 0
 
-				console.log(this.compareVersions(info.minElectronVersion, this.state.activeVersion.hostVersion))
 				if (!hostSupportsVersion) {
 					const latest = await this.get<any>(`/latest.json`)
 					if (mimiriPlatform.isWindows) {

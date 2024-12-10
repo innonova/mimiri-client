@@ -41,8 +41,6 @@ const markAllRead = e => {
 }
 
 const close = () => {
-	console.log('close')
-
 	visible.value = false
 }
 

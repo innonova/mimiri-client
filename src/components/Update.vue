@@ -115,6 +115,8 @@ const update = async () => {
 	const start = performance.now()
 	version = updateManager.latestVersion
 	await updateManager.download(version, status => {
+		console.log(status)
+
 		if (cancelled) {
 			return false
 		}
