@@ -53,7 +53,6 @@
 		<ShareDialog ref="shareDialog"></ShareDialog>
 		<AboutDialog ref="aboutDialog"></AboutDialog>
 		<CheckUpdateDialog ref="checkUpdateDialog"></CheckUpdateDialog>
-		<ChangePasswordDialog ref="changePasswordDialog"></ChangePasswordDialog>
 		<SaveEmptyNodeDialog ref="saveEmptyNodeDialog"></SaveEmptyNodeDialog>
 		<LimitDialog ref="limitDialog"></LimitDialog>
 		<div

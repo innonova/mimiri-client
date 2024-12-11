@@ -65,14 +65,31 @@ export class SymmetricCrypt {
 	async decrypt(data: string): Promise<string> {
 		const iv = fromBase64(data, 0, 16)
 		const bytes = fromBase64(data, 16)
-		return new TextDecoder().decode(await crypto.subtle.decrypt({ name: 'AES-CBC', iv }, this.key, bytes))
+		const buffer = await crypto.subtle.decrypt({ name: 'AES-CBC', iv }, this.key, bytes)
+		if (buffer.byteLength > 4) {
+			const header = new Uint8Array(buffer, 0, 4)
+			if (header[0] === 0 && header[1] === 0 && header[2] === 0 && header[3] === 1) {
+				const data2 = new Uint8Array(buffer, 4, buffer.byteLength - 4)
+				return await new Response(new Blob([data2]).stream().pipeThrough(new DecompressionStream('gzip'))).text()
+			}
+		}
+		return new TextDecoder().decode(buffer)
 	}
 
 	async encrypt(data: string): Promise<string> {
-		return this.encryptBytes(new TextEncoder().encode(data))
+		return this.encryptBytes(new TextEncoder().encode(data), true)
 	}
 
-	async encryptBytes(data: ArrayBuffer | Uint8Array): Promise<string> {
+	async encryptBytes(data: ArrayBuffer | Uint8Array, allowZip: boolean = false): Promise<string> {
+		if (data.byteLength > 512 && allowZip) {
+			const zipped = await new Response(
+				new Blob([data]).stream().pipeThrough(new CompressionStream('gzip')),
+			).arrayBuffer()
+			const data2 = new Uint8Array(zipped.byteLength + 4)
+			data2.set([0x00, 0x00, 0x00, 0x01], 0)
+			data2.set(new Uint8Array(zipped), 4)
+			data = data2
+		}
 		const iv = crypto.getRandomValues(new Uint8Array(16))
 		const encrypted = new Uint8Array(await crypto.subtle.encrypt({ name: 'AES-CBC', iv }, this.key, data))
 		const combined = new Uint8Array(16 + encrypted.length)
