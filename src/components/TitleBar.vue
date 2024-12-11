@@ -232,7 +232,7 @@ const showMenu = (rect, menu) => {
 	}
 	if (menu === 'account') {
 		menuManager.showMenu({ x: rect.right, y: rect.bottom - 30, backdropTop: 32, alignRight: true }, [
-			MenuItems.ChangePassword,
+			MenuItems.EditAccount,
 			MenuItems.DeleteAccount,
 			MenuItems.Separator,
 			MenuItems.Logout,

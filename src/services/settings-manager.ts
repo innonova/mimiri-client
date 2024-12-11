@@ -16,6 +16,7 @@ export interface MimerConfiguration {
 	lastRunHostVersion: string
 	mainWindowSize: { width: number; height: number }
 	keepTrayIconVisible: boolean
+	developerMode: boolean | undefined
 }
 
 class SettingsManager {
@@ -33,6 +34,7 @@ class SettingsManager {
 		lastRunHostVersion: '0.0.0',
 		mainWindowSize: { width: 0, height: 0 },
 		keepTrayIconVisible: true,
+		developerMode: undefined,
 	})
 
 	constructor() {
@@ -157,6 +159,10 @@ class SettingsManager {
 			this.state.mainWindowSize = { width: value.width, height: value.height }
 			void this.save()
 		}
+	}
+
+	public get developerMode() {
+		return this.state.developerMode
 	}
 }
 

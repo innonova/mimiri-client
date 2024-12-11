@@ -5,6 +5,7 @@ import {
 	checkUpdateDialog,
 	clipboardNote,
 	contextMenu,
+	createEditAccountScreen,
 	deleteNodeDialog,
 	env,
 	ipcClient,
@@ -14,6 +15,7 @@ import {
 	notificationManager,
 	searchInput,
 	shareDialog,
+	showCreateEditAccount,
 	showDeleteAccount,
 	showShareOffers,
 	showUpdate,
@@ -44,7 +46,7 @@ export enum MenuItems {
 	DarkMode = 'dark-mode',
 	About = 'about',
 	ShowDevTools = 'show-dev-tools',
-	ChangePassword = 'change-password',
+	EditAccount = 'edit-account',
 	DeleteAccount = 'delete-account',
 	Logout = 'logout',
 	Quit = 'quit',
@@ -53,6 +55,7 @@ export enum MenuItems {
 	UpdateAvailable = 'update-available',
 	MarkAsRead = 'mark-as-read',
 	CheckForUpdate = 'check-for-update',
+	AddGettingStarted = 'add-getting-started',
 }
 
 class MenuManager {
@@ -74,8 +77,8 @@ class MenuManager {
 	}
 
 	public async menuIdActivated(itemId: string) {
-		if (itemId === 'change-password') {
-			changePasswordDialog.value.show()
+		if (itemId === 'edit-account') {
+			createEditAccountScreen.value.show()
 		} else if (itemId === 'delete-account') {
 			showDeleteAccount.value = true
 		} else if (itemId === 'tray-double-click') {
@@ -165,6 +168,8 @@ class MenuManager {
 		} else if (itemId === 'check-for-update') {
 			await updateManager.check()
 			checkUpdateDialog.value.show()
+		} else if (itemId === 'add-getting-started') {
+			await noteManager.addGettingStarted()
 		}
 	}
 
@@ -350,13 +355,13 @@ class MenuManager {
 					result.push({
 						id: 'show-dev-tools',
 						title: 'Show Dev Tools',
-						visible: env.MODE === 'development' && ipcClient.isAvailable,
+						visible: (env.DEV || settingsManager.developerMode) && ipcClient.isAvailable,
 					})
 					break
-				case MenuItems.ChangePassword:
+				case MenuItems.EditAccount:
 					result.push({
-						id: 'change-password',
-						title: 'Change Password',
+						id: 'edit-account',
+						title: 'Edit Account',
 						enabled: noteManager.isLoggedIn && noteManager.isOnline,
 					})
 					break
@@ -416,6 +421,12 @@ class MenuManager {
 					result.push({
 						id: 'check-for-update',
 						title: 'Check for Updates',
+					})
+					break
+				case MenuItems.AddGettingStarted:
+					result.push({
+						id: 'add-getting-started',
+						title: 'Add Getting Started',
 					})
 					break
 			}
@@ -496,7 +507,11 @@ class MenuManager {
 	}
 
 	public get helpMenu() {
-		return [MenuItems.About, ...(ipcClient.isAvailable ? [MenuItems.CheckForUpdate, MenuItems.ShowDevTools] : [])]
+		return [
+			MenuItems.About,
+			...(ipcClient.isAvailable ? [MenuItems.CheckForUpdate, MenuItems.ShowDevTools] : []),
+			...(env.DEV || settingsManager.developerMode ? [MenuItems.Separator, MenuItems.AddGettingStarted] : []),
+		]
 	}
 
 	public updateAppMenu() {

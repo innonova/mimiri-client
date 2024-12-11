@@ -12,6 +12,7 @@ import {
 	browserHistory,
 	createNewNode,
 	createNewRootNode,
+	env,
 	ipcClient,
 	limitDialog,
 	mobileLog,
@@ -203,6 +204,33 @@ export class NoteManager {
 		}
 	}
 
+	private async addNotesRecursive(parent: Note, notes: any[]) {
+		for (const noteData of notes) {
+			const note = new Note()
+			note.keyName = parent.keyName
+			note.changeItem('metadata').title = noteData.title
+			note.changeItem('metadata').created = dateTimeNow()
+			note.changeItem('metadata').notes = []
+			note.changeItem('text').text = noteData.content
+			await this.addNotesRecursive(note, noteData.notes)
+			await this.client.createNote(note)
+			parent.changeItem('metadata').notes.push(note.id)
+		}
+	}
+
+	public async addGettingStarted(note?: Note) {
+		try {
+			const json = await fetch(`${env.VITE_MIMER_UPDATE_HOST}/getting-started.json`).then(res => res.json())
+			await this.addNotesRecursive(note ?? this._root.note, json.notes)
+			if (!note) {
+				await this.client.updateNote(this._root.note)
+				await this.refreshNote(this._root.note.id)
+			}
+		} catch (ex) {
+			console.log(ex)
+		}
+	}
+
 	private async ensureCreateComplete() {
 		if (!this.client.userData.createComplete) {
 			if (!this.client.keyWithIdExists(this.client.userData.rootKey)) {
@@ -221,6 +249,7 @@ export class NoteManager {
 				rootNote.id = this.client.userData.rootNote
 				rootNote.keyName = this.client.getKeyById(this.client.userData.rootKey).name
 				rootNote.changeItem('metadata').notes = []
+				await this.addGettingStarted(rootNote)
 				await this.client.createNote(rootNote)
 			}
 			this.client.userData.createComplete = true
@@ -381,8 +410,8 @@ export class NoteManager {
 		}
 	}
 
-	public async changePassword(oldPassword: string, newPassword: string) {
-		await this.client.changePassword(oldPassword, newPassword)
+	public async changeUserNameAndPassword(username: string, oldPassword: string, newPassword: string) {
+		await this.client.changeUserNameAndPassword(username, oldPassword, newPassword)
 	}
 
 	public async getShareOffers() {

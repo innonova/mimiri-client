@@ -516,7 +516,7 @@ export class MimerClient {
 		return this.passwordHash === passwordHash
 	}
 
-	public async changePassword(oldPassword: string, newPassword: string) {
+	public async changeUserNameAndPassword(newUsername: string, oldPassword: string, newPassword: string) {
 		if (
 			!this.rootCrypt ||
 			!this.username ||
@@ -533,7 +533,7 @@ export class MimerClient {
 		if (!(await this.validatePassword(oldPassword))) {
 			throw new Error('Old password does not match')
 		}
-		await this.updateUser(this.username, newPassword, this.userData)
+		await this.updateUser(newUsername || this.username, newPassword || oldPassword, this.userData)
 	}
 
 	public async updateUserData() {

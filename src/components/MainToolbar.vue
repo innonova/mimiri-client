@@ -94,7 +94,7 @@ const notificationsClick = () => {
 const accountClick = () => {
 	const rect = toolbar.value.getBoundingClientRect()
 	menuManager.showMenu({ x: screen.width, y: rect.bottom, alignRight: true }, [
-		MenuItems.ChangePassword,
+		MenuItems.EditAccount,
 		MenuItems.DeleteAccount,
 		MenuItems.Separator,
 		MenuItems.Logout,

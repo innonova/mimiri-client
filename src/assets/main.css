@@ -27,7 +27,7 @@
 		--color-warning: #f6ba00;
 		--color-button-primary: #4381c1;
 		--color-button-primary-text: #fff;
-		--color-button-disabled-text: #666;
+		--color-button-disabled-text: #b7b7b7;
 		--color-button-secondary: #d8d8d8;
 		--color-button-secondary-text: #000;
 		--color-dialog: #f4f4f4;
@@ -69,7 +69,7 @@
 		--color-warning: #f6ba00;
 		--color-button-primary: #666;
 		--color-button-primary-text: #fff;
-		--color-button-disabled-text: #666;
+		--color-button-disabled-text: #555;
 		--color-button-secondary: #333;
 		--color-button-secondary-text: #fff;
 		--color-dialog: #3f3f3f;
@@ -111,6 +111,14 @@ html[data-env-support='false'] {
 h1,
 h2 {
 	@apply font-display text-size-header;
+}
+
+a {
+	@apply underline;
+}
+
+a:hover {
+	@apply no-underline;
 }
 
 html,

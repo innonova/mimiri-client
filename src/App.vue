@@ -4,14 +4,24 @@
 		<div class="flex items-center justify-center h-full text-text pb-10">Loading...</div>
 	</div>
 	<div v-if="!loading" class="flex flex-col h-full bg-back text-text dark-mode safe-area-padding">
-		<TitleBar v-if="authenticated && !showUpdate && !showDeleteAccount" ref="titleBar"></TitleBar>
-		<Login v-if="!authenticated && !showCreateAccount && !showConvertAccount"></Login>
-		<CreateAccount v-if="!authenticated && showCreateAccount"></CreateAccount>
+		<TitleBar
+			v-if="authenticated && !showUpdate && !showDeleteAccount && !showCreateEditAccount"
+			ref="titleBar"
+		></TitleBar>
+		<Login v-if="!authenticated && !showCreateEditAccount && !showConvertAccount"></Login>
+		<CreateEditAccount ref="createEditAccountScreen"></CreateEditAccount>
 		<ConvertAccount v-if="showConvertAccount"></ConvertAccount>
 		<DeleteAccount v-if="showDeleteAccount"></DeleteAccount>
 		<Update v-if="authenticated && showUpdate"></Update>
 		<div
-			v-if="authenticated && !showConvertAccount && !showUpdate && !showDeleteAccount && !mimiriPlatform.isLocked"
+			v-if="
+				authenticated &&
+				!showConvertAccount &&
+				!showUpdate &&
+				!showDeleteAccount &&
+				!mimiriPlatform.isLocked &&
+				!showCreateEditAccount
+			"
 			class="flex h-full overflow-hidden"
 			@mouseup="endDragging"
 		>
@@ -64,7 +74,7 @@ import MainToolbar from './components/MainToolbar.vue'
 import Update from './components/Update.vue'
 import TitleBar from './components/TitleBar.vue'
 import Login from './components/Login.vue'
-import CreateAccount from './components/CreateAccount.vue'
+import CreateEditAccount from './components/CreateEditAccount.vue'
 import ContextMenu from './components/ContextMenu.vue'
 import NotificationList from './components/NotificationList.vue'
 import DeleteNodeDialog from './components/DeleteNodeDialog.vue'
@@ -80,12 +90,13 @@ import SearchBox from './components/SearchBox.vue'
 import {
 	noteManager,
 	contextMenu,
+	createEditAccountScreen,
 	shareDialog,
 	showShareOffers,
 	showSearchBox,
 	deleteNodeDialog,
 	changePasswordDialog,
-	showCreateAccount,
+	showCreateEditAccount,
 	showConvertAccount,
 	showUpdate,
 	mainToolbar,

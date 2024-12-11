@@ -55,7 +55,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { env, noteManager, showConvertAccount, showCreateAccount, conversionData, updateManager } from '../global'
+import { env, noteManager, showConvertAccount, showCreateEditAccount, conversionData, updateManager } from '../global'
 import { PossibleConversionError } from '../services/mimer-client'
 import LoadingIcon from '../icons/system/loading_3.vue'
 import { mimiriPlatform } from '../services/mimiri-platform'
@@ -90,6 +90,6 @@ const login = async () => {
 }
 
 const createAccount = () => {
-	showCreateAccount.value = true
+	showCreateEditAccount.value = true
 }
 </script>
