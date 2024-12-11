@@ -4,10 +4,10 @@
 			<div class="flex items-center ml-1 mr-0.5 h-full min-w-5 md:w-4 md:min-w-4"></div>
 			<NoteIcon
 				class="w-[30px] h-[30px] md:w-[23px] md:h-[23px] p-0.5 mr-1 md:mr-0.5"
-				:class="{ 'text-shared': noteManager.selectedViewModel?.shared }"
+				:class="{ 'text-shared': createNewNode && noteManager.selectedViewModel?.shared }"
 			></NoteIcon>
 			<input
-				class="outline-none bg-item-selected border-collapse flex-0"
+				class="outline-none bg-item-selected border-collapse flex-0 min-w-1 text-size-base"
 				ref="nameInput"
 				type="text"
 				@blur="endEdit"

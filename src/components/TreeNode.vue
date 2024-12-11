@@ -42,7 +42,7 @@
 			></NoteIcon>
 			<input
 				v-if="editName"
-				class="outline-none bg-item-selected border-collapse flex-1"
+				class="outline-none bg-item-selected border-collapse flex-1 min-w-1 text-size-base"
 				ref="renameInput"
 				type="text"
 				:value="node.title"
