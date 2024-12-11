@@ -368,7 +368,7 @@ const createAccount = async () => {
 	if (noteManager.state.authenticated) {
 		return
 	}
-	if (!canSave.value) {
+	if (!canCreate.value) {
 		return
 	}
 	if (disallowRegex.test(username.value)) {

@@ -2,7 +2,7 @@ import { CryptSignature } from './crypt-signature'
 import type { KeySet } from './types/key-set'
 import { Note } from './types/note'
 import { passwordHasher } from './password-hasher'
-import { DEFAULT_SYMMETRIC_ALGORITHM, SymmetricCrypt } from './symmetric-crypt'
+import { SymmetricCrypt } from './symmetric-crypt'
 import { newGuid, type Guid } from './types/guid'
 import type {
 	AllKeysResponse,
@@ -47,7 +47,6 @@ import { mimiriPlatform } from './mimiri-platform'
 
 const DEFAULT_SALT_SIZE = 32
 const DEFAULT_PASSWORD_ALGORITHM = 'PBKDF2;SHA512;1024'
-const DEFAULT_ASYMMETRIC_ALGORITHM = 'RSA;3072'
 
 export interface LoginData {
 	username: string
@@ -402,8 +401,8 @@ export class MimerClient {
 		try {
 			this.username = username
 			this.userData = userData
-			this.rootCrypt = await SymmetricCrypt.create(DEFAULT_SYMMETRIC_ALGORITHM)
-			this.rootSignature = await CryptSignature.create(DEFAULT_ASYMMETRIC_ALGORITHM)
+			this.rootCrypt = await SymmetricCrypt.create(SymmetricCrypt.DEFAULT_SYMMETRIC_ALGORITHM)
+			this.rootSignature = await CryptSignature.create(CryptSignature.DEFAULT_ASYMMETRIC_ALGORITHM)
 
 			const passwordAlgorithm = DEFAULT_PASSWORD_ALGORITHM
 			const passwordIterations = MimerClient.DEFAULT_ITERATIONS
@@ -417,15 +416,19 @@ export class MimerClient {
 
 			const iterations = MimerClient.DEFAULT_ITERATIONS
 			const salt = toHex(crypto.getRandomValues(new Uint8Array(DEFAULT_SALT_SIZE)))
-			const algorithm = DEFAULT_SYMMETRIC_ALGORITHM
 
-			this.userCrypt = await SymmetricCrypt.fromPassword(algorithm, password, salt, iterations)
+			this.userCrypt = await SymmetricCrypt.fromPassword(
+				SymmetricCrypt.DEFAULT_SYMMETRIC_ALGORITHM,
+				password,
+				salt,
+				iterations,
+			)
 
 			const request: CreateUserRequest = {
 				username,
 				iterations,
 				salt,
-				algorithm,
+				algorithm: this.userCrypt.algorithm,
 				asymmetricAlgorithm: this.rootSignature.algorithm,
 				publicKey: await this.rootSignature.publicKeyPem(),
 				privateKey: await this.userCrypt.encrypt(await this.rootSignature.privateKeyPem()),
@@ -464,16 +467,20 @@ export class MimerClient {
 
 		const iterations = MimerClient.DEFAULT_ITERATIONS
 		const salt = toHex(crypto.getRandomValues(new Uint8Array(DEFAULT_SALT_SIZE)))
-		const algorithm = DEFAULT_SYMMETRIC_ALGORITHM
 
-		const userCrypt = await SymmetricCrypt.fromPassword(algorithm, password, salt, iterations)
+		const userCrypt = await SymmetricCrypt.fromPassword(
+			SymmetricCrypt.DEFAULT_SYMMETRIC_ALGORITHM,
+			password,
+			salt,
+			iterations,
+		)
 
 		const request: UpdateUserRequest = {
 			oldUsername: this.username,
 			username,
 			iterations,
 			salt,
-			algorithm,
+			algorithm: userCrypt.algorithm,
 			asymmetricAlgorithm: this.rootSignature.algorithm,
 			publicKey: await this.rootSignature.publicKeyPem(),
 			privateKey: await userCrypt.encrypt(await this.rootSignature.privateKeyPem()),
@@ -558,8 +565,8 @@ export class MimerClient {
 		if (!this.rootCrypt) {
 			throw new Error('Not Logged in')
 		}
-		const sym = await SymmetricCrypt.create(DEFAULT_SYMMETRIC_ALGORITHM)
-		const signer = await CryptSignature.create(DEFAULT_ASYMMETRIC_ALGORITHM)
+		const sym = await SymmetricCrypt.create(SymmetricCrypt.DEFAULT_SYMMETRIC_ALGORITHM)
+		const signer = await CryptSignature.create(CryptSignature.DEFAULT_ASYMMETRIC_ALGORITHM)
 
 		const request: CreateKeyRequest = {
 			username: this.username,
@@ -585,7 +592,11 @@ export class MimerClient {
 		if (!this.rootCrypt) {
 			throw new Error('Not Logged in')
 		}
-		const signer = await CryptSignature.fromPem(DEFAULT_ASYMMETRIC_ALGORITHM, share.publicKey, share.privateKey)
+		const signer = await CryptSignature.fromPem(
+			CryptSignature.DEFAULT_ASYMMETRIC_ALGORITHM,
+			share.publicKey,
+			share.privateKey,
+		)
 		const request: CreateKeyRequest = {
 			username: this.username,
 			id,

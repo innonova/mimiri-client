@@ -1,5 +1,5 @@
 import { fromBase64, toBase64 } from './hex-base64'
-import { DEFAULT_SYMMETRIC_ALGORITHM, SymmetricCrypt } from './symmetric-crypt'
+import { SymmetricCrypt } from './symmetric-crypt'
 
 const pemToArrayBuffer = (pem: string) => {
 	const lines = pem.split('\n')
@@ -19,6 +19,8 @@ const pemToArrayBuffer = (pem: string) => {
 }
 
 export class CryptSignature {
+	static readonly DEFAULT_ASYMMETRIC_ALGORITHM = 'RSA;4096'
+
 	constructor(
 		public algorithm: string,
 		private publicKey: CryptoKey,
@@ -28,13 +30,13 @@ export class CryptSignature {
 	) {}
 
 	static async create(algorithm: string) {
-		if (algorithm !== 'RSA;3072') {
+		if (algorithm !== 'RSA;3072' && algorithm !== 'RSA;4096') {
 			throw new Error(`Algorithm not supported ${algorithm}`)
 		}
 		let key = await crypto.subtle.generateKey(
 			{
 				name: 'RSASSA-PKCS1-v1_5',
-				modulusLength: 3072,
+				modulusLength: parseInt(algorithm.split(';')[1]),
 				publicExponent: new Uint8Array([1, 0, 1]),
 				hash: 'SHA-256',
 			},
@@ -127,7 +129,7 @@ export class CryptSignature {
 	}
 
 	async encrypt(data: string) {
-		const crypt = await SymmetricCrypt.create(DEFAULT_SYMMETRIC_ALGORITHM)
+		const crypt = await SymmetricCrypt.create(SymmetricCrypt.DEFAULT_SYMMETRIC_ALGORITHM)
 		const encryptedData = await crypt.encrypt(data)
 		const aesKey = await crypt.getKey()
 		const encryptedKey = await crypto.subtle.encrypt({ name: 'RSA-OAEP' }, this.publicKeyEncrypt, aesKey)
@@ -146,7 +148,7 @@ export class CryptSignature {
 			this.privateKeyDecrypt,
 			fromBase64(json.encryptedKey),
 		)
-		const crypt = await SymmetricCrypt.fromKey(DEFAULT_SYMMETRIC_ALGORITHM, aesKey)
+		const crypt = await SymmetricCrypt.fromKey(SymmetricCrypt.DEFAULT_SYMMETRIC_ALGORITHM, aesKey)
 		return await crypt.decrypt(json.data)
 	}
 
