@@ -19,7 +19,7 @@ describe('MimerClient', () => {
 	})
 
 	test('Alice Create User ', async () => {
-		await _clientAlice.createUser('alice', 'secret', { rootNote: newGuid(), rootKey: newGuid() })
+		await _clientAlice.createUser('alice', 'secret', { rootNote: newGuid(), rootKey: newGuid() }, '')
 
 		await _clientAlice.createKey(_clientAlice.userData.rootKey, { shared: false, root: true })
 		const rootNote = new Note()
@@ -72,7 +72,7 @@ describe('MimerClient', () => {
 	})
 
 	test('Bob CreateUser', async () => {
-		await _clientBob.createUser('bob', 'secret', { rootNote: newGuid(), rootKey: newGuid() })
+		await _clientBob.createUser('bob', 'secret', { rootNote: newGuid(), rootKey: newGuid() }, '')
 
 		await _clientBob.createKey(_clientBob.userData.rootKey, { shared: false, root: true })
 		const rootNote = new Note()
