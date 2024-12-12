@@ -41,7 +41,8 @@
 				<div>(Leave empty for no change)</div>
 			</div>
 			<div class="p-1 m-aut0 flex">
-				<div class="w-24 flex items-center">New:</div>
+				<div v-if="authenticated" class="w-24 flex items-center">New:</div>
+				<div v-if="!authenticated" class="w-24 flex items-center">Password:</div>
 				<div class="w-52 text-right relative md:flex">
 					<input v-model="password" tabindex="2" :type="passwordFieldType" class="bg-input text-input-text" />
 					<div class="md:w-0 md:h-0 overflow-visible">
