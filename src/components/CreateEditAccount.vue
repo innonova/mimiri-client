@@ -115,7 +115,7 @@
 				</label>
 				<a href="https://mimiri.io/terms" target="_blank">Terms & Conditions</a>
 			</div> -->
-			<div v-if="!authenticated" class="p-1 m-auto text-left">
+			<div v-if="!authenticated" class="p-1 pt-5 m-auto text-left">
 				<label>
 					<input type="checkbox" v-model="readPrivacy" class="mr-1 relative top-0.5" />
 					I have read the
