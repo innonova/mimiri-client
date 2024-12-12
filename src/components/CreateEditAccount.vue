@@ -4,7 +4,10 @@
 		id="title-bar"
 		class="w-full h-[36px] pl-px select-none drag"
 	></div>
-	<div v-if="showCreateEditAccount && (!mimiriPlatform.isWeb || env.DEV)" class="mx-auto p-10 mt-20 md:my-auto">
+	<div
+		v-if="showCreateEditAccount && (!mimiriPlatform.isWeb || env.DEV)"
+		class="mx-auto px-10 pt-1 md:pt-10 md:my-auto"
+	>
 		<div class="mb-14">
 			<h1 v-if="!authenticated" class="text-center font-bold text-size-header">Create Mimiri Account</h1>
 			<h1 v-if="authenticated" class="text-center font-bold text-size-header">Edit Account</h1>
