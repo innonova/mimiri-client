@@ -173,7 +173,8 @@ export class NoteManager {
 			rootKey: newGuid(),
 			createComplete: false,
 		}
-		await this.client.createUser(username, password, userData)
+		const pow = await ProofOfWork.compute(username, this._proofBits)
+		await this.client.createUser(username, password, userData, pow)
 
 		// const keyMetadata = {
 		// 	shared: false,

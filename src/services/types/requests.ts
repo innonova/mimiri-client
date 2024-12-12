@@ -39,6 +39,7 @@ export interface CreateUserRequest extends BasicRequest {
 	symmetricAlgorithm: string
 	symmetricKey: string
 	data: string
+	pow: string
 }
 
 export interface DeleteKeyRequest extends BasicRequest {

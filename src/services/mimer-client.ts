@@ -394,7 +394,7 @@ export class MimerClient {
 		return await this.post<CheckUsernameResponse>('/user/available', request)
 	}
 
-	public async createUser(username: string, password: string, userData: any) {
+	public async createUser(username: string, password: string, userData: any, pow: string) {
 		if (this.rootCrypt) {
 			throw new Error('Already logged in')
 		}
@@ -441,10 +441,13 @@ export class MimerClient {
 				symmetricAlgorithm: this.rootCrypt.algorithm,
 				symmetricKey: await this.userCrypt.encryptBytes(await this.rootCrypt.getKey()),
 				data: await this.rootCrypt.encrypt(JSON.stringify(this.userData)),
+				pow,
 				timestamp: dateTimeNow(),
 				requestId: newGuid(),
 				signatures: [],
 			}
+			console.log(request)
+
 			await this.rootSignature.sign('user', request)
 			await this.post<BasicResponse>('/user/create', request)
 			this.logout()

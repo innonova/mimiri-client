@@ -45,7 +45,7 @@
 				<div class="w-52 text-right relative md:flex">
 					<input v-model="password" tabindex="2" :type="passwordFieldType" class="bg-input text-input-text" />
 					<div class="md:w-0 md:h-0 overflow-visible">
-						<div class="absolute right-1" @mousedown="showPassword" @mouseup="hidePassword">
+						<div class="absolute right-1 invisible md:visible" @mousedown="showPassword" @mouseup="hidePassword">
 							<ShowPasswordIcon v-if="passwordFieldType === 'password'" class="w-6 h-6 mt-1"></ShowPasswordIcon>
 							<ShowingPasswordIcon v-if="passwordFieldType === 'text'" class="w-6 h-6 mt-1"></ShowingPasswordIcon>
 						</div>
