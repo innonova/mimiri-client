@@ -133,17 +133,10 @@ let splitterPos = 300
 const dividerPosition = ref(`${splitterPos}px`)
 const editorWidth = ref(`${window.innerWidth - splitterPos - 10}px`)
 
-const checkIsMobile = () => {
-	noteManager.isMobile = !window.matchMedia?.('(min-width: 768px)')?.matches
-}
-
 const onResize = () => {
 	dividerPosition.value = `${splitterPos}px`
 	editorWidth.value = `${window.innerWidth - splitterPos - 10}px`
-	checkIsMobile()
 }
-
-checkIsMobile()
 
 const updateTheme = () => {
 	document.documentElement.setAttribute('data-theme', settingsManager.darkMode ? 'dark' : 'light')

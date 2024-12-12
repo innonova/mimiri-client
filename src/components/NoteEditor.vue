@@ -209,6 +209,7 @@ const find = () => {
 
 const onBack = () => {
 	window.history.back()
+	noteManager.closeEditorIfMobile()
 }
 
 const save = async () => {

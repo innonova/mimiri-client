@@ -71,6 +71,13 @@ export class NoteManager {
 	private _proofBits = 15
 
 	constructor(host: string) {
+		this._isMobile = !window.matchMedia?.('(min-width: 768px)')?.matches
+		window.addEventListener('resize', () => {
+			this._isMobile = !window.matchMedia?.('(min-width: 768px)')?.matches
+			if (!this._isMobile) {
+				this.state.noteOpen = true
+			}
+		})
 		this.state = reactive({
 			busy: false,
 			busyLong: false,
@@ -956,6 +963,12 @@ export class NoteManager {
 		createNewRootNode.value = true
 	}
 
+	public closeEditorIfMobile() {
+		if (this._isMobile && this.state.noteOpen) {
+			this.state.noteOpen = false
+		}
+	}
+
 	public get userId() {
 		return this.client.userId
 	}
@@ -1002,19 +1015,6 @@ export class NoteManager {
 
 	private set root(value: MimerNote) {
 		this._root = value
-	}
-
-	public get isMobile() {
-		return this._isMobile
-	}
-
-	public set isMobile(value: boolean) {
-		if (this._isMobile !== value) {
-			this._isMobile = value
-			if (!this._isMobile) {
-				this.state.noteOpen = true
-			}
-		}
 	}
 
 	public get selectedNote() {
