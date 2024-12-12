@@ -108,13 +108,13 @@
 				</div>
 			</div>
 
-			<div v-if="!authenticated" class="p-1 pt-5 m-auto text-left">
+			<!-- <div v-if="!authenticated" class="p-1 pt-5 m-auto text-left">
 				<label>
 					<input type="checkbox" v-model="acceptTerms" class="mr-1 relative top-0.5" />
 					I have read the
 				</label>
 				<a href="https://mimiri.io/terms" target="_blank">Terms & Conditions</a>
-			</div>
+			</div> -->
 			<div v-if="!authenticated" class="p-1 m-auto text-left">
 				<label>
 					<input type="checkbox" v-model="readPrivacy" class="mr-1 relative top-0.5" />
@@ -224,7 +224,7 @@ const usernameUnavailable = ref(false)
 const usernameInProgress = ref(false)
 const passwordQuality = ref('')
 const passwordMatch = ref(true)
-const acceptTerms = ref(false)
+const acceptTerms = ref(true)
 const readPrivacy = ref(false)
 const understandNoRecover = ref(false)
 const passwordFieldType = ref('password')
