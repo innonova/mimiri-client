@@ -54,12 +54,9 @@ public class MimiriUpdatePlugin: CAPPlugin, CAPBridgedPlugin {
         "active": _config["activeVersion"] as? String == "base",
         "previous": _config["previousActiveVersion"] as? String == "base",
       ])
-      print("scan path " + _bundlesPath.path)
       for item in try FileManager.default.contentsOfDirectory(at: _bundlesPath, includingPropertiesForKeys: nil, options: []) {
         let infoPath = item.appendingPathComponent("info.json")
-        print(infoPath)
         if (FileManager.default.fileExists(atPath: infoPath.path)) {
-          print("info path exists")
           let json = try Data(contentsOf: infoPath)
           var info = try JSONSerialization.jsonObject(with: json) as? [String: Any] ?? [:]
           info["hostVersion"] = VersionInfo.HostVersion
@@ -121,7 +118,7 @@ public class MimiriUpdatePlugin: CAPPlugin, CAPBridgedPlugin {
     } catch {
       print(error.localizedDescription)
     }
-      
+
     //print(call.getObject("bundle"))
     call.resolve([:])
   }

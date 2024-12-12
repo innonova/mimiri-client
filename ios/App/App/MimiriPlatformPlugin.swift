@@ -25,15 +25,14 @@ public class MimiriPlatformPlugin: CAPPlugin, CAPBridgedPlugin {
     if UIDevice.current.userInterfaceIdiom == .carPlay {
       result["mode"] = "carPlay"
     }
-    
+
     let context = LAContext()
     var error: NSError?
     result["biometrics"] = context.canEvaluatePolicy(LAPolicy.deviceOwnerAuthenticationWithBiometrics, error: &error)
     call.resolve(result)
   }
-  
+
   @objc func verifyBiometry(_ call: CAPPluginCall) {
-     print("verifyBiometry")
      let context = LAContext()
     var error: NSError?
     if context.canEvaluatePolicy(LAPolicy.deviceOwnerAuthenticationWithBiometrics, error: &error) {
@@ -44,6 +43,6 @@ public class MimiriPlatformPlugin: CAPPlugin, CAPBridgedPlugin {
       call.resolve(["verified": false])
     }
   }
-  
+
 }
 
