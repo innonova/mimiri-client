@@ -18,6 +18,8 @@
 		"test": "jest",
 		"import-icons": "node ./scripts/icons",
 		"cap-sync": "npx cap sync",
+		"ios": "npx cap open ios",
+		"android": "npx cap open android",
 		"sync": "run-s build cap-sync",
 		"sync-dev": "NODE_ENV=development npx cap sync",
 		"set-version": "node ./scripts/set-version",
