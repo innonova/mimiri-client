@@ -445,12 +445,16 @@ class MenuManager {
 					id: 'show-dev-tools',
 					title: 'Dev Tools',
 				},
-				{
-					id: 'toggle-screen-sharing',
-					title: 'Allow Screen Sharing',
-					type: 'checkbox',
-					checked: settingsManager.allowScreenSharing,
-				},
+				...(!mimiriPlatform.isLinux
+					? [
+							{
+								id: 'toggle-screen-sharing',
+								title: 'Allow Screen Sharing',
+								type: 'checkbox',
+								checked: settingsManager.allowScreenSharing,
+							},
+						]
+					: []),
 				...(mimiriPlatform.isWindows
 					? [
 							{
