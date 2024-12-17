@@ -36,8 +36,8 @@
 import { ref, watch } from 'vue'
 import { showSearchBox } from '../global'
 import { searchManager } from '../services/search-manager'
-import SearchIcon from '../icons/file/search_3.vue'
-import CloseIcon from '../icons/system/close.vue'
+import SearchIcon from '../icons/search.vue'
+import CloseIcon from '../icons/close.vue'
 
 const searchInput = ref(null)
 

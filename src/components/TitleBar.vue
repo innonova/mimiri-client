@@ -138,12 +138,12 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { noteManager, searchInput, showSearchBox, ipcClient, notificationManager, showUpdate } from '../global'
-import ScreenShareEnabledIcon from '../icons/media/camera_2.vue'
-import ScreenShareDisabledIcon from '../icons/media/camera_2_off.vue'
-import AccountIcon from '../icons/user/user_1.vue'
-import NotificationIcon from '../icons/media/notification.vue'
-import NotificationActiveIcon from '../icons/media/bell_ringing.vue'
+import { noteManager, searchInput, showSearchBox, ipcClient, notificationManager } from '../global'
+import ScreenShareEnabledIcon from '../icons/screen-sharing-enabled.vue'
+import ScreenShareDisabledIcon from '../icons/screen-sharing-disabled.vue'
+import AccountIcon from '../icons/account.vue'
+import NotificationIcon from '../icons/notification.vue'
+import NotificationActiveIcon from '../icons/notification-active.vue'
 import { searchManager } from '../services/search-manager'
 import { MenuItems, menuManager } from '../services/menu-manager'
 import { settingsManager } from '../services/settings-manager'

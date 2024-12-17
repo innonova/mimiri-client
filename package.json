@@ -16,7 +16,8 @@
 		"build-only": "vite build",
 		"type-check": "vue-tsc --build --force",
 		"test": "jest",
-		"import-icons": "node ./scripts/icons",
+		"icons-import": "node ./scripts/icons",
+		"icons-list": "node ./scripts/create-icon-list.js",
 		"cap-sync": "npx cap sync",
 		"ios": "npx cap open ios",
 		"android": "npx cap open android",
@@ -25,9 +26,7 @@
 		"set-version": "node ./scripts/set-version",
 		"make-bundle": "node ./scripts/make-bundle",
 		"create-key": "node ./scripts/create-key",
-		"deploy-web": "node ./scripts/deploy-web",
-		"enable-gpl-icons": "node ./scripts/set-icons.js gpl_icons",
-		"enable-prop-icons": "node ./scripts/set-icons.js ../../mimiri-icons"
+		"deploy-web": "node ./scripts/deploy-web"
 	},
 	"dependencies": {
 		"@capacitor/android": "^6.1.2",

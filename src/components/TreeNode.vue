@@ -79,10 +79,10 @@ import { noteManager, dragId, showSearchBox, createNewNode, createNewRootNode } 
 import type { NoteViewModel } from '../services/types/mimer-note'
 import { searchManager } from '../services/search-manager'
 import NewTreeNode from './NewTreeNode.vue'
-import NoteIcon from '../icons/file/document_2.vue'
-import PlusIcon from '../icons/system/add_square.vue'
-import MinusIcon from '../icons/system/minus_square.vue'
-import OpenIcon from '../icons/arrow/right.vue'
+import NoteIcon from '../icons/note.vue'
+import PlusIcon from '../icons/plus.vue'
+import MinusIcon from '../icons/minus.vue'
+import OpenIcon from '../icons/open.vue'
 import { MenuItems, menuManager } from '../services/menu-manager'
 
 const visualElement = ref(null)

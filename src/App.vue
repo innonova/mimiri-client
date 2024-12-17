@@ -93,7 +93,6 @@ import {
 	showShareOffers,
 	showSearchBox,
 	deleteNodeDialog,
-	changePasswordDialog,
 	showCreateEditAccount,
 	showConvertAccount,
 	showUpdate,
@@ -113,7 +112,7 @@ import {
 	mobileLog,
 } from './global'
 import { settingsManager } from './services/settings-manager'
-import LoadingIcon from './icons/system/loading_3.vue'
+import LoadingIcon from './icons/loading.vue'
 import { mimiriPlatform } from './services/mimiri-platform'
 import DeleteAccount from './components/DeleteAccount.vue'
 import { menuManager } from './services/menu-manager'

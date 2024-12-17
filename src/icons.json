@@ -1,0 +1,291 @@
+{
+	"note": {
+		"url": "https://www.svgrepo.com/download/471390/file-06.svg",
+		"license": "CC0",
+		"attribution": "",
+		"collection": "https://www.svgrepo.com/collection/ui-oval-interface-icons/"
+	},
+	"cloud": {
+		"url": "https://www.svgrepo.com/download/471197/cloud-blank-01.svg",
+		"license": "CC0",
+		"attribution": "",
+		"collection": "https://www.svgrepo.com/collection/ui-oval-interface-icons/"
+	},
+	"add-root": {
+		"url": "https://www.svgrepo.com/download/471458/folder-plus.svg",
+		"remix": "folder-plus.svg",
+		"license": "CC0",
+		"attribution": "",
+		"collection": "https://www.svgrepo.com/collection/ui-oval-interface-icons/"
+	},
+	"add-note": {
+		"url": "https://www.svgrepo.com/download/471414/file-plus-03.svg",
+		"license": "CC0",
+		"attribution": "",
+		"collection": "https://www.svgrepo.com/collection/ui-oval-interface-icons/"
+	},
+	"rename": {
+		"url": "https://www.svgrepo.com/download/532786/file-pencil-alt.svg",
+		"license": "CC Attribution License",
+		"attribution": "Vectors and icons by <a href=\"https://dazzleui.gumroad.com/l/dazzleiconsfree?ref=svgrepo.com\" target=\"_blank\">Dazzle Ui</a> in CC Attribution License via <a href=\"https://www.svgrepo.com/\" target=\"_blank\">SVG Repo</a>",
+		"collection": "https://www.svgrepo.com/collection/dazzle-line-icons/"
+	},
+	"delete": {
+		"url": "https://www.svgrepo.com/download/471425/file-x-03.svg",
+		"license": "CC0",
+		"attribution": "",
+		"collection": "https://www.svgrepo.com/collection/ui-oval-interface-icons/"
+	},
+	"refresh": {
+		"url": "https://www.svgrepo.com/download/471820/refresh-cw-02.svg",
+		"license": "CC0",
+		"attribution": "",
+		"collection": "https://www.svgrepo.com/collection/ui-oval-interface-icons/"
+	},
+	"search-all": {
+		"url": "https://www.svgrepo.com/download/471419/file-search-02.svg",
+		"license": "CC0",
+		"attribution": "",
+		"collection": "https://www.svgrepo.com/collection/ui-oval-interface-icons/"
+	},
+	"search": {
+		"url": "https://www.svgrepo.com/download/471864/search-sm.svg",
+		"license": "CC0",
+		"attribution": "",
+		"collection": "https://www.svgrepo.com/collection/ui-oval-interface-icons/"
+	},
+	"save": {
+		"url": "https://www.svgrepo.com/download/471848/save-02.svg",
+		"license": "CC0",
+		"attribution": "",
+		"collection": "https://www.svgrepo.com/collection/ui-oval-interface-icons/"
+	},
+	"word-wrap-on": {
+		"url": "https://www.svgrepo.com/download/471744/paragraph-wrap.svg",
+		"license": "CC0",
+		"attribution": "",
+		"collection": "https://www.svgrepo.com/collection/ui-oval-interface-icons/"
+	},
+	"word-wrap-off": {
+		"url": "https://www.svgrepo.com/download/471744/paragraph-wrap.svg",
+		"license": "CC0",
+		"attribution": "",
+		"collection": "https://www.svgrepo.com/collection/ui-oval-interface-icons/"
+	},
+	"undo": {
+		"url": "https://www.svgrepo.com/download/471261/corner-up-left.svg",
+		"license": "CC0",
+		"attribution": "",
+		"collection": "https://www.svgrepo.com/collection/ui-oval-interface-icons/"
+	},
+	"redo": {
+		"url": "https://www.svgrepo.com/download/471262/corner-up-right.svg",
+		"license": "CC0",
+		"attribution": "",
+		"collection": "https://www.svgrepo.com/collection/ui-oval-interface-icons/"
+	},
+	"history": {
+		"url": "https://www.svgrepo.com/download/471131/calendar.svg",
+		"license": "CC0",
+		"attribution": "",
+		"collection": "https://www.svgrepo.com/collection/ui-oval-interface-icons/"
+	},
+	"back": {
+		"url": "https://www.svgrepo.com/download/471005/arrow-narrow-left.svg",
+		"license": "CC0",
+		"attribution": "",
+		"collection": "https://www.svgrepo.com/collection/ui-oval-interface-icons/"
+	},
+	"check-mark": {
+		"url": "https://www.svgrepo.com/download/471152/check.svg",
+		"license": "CC0",
+		"attribution": "",
+		"collection": "https://www.svgrepo.com/collection/ui-oval-interface-icons/"
+	},
+	"menu": {
+		"url": "https://www.svgrepo.com/download/471667/menu-01.svg",
+		"license": "CC0",
+		"attribution": "",
+		"collection": "https://www.svgrepo.com/collection/ui-oval-interface-icons/"
+	},
+	"logout": {
+		"url": "https://www.svgrepo.com/download/471638/log-out-01.svg",
+		"license": "CC0",
+		"attribution": "",
+		"collection": "https://www.svgrepo.com/collection/ui-oval-interface-icons/"
+	},
+	"help": {
+		"url": "https://www.svgrepo.com/download/471510/help-circle.svg",
+		"license": "CC0",
+		"attribution": "",
+		"collection": "https://www.svgrepo.com/collection/ui-oval-interface-icons/"
+	},
+	"account": {
+		"url": "https://www.svgrepo.com/download/472034/user-03.svg",
+		"license": "CC0",
+		"attribution": "",
+		"collection": "https://www.svgrepo.com/collection/ui-oval-interface-icons/"
+	},
+	"notification": {
+		"url": "https://www.svgrepo.com/download/471075/bell-01.svg",
+		"license": "CC0",
+		"attribution": "",
+		"collection": "https://www.svgrepo.com/collection/ui-oval-interface-icons/"
+	},
+	"notification-active": {
+		"url": "https://www.svgrepo.com/download/471086/bell-ringing-01.svg",
+		"license": "CC0",
+		"attribution": "",
+		"collection": "https://www.svgrepo.com/collection/ui-oval-interface-icons/"
+	},
+	"hide": {
+		"url": "https://www.svgrepo.com/download/471369/eye-off.svg",
+		"license": "CC0",
+		"attribution": "",
+		"collection": "https://www.svgrepo.com/collection/ui-oval-interface-icons/"
+	},
+	"loading": {
+		"url": "https://www.svgrepo.com/download/471622/loading-02.svg",
+		"license": "CC0",
+		"attribution": "",
+		"collection": "https://www.svgrepo.com/collection/ui-oval-interface-icons/"
+	},
+	"available": {
+		"url": "https://www.svgrepo.com/download/471152/check.svg",
+		"license": "CC0",
+		"attribution": "",
+		"collection": "https://www.svgrepo.com/collection/ui-oval-interface-icons/"
+	},
+	"unavailable": {
+		"url": "https://www.svgrepo.com/download/472094/x-close.svg",
+		"license": "CC0",
+		"attribution": "",
+		"collection": "https://www.svgrepo.com/collection/ui-oval-interface-icons/"
+	},
+	"show-password": {
+		"url": "https://www.svgrepo.com/download/471369/eye-off.svg",
+		"license": "CC0",
+		"attribution": "",
+		"collection": "https://www.svgrepo.com/collection/ui-oval-interface-icons/"
+	},
+	"showing-password": {
+		"url": "https://www.svgrepo.com/download/471368/eye.svg",
+		"license": "CC0",
+		"attribution": "",
+		"collection": "https://www.svgrepo.com/collection/ui-oval-interface-icons/"
+	},
+	"free-access": {
+		"url": "https://www.svgrepo.com/download/458444/wow.svg",
+		"license": "CC Attribution License",
+		"attribution": "Vectors and icons by <a href=\"https://www.figma.com/@leonid?ref=svgrepo.com\" target=\"_blank\">Leonid Tsvetkov</a> in CC Attribution License via <a href=\"https://www.svgrepo.com/\" target=\"_blank\">SVG Repo</a>",
+		"collection": "https://www.svgrepo.com/collection/lets-light-line-interface-icons/"
+	},
+	"casual-only": {
+		"url": "https://www.svgrepo.com/download/458339/sad-alt-2.svg",
+		"license": "CC Attribution License",
+		"attribution": "Vectors and icons by <a href=\"https://www.figma.com/@leonid?ref=svgrepo.com\" target=\"_blank\">Leonid Tsvetkov</a> in CC Attribution License via <a href=\"https://www.svgrepo.com/\" target=\"_blank\">SVG Repo</a>",
+		"collection": "https://www.svgrepo.com/collection/lets-light-line-interface-icons/"
+	},
+	"light-security": {
+		"url": "https://www.svgrepo.com/download/458222/happy.svg",
+		"license": "CC Attribution License",
+		"attribution": "Vectors and icons by <a href=\"https://www.figma.com/@leonid?ref=svgrepo.com\" target=\"_blank\">Leonid Tsvetkov</a> in CC Attribution License via <a href=\"https://www.svgrepo.com/\" target=\"_blank\">SVG Repo</a>",
+		"collection": "https://www.svgrepo.com/collection/lets-light-line-interface-icons/"
+	},
+	"decent-security": {
+		"url": "https://www.svgrepo.com/download/458461/happy-1.svg",
+		"license": "CC Attribution License",
+		"attribution": "Vectors and icons by <a href=\"https://www.figma.com/@leonid?ref=svgrepo.com\" target=\"_blank\">Leonid Tsvetkov</a> in CC Attribution License via <a href=\"https://www.svgrepo.com/\" target=\"_blank\">SVG Repo</a>",
+		"collection": "https://www.svgrepo.com/collection/lets-light-line-interface-icons/"
+	},
+	"strong-security": {
+		"url": "https://www.svgrepo.com/download/458266/lol.svg",
+		"license": "CC Attribution License",
+		"attribution": "Vectors and icons by <a href=\"https://www.figma.com/@leonid?ref=svgrepo.com\" target=\"_blank\">Leonid Tsvetkov</a> in CC Attribution License via <a href=\"https://www.svgrepo.com/\" target=\"_blank\">SVG Repo</a>",
+		"collection": "https://www.svgrepo.com/collection/lets-light-line-interface-icons/"
+	},
+	"update": {
+		"url": "https://www.svgrepo.com/download/471344/download-01.svg",
+		"license": "CC0",
+		"attribution": "",
+		"collection": "https://www.svgrepo.com/collection/ui-oval-interface-icons/"
+	},
+	"share": {
+		"url": "https://www.svgrepo.com/download/471612/link-04.svg",
+		"license": "CC0",
+		"attribution": "",
+		"collection": "https://www.svgrepo.com/collection/ui-oval-interface-icons/"
+	},
+	"close": {
+		"url": "https://www.svgrepo.com/download/472094/x-close.svg",
+		"license": "CC0",
+		"attribution": "",
+		"collection": "https://www.svgrepo.com/collection/ui-oval-interface-icons/"
+	},
+	"line-up": {
+		"url": "https://www.svgrepo.com/download/471008/arrow-narrow-up.svg",
+		"license": "CC0",
+		"attribution": "",
+		"collection": "https://www.svgrepo.com/collection/ui-oval-interface-icons/"
+	},
+	"expand-left": {
+		"url": "https://www.svgrepo.com/download/471005/arrow-narrow-left.svg",
+		"license": "CC0",
+		"attribution": "",
+		"collection": "https://www.svgrepo.com/collection/ui-oval-interface-icons/"
+	},
+	"shrink-left": {
+		"url": "https://www.svgrepo.com/download/471007/arrow-narrow-right.svg",
+		"license": "CC0",
+		"attribution": "",
+		"collection": "https://www.svgrepo.com/collection/ui-oval-interface-icons/"
+	},
+	"shrink-right": {
+		"url": "https://www.svgrepo.com/download/471005/arrow-narrow-left.svg",
+		"license": "CC0",
+		"attribution": "",
+		"collection": "https://www.svgrepo.com/collection/ui-oval-interface-icons/"
+	},
+	"expand-right": {
+		"url": "https://www.svgrepo.com/download/471007/arrow-narrow-right.svg",
+		"license": "CC0",
+		"attribution": "",
+		"collection": "https://www.svgrepo.com/collection/ui-oval-interface-icons/"
+	},
+	"line-down": {
+		"url": "https://www.svgrepo.com/download/471003/arrow-narrow-down.svg",
+		"license": "CC0",
+		"attribution": "",
+		"collection": "https://www.svgrepo.com/collection/ui-oval-interface-icons/"
+	},
+	"screen-sharing-enabled": {
+		"url": "https://www.svgrepo.com/download/471140/camera-01.svg",
+		"license": "CC0",
+		"attribution": "",
+		"collection": "https://www.svgrepo.com/collection/ui-oval-interface-icons/"
+	},
+	"screen-sharing-disabled": {
+		"url": "https://www.svgrepo.com/download/471146/camera-off.svg",
+		"license": "CC0",
+		"attribution": "",
+		"collection": "https://www.svgrepo.com/collection/ui-oval-interface-icons/"
+	},
+	"plus": {
+		"url": "https://www.svgrepo.com/download/471794/plus-square.svg",
+		"license": "CC0",
+		"attribution": "",
+		"collection": "https://www.svgrepo.com/collection/ui-oval-interface-icons/"
+	},
+	"minus": {
+		"url": "https://www.svgrepo.com/download/471708/minus-square.svg",
+		"license": "CC0",
+		"attribution": "",
+		"collection": "https://www.svgrepo.com/collection/ui-oval-interface-icons/"
+	},
+	"open": {
+		"url": "https://www.svgrepo.com/download/471106/book-open-01.svg",
+		"license": "CC0",
+		"attribution": "",
+		"collection": "https://www.svgrepo.com/collection/ui-oval-interface-icons/"
+	}
+}

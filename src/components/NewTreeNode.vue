@@ -19,7 +19,7 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import NoteIcon from '../icons/file/document_2.vue'
+import NoteIcon from '../icons/note.vue'
 import { createNewNode, createNewRootNode, noteManager } from '../global'
 
 const nameInput = ref(null)

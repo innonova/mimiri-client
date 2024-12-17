@@ -14,8 +14,8 @@
 
 <script setup lang="ts">
 import { notificationManager } from '../global'
-import UpdateIcon from '../icons/file/download_2.vue'
-import ShareIcon from '../icons/file/link_3.vue'
+import UpdateIcon from '../icons/update.vue'
+import ShareIcon from '../icons/share.vue'
 import type { MimiriNotification } from '../services/notification-manager'
 
 const props = defineProps<{

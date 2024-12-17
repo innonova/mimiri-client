@@ -19,13 +19,13 @@
 </template>
 
 <script setup lang="ts">
-import LineUp from '../icons/arrow/arrow_up.vue'
-import ExpandLeft from '../icons/arrow/arrow_left.vue'
-import ShrinkLeft from '../icons/arrow/arrow_right.vue'
-import MenuIcon from '../icons/editor/menu.vue'
-import ShrinkRight from '../icons/arrow/arrow_left.vue'
-import ExpandRight from '../icons/arrow/arrow_right.vue'
-import LineDown from '../icons/arrow/arrow_down.vue'
+import LineUp from '../icons/line-up.vue'
+import ExpandLeft from '../icons/expand-left.vue'
+import ShrinkLeft from '../icons/shrink-left.vue'
+import MenuIcon from '../icons/menu.vue'
+import ShrinkRight from '../icons/shrink-right.vue'
+import ExpandRight from '../icons/expand-right.vue'
+import LineDown from '../icons/line-down.vue'
 import { mimiriEditor } from '../global'
 import { SelectionExpansion } from '../services/editor/mimiri-editor'
 import { ref } from 'vue'

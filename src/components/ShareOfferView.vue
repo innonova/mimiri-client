@@ -39,7 +39,7 @@
 import { noteManager } from '../global'
 import type { NoteShareInfo } from '../services/types/note-share-info'
 import ToolbarIcon from './ToolbarIcon.vue'
-import NoteIcon from '../icons/file/document_2.vue'
+import NoteIcon from '../icons/note.vue'
 
 const formatDate = (value: Date) => {
 	return (

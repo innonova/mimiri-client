@@ -33,6 +33,7 @@ coverage
 bundles/
 certs/
 prop_icons/
-icons/
 .env
 artifacts.json
+src/icon-sources/
+src/icons.cache/

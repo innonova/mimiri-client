@@ -79,7 +79,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { noteManager, showDeleteAccount } from '../global'
-import LoadingIcon from '../icons/system/loading_3.vue'
+import LoadingIcon from '../icons/loading.vue'
 const understandDeleteAccount = ref(false)
 const understandDeleteData = ref(false)
 const understandRoRecovery = ref(false)
