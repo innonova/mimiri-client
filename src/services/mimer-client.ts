@@ -472,7 +472,7 @@ export class MimerClient {
 		const salt = toHex(crypto.getRandomValues(new Uint8Array(DEFAULT_SALT_SIZE)))
 
 		const userCrypt = await SymmetricCrypt.fromPassword(
-			SymmetricCrypt.DEFAULT_SYMMETRIC_ALGORITHM,
+			this.loginResponse?.algorithm ?? SymmetricCrypt.DEFAULT_SYMMETRIC_ALGORITHM,
 			password,
 			salt,
 			iterations,
