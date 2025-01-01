@@ -329,6 +329,9 @@ export class NoteManager {
 					void this.ensureLiveNode(note)
 				}
 			}
+			mobileLog.log('Online')
+		} catch (ex) {
+			mobileLog.log('Failed to go online ' + ex.message)
 		} finally {
 			this.endAction()
 		}

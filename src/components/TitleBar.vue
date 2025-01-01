@@ -236,7 +236,7 @@ const showMenu = (rect, menu) => {
 			MenuItems.DeleteAccount,
 			MenuItems.Separator,
 			MenuItems.Logout,
-			...(ipcClient.isAvailable ? [MenuItems.Separator, MenuItems.WorkOffline] : []),
+			...(ipcClient.isAvailable ? [MenuItems.Separator, MenuItems.GoOnline] : []),
 		])
 	}
 }

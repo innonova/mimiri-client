@@ -6,6 +6,7 @@ import { NoteHistory } from './note-history'
 import { Capacitor, registerPlugin } from '@capacitor/core'
 import { mimiriPlatform } from '../mimiri-platform'
 import { Debounce } from '../helpers'
+import { mobileLog } from '../../global'
 
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms))
 
@@ -40,6 +41,9 @@ export class MimiriEditor {
 	private backgroundElement: HTMLDivElement
 	private infoElement: HTMLDivElement
 	private clipboard: any
+	private styleOverridesDirty = false
+	private styleUpdateRunning = false
+	private styleUpdateStartTime = Date.now()
 
 	public state: EditorState
 
@@ -114,6 +118,30 @@ export class MimiriEditor {
 		})
 	}
 
+	private executeUpdateStyleOverrides() {
+		if (this.styleOverridesDirty) {
+			for (const span of this.backgroundEditor.getDomNode().getElementsByTagName('span')) {
+				if (!span.innerHTML.includes('<') && span.innerHTML.includes('password')) {
+					if (span.className !== 'mtk1') {
+						mobileLog.log('Styles Updated')
+						this.styleOverridesDirty = false
+						this.styleElement.innerHTML = `.${span.className} { -webkit-text-security: disc; }`
+					}
+					break
+				}
+			}
+		}
+		if (this.styleOverridesDirty && Date.now() - this.styleUpdateStartTime < 600000) {
+			this.styleUpdateRunning = true
+			setTimeout(() => this.executeUpdateStyleOverrides(), 100)
+		} else {
+			if (this.styleOverridesDirty) {
+				mobileLog.log('failed to update styles')
+			}
+			this.styleUpdateRunning = false
+		}
+	}
+
 	private async updateStyleOverrides() {
 		if (settingsManager.darkMode) {
 			this.backgroundEditor.updateOptions({
@@ -124,21 +152,13 @@ export class MimiriEditor {
 				theme: 'mimiri-light',
 			})
 		}
+		mobileLog.log('Updating Style')
 		const passwordSyntax = 'p`password`'
 		this.backgroundModel.setValue(passwordSyntax)
-		const start = Date.now()
-		let found = false
-		while (!found && Date.now() - start < 2000) {
-			await delay(25)
-			for (const span of this.backgroundEditor.getDomNode().getElementsByTagName('span')) {
-				if (!span.innerHTML.includes('<') && span.innerHTML.includes('password')) {
-					if (span.className !== 'mtk1') {
-						found = true
-						this.styleElement.innerHTML = `.${span.className} { -webkit-text-security: disc; }`
-					}
-					break
-				}
-			}
+		if (!this.styleUpdateRunning) {
+			this.styleOverridesDirty = true
+			this.styleUpdateStartTime = Date.now()
+			this.executeUpdateStyleOverrides()
 		}
 	}
 
@@ -414,6 +434,9 @@ export class MimiriEditor {
 	public open(note: MimerNote) {
 		if (this.note) {
 			this.note.scrollTop = this.monacoEditor.getScrollTop()
+		}
+		if (this.styleOverridesDirty && !this.styleUpdateRunning) {
+			this.updateStyleOverrides()
 		}
 
 		if (!note) {

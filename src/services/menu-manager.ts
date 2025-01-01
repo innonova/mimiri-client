@@ -50,7 +50,7 @@ export enum MenuItems {
 	DeleteAccount = 'delete-account',
 	Logout = 'logout',
 	Quit = 'quit',
-	WorkOffline = 'work-offline',
+	GoOnline = 'go-online',
 	WordWrap = 'word-wrap',
 	UpdateAvailable = 'update-available',
 	MarkAsRead = 'mark-as-read',
@@ -88,6 +88,8 @@ class MenuManager {
 		} else if (itemId === 'logout') {
 			noteManager.logout()
 			window.location.reload()
+		} else if (itemId === 'go-online') {
+			noteManager.goOnline()
 		} else if (itemId === 'toggle-screen-sharing') {
 			settingsManager.allowScreenSharing = !settingsManager.allowScreenSharing
 		} else if (itemId === 'toggle-notify-promoted') {
@@ -387,12 +389,11 @@ class MenuManager {
 						visible: ipcClient.isAvailable,
 					})
 					break
-				case MenuItems.WorkOffline:
+				case MenuItems.GoOnline:
 					result.push({
-						id: 'work-offline',
-						title: 'Work Offline',
-						visible: ipcClient.isAvailable,
-						enabled: false,
+						id: 'go-online',
+						title: 'Go Online',
+						enabled: noteManager.isLoggedIn && !noteManager.isOnline,
 					})
 					break
 				case MenuItems.WordWrap:

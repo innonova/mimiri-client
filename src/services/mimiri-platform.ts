@@ -107,10 +107,15 @@ class MimiriPlatform {
 						} else {
 							this.state.locked = false
 						}
-					} else if (mimiriPlatform.isElectron && Date.now() - this._lastUpdateCheck > 20 * 60000) {
-						this._lastUpdateCheck = Date.now()
-						updateManager.check()
-						noteManager.loadShareOffers()
+					} else if (mimiriPlatform.isElectron) {
+						if (!noteManager.isOnline) {
+							await noteManager.goOnline()
+						}
+						if (Date.now() - this._lastUpdateCheck > 20 * 60000) {
+							this._lastUpdateCheck = Date.now()
+							updateManager.check()
+							noteManager.loadShareOffers()
+						}
 					}
 				} catch (ex) {
 					mobileLog.log('Error during resume: ' + ex.message)

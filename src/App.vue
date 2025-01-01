@@ -118,7 +118,7 @@ import DeleteAccount from './components/DeleteAccount.vue'
 import { menuManager } from './services/menu-manager'
 import { Debounce } from './services/helpers'
 
-mobileLog.log('App Loading')
+mobileLog.log(`App Loading ${settingsManager.channel} ${updateManager.currentVersion}`)
 
 const colorScheme = ref('only light')
 const loading = ref(true)

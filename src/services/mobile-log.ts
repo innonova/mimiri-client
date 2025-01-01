@@ -37,11 +37,15 @@ export class MobileLog {
 	log(message: string) {
 		const logText = localStorage.getItem('mimiri-mobile-log') ?? '[]'
 		const items = JSON.parse(logText)
-		items.push(`${this.timeStamp()} ${message}`)
+		const messageText = `${this.timeStamp()} ${message}`
+		items.push(messageText)
 		while (items.length > 100) {
 			items.shift()
 		}
 		localStorage.setItem('mimiri-mobile-log', JSON.stringify(items))
+		if (mimiriPlatform.isElectron) {
+			console.log(messageText)
+		}
 	}
 
 	get enabled() {
