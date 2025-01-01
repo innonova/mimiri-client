@@ -5,7 +5,7 @@ export default {
 	content: [],
 	theme: {
 		fontFamily: {
-			display: ['Segoe UI', 'Verdana', 'Ubuntu'],
+			display: ['Segoe UI', 'Verdana', 'Ubuntu', 'Noto Sans'],
 			editor: ['Consolas', 'Courier New', 'monospace']
 		},
 		fontSize: {

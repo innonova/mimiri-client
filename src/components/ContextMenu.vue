@@ -48,8 +48,12 @@ const backdropTop = ref('0px')
 const config = ref<ContextMenu>({ items: [] })
 let activationCallback: (item?: ContextMenuItem) => void = undefined
 const contextMenu = ref(null)
+let showTime = Date.now()
 
-const close = () => {
+const close = e => {
+	if (Date.now() - showTime < 1000 && e.button === 2) {
+		return // ignore right mouse up after context menu on some platforms
+	}
 	visible.value = false
 	try {
 		activationCallback?.()
@@ -87,6 +91,7 @@ const show = (position: ContextMenuPosition, conf: ContextMenu, callback: (item:
 	backdropTop.value = `${position.backdropTop ?? 0}px`
 	config.value = conf
 	setTimeout(() => adjustPosition(position, windowWidth, windowHeight))
+	showTime = Date.now()
 }
 
 const activateItem = (item: ContextMenuItem) => {
