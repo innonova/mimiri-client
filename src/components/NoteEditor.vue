@@ -134,7 +134,7 @@ window.addEventListener('blur', () => {
 })
 
 const setActiveViewModel = viewModel => {
-	if (activeViewModel != viewModel) {
+	if (activeViewModel !== viewModel) {
 		if (activeViewModelStopWatch) {
 			activeViewModelStopWatch()
 			activeViewModelStopWatch = undefined
@@ -143,7 +143,7 @@ const setActiveViewModel = viewModel => {
 		if (activeViewModel) {
 			mimiriEditor.open(noteManager.getNoteById(activeViewModel.id))
 			activeViewModelStopWatch = watch(activeViewModel, () => {
-				if (activeViewModel) {
+				if (activeViewModel && activeViewModel.id === mimiriEditor.note?.id) {
 					mimiriEditor.open(noteManager.getNoteById(activeViewModel.id))
 				}
 			})
