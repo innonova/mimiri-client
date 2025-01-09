@@ -16,6 +16,7 @@
 				'bg-item-selected': isSelected && !createNewNode && !createNewRootNode,
 			}"
 			ref="visualElement"
+			data-testid="tree-node"
 			@click="selectNode(false)"
 			@dblclick="toggleNode"
 		>
