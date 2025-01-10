@@ -9,7 +9,7 @@ describe('MimerClient', () => {
 
 	beforeAll(async () => {
 		MimerClient.DEFAULT_ITERATIONS = 10
-		_clientAlice = new MimerClient('http://localhost:5292/api')
+		_clientAlice = new MimerClient('http://localhost:5292/api', '', '')
 		await _clientAlice.beginTest('mimerClientTs')
 		_clientBob = _clientAlice.cloneTest()
 	})
