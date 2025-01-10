@@ -44,6 +44,7 @@ interface NoteManagerState {
 	noteOpen: boolean
 	selectedNoteId?: Guid
 	shareOffers: NoteShareInfo[]
+	stateLoaded: boolean
 }
 
 class MimerError extends Error {
@@ -70,7 +71,7 @@ export class NoteManager {
 	private _ensureWhenOnline: Note[] = []
 	private _proofBits = 15
 
-	constructor(host: string) {
+	constructor(host: string, serverKey: string, serverKeyId: string) {
 		this._isMobile = !window.matchMedia?.('(min-width: 768px)')?.matches
 		window.addEventListener('resize', () => {
 			this._isMobile = !window.matchMedia?.('(min-width: 768px)')?.matches
@@ -87,8 +88,9 @@ export class NoteManager {
 			online: false,
 			noteOpen: !this._isMobile,
 			shareOffers: [],
+			stateLoaded: false,
 		})
-		this.client = new MimerClient(host)
+		this.client = new MimerClient(host, serverKey, serverKeyId)
 		browserHistory.init(noteId => {
 			if (noteId) {
 				this.getNoteById(noteId)?.select()
@@ -368,6 +370,7 @@ export class NoteManager {
 				note?.select()
 			}
 		}
+		this.state.stateLoaded = true
 	}
 
 	public async deleteAccount(deleteLocal: boolean) {
@@ -904,7 +907,7 @@ export class NoteManager {
 	}
 
 	public cloneTest() {
-		const result = new NoteManager('')
+		const result = new NoteManager('', '', '')
 		result.client = this.client.cloneTest()
 		return result
 	}

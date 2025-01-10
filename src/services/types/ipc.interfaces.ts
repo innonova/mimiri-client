@@ -63,6 +63,11 @@ export interface IpcWatchDog {
 	onCheck(callback: () => void)
 }
 
+export interface IpcSession {
+	set(name: string, value: any): Promise<void>
+	get(name: string): Promise<any>
+}
+
 export interface IpcApi {
 	cache: IpcCacheApi
 	menu: IpcMenuApi
@@ -70,4 +75,5 @@ export interface IpcApi {
 	bundle: IpcBundleApi
 	window: IpcWindowApi
 	watchDog: IpcWatchDog
+	session: IpcSession
 }

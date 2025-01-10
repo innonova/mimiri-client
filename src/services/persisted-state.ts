@@ -93,6 +93,21 @@ class PersistedState {
 		}
 	}
 
+	getTreeScrollTop() {
+		if (this.enabled) {
+			const state = this.loadState()
+			return state.treeScrollTop ?? 0
+		}
+	}
+
+	setTreeScrollTop(value: number) {
+		if (this.enabled) {
+			const state = this.loadState()
+			state.treeScrollTop = value
+			this.saveState(state)
+		}
+	}
+
 	get expanded() {
 		if (this.enabled) {
 			const state = this.loadState()

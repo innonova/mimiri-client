@@ -10,7 +10,7 @@ export interface SymmetricAlgorithm {
 }
 
 export class SymmetricCrypt {
-	// static readonly DEFAULT_SYMMETRIC_ALGORITHM = 'AES;CBC;PKCS7;32'
+	static readonly DOTNET_COMPAT_SYMMETRIC_ALGORITHM = 'AES;CBC;PKCS7;32'
 	static readonly DEFAULT_SYMMETRIC_ALGORITHM = 'AES;GCM;32'
 
 	constructor(
@@ -112,8 +112,8 @@ export class SymmetricCrypt {
 		return new TextDecoder().decode(buffer)
 	}
 
-	async encrypt(data: string): Promise<string> {
-		return this.encryptBytes(new TextEncoder().encode(data), true)
+	async encrypt(data: string, allowZip: boolean = true): Promise<string> {
+		return this.encryptBytes(new TextEncoder().encode(data), allowZip)
 	}
 
 	async encryptBytes(data: ArrayBuffer | Uint8Array, allowZip: boolean = false): Promise<string> {

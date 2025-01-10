@@ -320,14 +320,14 @@ export class MimiriEditor {
 			this.updateAbilities()
 		})
 
-		const resizeDebounce = new Debounce(async () => {
+		const scrollDebounce = new Debounce(async () => {
 			if (this.note) {
 				this.note.scrollTop = this.monacoEditor.getScrollTop()
 			}
 		}, 250)
 
 		this.monacoEditor.onDidScrollChange(() => {
-			resizeDebounce.activate()
+			scrollDebounce.activate()
 		})
 
 		const mouseInfo = {

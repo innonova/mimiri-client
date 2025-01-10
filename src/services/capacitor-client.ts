@@ -5,6 +5,7 @@ import type {
 	IpcBundleApi,
 	IpcCacheApi,
 	IpcMenuApi,
+	IpcSession,
 	IpcSettingsApi,
 	IpcWatchDog,
 	IpcWindowApi,
@@ -169,6 +170,7 @@ class CapacitorClient implements IpcApi {
 	public bundle: IpcBundleApi
 	public window: IpcWindowApi
 	public watchDog: IpcWatchDog
+	public session: IpcSession
 
 	constructor() {
 		this.available = false

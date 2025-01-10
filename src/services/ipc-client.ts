@@ -162,6 +162,19 @@ export class WatchDog {
 	}
 }
 
+export class ElectronSession {
+	constructor(private api: IpcApi) {}
+	public get isAvailable() {
+		return !!this.api.session
+	}
+	public get(name: string) {
+		return this.api.session.get(name)
+	}
+	public set(name: string, value: any) {
+		return this.api.session.set(name, value)
+	}
+}
+
 export class IpcClient {
 	private api: IpcApi
 	public readonly cache: MimerCache
@@ -170,6 +183,7 @@ export class IpcClient {
 	public readonly bundle: MimerBundle
 	public readonly window: MimerWindow
 	public readonly watchDog: WatchDog
+	public readonly session: ElectronSession
 
 	constructor() {
 		if (capacitorClient.available) {
@@ -183,6 +197,7 @@ export class IpcClient {
 		this.bundle = new MimerBundle(this.api)
 		this.window = new MimerWindow(this.api)
 		this.watchDog = new WatchDog(this.api)
+		this.session = new ElectronSession(this.api)
 	}
 
 	public get isAvailable() {

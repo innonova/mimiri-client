@@ -13,9 +13,11 @@ import { PasswordGenerator } from './services/password-generator'
 
 export const env = import.meta.env
 const host = env.VITE_MIMER_API_HOST
+const serverKey = env.VITE_API_PUBLIC_KEY
+const serverKeyId = env.VITE_API_PUBLIC_KEY_ID
 export const ipcClient = new IpcClient()
 export const browserHistory = new BrowserHistory()
-export const noteManager = new NoteManager(host)
+export const noteManager = new NoteManager(host, serverKey, serverKeyId)
 export const updateManager = new UpdateManager(env.VITE_MIMER_UPDATE_HOST)
 export const notificationManager = new NotificationManager()
 export const passwordGenerator = new PasswordGenerator()

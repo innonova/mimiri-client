@@ -42,7 +42,7 @@ import { dateTimeNow } from './types/date-time'
 import { fromBase64, toBase64, toHex } from './hex-base64'
 import type { NoteShareInfo } from './types/note-share-info'
 import type { ICacheManager } from './types/cache-manager'
-import { env } from '../global'
+import { env, ipcClient } from '../global'
 import { mimiriPlatform } from './mimiri-platform'
 
 const DEFAULT_SALT_SIZE = 32
@@ -90,6 +90,7 @@ export class MimerClient {
 	private userCrypt: SymmetricCrypt
 	private rootCrypt: SymmetricCrypt
 	private rootSignature: CryptSignature
+	private serverSignature: CryptSignature
 	private _userData: any
 	private keyChain: KeySet[] = []
 	private passwordHash: string
@@ -102,7 +103,15 @@ export class MimerClient {
 	private _sizeDelta = 0
 	private _noteCountDelta = 0
 
-	constructor(private host: string) {}
+	constructor(
+		private host: string,
+		private serverKey: string,
+		private serverKeyId: string,
+	) {
+		if (serverKey) {
+			CryptSignature.fromPem('RSA;3072', serverKey).then(sig => (this.serverSignature = sig))
+		}
+	}
 
 	private getKey(name: Guid) {
 		return this.keyChain.find(key => key.name == name)
@@ -135,14 +144,21 @@ export class MimerClient {
 		return response.json()
 	}
 
-	private async post<T>(path: string, data: any): Promise<T> {
+	private async post<T>(path: string, data: any, encrypt: boolean = false): Promise<T> {
 		if (this.simulateOffline) {
 			throw new Error('Simulate offline')
+		}
+		let body = data
+		if (encrypt && this.serverSignature) {
+			body = {
+				keyId: this.serverKeyId,
+				data: await this.serverSignature.encrypt(JSON.stringify(data)),
+			}
 		}
 		// console.log('POST', `${this.host}${path}`, data)
 		const response = await fetch(`${this.host}${path}`, {
 			method: 'POST',
-			body: JSON.stringify(data),
+			body: JSON.stringify(body),
 		})
 		if (response.status !== 200) {
 			throw new HttpRequestError(`Post to ${path} failed with status code ${response.status}`, response.status)
@@ -177,9 +193,13 @@ export class MimerClient {
 				return undefined
 			}
 		}
-		const loginData = sessionStorage.getItem('mimiri-login-data')
-		if (loginData) {
-			return JSON.parse(loginData)
+		if (ipcClient.isAvailable && ipcClient.session.isAvailable) {
+			return ipcClient.session.get('mimiri-login-data')
+		} else {
+			const loginData = sessionStorage.getItem('mimiri-login-data')
+			if (loginData) {
+				return JSON.parse(loginData)
+			}
 		}
 		return undefined
 	}
@@ -196,7 +216,12 @@ export class MimerClient {
 				userKey: await this.userCrypt.getKeyString(),
 				userKeyAlgorithm: this.userCrypt.algorithm,
 			}
-			sessionStorage.setItem('mimiri-login-data', JSON.stringify(loginData))
+
+			if (ipcClient.isAvailable && ipcClient.session.isAvailable) {
+				await ipcClient.session.set('mimiri-login-data', loginData)
+			} else {
+				sessionStorage.setItem('mimiri-login-data', JSON.stringify(loginData))
+			}
 		}
 	}
 
@@ -446,10 +471,8 @@ export class MimerClient {
 				requestId: newGuid(),
 				signatures: [],
 			}
-			console.log(request)
-
 			await this.rootSignature.sign('user', request)
-			await this.post<BasicResponse>('/user/create', request)
+			await this.post<BasicResponse>('/user/create', request, true)
 			this.logout()
 			await this.login({ username, password })
 		} catch (ex) {
@@ -502,7 +525,7 @@ export class MimerClient {
 		}
 		await this.rootSignature.sign('user', request)
 		await this.rootSignature.sign('old-user', request)
-		await this.post<BasicResponse>('/user/update', request)
+		await this.post<BasicResponse>('/user/update', request, true)
 		this.userCrypt = userCrypt
 		this.username = username
 		this.userData = userData
@@ -1184,7 +1207,7 @@ export class MimerClient {
 	}
 
 	public cloneTest() {
-		const client = new MimerClient(this.host)
+		const client = new MimerClient(this.host, this.serverKey, this.serverKeyId)
 		client.cacheManager = this.cacheManager
 		client.testId = this.testId
 		return client

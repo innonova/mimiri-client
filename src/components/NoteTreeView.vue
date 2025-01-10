@@ -2,6 +2,8 @@
 	<div
 		class="flex-auto pt-1.5 pr-2.5 pb-5 pl-1 bg-input overflow-y-auto overflow-x-hidden"
 		@contextmenu="showContextMenu"
+		@scroll="onScroll"
+		ref="mainElement"
 	>
 		<TreeNode v-for="node of noteManager.root?.viewModel.children" :node="node" :key="node.id"></TreeNode>
 		<NewTreeNode v-if="createNewRootNode"></NewTreeNode>
@@ -14,6 +16,20 @@ import type { MimerNote } from '../services/types/mimer-note'
 import TreeNode from './TreeNode.vue'
 import NewTreeNode from './NewTreeNode.vue'
 import { MenuItems, menuManager } from '../services/menu-manager'
+import { Debounce } from '../services/helpers'
+import { ref, watch } from 'vue'
+import { persistedState } from '../services/persisted-state'
+
+const mainElement = ref(null)
+let stateLoaded = false
+
+const stopWatching = watch(noteManager.state, () => {
+	if (noteManager.state.stateLoaded && !stateLoaded) {
+		stateLoaded = true
+		mainElement.value.scrollTop = persistedState.getTreeScrollTop()
+		stopWatching()
+	}
+})
 
 const duplicateActiveNote = async () => {
 	if (noteManager.selectedNote) {
@@ -132,6 +148,15 @@ const showContextMenu = async e => {
 
 const hasFocus = () => {
 	return document.activeElement.tagName === 'BODY'
+}
+
+const scrollDebounce = new Debounce(async () => {
+	const scrollTop = Math.round(mainElement.value?.scrollTop ?? 0)
+	persistedState.setTreeScrollTop(scrollTop)
+}, 250)
+
+const onScroll = () => {
+	scrollDebounce.activate()
 }
 
 defineExpose({

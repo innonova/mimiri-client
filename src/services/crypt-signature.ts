@@ -129,8 +129,8 @@ export class CryptSignature {
 	}
 
 	async encrypt(data: string) {
-		const crypt = await SymmetricCrypt.create(SymmetricCrypt.DEFAULT_SYMMETRIC_ALGORITHM)
-		const encryptedData = await crypt.encrypt(data)
+		const crypt = await SymmetricCrypt.create(SymmetricCrypt.DOTNET_COMPAT_SYMMETRIC_ALGORITHM)
+		const encryptedData = await crypt.encrypt(data, false)
 		const aesKey = await crypt.getKey()
 		const encryptedKey = await crypto.subtle.encrypt({ name: 'RSA-OAEP' }, this.publicKeyEncrypt, aesKey)
 
@@ -148,7 +148,7 @@ export class CryptSignature {
 			this.privateKeyDecrypt,
 			fromBase64(json.encryptedKey),
 		)
-		const crypt = await SymmetricCrypt.fromKey(SymmetricCrypt.DEFAULT_SYMMETRIC_ALGORITHM, aesKey)
+		const crypt = await SymmetricCrypt.fromKey(SymmetricCrypt.DOTNET_COMPAT_SYMMETRIC_ALGORITHM, aesKey)
 		return await crypt.decrypt(json.data)
 	}
 
