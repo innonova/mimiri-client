@@ -212,7 +212,7 @@ import DecentSecurityIcon from '../icons/decent-security.vue'
 import StrongSecurityIcon from '../icons/strong-security.vue'
 
 const disallowString = '!"#$:%&@\'()*/=?[]{}~^`'
-const disallowRegex = /[!"#$:%&@'()*/=?[\]{}~\^\\`]/
+const disallowRegex = /[!"#$:%&@'()*/=?[\]{}~\^\\`\s]/
 
 const username = ref('')
 const password = ref('')
