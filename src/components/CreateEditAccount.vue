@@ -59,31 +59,19 @@
 							v-if="passwordQuality === 'free-access'"
 							class="flex items-center w-52 h-7 md:ml-2 mt-1.5 md:mt-0 text-left"
 						>
-							<FreeAccessIcon class="w-6 h-6 mr-1 inline-block"></FreeAccessIcon> Free access
+							<FreeAccessIcon class="w-6 h-6 mr-1 inline-block"></FreeAccessIcon> Not really a password
 						</div>
 						<div
 							v-if="passwordQuality === 'casual-use-only'"
 							class="flex items-center w-52 h-7 md:ml-2 mt-1.5 md:mt-0 text-left"
 						>
-							<CasualOnlyIcon class="w-6 h-6 mr-1 inline-block"></CasualOnlyIcon> Casual use only
+							<CasualOnlyIcon class="w-6 h-6 mr-1 inline-block"></CasualOnlyIcon> Very limited security
 						</div>
 						<div
-							v-if="passwordQuality === 'light-security'"
+							v-if="passwordQuality === 'acceptable-security'"
 							class="flex items-center w-52 h-7 md:ml-2 mt-1.5 md:mt-0 text-left"
 						>
-							<LightSecurityIcon class="w-6 h-6 mr-1 inline-block"></LightSecurityIcon> Light security
-						</div>
-						<div
-							v-if="passwordQuality === 'decent-security'"
-							class="flex items-center w-52 h-7 md:ml-2 mt-1.5 md:mt-0 text-left"
-						>
-							<DecentSecurityIcon class="w-6 h-6 mr-1 inline-block"></DecentSecurityIcon> Decent security
-						</div>
-						<div
-							v-if="passwordQuality === 'strong-security'"
-							class="flex items-center w-52 h-7 md:ml-2 mt-1.5 md:mt-0 text-left"
-						>
-							<StrongSecurityIcon class="w-6 h-6 mr-1 inline-block"></StrongSecurityIcon> Strong security
+							<LightSecurityIcon class="w-6 h-6 mr-1 inline-block"></LightSecurityIcon> Acceptable
 						</div>
 					</div>
 				</div>
@@ -111,20 +99,31 @@
 					<input v-model="passwordCurrent" tabindex="3" type="password" class="bg-input text-input-text" />
 				</div>
 			</div>
-
-			<!-- <div v-if="!authenticated" class="p-1 pt-5 m-auto text-left">
+			<div v-if="!authenticated" class="p-1 pt-5 m-auto text-left">
 				<label>
 					<input type="checkbox" v-model="acceptTerms" class="mr-1 relative top-0.5" />
 					I have read the
 				</label>
 				<a href="https://mimiri.io/terms" target="_blank">Terms & Conditions</a>
-			</div> -->
-			<div v-if="!authenticated" class="p-1 pt-5 m-auto text-left">
+			</div>
+			<div v-if="!authenticated" class="p-1 m-auto text-left">
 				<label>
 					<input type="checkbox" v-model="readPrivacy" class="mr-1 relative top-0.5" />
 					I have read the
 				</label>
 				<a href="https://mimiri.io/privacy" target="_blank">Privacy Policy</a>
+			</div>
+			<div v-if="!authenticated" class="p-1 m-auto text-left" :class="{ 'line-through': !passwordIsWeak }">
+				<label>
+					<input
+						type="checkbox"
+						v-model="acceptWeakPassword"
+						class="mr-1 relative top-0.5"
+						:disabled="!passwordIsWeak"
+						:class="{ 'opacity-50': !passwordIsWeak }"
+					/>
+					I know that my password is weak
+				</label>
 			</div>
 			<div v-if="!authenticated" class="p-1 pb-5 m-auto text-left">
 				<div class="max-w-96 leading-5">
@@ -208,8 +207,6 @@ import ShowingPasswordIcon from '../icons/showing-password.vue'
 import FreeAccessIcon from '../icons/free-access.vue'
 import CasualOnlyIcon from '../icons/casual-only.vue'
 import LightSecurityIcon from '../icons/light-security.vue'
-import DecentSecurityIcon from '../icons/decent-security.vue'
-import StrongSecurityIcon from '../icons/strong-security.vue'
 
 const disallowString = '!"#$:%&@\'()*/=?[]{}~^`'
 const disallowRegex = /[!"#$:%&@'()*/=?[\]{}~\^\\`\s]/
@@ -228,8 +225,10 @@ const usernameUnavailable = ref(false)
 const usernameInProgress = ref(false)
 const passwordQuality = ref('')
 const passwordMatch = ref(true)
-const acceptTerms = ref(true)
+const acceptTerms = ref(false)
 const readPrivacy = ref(false)
+const acceptWeakPassword = ref(false)
+const passwordIsWeak = ref(false)
 const understandNoRecover = ref(false)
 const passwordFieldType = ref('password')
 
@@ -248,6 +247,7 @@ const canCreate = computed(
 	() =>
 		acceptTerms.value &&
 		readPrivacy.value &&
+		(acceptWeakPassword.value || !passwordIsWeak.value) &&
 		understandNoRecover.value &&
 		passwordMatch.value &&
 		!usernameInvalid.value &&
@@ -306,14 +306,13 @@ watch(password, value => {
 		const days = result.crack_times_seconds.offline_slow_hashing_1e4_per_second / 60 / 60 / 24
 		if (days < 0.0001) {
 			passwordQuality.value = 'free-access'
+			passwordIsWeak.value = true
 		} else if (days < 0.1) {
 			passwordQuality.value = 'casual-use-only'
-		} else if (days < 10) {
-			passwordQuality.value = 'light-security'
-		} else if (days < 365 * 100) {
-			passwordQuality.value = 'decent-security'
+			passwordIsWeak.value = true
 		} else {
-			passwordQuality.value = 'strong-security'
+			passwordQuality.value = 'acceptable-security'
+			passwordIsWeak.value = false
 		}
 		checkPasswordMatch()
 	} else {

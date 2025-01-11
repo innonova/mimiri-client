@@ -20,7 +20,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import NoteIcon from '../icons/note.vue'
-import { createNewNode, createNewRootNode, noteManager } from '../global'
+import { createNewNode, createNewRootNode, mimiriEditor, noteManager } from '../global'
 
 const nameInput = ref(null)
 
@@ -51,6 +51,7 @@ const endEdit = async e => {
 		} else if (createNewRootNode.value) {
 			await noteManager.root.addChild(name)
 		}
+		mimiriEditor.focus()
 	}
 	createNewNode.value = false
 	createNewRootNode.value = false
