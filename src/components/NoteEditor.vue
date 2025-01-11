@@ -155,6 +155,7 @@ onMounted(() => {
 	mimiriEditor.init(editorContainer.value)
 	mimiriEditor.onSave(() => save())
 	mimiriEditor.onSearchAll(() => titleBar.value?.searchAllNotes())
+	mimiriEditor.onBlur(() => save())
 	setActiveViewModel(noteManager.selectedViewModel)
 
 	watch(settingsManager.state, () => {

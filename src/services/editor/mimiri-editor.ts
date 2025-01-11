@@ -57,6 +57,11 @@ export class MimiriEditor {
 		this.searchAllListener = listener
 	}
 
+	private blurListener: () => void
+	public onBlur(listener: () => void) {
+		this.blurListener = listener
+	}
+
 	constructor() {
 		this.state = reactive({
 			text: '',
@@ -318,6 +323,10 @@ export class MimiriEditor {
 				}
 			}
 			this.updateAbilities()
+		})
+
+		this.monacoEditor.onDidBlurEditorText(e => {
+			this.blurListener?.()
 		})
 
 		const scrollDebounce = new Debounce(async () => {
