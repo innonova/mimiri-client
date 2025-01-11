@@ -90,6 +90,10 @@ export class MimerMenu {
 		this.api.menu.show()
 	}
 
+	public hide() {
+		this.api.menu.hide()
+	}
+
 	public showDevTools() {
 		this.api.menu.showDevTools()
 	}
@@ -148,6 +152,9 @@ export class MimerWindow {
 	}
 	public setMainWindowSize(value: { width: number; height: number }) {
 		return this.api.window.setMainWindowSize(toRaw(value))
+	}
+	public getIsVisible() {
+		return this.api.window.getIsVisible()
 	}
 }
 

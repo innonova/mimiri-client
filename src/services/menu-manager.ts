@@ -84,7 +84,11 @@ class MenuManager {
 		} else if (itemId === 'tray-double-click') {
 			ipcClient.menu.show()
 		} else if (itemId === 'tray-click') {
-			ipcClient.menu.show()
+			if (await ipcClient.window.getIsVisible()) {
+				ipcClient.menu.hide()
+			} else {
+				ipcClient.menu.show()
+			}
 		} else if (itemId === 'logout') {
 			noteManager.logout()
 			window.location.reload()
@@ -94,6 +98,8 @@ class MenuManager {
 			settingsManager.allowScreenSharing = !settingsManager.allowScreenSharing
 		} else if (itemId === 'toggle-notify-promoted') {
 			settingsManager.keepTrayIconVisible = !settingsManager.keepTrayIconVisible
+		} else if (itemId === 'toggle-show-in-taskbar') {
+			settingsManager.showInTaskBar = !settingsManager.showInTaskBar
 		} else if (itemId === 'show') {
 			ipcClient.menu.show()
 		} else if (itemId === 'quit') {
@@ -463,6 +469,12 @@ class MenuManager {
 								title: 'Keep Tray Icon Visible',
 								type: 'checkbox',
 								checked: settingsManager.keepTrayIconVisible,
+							},
+							{
+								id: 'toggle-show-in-taskbar',
+								title: 'Show In Taskbar',
+								type: 'checkbox',
+								checked: settingsManager.showInTaskBar,
 							},
 						]
 					: []),

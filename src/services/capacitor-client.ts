@@ -16,6 +16,7 @@ import type { Bundle } from './update-manger'
 
 class NoOpMenu implements IpcMenuApi {
 	show() {}
+	hide() {}
 	quit() {}
 	showDevTools() {}
 	onToggleScreenSharing(callback: () => void) {}
@@ -29,6 +30,9 @@ class NoOpWindow implements IpcWindowApi {
 	async setMainWindowSize(value: { width: number; height: number }): Promise<void> {}
 	getMainWindowSize(): Promise<{ width: number; height: number }> {
 		return Promise.resolve({ width: 0, height: 0 })
+	}
+	getIsVisible(): Promise<boolean> {
+		return Promise.resolve(true)
 	}
 }
 

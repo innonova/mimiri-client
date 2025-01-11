@@ -18,6 +18,7 @@ export interface IpcSettingsApi {
 export interface IpcMenuApi {
 	quit()
 	show()
+	hide()
 	showDevTools()
 	onToggleScreenSharing(callback: () => void)
 	onToggleOpenAtLogin(callback: () => void)
@@ -56,6 +57,7 @@ export interface IpcBundleApi {
 export interface IpcWindowApi {
 	setMainWindowSize(value: { width: number; height: number }): Promise<void>
 	getMainWindowSize(): Promise<{ width: number; height: number }>
+	getIsVisible(): Promise<boolean>
 }
 
 export interface IpcWatchDog {

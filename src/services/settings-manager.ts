@@ -17,6 +17,7 @@ export interface MimerConfiguration {
 	mainWindowSize: { width: number; height: number }
 	keepTrayIconVisible: boolean
 	developerMode: boolean | undefined
+	showInTaskBar: boolean
 }
 
 class SettingsManager {
@@ -35,6 +36,7 @@ class SettingsManager {
 		mainWindowSize: { width: 0, height: 0 },
 		keepTrayIconVisible: true,
 		developerMode: undefined,
+		showInTaskBar: true,
 	})
 
 	constructor() {
@@ -129,6 +131,15 @@ class SettingsManager {
 
 	public set wordwrap(value: boolean) {
 		this.state.wordwrap = value
+		void this.save()
+	}
+
+	public get showInTaskBar() {
+		return this.state.showInTaskBar
+	}
+
+	public set showInTaskBar(value: boolean) {
+		this.state.showInTaskBar = value
 		void this.save()
 	}
 
