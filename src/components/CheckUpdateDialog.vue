@@ -12,7 +12,11 @@
 				</div>
 			</main>
 			<footer class="flex justify-end gap-2 pt-3">
-				<button class="bg-button-primary text-button-primary-text mr-2 mb-2 hover:opacity-80" @click="update">
+				<button
+					v-if="updateManager.latestVersion"
+					class="bg-button-primary text-button-primary-text mr-2 mb-2 hover:opacity-80"
+					@click="update"
+				>
 					Update
 				</button>
 				<button class="bg-button-primary text-button-primary-text mr-2 mb-2 hover:opacity-80" @click="close">
