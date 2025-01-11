@@ -54,6 +54,7 @@ export interface NoteViewModel {
 	renaming: boolean
 	cache: boolean
 	hasMoreHistory: boolean
+	isRecycleBin: boolean
 }
 
 export class MimerNote {
@@ -87,6 +88,7 @@ export class MimerNote {
 				renaming: false,
 				cache: this.isCache,
 				hasMoreHistory: true,
+				isRecycleBin: this.isRecycleBin,
 			})
 			this._historyItems = this.viewModel.history
 		} else {
@@ -102,6 +104,7 @@ export class MimerNote {
 				renaming: false,
 				cache: this.isCache,
 				hasMoreHistory: true,
+				isRecycleBin: this.isRecycleBin,
 			})
 			this._historyItems = this.viewModel.history
 		}
@@ -155,6 +158,7 @@ export class MimerNote {
 					renaming: false,
 					cache: false,
 					hasMoreHistory: true,
+					isRecycleBin: this.isRecycleBin,
 				})
 			}
 		}
@@ -354,6 +358,33 @@ export class MimerNote {
 		}
 	}
 
+	public async deleteChildren() {
+		await this.ensureChildren()
+		for (const child of this.children) {
+			await child.delete()
+		}
+	}
+
+	public async moveToRecycleBin() {
+		if (this.parent) {
+			if (this.prevSibling) {
+				this.prevSibling.select()
+			} else if (this.nextSibling) {
+				this.nextSibling.select()
+			} else {
+				this.parent.select()
+			}
+			if (!this.owner.recycleBin.hasChildren) {
+				console.log('collapse recycle bin')
+
+				this.owner.recycleBin.collapse()
+			}
+			await this.owner.move(this.parent.id, this.owner.recycleBin.id, this, -1, this.isShareRoot, false)
+		} else {
+			throw new Error('Cannot recycle root')
+		}
+	}
+
 	public async deleteReference(force: boolean = false) {
 		if (this.parent != null) {
 			if (!this.isShareRoot && !force) {
@@ -377,7 +408,7 @@ export class MimerNote {
 
 	public async move(target: MimerNote, index: number = -1) {
 		if (this.parent != null) {
-			await this.owner.move(this.parent.id, target.id, this, index, this.isShareRoot)
+			await this.owner.move(this.parent.id, target.id, this, index, this.isShareRoot, true)
 		} else {
 			throw new Error('Cannot move root')
 		}
@@ -510,6 +541,10 @@ export class MimerNote {
 		return this.parent?.id === this.owner.root.id
 	}
 
+	public get hasChildren() {
+		return this.note.getItem('metadata').notes.length > 0
+	}
+
 	public get isCache() {
 		return this.note.isCache
 	}
@@ -526,12 +561,21 @@ export class MimerNote {
 		this._note = value
 	}
 
+	public get isRecycleBin() {
+		return !!this.note.getItem('metadata').isRecycleBin
+	}
+
 	public get title() {
+		if (this.note.getItem('metadata').isRecycleBin) {
+			return 'Recycle Bin'
+		}
 		return this.note.getItem('metadata').title as string
 	}
 
 	public set title(value: string) {
-		this.note.changeItem('metadata').title = value
+		if (!this.note.getItem('metadata').isRecycleBin) {
+			this.note.changeItem('metadata').title = value
+		}
 	}
 
 	public get text() {

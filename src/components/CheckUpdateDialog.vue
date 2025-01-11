@@ -12,6 +12,9 @@
 				</div>
 			</main>
 			<footer class="flex justify-end gap-2 pt-3">
+				<button class="bg-button-primary text-button-primary-text mr-2 mb-2 hover:opacity-80" @click="update">
+					Update
+				</button>
 				<button class="bg-button-primary text-button-primary-text mr-2 mb-2 hover:opacity-80" @click="close">
 					Close
 				</button>
@@ -22,11 +25,16 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { updateManager } from '../global'
+import { showUpdate, updateManager } from '../global'
 const dialog = ref(null)
 
 const show = () => {
 	dialog.value.showModal()
+}
+
+const update = () => {
+	showUpdate.value = true
+	dialog.value.close()
 }
 
 const close = () => {

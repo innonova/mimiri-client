@@ -407,6 +407,9 @@ export class MimerClient {
 		this.online = false
 		this.workOffline = false
 		sessionStorage.removeItem('mimiri-login-data')
+		if (ipcClient.isAvailable && ipcClient.session.isAvailable) {
+			ipcClient.session.set('mimiri-login-data', undefined)
+		}
 	}
 
 	public async checkUsername(username: string, pow: string) {

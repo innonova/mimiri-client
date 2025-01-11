@@ -50,6 +50,7 @@
 		<ContextMenu ref="contextMenu"></ContextMenu>
 		<NotificationList ref="notificationList"></NotificationList>
 		<DeleteNodeDialog ref="deleteNodeDialog"></DeleteNodeDialog>
+		<EmptyRecycleBinDialog ref="emptyRecycleBinDialog"></EmptyRecycleBinDialog>
 		<ShareDialog ref="shareDialog"></ShareDialog>
 		<AboutDialog ref="aboutDialog"></AboutDialog>
 		<CheckUpdateDialog ref="checkUpdateDialog"></CheckUpdateDialog>
@@ -93,6 +94,7 @@ import {
 	showShareOffers,
 	showSearchBox,
 	deleteNodeDialog,
+	emptyRecycleBinDialog,
 	showCreateEditAccount,
 	showConvertAccount,
 	showUpdate,
@@ -117,6 +119,7 @@ import { mimiriPlatform } from './services/mimiri-platform'
 import DeleteAccount from './components/DeleteAccount.vue'
 import { menuManager } from './services/menu-manager'
 import { Debounce } from './services/helpers'
+import EmptyRecycleBinDialog from './components/EmptyRecycleBinDialog.vue'
 
 mobileLog.log(`App Loading ${settingsManager.channel} ${updateManager.currentVersion}`)
 
@@ -228,7 +231,11 @@ const handleShortcut = event => {
 			event.preventDefault()
 			event.stopPropagation()
 			if (noteTreeView.value) {
-				noteTreeView.value.deleteActiveNote()
+				if (event.shiftKey) {
+					noteTreeView.value.deleteActiveNote()
+				} else {
+					noteTreeView.value.recycleActiveNote()
+				}
 			}
 		}
 	}

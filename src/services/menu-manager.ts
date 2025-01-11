@@ -7,6 +7,7 @@ import {
 	contextMenu,
 	createEditAccountScreen,
 	deleteNodeDialog,
+	emptyRecycleBinDialog,
 	env,
 	ipcClient,
 	isCut,
@@ -39,6 +40,7 @@ export enum MenuItems {
 	RefreshRoot = 'refresh-root',
 	Rename = 'rename',
 	Delete = 'delete',
+	Recycle = 'recycle',
 	FindInNotes = 'find-in-notes',
 	Find = 'find',
 	History = 'history',
@@ -56,6 +58,7 @@ export enum MenuItems {
 	MarkAsRead = 'mark-as-read',
 	CheckForUpdate = 'check-for-update',
 	AddGettingStarted = 'add-getting-started',
+	EmptyRecycleBin = 'empty-recycle-bin',
 }
 
 class MenuManager {
@@ -145,6 +148,10 @@ class MenuManager {
 			if (noteManager.selectedNote) {
 				deleteNodeDialog.value.show()
 			}
+		} else if (itemId === 'recycle') {
+			if (noteManager.selectedNote) {
+				noteManager.selectedNote.moveToRecycleBin()
+			}
 		} else if (itemId === 'copy') {
 			clipboardNote.value = noteManager.selectedNote
 			isCut.value = false
@@ -178,6 +185,8 @@ class MenuManager {
 			checkUpdateDialog.value.show()
 		} else if (itemId === 'add-getting-started') {
 			await noteManager.addGettingStarted()
+		} else if (itemId === 'empty-recycle-bin') {
+			emptyRecycleBinDialog.value.show()
 		}
 	}
 
@@ -309,6 +318,15 @@ class MenuManager {
 						enabled: noteManager.isLoggedIn && !!noteManager.selectedNote,
 					})
 					break
+				case MenuItems.Recycle:
+					result.push({
+						id: 'recycle',
+						title: 'Delete',
+						shortcut: 'Del',
+						icon: 'delete-note',
+						enabled: noteManager.isLoggedIn && !!noteManager.selectedNote,
+					})
+					break
 				case MenuItems.FindInNotes:
 					result.push({
 						id: 'find-in-notes',
@@ -434,6 +452,12 @@ class MenuManager {
 					result.push({
 						id: 'add-getting-started',
 						title: 'Add Getting Started',
+					})
+					break
+				case MenuItems.EmptyRecycleBin:
+					result.push({
+						id: 'empty-recycle-bin',
+						title: 'Empty',
 					})
 					break
 			}

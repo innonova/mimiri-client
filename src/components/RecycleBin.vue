@@ -14,7 +14,7 @@
 			class="rounded overflow-hidden h-[30px] md:h-[25px] flex items-center py-4 md:py-0"
 			:class="{
 				'bg-item-selected': isSelected && !createNewNode && !createNewRootNode,
-				'text-menu-disabled': node.isRecycleBin && !hasChildren && !isSelected,
+				'text-menu-disabled': !hasChildren,
 			}"
 			ref="visualElement"
 			@click="selectNode(false)"
@@ -37,39 +37,24 @@
 					:class="{ invisible: !hasChildren }"
 				></MinusIcon>
 			</div>
-			<NoteIcon
-				v-if="!node.isRecycleBin"
-				class="w-[30px] h-[30px] md:w-[23px] md:h-[23px] p-0.5 mr-1 md:mr-0.5"
-				:class="{ 'text-shared': node.shared }"
-			></NoteIcon>
 			<RecycleBinIcon
-				v-if="node.isRecycleBin && hasChildren"
+				v-if="hasChildren"
 				class="w-[30px] h-[30px] md:w-[23px] md:h-[23px] p-0.5 mr-1 md:mr-0.5"
 				:class="{ 'text-shared': node.shared }"
 			></RecycleBinIcon>
 			<RecycleBinEmptyIcon
-				v-if="node.isRecycleBin && !hasChildren"
+				v-if="!hasChildren"
 				class="w-[30px] h-[30px] md:w-[23px] md:h-[23px] p-0.5 mr-1 md:mr-0.5"
 				:class="{ 'text-shared': node.shared }"
 			></RecycleBinEmptyIcon>
-			<input
-				v-if="editName"
-				class="outline-none bg-item-selected border-collapse flex-1 min-w-1 text-size-base"
-				ref="renameInput"
-				type="text"
-				:value="node.title"
-				@blur="endEdit"
-				@keydown="checkCancelEdit"
-			/>
 			<div
-				v-if="!editName"
 				class="select-none flex-1 overflow-hidden overflow-ellipsis"
 				:class="{
 					'text-search-parent': isOnlyParent,
 					'text-error': !shouldShow,
 				}"
 			>
-				{{ node.title }}
+				Recycle Bin
 			</div>
 			<div class="md:hidden pl-14 flex justify-end" @click="selectNode(true)">
 				<OpenIcon class="w-[23px] h-[23px] p-0.5"></OpenIcon>
@@ -81,17 +66,15 @@
 				:node="<NoteViewModel>childNode"
 			></TreeNode>
 		</template>
-		<NewTreeNode v-if="isSelected && createNewNode"></NewTreeNode>
 	</div>
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, ref } from 'vue'
 import { noteManager, dragId, showSearchBox, createNewNode, createNewRootNode } from '../global'
 import type { NoteViewModel } from '../services/types/mimer-note'
 import { searchManager } from '../services/search-manager'
-import NewTreeNode from './NewTreeNode.vue'
-import NoteIcon from '../icons/note.vue'
+import TreeNode from './TreeNode.vue'
 import RecycleBinIcon from '../icons/recycle-bin.vue'
 import RecycleBinEmptyIcon from '../icons/recycle-bin-empty.vue'
 import PlusIcon from '../icons/plus.vue'
@@ -110,19 +93,6 @@ const props = defineProps<{
 	node: NoteViewModel
 }>()
 
-const editName = computed(() => !!props.node?.renaming)
-
-watch(editName, (newVal, _) => {
-	if (newVal) {
-		setTimeout(() => {
-			if (renameInput.value) {
-				renameInput.value.focus()
-				renameInput.value.select()
-			}
-		})
-	}
-})
-
 const hasChildren = computed(() => props.node.children.length > 0)
 const isSelected = computed(() => props.node.id === noteManager.state.selectedNoteId)
 const shouldShow = computed(() => {
@@ -140,13 +110,7 @@ const searchModeActive = computed(() => {
 
 const startDrag = event => {
 	event.stopPropagation()
-	if (noteManager.isOnline && !props.node.isRecycleBin) {
-		event.dataTransfer.dropEffect = 'move'
-		event.dataTransfer.effectAllowed = 'move'
-		dragId.value = props.node.id
-	} else {
-		event.preventDefault()
-	}
+	event.preventDefault()
 }
 
 const onDrop = async event => {
@@ -156,10 +120,7 @@ const onDrop = async event => {
 		indicatorVisible.value = false
 		const note = noteManager.getNoteById(dragId.value)
 		const dropNote = noteManager.getNoteById(props.node.id)
-		if (target < 0) {
-			await note.move(dropNote.parent, dropNote.index)
-		} else if (target === 0) {
-			dropNote.expand()
+		if (target <= 0) {
 			await note.move(dropNote)
 		} else {
 			await note.move(dropNote.parent, dropNote.index + 1)
@@ -179,10 +140,7 @@ const onDragOver = event => {
 			const top = height / 3
 			const bottom = (2 * height) / 3
 
-			if (event.offsetY < top && !props.node.isRecycleBin) {
-				indicatorTop.value = '0px'
-				target = -1
-			} else if (event.offsetY > bottom) {
+			if (event.offsetY > bottom) {
 				indicatorTop.value = `${height}px`
 				target = 1
 			} else {
@@ -244,62 +202,27 @@ const selectNode = async (mobileSwitch: boolean) => {
 	}
 }
 
-const checkCancelEdit = e => {
-	e.stopPropagation()
-	if (e.key === 'Escape') {
-		props.node.renaming = false
-		renameInput.value.value = props.node.title
-		renameInput.value.blur()
-	}
-	if (e.key === 'Enter') {
-		renameInput.value.blur()
-	}
-}
-
-const endEdit = async e => {
-	if (props.node.renaming) {
-		props.node.renaming = false
-		const inputElement = e.target as HTMLInputElement
-		if (inputElement) {
-			const newName = inputElement.value
-			const note = noteManager.getNoteById(props.node.id)
-			if (note.title !== newName) {
-				props.node.title = newName
-				note.title = newName
-				await note.save()
-			}
-		}
-	}
-}
-
 const showContextMenu = async e => {
 	e.stopPropagation()
 	e.preventDefault()
 	await selectNode(false)
 
-	if (props.node.isRecycleBin) {
-		menuManager.showMenu({ x: e.x, y: e.y }, [
-			...(props.node.children.length > 0 ? [MenuItems.EmptyRecycleBin] : []),
-			MenuItems.Refresh,
-		])
-	} else {
-		menuManager.showMenu({ x: e.x, y: e.y }, [
-			MenuItems.NewNote,
-			MenuItems.NewRootNote,
-			MenuItems.Separator,
-			MenuItems.Duplicate,
-			MenuItems.Cut,
-			MenuItems.Copy,
-			MenuItems.Paste,
-			MenuItems.CopyPath,
-			MenuItems.Separator,
-			MenuItems.Share,
-			MenuItems.Refresh,
-			MenuItems.Separator,
-			MenuItems.Rename,
-			e.shiftKey ? MenuItems.Delete : MenuItems.Recycle,
-		])
-	}
+	menuManager.showMenu({ x: e.x, y: e.y }, [
+		MenuItems.NewNote,
+		MenuItems.NewRootNote,
+		MenuItems.Separator,
+		MenuItems.Duplicate,
+		MenuItems.Cut,
+		MenuItems.Copy,
+		MenuItems.Paste,
+		MenuItems.CopyPath,
+		MenuItems.Separator,
+		MenuItems.Share,
+		MenuItems.Refresh,
+		MenuItems.Separator,
+		MenuItems.Rename,
+		MenuItems.Delete,
+	])
 }
 </script>
 

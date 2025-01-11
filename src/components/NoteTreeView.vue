@@ -60,6 +60,10 @@ const deleteActiveNote = () => {
 	deleteNodeDialog.value.show()
 }
 
+const recycleActiveNote = () => {
+	noteManager.selectedNote.moveToRecycleBin()
+}
+
 const renameActiveNote = () => {
 	if (noteManager.selectedNote) {
 		noteManager.selectedNote.viewModel.renaming = true
@@ -165,6 +169,7 @@ defineExpose({
 	cutActiveNote,
 	pasteIntoActiveNote,
 	deleteActiveNote,
+	recycleActiveNote,
 	renameActiveNote,
 	moveSelectionUp,
 	moveSelectionDown,

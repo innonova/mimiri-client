@@ -255,15 +255,37 @@ export class NoteManager {
 				rootNote = await this.client.readNote(this.client.userData.rootNote, false)
 			} catch {}
 			if (!rootNote) {
+				const recycleBin = new Note()
+				recycleBin.keyName = this.client.getKeyById(this.client.userData.rootKey).name
+				recycleBin.changeItem('metadata').notes = []
+				recycleBin.changeItem('metadata').isRecycleBin = true
+				await this.client.createNote(recycleBin)
 				const rootNote = new Note()
 				rootNote.id = this.client.userData.rootNote
 				rootNote.keyName = this.client.getKeyById(this.client.userData.rootKey).name
-				rootNote.changeItem('metadata').notes = []
+				rootNote.changeItem('metadata').recycleBin = recycleBin.id
+				rootNote.changeItem('metadata').notes = [recycleBin.id]
 				await this.addGettingStarted(rootNote)
 				await this.client.createNote(rootNote)
 			}
 			this.client.userData.createComplete = true
 			await this.client.updateUserData()
+		}
+		this.ensureRecycleBin()
+	}
+
+	private async ensureRecycleBin() {
+		const root = await this.client.readNote(this.client.userData.rootNote, false)
+		if (!root.getItem('metadata').recycleBin) {
+			const recycleBin = new Note()
+			recycleBin.keyName = root.keyName
+			recycleBin.changeItem('metadata').notes = []
+			recycleBin.changeItem('metadata').isRecycleBin = true
+			await this.client.createNote(recycleBin)
+			root.changeItem('metadata').recycleBin = recycleBin.id
+			const rootChildren = root.changeItem('metadata').notes
+			root.changeItem('metadata').notes = [recycleBin.id, ...rootChildren]
+			await this.client.updateNote(root)
 		}
 	}
 
@@ -827,7 +849,14 @@ export class NoteManager {
 		}
 	}
 
-	public async move(sourceId: Guid, targetId: Guid, mimerNote: MimerNote, index: number, keepKey: boolean) {
+	public async move(
+		sourceId: Guid,
+		targetId: Guid,
+		mimerNote: MimerNote,
+		index: number,
+		keepKey: boolean,
+		select: boolean,
+	) {
 		if (!this.client.isOnline) {
 			throw new MimerError('Offline', 'Cannot move while offline')
 		}
@@ -837,6 +866,10 @@ export class NoteManager {
 			const target = await this.client.readNote(targetId)
 			const note = await this.client.readNote(mimerNote.id)
 			const actions: NoteAction[] = []
+			if (target.id === this._root.id && index === 0) {
+				// Do not allow moving above recycle bin
+				index = 1
+			}
 			if (source.id === target.id) {
 				const currentIndex = target.getItem('metadata').notes.indexOf(note.id)
 				if (currentIndex !== index) {
@@ -876,7 +909,9 @@ export class NoteManager {
 			for (const id of affectedIds) {
 				await this.refreshNote(id)
 			}
-			;(await this.getNoteById(mimerNote.id))?.select()
+			if (select) {
+				;(await this.getNoteById(mimerNote.id))?.select()
+			}
 		} finally {
 			this.endAction()
 		}
@@ -1022,6 +1057,10 @@ export class NoteManager {
 
 	private set root(value: MimerNote) {
 		this._root = value
+	}
+
+	public get recycleBin() {
+		return this.root.children.find(child => child.id === this.root.note.getItem('metadata').recycleBin)
 	}
 
 	public get selectedNote() {
