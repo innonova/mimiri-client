@@ -42,6 +42,7 @@
 					<div
 						v-if="(!loading && !mimiriPlatform.isWeb) || env.DEV"
 						class="mr-1 cursor-pointer hover:underline"
+						data-testid="create-account-link"
 						@click="createAccount"
 					>
 						Create Account

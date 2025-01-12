@@ -19,7 +19,7 @@
 			<div class="p-1 m-auto flex">
 				<div class="w-24 flex items-center">Username:</div>
 				<div class="w-52 text-right relative md:flex">
-					<input v-model="username" tabindex="1" type="text" class="bg-input text-input-text" autofocus />
+					<input v-model="username" tabindex="1" type="text" class="bg-input text-input-text" autofocus data-testid="username-input" />
 					<div v-if="username" class="md:w-0 md:h-0 pt-1 overflow-visible">
 						<div v-if="usernameCurrent" class="flex items-center w-52 md:ml-2 mt-1.5 md:mt-0">
 							<AvailableIcon class="w-6 h-6 mr-1 inline-block"></AvailableIcon> Current
@@ -47,7 +47,7 @@
 				<div v-if="authenticated" class="w-24 flex items-center">New:</div>
 				<div v-if="!authenticated" class="w-24 flex items-center">Password:</div>
 				<div class="w-52 text-right relative md:flex">
-					<input v-model="password" tabindex="2" :type="passwordFieldType" class="bg-input text-input-text" />
+					<input v-model="password" tabindex="2" :type="passwordFieldType" class="bg-input text-input-text" data-testid="password-input" />
 					<div class="md:w-0 md:h-0 overflow-visible">
 						<div class="absolute right-1 invisible md:visible" @mousedown="showPassword" @mouseup="hidePassword">
 							<ShowPasswordIcon v-if="passwordFieldType === 'password'" class="w-6 h-6 mt-1"></ShowPasswordIcon>
@@ -79,7 +79,7 @@
 			<div class="p-1 m-auto flex">
 				<div class="w-24 flex items-center">Repeat:</div>
 				<div class="w-52 text-right relative md:flex">
-					<input v-model="passwordRepeat" tabindex="3" type="password" class="bg-input text-input-text" />
+					<input v-model="passwordRepeat" tabindex="3" type="password" class="bg-input text-input-text" data-testid="repeat-input" />
 					<div v-if="password" class="md:w-0 md:h-0 pt-1 overflow-visible">
 						<div v-if="passwordMatch" class="flex items-center w-52 md:ml-2 mt-1.5 md:mt-0">
 							<AvailableIcon class="w-6 h-6 mr-1 inline-block"></AvailableIcon> Matching
@@ -108,7 +108,7 @@
 			</div>
 			<div v-if="!authenticated" class="p-1 m-auto text-left">
 				<label>
-					<input type="checkbox" v-model="readPrivacy" class="mr-1 relative top-0.5" />
+					<input type="checkbox" v-model="readPrivacy" class="mr-1 relative top-0.5" data-testid="privacy-checkbox" />
 					I have read the
 				</label>
 				<a href="https://mimiri.io/privacy" target="_blank">Privacy Policy</a>
@@ -128,7 +128,7 @@
 			<div v-if="!authenticated" class="p-1 pb-5 m-auto text-left">
 				<div class="max-w-96 leading-5">
 					<label>
-						<input type="checkbox" v-model="understandNoRecover" class="mr-1 relative top-0.5" />
+						<input type="checkbox" v-model="understandNoRecover" class="mr-1 relative top-0.5" data-testid="no-recover-checkbox" />
 						I understand that I am solely responsible for remembering my password and innonova GmbH has <b>no way</b> to
 						recover my data or account if I lose my password
 					</label>
@@ -159,6 +159,7 @@
 							'text-button-primary-text': !loading && canCreate,
 						}"
 						type="submit"
+						data-testid="create-button"
 					>
 						Create
 					</button>

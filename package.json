@@ -16,6 +16,7 @@
 		"build-only": "vite build",
 		"type-check": "vue-tsc --build --force",
 		"test": "jest",
+		"e2e": "playwright test",
 		"icons-import": "node ./scripts/icons",
 		"icons-list": "node ./scripts/create-icon-list.js",
 		"cap-sync": "npx cap sync",
@@ -45,6 +46,7 @@
 		"zxcvbn": "^4.4.2"
 	},
 	"devDependencies": {
+		"@playwright/test": "1.49.1",
 		"@capacitor/assets": "^3.0.5",
 		"@capacitor/cli": "^6.1.2",
 		"@jest/globals": "^29.7.0",
