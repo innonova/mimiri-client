@@ -9,19 +9,34 @@
 				<div class="py-1">I understand that</div>
 				<div class="py-1">
 					<label>
-						<input type="checkbox" v-model="understandDeleteAccount" class="mr-1 relative top-0.5" />
+						<input
+							type="checkbox"
+							v-model="understandDeleteAccount"
+							class="mr-1 relative top-0.5"
+							data-testid="delete-account-checkbox"
+						/>
 						this will <b>permanently</b> delete my account
 					</label>
 				</div>
 				<div class="py-1">
 					<label>
-						<input type="checkbox" v-model="understandDeleteData" class="mr-1 relative top-0.5" />
+						<input
+							type="checkbox"
+							v-model="understandDeleteData"
+							class="mr-1 relative top-0.5"
+							data-testid="delete-data-checkbox"
+						/>
 						this will <b>permanently</b> delete all my data
 					</label>
 				</div>
 				<div class="py-1">
 					<label>
-						<input type="checkbox" v-model="understandRoRecovery" class="mr-1 relative top-0.5" />
+						<input
+							type="checkbox"
+							v-model="understandRoRecovery"
+							class="mr-1 relative top-0.5"
+							data-testid="no-recovery-checkbox"
+						/>
 						that there is <b>no way</b> to recover my data
 					</label>
 				</div>
@@ -29,7 +44,13 @@
 				<div class="flex justify-end items-baseline">
 					<div class="mr-2">Password:</div>
 					<div class="text-right">
-						<input v-model="password" tabindex="2" type="password" class="bg-input text-input-text" />
+						<input
+							v-model="password"
+							tabindex="2"
+							type="password"
+							class="bg-input text-input-text"
+							data-testid="password-input"
+						/>
 					</div>
 				</div>
 				<div class="pt-2 pb-6 text-right">
@@ -56,6 +77,7 @@
 							'text-menu-disabled':
 								loading || !understandDeleteAccount || !understandDeleteData || !understandRoRecovery,
 						}"
+						data-testid="submit-button"
 						type="submit"
 					>
 						Delete Account
