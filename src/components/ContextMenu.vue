@@ -16,6 +16,7 @@
 						'hover:bg-menu-hover': item.enabled !== false,
 						'text-menu-disabled': item.enabled === false,
 					}"
+					:data-testid="`menu-${item.id}`"
 					@mouseup="activateItem(item)"
 				>
 					<div class="flex items-center w-full h-7">

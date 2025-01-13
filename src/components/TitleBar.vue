@@ -120,9 +120,10 @@
 				'min-w-[44px] w-[55px]': mimiriPlatform.isPc,
 				'w-16': !mimiriPlatform.isPc,
 			}"
+			data-testid="account-button"
+			title="Account"
 			@click="menuClick($event, 'account')"
 			@mouseenter="menuHover($event, 'account')"
-			title="Account"
 		>
 			<AccountIcon
 				class="w-9 h-7 p-0.5 px-1 no-drag pointer-events-none"
