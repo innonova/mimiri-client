@@ -17,6 +17,7 @@
 		"type-check": "vue-tsc --build --force",
 		"test": "jest",
 		"e2e": "playwright test",
+		"e2e-ss-update": "playwright test --update-snapshots",
 		"icons-import": "node ./scripts/icons",
 		"icons-list": "node ./scripts/create-icon-list.js",
 		"cap-sync": "npx cap sync",

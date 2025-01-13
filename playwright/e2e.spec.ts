@@ -12,6 +12,7 @@ test.beforeAll(async () => {
 })
 
 const randomId = generateRandomString(8)
+const username = 'test_automation_longer_than_input_field_' + randomId // Very long so random value is not visible in input field when taking screenshots
 const password = 'password_' + randomId
 
 test.describe('e2e user flow', () => {
@@ -25,18 +26,25 @@ test.describe('e2e user flow', () => {
 		const createButton = page.getByTestId('create-button')
 
 		await createAccountLink.click()
-		await usernameInput.fill('test_automation_' + randomId)
+		await expect(usernameInput).toBeVisible()
+		await expect(page).toHaveScreenshot('create-account.png')
+		await usernameInput.fill(username)
 		await passwordInput.fill(password)
 		await repeatInput.fill(password)
 		await privacyCheckbox.check()
 		await noRecoverCheckbox.check()
+		await expect(createButton).toBeEnabled()
+		await expect(page).toHaveScreenshot('create-account-filled.png')
 		await createButton.click()
 	})
 
 	test(`should verify data in account`, async () => {
 		const firstNode = page.getByTestId('tree-node').first()
 
+		await firstNode.click()
 		await expect(firstNode).toHaveText('Getting Started')
+		await page.waitForTimeout(100) // CSS inside the Monaco editor takes a little while to get applied, saw no better option than to wait a bit for it
+		await expect(page).toHaveScreenshot('getting-started.png')
 	})
 
 	test(`should delete account`, async () => {
@@ -50,10 +58,14 @@ test.describe('e2e user flow', () => {
 
 		await accountButton.click()
 		await deleteAccountMenu.click()
+		await expect(passwordInput).toBeVisible()
+		await expect(page).toHaveScreenshot('delete-account.png')
 		await deleteAccountCheckbox.check()
 		await deleteDataCheckbox.check()
 		await noRecoverCheckbox.check()
 		await passwordInput.fill(password)
+		await expect(submitButton).toBeEnabled()
+		await expect(page).toHaveScreenshot('delete-account-filled.png')
 		await submitButton.click()
 	})
 })
