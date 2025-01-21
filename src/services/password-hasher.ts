@@ -18,7 +18,7 @@ class PasswordHasher {
 				hash: { name: 'SHA-512' },
 			},
 			passwordKey,
-			+algorithmParts[2] * 8,
+			2048,
 		)
 		return toHex(passwordHash)
 	}

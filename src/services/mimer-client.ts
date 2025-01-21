@@ -45,8 +45,8 @@ import type { ICacheManager } from './types/cache-manager'
 import { env, ipcClient } from '../global'
 import { mimiriPlatform } from './mimiri-platform'
 
-const DEFAULT_SALT_SIZE = 32
-const DEFAULT_PASSWORD_ALGORITHM = 'PBKDF2;SHA512;1024'
+export const DEFAULT_SALT_SIZE = 32
+export const DEFAULT_PASSWORD_ALGORITHM = 'PBKDF2;SHA512;1024'
 
 export interface LoginData {
 	username: string
@@ -82,7 +82,7 @@ export class VersionConflictError extends Error {
 }
 
 export class MimerClient {
-	public static DEFAULT_ITERATIONS = 300000
+	public static DEFAULT_ITERATIONS = 1000000
 	public suppressErrorLog = false
 	private _testId: string
 	private _username: string
@@ -283,6 +283,7 @@ export class MimerClient {
 				const loginRequest: LoginRequest = {
 					username: data.username,
 					response: await passwordHasher.computeResponse(this.passwordHash, this.preLoginResponse.challenge),
+					hashLength: this.passwordHash.length / 2,
 				}
 
 				this.loginResponse = await this.post<LoginResponse>('/user/login', loginRequest)
@@ -353,6 +354,7 @@ export class MimerClient {
 			const loginRequest: LoginRequest = {
 				username: this.username,
 				response: await passwordHasher.computeResponse(this.passwordHash, this.preLoginResponse.challenge),
+				hashLength: this.passwordHash.length / 2,
 			}
 
 			this.loginResponse = await this.post<LoginResponse>('/user/login', loginRequest)
@@ -422,7 +424,7 @@ export class MimerClient {
 		return await this.post<CheckUsernameResponse>('/user/available', request)
 	}
 
-	public async createUser(username: string, password: string, userData: any, pow: string) {
+	public async createUser(username: string, password: string, userData: any, pow: string, iterations: number) {
 		if (this.rootCrypt) {
 			throw new Error('Already logged in')
 		}
@@ -433,7 +435,7 @@ export class MimerClient {
 			this.rootSignature = await CryptSignature.create(CryptSignature.DEFAULT_ASYMMETRIC_ALGORITHM)
 
 			const passwordAlgorithm = DEFAULT_PASSWORD_ALGORITHM
-			const passwordIterations = MimerClient.DEFAULT_ITERATIONS
+			const passwordIterations = iterations
 			const passwordSalt = toHex(crypto.getRandomValues(new Uint8Array(DEFAULT_SALT_SIZE)))
 			this.passwordHash = await passwordHasher.hashPassword(
 				password,
@@ -442,7 +444,6 @@ export class MimerClient {
 				passwordIterations,
 			)
 
-			const iterations = MimerClient.DEFAULT_ITERATIONS
 			const salt = toHex(crypto.getRandomValues(new Uint8Array(DEFAULT_SALT_SIZE)))
 
 			this.userCrypt = await SymmetricCrypt.fromPassword(
@@ -484,17 +485,16 @@ export class MimerClient {
 		}
 	}
 
-	public async updateUser(username: string, password: string, userData: any) {
+	public async updateUser(username: string, password: string, userData: any, iterations: number) {
 		if (!this.rootCrypt) {
 			throw new Error('Not Logged in')
 		}
 
 		const passwordAlgorithm = DEFAULT_PASSWORD_ALGORITHM
-		const passwordIterations = MimerClient.DEFAULT_ITERATIONS
+		const passwordIterations = iterations
 		const passwordSalt = toHex(crypto.getRandomValues(new Uint8Array(DEFAULT_SALT_SIZE)))
 		this.passwordHash = await passwordHasher.hashPassword(password, passwordSalt, passwordAlgorithm, passwordIterations)
 
-		const iterations = MimerClient.DEFAULT_ITERATIONS
 		const salt = toHex(crypto.getRandomValues(new Uint8Array(DEFAULT_SALT_SIZE)))
 
 		const userCrypt = await SymmetricCrypt.fromPassword(
@@ -552,7 +552,12 @@ export class MimerClient {
 		return this.passwordHash === passwordHash
 	}
 
-	public async changeUserNameAndPassword(newUsername: string, oldPassword: string, newPassword: string) {
+	public async changeUserNameAndPassword(
+		newUsername: string,
+		oldPassword: string,
+		newPassword: string,
+		iterations: number,
+	) {
 		if (
 			!this.rootCrypt ||
 			!this.username ||
@@ -569,7 +574,7 @@ export class MimerClient {
 		if (!(await this.validatePassword(oldPassword))) {
 			throw new Error('Old password does not match')
 		}
-		await this.updateUser(newUsername || this.username, newPassword || oldPassword, this.userData)
+		await this.updateUser(newUsername || this.username, newPassword || oldPassword, this.userData, iterations)
 	}
 
 	public async updateUserData() {

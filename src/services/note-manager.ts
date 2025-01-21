@@ -169,14 +169,14 @@ export class NoteManager {
 		}
 	}
 
-	public async createAccount(username: string, password: string) {
+	public async createAccount(username: string, password: string, iterations: number) {
 		const userData = {
 			rootNote: newGuid(),
 			rootKey: newGuid(),
 			createComplete: false,
 		}
 		const pow = await ProofOfWork.compute(username, this._proofBits)
-		await this.client.createUser(username, password, userData, pow)
+		await this.client.createUser(username, password, userData, pow, iterations)
 
 		// const keyMetadata = {
 		// 	shared: false,
@@ -446,8 +446,13 @@ export class NoteManager {
 		}
 	}
 
-	public async changeUserNameAndPassword(username: string, oldPassword: string, newPassword: string) {
-		await this.client.changeUserNameAndPassword(username, oldPassword, newPassword)
+	public async changeUserNameAndPassword(
+		username: string,
+		oldPassword: string,
+		newPassword: string,
+		iterations: number,
+	) {
+		await this.client.changeUserNameAndPassword(username, oldPassword, newPassword, iterations)
 	}
 
 	public async getShareOffers() {

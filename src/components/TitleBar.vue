@@ -45,6 +45,14 @@
 		<div
 			v-if="mimiriPlatform.isPc && !mimiriPlatform.isMac"
 			class="hover:bg-title-hover cursor-default rounded px-2 no-drag"
+			@click="menuClick($event, 'tools')"
+			@mouseenter="menuHover($event, 'tools')"
+		>
+			Tools
+		</div>
+		<div
+			v-if="mimiriPlatform.isPc && !mimiriPlatform.isMac"
+			class="hover:bg-title-hover cursor-default rounded px-2 no-drag"
 			@click="menuClick($event, 'help')"
 			@mouseenter="menuHover($event, 'help')"
 		>
@@ -227,6 +235,9 @@ const showMenu = (rect, menu) => {
 	}
 	if (menu === 'view') {
 		menuManager.showMenu({ x: rect.left, y: rect.bottom - 30, backdropTop: 32 }, menuManager.viewMenu)
+	}
+	if (menu === 'tools') {
+		menuManager.showMenu({ x: rect.left, y: rect.bottom - 30, backdropTop: 32 }, menuManager.toolsMenu)
 	}
 	if (menu === 'help') {
 		menuManager.showMenu({ x: rect.left, y: rect.bottom - 30, backdropTop: 32 }, menuManager.helpMenu)

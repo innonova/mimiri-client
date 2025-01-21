@@ -131,6 +131,7 @@ const toggleSearchAllNotes = () => {
 const showMobileMenu = () => {
 	const whenSelectedNote = [
 		MenuItems.About,
+		MenuItems.DarkMode,
 		MenuItems.Separator,
 		MenuItems.NewNote,
 		MenuItems.NewRootNote,

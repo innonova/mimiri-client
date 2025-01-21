@@ -14,7 +14,7 @@
 		</div>
 		<form v-on:submit.prevent="createAccount">
 			<div v-if="authenticated" class="p-1 pt-7 pb-3 m-aut0">
-				<div>Change username:</div>
+				<div class="font-bold">Change username:</div>
 			</div>
 			<div class="p-1 m-auto flex">
 				<div class="w-24 flex items-center">Username:</div>
@@ -39,19 +39,19 @@
 					</div>
 				</div>
 			</div>
-			<div v-if="authenticated" class="p-1 pt-7 pb-3 m-aut0 leading-6">
-				<div>Change password:</div>
-				<div>(Leave empty for no change)</div>
+			<div v-if="authenticated && !passwordGeneratorVisible" class="p-1 pt-7 pb-3 m-aut0 leading-6">
+				<div class="font-bold">Change password:</div>
+				<div><i>Leave empty for no change</i></div>
 			</div>
-			<div class="p-1 m-aut0 flex">
+			<div v-if="!passwordGeneratorVisible" class="p-1 m-aut0 flex">
 				<div v-if="authenticated" class="w-24 flex items-center">New:</div>
 				<div v-if="!authenticated" class="w-24 flex items-center">Password:</div>
 				<div class="w-52 text-right relative md:flex">
 					<input v-model="password" tabindex="2" :type="passwordFieldType" class="bg-input text-input-text" data-testid="password-input" />
 					<div class="md:w-0 md:h-0 overflow-visible">
 						<div class="absolute right-1 invisible md:visible" @mousedown="showPassword" @mouseup="hidePassword">
-							<ShowPasswordIcon v-if="passwordFieldType === 'password'" class="w-6 h-6 mt-1"></ShowPasswordIcon>
-							<ShowingPasswordIcon v-if="passwordFieldType === 'text'" class="w-6 h-6 mt-1"></ShowingPasswordIcon>
+							<ShowPasswordIcon v-if="passwordFieldType === 'password'" class="w-6 h-6 mt-0.5"></ShowPasswordIcon>
+							<ShowingPasswordIcon v-if="passwordFieldType === 'text'" class="w-6 h-6 mt-0.5"></ShowingPasswordIcon>
 						</div>
 					</div>
 					<div v-if="passwordQuality" class="md:w-0 md:h-0 overflow-visible">
@@ -76,7 +76,7 @@
 					</div>
 				</div>
 			</div>
-			<div class="p-1 m-auto flex">
+			<div v-if="!passwordGeneratorVisible" class="p-1 m-auto flex">
 				<div class="w-24 flex items-center">Repeat:</div>
 				<div class="w-52 text-right relative md:flex">
 					<input v-model="passwordRepeat" tabindex="3" type="password" class="bg-input text-input-text" data-testid="repeat-input" />
@@ -90,8 +90,82 @@
 					</div>
 				</div>
 			</div>
+			<div v-if="advancedSettingsVisible" class="p-1 m-auto flex">
+				<div class="w-24 flex items-center">Iterations:</div>
+				<select v-model="iterations">
+					<option value="1000000">1M ({{ time1M }}) (default)</option>
+					<option value="2000000">2M ({{ time2M }})</option>
+					<option value="10000000">10M ({{ time10M }})</option>
+					<option value="20000000">20M ({{ time20M }})</option>
+				</select>
+			</div>
+
+			<div v-if="authenticated && !passwordGeneratorVisible" class="p-1 pt-2 pb-3 m-aut0 leading-6">
+				<a class="invisible md:visible hover:underline mt-0.5" href="https://mimiri.io/passwords" target="_blank"
+					>Learn about passwords</a
+				>
+				<div class="underline cursor-pointer mt-0.5" @click="showPasswordGenerator">Help me choose a good password</div>
+				<div v-if="!advancedSettingsVisible" class="underline cursor-pointer mt-0.5" @click="showAdvancedSettings">
+					Show advanced settings
+				</div>
+				<div v-if="advancedSettingsVisible" class="underline cursor-pointer mt-0.5" @click="showAdvancedSettings">
+					Hide advanced settings
+				</div>
+			</div>
+			<div v-show="passwordGeneratorVisible" class="mt-6 pl-1">
+				<div class="mb-3 font-bold">Create new password:</div>
+				<PasswordGeneratorComp
+					ref="passwordGenerator"
+					mode="mimiri"
+					@password="onPasswordGenerated"
+				></PasswordGeneratorComp>
+				<div class="p-1 mt-8 m-aut0 flex">
+					<div class="w-24 flex items-center">New:</div>
+					<div class="w-52 text-right relative md:flex">
+						<input v-model="password" tabindex="2" type="text" class="bg-input text-input-text" />
+						<div class="md:w-0 md:h-0 pt-0.5 overflow-visible">
+							<RefreshIcon class="w-6 h-6 ml-2" @click="regeneratePassword"></RefreshIcon>
+						</div>
+					</div>
+				</div>
+				<div class="p-1 m-auto flex">
+					<div class="w-24 flex items-center">Repeat:</div>
+					<div class="w-52 text-right relative md:flex">
+						<input v-model="passwordRepeat" tabindex="3" type="password" class="bg-input text-input-text" />
+						<div v-if="password" class="md:w-0 md:h-0 pt-1 overflow-visible">
+							<div v-if="passwordMatch" class="flex items-center w-52 md:ml-2 mt-1.5 md:mt-0">
+								<AvailableIcon class="w-6 h-6 mr-1 inline-block"></AvailableIcon> Matching
+							</div>
+							<div v-if="!passwordMatch" class="flex items-center w-52 md:ml-2 mt-1.5 md:mt-0">
+								<UnavailableIcon class="w-6 h-6 mr-1 inline-block"></UnavailableIcon> Not matching
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="text-right mt-1 flex items-center">
+					<div class="w-24 flex items-center"></div>
+					<LoadingIcon
+						v-if="passwordTestInProgress"
+						class="animate-spin w-8 h-8 ml-10 mr-10 inline-block"
+					></LoadingIcon>
+					<button
+						v-if="!passwordTestInProgress"
+						class="bg-button-primary text-button-primary-text hover:opacity-80 ml-2 mr-2"
+						@click="testPassword()"
+					>
+						Test
+					</button>
+					<button
+						class="bg-button-primary text-button-primary-text hover:opacity-80 mr-2"
+						@click="cancelPasswordGenerator"
+					>
+						Cancel
+					</button>
+				</div>
+				<div v-if="timeElapsed" class="mt-3 ml-2 pl-24 leading-5">Time elapsed: {{ timeElapsed }}</div>
+			</div>
 			<div v-if="authenticated" class="p-1 pt-12 pb-3 m-aut0">
-				<div>Verify that it's you:</div>
+				<div class="font-bold">Verify that it's you:</div>
 			</div>
 			<div v-if="authenticated" class="p-1 pb-2 m-auto">
 				<div class="inline-block w-24">Password:</div>
@@ -195,7 +269,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { env, noteManager, showCreateEditAccount } from '../global'
 import { mimiriPlatform } from '../services/mimiri-platform'
 import zxcvbn from 'zxcvbn'
@@ -208,6 +282,10 @@ import ShowingPasswordIcon from '../icons/showing-password.vue'
 import FreeAccessIcon from '../icons/free-access.vue'
 import CasualOnlyIcon from '../icons/casual-only.vue'
 import LightSecurityIcon from '../icons/light-security.vue'
+import PasswordGeneratorComp from './PasswordGenerator.vue'
+import RefreshIcon from '../icons/refresh.vue'
+import { PasswordGenerator } from '../services/password-generator'
+import { MimerClient } from '../services/mimer-client'
 
 const disallowString = '!"#$:%&@\'()*/=?[]{}~^`'
 const disallowRegex = /[!"#$:%&@'()*/=?[\]{}~\^\\`\s]/
@@ -232,8 +310,29 @@ const acceptWeakPassword = ref(false)
 const passwordIsWeak = ref(false)
 const understandNoRecover = ref(false)
 const passwordFieldType = ref('password')
+const passwordGeneratorVisible = ref(false)
+const advancedSettingsVisible = ref(false)
+const passwordGenerator = ref(null)
+const iterations = ref(1000000)
+const time1M = ref('')
+const time2M = ref('')
+const time10M = ref('')
+const time20M = ref('')
+const passwordTestInProgress = ref(false)
+const timeElapsed = ref('')
 
 const authenticated = computed(() => noteManager.state.authenticated)
+
+onMounted(() => {
+	setTimeout(() => {
+		new PasswordGenerator().calcTimeFactor().then(times => {
+			time1M.value = `~${times.time1M}s`
+			time2M.value = `~${times.time2M}s`
+			time10M.value = `~${Math.ceil(times.time10M / 5) * 5}s`
+			time20M.value = `~${Math.ceil(times.time20M / 5) * 5}s`
+		})
+	}, 200)
+})
 
 const canSave = computed(
 	() =>
@@ -337,6 +436,47 @@ const hidePassword = () => {
 	passwordFieldType.value = 'password'
 }
 
+const showPasswordGenerator = () => {
+	passwordGeneratorVisible.value = true
+	passwordGenerator.value.regeneratePassword()
+}
+
+const showAdvancedSettings = () => {
+	advancedSettingsVisible.value = !advancedSettingsVisible.value
+}
+
+const onPasswordGenerated = pwd => {
+	if (passwordGeneratorVisible.value) {
+		password.value = pwd
+	}
+}
+
+const regeneratePassword = () => {
+	passwordGenerator.value.regeneratePassword()
+}
+
+const cancelPasswordGenerator = () => {
+	passwordGeneratorVisible.value = false
+}
+
+const testPassword = () => {
+	const start = performance.now()
+	const interval = setInterval(() => {
+		const value = Math.round((performance.now() - start) / 100) / 10
+		if (Math.floor(value) === value) {
+			timeElapsed.value = `${value}.0 s`
+		} else {
+			timeElapsed.value = `${value} s`
+		}
+	}, 100)
+	passwordTestInProgress.value = true
+	passwordGenerator.value.verify().then(() => {
+		passwordTestInProgress.value = false
+		timeElapsed.value = ''
+		clearInterval(interval)
+	})
+}
+
 const save = async () => {
 	if (!canSave.value) {
 		return
@@ -350,7 +490,12 @@ const save = async () => {
 	loading.value = true
 	try {
 		try {
-			await noteManager.changeUserNameAndPassword(username.value, passwordCurrent.value, password.value)
+			await noteManager.changeUserNameAndPassword(
+				username.value,
+				passwordCurrent.value,
+				password.value,
+				iterations.value,
+			)
 			successText.value = 'Changes Saved'
 		} catch (ex) {
 			errorText.value = ex.message
@@ -395,7 +540,7 @@ const createAccount = async () => {
 	loading.value = true
 	try {
 		try {
-			await noteManager.createAccount(username.value, password.value)
+			await noteManager.createAccount(username.value, password.value, MimerClient.DEFAULT_ITERATIONS)
 			showCreateEditAccount.value = false
 		} catch (ex) {
 			errorText.value = ex.message
@@ -417,6 +562,8 @@ const login = () => {
 
 const show = () => {
 	if (noteManager.state.authenticated) {
+		passwordGeneratorVisible.value = false
+		advancedSettingsVisible.value = false
 		username.value = noteManager.username
 		usernameCurrent.value = true
 		password.value = ''

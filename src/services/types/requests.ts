@@ -57,6 +57,7 @@ export interface DeleteShareRequest extends BasicRequest {
 export interface LoginRequest {
 	username: string
 	response: string
+	hashLength: number
 }
 
 export interface PublicKeyRequest extends BasicRequest {

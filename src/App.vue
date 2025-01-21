@@ -51,6 +51,7 @@
 		<NotificationList ref="notificationList"></NotificationList>
 		<DeleteNodeDialog ref="deleteNodeDialog"></DeleteNodeDialog>
 		<EmptyRecycleBinDialog ref="emptyRecycleBinDialog"></EmptyRecycleBinDialog>
+		<PasswordGeneratorDialog ref="passwordGeneratorDialog"></PasswordGeneratorDialog>
 		<ShareDialog ref="shareDialog"></ShareDialog>
 		<AboutDialog ref="aboutDialog"></AboutDialog>
 		<CheckUpdateDialog ref="checkUpdateDialog"></CheckUpdateDialog>
@@ -86,6 +87,8 @@ import SaveEmptyNodeDialog from './components/SaveEmptyNodeDialog.vue'
 import LimitDialog from './components/LimitDialog.vue'
 import ConvertAccount from './components/ConvertAccount.vue'
 import SearchBox from './components/SearchBox.vue'
+import EmptyRecycleBinDialog from './components/EmptyRecycleBinDialog.vue'
+import PasswordGeneratorDialog from './components/PasswordGeneratorDialog.vue'
 import {
 	noteManager,
 	contextMenu,
@@ -95,6 +98,7 @@ import {
 	showSearchBox,
 	deleteNodeDialog,
 	emptyRecycleBinDialog,
+	passwordGeneratorDialog,
 	showCreateEditAccount,
 	showConvertAccount,
 	showUpdate,
@@ -119,7 +123,6 @@ import { mimiriPlatform } from './services/mimiri-platform'
 import DeleteAccount from './components/DeleteAccount.vue'
 import { menuManager } from './services/menu-manager'
 import { Debounce } from './services/helpers'
-import EmptyRecycleBinDialog from './components/EmptyRecycleBinDialog.vue'
 
 mobileLog.log(`App Loading ${settingsManager.channel} ${updateManager.currentVersion}`)
 

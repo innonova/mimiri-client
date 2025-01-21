@@ -1,7 +1,6 @@
 import { reactive } from 'vue'
 import {
 	aboutDialog,
-	changePasswordDialog,
 	checkUpdateDialog,
 	clipboardNote,
 	contextMenu,
@@ -14,9 +13,9 @@ import {
 	noteEditor,
 	noteManager,
 	notificationManager,
+	passwordGeneratorDialog,
 	searchInput,
 	shareDialog,
-	showCreateEditAccount,
 	showDeleteAccount,
 	showShareOffers,
 	showUpdate,
@@ -59,6 +58,7 @@ export enum MenuItems {
 	CheckForUpdate = 'check-for-update',
 	AddGettingStarted = 'add-getting-started',
 	EmptyRecycleBin = 'empty-recycle-bin',
+	PasswordGenerator = 'password-generator',
 }
 
 class MenuManager {
@@ -187,6 +187,8 @@ class MenuManager {
 			await noteManager.addGettingStarted()
 		} else if (itemId === 'empty-recycle-bin') {
 			emptyRecycleBinDialog.value.show()
+		} else if (itemId === 'password-generator') {
+			passwordGeneratorDialog.value.show()
 		}
 	}
 
@@ -460,6 +462,12 @@ class MenuManager {
 						title: 'Empty',
 					})
 					break
+				case MenuItems.PasswordGenerator:
+					result.push({
+						id: 'password-generator',
+						title: 'Password Generator',
+					})
+					break
 			}
 		}
 		return result
@@ -545,6 +553,10 @@ class MenuManager {
 
 	public get viewMenu() {
 		return [MenuItems.History, MenuItems.Share, MenuItems.Separator, MenuItems.WordWrap, MenuItems.DarkMode]
+	}
+
+	public get toolsMenu() {
+		return [MenuItems.PasswordGenerator]
 	}
 
 	public get helpMenu() {

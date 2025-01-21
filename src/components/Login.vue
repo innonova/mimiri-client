@@ -25,7 +25,10 @@
 				<div class="inline-block w-52 text-right">
 					<div v-if="loading" class="flex items-center justify-end">
 						<LoadingIcon class="animate-spin w-8 h-8 mr-2 inline-block"></LoadingIcon>
-						Please wait
+						<div class="flex flex-col items-center">
+							<div>Please wait</div>
+							<div v-if="longTime" class="mt-1">{{ timeElapsed }}</div>
+						</div>
 					</div>
 					<button
 						v-else
@@ -66,9 +69,21 @@ const password = ref('')
 const loading = ref(false)
 const error = ref(false)
 const changelogToggled = ref(false)
+const timeElapsed = ref('')
+const longTime = ref(false)
 
 const login = async () => {
 	loading.value = true
+	const start = performance.now()
+	const interval = setInterval(() => {
+		const value = Math.round((performance.now() - start) / 100) / 10
+		longTime.value = value > 2
+		if (Math.floor(value) === value) {
+			timeElapsed.value = `${value}.0 s`
+		} else {
+			timeElapsed.value = `${value} s`
+		}
+	}, 100)
 	try {
 		await noteManager.login({ username: username.value, password: password.value })
 	} catch (ex) {
@@ -82,6 +97,7 @@ const login = async () => {
 		}
 		console.log(ex)
 	}
+	clearInterval(interval)
 	loading.value = false
 	if (!noteManager.isLoggedIn) {
 		error.value = true
