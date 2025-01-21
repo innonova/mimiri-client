@@ -215,7 +215,7 @@ const onBack = () => {
 
 const save = async () => {
 	if (activeViewModel && saveEnabled) {
-		const note = mimiriEditor.note
+		let note = mimiriEditor.note
 		const textValue = mimiriEditor.state.text
 		if (note && note.text !== textValue) {
 			if (note.text.length > 5 && textValue.length === 0) {
@@ -223,6 +223,7 @@ const save = async () => {
 			} else {
 				while (true) {
 					try {
+						note = noteManager.getNoteById(note.id)
 						const sizeBefore = note.size
 						note.text = textValue
 						const sizeAfter = note.size
