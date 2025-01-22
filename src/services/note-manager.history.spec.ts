@@ -22,7 +22,7 @@ describe('Version', () => {
 	})
 
 	test('Alice_CreateUser', async () => {
-		await _managerAlice.createAccount('alice', 'secret')
+		await _managerAlice.createAccount('alice', 'secret', 1000)
 		expect(_managerAlice.isLoggedIn).toBeTruthy()
 	})
 

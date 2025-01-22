@@ -40,7 +40,7 @@ describe('Note Manager', () => {
 	})
 
 	test('Alice_CreateUser', async () => {
-		await _managerAlice.createAccount('alice', 'secret')
+		await _managerAlice.createAccount('alice', 'secret', 1000)
 		expect(_managerAlice.isLoggedIn).toBeTruthy()
 		await _managerAlice.root.ensureChildren()
 	})
@@ -177,7 +177,7 @@ describe('Note Manager', () => {
 	})
 
 	test('Bob_CreateAccount', async () => {
-		await _managerBob.createAccount('bob', 'secret')
+		await _managerBob.createAccount('bob', 'secret', 1000)
 		expect(_managerBob.isLoggedIn).toBeTruthy()
 		await _managerBob.root.ensureChildren()
 	})

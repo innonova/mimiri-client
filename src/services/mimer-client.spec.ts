@@ -19,7 +19,7 @@ describe('MimerClient', () => {
 	})
 
 	test('Alice Create User ', async () => {
-		await _clientAlice.createUser('alice', 'secret', { rootNote: newGuid(), rootKey: newGuid() }, '')
+		await _clientAlice.createUser('alice', 'secret', { rootNote: newGuid(), rootKey: newGuid() }, '', 1000)
 
 		await _clientAlice.createKey(_clientAlice.userData.rootKey, { shared: false, root: true })
 		const rootNote = new Note()
@@ -72,7 +72,7 @@ describe('MimerClient', () => {
 	})
 
 	test('Bob CreateUser', async () => {
-		await _clientBob.createUser('bob', 'secret', { rootNote: newGuid(), rootKey: newGuid() }, '')
+		await _clientBob.createUser('bob', 'secret', { rootNote: newGuid(), rootKey: newGuid() }, '', 1000)
 
 		await _clientBob.createKey(_clientBob.userData.rootKey, { shared: false, root: true })
 		const rootNote = new Note()
@@ -150,7 +150,7 @@ describe('MimerClient', () => {
 	})
 
 	test('Alice ChangePassword', async () => {
-		await _clientAlice.updateUser(_clientAlice.username, 'new-secret', _clientAlice.userData)
+		await _clientAlice.updateUser(_clientAlice.username, 'new-secret', _clientAlice.userData, 1000)
 		_clientAlice.logout()
 		_clientAlice.suppressErrorLog = true
 		const loginSuccess = await _clientAlice.login({ username: 'alice', password: 'secret' })

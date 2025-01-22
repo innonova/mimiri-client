@@ -21,7 +21,7 @@ describe('Version', () => {
 	})
 
 	test('CreateUser', async () => {
-		await _manager.createAccount('alice', 'secret')
+		await _manager.createAccount('alice', 'secret', 1000)
 		expect(_manager.isLoggedIn).toBeTruthy()
 	})
 
