@@ -8,7 +8,7 @@ import type { LoginListener } from './note-manager'
 
 class LocalAuth implements LoginListener {
 	private _state: any = reactive({ locked: false })
-	private _lockTimeout: number = 1000
+	private _lockTimeout: number = 60000
 
 	constructor() {
 		noteManager.registerListener(this)
