@@ -344,9 +344,9 @@ export class MimerClient {
 			) {
 				this.passwordHash = await passwordHasher.hashPassword(
 					password,
-					this.preLoginResponse.salt,
-					this.preLoginResponse.algorithm,
-					this.preLoginResponse.iterations,
+					preLoginResponse.salt,
+					preLoginResponse.algorithm,
+					preLoginResponse.iterations,
 				)
 			}
 			this.preLoginResponse = preLoginResponse

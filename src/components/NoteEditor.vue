@@ -80,6 +80,7 @@ import ToolbarIcon from './ToolbarIcon.vue'
 import SelectionControl from './SelectionControl.vue'
 import { VersionConflictError } from '../services/mimer-client'
 import { settingsManager } from '../services/settings-manager'
+import { useEventListener } from '@vueuse/core'
 
 let activeViewModelStopWatch: WatchStopHandle = undefined
 let activeViewModel: NoteViewModel = undefined
@@ -124,11 +125,11 @@ watch(historyVisible, (newVal, _) => {
 	}
 })
 
-window.addEventListener('focus', () => {
+useEventListener(window, 'focus', () => {
 	windowFocus.value = true
 })
 
-window.addEventListener('blur', () => {
+useEventListener(window, 'blur', () => {
 	save()
 	windowFocus.value = false
 })

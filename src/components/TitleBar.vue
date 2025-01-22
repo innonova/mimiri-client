@@ -157,6 +157,7 @@ import { searchManager } from '../services/search-manager'
 import { MenuItems, menuManager } from '../services/menu-manager'
 import { settingsManager } from '../services/settings-manager'
 import { mimiriPlatform } from '../services/mimiri-platform'
+import { useEventListener } from '@vueuse/core'
 
 const hasFocus = ref(true)
 
@@ -169,8 +170,8 @@ const updateTitleBar = () => {
 
 updateTitleBar()
 
-window.addEventListener('blur', () => updateTitleBar())
-window.addEventListener('focus', () => updateTitleBar())
+useEventListener(window, 'blur', () => updateTitleBar())
+useEventListener(window, 'focus', () => updateTitleBar())
 
 const toggleScreenSharing = () => {
 	settingsManager.allowScreenSharing = !settingsManager.allowScreenSharing
@@ -246,6 +247,7 @@ const showMenu = (rect, menu) => {
 		menuManager.showMenu({ x: rect.right, y: rect.bottom - 30, backdropTop: 32, alignRight: true }, [
 			MenuItems.EditAccount,
 			MenuItems.DeleteAccount,
+			...(mimiriPlatform.isElectron ? [MenuItems.SetPin] : []),
 			MenuItems.Separator,
 			MenuItems.Logout,
 			...(ipcClient.isAvailable ? [MenuItems.Separator, MenuItems.GoOnline] : []),

@@ -56,6 +56,12 @@ class MimerError extends Error {
 	}
 }
 
+export interface LoginListener {
+	login()
+	logout()
+	online()
+}
+
 export class NoteManager {
 	public ignoreFirstWALError: boolean = false
 
@@ -70,6 +76,7 @@ export class NoteManager {
 	private _isMobile = false
 	private _ensureWhenOnline: Note[] = []
 	private _proofBits = 15
+	private _listener: LoginListener
 
 	constructor(host: string, serverKey: string, serverKeyId: string) {
 		this._isMobile = !window.matchMedia?.('(min-width: 768px)')?.matches
@@ -125,6 +132,10 @@ export class NoteManager {
 			this.whenOnlineCallbacks = []
 			callbacks.forEach(cb => cb())
 		}
+	}
+
+	public registerListener(listener: LoginListener) {
+		this._listener = listener
 	}
 
 	public beginAction() {
@@ -321,6 +332,7 @@ export class NoteManager {
 						this.loadShareOffers()
 						updateManager.good()
 					}
+					this._listener?.login()
 					return true
 				} else {
 					await this.client.login({ ...data, preferOffline: false })
@@ -353,6 +365,7 @@ export class NoteManager {
 					void this.ensureLiveNode(note)
 				}
 			}
+			this._listener?.online()
 			mobileLog.log('Online')
 		} catch (ex) {
 			mobileLog.log('Failed to go online ' + ex.message)
@@ -363,6 +376,7 @@ export class NoteManager {
 
 	public logout() {
 		mobileLog.log('Logging out')
+		this._listener?.logout()
 		this.root = undefined
 		this.client.logout()
 		this.emitStatusUpdated()

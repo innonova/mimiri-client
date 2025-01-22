@@ -18,6 +18,7 @@ export interface MimerConfiguration {
 	keepTrayIconVisible: boolean
 	developerMode: boolean | undefined
 	showInTaskBar: boolean
+	pinEnabled: boolean
 }
 
 class SettingsManager {
@@ -37,6 +38,7 @@ class SettingsManager {
 		keepTrayIconVisible: true,
 		developerMode: undefined,
 		showInTaskBar: true,
+		pinEnabled: false,
 	})
 
 	constructor() {
@@ -174,6 +176,15 @@ class SettingsManager {
 
 	public get developerMode() {
 		return this.state.developerMode
+	}
+
+	public get pinEnabled() {
+		return this.state.pinEnabled
+	}
+
+	public set pinEnabled(value: boolean) {
+		this.state.pinEnabled = value
+		void this.save()
 	}
 }
 

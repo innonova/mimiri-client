@@ -17,6 +17,7 @@ import {
 	searchInput,
 	shareDialog,
 	showDeleteAccount,
+	showSetPin,
 	showShareOffers,
 	showUpdate,
 	updateManager,
@@ -49,6 +50,7 @@ export enum MenuItems {
 	ShowDevTools = 'show-dev-tools',
 	EditAccount = 'edit-account',
 	DeleteAccount = 'delete-account',
+	SetPin = 'set-pin',
 	Logout = 'logout',
 	Quit = 'quit',
 	GoOnline = 'go-online',
@@ -189,6 +191,8 @@ class MenuManager {
 			emptyRecycleBinDialog.value.show()
 		} else if (itemId === 'password-generator') {
 			passwordGeneratorDialog.value.show()
+		} else if (itemId === 'set-pin') {
+			showSetPin.value = true
 		}
 	}
 
@@ -397,6 +401,13 @@ class MenuManager {
 					result.push({
 						id: 'delete-account',
 						title: 'Delete Account',
+						enabled: noteManager.isLoggedIn && noteManager.isOnline,
+					})
+					break
+				case MenuItems.SetPin:
+					result.push({
+						id: 'set-pin',
+						title: 'Set PIN',
 						enabled: noteManager.isLoggedIn && noteManager.isOnline,
 					})
 					break

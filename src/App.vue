@@ -10,6 +10,7 @@
 		></TitleBar>
 		<Login v-if="!authenticated && !showCreateEditAccount && !showConvertAccount"></Login>
 		<CreateEditAccount ref="createEditAccountScreen"></CreateEditAccount>
+		<SetPinScreen v-if="showSetPin"></SetPinScreen>
 		<ConvertAccount v-if="showConvertAccount"></ConvertAccount>
 		<DeleteAccount v-if="showDeleteAccount"></DeleteAccount>
 		<Update v-if="authenticated && showUpdate"></Update>
@@ -19,8 +20,9 @@
 				!showConvertAccount &&
 				!showUpdate &&
 				!showDeleteAccount &&
-				!mimiriPlatform.isLocked &&
-				!showCreateEditAccount
+				!localAuth.locked &&
+				!showCreateEditAccount &&
+				!showSetPin
 			"
 			class="flex h-full overflow-hidden"
 			@mouseup="endDragging"
@@ -42,10 +44,10 @@
 			</div>
 		</div>
 		<div
-			v-if="authenticated && mimiriPlatform.isLocked"
+			v-if="authenticated && localAuth.locked"
 			class="absolute left-0 top-0 w-full h-full flex bg-back items-center justify-center"
 		>
-			Locked
+			<LockScreen></LockScreen>
 		</div>
 		<ContextMenu ref="contextMenu"></ContextMenu>
 		<NotificationList ref="notificationList"></NotificationList>
@@ -100,6 +102,7 @@ import {
 	emptyRecycleBinDialog,
 	passwordGeneratorDialog,
 	showCreateEditAccount,
+	showSetPin,
 	showConvertAccount,
 	showUpdate,
 	mainToolbar,
@@ -123,6 +126,10 @@ import { mimiriPlatform } from './services/mimiri-platform'
 import DeleteAccount from './components/DeleteAccount.vue'
 import { menuManager } from './services/menu-manager'
 import { Debounce } from './services/helpers'
+import { localAuth } from './services/local-auth'
+import LockScreen from './components/LockScreen.vue'
+import { useEventListener } from '@vueuse/core'
+import SetPinScreen from './components/SetPinScreen.vue'
 
 mobileLog.log(`App Loading ${settingsManager.channel} ${updateManager.currentVersion}`)
 
@@ -173,10 +180,9 @@ watch(settingsManager.state, () => {
 watch(noteManager.state, () => {
 	menuManager.updateAppMenu()
 })
+useEventListener(window, 'resize', onResize)
 
-window.addEventListener('resize', onResize)
-
-document.addEventListener('contextmenu', e => e.preventDefault(), false)
+useEventListener(document, 'contextmenu', e => e.preventDefault(), false)
 
 if (ipcClient.isAvailable) {
 	noteManager.setCacheManager(ipcClient.cache)
@@ -320,7 +326,7 @@ const handleShortcut = event => {
 		}
 	}
 }
-document.addEventListener('keydown', handleShortcut, false)
+useEventListener(document, 'keydown', handleShortcut, false)
 
 const resizeDebounce = new Debounce(async () => {
 	if (ipcClient.isAvailable) {
@@ -329,7 +335,7 @@ const resizeDebounce = new Debounce(async () => {
 	}
 }, 250)
 
-window.addEventListener('resize', async () => {
+useEventListener(window, 'resize', async () => {
 	resizeDebounce.activate()
 })
 ;(async () => {

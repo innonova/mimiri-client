@@ -13,7 +13,7 @@ interface BiometryResponse {
 	verified: boolean
 }
 
-interface MimiriPlatform {
+interface MimiriNativePlatform {
 	info(): Promise<PlatformInfo>
 	verifyBiometry(): Promise<BiometryResponse>
 }
@@ -26,7 +26,7 @@ class MimiriPlatform {
 	private state: MimiriPlatformState = reactive({ locked: false })
 	private _lockTime = Date.now()
 	private _lastUpdateCheck = Date.now()
-	private _nativePlatform: MimiriPlatform
+	private _nativePlatform: MimiriNativePlatform
 	private _platformInfo: PlatformInfo
 	private _displayMode = 'browser'
 	private _isCapacitor = false
@@ -48,7 +48,7 @@ class MimiriPlatform {
 	constructor() {
 		if (Capacitor.isPluginAvailable('MimiriPlatform')) {
 			this._isCapacitor = true
-			this._nativePlatform = registerPlugin<MimiriPlatform>('MimiriPlatform')
+			this._nativePlatform = registerPlugin<MimiriNativePlatform>('MimiriPlatform')
 			this._isIos = Capacitor.getPlatform() === 'ios'
 			this._isAndroid = Capacitor.getPlatform() === 'android'
 		} else if ((window as any).mimiri) {
@@ -78,60 +78,6 @@ class MimiriPlatform {
 			}
 		}
 
-		if (Capacitor.isPluginAvailable('App')) {
-			App.addListener('resume', async () => {
-				try {
-					mobileLog.log('App Resuming')
-					if (this.isLocked) {
-						if (noteManager.isLoggedIn) {
-							if (Date.now() - this._lockTime < 60000) {
-								this.state.locked = false
-								updateManager.check()
-							} else if (this._platformInfo?.biometrics) {
-								mobileLog.log('Requesting Biometrics')
-								const result = await this._nativePlatform.verifyBiometry()
-								if (result.verified) {
-									this.state.locked = false
-									updateManager.check()
-									noteManager.loadShareOffers()
-									await noteManager.selectedNote?.refresh()
-								}
-							} else {
-								mobileLog.log('Biometrics not available')
-								// TODO consider what to do
-								this.state.locked = false
-								updateManager.check()
-								noteManager.loadShareOffers()
-								await noteManager.selectedNote?.refresh()
-							}
-						} else {
-							this.state.locked = false
-						}
-					} else if (mimiriPlatform.isElectron) {
-						if (!noteManager.isOnline) {
-							await noteManager.goOnline()
-						}
-						if (Date.now() - this._lastUpdateCheck > 20 * 60000) {
-							this._lastUpdateCheck = Date.now()
-							updateManager.check()
-							noteManager.loadShareOffers()
-						}
-					}
-				} catch (ex) {
-					mobileLog.log('Error during resume: ' + ex.message)
-					// Do something better
-					this.state.locked = false
-				}
-			})
-			App.addListener('pause', () => {
-				mobileLog.log('App Pausing')
-				if (this._platformInfo?.biometrics) {
-					this.state.locked = true
-					this._lockTime = Date.now()
-				}
-			})
-		}
-
 		this._platformInfo = (await this._nativePlatform?.info()) ?? { mode: '', biometrics: false }
 		this._displayMode = this._platformInfo.mode
 	}
@@ -153,6 +99,11 @@ class MimiriPlatform {
 				navigator.userAgent,
 			)
 		return isTablet
+	}
+
+	public async verifyBiometry() {
+		const result = await this._nativePlatform.verifyBiometry()
+		return result.verified
 	}
 
 	public get isPhone() {
