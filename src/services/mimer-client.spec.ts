@@ -150,7 +150,7 @@ describe('MimerClient', () => {
 	})
 
 	test('Alice ChangePassword', async () => {
-		await _clientAlice.updateUser(_clientAlice.username, 'new-secret', _clientAlice.userData, 1000)
+		await _clientAlice.changeUserNameAndPassword(_clientAlice.username, 'secret', 'new-secret', 1000)
 		_clientAlice.logout()
 		_clientAlice.suppressErrorLog = true
 		const loginSuccess = await _clientAlice.login({ username: 'alice', password: 'secret' })

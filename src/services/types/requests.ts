@@ -91,6 +91,8 @@ export interface UpdateUserDataRequest extends BasicRequest {
 
 export interface UpdateUserRequest extends BasicRequest {
 	oldUsername: string
+	response: string
+	hashLength: number
 	publicKey: string
 	privateKey: string
 	asymmetricAlgorithm: string
@@ -113,6 +115,11 @@ export interface WriteNoteRequest extends BasicRequest {
 	oldKeyName?: Guid
 	id: Guid
 	items: Omit<NoteItem, 'changed' | 'isCache'>[]
+}
+
+export interface DeleteAccountRequest extends BasicRequest {
+	response: string
+	hashLength: number
 }
 
 export enum NoteActionType {

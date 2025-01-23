@@ -37,6 +37,16 @@ export interface LoginResponse {
 	maxHistoryEntries: number
 }
 
+export interface UserDataResponse {
+	data: string
+	size: number
+	noteCount: number
+	maxTotalBytes: number
+	maxNoteBytes: number
+	maxNoteCount: number
+	maxHistoryEntries: number
+}
+
 export interface PreLoginResponse {
 	salt: string
 	iterations: number

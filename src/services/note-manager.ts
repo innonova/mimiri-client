@@ -217,11 +217,12 @@ export class NoteManager {
 	}
 
 	private async recoverLogin() {
-		const loginData = await this.client.getPersistedLogin()
-		if (loginData) {
-			if (await this.login(loginData)) {
-				this.loadState()
-			}
+		if (await this.client.restoreLogin()) {
+			this.state.noteOpen = !this._isMobile
+			browserHistory.openTree(ipcClient.isAvailable && Capacitor.getPlatform() === 'web')
+			await this.ensureCreateComplete()
+			await this.loadRootNote()
+			await this.loadState()
 		}
 	}
 
@@ -300,6 +301,19 @@ export class NoteManager {
 		}
 	}
 
+	private async loadRootNote() {
+		const note = await this.client.readNote(this.client.userData.rootNote, true)
+		if (note) {
+			this.root = new MimerNote(this, undefined, note)
+			this.emitStatusUpdated()
+		} else {
+			this.root = undefined
+			this.client.logout()
+			this.emitStatusUpdated()
+			throw new MimerError('Login Error', 'Failed to read root node')
+		}
+	}
+
 	public async login(data: LoginData) {
 		this.state.busy = true
 		this.state.spinner = false
@@ -313,16 +327,7 @@ export class NoteManager {
 			while (true) {
 				if (this.client.isLoggedIn) {
 					await this.ensureCreateComplete()
-					const note = await this.client.readNote(this.client.userData.rootNote, true)
-					if (note) {
-						this.root = new MimerNote(this, undefined, note)
-						this.emitStatusUpdated()
-					} else {
-						this.root = undefined
-						this.client.logout()
-						this.emitStatusUpdated()
-						throw new MimerError('Login Error', 'Failed to read root node')
-					}
+					await this.loadRootNote()
 					if (!this.client.isOnline && !this.workOffline) {
 						setTimeout(() => {
 							void this.goOnline(data.password)
@@ -409,8 +414,8 @@ export class NoteManager {
 		this.state.stateLoaded = true
 	}
 
-	public async deleteAccount(deleteLocal: boolean) {
-		await this.client.deleteAccount(deleteLocal)
+	public async deleteAccount(password: string, deleteLocal: boolean) {
+		await this.client.deleteAccount(password, deleteLocal)
 		this.state.online = false
 	}
 
@@ -954,10 +959,6 @@ export class NoteManager {
 
 	public isShared(note: Note) {
 		return !!this.client.getKeyByName(note.keyName).metadata.shared
-	}
-
-	public validatePassword(password: string) {
-		return this.client.validatePassword(password)
 	}
 
 	public cloneTest() {

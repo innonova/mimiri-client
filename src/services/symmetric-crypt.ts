@@ -92,6 +92,10 @@ export class SymmetricCrypt {
 		return new SymmetricCrypt(algo, key)
 	}
 
+	static async fromKeyString(algorithm: string, key: string): Promise<SymmetricCrypt> {
+		return SymmetricCrypt.fromKey(algorithm, fromBase64(key))
+	}
+
 	async decryptBytes(data: string): Promise<ArrayBuffer> {
 		const iv = fromBase64(data, 0, this._algorithm.ivSize)
 		const bytes = fromBase64(data, this._algorithm.ivSize)

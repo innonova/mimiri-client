@@ -124,15 +124,14 @@ const deleteAccount = async () => {
 	loading.value = true
 	error.value = ''
 	if (password.value) {
-		const valid = await noteManager.validatePassword(password.value)
-		if (valid) {
-			await noteManager.deleteAccount(deleteLocal.value)
+		try {
+			await noteManager.deleteAccount(password.value, deleteLocal.value)
 			loading.value = false
 			showDeleteAccount.value = false
 			if (deleteLocal.value) {
 				noteManager.logout()
 			}
-		} else {
+		} catch {
 			loading.value = false
 			error.value = 'Invalid password'
 		}

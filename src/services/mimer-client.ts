@@ -16,6 +16,7 @@ import type {
 	ReadNoteResponse,
 	ShareOffersResponse,
 	UpdateNoteResponse,
+	UserDataResponse,
 	VersionConflict,
 } from './types/responses'
 import {
@@ -24,6 +25,7 @@ import {
 	type CheckUsernameRequest,
 	type CreateKeyRequest,
 	type CreateUserRequest,
+	type DeleteAccountRequest,
 	type DeleteKeyRequest,
 	type DeleteNoteRequest,
 	type DeleteShareRequest,
@@ -50,11 +52,17 @@ export const DEFAULT_PASSWORD_ALGORITHM = 'PBKDF2;SHA512;1024'
 
 export interface LoginData {
 	username: string
-	password?: string
+	password: string
 	preferOffline?: boolean
-	passwordHash?: string
-	userKey?: string
-	userKeyAlgorithm?: string
+}
+
+export interface UserStats {
+	size: number
+	noteCount: number
+	maxTotalBytes: number
+	maxNoteBytes: number
+	maxNoteCount: number
+	maxHistoryEntries: number
 }
 
 export class HttpRequestError extends Error {
@@ -87,21 +95,26 @@ export class MimerClient {
 	private _testId: string
 	private _username: string
 	private _userId: Guid
-	private userCrypt: SymmetricCrypt
+	private _userCryptAlgorithm: string
 	private rootCrypt: SymmetricCrypt
 	private rootSignature: CryptSignature
 	private serverSignature: CryptSignature
 	private _userData: any
 	private keyChain: KeySet[] = []
-	private passwordHash: string
-	private loginResponse: LoginResponse
-	private preLoginResponse: PreLoginResponse
 	private cacheManager: ICacheManager
 	private online: boolean = false
 	private _workOffline: boolean = false
 	private _simulateOffline: boolean = false
 	private _sizeDelta = 0
 	private _noteCountDelta = 0
+	private _userStats: UserStats = {
+		size: 0,
+		noteCount: 0,
+		maxTotalBytes: 0,
+		maxNoteBytes: 0,
+		maxNoteCount: 0,
+		maxHistoryEntries: 0,
+	}
 
 	constructor(
 		private host: string,
@@ -184,45 +197,74 @@ export class MimerClient {
 		await this.get<BasicResponse>(`/end/${keepLogs}`)
 	}
 
-	public async getPersistedLogin() {
-		if (mimiriPlatform.isIos || mimiriPlatform.isAndroid) {
-			if (!mimiriPlatform.supportsBiometry) {
-				return undefined
-			}
-			if (!(await mimiriPlatform.verifyBiometry())) {
-				return undefined
-			}
-		}
-		if (ipcClient.isAvailable && ipcClient.session.isAvailable) {
-			return ipcClient.session.get('mimiri-login-data')
-		} else {
-			const loginData = sessionStorage.getItem('mimiri-login-data')
-			if (loginData) {
-				return JSON.parse(loginData)
-			}
-		}
-		return undefined
-	}
-
 	public async persistLogin() {
 		if (
 			env.DEV ||
 			mimiriPlatform.isElectron ||
 			((mimiriPlatform.isIos || mimiriPlatform.isAndroid) && mimiriPlatform.supportsBiometry)
 		) {
-			const loginData: LoginData = {
-				username: this.username,
-				passwordHash: this.passwordHash,
-				userKey: await this.userCrypt.getKeyString(),
-				userKeyAlgorithm: this.userCrypt.algorithm,
+			const loginData = {
+				username: this._username,
+				userId: this._userId,
+				userCryptAlgorithm: this._userCryptAlgorithm,
+				rootCrypt: {
+					algorithm: this.rootCrypt.algorithm,
+					key: await this.rootCrypt.getKeyString(),
+				},
+				rootSignature: {
+					algorithm: this.rootSignature.algorithm,
+					publicKey: await this.rootSignature.publicKeyPem(),
+					privateKey: await this.rootSignature.privateKeyPem(),
+				},
 			}
-
+			const zipped = await new Response(
+				new Blob([new TextEncoder().encode(JSON.stringify(loginData))])
+					.stream()
+					.pipeThrough(new CompressionStream('gzip')),
+			).arrayBuffer()
+			const str = toBase64(zipped)
 			if (ipcClient.isAvailable && ipcClient.session.isAvailable) {
-				await ipcClient.session.set('mimiri-login-data', loginData)
+				await ipcClient.session.set('mimiri-login-data', str)
+			} else if (mimiriPlatform.isIos || mimiriPlatform.isAndroid) {
+				localStorage.setItem('mimiri-login-data', str)
 			} else {
-				sessionStorage.setItem('mimiri-login-data', JSON.stringify(loginData))
+				sessionStorage.setItem('mimiri-login-data', str)
 			}
 		}
+	}
+
+	public async restoreLogin() {
+		if (
+			env.DEV ||
+			mimiriPlatform.isElectron ||
+			((mimiriPlatform.isIos || mimiriPlatform.isAndroid) && mimiriPlatform.supportsBiometry)
+		) {
+			try {
+				let str
+				if (ipcClient.isAvailable && ipcClient.session.isAvailable) {
+					str = await ipcClient.session.get('mimiri-login-data')
+				} else if (mimiriPlatform.isIos || mimiriPlatform.isAndroid) {
+					str = localStorage.getItem('mimiri-login-data')
+				} else {
+					str = sessionStorage.getItem('mimiri-login-data')
+				}
+				const unzipped = await new Response(
+					new Blob([fromBase64(str)]).stream().pipeThrough(new DecompressionStream('gzip')),
+				).text()
+				const loginData = JSON.parse(unzipped)
+				this._username = loginData.username
+				this._userId = loginData.userId
+				this._userCryptAlgorithm = loginData.userCryptAlgorithm
+				this.rootCrypt = await SymmetricCrypt.fromKeyString(loginData.rootCrypt.algorithm, loginData.rootCrypt.key)
+				this.rootSignature = await CryptSignature.fromPem(
+					loginData.rootSignature.algorithm ?? CryptSignature.DEFAULT_ASYMMETRIC_ALGORITHM,
+					loginData.rootSignature.publicKey,
+					loginData.rootSignature.privateKey,
+				)
+				return await this.goOnline()
+			} catch {}
+		}
+		return false
 	}
 
 	public async login(data: LoginData) {
@@ -232,93 +274,84 @@ export class MimerClient {
 		if (!data.preferOffline) {
 			data.preferOffline = false
 		}
+		let loginResponse: LoginResponse = undefined
+		let preLoginResponse: PreLoginResponse = undefined
+		let passwordHash: string = undefined
+		let userCrypt: SymmetricCrypt = undefined
 		try {
 			this.username = data.username
-			this.loginResponse = undefined
-			this.preLoginResponse = undefined
 			if (data.preferOffline && this.cacheManager) {
-				this.loginResponse = await this.cacheManager.getUser(data.username)
-				this.preLoginResponse = await this.cacheManager.getPreLogin(data.username)
-				if (!this.loginResponse?.userId) {
-					this.loginResponse = undefined
-					this.preLoginResponse = undefined
+				loginResponse = await this.cacheManager.getUser(data.username)
+				preLoginResponse = await this.cacheManager.getPreLogin(data.username)
+				if (!loginResponse?.userId) {
+					loginResponse = undefined
+					preLoginResponse = undefined
 				}
-				if (this.preLoginResponse) {
-					if (data.password) {
-						this.passwordHash = await passwordHasher.hashPassword(
-							data.password,
-							this.preLoginResponse.salt,
-							this.preLoginResponse.algorithm,
-							this.preLoginResponse.iterations,
-						)
-					} else if (data.passwordHash) {
-						this.passwordHash = data.passwordHash
-					} else {
-						throw new Error('Must provide either password or passwordHash')
-					}
+				if (preLoginResponse) {
+					passwordHash = await passwordHasher.hashPassword(
+						data.password,
+						preLoginResponse.salt,
+						preLoginResponse.algorithm,
+						preLoginResponse.iterations,
+					)
 				}
 				this.online = false
 			}
 
-			if (!this.loginResponse || !this.preLoginResponse) {
+			if (!loginResponse || !preLoginResponse) {
 				try {
-					this.preLoginResponse = await this.get<PreLoginResponse>(`/user/pre-login/${data.username}`)
+					preLoginResponse = await this.get<PreLoginResponse>(`/user/pre-login/${data.username}`)
 				} catch (exi) {
 					throw exi
 				}
 
-				if (data.password) {
-					this.passwordHash = await passwordHasher.hashPassword(
-						data.password,
-						this.preLoginResponse.salt,
-						this.preLoginResponse.algorithm,
-						this.preLoginResponse.iterations,
-					)
-				} else if (data.passwordHash) {
-					this.passwordHash = data.passwordHash
-				} else {
-					throw new Error('Must provide either password or passwordHash')
-				}
+				passwordHash = await passwordHasher.hashPassword(
+					data.password,
+					preLoginResponse.salt,
+					preLoginResponse.algorithm,
+					preLoginResponse.iterations,
+				)
 
 				const loginRequest: LoginRequest = {
 					username: data.username,
-					response: await passwordHasher.computeResponse(this.passwordHash, this.preLoginResponse.challenge),
-					hashLength: this.passwordHash.length / 2,
+					response: await passwordHasher.computeResponse(passwordHash, preLoginResponse.challenge),
+					hashLength: passwordHash.length / 2,
 				}
 
-				this.loginResponse = await this.post<LoginResponse>('/user/login', loginRequest)
+				loginResponse = await this.post<LoginResponse>('/user/login', loginRequest)
 
 				if (this.cacheManager != null) {
-					await this.cacheManager.setUser(data.username, this.loginResponse, this.preLoginResponse)
+					await this.cacheManager.setUser(data.username, loginResponse, preLoginResponse)
 				}
 				this.online = true
 			}
-			this._userId = this.loginResponse.userId
-			if (data.password) {
-				this.userCrypt = await SymmetricCrypt.fromPassword(
-					this.loginResponse.algorithm,
-					data.password,
-					this.loginResponse.salt,
-					this.loginResponse.iterations,
-				)
-			} else if (data.userKey && data.userKeyAlgorithm) {
-				this.userCrypt = await SymmetricCrypt.fromKey(data.userKeyAlgorithm, fromBase64(data.userKey))
-			} else {
-				throw new Error('Must provide either password or userKey and userKeyAlgorithm')
-			}
+			this._userId = loginResponse.userId
+			userCrypt = await SymmetricCrypt.fromPassword(
+				loginResponse.algorithm,
+				data.password,
+				loginResponse.salt,
+				loginResponse.iterations,
+			)
 			this.rootCrypt = await SymmetricCrypt.fromKey(
-				this.loginResponse.symmetricAlgorithm,
-				await this.userCrypt.decryptBytes(this.loginResponse.symmetricKey),
+				loginResponse.symmetricAlgorithm,
+				await userCrypt.decryptBytes(loginResponse.symmetricKey),
 			)
 			this.rootSignature = await CryptSignature.fromPem(
-				this.loginResponse.asymmetricAlgorithm,
-				this.loginResponse.publicKey,
-				await this.userCrypt.decrypt(this.loginResponse.privateKey),
+				loginResponse.asymmetricAlgorithm,
+				loginResponse.publicKey,
+				await userCrypt.decrypt(loginResponse.privateKey),
 			)
-			this.userData = JSON.parse(await this.rootCrypt.decrypt(this.loginResponse.data))
+			this.userData = JSON.parse(await this.rootCrypt.decrypt(loginResponse.data))
 
 			this._sizeDelta = 0
 			this._noteCountDelta = 0
+			this._userCryptAlgorithm = loginResponse.algorithm ?? SymmetricCrypt.DEFAULT_SYMMETRIC_ALGORITHM
+			this._userStats.size = loginResponse.size
+			this._userStats.noteCount = loginResponse.noteCount
+			this._userStats.maxTotalBytes = loginResponse.maxTotalBytes
+			this._userStats.maxNoteBytes = loginResponse.maxNoteBytes
+			this._userStats.maxNoteCount = loginResponse.maxNoteCount
+			this._userStats.maxHistoryEntries = loginResponse.maxHistoryEntries
 			await this.loadAllKeys(data.preferOffline)
 			await this.persistLogin()
 			return true
@@ -334,60 +367,58 @@ export class MimerClient {
 	}
 
 	public async goOnline(password?: string) {
-		if (!this.online && this.username && this.passwordHash && this.userCrypt) {
-			const preLoginResponse = await this.get<PreLoginResponse>(`/user/pre-login/${this.username}`)
-			if (
-				password &&
-				(preLoginResponse.salt !== this.preLoginResponse.salt ||
-					preLoginResponse.algorithm !== this.preLoginResponse.algorithm ||
-					preLoginResponse.iterations !== this.preLoginResponse.iterations)
-			) {
-				this.passwordHash = await passwordHasher.hashPassword(
-					password,
-					preLoginResponse.salt,
-					preLoginResponse.algorithm,
-					preLoginResponse.iterations,
-				)
-			}
-			this.preLoginResponse = preLoginResponse
-
-			const loginRequest: LoginRequest = {
-				username: this.username,
-				response: await passwordHasher.computeResponse(this.passwordHash, this.preLoginResponse.challenge),
-				hashLength: this.passwordHash.length / 2,
-			}
-
-			this.loginResponse = await this.post<LoginResponse>('/user/login', loginRequest)
-
-			if (this.cacheManager != null) {
-				await this.cacheManager.setUser(this.username, this.loginResponse, this.preLoginResponse)
-			}
-
-			this.rootCrypt = await SymmetricCrypt.fromKey(
-				this.loginResponse.symmetricAlgorithm,
-				await this.userCrypt.decryptBytes(this.loginResponse.symmetricKey),
-			)
-			this.rootSignature = await CryptSignature.fromPem(
-				this.loginResponse.asymmetricAlgorithm,
-				this.loginResponse.publicKey,
-				await this.userCrypt.decrypt(this.loginResponse.privateKey),
-			)
-			this.userData = JSON.parse(await this.rootCrypt.decrypt(this.loginResponse.data))
-			this._userId = this.loginResponse.userId
-			await this.loadAllKeys()
-			this.online = true
-			return true
-		}
-		return false
-	}
-
-	public async deleteAccount(deleteLocal: boolean) {
-		const request: BasicRequest = {
+		const getDataRequest: BasicRequest = {
 			username: this.username,
 			timestamp: dateTimeNow(),
 			requestId: newGuid(),
 			signatures: [],
 		}
+		await this.rootSignature!.sign('user', getDataRequest)
+		try {
+			const response = await this.post<UserDataResponse>(`/user/get-data`, getDataRequest)
+			this._userStats.size = response.size
+			this._userStats.noteCount = response.noteCount
+			this._userStats.maxTotalBytes = response.maxTotalBytes
+			this._userStats.maxNoteBytes = response.maxNoteBytes
+			this._userStats.maxNoteCount = response.maxNoteCount
+			this._userStats.maxHistoryEntries = response.maxHistoryEntries
+			this.userData = JSON.parse(await this.rootCrypt.decrypt(response.data))
+			await this.loadAllKeys()
+			this.online = true
+			return true
+		} catch {
+			if (password) {
+				return await this.login({
+					username: this.username,
+					password,
+					preferOffline: false,
+				})
+			}
+		}
+		return false
+	}
+
+	public async deleteAccount(password: string, deleteLocal: boolean) {
+		console.log('deleteAccount')
+		const preLoginResponse = await this.get<PreLoginResponse>(`/user/pre-login/${this.username}`)
+		const passwordHash = await passwordHasher.hashPassword(
+			password,
+			preLoginResponse.salt,
+			preLoginResponse.algorithm,
+			preLoginResponse.iterations,
+		)
+		const responseToChallenge = await passwordHasher.computeResponse(passwordHash, preLoginResponse.challenge)
+
+		const request: DeleteAccountRequest = {
+			username: this.username,
+			response: responseToChallenge,
+			hashLength: passwordHash.length / 2,
+			timestamp: dateTimeNow(),
+			requestId: newGuid(),
+			signatures: [],
+		}
+		console.log(request)
+
 		await this.rootSignature!.sign('user', request)
 		await this.post<BasicResponse>('/user/delete', request)
 		this.online = false
@@ -399,16 +430,21 @@ export class MimerClient {
 	public logout() {
 		this.rootCrypt = undefined
 		this.rootSignature = undefined
-		this.userCrypt = undefined
 		this.keyChain = []
-		this.preLoginResponse = undefined
-		this.loginResponse = undefined
-		this.passwordHash = undefined
 		this.username = undefined
 		this.userData = undefined
+		this._userStats = {
+			size: 0,
+			noteCount: 0,
+			maxTotalBytes: 0,
+			maxNoteBytes: 0,
+			maxNoteCount: 0,
+			maxHistoryEntries: 0,
+		}
 		this.online = false
 		this.workOffline = false
 		sessionStorage.removeItem('mimiri-login-data')
+		localStorage.removeItem('mimiri-login-data')
 		if (ipcClient.isAvailable && ipcClient.session.isAvailable) {
 			ipcClient.session.set('mimiri-login-data', undefined)
 		}
@@ -437,7 +473,7 @@ export class MimerClient {
 			const passwordAlgorithm = DEFAULT_PASSWORD_ALGORITHM
 			const passwordIterations = iterations
 			const passwordSalt = toHex(crypto.getRandomValues(new Uint8Array(DEFAULT_SALT_SIZE)))
-			this.passwordHash = await passwordHasher.hashPassword(
+			const passwordHash = await passwordHasher.hashPassword(
 				password,
 				passwordSalt,
 				passwordAlgorithm,
@@ -446,7 +482,7 @@ export class MimerClient {
 
 			const salt = toHex(crypto.getRandomValues(new Uint8Array(DEFAULT_SALT_SIZE)))
 
-			this.userCrypt = await SymmetricCrypt.fromPassword(
+			const userCrypt = await SymmetricCrypt.fromPassword(
 				SymmetricCrypt.DEFAULT_SYMMETRIC_ALGORITHM,
 				password,
 				salt,
@@ -457,18 +493,18 @@ export class MimerClient {
 				username,
 				iterations,
 				salt,
-				algorithm: this.userCrypt.algorithm,
+				algorithm: userCrypt.algorithm,
 				asymmetricAlgorithm: this.rootSignature.algorithm,
 				publicKey: await this.rootSignature.publicKeyPem(),
-				privateKey: await this.userCrypt.encrypt(await this.rootSignature.privateKeyPem()),
+				privateKey: await userCrypt.encrypt(await this.rootSignature.privateKeyPem()),
 				password: {
 					algorithm: passwordAlgorithm,
 					iterations: passwordIterations,
 					salt: passwordSalt,
-					hash: this.passwordHash,
+					hash: passwordHash,
 				},
 				symmetricAlgorithm: this.rootCrypt.algorithm,
-				symmetricKey: await this.userCrypt.encryptBytes(await this.rootCrypt.getKey()),
+				symmetricKey: await userCrypt.encryptBytes(await this.rootCrypt.getKey()),
 				data: await this.rootCrypt.encrypt(JSON.stringify(this.userData)),
 				pow,
 				timestamp: dateTimeNow(),
@@ -485,29 +521,53 @@ export class MimerClient {
 		}
 	}
 
-	public async updateUser(username: string, password: string, userData: any, iterations: number) {
+	public async changeUserNameAndPassword(
+		newUsername: string,
+		oldPassword: string,
+		newPassword: string,
+		iterations: number,
+	) {
 		if (!this.rootCrypt) {
 			throw new Error('Not Logged in')
 		}
+		const preLoginResponse = await this.get<PreLoginResponse>(`/user/pre-login/${this.username}`)
+		const oldPasswordHash = await passwordHasher.hashPassword(
+			oldPassword,
+			preLoginResponse.salt,
+			preLoginResponse.algorithm,
+			preLoginResponse.iterations,
+		)
+		const responseToChallenge = await passwordHasher.computeResponse(oldPasswordHash, preLoginResponse.challenge)
 
-		const passwordAlgorithm = DEFAULT_PASSWORD_ALGORITHM
-		const passwordIterations = iterations
-		const passwordSalt = toHex(crypto.getRandomValues(new Uint8Array(DEFAULT_SALT_SIZE)))
-		this.passwordHash = await passwordHasher.hashPassword(password, passwordSalt, passwordAlgorithm, passwordIterations)
+		let passwordAlgorithm = preLoginResponse.algorithm
+		let passwordIterations = preLoginResponse.iterations
+		let passwordSalt = preLoginResponse.salt
+		let passwordHash = oldPasswordHash
+
+		if (newPassword) {
+			passwordAlgorithm = DEFAULT_PASSWORD_ALGORITHM
+			passwordIterations = iterations
+			passwordSalt = toHex(crypto.getRandomValues(new Uint8Array(DEFAULT_SALT_SIZE)))
+			passwordHash = await passwordHasher.hashPassword(newPassword, passwordSalt, passwordAlgorithm, passwordIterations)
+		} else {
+			newPassword = oldPassword
+		}
 
 		const salt = toHex(crypto.getRandomValues(new Uint8Array(DEFAULT_SALT_SIZE)))
 
 		const userCrypt = await SymmetricCrypt.fromPassword(
-			this.loginResponse?.algorithm ?? SymmetricCrypt.DEFAULT_SYMMETRIC_ALGORITHM,
-			password,
+			this._userCryptAlgorithm ?? SymmetricCrypt.DEFAULT_SYMMETRIC_ALGORITHM,
+			newPassword,
 			salt,
-			iterations,
+			passwordIterations,
 		)
 
 		const request: UpdateUserRequest = {
 			oldUsername: this.username,
-			username,
-			iterations,
+			response: responseToChallenge,
+			hashLength: oldPassword.length / 2,
+			username: newUsername || this.username,
+			iterations: passwordIterations,
 			salt,
 			algorithm: userCrypt.algorithm,
 			asymmetricAlgorithm: this.rootSignature.algorithm,
@@ -517,11 +577,11 @@ export class MimerClient {
 				algorithm: passwordAlgorithm,
 				iterations: passwordIterations,
 				salt: passwordSalt,
-				hash: this.passwordHash,
+				hash: passwordHash,
 			},
 			symmetricAlgorithm: this.rootCrypt.algorithm,
 			symmetricKey: await userCrypt.encryptBytes(await this.rootCrypt.getKey()),
-			data: await this.rootCrypt.encrypt(JSON.stringify(userData)),
+			data: await this.rootCrypt.encrypt(JSON.stringify(this.userData)),
 			timestamp: dateTimeNow(),
 			requestId: newGuid(),
 			signatures: [],
@@ -529,52 +589,12 @@ export class MimerClient {
 		await this.rootSignature.sign('user', request)
 		await this.rootSignature.sign('old-user', request)
 		await this.post<BasicResponse>('/user/update', request, true)
-		this.userCrypt = userCrypt
-		this.username = username
-		this.userData = userData
+		this.username = newUsername
 		if (this.cacheManager != null) {
 			await this.cacheManager.deleteUser(this.username)
 		}
 		this.logout()
-		await this.login({ username, password })
-	}
-
-	public async validatePassword(password: string) {
-		if (!this.preLoginResponse) {
-			return false
-		}
-		const passwordHash = await passwordHasher.hashPassword(
-			password,
-			this.preLoginResponse.salt,
-			this.preLoginResponse.algorithm,
-			this.preLoginResponse.iterations,
-		)
-		return this.passwordHash === passwordHash
-	}
-
-	public async changeUserNameAndPassword(
-		newUsername: string,
-		oldPassword: string,
-		newPassword: string,
-		iterations: number,
-	) {
-		if (
-			!this.rootCrypt ||
-			!this.username ||
-			!this.userData ||
-			!this.loginResponse ||
-			!this.userCrypt ||
-			!this.preLoginResponse
-		) {
-			throw new Error('Not Logged in')
-		}
-		if (!this.online) {
-			throw new Error('Cannot change password while offline')
-		}
-		if (!(await this.validatePassword(oldPassword))) {
-			throw new Error('Old password does not match')
-		}
-		await this.updateUser(newUsername || this.username, newPassword || oldPassword, this.userData, iterations)
+		await this.login({ username: newUsername, password: newPassword })
 	}
 
 	public async updateUserData() {
@@ -910,8 +930,8 @@ export class MimerClient {
 			if (!response.success) {
 				throw new VersionConflictError(response.conflicts)
 			} else {
-				this.loginResponse.size = response.size
-				this.loginResponse.noteCount = response.noteCount
+				this._userStats.size = response.size
+				this._userStats.noteCount = response.noteCount
 				this._sizeDelta = 0
 				this._noteCountDelta = 0
 			}
@@ -1166,8 +1186,8 @@ export class MimerClient {
 					await this.cacheManager.deleteNote(id)
 				}
 			}
-			this.loginResponse.size = response.size
-			this.loginResponse.noteCount = response.noteCount
+			this._userStats.size = response.size
+			this._userStats.noteCount = response.noteCount
 			this._sizeDelta = 0
 			this._noteCountDelta = 0
 		} else {
@@ -1290,26 +1310,26 @@ export class MimerClient {
 	}
 
 	public get usedBytes() {
-		return +this.loginResponse.size + this._sizeDelta
+		return +this._userStats.size + this._sizeDelta
 	}
 
 	public get maxBytes() {
-		return +this.loginResponse.maxTotalBytes
+		return +this._userStats.maxTotalBytes
 	}
 
 	public get noteCount() {
-		return +this.loginResponse.noteCount + this._noteCountDelta
+		return +this._userStats.noteCount + this._noteCountDelta
 	}
 
 	public get maxNoteCount() {
-		return +this.loginResponse.maxNoteCount
+		return +this._userStats.maxNoteCount
 	}
 
 	public get maxNoteSize() {
-		return +this.loginResponse.maxNoteBytes
+		return +this._userStats.maxNoteBytes
 	}
 
 	public get maxHistoryEntries() {
-		return +this.loginResponse.maxHistoryEntries
+		return +this._userStats.maxHistoryEntries
 	}
 }

@@ -34,6 +34,7 @@ class LocalAuth implements LoginListener {
 			App.addListener('resume', async () => this.resuming())
 			App.addListener('pause', () => this.pausing())
 		}
+		await this.resuming()
 	}
 
 	public async unlockWithPin(pin: string) {
@@ -51,9 +52,11 @@ class LocalAuth implements LoginListener {
 		this.lastPause = -1
 		this._state.locked = false
 		sessionStorage.setItem('locked', 'false')
-		updateManager.check()
-		noteManager.loadShareOffers()
-		await noteManager.selectedNote?.refresh()
+		if (noteManager.isLoggedIn) {
+			updateManager.check()
+			noteManager.loadShareOffers()
+			await noteManager.selectedNote?.refresh()
+		}
 	}
 
 	public async lock() {
