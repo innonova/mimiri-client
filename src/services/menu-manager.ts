@@ -578,7 +578,7 @@ class MenuManager {
 	}
 
 	public get viewMenu() {
-		return [MenuItems.History, MenuItems.Share, MenuItems.Separator, MenuItems.WordWrap, MenuItems.DarkMode]
+		return [MenuItems.History, MenuItems.ShareOffers, MenuItems.Separator, MenuItems.WordWrap, MenuItems.DarkMode]
 	}
 
 	public get toolsMenu() {
