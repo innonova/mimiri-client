@@ -64,11 +64,22 @@ export enum MenuItems {
 }
 
 class MenuManager {
+	private _hasFocus = true
+	private _lostFocusTime = Date.now()
+
 	public readonly state = reactive({
 		menuShowing: false,
 	})
 
-	constructor() {}
+	constructor() {
+		window.addEventListener('blur', () => {
+			this._hasFocus = false
+			this._lostFocusTime = Date.now()
+		})
+		window.addEventListener('focus', () => {
+			this._hasFocus = true
+		})
+	}
 
 	private async menuActivated(item: ContextMenuItem) {
 		this.state.menuShowing = false
@@ -90,7 +101,11 @@ class MenuManager {
 			ipcClient.menu.show()
 		} else if (itemId === 'tray-click') {
 			if (await ipcClient.window.getIsVisible()) {
-				ipcClient.menu.hide()
+				if (!this._hasFocus && Date.now() - this._lostFocusTime > 1000) {
+					ipcClient.menu.show()
+				} else {
+					ipcClient.menu.hide()
+				}
 			} else {
 				ipcClient.menu.show()
 			}

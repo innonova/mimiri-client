@@ -7,7 +7,7 @@ import type { HideShowListener } from './ipc-client'
 
 class LocalAuth implements LoginListener, HideShowListener {
 	private _state: any = reactive({ locked: false })
-	private _lockTimeout: number = 1000
+	private _lockTimeout: number = 60000
 
 	constructor() {
 		noteManager.registerListener(this)
