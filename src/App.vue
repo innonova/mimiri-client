@@ -15,15 +15,8 @@
 		<DeleteAccount v-if="showDeleteAccount"></DeleteAccount>
 		<Update v-if="authenticated && showUpdate"></Update>
 		<div
-			v-if="
-				authenticated &&
-				!showConvertAccount &&
-				!showUpdate &&
-				!showDeleteAccount &&
-				!localAuth.locked &&
-				!showCreateEditAccount &&
-				!showSetPin
-			"
+			v-if="authenticated && !showConvertAccount"
+			v-show="!showUpdate && !showDeleteAccount && !showCreateEditAccount && !showSetPin && !localAuth.locked"
 			class="flex h-full overflow-hidden"
 			@mouseup="endDragging"
 		>
@@ -193,6 +186,9 @@ if (ipcClient.isAvailable) {
 // noteManager.beginTest('import-test')
 
 const handleShortcut = event => {
+	if (!authenticated || localAuth.locked || showSetPin || showUpdate || showDeleteAccount || showCreateEditAccount) {
+		return
+	}
 	const treeViewShortCutsActive =
 		(document.activeElement.tagName === 'BODY' || !noteEditor.value?.$el.contains(document.activeElement)) &&
 		event.target.tagName === 'BODY'

@@ -1,14 +1,13 @@
-import { Capacitor } from '@capacitor/core'
-import { App } from '@capacitor/app'
 import { mimiriPlatform } from './mimiri-platform'
 import { settingsManager } from './settings-manager'
-import { noteManager, updateManager } from '../global'
+import { ipcClient, noteManager, updateManager } from '../global'
 import { reactive } from 'vue'
 import type { LoginListener } from './note-manager'
+import type { HideShowListener } from './ipc-client'
 
-class LocalAuth implements LoginListener {
+class LocalAuth implements LoginListener, HideShowListener {
 	private _state: any = reactive({ locked: false })
-	private _lockTimeout: number = 60000
+	private _lockTimeout: number = 1000
 
 	constructor() {
 		noteManager.registerListener(this)
@@ -18,7 +17,7 @@ class LocalAuth implements LoginListener {
 
 	login() {
 		if (this._state.locked) {
-			this.resuming()
+			this.showing()
 		}
 	}
 
@@ -30,11 +29,8 @@ class LocalAuth implements LoginListener {
 	online() {}
 
 	public async init() {
-		if (Capacitor.isPluginAvailable('App')) {
-			App.addListener('resume', async () => this.resuming())
-			App.addListener('pause', () => this.pausing())
-		}
-		await this.resuming()
+		ipcClient.menu.registerHideShowListener(this)
+		await this.showing()
 	}
 
 	public async unlockWithPin(pin: string) {
@@ -64,7 +60,7 @@ class LocalAuth implements LoginListener {
 		sessionStorage.setItem('locked', 'true')
 	}
 
-	private async resuming() {
+	public async showing() {
 		if (this.lastPause < 0 || Date.now() - this.lastPause < this._lockTimeout) {
 			await this.unlock()
 		} else if (mimiriPlatform.isElectron) {
@@ -80,7 +76,7 @@ class LocalAuth implements LoginListener {
 		}
 	}
 
-	private async pausing() {
+	public async hiding() {
 		if (!this._state.locked) {
 			this.lastPause = Date.now()
 			await this.lock()

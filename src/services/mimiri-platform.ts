@@ -1,8 +1,6 @@
 import { Capacitor, registerPlugin } from '@capacitor/core'
 import { Keyboard } from '@capacitor/keyboard'
-import { App } from '@capacitor/app'
 import { reactive } from 'vue'
-import { mobileLog, noteManager, updateManager } from '../global'
 
 interface PlatformInfo {
 	mode: string
@@ -24,8 +22,6 @@ interface MimiriPlatformState {
 
 class MimiriPlatform {
 	private state: MimiriPlatformState = reactive({ locked: false })
-	private _lockTime = Date.now()
-	private _lastUpdateCheck = Date.now()
 	private _nativePlatform: MimiriNativePlatform
 	private _platformInfo: PlatformInfo
 	private _displayMode = 'browser'

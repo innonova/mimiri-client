@@ -8,6 +8,8 @@ import type { Bundle } from './update-manger'
 import { menuManager } from './menu-manager'
 import { toRaw } from 'vue'
 import { watchDog } from './watch-dog'
+import { Capacitor } from '@capacitor/core'
+import { App } from '@capacitor/app'
 
 export class MimerCache implements ICacheManager {
 	constructor(private api: IpcApi) {}
@@ -69,7 +71,13 @@ export class MimerCache implements ICacheManager {
 	}
 }
 
+export interface HideShowListener {
+	hiding(): Promise<void>
+	showing(): Promise<void>
+}
+
 export class MimerMenu {
+	private _listener: HideShowListener
 	constructor(private api: IpcApi) {
 		this.api?.menu?.onToggleScreenSharing(() => {
 			settingsManager.allowScreenSharing = !settingsManager.allowScreenSharing
@@ -87,10 +95,12 @@ export class MimerMenu {
 	}
 
 	public show() {
+		this._listener?.showing()
 		this.api.menu.show()
 	}
 
 	public hide() {
+		this._listener?.hiding()
 		this.api.menu.hide()
 	}
 
@@ -104,6 +114,17 @@ export class MimerMenu {
 
 	public seTrayMenu(value: any) {
 		this.api.menu.seTrayMenu(value)
+	}
+
+	registerHideShowListener(listener: HideShowListener) {
+		if (capacitorClient.available) {
+			if (Capacitor.isPluginAvailable('App')) {
+				App.addListener('resume', async () => listener.showing())
+				App.addListener('pause', () => listener.hiding())
+			}
+		} else {
+			this._listener = listener
+		}
 	}
 }
 
