@@ -8,7 +8,9 @@
 			v-if="authenticated && !showUpdate && !showDeleteAccount && !showCreateEditAccount"
 			ref="titleBar"
 		></TitleBar>
-		<Login v-if="!authenticated && !showCreateEditAccount && !showConvertAccount"></Login>
+		<Login
+			v-if="!authenticated && !showCreateEditAccount && !showConvertAccount && !noteManager.initInProgress"
+		></Login>
 		<CreateEditAccount ref="createEditAccountScreen"></CreateEditAccount>
 		<SetPinScreen v-if="showSetPin"></SetPinScreen>
 		<ConvertAccount v-if="showConvertAccount"></ConvertAccount>

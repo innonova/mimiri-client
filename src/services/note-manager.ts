@@ -45,6 +45,7 @@ interface NoteManagerState {
 	selectedNoteId?: Guid
 	shareOffers: NoteShareInfo[]
 	stateLoaded: boolean
+	initInProgress: boolean
 }
 
 class MimerError extends Error {
@@ -96,6 +97,7 @@ export class NoteManager {
 			noteOpen: !this._isMobile,
 			shareOffers: [],
 			stateLoaded: false,
+			initInProgress: true,
 		})
 		this.client = new MimerClient(host, serverKey, serverKeyId)
 		browserHistory.init(noteId => {
@@ -217,12 +219,16 @@ export class NoteManager {
 	}
 
 	private async recoverLogin() {
-		if (await this.client.restoreLogin()) {
-			this.state.noteOpen = !this._isMobile
-			browserHistory.openTree(ipcClient.isAvailable && Capacitor.getPlatform() === 'web')
-			await this.ensureCreateComplete()
-			await this.loadRootNote()
-			await this.loadState()
+		try {
+			if (await this.client.restoreLogin()) {
+				this.state.noteOpen = !this._isMobile
+				browserHistory.openTree(ipcClient.isAvailable && Capacitor.getPlatform() === 'web')
+				await this.ensureCreateComplete()
+				await this.loadRootNote()
+				await this.loadState()
+			}
+		} finally {
+			this.state.initInProgress = false
 		}
 	}
 
@@ -1113,5 +1119,9 @@ export class NoteManager {
 
 	public get maxHistoryEntries() {
 		return this.client.maxHistoryEntries
+	}
+
+	public get initInProgress() {
+		return this.state.initInProgress
 	}
 }
