@@ -565,7 +565,7 @@ export class MimerClient {
 		const request: UpdateUserRequest = {
 			oldUsername: this.username,
 			response: responseToChallenge,
-			hashLength: oldPassword.length / 2,
+			hashLength: oldPasswordHash.length / 2,
 			username: newUsername || this.username,
 			iterations: passwordIterations,
 			salt,
@@ -588,6 +588,8 @@ export class MimerClient {
 		}
 		await this.rootSignature.sign('user', request)
 		await this.rootSignature.sign('old-user', request)
+		console.log(request)
+
 		await this.post<BasicResponse>('/user/update', request, true)
 		this.username = newUsername
 		if (this.cacheManager != null) {
