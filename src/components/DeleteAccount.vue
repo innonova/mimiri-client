@@ -71,27 +71,13 @@
 					<button
 						v-else
 						tabindex="3"
-						class="bg-button-primary text-button-primary-text hover:opacity-80 w-36 mr-2"
 						:disabled="loading || !understandDeleteAccount || !understandDeleteData || !understandRoRecovery"
-						:class="{
-							'text-menu-disabled':
-								loading || !understandDeleteAccount || !understandDeleteData || !understandRoRecovery,
-						}"
 						data-testid="submit-button"
 						type="submit"
 					>
 						Delete Account
 					</button>
-					<button
-						class="bg-button-secondary text-button-secondary-text mb-2 hover:opacity-80"
-						:class="{
-							'text-menu-disabled': loading,
-						}"
-						:disabled="loading"
-						@click="close"
-					>
-						Cancel
-					</button>
+					<button class="secondary" :disabled="loading" @click="close">Cancel</button>
 				</div>
 			</div>
 		</form>

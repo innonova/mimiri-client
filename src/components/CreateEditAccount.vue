@@ -167,19 +167,8 @@
 						v-if="passwordTestInProgress"
 						class="animate-spin w-8 h-8 ml-10 mr-10 inline-block"
 					></LoadingIcon>
-					<button
-						v-if="!passwordTestInProgress"
-						class="bg-button-primary text-button-primary-text hover:opacity-80 ml-2 mr-2"
-						@click="testPassword()"
-					>
-						Test
-					</button>
-					<button
-						class="bg-button-primary text-button-primary-text hover:opacity-80 mr-2"
-						@click="cancelPasswordGenerator"
-					>
-						Cancel
-					</button>
+					<button v-if="!passwordTestInProgress" @click="testPassword()">Test</button>
+					<button class="secondary" @click="cancelPasswordGenerator">Cancel</button>
 				</div>
 				<div v-if="timeElapsed" class="mt-3 ml-2 pl-24 leading-5">Time elapsed: {{ timeElapsed }}</div>
 			</div>
@@ -250,37 +239,16 @@
 					<button
 						v-if="!loading && !authenticated"
 						tabindex="3"
-						class="bg-button-primary hover:opacity-80"
 						:disabled="loading || !canCreate"
-						:class="{
-							'text-button-disabled-text': loading || !canCreate,
-							'text-button-primary-text': !loading && canCreate,
-						}"
 						type="submit"
 						data-testid="create-button"
 					>
 						Create
 					</button>
-					<button
-						v-if="!loading && authenticated"
-						tabindex="3"
-						class="bg-button-primary hover:opacity-80"
-						:disabled="loading || !canSave"
-						:class="{
-							'text-button-disabled-text': loading || !canSave,
-							'text-button-primary-text': !loading && canSave,
-						}"
-						@click="save"
-					>
+					<button v-if="!loading && authenticated" tabindex="3" :disabled="loading || !canSave" @click="save">
 						Save
 					</button>
-					<button
-						v-if="!loading && authenticated"
-						tabindex="3"
-						class="bg-button-primary text-button-primary-text hover:opacity-80 ml-2"
-						:disabled="loading"
-						@click="cancel"
-					>
+					<button v-if="!loading && authenticated" tabindex="3" class="secondary" :disabled="loading" @click="cancel">
 						Close
 					</button>
 					<div v-if="!loading && !authenticated" class="mt-5 mr-1 cursor-pointer hover:underline" @click="login">

@@ -1,10 +1,7 @@
 <template>
 	<dialog class="bg-dialog border border-solid border-dialog-border text-text" ref="dialog">
 		<div class="grid grid-rows-[auto_1fr_auto] gap-6">
-			<header class="flex gap-8 justify-between items-center">
-				<h1 class="pl-2">Share Note</h1>
-				<button class="cursor-default w-8" @click="close">X</button>
-			</header>
+			<DialogTitle @close="close">Share Note</DialogTitle>
 			<main class="px-2">
 				<div>
 					<label class="flex justify-between items-center">
@@ -25,9 +22,9 @@
 					><input ref="allowReshare" id="allow-reshare" type="checkbox" class="align-middle mr-0 ml-2" />
 				</div>
 			</main>
-			<footer class="flex justify-end gap-2">
-				<button class="bg-button-primary text-button-primary-text mr-2 mb-2" @click="submitDialog">OK</button>
-				<button class="bg-button-secondary text-button-secondary-text mr-2 mb-2" @click="close">Cancel</button>
+			<footer class="flex justify-end gap-2 pr-2 pb-2">
+				<button @click="submitDialog">OK</button>
+				<button class="secondary" @click="close">Cancel</button>
 			</footer>
 		</div>
 	</dialog>
@@ -35,7 +32,8 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { noteManager } from '../global'
+import { noteManager } from '../../global'
+import DialogTitle from './DialogTitle.vue'
 const dialog = ref(null)
 const nameInput = ref(null)
 const allowReshare = ref(null)

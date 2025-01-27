@@ -14,29 +14,9 @@
 			<div class="border-2 w-10 h-16 rounded-lg flex items-center justify-center"><h1 v-if="pin.length > 3">*</h1></div>
 		</div>
 		<div class="mt-6">
-			<button
-				class="bg-button-primary"
-				:disabled="!canSet"
-				:class="{
-					'text-button-disabled-text': !canSet,
-					'text-button-primary-text hover:opacity-80': canSet,
-				}"
-				@click="setPin"
-			>
-				Set PIN
-			</button>
-			<button
-				class="bg-button-primary ml-2"
-				@click="disablePin"
-				:disabled="!localAuth.pinEnabled"
-				:class="{
-					'text-button-disabled-text': !localAuth.pinEnabled,
-					'text-button-primary-text hover:opacity-80': localAuth.pinEnabled,
-				}"
-			>
-				Disable PIN
-			</button>
-			<button class="bg-button-primary text-button-primary-text hover:opacity-80 ml-2" @click="close">Cancel</button>
+			<button :disabled="!canSet" @click="setPin">Set PIN</button>
+			<button @click="disablePin" :disabled="!localAuth.pinEnabled">Disable PIN</button>
+			<button class="secondary" @click="close">Cancel</button>
 		</div>
 	</div>
 </template>

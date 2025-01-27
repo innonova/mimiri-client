@@ -1,17 +1,12 @@
 <template>
 	<dialog class="w-80 bg-dialog text-text border border-solid border-dialog-border" ref="dialog">
 		<div class="grid grid-rows-[auto_1fr_auto] gap-6">
-			<header class="flex gap-8 justify-between items-center py-0.5 bg-title-bar">
-				<div class="pl-2">{{ title }}</div>
-				<button class="cursor-default w-8" @click="close">X</button>
-			</header>
+			<DialogTitle @close="close">{{ title }}</DialogTitle>
 			<main class="px-2 leading-5">
 				<div>{{ text }}</div>
 			</main>
-			<footer class="flex justify-end gap-2">
-				<button class="bg-button-secondary text-button-secondary-text mr-2 mb-2 hover:opacity-80" @click="close">
-					OK
-				</button>
+			<footer class="flex justify-end gap-2 pr-2 pb-2">
+				<button @click="close">OK</button>
 			</footer>
 		</div>
 	</dialog>
@@ -19,7 +14,8 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { noteManager } from '../global'
+import { noteManager } from '../../global'
+import DialogTitle from './DialogTitle.vue'
 const dialog = ref(null)
 const title = ref('')
 const text = ref('')

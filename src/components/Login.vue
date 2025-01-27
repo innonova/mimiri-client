@@ -30,15 +30,7 @@
 							<div v-if="longTime" class="mt-1">{{ timeElapsed }}</div>
 						</div>
 					</div>
-					<button
-						v-else
-						tabindex="3"
-						class="bg-button-primary text-button-primary-text hover:opacity-80"
-						:disabled="loading"
-						type="submit"
-					>
-						Login
-					</button>
+					<button v-else tabindex="3" :disabled="loading" type="submit">Login</button>
 				</div>
 				<div class="flex mt-5 w-full justify-between items-center">
 					<a class="invisible md:visible hover:underline" href="https://mimiri.io" target="_blank">What is Mimiri?</a>

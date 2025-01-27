@@ -1,10 +1,7 @@
 <template>
 	<dialog class="w-96 bg-dialog text-text border border-solid border-dialog-border" ref="dialog">
 		<div v-if="!showLog" class="grid grid-rows-[auto_1fr_auto] gap-6" @click="boxClicked">
-			<header class="flex gap-8 justify-between items-center py-0.5 bg-title-bar">
-				<div class="pl-2">Mimiri Notes</div>
-				<button class="cursor-default w-8 outline-none" @click="close">X</button>
-			</header>
+			<DialogTitle @close="close">Mimiri Notes</DialogTitle>
 			<main>
 				<div class="p-1 pl-4">Bundle Version: {{ updateManager.currentVersion }}</div>
 				<div class="p-1 pl-4 pt-2">Host Version: {{ updateManager.hostVersion }}</div>
@@ -16,10 +13,8 @@
 				<div class="pt-3 pl-4"><a href="https://discord.gg/pg69qPAVZR" target="_blank">Join us on Discord</a></div>
 				<div class="pt-6 pl-4">Copyright &copy;2024 innonova GmbH</div>
 			</main>
-			<footer class="flex justify-end gap-2 pt-3">
-				<button class="bg-button-primary text-button-primary-text mr-2 mb-2 hover:opacity-80" @click="close">
-					Close
-				</button>
+			<footer class="flex justify-end gap-2 pt-3 pr-2 pb-2">
+				<button class="secondary" @click="close">Close</button>
 			</footer>
 		</div>
 		<div v-if="showLog" class="flex flex-col">
@@ -30,12 +25,10 @@
 			</div>
 			<div class="flex justify-around">
 				<div class="text-center">
-					<button class="bg-button-primary text-button-primary-text hover:opacity-80" @click="closeLog">
-						Close Log
-					</button>
+					<button class="secondary" @click="closeLog">Close Log</button>
 				</div>
 				<div class="text-center">
-					<button class="bg-button-primary text-button-primary-text hover:opacity-80" @click="changeChannel">
+					<button @click="changeChannel">
 						{{ settingsManager.channel }}
 					</button>
 				</div>
@@ -46,8 +39,9 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { noteManager, updateManager, mobileLog } from '../global'
-import { settingsManager } from '../services/settings-manager'
+import { noteManager, updateManager, mobileLog } from '../../global'
+import { settingsManager } from '../../services/settings-manager'
+import DialogTitle from './DialogTitle.vue'
 const dialog = ref(null)
 
 const usedBytes = ref('0 MB')

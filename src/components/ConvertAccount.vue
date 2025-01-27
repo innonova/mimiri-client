@@ -19,22 +19,8 @@
 			</div>
 		</div>
 		<div class="w-[300px] mt-2 m-auto flex justify-end">
-			<button
-				tabindex="1"
-				class="bg-button-primary text-button-primary-text mr-2 hover:opacity-80"
-				:disabled="running"
-				@click="convert"
-			>
-				Convert
-			</button>
-			<button
-				tabindex="2"
-				class="bg-button-secondary text-button-secondary-text hover:opacity-80"
-				:disabled="running"
-				@click="cancel"
-			>
-				Cancel
-			</button>
+			<button tabindex="1" :disabled="running" @click="convert">Convert</button>
+			<button tabindex="2" class="secondary" :disabled="running" @click="cancel">Cancel</button>
 		</div>
 	</div>
 </template>

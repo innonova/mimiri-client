@@ -41,28 +41,10 @@
 			</div>
 		</div>
 		<div v-if="!updateManager.isHostUpdate || !mimiriPlatform.isLinux" class="mt-2 m-auto flex justify-end">
-			<button class="bg-button-primary text-button-primary-text mr-2 hover:opacity-80" v-if="!running" @click="update">
-				Update
-			</button>
-			<button
-				class="bg-button-secondary text-button-secondary-text w-32 hover:opacity-80"
-				v-if="!running"
-				@click="later"
-			>
-				Maybe Later
-			</button>
-			<button
-				class="bg-button-primary text-button-primary-text w-32 mr-2 hover:opacity-80"
-				v-if="running && stage === 'ready'"
-				@click="restart"
-			>
-				Restart
-			</button>
-			<button
-				class="bg-button-primary text-button-primary-text w-32 hover:opacity-80"
-				v-if="running && (stage === 'download' || stage === 'ready')"
-				@click="cancel"
-			>
+			<button v-if="!running" @click="update">Update</button>
+			<button class="secondary" v-if="!running" @click="later">Maybe Later</button>
+			<button v-if="running && stage === 'ready'" @click="restart">Restart</button>
+			<button class="secondary" v-if="running && (stage === 'download' || stage === 'ready')" @click="cancel">
 				Cancel
 			</button>
 		</div>

@@ -27,8 +27,9 @@
 		--color-warning: #f6ba00;
 		--color-button-primary: #4381c1;
 		--color-button-primary-text: #fff;
-		--color-button-disabled-text: #b7b7b7;
-		--color-button-secondary: #d8d8d8;
+		--color-button-disabled: #aaa;
+		--color-button-disabled-text: #ccc;
+		--color-button-secondary: #777;
 		--color-button-secondary-text: #000;
 		--color-dialog: #f4f4f4;
 		--color-dialog-border: #000;
@@ -69,8 +70,9 @@
 		--color-warning: #f6ba00;
 		--color-button-primary: #666;
 		--color-button-primary-text: #fff;
-		--color-button-disabled-text: #555;
-		--color-button-secondary: #333;
+		--color-button-disabled: #484848;
+		--color-button-disabled-text: #777;
+		--color-button-secondary: #222;
 		--color-button-secondary-text: #fff;
 		--color-dialog: #3f3f3f;
 		--color-dialog-border: #8e8e8e;
@@ -108,7 +110,20 @@ html[data-env-support='false'] {
 	color: inherit !important;
 }
 
-h1,
+button {
+	@apply bg-button-primary text-button-primary-text hover:brightness-125 hover:rounded ml-2;
+}
+
+button:disabled,
+button[disabled] {
+	@apply bg-button-disabled text-button-disabled-text hover:brightness-100;
+}
+
+button.secondary {
+	@apply bg-button-secondary text-button-primary-text hover:brightness-150;
+}
+
+.button-disabled h1,
 h2 {
 	@apply font-display text-size-header;
 }

@@ -58,12 +58,7 @@
 						</div>
 					</template>
 				</div>
-				<button
-					class="w-full"
-					:class="{ 'text-menu-disabled': !mimiriEditor.history.hasMoreHistory }"
-					:disabled="!mimiriEditor.history.hasMoreHistory"
-					@click="loadMoreHistory"
-				>
+				<button class="w-full" :disabled="!mimiriEditor.history.hasMoreHistory" @click="loadMoreHistory">
 					Read More Entries
 				</button>
 			</div>

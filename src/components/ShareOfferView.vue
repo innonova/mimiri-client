@@ -22,12 +22,8 @@
 						from: <span class="italic">{{ offer.sender }}</span>
 					</div>
 					<div class="flex w-full justify-end mt-2">
-						<button class="bg-button-primary text-button-primary-text mr-2 mb-2" @click="acceptOffer(offer)">
-							Accept
-						</button>
-						<button class="bg-button-secondary text-button-secondary-text mr-2 mb-2" @click="declineOffer(offer)">
-							Ignore
-						</button>
+						<button @click="acceptOffer(offer)">Accept</button>
+						<button class="secondary" @click="declineOffer(offer)">Ignore</button>
 					</div>
 				</div>
 			</template>

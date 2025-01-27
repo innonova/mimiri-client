@@ -1,10 +1,7 @@
 <template>
 	<dialog class="min-w-96 bg-dialog text-text border border-solid border-dialog-border" ref="dialog">
 		<div class="grid grid-rows-[auto_1fr_auto] gap-6">
-			<header class="flex gap-8 justify-between items-center py-0.5 bg-title-bar">
-				<div class="pl-2">Generate Password</div>
-				<button class="cursor-default w-8" @click="close">X</button>
-			</header>
+			<DialogTitle @close="close">Generate Password</DialogTitle>
 			<main class="px-3">
 				<PasswordGeneratorComp
 					ref="passwordGenerator"
@@ -27,19 +24,10 @@
 					</div>
 				</div>
 			</main>
-			<footer class="flex justify-end items-center gap-2">
-				<button class="bg-button-secondary text-button-secondary-text mb-2 hover:opacity-80" @click="copyPassword">
-					Copy
-				</button>
-				<button
-					class="bg-button-secondary text-button-secondary-text mb-2 hover:opacity-80"
-					@click="regeneratePassword"
-				>
-					Generate
-				</button>
-				<button class="bg-button-secondary text-button-secondary-text mr-2 mb-2 hover:opacity-80" @click="close">
-					Close
-				</button>
+			<footer class="flex justify-end items-center gap-2 pr-2 pb-2">
+				<button @click="copyPassword">Copy</button>
+				<button @click="regeneratePassword">Generate</button>
+				<button class="secondary" @click="close">Close</button>
 			</footer>
 		</div>
 	</dialog>
@@ -47,10 +35,11 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import PasswordGeneratorComp from './PasswordGenerator.vue'
-import ShowPasswordIcon from '../icons/show-password.vue'
-import ShowingPasswordIcon from '../icons/showing-password.vue'
+import PasswordGeneratorComp from '../PasswordGenerator.vue'
+import ShowPasswordIcon from '../../icons/show-password.vue'
+import ShowingPasswordIcon from '../../icons/showing-password.vue'
 import { Capacitor, registerPlugin } from '@capacitor/core'
+import DialogTitle from './DialogTitle.vue'
 
 const passwordGenerator = ref(null)
 const password = ref('')

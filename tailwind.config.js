@@ -11,6 +11,7 @@ export default {
 		fontSize: {
 			'size-base': ['14px', '1'],
 			'size-menu': ['13px', '20px'],
+			'size-title': ['16px', '1'],
 			'size-header': ['24px', '1.3'],
 			'size-input': ['16px', '1.5'],
 		},
@@ -41,6 +42,7 @@ export default {
 			offline: 'var(--color-offline)',
 			warning: 'var(--color-warning)',
 			'button-primary': 'var(--color-button-primary)',
+			'button-disabled': 'var(--color-button-disabled)',
 			'button-primary-text': 'var(--color-button-primary-text)',
 			'button-disabled-text': 'var(--color-button-disabled-text)',
 			'dialog': 'var(--color-dialog)',
