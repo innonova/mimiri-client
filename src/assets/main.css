@@ -149,7 +149,11 @@ button {
 }
 
 input {
-	@apply bg-input text-input-text text-size-input;
+	@apply bg-input text-input-text text-size-input px-1 pt-px pb-[2px];
+}
+
+select {
+	@apply bg-input text-input-text text-size-input px-1 pt-px pb-[2px];
 }
 
 input::selection {
