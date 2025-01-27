@@ -26,21 +26,11 @@
 			@click="toggleSearchAllNotes"
 		></ToolbarIcon>
 		<ToolbarIcon
-			icon="note-shared"
+			class="hidden md:block"
+			icon="search-all-notes"
 			:hoverEffect="true"
-			title="Toggle Share Offers"
-			@click="toggleShareOffers"
-		></ToolbarIcon>
-		<div
-			v-if="!mimiriPlatform.isPhone"
-			class="inline-block h-4/5 w-0 border border-solid border-toolbar-separator m-0.5"
-		></div>
-		<ToolbarIcon
-			v-if="!mimiriPlatform.isPhone"
-			icon="refresh"
-			:hoverEffect="true"
-			title="Refresh Root Notes"
-			@click="refreshRoot"
+			title="Search All Notes"
+			@click="gotoSearchAllNotes"
 		></ToolbarIcon>
 		<div
 			v-if="mimiriPlatform.isPhone"
@@ -67,7 +57,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { noteManager, showShareOffers, showSearchBox, ipcClient } from '../global'
+import { noteManager, showShareOffers, showSearchBox, ipcClient, searchInput } from '../global'
 import ToolbarIcon from './ToolbarIcon.vue'
 import { MenuItems, menuManager } from '../services/menu-manager'
 import { mimiriPlatform } from '../services/mimiri-platform'
@@ -109,23 +99,20 @@ const createChildNote = () => {
 	noteManager.newNote()
 }
 
-const refreshRoot = async () => {
-	await noteManager.root.refresh()
-}
-
-const toggleShareOffers = () => {
-	showShareOffers.value = !showShareOffers.value
-	if (showShareOffers.value) {
-		noteManager.loadShareOffers()
-	}
-}
-
 const searchAllNotes = () => {
 	showSearchBox.value = true
 }
 
 const toggleSearchAllNotes = () => {
 	showSearchBox.value = !showSearchBox.value
+}
+
+const gotoSearchAllNotes = () => {
+	searchInput.value.focus()
+	searchInput.value.classList.add('animate-ping')
+	setTimeout(() => {
+		searchInput.value.classList.remove('animate-ping')
+	}, 600)
 }
 
 const showMobileMenu = () => {
