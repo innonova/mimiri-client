@@ -110,8 +110,8 @@
 				details
 			</div>
 		</div>
-		<div v-if="props.mode === 'mimiri'">
-			<div class="mt-4 mb-1.5 font-bold">How likely to be cracked in case of:</div>
+		<div v-if="props.mode === 'mimiri'" class="info mt-4">
+			<div class="mt-1 mb-1.5 font-bold">How likely to be cracked in case of:</div>
 			<div class="mt-1 pl-1 flex justify-between w-64">
 				<div>Large scale breach:</div>
 				{{ breachLikelyHood }}
@@ -136,8 +136,8 @@
 				</div>
 			</div>
 		</div>
-		<div v-if="props.mode === '3rdp'">
-			<div class="mt-4 mb-1.5 font-bold">How likely to be cracked in case of:</div>
+		<div v-if="props.mode === '3rdp'" class="info mt-4">
+			<div class="mb-1.5 font-bold">How likely to be cracked in case of:</div>
 			<div class="mt-1 pl-1 flex justify-between w-80">
 				<div>Online attack:</div>
 				not happening

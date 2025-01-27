@@ -22,6 +22,7 @@ export default {
 			black: '#000',
 			backdrop: 'var(--color-backdrop)',
 			back: 'var(--color-back)',
+			info: 'var(--color-info)',
 			text: 'var(--color-text)',
 			logo: 'var(--color-logo)',
 			'title-bar': 'var(--color-title-bar)',

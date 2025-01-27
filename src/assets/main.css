@@ -5,6 +5,7 @@
 @layer base {
 	html[data-theme='light'] {
 		--color-back: #e3e3e3;
+		--color-info: #eaeaf2;
 		--color-backdrop: rgba(0, 0, 0, 0.2);
 		--color-text: #000;
 		--color-logo: #000;
@@ -48,6 +49,7 @@
 
 	html[data-theme='dark'] {
 		--color-back: #3f3f3f;
+		--color-info: #505059;
 		--color-backdrop: rgba(255, 255, 255, 0.1);
 		--color-text: #d4d4d4;
 		--color-logo: #fff;
@@ -158,6 +160,10 @@ select {
 
 input::selection {
 	@apply bg-input-selection text-input-selected-text;
+}
+
+div.info {
+	@apply bg-info pl-1 pr-2 pb-2 pt-1;
 }
 
 div {
