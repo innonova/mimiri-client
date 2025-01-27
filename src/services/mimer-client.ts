@@ -244,6 +244,9 @@ export class MimerClient {
 				if (ipcClient.isAvailable && ipcClient.session.isAvailable) {
 					str = await ipcClient.session.get('mimiri-login-data')
 				} else if (mimiriPlatform.isIos || mimiriPlatform.isAndroid) {
+					if (!(await mimiriPlatform.verifyBiometry())) {
+						return
+					}
 					str = localStorage.getItem('mimiri-login-data')
 				} else {
 					str = sessionStorage.getItem('mimiri-login-data')
