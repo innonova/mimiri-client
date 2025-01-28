@@ -20,7 +20,7 @@
 import { ref } from 'vue'
 import { MimerNote } from '../../services/types/mimer-note'
 import { mimiriEditor } from '../../global'
-import DialogTitle from './DialogTitle.vue'
+import DialogTitle from '../elements/DialogTitle.vue'
 const dialog = ref(null)
 const noteItem = ref<MimerNote>(undefined)
 

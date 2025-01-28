@@ -33,7 +33,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { noteManager } from '../../global'
-import DialogTitle from './DialogTitle.vue'
+import DialogTitle from '../elements/DialogTitle.vue'
 const dialog = ref(null)
 const nameInput = ref(null)
 const allowReshare = ref(null)

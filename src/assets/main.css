@@ -5,7 +5,7 @@
 @layer base {
 	html[data-theme='light'] {
 		--color-back: #e3e3e3;
-		--color-info: #eaeaf2;
+		--color-info: #d2d2d8;
 		--color-backdrop: rgba(0, 0, 0, 0.2);
 		--color-text: #000;
 		--color-logo: #000;
@@ -125,7 +125,12 @@ button.secondary {
 	@apply bg-button-secondary text-button-primary-text hover:brightness-150;
 }
 
-.button-disabled h1,
+button.secondary:disabled,
+button.secondary[disabled] {
+	@apply bg-button-disabled text-button-disabled-text hover:brightness-100;
+}
+
+h1,
 h2 {
 	@apply font-display text-size-header;
 }

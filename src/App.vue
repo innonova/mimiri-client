@@ -5,20 +5,18 @@
 	</div>
 	<div v-if="!loading" class="flex flex-col h-full bg-back text-text dark-mode safe-area-padding">
 		<TitleBar
-			v-if="authenticated && !showUpdate && !showDeleteAccount && !showCreateEditAccount"
+			v-if="authenticated && !showUpdate && !showDeleteAccount && !showCreateAccount && !showSettings"
 			ref="titleBar"
 		></TitleBar>
-		<Login
-			v-if="!authenticated && !showCreateEditAccount && !showConvertAccount && !noteManager.initInProgress"
-		></Login>
+		<Login v-if="!authenticated && !showCreateAccount && !showConvertAccount && !noteManager.initInProgress"></Login>
 		<CreateEditAccount ref="createEditAccountScreen"></CreateEditAccount>
-		<SetPinScreen v-if="showSetPin"></SetPinScreen>
+		<Settings v-if="authenticated" ref="settingsScreen"></Settings>
 		<ConvertAccount v-if="showConvertAccount"></ConvertAccount>
 		<DeleteAccount v-if="showDeleteAccount"></DeleteAccount>
 		<Update v-if="authenticated && showUpdate"></Update>
 		<div
 			v-if="authenticated && !showConvertAccount"
-			v-show="!showUpdate && !showDeleteAccount && !showCreateEditAccount && !showSetPin && !localAuth.locked"
+			v-show="!showUpdate && !showDeleteAccount && !showCreateAccount && !localAuth.locked && !showSettings"
 			class="flex h-full overflow-hidden"
 			@mouseup="endDragging"
 		>
@@ -54,6 +52,7 @@
 		<CheckUpdateDialog ref="checkUpdateDialog"></CheckUpdateDialog>
 		<SaveEmptyNodeDialog ref="saveEmptyNodeDialog"></SaveEmptyNodeDialog>
 		<LimitDialog ref="limitDialog"></LimitDialog>
+		<PasswordDialog ref="passwordDialog"></PasswordDialog>
 		<div
 			v-if="noteManager.state.busy"
 			class="absolute left-0 top-0 w-full h-full flex items-center justify-around text-white"
@@ -72,7 +71,8 @@ import MainToolbar from './components/MainToolbar.vue'
 import Update from './components/Update.vue'
 import TitleBar from './components/TitleBar.vue'
 import Login from './components/Login.vue'
-import CreateEditAccount from './components/CreateEditAccount.vue'
+import CreateEditAccount from './components/CreateAccount.vue'
+import Settings from './components/SettingsScreen.vue'
 import ContextMenu from './components/ContextMenu.vue'
 import NotificationList from './components/NotificationList.vue'
 import DeleteNodeDialog from './components/dialogs/DeleteNodeDialog.vue'
@@ -82,6 +82,7 @@ import AboutDialog from './components/dialogs/AboutDialog.vue'
 import CheckUpdateDialog from './components/dialogs/CheckUpdateDialog.vue'
 import SaveEmptyNodeDialog from './components/dialogs/SaveEmptyNodeDialog.vue'
 import LimitDialog from './components/dialogs/LimitDialog.vue'
+import PasswordDialog from './components/dialogs/PasswordDialog.vue'
 import ConvertAccount from './components/ConvertAccount.vue'
 import SearchBox from './components/SearchBox.vue'
 import EmptyRecycleBinDialog from './components/dialogs/EmptyRecycleBinDialog.vue'
@@ -96,8 +97,7 @@ import {
 	deleteNodeDialog,
 	emptyRecycleBinDialog,
 	passwordGeneratorDialog,
-	showCreateEditAccount,
-	showSetPin,
+	showCreateAccount,
 	showConvertAccount,
 	showUpdate,
 	mainToolbar,
@@ -111,9 +111,12 @@ import {
 	mimiriEditor,
 	saveEmptyNodeDialog,
 	limitDialog,
+	passwordDialog,
 	showDeleteAccount,
 	updateManager,
 	mobileLog,
+	settingsScreen,
+	showSettings,
 } from './global'
 import { settingsManager } from './services/settings-manager'
 import LoadingIcon from './icons/loading.vue'
@@ -124,7 +127,6 @@ import { Debounce } from './services/helpers'
 import { localAuth } from './services/local-auth'
 import LockScreen from './components/LockScreen.vue'
 import { useEventListener } from '@vueuse/core'
-import SetPinScreen from './components/SetPinScreen.vue'
 
 mobileLog.log(`App Loading ${settingsManager.channel} ${updateManager.currentVersion}`)
 
@@ -188,7 +190,7 @@ if (ipcClient.isAvailable) {
 // noteManager.beginTest('import-test')
 
 const handleShortcut = event => {
-	if (!authenticated || localAuth.locked || showSetPin || showUpdate || showDeleteAccount || showCreateEditAccount) {
+	if (!authenticated || localAuth.locked || showSettings || showUpdate || showDeleteAccount || showCreateAccount) {
 		return
 	}
 	const treeViewShortCutsActive =

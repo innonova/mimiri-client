@@ -151,11 +151,11 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, watch, watchEffect } from 'vue'
-import { PasswordGenerator, type PasswordComplexity } from '../services/password-generator'
-import { passwordHasher } from '../services/password-hasher'
-import { DEFAULT_PASSWORD_ALGORITHM, MimerClient } from '../services/mimer-client'
-import { SymmetricCrypt } from '../services/symmetric-crypt'
+import { computed, onMounted, ref, watch, watchEffect } from 'vue'
+import { PasswordGenerator, passwordTimeFactor, type PasswordComplexity } from '../../services/password-generator'
+import { passwordHasher } from '../../services/password-hasher'
+import { DEFAULT_PASSWORD_ALGORITHM, MimerClient } from '../../services/mimer-client'
+import { SymmetricCrypt } from '../../services/symmetric-crypt'
 const verificationInProgress = ref(false)
 const preset = ref(0)
 const custom = ref(false)
@@ -175,12 +175,12 @@ const password = ref('')
 const verificationText = ref('')
 const timeElapsed = ref('')
 const verificationResult = ref('')
-const time1M = ref('')
-const time2M = ref('')
-const time10M = ref('')
-const time20M = ref('')
 const showDetails = ref(false)
 const showInvestmentDetails = ref(false)
+const time1M = computed(() => `~${passwordTimeFactor.time1M}s`)
+const time2M = computed(() => `~${passwordTimeFactor.time2M}s`)
+const time10M = computed(() => `~${passwordTimeFactor.time10M}s`)
+const time20M = computed(() => `~${passwordTimeFactor.time20M}s`)
 
 const emit = defineEmits(['password'])
 
@@ -425,14 +425,6 @@ const calculateLikelyHood = (costYear, investment) => {
 onMounted(() => {
 	preset.value = props.mode === 'mimiri' ? 0 : 5
 	loadPreset()
-	setTimeout(() => {
-		generator.calcTimeFactor().then(times => {
-			time1M.value = `~${times.time1M}s`
-			time2M.value = `~${times.time2M}s`
-			time10M.value = `~${Math.ceil(times.time10M / 5) * 5}s`
-			time20M.value = `~${Math.ceil(times.time20M / 5) * 5}s`
-		})
-	}, 200)
 })
 
 watchEffect(async () => {
@@ -462,14 +454,14 @@ watchEffect(async () => {
 	}
 	generator.generate().then(pwd => {
 		password.value = pwd
-		emit('password', pwd)
+		emit('password', pwd, iterations.value)
 	})
 })
 
 const regeneratePassword = () => {
 	generator.generate().then(pwd => {
 		password.value = pwd
-		emit('password', pwd)
+		emit('password', pwd, iterations.value)
 	})
 }
 

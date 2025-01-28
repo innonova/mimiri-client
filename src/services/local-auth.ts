@@ -103,6 +103,10 @@ class LocalAuth implements LoginListener, HideShowListener {
 		return this._state.locked
 	}
 
+	public get pin() {
+		return noteManager.root.note.getItem('config').pinCode
+	}
+
 	public get lastPinFailed() {
 		return localStorage.getItem('lastPin') === 'failure'
 	}

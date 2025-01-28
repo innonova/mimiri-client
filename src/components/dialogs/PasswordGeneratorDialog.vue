@@ -35,11 +35,11 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import PasswordGeneratorComp from '../PasswordGenerator.vue'
+import PasswordGeneratorComp from '../elements/PasswordGenerator.vue'
 import ShowPasswordIcon from '../../icons/show-password.vue'
 import ShowingPasswordIcon from '../../icons/showing-password.vue'
 import { Capacitor, registerPlugin } from '@capacitor/core'
-import DialogTitle from './DialogTitle.vue'
+import DialogTitle from '../elements/DialogTitle.vue'
 
 const passwordGenerator = ref(null)
 const password = ref('')

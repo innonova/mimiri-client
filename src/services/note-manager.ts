@@ -358,6 +358,10 @@ export class NoteManager {
 		}
 	}
 
+	public async verifyPassword(password: string) {
+		return this.client.verifyPassword(password)
+	}
+
 	public async goOnline(password?: string) {
 		mobileLog.log('Going online')
 		this.beginAction()
@@ -474,8 +478,8 @@ export class NoteManager {
 	public async changeUserNameAndPassword(
 		username: string,
 		oldPassword: string,
-		newPassword: string,
-		iterations: number,
+		newPassword?: string,
+		iterations?: number,
 	) {
 		await this.client.changeUserNameAndPassword(username, oldPassword, newPassword, iterations)
 	}

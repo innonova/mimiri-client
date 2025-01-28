@@ -9,13 +9,12 @@
 		>
 			<slot></slot>
 		</div>
-		<button class="cursor-default w-8 outline-none m-1" @click="close">X</button>
+		<button class="cursor-default w-8 outline-none m-1" @click="close" type="button">X</button>
 	</header>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import DialogTitle from './DialogTitle.vue'
 const titleBar = ref(null)
 
 let dialog

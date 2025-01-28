@@ -48,7 +48,7 @@ import { env, ipcClient } from '../global'
 import { mimiriPlatform } from './mimiri-platform'
 
 export const DEFAULT_SALT_SIZE = 32
-export const DEFAULT_PASSWORD_ALGORITHM = 'PBKDF2;SHA512;1024'
+export const DEFAULT_PASSWORD_ALGORITHM = 'PBKDF2;SHA512;256'
 
 export interface LoginData {
 	username: string
@@ -369,6 +369,26 @@ export class MimerClient {
 		}
 	}
 
+	public async verifyPassword(password: string) {
+		try {
+			const preLoginResponse = await this.get<PreLoginResponse>(`/user/pre-login/${this.username}`)
+			const passwordHash = await passwordHasher.hashPassword(
+				password,
+				preLoginResponse.salt,
+				preLoginResponse.algorithm,
+				preLoginResponse.iterations,
+			)
+			const loginRequest: LoginRequest = {
+				username: this.username,
+				response: await passwordHasher.computeResponse(passwordHash, preLoginResponse.challenge),
+				hashLength: passwordHash.length / 2,
+			}
+			const loginResponse = await this.post<LoginResponse>('/user/login', loginRequest)
+			return !!loginResponse.userId
+		} catch {}
+		return false
+	}
+
 	public async goOnline(password?: string) {
 		const getDataRequest: BasicRequest = {
 			username: this.username,
@@ -402,7 +422,6 @@ export class MimerClient {
 	}
 
 	public async deleteAccount(password: string, deleteLocal: boolean) {
-		console.log('deleteAccount')
 		const preLoginResponse = await this.get<PreLoginResponse>(`/user/pre-login/${this.username}`)
 		const passwordHash = await passwordHasher.hashPassword(
 			password,
@@ -420,8 +439,6 @@ export class MimerClient {
 			requestId: newGuid(),
 			signatures: [],
 		}
-		console.log(request)
-
 		await this.rootSignature!.sign('user', request)
 		await this.post<BasicResponse>('/user/delete', request)
 		this.online = false
@@ -527,8 +544,8 @@ export class MimerClient {
 	public async changeUserNameAndPassword(
 		newUsername: string,
 		oldPassword: string,
-		newPassword: string,
-		iterations: number,
+		newPassword?: string,
+		iterations?: number,
 	) {
 		if (!this.rootCrypt) {
 			throw new Error('Not Logged in')
@@ -591,8 +608,6 @@ export class MimerClient {
 		}
 		await this.rootSignature.sign('user', request)
 		await this.rootSignature.sign('old-user', request)
-		console.log(request)
-
 		await this.post<BasicResponse>('/user/update', request, true)
 		this.username = newUsername
 		if (this.cacheManager != null) {

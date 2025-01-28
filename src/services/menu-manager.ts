@@ -4,7 +4,6 @@ import {
 	checkUpdateDialog,
 	clipboardNote,
 	contextMenu,
-	createEditAccountScreen,
 	deleteNodeDialog,
 	emptyRecycleBinDialog,
 	env,
@@ -15,9 +14,9 @@ import {
 	notificationManager,
 	passwordGeneratorDialog,
 	searchInput,
+	settingsScreen,
 	shareDialog,
 	showDeleteAccount,
-	showSetPin,
 	showShareOffers,
 	showUpdate,
 	updateManager,
@@ -48,7 +47,8 @@ export enum MenuItems {
 	DarkMode = 'dark-mode',
 	About = 'about',
 	ShowDevTools = 'show-dev-tools',
-	EditAccount = 'edit-account',
+	ChangeUsername = 'change-username',
+	ChangePassword = 'change-password',
 	DeleteAccount = 'delete-account',
 	SetPin = 'set-pin',
 	Logout = 'logout',
@@ -61,6 +61,7 @@ export enum MenuItems {
 	AddGettingStarted = 'add-getting-started',
 	EmptyRecycleBin = 'empty-recycle-bin',
 	PasswordGenerator = 'password-generator',
+	Settings = 'settings',
 }
 
 class MenuManager {
@@ -93,8 +94,10 @@ class MenuManager {
 	}
 
 	public async menuIdActivated(itemId: string) {
-		if (itemId === 'edit-account') {
-			createEditAccountScreen.value.show()
+		if (itemId === 'change-username') {
+			settingsScreen.value.show('username')
+		} else if (itemId === 'change-password') {
+			settingsScreen.value.show('password')
 		} else if (itemId === 'delete-account') {
 			showDeleteAccount.value = true
 		} else if (itemId === 'tray-double-click') {
@@ -207,7 +210,9 @@ class MenuManager {
 		} else if (itemId === 'password-generator') {
 			passwordGeneratorDialog.value.show()
 		} else if (itemId === 'set-pin') {
-			showSetPin.value = true
+			settingsScreen.value.show('pin')
+		} else if (itemId === 'settings') {
+			settingsScreen.value.show('general')
 		}
 	}
 
@@ -405,10 +410,17 @@ class MenuManager {
 						visible: (env.DEV || settingsManager.developerMode) && ipcClient.isAvailable,
 					})
 					break
-				case MenuItems.EditAccount:
+				case MenuItems.ChangeUsername:
 					result.push({
-						id: 'edit-account',
-						title: 'Edit Account',
+						id: 'change-username',
+						title: 'Change Username',
+						enabled: noteManager.isLoggedIn && noteManager.isOnline,
+					})
+					break
+				case MenuItems.ChangePassword:
+					result.push({
+						id: 'change-password',
+						title: 'Change Password',
 						enabled: noteManager.isLoggedIn && noteManager.isOnline,
 					})
 					break
@@ -494,6 +506,12 @@ class MenuManager {
 						title: 'Password Generator',
 					})
 					break
+				case MenuItems.Settings:
+					result.push({
+						id: 'settings',
+						title: 'Settings',
+					})
+					break
 			}
 		}
 		return result
@@ -574,6 +592,8 @@ class MenuManager {
 			MenuItems.Share,
 			MenuItems.Rename,
 			MenuItems.Delete,
+			MenuItems.Separator,
+			MenuItems.Settings,
 		]
 	}
 

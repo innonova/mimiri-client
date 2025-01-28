@@ -19,7 +19,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { showUpdate, updateManager } from '../../global'
-import DialogTitle from './DialogTitle.vue'
+import DialogTitle from '../elements/DialogTitle.vue'
 const dialog = ref(null)
 
 const show = () => {

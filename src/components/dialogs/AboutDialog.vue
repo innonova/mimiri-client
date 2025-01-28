@@ -41,7 +41,7 @@
 import { ref } from 'vue'
 import { noteManager, updateManager, mobileLog } from '../../global'
 import { settingsManager } from '../../services/settings-manager'
-import DialogTitle from './DialogTitle.vue'
+import DialogTitle from '../elements/DialogTitle.vue'
 const dialog = ref(null)
 
 const usedBytes = ref('0 MB')

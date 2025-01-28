@@ -52,7 +52,7 @@ const contextMenu = ref(null)
 let showTime = Date.now()
 
 const close = e => {
-	if (Date.now() - showTime < 1000 && e.button === 2) {
+	if (Date.now() - showTime < 1000 && e?.button === 2) {
 		return // ignore right mouse up after context menu on some platforms
 	}
 	visible.value = false

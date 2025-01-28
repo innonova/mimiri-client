@@ -245,9 +245,10 @@ const showMenu = (rect, menu) => {
 	}
 	if (menu === 'account') {
 		menuManager.showMenu({ x: rect.right, y: rect.bottom - 30, backdropTop: 32, alignRight: true }, [
-			MenuItems.EditAccount,
-			MenuItems.DeleteAccount,
+			MenuItems.ChangeUsername,
+			MenuItems.ChangePassword,
 			...(mimiriPlatform.isElectron ? [MenuItems.SetPin] : []),
+			MenuItems.DeleteAccount,
 			MenuItems.Separator,
 			MenuItems.Logout,
 			...(ipcClient.isAvailable ? [MenuItems.Separator, MenuItems.GoOnline] : []),

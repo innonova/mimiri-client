@@ -1,3 +1,4 @@
+import { reactive } from 'vue'
 import { DEFAULT_PASSWORD_ALGORITHM } from './mimer-client'
 import { passwordHasher } from './password-hasher'
 import { SymmetricCrypt } from './symmetric-crypt'
@@ -22,6 +23,25 @@ export interface PasswordComplexity {
 	hmacDay: number
 	hmacYear: number
 }
+
+export const passwordTimeFactor = reactive({
+	time1M: 1,
+	time2M: 3,
+	time10M: 15,
+	time20M: 30,
+})
+
+setTimeout(async () => {
+	const start = performance.now()
+	await passwordHasher.hashPassword('', '00ff', DEFAULT_PASSWORD_ALGORITHM, 100000)
+	await SymmetricCrypt.fromPassword(SymmetricCrypt.DEFAULT_SYMMETRIC_ALGORITHM, '', '00ff', 100000)
+	const elapsed = performance.now() - start
+	const factor = 154 / elapsed
+	passwordTimeFactor.time1M = Math.ceil(1.5 * factor)
+	passwordTimeFactor.time2M = Math.ceil(3 * factor)
+	passwordTimeFactor.time10M = Math.ceil(14 * factor)
+	passwordTimeFactor.time20M = Math.ceil(28 * factor)
+}, 500)
 
 export class PasswordGenerator {
 	private _options: PasswordOptions
@@ -160,20 +180,6 @@ export class PasswordGenerator {
 			}
 		}
 		return password
-	}
-
-	async calcTimeFactor() {
-		const start = performance.now()
-		await passwordHasher.hashPassword('', '00ff', DEFAULT_PASSWORD_ALGORITHM, 100000)
-		await SymmetricCrypt.fromPassword(SymmetricCrypt.DEFAULT_SYMMETRIC_ALGORITHM, '', '00ff', 100000)
-		const elapsed = performance.now() - start
-		const factor = 154 / elapsed
-		return {
-			time1M: Math.ceil(1.5 * factor),
-			time2M: Math.ceil(3 * factor),
-			time10M: Math.ceil(14 * factor),
-			time20M: Math.ceil(28 * factor),
-		}
 	}
 
 	public get friendlySymbols() {
