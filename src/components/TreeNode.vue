@@ -284,6 +284,11 @@ const showContextMenu = async e => {
 			MenuItems.Refresh,
 		])
 	} else {
+		let showShare = true
+		if (props.node.shared) {
+			const note = noteManager.getNoteById(props.node.id)
+			showShare = note.isShareRoot
+		}
 		menuManager.showMenu({ x: e.x, y: e.y }, [
 			MenuItems.NewNote,
 			MenuItems.NewRootNote,
@@ -294,7 +299,7 @@ const showContextMenu = async e => {
 			MenuItems.Paste,
 			MenuItems.CopyPath,
 			MenuItems.Separator,
-			MenuItems.Share,
+			...(showShare ? [MenuItems.Share] : []),
 			MenuItems.Refresh,
 			MenuItems.Separator,
 			MenuItems.Rename,
