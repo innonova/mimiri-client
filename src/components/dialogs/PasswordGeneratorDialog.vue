@@ -15,6 +15,10 @@
 					<div class="w-24 flex items-center">Password:</div>
 					<div class="w-52 text-right relative md:flex">
 						<input v-model="password" tabindex="2" :type="passwordFieldType" class="bg-input text-input-text" />
+						<div class="w-0 h-0 pt-1 overflow-visible">
+							<RefreshIcon class="w-6 h-6 ml-2" @click="regeneratePassword"></RefreshIcon>
+						</div>
+
 						<div class="md:w-0 md:h-0 overflow-visible">
 							<div class="absolute right-1 invisible md:visible" @mousedown="showPassword" @mouseup="hidePassword">
 								<ShowPasswordIcon v-if="passwordFieldType === 'password'" class="w-6 h-6 mt-0.5"></ShowPasswordIcon>
@@ -26,7 +30,6 @@
 			</main>
 			<footer class="flex justify-end items-center gap-2 pr-2 pb-2">
 				<button @click="copyPassword">Copy</button>
-				<button @click="regeneratePassword">Generate</button>
 				<button class="secondary" @click="close">Close</button>
 			</footer>
 		</div>
@@ -40,6 +43,7 @@ import ShowPasswordIcon from '../../icons/show-password.vue'
 import ShowingPasswordIcon from '../../icons/showing-password.vue'
 import { Capacitor, registerPlugin } from '@capacitor/core'
 import DialogTitle from '../elements/DialogTitle.vue'
+import RefreshIcon from '../../icons/refresh.vue'
 
 const passwordGenerator = ref(null)
 const password = ref('')

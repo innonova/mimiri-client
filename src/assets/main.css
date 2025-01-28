@@ -113,7 +113,7 @@ html[data-env-support='false'] {
 }
 
 button {
-	@apply bg-button-primary text-button-primary-text hover:brightness-125 hover:rounded ml-2 select-none;
+	@apply bg-button-primary text-button-primary-text hover:brightness-125 hover:rounded select-none;
 }
 
 button:disabled,
@@ -160,7 +160,7 @@ input {
 }
 
 select {
-	@apply bg-input text-input-text text-size-input px-1 pt-px pb-[2px];
+	@apply bg-input text-input-text px-1 pt-px pb-[2px];
 }
 
 input::selection {

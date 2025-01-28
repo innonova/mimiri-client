@@ -6,7 +6,7 @@
 	<UsernameInput ref="usernameInput" @changed="usernameChanged"></UsernameInput>
 	<div class="mt-10 w-full">
 		<hr />
-		<div class="w-full flex justify-end mt-2">
+		<div class="w-full flex justify-end mt-2 gap-2">
 			<button :disabled="!canSave" @click="save">Save</button>
 			<button class="secondary" @click="close">Close</button>
 		</div>
