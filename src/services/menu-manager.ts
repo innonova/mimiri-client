@@ -253,7 +253,7 @@ class MenuManager {
 						title: 'New Note',
 						icon: 'add-note',
 						shortcut: ipcClient.isAvailable ? 'Ctrl+N' : undefined,
-						enabled: noteManager.isLoggedIn && !!noteManager.selectedNote,
+						enabled: noteManager.isLoggedIn && !!noteManager.selectedNote && !noteManager.selectedNote.isRecycleBin,
 					})
 					break
 				case MenuItems.NewRootNote:

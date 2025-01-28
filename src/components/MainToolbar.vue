@@ -12,7 +12,7 @@
 		<ToolbarIcon icon="add-root-note" :hoverEffect="true" title="New Root Note" @click="createRootNote"></ToolbarIcon>
 		<ToolbarIcon
 			icon="add-note"
-			:disabled="!noteManager.selectedNote"
+			:disabled="!noteManager.selectedNote || noteManager.selectedNote.isRecycleBin"
 			:hoverEffect="true"
 			title="New Note"
 			@click="createChildNote"

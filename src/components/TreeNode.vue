@@ -291,7 +291,6 @@ const showContextMenu = async e => {
 		}
 		menuManager.showMenu({ x: e.x, y: e.y }, [
 			MenuItems.NewNote,
-			MenuItems.NewRootNote,
 			MenuItems.Separator,
 			MenuItems.Duplicate,
 			MenuItems.Cut,

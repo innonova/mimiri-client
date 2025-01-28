@@ -14,6 +14,7 @@
 			<ToolbarIcon
 				:icon="settingsManager.wordwrap ? 'wordwrap-on' : 'wordwrap-off'"
 				:hoverEffect="true"
+				:disabled="noteManager.selectedNote?.isRecycleBin"
 				title="Toggle Wordwrap"
 				@click="toggleWordWrap"
 			></ToolbarIcon>
@@ -32,7 +33,13 @@
 				@click="redo"
 			></ToolbarIcon>
 			<div class="inline-block h-4/5 w-0 border border-solid border-toolbar-separator m-0.5"></div>
-			<ToolbarIcon icon="history" :hoverEffect="true" title="Show History" @click="showHistory"></ToolbarIcon>
+			<ToolbarIcon
+				icon="history"
+				:hoverEffect="true"
+				title="Show History"
+				:disabled="noteManager.selectedNote?.isRecycleBin"
+				@click="showHistory"
+			></ToolbarIcon>
 			<ToolbarIcon
 				icon="hide"
 				:hoverEffect="true"
