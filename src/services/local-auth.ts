@@ -8,6 +8,7 @@ import type { HideShowListener } from './ipc-client'
 class LocalAuth implements LoginListener, HideShowListener {
 	private _state: any = reactive({ locked: false })
 	private _lockTimeout: number = 60000
+	private _timer
 
 	constructor() {
 		noteManager.registerListener(this)
@@ -61,6 +62,13 @@ class LocalAuth implements LoginListener, HideShowListener {
 	}
 
 	public async showing() {
+		if (this._timer) {
+			clearTimeout(this._timer)
+			this._timer = undefined
+		}
+		if (!this._state.locked) {
+			return
+		}
 		if (this.lastPause < 0 || Date.now() - this.lastPause < this._lockTimeout) {
 			await this.unlock()
 		} else if (mimiriPlatform.isElectron) {
@@ -79,7 +87,16 @@ class LocalAuth implements LoginListener, HideShowListener {
 	public async hiding() {
 		if (!this._state.locked) {
 			this.lastPause = Date.now()
-			await this.lock()
+			if (mimiriPlatform.isElectron) {
+				if (!this._timer) {
+					this._timer = setTimeout(() => {
+						this._timer = undefined
+						this.lock()
+					}, this._lockTimeout)
+				}
+			} else {
+				await this.lock()
+			}
 		}
 	}
 

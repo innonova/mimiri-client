@@ -15,7 +15,7 @@
 					<div class="w-24 flex items-center">Password:</div>
 					<div class="w-52 text-right relative md:flex">
 						<input v-model="password" tabindex="2" :type="passwordFieldType" class="bg-input text-input-text" />
-						<div class="w-0 h-0 pt-1 overflow-visible">
+						<div class="w-0 h-0 pt-1 overflow-visible select-none">
 							<RefreshIcon class="w-6 h-6 ml-2" @click="regeneratePassword"></RefreshIcon>
 						</div>
 
