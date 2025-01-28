@@ -1,6 +1,12 @@
 <template>
 	<div v-if="showSettings">
-		<div class="flex items-center bg-title-bar select-none drag">
+		<div
+			class="flex items-center bg-title-bar select-none drag"
+			:class="{
+				'h-[36px]': mimiriPlatform.isPc,
+				'h-14': !mimiriPlatform.isPc,
+			}"
+		>
 			<img
 				v-if="mimiriPlatform.isPc && !mimiriPlatform.isMac"
 				class="ml-1.5 mr-1 mt-px p-1 min-w-7 w-7 h-7"
