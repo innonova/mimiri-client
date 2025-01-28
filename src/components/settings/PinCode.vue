@@ -46,16 +46,16 @@ const pin = ref('')
 const enabled = ref(false)
 const changed = ref(false)
 const canSave = computed(() => {
-	if (pin.value?.length === 4) {
+	if (pin.value.length === 4) {
 		return changed.value
-	} else if (pin.value?.length === 0 && !enabled.value) {
+	} else if (pin.value.length === 0 && !enabled.value) {
 		return enabled.value !== localAuth.pinEnabled
 	}
 	return false
 })
 
 onMounted(() => {
-	pin.value = localAuth.pin
+	pin.value = localAuth.pin ?? ''
 	enabled.value = localAuth.pinEnabled
 	changed.value = false
 	inputEnabled = true
@@ -66,9 +66,9 @@ watch(pin, () => {
 		// latch to prevent using this screen from being used for figuring out the pin
 		changed.value = true
 	}
-	if (pin.value?.length < 4) {
+	if (pin.value.length < 4) {
 		enabled.value = false
-	} else if (pin.value?.length === 4) {
+	} else if (pin.value.length === 4) {
 		enabled.value = true
 	}
 })
