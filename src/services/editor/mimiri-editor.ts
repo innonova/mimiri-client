@@ -43,6 +43,7 @@ export class MimiriEditor {
 	private clipboard: any
 	private styleOverridesDirty = false
 	private styleUpdateRunning = false
+	private skipScrollOnce = false
 	private styleUpdateStartTime = Date.now()
 
 	public state: EditorState
@@ -336,6 +337,10 @@ export class MimiriEditor {
 		}, 250)
 
 		this.monacoEditor.onDidScrollChange(() => {
+			if (this.skipScrollOnce) {
+				this.skipScrollOnce = false
+				return
+			}
 			scrollDebounce.activate()
 		})
 
@@ -441,7 +446,7 @@ export class MimiriEditor {
 	}
 
 	public open(note: MimerNote) {
-		if (this.note) {
+		if (this.note && this.note.id !== note?.id) {
 			this.note.scrollTop = this.monacoEditor.getScrollTop()
 		}
 		if (this.styleOverridesDirty && !this.styleUpdateRunning) {
@@ -466,6 +471,7 @@ export class MimiriEditor {
 			this.state.text = note.text
 			this.state.changed = false
 			this.monacoEditorModel.setValue(note.text)
+			this.skipScrollOnce = true
 			this.monacoEditor.setScrollTop(this.note.scrollTop, editor.ScrollType.Immediate)
 		} else {
 			this.state.initialText = note.text
