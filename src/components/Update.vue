@@ -40,9 +40,9 @@
 				</div>
 			</div>
 		</div>
-		<div v-if="!updateManager.isHostUpdate || !mimiriPlatform.isLinux" class="mt-2 m-auto flex justify-end">
+		<div v-if="!updateManager.isHostUpdate || !mimiriPlatform.isLinux" class="mt-2 m-auto flex justify-end gap-2">
 			<button v-if="!running" @click="update">Update</button>
-			<button class="secondary" v-if="!running" @click="later">Maybe Later</button>
+			<button class="secondary w-32" v-if="!running" @click="later">Maybe Later</button>
 			<button v-if="running && stage === 'ready'" @click="restart">Restart</button>
 			<button class="secondary" v-if="running && (stage === 'download' || stage === 'ready')" @click="cancel">
 				Cancel

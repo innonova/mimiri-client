@@ -63,7 +63,7 @@
 				<div class="flex justify-end" v-if="error">
 					<div class="text-error pb-4 text-right">{{ error }}</div>
 				</div>
-				<div class="flex justify-end">
+				<div class="flex justify-end gap-2">
 					<div v-if="loading" class="flex items-center justify-end">
 						<LoadingIcon class="animate-spin w-8 h-8 mr-2 inline-block"></LoadingIcon>
 						Please wait
@@ -71,6 +71,7 @@
 					<button
 						v-else
 						tabindex="3"
+						class="w-32"
 						:disabled="loading || !understandDeleteAccount || !understandDeleteData || !understandRoRecovery"
 						data-testid="submit-button"
 						type="submit"

@@ -332,7 +332,9 @@ export class MimiriEditor {
 
 		const scrollDebounce = new Debounce(async () => {
 			if (this.note) {
-				this.note.scrollTop = this.monacoEditor.getScrollTop()
+				if (this.monacoEditor.getScrollWidth() > 100) {
+					this.note.scrollTop = this.monacoEditor.getScrollTop()
+				}
 			}
 		}, 250)
 
