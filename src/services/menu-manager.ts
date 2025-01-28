@@ -112,6 +112,8 @@ class MenuManager {
 			} else {
 				ipcClient.menu.show()
 			}
+		} else if (itemId === 'hide') {
+			ipcClient.menu.hide()
 		} else if (itemId === 'logout') {
 			noteManager.logout()
 			window.location.reload()
