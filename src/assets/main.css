@@ -113,21 +113,21 @@ html[data-env-support='false'] {
 }
 
 button {
-	@apply bg-button-primary text-button-primary-text hover:brightness-125 hover:rounded ml-2;
+	@apply bg-button-primary text-button-primary-text hover:brightness-125 hover:rounded ml-2 select-none;
 }
 
 button:disabled,
 button[disabled] {
-	@apply bg-button-disabled text-button-disabled-text hover:brightness-100;
+	@apply bg-button-disabled text-button-disabled-text hover:brightness-100 select-none;
 }
 
 button.secondary {
-	@apply bg-button-secondary text-button-primary-text hover:brightness-150;
+	@apply bg-button-secondary text-button-primary-text hover:brightness-150 select-none;
 }
 
 button.secondary:disabled,
 button.secondary[disabled] {
-	@apply bg-button-disabled text-button-disabled-text hover:brightness-100;
+	@apply bg-button-disabled text-button-disabled-text hover:brightness-100 select-none;
 }
 
 h1,
