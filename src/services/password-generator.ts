@@ -129,6 +129,15 @@ export class PasswordGenerator {
 		return result
 	}
 
+	private contains(pool: string, password: string) {
+		for (const c of password) {
+			if (pool.includes(c)) {
+				return true
+			}
+		}
+		return false
+	}
+
 	async generate() {
 		let symbols = ''
 		let pool = ''
@@ -155,31 +164,46 @@ export class PasswordGenerator {
 		if (!this._options.oneSymbol) {
 			pool += symbols
 		}
-		const rand = new Uint8Array(128)
-		crypto.getRandomValues(rand)
-		const int32s = new Uint32Array(rand.buffer)
+		while (true) {
+			const rand = new Uint8Array(128)
+			crypto.getRandomValues(rand)
+			const int32s = new Uint32Array(rand.buffer)
 
-		const targetLength = this._options.characters - (this._options.oneSymbol ? 1 : 0)
-		let index = 0
-		let password = ''
-		while (password.length < targetLength) {
-			password += this.getCharacters(pool, int32s[index++])
-		}
-		if (password.length > targetLength) {
-			password = password.substring(0, targetLength)
-		}
-		if (this._options.oneSymbol) {
-			const specialIndex = int32s[index] % password.length
-			const specialChar = symbols[int32s[index + 1] % symbols.length]
-			if (specialIndex === 0) {
-				password = specialChar + password
-			} else if (specialIndex >= password.length - 1) {
-				password += specialChar
-			} else {
-				password = password.substring(0, specialIndex) + specialChar + password.substring(specialIndex, password.length)
+			const targetLength = this._options.characters - (this._options.oneSymbol ? 1 : 0)
+			let index = 0
+			let password = ''
+			while (password.length < targetLength) {
+				password += this.getCharacters(pool, int32s[index++])
 			}
+			if (password.length > targetLength) {
+				password = password.substring(0, targetLength)
+			}
+			if (this._options.oneSymbol) {
+				const specialIndex = int32s[index] % password.length
+				const specialChar = symbols[int32s[index + 1] % symbols.length]
+				if (specialIndex === 0) {
+					password = specialChar + password
+				} else if (specialIndex >= password.length - 1) {
+					password += specialChar
+				} else {
+					password =
+						password.substring(0, specialIndex) + specialChar + password.substring(specialIndex, password.length)
+				}
+			}
+			if (this._options.lower && !this.contains(this._lower, password)) {
+				continue
+			}
+			if (this._options.upper && !this.contains(this._upper, password)) {
+				continue
+			}
+			if (this._options.numbers && !this.contains(this._numbers, password)) {
+				continue
+			}
+			if (!this._options.oneSymbol && symbols.length > 0 && !this.contains(symbols, password)) {
+				continue
+			}
+			return password
 		}
-		return password
 	}
 
 	public get friendlySymbols() {
