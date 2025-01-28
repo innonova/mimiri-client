@@ -12,10 +12,15 @@ shell.mkdir('-p', cache)
 
 const json = JSON.parse(readFileSync(jsonFile))
 
+const attributionMap = {}
+
 for (const key of Object.keys(json)) {
 	console.log(key);
 	let icon = ''
 	const iconObj = json[key]
+	if (iconObj.attribution) {
+		attributionMap[iconObj.attribution] = 0
+	}
 	if (iconObj.remix) {
 		icon = readFileSync(Path.join(remix, iconObj.remix)).toString();
 	} else {
@@ -52,6 +57,12 @@ ${icon.trim()}
 
 
 }
+
+const attributions = []
+for (const key of Object.keys(attributionMap)) {
+	attributions.push(key)
+}
+writeFileSync(Path.join(dest, `attributions.ts`), `export const iconAttributions = ${JSON.stringify(attributions, undefined, '  ')}`);
 
 
 

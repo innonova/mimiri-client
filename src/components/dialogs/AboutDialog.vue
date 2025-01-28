@@ -12,6 +12,12 @@
 				<div class="pt-6 pl-4"><a href="https://mimiri.io" target="_blank">https://mimiri.io</a></div>
 				<div class="pt-3 pl-4"><a href="https://discord.gg/pg69qPAVZR" target="_blank">Join us on Discord</a></div>
 				<div class="pt-6 pl-4">Copyright &copy;2024 innonova GmbH</div>
+				<div class="flex flex-col mx-4 p-2 mt-4 bg-info">
+					<b>Attributions:</b>
+					<template v-for="att of iconAttributions">
+						<div class="mt-2 leading-5" v-html="att"></div>
+					</template>
+				</div>
 			</main>
 			<footer class="flex justify-end gap-2 pt-3 pr-2 pb-2">
 				<button class="secondary" @click="close">Close</button>
@@ -42,6 +48,8 @@ import { ref } from 'vue'
 import { noteManager, updateManager, mobileLog } from '../../global'
 import { settingsManager } from '../../services/settings-manager'
 import DialogTitle from '../elements/DialogTitle.vue'
+import { iconAttributions } from '../../icons/attributions'
+
 const dialog = ref(null)
 
 const usedBytes = ref('0 MB')
