@@ -84,14 +84,12 @@ class LocalAuth implements LoginListener, HideShowListener {
 	}
 
 	public async setPin(pin: string) {
-		noteManager.root.note.getItem('config').pinCode = pin
+		noteManager.root.note.changeItem('config').pinCode = pin
 		await noteManager.root.save()
 		settingsManager.pinEnabled = true
 	}
 
 	public disablePin() {
-		console.log('disablePin', settingsManager.pinEnabled)
-
 		settingsManager.pinEnabled = false
 	}
 
