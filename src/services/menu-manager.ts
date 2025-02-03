@@ -556,12 +556,16 @@ class MenuManager {
 							},
 						]
 					: []),
-				{
-					id: 'open-at-login',
-					title: 'Launch on Startup',
-					type: 'checkbox',
-					checked: settingsManager.openAtLogin,
-				},
+				...(!mimiriPlatform.isFlatHub
+					? [
+							{
+								id: 'open-at-login',
+								title: 'Launch on Startup',
+								type: 'checkbox',
+								checked: settingsManager.openAtLogin,
+							},
+						]
+					: []),
 				{ type: 'separator' },
 				{
 					id: 'quit',
@@ -570,6 +574,7 @@ class MenuManager {
 			])
 		}
 	}
+
 	public get appleMenu() {
 		return [MenuItems.About, MenuItems.Separator, MenuItems.Logout, MenuItems.Quit]
 	}

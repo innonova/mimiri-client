@@ -9,7 +9,7 @@
 			Dark Mode
 		</label>
 	</div>
-	<div class="p-1 pt-2 m-auto text-left">
+	<div v-if="!mimiriPlatform.isFlatHub" class="p-1 pt-2 m-auto text-left">
 		<label>
 			<input type="checkbox" v-model="openAtLogin" class="mr-1 relative top-0.5" />
 			Lunch Mimiri Notes on Login
@@ -39,6 +39,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import { settingsManager } from '../../services/settings-manager'
+import { mimiriPlatform } from '../../services/mimiri-platform'
 
 const emit = defineEmits(['close'])
 
