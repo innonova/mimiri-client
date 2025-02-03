@@ -556,7 +556,7 @@ class MenuManager {
 							},
 						]
 					: []),
-				...(!mimiriPlatform.isFlatHub
+				...(!mimiriPlatform.isFlatpak
 					? [
 							{
 								id: 'open-at-login',

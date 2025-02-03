@@ -9,7 +9,7 @@
 			Dark Mode
 		</label>
 	</div>
-	<div v-if="!mimiriPlatform.isFlatHub" class="p-1 pt-2 m-auto text-left">
+	<div v-if="!mimiriPlatform.isFlatpak" class="p-1 pt-2 m-auto text-left">
 		<label>
 			<input type="checkbox" v-model="openAtLogin" class="mr-1 relative top-0.5" />
 			Lunch Mimiri Notes on Login
