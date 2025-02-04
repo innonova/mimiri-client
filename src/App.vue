@@ -190,7 +190,14 @@ if (ipcClient.isAvailable) {
 // noteManager.beginTest('import-test')
 
 const handleShortcut = event => {
-	if (!authenticated || localAuth.locked || showSettings || showUpdate || showDeleteAccount || showCreateAccount) {
+	if (
+		!authenticated ||
+		localAuth.locked ||
+		showSettings.value ||
+		showUpdate.value ||
+		showDeleteAccount.value ||
+		showCreateAccount.value
+	) {
 		return
 	}
 	const treeViewShortCutsActive =
@@ -297,6 +304,7 @@ const handleShortcut = event => {
 		event.preventDefault()
 		noteEditor.value.save()
 	}
+	console.log('p.3')
 	if (event.key === 'C' && ctrlActive) {
 		event.preventDefault()
 		mimiriEditor.toggleSelectionAsPassword()
