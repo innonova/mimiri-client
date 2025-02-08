@@ -226,6 +226,9 @@ export class NoteManager {
 				await this.ensureCreateComplete()
 				await this.loadRootNote()
 				await this.loadState()
+				await this.connectForNotifications()
+				this.loadShareOffers()
+				updateManager.good()
 			}
 		} finally {
 			this.state.initInProgress = false
