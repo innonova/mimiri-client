@@ -1,4 +1,5 @@
 {
 	"cSpell.words": ["gibi", "Hasher", "kibi", "mibi", "mimiri", "nupkg", "Reshare", "signalr", "vueuse", "zxcvbn"],
-	"window.title": "${dirty}Vue Client"
+	"window.title": "${dirty}Vue Client",
+	"css.customData": [".vscode/tailwind.json"]
 }

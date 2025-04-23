@@ -16,13 +16,13 @@ export const toHex = (data: ArrayBuffer | Uint8Array) => {
 
 export const fromHex = (hex: string) => {
 	return new Uint8Array(
-		hex.match(/[\da-f]{2}/gi).map(h => {
+		hex.match(/[\da-f]{2}/gi)!.map(h => {
 			return parseInt(h, 16)
 		}),
 	).buffer
 }
 
-export const fromBase64 = (base64, start: number = 0, end?: number) => {
+export const fromBase64 = (base64: string, start: number = 0, end?: number) => {
 	return Uint8Array.from(atob(base64).substring(start, end), c => c.charCodeAt(0))
 }
 

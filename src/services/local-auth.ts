@@ -56,7 +56,7 @@ class LocalAuth implements LoginListener, HideShowListener {
 		}
 	}
 
-	public async lock() {
+	private async lock() {
 		this._state.locked = true
 		sessionStorage.setItem('locked', 'true')
 	}
@@ -88,7 +88,7 @@ class LocalAuth implements LoginListener, HideShowListener {
 		if (!this._state.locked) {
 			this.lastPause = Date.now()
 			if (mimiriPlatform.isElectron) {
-				if (!this._timer) {
+				if (!this._timer && this.pinEnabled) {
 					this._timer = setTimeout(() => {
 						this._timer = undefined
 						this.lock()

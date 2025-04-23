@@ -83,7 +83,7 @@ export class SymmetricCrypt {
 		return new SymmetricCrypt(algo, key)
 	}
 
-	static async fromKey(algorithm: string, keyData: ArrayBuffer): Promise<SymmetricCrypt> {
+	static async fromKey(algorithm: string, keyData: ArrayBuffer | Uint8Array): Promise<SymmetricCrypt> {
 		const algo = this.toAlgorithm(algorithm)
 		if (!algo) {
 			throw new Error(`Algorithm not supported ${algorithm}`)

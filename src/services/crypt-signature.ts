@@ -44,7 +44,7 @@ export class CryptSignature {
 			['sign', 'verify'],
 		)
 
-		const temp = new CryptSignature(algorithm, key.publicKey, undefined, key.privateKey)
+		const temp = new CryptSignature(algorithm, key.publicKey, undefined!, key.privateKey)
 		return CryptSignature.fromPem(algorithm, await temp.publicKeyPem(), await temp.privateKeyPem())
 	}
 
@@ -102,7 +102,7 @@ export class CryptSignature {
 
 	async sign(name: string, data: any) {
 		const payload = JSON.stringify({ ...data, signatures: undefined })
-		const signature = await crypto.subtle.sign('RSASSA-PKCS1-v1_5', this.privateKey, new TextEncoder().encode(payload))
+		const signature = await crypto.subtle.sign('RSASSA-PKCS1-v1_5', this.privateKey!, new TextEncoder().encode(payload))
 		if (!data.signatures) {
 			data.signatures = []
 		}
@@ -114,7 +114,7 @@ export class CryptSignature {
 	}
 
 	async verify(name: string, data: any) {
-		const signature = data.signatures.find(sig => sig.name === name)
+		const signature = data.signatures.find((sig: any) => sig.name === name)
 		const payload = JSON.stringify({ ...data, signatures: undefined })
 		return await crypto.subtle.verify(
 			'RSASSA-PKCS1-v1_5',
@@ -145,7 +145,7 @@ export class CryptSignature {
 		const json = JSON.parse(new TextDecoder().decode(fromBase64(data)))
 		const aesKey = await crypto.subtle.decrypt(
 			{ name: 'RSA-OAEP' },
-			this.privateKeyDecrypt,
+			this.privateKeyDecrypt!,
 			fromBase64(json.encryptedKey),
 		)
 		const crypt = await SymmetricCrypt.fromKey(SymmetricCrypt.DOTNET_COMPAT_SYMMETRIC_ALGORITHM, aesKey)
@@ -160,7 +160,7 @@ export class CryptSignature {
 
 	async privateKeyPem(): Promise<string> {
 		return `-----BEGIN PRIVATE KEY-----\n${toBase64(
-			await crypto.subtle.exportKey('pkcs8', this.privateKey),
+			await crypto.subtle.exportKey('pkcs8', this.privateKey!),
 		)}\n-----END PRIVATE KEY-----`
 	}
 }
