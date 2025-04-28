@@ -352,7 +352,7 @@ export class MimerClient {
 			this._sizeDelta = 0
 			this._noteCountDelta = 0
 			this._userCryptAlgorithm = loginResponse.algorithm ?? SymmetricCrypt.DEFAULT_SYMMETRIC_ALGORITHM
-			this._clientConfig = JSON.parse(loginResponse.config) as ClientConfig
+			this._clientConfig = JSON.parse(loginResponse.config ?? '{}') as ClientConfig
 			this._userStats.size = loginResponse.size
 			this._userStats.noteCount = loginResponse.noteCount
 			this._userStats.maxTotalBytes = loginResponse.maxTotalBytes
@@ -403,7 +403,7 @@ export class MimerClient {
 		await this.rootSignature!.sign('user', getDataRequest)
 		try {
 			const response = await this.post<UserDataResponse>(`/user/get-data`, getDataRequest)
-			this._clientConfig = JSON.parse(response.config) as ClientConfig
+			this._clientConfig = JSON.parse(response.config ?? '{}') as ClientConfig
 			this._userStats.size = response.size
 			this._userStats.noteCount = response.noteCount
 			this._userStats.maxTotalBytes = response.maxTotalBytes
