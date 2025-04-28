@@ -7,7 +7,7 @@ const delay = ms => new Promise(resolve => setTimeout(resolve, ms))
 
 describe('Version', () => {
 	const TEST_NAME = 'history'
-	const _managerAlice = new NoteManager('http://localhost:5292/api', '', '')
+	const _managerAlice = new NoteManager('http://localhost:5292/api', '', '', '')
 
 	let _note: MimerNote
 	let _nextHistoryId = 1

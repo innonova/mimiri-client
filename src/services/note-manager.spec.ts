@@ -7,7 +7,7 @@ const delay = ms => new Promise(resolve => setTimeout(resolve, ms))
 
 describe('Note Manager', () => {
 	const TEST_NAME = 'noteManager'
-	const _managerAlice = new NoteManager('http://localhost:5292/api', '', '')
+	const _managerAlice = new NoteManager('http://localhost:5292/api', '', '', '')
 	let _managerBob: NoteManager
 
 	let note1: MimerNote
