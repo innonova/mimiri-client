@@ -1,0 +1,31 @@
+<template>
+	<div class="flex flex-col h-full">
+		<div class="flex select-none">
+			<div class="py-2 px-4 bg-info cursor-default">Billing Address</div>
+		</div>
+		<div class="bg-info w-full h-2 mb-2"></div>
+		<div class="p-1 pt-2 text-left overflow-y-auto">
+			<CustomerData ref="customerElement" mode="edit" v-model:changed="changed" v-model:valid="valid"></CustomerData>
+			<div class="flex gap-2 justify-end mt-10">
+				<button :disabled="!valid || !changed" @click="save">Save</button>
+				<button :disabled="!changed" @click="cancel">Cancel</button>
+			</div>
+		</div>
+	</div>
+</template>
+
+<script setup lang="ts">
+import { ref } from 'vue'
+import CustomerData from './CustomerData.vue'
+
+const changed = ref()
+const valid = ref()
+const customerElement = ref<typeof CustomerData>(undefined!)
+
+const save = async () => {
+	await customerElement.value.save()
+}
+const cancel = async () => {
+	await customerElement.value.cancel()
+}
+</script>

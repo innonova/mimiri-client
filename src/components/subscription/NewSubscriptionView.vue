@@ -1,0 +1,82 @@
+<template>
+	<div class="flex select-none">
+		<div class="py-2 px-4 bg-info cursor-default">Choose new plan</div>
+	</div>
+	<div class="bg-info w-full h-2 mb-4"></div>
+	<div data-testid="new-subscription-view w-full">
+		<div class="pb-4 cursor-default flex gap-5 justify-start items-center">
+			<PeriodSelector v-model="period"></PeriodSelector>
+			<div class="inline-block"></div>
+			<CurrencySelector v-model="currency"></CurrencySelector>
+		</div>
+		<div class="flex gap-1">
+			<SubscriptionItem
+				v-if="currentProduct && !products.find(p => p.id === currentProduct?.id)"
+				:product="currentProduct"
+				:subscription="currentSubscription"
+				:show-features="true"
+				:showCurrent="true"
+			></SubscriptionItem>
+			<template v-for="product of products" :key="product.sku">
+				<SubscriptionItem
+					:product="product"
+					:subscription="product.id === currentProduct?.id ? currentSubscription : undefined"
+					:showBuy="!currentProduct"
+					:showChangeTo="!!currentProduct && product.id !== currentProduct?.id"
+					:showCurrent="product.id === currentProduct?.id"
+					:show-features="true"
+					:currency="currency"
+					@buy="buy"
+				></SubscriptionItem>
+			</template>
+		</div>
+	</div>
+</template>
+
+<script setup lang="ts">
+import { onMounted, ref, watch } from 'vue'
+import { Currency, Period, type Subscription, type SubscriptionProduct } from '../../services/types/subscription'
+import SubscriptionItem from './SubscriptionItem.vue'
+import CurrencySelector from './CurrencySelector.vue'
+import PeriodSelector from './PeriodSelector.vue'
+import { noteManager } from '../../global'
+
+let currentLoaded = false
+const currentProduct = ref<SubscriptionProduct>()
+const currentSubscription = ref<Subscription>()
+const period = ref(Period.Year)
+const products = ref<SubscriptionProduct[]>([])
+const currency = ref(Currency.CHF)
+
+const emit = defineEmits(['choose'])
+
+const populate = async () => {
+	if (!currentLoaded) {
+		currentProduct.value = await noteManager.paymentClient.getCurrentSubscriptionProduct()
+		currentSubscription.value = await noteManager.paymentClient.getCurrentSubscription()
+
+		currentLoaded = true
+	}
+	products.value = (await noteManager.paymentClient.getSubscriptionProducts()).filter(
+		prod => prod.data.period === period.value,
+	)
+}
+
+onMounted(async () => {
+	currentLoaded = false
+	await populate()
+})
+
+watch(period, async () => {
+	await populate()
+})
+
+const buy = (sku: string) => {
+	emit(
+		'choose',
+		products.value.find(p => p.sku === sku),
+		currency.value,
+	)
+	// void router.push(`/upgrade?sku=${sku}&currency=${currency.value}`)
+}
+</script>

@@ -1,6 +1,10 @@
 import type { Guid } from './guid'
 import type { NoteItem } from './note'
 
+export interface ClientConfig {
+	features: string[]
+}
+
 export interface BasicResponse {}
 
 export interface KeyResponse {
@@ -29,6 +33,7 @@ export interface LoginResponse {
 	symmetricAlgorithm: string
 	symmetricKey: string
 	data: string
+	config: string
 	size: number
 	noteCount: number
 	maxTotalBytes: number
@@ -39,6 +44,7 @@ export interface LoginResponse {
 
 export interface UserDataResponse {
 	data: string
+	config: string
 	size: number
 	noteCount: number
 	maxTotalBytes: number
@@ -78,6 +84,10 @@ export interface ShareOffersResponse {
 export interface NotificationUrlResponse {
 	url: string
 	token: string
+}
+
+export interface UrlResponse {
+	url: string
 }
 
 export interface VersionConflict {

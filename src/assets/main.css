@@ -45,6 +45,8 @@
 		--color-progress-indicator: green;
 		--color-search-highlight: #ffc147;
 		--color-info-bar: #ffc147;
+		--color-good: green;
+		--color-bad: red;
 	}
 
 	html[data-theme='dark'] {
@@ -89,6 +91,8 @@
 		--color-progress-indicator: #8e8e8e;
 		--color-search-highlight: #bf5116;
 		--color-info-bar: #bf5116;
+		--color-good: green;
+		--color-bad: red;
 	}
 }
 

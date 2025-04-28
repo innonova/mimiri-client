@@ -39,11 +39,12 @@
 		"@microsoft/signalr": "^8.0.7",
 		"@vueuse/core": "10.7.2",
 		"assert": "1.5.0",
+		"date-fns": "^4.1.0",
 		"js-base64": "^3.7.7",
 		"monaco-editor": "^0.51.0",
 		"uuid": "^10.0.0",
-		"vue": "3.3.11",
-		"vue-router": "4.2.5",
+		"vue": "^3.5.13",
+		"vue-router": "^4.5.0",
 		"zxcvbn": "^4.4.2"
 	},
 	"devDependencies": {
@@ -54,7 +55,8 @@
 		"@tsconfig/node18": "18.2.2",
 		"@types/crypto-js": "4.2.1",
 		"@types/node": "18.19.3",
-		"@vitejs/plugin-vue": "4.5.2",
+		"@vitejs/plugin-vue": "^5.2.1",
+		"@vitejs/plugin-vue-jsx": "^4.1.1",
 		"@vue/tsconfig": "0.5.0",
 		"autoprefixer": "^10.4.20",
 		"dotenv": "^16.4.5",
@@ -72,8 +74,8 @@
 		"tailwindcss": "^3.4.13",
 		"ts-jest": "^29.2.5",
 		"typescript": "5.3.3",
-		"vite": "~5.0.10",
-		"vite-plugin-mkcert": "^1.17.6",
-		"vue-tsc": "1.8.25"
+		"vite": "^6.1.0",
+		"vite-plugin-vue-devtools": "^7.7.2",
+		"vue-tsc": "^2.2.2"
 	}
 }

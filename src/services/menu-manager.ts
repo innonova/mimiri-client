@@ -19,6 +19,7 @@ import {
 	showDeleteAccount,
 	showShareOffers,
 	showUpdate,
+	subscriptionsScreen,
 	updateManager,
 } from '../global'
 import type { ContextMenuItem, ContextMenuPosition } from './types/context-menu'
@@ -50,6 +51,7 @@ export enum MenuItems {
 	ChangeUsername = 'change-username',
 	ChangePassword = 'change-password',
 	DeleteAccount = 'delete-account',
+	ManageSubscription = 'manage-subscription',
 	SetPin = 'set-pin',
 	Logout = 'logout',
 	Quit = 'quit',
@@ -100,6 +102,8 @@ class MenuManager {
 			settingsScreen.value.show('password')
 		} else if (itemId === 'delete-account') {
 			showDeleteAccount.value = true
+		} else if (itemId === 'manage-subscription') {
+			subscriptionsScreen.value.show()
 		} else if (itemId === 'tray-double-click') {
 			ipcClient.menu.show()
 		} else if (itemId === 'tray-click') {
@@ -430,6 +434,13 @@ class MenuManager {
 					result.push({
 						id: 'delete-account',
 						title: 'Delete Account',
+						enabled: noteManager.isLoggedIn && noteManager.isOnline,
+					})
+					break
+				case MenuItems.ManageSubscription:
+					result.push({
+						id: 'manage-subscription',
+						title: 'Subscription',
 						enabled: noteManager.isLoggedIn && noteManager.isOnline,
 					})
 					break

@@ -11,7 +11,9 @@ export default {
 		fontSize: {
 			'size-base': ['14px', '1'],
 			'size-menu': ['13px', '20px'],
+			'size-secondary': ['12px', '16px'],
 			'size-title': ['16px', '1'],
+			'size-product': ['18px', '1'],
 			'size-header': ['24px', '1.3'],
 			'size-input': ['16px', '1.5'],
 		},
@@ -60,6 +62,8 @@ export default {
 			'toolbar-hover': 'var(--color-toolbar-hover)',
 			'progress-indicator': 'var(--color-progress-indicator)',
 			'info-bar': 'var(--color-info-bar)',
+			'good': 'var(--color-good)',
+			'bad': 'var(--color-bad)',
 		},
 		extend: {},
 	},

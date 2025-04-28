@@ -22,6 +22,8 @@ import { Capacitor } from '@capacitor/core'
 import { mimiriPlatform } from './mimiri-platform'
 import { persistedState } from './persisted-state'
 import { ProofOfWork } from './proof-of-work'
+import { PaymentClient } from './payment-client'
+import type { ClientConfig } from './types/responses'
 
 export enum ActionType {
 	Save,
@@ -70,6 +72,7 @@ export class NoteManager {
 	private busyStart: number
 
 	private client: MimerClient
+	private _paymentClient: PaymentClient
 	private _root: MimerNote
 	private notes: { [id: Guid]: MimerNote } = {}
 	private outstandingActions: number = 0
@@ -79,7 +82,7 @@ export class NoteManager {
 	private _proofBits = 15
 	private _listener: LoginListener
 
-	constructor(host: string, serverKey: string, serverKeyId: string) {
+	constructor(host: string, paymentHost: string, serverKey: string, serverKeyId: string) {
 		this._isMobile = !window.matchMedia?.('(min-width: 768px)')?.matches
 		window.addEventListener('resize', () => {
 			this._isMobile = !window.matchMedia?.('(min-width: 768px)')?.matches
@@ -100,6 +103,7 @@ export class NoteManager {
 			initInProgress: true,
 		})
 		this.client = new MimerClient(host, serverKey, serverKeyId)
+		this._paymentClient = new PaymentClient(this.client, paymentHost)
 		browserHistory.init(noteId => {
 			if (noteId) {
 				this.getNoteById(noteId)?.select()
@@ -387,6 +391,14 @@ export class NoteManager {
 			mobileLog.log('Online')
 		} catch (ex) {
 			mobileLog.log('Failed to go online ' + ex.message)
+		} finally {
+			this.endAction()
+		}
+	}
+	public async updateUserStats() {
+		this.beginAction()
+		try {
+			await this.client.goOnline()
 		} finally {
 			this.endAction()
 		}
@@ -975,7 +987,7 @@ export class NoteManager {
 	}
 
 	public cloneTest() {
-		const result = new NoteManager('', '', '')
+		const result = new NoteManager('', '', '', '')
 		result.client = this.client.cloneTest()
 		return result
 	}
@@ -1042,6 +1054,18 @@ export class NoteManager {
 		if (this._isMobile && this.state.noteOpen) {
 			this.state.noteOpen = false
 		}
+	}
+
+	public async accountUrl() {
+		return this.client.getAccountUrl()
+	}
+
+	public featureEnabled(name: string) {
+		return this.client.clientConfig?.features?.includes(name)
+	}
+
+	public get paymentClient() {
+		return this._paymentClient
 	}
 
 	public get userId() {
@@ -1130,5 +1154,9 @@ export class NoteManager {
 
 	public get initInProgress() {
 		return this.state.initInProgress
+	}
+
+	public get clientConfig(): ClientConfig {
+		return this.client.clientConfig
 	}
 }

@@ -1,0 +1,38 @@
+<template>
+	<div class="flex flex-col h-full">
+		<div class="flex select-none">
+			<div class="py-2 px-4 bg-info cursor-default">Invoices</div>
+		</div>
+		<div class="bg-info w-full h-2 mb-2"></div>
+		<div class="p-1 pt-2 text-left overflow-y-auto">
+			<div class="flex flex-col gap-2">
+				<template v-for="invoice of invoices" :key="invoice.id">
+					<InvoiceItem :invoice="invoice" @view="viewInvoice"></InvoiceItem>
+				</template>
+			</div>
+		</div>
+	</div>
+</template>
+
+<script setup lang="ts">
+import { onMounted, ref } from 'vue'
+import type { Invoice } from '../../services/types/subscription'
+import { noteManager } from '../../global'
+import InvoiceItem from './InvoiceItem.vue'
+
+const auth = ref<string>('')
+const invoices = ref<Invoice[]>([])
+const invoiceToView = ref<Invoice>()
+
+const populate = async () => {
+	invoices.value = await noteManager.paymentClient.getInvoices()
+}
+
+const viewInvoice = (invoice: Invoice) => {
+	invoiceToView.value = invoice
+}
+
+onMounted(async () => {
+	await populate()
+})
+</script>

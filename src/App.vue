@@ -5,18 +5,28 @@
 	</div>
 	<div v-if="!loading" class="flex flex-col h-full bg-back text-text dark-mode safe-area-padding">
 		<TitleBar
-			v-if="authenticated && !showUpdate && !showDeleteAccount && !showCreateAccount && !showSettings"
+			v-if="
+				authenticated && !showUpdate && !showDeleteAccount && !showCreateAccount && !showSettings && !showSubscriptions
+			"
 			ref="titleBar"
 		></TitleBar>
 		<Login v-if="!authenticated && !showCreateAccount && !showConvertAccount && !noteManager.initInProgress"></Login>
 		<CreateEditAccount ref="createEditAccountScreen"></CreateEditAccount>
 		<Settings v-if="authenticated" ref="settingsScreen"></Settings>
+		<Subscriptions v-if="authenticated" ref="subscriptionsScreen"></Subscriptions>
 		<ConvertAccount v-if="showConvertAccount"></ConvertAccount>
 		<DeleteAccount v-if="showDeleteAccount"></DeleteAccount>
 		<Update v-if="authenticated && showUpdate"></Update>
 		<div
 			v-if="authenticated && !showConvertAccount"
-			v-show="!showUpdate && !showDeleteAccount && !showCreateAccount && !localAuth.locked && !showSettings"
+			v-show="
+				!showUpdate &&
+				!showDeleteAccount &&
+				!showCreateAccount &&
+				!localAuth.locked &&
+				!showSettings &&
+				!showSubscriptions
+			"
 			class="flex h-full overflow-hidden"
 			@mouseup="endDragging"
 		>
@@ -73,6 +83,7 @@ import TitleBar from './components/TitleBar.vue'
 import Login from './components/Login.vue'
 import CreateEditAccount from './components/CreateAccount.vue'
 import Settings from './components/SettingsScreen.vue'
+import Subscriptions from './components/SubscriptionsScreen.vue'
 import ContextMenu from './components/ContextMenu.vue'
 import NotificationList from './components/NotificationList.vue'
 import DeleteNodeDialog from './components/dialogs/DeleteNodeDialog.vue'
@@ -116,7 +127,9 @@ import {
 	updateManager,
 	mobileLog,
 	settingsScreen,
+	subscriptionsScreen,
 	showSettings,
+	showSubscriptions,
 } from './global'
 import { settingsManager } from './services/settings-manager'
 import LoadingIcon from './icons/loading.vue'
@@ -304,7 +317,6 @@ const handleShortcut = event => {
 		event.preventDefault()
 		noteEditor.value.save()
 	}
-	console.log('p.3')
 	if (event.key === 'C' && ctrlActive) {
 		event.preventDefault()
 		mimiriEditor.toggleSelectionAsPassword()

@@ -8,6 +8,7 @@ import type {
 	AllKeysResponse,
 	BasicResponse,
 	CheckUsernameResponse,
+	ClientConfig,
 	KeyResponse,
 	LoginResponse,
 	NotificationUrlResponse,
@@ -16,6 +17,7 @@ import type {
 	ReadNoteResponse,
 	ShareOffersResponse,
 	UpdateNoteResponse,
+	UrlResponse,
 	UserDataResponse,
 	VersionConflict,
 } from './types/responses'
@@ -115,6 +117,7 @@ export class MimerClient {
 		maxNoteCount: 0,
 		maxHistoryEntries: 0,
 	}
+	private _clientConfig: ClientConfig
 
 	constructor(
 		private host: string,
@@ -349,6 +352,7 @@ export class MimerClient {
 			this._sizeDelta = 0
 			this._noteCountDelta = 0
 			this._userCryptAlgorithm = loginResponse.algorithm ?? SymmetricCrypt.DEFAULT_SYMMETRIC_ALGORITHM
+			this._clientConfig = JSON.parse(loginResponse.config) as ClientConfig
 			this._userStats.size = loginResponse.size
 			this._userStats.noteCount = loginResponse.noteCount
 			this._userStats.maxTotalBytes = loginResponse.maxTotalBytes
@@ -399,6 +403,7 @@ export class MimerClient {
 		await this.rootSignature!.sign('user', getDataRequest)
 		try {
 			const response = await this.post<UserDataResponse>(`/user/get-data`, getDataRequest)
+			this._clientConfig = JSON.parse(response.config) as ClientConfig
 			this._userStats.size = response.size
 			this._userStats.noteCount = response.noteCount
 			this._userStats.maxTotalBytes = response.maxTotalBytes
@@ -1230,6 +1235,21 @@ export class MimerClient {
 		return await this.post<NotificationUrlResponse>('/notification/create-url', request)
 	}
 
+	public async getAccountUrl() {
+		if (!this.rootCrypt) {
+			throw new Error('Not Logged in')
+		}
+		const request: BasicRequest = {
+			username: this.username,
+			timestamp: dateTimeNow(),
+			requestId: newGuid(),
+			signatures: [],
+		}
+		await this.rootSignature.sign('user', request)
+		const response = await this.post<UrlResponse>('/user/account-url', request)
+		return response.url
+	}
+
 	public getKeyById(id: Guid) {
 		const result = this.keyChain.find(key => key.id == id)
 		if (result) {
@@ -1263,6 +1283,10 @@ export class MimerClient {
 
 	public setCacheManager(cacheManager: ICacheManager) {
 		this.cacheManager = cacheManager
+	}
+
+	public async signRequest(request: any) {
+		await this.rootSignature.sign('user', request)
 	}
 
 	public get root(): string {
@@ -1351,5 +1375,9 @@ export class MimerClient {
 
 	public get maxHistoryEntries() {
 		return +this._userStats.maxHistoryEntries
+	}
+
+	public get clientConfig(): ClientConfig {
+		return this._clientConfig
 	}
 }
