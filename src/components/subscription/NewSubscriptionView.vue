@@ -77,6 +77,5 @@ const buy = (sku: string) => {
 		products.value.find(p => p.sku === sku),
 		currency.value,
 	)
-	// void router.push(`/upgrade?sku=${sku}&currency=${currency.value}`)
 }
 </script>

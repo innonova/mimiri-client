@@ -54,6 +54,6 @@ const deleteMethod = async (method: PaymentMethod) => {
 
 const createNew = async () => {
 	const result = await noteManager.paymentClient.createNewPaymentMethod({ clientReference: 'create-method' })
-	location.href = result.link
+	window.open(result.link, '_blank')
 }
 </script>

@@ -3,27 +3,27 @@
 		<div>Invoice No: {{ invoice.no }}</div>
 		<div>Issued: {{ formatInvoiceDate(invoice.issued) }}</div>
 		<div v-if="invoice.status === 'paid'" class="text-right" :data-testid="`invoice-${invoice.no}-status-paid`">
-			Status: <span class="text-green-600 font-bold">PAID</span>
+			Status: <span class="text-good font-bold">PAID</span>
 		</div>
 		<div
 			v-if="invoice.status === 'issued' && !overdue"
 			class="text-right"
 			:data-testid="`invoice-${invoice.no}-status-open`"
 		>
-			Status: <span class="text-green-600 font-bold">OPEN</span>
+			Status: <span class="text-good font-bold">OPEN</span>
 		</div>
 		<div v-if="overdue" class="text-right" :data-testid="`invoice-${invoice.no}-status-overdue`">
-			Status: <span class="text-red-600 font-bold">OVERDUE</span>
+			Status: <span class="text-bad font-bold">OVERDUE</span>
 		</div>
 		<div v-if="invoice.status === 'credited'" class="text-right" :data-testid="`invoice-${invoice.no}-status-credited`">
-			Status: <span class="text-green-600 font-bold">CREDITED</span>
+			Status: <span class="text-good font-bold">CREDITED</span>
 		</div>
 		<div
 			v-if="invoice.status === 'credit-note'"
 			class="text-right"
 			:data-testid="`invoice-${invoice.no}-status-credit-note`"
 		>
-			Status: <span class="text-green-600 font-bold">CREDIT NOTE</span>
+			Status: <span class="text-good font-bold">CREDIT NOTE</span>
 		</div>
 		<div v-if="invoice.status === 'issued'"></div>
 		<div v-if="invoice.status === 'issued'">Due: {{ formatInvoiceDate(invoice.due) }}</div>
@@ -47,7 +47,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
-import { currentTime, formatCurrency, formatInvoiceDate, nowQuery } from '../../services/helpers'
+import { currentTime, formatCurrency, formatInvoiceDate } from '../../services/helpers'
 import { InvoiceStatus, RenewalType, type Invoice } from '../../services/types/subscription'
 import { add, isAfter } from 'date-fns'
 import { noteManager } from '../../global'
@@ -56,7 +56,7 @@ const props = defineProps<{
 	invoice: Invoice
 }>()
 
-const emit = defineEmits(['view'])
+const emit = defineEmits(['pay-invoice'])
 
 const now = ref<Date>(currentTime())
 const autoPay = ref(false)
@@ -70,7 +70,6 @@ onMounted(async () => {
 		if (subscription?.id === props.invoice.subscriptionId) {
 			autoPay.value = subscription.renewalType === RenewalType.Automatic
 		}
-		console.log(subscription)
 	}
 })
 
@@ -96,6 +95,6 @@ const showInvoicePdf = async () => {
 }
 
 const payNow = async () => {
-	// await router.push(`/pay-invoice?invoice=${props.invoice.id}${nowQuery('&')}`)
+	emit('pay-invoice', props.invoice)
 }
 </script>

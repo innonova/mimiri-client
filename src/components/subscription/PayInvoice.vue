@@ -1,22 +1,11 @@
 <template>
 	<div class="flex flex-col h-full">
 		<div class="flex select-none">
-			<div class="py-2 px-4 bg-info cursor-default">Upgrade</div>
+			<div class="py-2 px-4 bg-info cursor-default">Pay Invoice</div>
 		</div>
 		<div class="bg-info w-full h-2 mb-4"></div>
-		<div class="flex flex-col overflow-y-auto pr-2" data-testid="upgrade-view">
+		<div class="flex flex-col overflow-y-auto pr-2" data-testid="pay-invoice-view">
 			<form v-on:submit.prevent="submit">
-				<ItemHeader>Chosen subscription</ItemHeader>
-				<div class="flex justify-center pb-5">
-					<Subscription
-						v-if="product"
-						:product="product"
-						:compact="true"
-						:showChange="true"
-						:currency="currency"
-						@change="changePlan"
-					></Subscription>
-				</div>
 				<ItemHeader>Billing address</ItemHeader>
 				<CustomerData
 					ref="customerElement"
@@ -26,8 +15,7 @@
 				></CustomerData>
 				<PaymentMethodSelector v-model="method"></PaymentMethodSelector>
 				<PaymentSummary
-					v-if="product"
-					:items="[{ sku: product.sku, text: product.name, price: product.price, quantity: 1 }]"
+					:items="invoice.data.items"
 					:currency="Currency.CHF"
 					v-model:terms="termsAccepted"
 					v-model:privacy="privacyAccepted"
@@ -43,19 +31,17 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { ref } from 'vue'
 import CustomerData from './CustomerData.vue'
 import PaymentMethodSelector from './PaymentMethodSelector.vue'
-import ItemHeader from './ItemHeader.vue'
-import Subscription from './SubscriptionItem.vue'
-import { Currency, RenewalType, type SubscriptionProduct } from '../../services/types/subscription'
+import { Currency, type Invoice } from '../../services/types/subscription'
 import { noteManager } from '../../global'
 import { assertGuid } from '../../services/types/guid'
+import ItemHeader from './ItemHeader.vue'
 import PaymentSummary from './PaymentSummary.vue'
 
 const props = defineProps<{
-	product: SubscriptionProduct
-	currency: Currency
+	invoice: Invoice
 }>()
 
 const emit = defineEmits(['pay-in-progress'])
@@ -68,42 +54,29 @@ const customerElement = ref<typeof CustomerData>()
 
 const method = ref('')
 
-const changePlan = () => {}
-
-const populate = async () => {}
-
-onMounted(async () => {
-	await populate()
-})
-
 const submit = async () => {
-	if (customerElement.value && valid && termsAccepted.value && privacyAccepted.value && props.product) {
+	if (customerElement.value && valid && termsAccepted.value && privacyAccepted.value && props.invoice) {
 		await customerElement.value.save(termsAccepted.value, privacyAccepted.value)
 		await customerElement.value.verifyEmail()
-		const newSubResult = await noteManager.paymentClient.newSubscription({
-			productId: props.product.id!,
-			renewalType: RenewalType.Automatic,
-			currency: props.currency,
-		})
 
 		if (method.value === 'NEW') {
 			const createPayResult = await noteManager.paymentClient.createPaymentLink({
-				invoiceId: newSubResult.invoiceId,
+				invoiceId: props.invoice.id,
 				save: true,
-				clientRef: 'upgrade',
+				clientRef: 'pay-invoice',
 			})
 			window.open(createPayResult.link, '_blank')
-			emit('pay-in-progress', newSubResult.invoiceId, true)
+			emit('pay-in-progress', props.invoice.id, true)
 		} else {
 			const methodId = method.value
 			assertGuid(methodId)
 			const payResult = await noteManager.paymentClient.chargeExistingMethod({
-				invoiceId: newSubResult.invoiceId,
+				invoiceId: props.invoice.id,
 				methodId,
 				purpose: 'Online order',
 			})
 			if (payResult.success) {
-				emit('pay-in-progress', newSubResult.invoiceId, false)
+				emit('pay-in-progress', props.invoice.id, false)
 			}
 		}
 	}

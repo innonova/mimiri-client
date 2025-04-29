@@ -7,7 +7,7 @@
 		<div class="p-1 pt-2 text-left overflow-y-auto">
 			<div class="flex flex-col gap-2">
 				<template v-for="invoice of invoices" :key="invoice.id">
-					<InvoiceItem :invoice="invoice" @view="viewInvoice"></InvoiceItem>
+					<InvoiceItem :invoice="invoice" @pay-invoice="payInvoice"></InvoiceItem>
 				</template>
 			</div>
 		</div>
@@ -20,16 +20,16 @@ import type { Invoice } from '../../services/types/subscription'
 import { noteManager } from '../../global'
 import InvoiceItem from './InvoiceItem.vue'
 
-const auth = ref<string>('')
+const emit = defineEmits(['pay-invoice'])
+
 const invoices = ref<Invoice[]>([])
-const invoiceToView = ref<Invoice>()
 
 const populate = async () => {
 	invoices.value = await noteManager.paymentClient.getInvoices()
 }
 
-const viewInvoice = (invoice: Invoice) => {
-	invoiceToView.value = invoice
+const payInvoice = (invoice: Invoice) => {
+	emit('pay-invoice', invoice)
 }
 
 onMounted(async () => {

@@ -105,7 +105,7 @@ export class PaymentClient {
 	}
 
 	public async createNewPaymentMethod(request: CreatePaymentMethodRequest) {
-		return await this.post<any>(`/payment/create-method`, request)
+		return await this.post<any>(`/payment/create-method`, await this.sign(request))
 	}
 
 	public async makePaymentMethodDefault(methodId: Guid) {

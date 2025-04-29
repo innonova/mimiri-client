@@ -18,20 +18,21 @@
 			@change="change"
 			@cancel="cancel"
 			@resume="resume"
+			@pay-invoice="payInvoice"
 		></SubscriptionItem>
 	</div>
 </template>
 
 <script setup lang="ts">
 import { noteManager } from '../../global'
-import { type Subscription, type SubscriptionProduct, Currency } from '../../services/types/subscription'
+import { type Invoice, type Subscription, type SubscriptionProduct } from '../../services/types/subscription'
 import SubscriptionItem from './SubscriptionItem.vue'
 import { onMounted, ref } from 'vue'
 
 const product = ref<SubscriptionProduct>()
 const subscription = ref<Subscription>()
 
-const emit = defineEmits(['change'])
+const emit = defineEmits(['change', 'pay-invoice'])
 
 onMounted(async () => {
 	await populate()
@@ -44,8 +45,6 @@ const populate = async () => {
 
 const change = async () => {
 	emit('change')
-	// showNewPlanView.value = true
-	// await router.push('/new-subscription')
 }
 
 const cancel = async () => {
@@ -56,5 +55,9 @@ const cancel = async () => {
 const resume = async () => {
 	await noteManager.paymentClient.resumeSubscription()
 	await populate()
+}
+
+const payInvoice = (invoice: Invoice) => {
+	emit('pay-invoice', invoice)
 }
 </script>

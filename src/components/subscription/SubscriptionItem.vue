@@ -115,7 +115,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { currentTime, formatCurrency, formatExpirationDate, nowQuery } from '../../services/helpers'
+import { currentTime, formatCurrency, formatExpirationDate } from '../../services/helpers'
 import {
 	Currency,
 	Period,
@@ -142,6 +142,8 @@ const props = defineProps<{
 	currency?: Currency
 }>()
 
+const emit = defineEmits(['buy', 'change', 'cancel', 'resume', 'pay-invoice'])
+
 const now = ref<Date>(currentTime())
 const overdue = computed(
 	() =>
@@ -154,14 +156,12 @@ const ended = computed(
 		props.subscription?.renewalType === RenewalType.None,
 )
 
-const emit = defineEmits(['buy', 'change', 'cancel', 'resume'])
-
 const payNow = async () => {
 	const invoices = await noteManager.paymentClient.getOpenInvoices()
 	const overdue = invoices.filter(inv => inv.due && isAfter(now.value, inv.due))
 	if (overdue.length > 0) {
 		const invoiceId = overdue[0].id
-		// await router.push(`/pay-invoice?invoice=${invoiceId}${nowQuery('&')}`)
+		emit('pay-invoice', overdue[0])
 	}
 }
 </script>

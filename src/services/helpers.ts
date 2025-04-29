@@ -65,12 +65,11 @@ export const formatExpirationDate = (date?: Date) => {
 }
 
 export const currentTime = () => {
+	const queryTimeMatch = /now=(\d{4}\.\d{2}\.\d{2})/.exec(location.search)
+	if (queryTimeMatch) {
+		return new Date(queryTimeMatch[1])
+	}
 	return new Date()
-}
-
-export const nowQuery = (delim?: string) => {
-	// return router.currentRoute.value.query.now ? `${delim}now=${router.currentRoute.value.query.now}` : ''
-	return ''
 }
 
 export const calculateReverseVat = (total: number) => {

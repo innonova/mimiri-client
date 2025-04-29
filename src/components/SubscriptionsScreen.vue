@@ -34,7 +34,7 @@
 			<div class="flex flex-col gap-16 min-w-[500px] overflow-y-hidden">
 				<div class="mt-5 overflow-y-hidden">
 					<div v-if="selectedId === 'subscription'">
-						<SubHome @change="change"></SubHome>
+						<SubHome @change="change" @pay-invoice="payInvoice"></SubHome>
 					</div>
 					<div v-if="selectedId === 'account'" class="h-full">
 						<Account></Account>
@@ -43,7 +43,10 @@
 						<PaymentMethods></PaymentMethods>
 					</div>
 					<div v-if="selectedId === 'invoices'" class="h-full">
-						<Invoices></Invoices>
+						<Invoices @pay-invoice="payInvoice"></Invoices>
+					</div>
+					<div v-if="selectedId === 'pay-invoice'" class="h-full">
+						<PayInvoice :invoice="activeInvoice" @pay-in-progress="payInProgress"></PayInvoice>
 					</div>
 					<div v-if="selectedId === 'new'" class="h-full">
 						<NewSubscriptionView @choose="chooseNewPlan"></NewSubscriptionView>
@@ -66,7 +69,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { env, noteManager, showSubscriptions } from '../global'
+import { noteManager, showSubscriptions } from '../global'
 import { mimiriPlatform } from '../services/mimiri-platform'
 import SubHome from './subscription/SubHome.vue'
 import Account from './subscription/Account.vue'
@@ -74,15 +77,17 @@ import PaymentMethods from './subscription/PaymentMethods.vue'
 import Invoices from './subscription/Invoices.vue'
 import UpgradeView from './subscription/UpgradeView.vue'
 import NewSubscriptionView from './subscription/NewSubscriptionView.vue'
-import { Currency, type SubscriptionProduct } from '../services/types/subscription'
+import { Currency, type Invoice, type SubscriptionProduct } from '../services/types/subscription'
 import WaitingForPayment from './subscription/WaitingForPayment.vue'
 import type { Guid } from '../services/types/guid'
+import PayInvoice from './subscription/PayInvoice.vue'
 
 const selectedId = ref('subscription')
 const newProduct = ref<SubscriptionProduct>()
 const currency = ref<Currency>(Currency.CHF)
 const invoiceId = ref<Guid>()
 const waitingForUser = ref<boolean>(false)
+const activeInvoice = ref<Invoice>()
 
 const change = () => {
 	selectedId.value = 'new'
@@ -102,6 +107,11 @@ const payInProgress = async (id: Guid, waiting: boolean) => {
 	selectedId.value = 'pay-in-progress'
 	invoiceId.value = id
 	waitingForUser.value = waiting
+}
+
+const payInvoice = async (invoice: Invoice) => {
+	activeInvoice.value = invoice
+	selectedId.value = 'pay-invoice'
 }
 
 const menuItems = [
