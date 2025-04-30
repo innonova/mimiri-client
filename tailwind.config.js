@@ -60,6 +60,7 @@ export default {
 			'toolbar-separator': 'var(--color-toolbar-separator)',
 			'toolbar-disabled': 'var(--color-toolbar-disabled)',
 			'toolbar-hover': 'var(--color-toolbar-hover)',
+			'toolbar-toggled': 'var(--color-toolbar-toggled)',
 			'progress-indicator': 'var(--color-progress-indicator)',
 			'info-bar': 'var(--color-info-bar)',
 			'good': 'var(--color-good)',

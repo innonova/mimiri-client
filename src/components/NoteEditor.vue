@@ -15,7 +15,8 @@
 				:icon="settingsManager.wordwrap ? 'wordwrap-on' : 'wordwrap-off'"
 				:hoverEffect="true"
 				:disabled="noteManager.selectedNote?.isRecycleBin"
-				title="Toggle Wordwrap"
+				:title="settingsManager.wordwrap ? 'Disable Word Wrap' : 'Enable Word Wrap'"
+				:toggledOn="settingsManager.wordwrap"
 				@click="toggleWordWrap"
 			></ToolbarIcon>
 			<ToolbarIcon
@@ -36,8 +37,9 @@
 			<ToolbarIcon
 				icon="history"
 				:hoverEffect="true"
-				title="Show History"
+				:title="historyVisible ? 'Hide History' : 'Show History'"
 				:disabled="noteManager.selectedNote?.isRecycleBin"
+				:toggledOn="historyVisible"
 				@click="showHistory"
 			></ToolbarIcon>
 			<ToolbarIcon
@@ -49,9 +51,20 @@
 			></ToolbarIcon>
 		</div>
 		<div class="relative flex-auto flex flex-col items-stretch overflow-hidden">
+			<div v-if="historyVisible" class="p-2 bg-info-bar">While in History Mode the Editor is read-only</div>
 			<div class="overflow-hidden flex-1" ref="editorContainer"></div>
 			<SelectionControl></SelectionControl>
 			<div v-if="historyVisible" class="w-full h-1/3 flex flex-col">
+				<div class="flex items-center justify-between bg-toolbar border-b border-solid border-toolbar">
+					<div>History entries:</div>
+					<button
+						class="cursor-default w-8 outline-none m-1 rounded secondary hover:border-menu-hover hover:border"
+						@click="showHistory()"
+						type="button"
+					>
+						X
+					</button>
+				</div>
 				<div class="flex-auto overflow-y-auto h-0 pb-5 w-full bg-input">
 					<template v-for="(historyItem, index) of mimiriEditor.history.historyItems" :key="historyItem.timestamp">
 						<div

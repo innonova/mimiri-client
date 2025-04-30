@@ -8,6 +8,7 @@
 				'w-6 h-6 p-[1px]': props.keepSizeOnMobile,
 				'text-toolbar-disabled': props.disabled,
 				'hover:bg-toolbar-hover active:bg-toolbar-hover active:p-[4px]': !props.disabled && props.hoverEffect,
+				'bg-toolbar-toggled': props.toggledOn,
 				'p-px text-online active:p-[1px]': props.icon === 'online',
 				'p-px text-offline active:p-[1px]': props.icon === 'offline',
 				'text-online': props.icon === 'account-online',
@@ -50,6 +51,7 @@ const props = defineProps<{
 	title?: string
 	disabled?: boolean
 	hoverEffect?: boolean
+	toggledOn?: boolean
 	keepSizeOnMobile?: boolean
 }>()
 
