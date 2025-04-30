@@ -4,6 +4,7 @@
 		@contextmenu="showContextMenu"
 		@scroll="onScroll"
 		ref="mainElement"
+		data-testid="note-tree"
 	>
 		<TreeNode v-for="node of noteManager.root?.viewModel.children" :node="node" :key="node.id"></TreeNode>
 		<NewTreeNode v-if="createNewRootNode"></NewTreeNode>

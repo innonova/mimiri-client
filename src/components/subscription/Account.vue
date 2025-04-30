@@ -4,7 +4,7 @@
 			<div class="py-2 px-4 bg-info cursor-default">Billing Address</div>
 		</div>
 		<div class="bg-info w-full h-2 mb-2"></div>
-		<div class="p-1 pt-2 text-left overflow-y-auto">
+		<div class="p-1 pt-2 text-left overflow-y-auto" data-testid="account-view">
 			<CustomerData ref="customerElement" mode="edit" v-model:changed="changed" v-model:valid="valid"></CustomerData>
 			<div class="flex gap-2 justify-end mt-10">
 				<button :disabled="!valid || !changed" @click="save">Save</button>

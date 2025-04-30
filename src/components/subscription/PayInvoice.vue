@@ -16,7 +16,7 @@
 				<PaymentMethodSelector v-model="method"></PaymentMethodSelector>
 				<PaymentSummary
 					:items="invoice.data.items"
-					:currency="Currency.CHF"
+					:currency="invoice.currency"
 					v-model:terms="termsAccepted"
 					v-model:privacy="privacyAccepted"
 				></PaymentSummary>
@@ -34,7 +34,7 @@
 import { ref } from 'vue'
 import CustomerData from './CustomerData.vue'
 import PaymentMethodSelector from './PaymentMethodSelector.vue'
-import { Currency, type Invoice } from '../../services/types/subscription'
+import { type Invoice } from '../../services/types/subscription'
 import { noteManager } from '../../global'
 import { assertGuid } from '../../services/types/guid'
 import ItemHeader from './ItemHeader.vue'

@@ -3,7 +3,7 @@
 		<div class="py-2 px-4 bg-info cursor-default">Current Plan</div>
 	</div>
 	<div class="bg-info w-full h-2 mb-2"></div>
-	<div class="p-1 pt-2 flex">
+	<div class="p-1 pt-2 flex" data-testid="home-view">
 		<SubscriptionItem
 			v-if="product"
 			:product="product"
@@ -20,6 +20,8 @@
 			@resume="resume"
 			@pay-invoice="payInvoice"
 		></SubscriptionItem>
+		<input type="hidden" data-testid="current-subscription-sku" :value="product?.sku" />
+		<input type="hidden" data-testid="current-subscription-paid-until" :value="subscription?.paidUntil" />
 	</div>
 </template>
 

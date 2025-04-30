@@ -4,7 +4,8 @@
 			<div class="py-2 px-4 bg-info cursor-default">Invoices</div>
 		</div>
 		<div class="bg-info w-full h-2 mb-2"></div>
-		<div class="p-1 pt-2 text-left overflow-y-auto">
+		<div class="p-1 pt-2 text-left overflow-y-auto" data-testid="invoices-view">
+			<div v-if="!invoices?.length" class="m-5" data-testid="invoices-none">No Invoices Yet</div>
 			<div class="flex flex-col gap-2">
 				<template v-for="invoice of invoices" :key="invoice.id">
 					<InvoiceItem :invoice="invoice" @pay-invoice="payInvoice"></InvoiceItem>

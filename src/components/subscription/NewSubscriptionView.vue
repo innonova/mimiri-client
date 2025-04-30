@@ -3,7 +3,7 @@
 		<div class="py-2 px-4 bg-info cursor-default">Choose new plan</div>
 	</div>
 	<div class="bg-info w-full h-2 mb-4"></div>
-	<div data-testid="new-subscription-view w-full">
+	<div data-testid="new-subscription-view">
 		<div class="pb-4 cursor-default flex gap-5 justify-start items-center">
 			<PeriodSelector v-model="period"></PeriodSelector>
 			<div class="inline-block"></div>

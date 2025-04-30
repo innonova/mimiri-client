@@ -35,8 +35,8 @@
 		</div>
 
 		<div class="flex gap-2">
-			<button @click="showInvoice">View</button>
-			<button @click="showInvoicePdf">PDF</button>
+			<button @click="showInvoice" :data-testid="`invoice-${invoice.no}-view-link`">View</button>
+			<button @click="showInvoicePdf" :data-testid="`invoice-${invoice.no}-pdf-link`">PDF</button>
 		</div>
 		<div></div>
 		<div class="text-right" :data-testid="`invoice-${invoice.no}-total`">
@@ -79,7 +79,7 @@ const showInvoice = async () => {
 		timestamp: new Date(),
 		validUntil: add(new Date(), { hours: 12 }),
 	})
-	window.open(`http://localhost:5174/invoice/${props.invoice.id}?auth=${auth}`, '_blank')
+	window.open(`http://localhost:5174/invoice/${props.invoice.id}?auth=${auth}&status=true`, '_blank')
 }
 
 const showInvoicePdf = async () => {

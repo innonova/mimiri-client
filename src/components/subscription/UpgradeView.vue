@@ -28,7 +28,7 @@
 				<PaymentSummary
 					v-if="product"
 					:items="[{ sku: product.sku, text: product.name, price: product.price, quantity: 1 }]"
-					:currency="Currency.CHF"
+					:currency="currency"
 					v-model:terms="termsAccepted"
 					v-model:privacy="privacyAccepted"
 				></PaymentSummary>

@@ -1,6 +1,6 @@
 <template>
 	<div id="title-bar" class="w-full h-[36px] pl-px select-none drag"></div>
-	<div class="mx-auto p-1 mt-20 md:my-auto">
+	<div class="mx-auto p-1 mt-20 md:my-auto" data-testid="login-view">
 		<div class="mb-14">
 			<h1 class="text-center font-bold text-size-header">Mimiri Login</h1>
 		</div>
@@ -8,13 +8,26 @@
 			<div class="p-1 m-auto">
 				<div class="inline-block w-24">Username:</div>
 				<div class="inline-block w-52 text-right">
-					<input v-model="username" tabindex="1" type="text" class="bg-input text-input-text" autofocus />
+					<input
+						v-model="username"
+						tabindex="1"
+						type="text"
+						class="bg-input text-input-text"
+						data-testid="username-input"
+						autofocus
+					/>
 				</div>
 			</div>
 			<div class="p-1 m-auto">
 				<div class="inline-block w-24">Password:</div>
 				<div class="inline-block w-52 text-right">
-					<input v-model="password" tabindex="2" type="password" class="bg-input text-input-text" />
+					<input
+						v-model="password"
+						tabindex="2"
+						type="password"
+						data-testid="password-input"
+						class="bg-input text-input-text"
+					/>
 				</div>
 			</div>
 			<div class="p-1 m-auto" v-if="error">
@@ -30,7 +43,7 @@
 							<div v-if="longTime" class="mt-1">{{ timeElapsed }}</div>
 						</div>
 					</div>
-					<button v-else tabindex="3" :disabled="loading" type="submit">Login</button>
+					<button v-else tabindex="3" :disabled="loading" type="submit" data-testid="login-button">Login</button>
 				</div>
 				<div class="flex mt-5 w-full justify-between items-center">
 					<a class="invisible md:visible hover:underline" href="https://mimiri.io" target="_blank">What is Mimiri?</a>

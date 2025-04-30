@@ -21,9 +21,11 @@ test.describe('e2e user flow', () => {
 		const usernameInput = page.getByTestId('username-input')
 		const passwordInput = page.getByTestId('password-input')
 		const repeatInput = page.getByTestId('repeat-input')
+		const termsCheckbox = page.getByTestId('terms-checkbox')
 		const privacyCheckbox = page.getByTestId('privacy-checkbox')
 		const noRecoverCheckbox = page.getByTestId('no-recover-checkbox')
 		const createButton = page.getByTestId('create-button')
+		const noteTree = page.getByTestId('note-tree')
 
 		await createAccountLink.click()
 		await expect(usernameInput).toBeVisible()
@@ -31,16 +33,17 @@ test.describe('e2e user flow', () => {
 		await usernameInput.fill(username)
 		await passwordInput.fill(password)
 		await repeatInput.fill(password)
+		await termsCheckbox.check()
 		await privacyCheckbox.check()
 		await noRecoverCheckbox.check()
 		await expect(createButton).toBeEnabled()
 		await expect(page).toHaveScreenshot('create-account-filled.png')
 		await createButton.click()
+		await expect(noteTree).toBeVisible({ timeout: 30000 })
 	})
 
 	test(`should verify data in account`, async () => {
-		const firstNode = page.getByTestId('tree-node').first()
-
+		const firstNode = page.getByTestId('tree-node').nth(1)
 		await firstNode.click()
 		await expect(firstNode).toHaveText('Getting Started')
 		await page.waitForTimeout(100) // CSS inside the Monaco editor takes a little while to get applied, saw no better option than to wait a bit for it

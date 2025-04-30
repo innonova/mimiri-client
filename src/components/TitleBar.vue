@@ -12,6 +12,7 @@
 			'h-14': !mimiriPlatform.isPc,
 		}"
 		@click="titleBarClick"
+		data-testid="title-bar"
 	>
 		<img
 			v-if="mimiriPlatform.isPc && !mimiriPlatform.isMac"

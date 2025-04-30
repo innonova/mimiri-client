@@ -26,6 +26,7 @@
 							'cursor-pointer': item.id !== selectedId,
 						}"
 						@click="menuClick(item.id)"
+						:data-testid="`screen-menu-${item.id}`"
 					>
 						{{ item.title }}
 					</div>
@@ -82,6 +83,7 @@ import WaitingForPayment from './subscription/WaitingForPayment.vue'
 import type { Guid } from '../services/types/guid'
 import PayInvoice from './subscription/PayInvoice.vue'
 
+let pageAfterPay = 'subscription'
 const selectedId = ref('subscription')
 const newProduct = ref<SubscriptionProduct>()
 const currency = ref<Currency>(Currency.CHF)
@@ -94,13 +96,14 @@ const change = () => {
 }
 
 const closeWaiting = () => {
-	selectedId.value = 'subscription'
+	selectedId.value = pageAfterPay
 }
 
-const chooseNewPlan = async (product: SubscriptionProduct, currency: Currency) => {
+const chooseNewPlan = async (product: SubscriptionProduct, cur: Currency) => {
 	newProduct.value = product
-	currency = currency
+	currency.value = cur
 	selectedId.value = 'upgrade'
+	pageAfterPay = 'subscription'
 }
 
 const payInProgress = async (id: Guid, waiting: boolean) => {
@@ -112,6 +115,7 @@ const payInProgress = async (id: Guid, waiting: boolean) => {
 const payInvoice = async (invoice: Invoice) => {
 	activeInvoice.value = invoice
 	selectedId.value = 'pay-invoice'
+	pageAfterPay = 'invoices'
 }
 
 const menuItems = [

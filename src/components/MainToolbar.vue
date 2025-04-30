@@ -3,6 +3,7 @@
 		ref="toolbar"
 		class="flex items-center py-px px-1.5 bg-toolbar border-b border-solid border-toolbar"
 		:class="{ 'justify-between': mimiriPlatform.isPhone }"
+		data-testid="main-toolbar"
 	>
 		<ToolbarIcon v-if="!mimiriPlatform.isPc" icon="menu" @click="showMobileMenu"></ToolbarIcon>
 		<div
