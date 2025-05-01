@@ -51,11 +51,15 @@
 			></ToolbarIcon>
 		</div>
 		<div class="relative flex-auto flex flex-col items-stretch overflow-hidden">
-			<div v-if="historyVisible" class="p-2 bg-info-bar">While in History Mode the Editor is read-only</div>
+			<div v-if="historyVisible" class="px-2 py-1 bg-info-bar cursor-default text-size-menu">
+				While in History Mode the Editor is read-only
+			</div>
 			<div class="overflow-hidden flex-1" ref="editorContainer"></div>
 			<SelectionControl></SelectionControl>
 			<div v-if="historyVisible" class="w-full h-1/3 flex flex-col">
-				<div class="flex items-center justify-between bg-toolbar border-b border-solid border-toolbar">
+				<div
+					class="flex items-center justify-between bg-toolbar border-b border-solid border-toolbar cursor-default text-size-menu"
+				>
 					<div>History entries:</div>
 					<button
 						class="cursor-default w-8 outline-none m-1 rounded secondary hover:border-menu-hover hover:border"

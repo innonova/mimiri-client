@@ -62,6 +62,7 @@ export default {
 			'toolbar-hover': 'var(--color-toolbar-hover)',
 			'toolbar-toggled': 'var(--color-toolbar-toggled)',
 			'progress-indicator': 'var(--color-progress-indicator)',
+			'info-bar-accented': 'var(--color-info-bar-accented)',
 			'info-bar': 'var(--color-info-bar)',
 			'good': 'var(--color-good)',
 			'bad': 'var(--color-bad)',

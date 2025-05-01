@@ -42,10 +42,11 @@
 		--color-toolbar-separator: #555;
 		--color-toolbar-disabled: #b7b7b7;
 		--color-toolbar-hover: #dfecf9;
-		--color-toolbar-toggled: #dfecf9;
+		--color-toolbar-toggled: #C5D5EB;
 		--color-progress-indicator: green;
 		--color-search-highlight: #ffc147;
-		--color-info-bar: #ffc147;
+		--color-info-bar: #A5BBD9;
+		--color-info-bar-accented: #ffc147;
 		--color-good: green;
 		--color-bad: red;
 	}
@@ -89,10 +90,11 @@
 		--color-toolbar-separator: #555;
 		--color-toolbar-disabled: #666;
 		--color-toolbar-hover: #454646;
-		--color-toolbar-toggled: #414E60;
+		--color-toolbar-toggled: #295077;
 		--color-progress-indicator: #8e8e8e;
 		--color-search-highlight: #bf5116;
-		--color-info-bar: #bf5116;
+		--color-info-bar: #253E5B;
+		--color-info-bar-accented: #bf5116;
 		--color-good: green;
 		--color-bad: #ff2222;
 	}
