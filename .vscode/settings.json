@@ -12,6 +12,9 @@
 		"vueuse",
 		"zxcvbn"
 	],
-	"window.title": "${dirty}Vue Client",
+	"editor.formatOnSave": true,
+	"editor.defaultFormatter": "esbenp.prettier-vscode",
+	"typescript.preferences.importModuleSpecifier": "relative",
+	"window.title": "${dirty}Mimiri Vue",
 	"css.customData": [".vscode/tailwind.json"]
 }

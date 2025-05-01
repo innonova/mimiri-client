@@ -20,7 +20,7 @@
 		--color-menu-disabled: #b7b7b7;
 		--color-menu-hover: #d2dfec;
 		--color-menu-separator: #d8d8d8;
-		--color-item-selected: #D9E6F3;
+		--color-item-selected: #d9e6f3;
 		--color-drop-indicator: #000;
 		--color-shared: #d78af6;
 		--color-search-parent: #888;
@@ -46,9 +46,9 @@
 		--color-toolbar-disabled: #b7b7b7;
 		--color-toolbar-hover: #dfecf9;
 		--color-progress-indicator: green;
-		--color-toolbar-toggled: #D9E6F3;
+		--color-toolbar-toggled: #d9e6f3;
 		--color-search-highlight: #ffc147;
-		--color-info-bar: #D9E6F3;
+		--color-info-bar: #d9e6f3;
 		--color-info-bar-accented: #ffc147;
 		--color-good: green;
 		--color-bad: red;
