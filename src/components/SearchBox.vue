@@ -25,7 +25,9 @@
 				<SearchIcon class="h-7 w-7 p-px mr-1"></SearchIcon>
 				<div>{{ searchManager.state.term }}</div>
 				<div class="w-full flex justify-end">
-					<CloseIcon @click="close" class="h-7 w-7 p-1"></CloseIcon>
+					<button class="h-7 w-7 p-1 text-text bg-[inherit] hover:bg-button-hover hover:rounded-none" @click="close">
+						<CloseIcon />
+					</button>
 				</div>
 			</div>
 		</div>

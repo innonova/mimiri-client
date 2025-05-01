@@ -51,22 +51,21 @@
 			></ToolbarIcon>
 		</div>
 		<div class="relative flex-auto flex flex-col items-stretch overflow-hidden">
-			<div v-if="historyVisible" class="px-2 py-1 bg-info-bar cursor-default text-size-menu">
-				While in History Mode the Editor is read-only
+			<div v-if="historyVisible && selectedHistoryItem" class="px-2 py-1 bg-info-bar cursor-default text-size-menu">
+				{{ selectedHistoryItem.username }} - {{ formatDate(selectedHistoryItem.timestamp) }} (read-only)
 			</div>
 			<div class="overflow-hidden flex-1" ref="editorContainer"></div>
 			<SelectionControl></SelectionControl>
 			<div v-if="historyVisible" class="w-full h-1/3 flex flex-col">
 				<div
-					class="flex items-center justify-between bg-toolbar border-b border-solid border-toolbar cursor-default text-size-menu"
+					class="flex items-center justify-between bg-toolbar border-b border-solid border-toolbar cursor-default text-size-menu p-0.5"
 				>
 					<div>History entries:</div>
 					<button
-						class="cursor-default w-8 outline-none m-1 rounded secondary hover:border-menu-hover hover:border"
-						@click="showHistory()"
-						type="button"
+						class="h-7 w-7 p-1 text-text bg-[inherit] hover:bg-button-hover hover:rounded-none"
+						@click="showHistory"
 					>
-						X
+						<CloseIcon />
 					</button>
 				</div>
 				<div class="flex-auto overflow-y-auto h-0 pb-5 w-full bg-input">
@@ -100,12 +99,14 @@ import SelectionControl from './SelectionControl.vue'
 import { VersionConflictError } from '../services/mimer-client'
 import { settingsManager } from '../services/settings-manager'
 import { useEventListener } from '@vueuse/core'
+import CloseIcon from '../icons/close.vue'
 
 let activeViewModelStopWatch: WatchStopHandle = undefined
 let activeViewModel: NoteViewModel = undefined
 const editorContainer = ref(null)
 const windowFocus = ref(true)
 const historyVisible = ref(false)
+const selectedHistoryItem = computed(() => mimiriEditor.history.state.selectedHistoryItem)
 
 const biCif = value => {
 	if (value < 10) {

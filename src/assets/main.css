@@ -20,7 +20,7 @@
 		--color-menu-disabled: #b7b7b7;
 		--color-menu-hover: #d2dfec;
 		--color-menu-separator: #d8d8d8;
-		--color-item-selected: #cce8ff;
+		--color-item-selected: #D9E6F3;
 		--color-drop-indicator: #000;
 		--color-shared: #d78af6;
 		--color-search-parent: #888;
@@ -34,6 +34,7 @@
 		--color-button-disabled-text: #ccc;
 		--color-button-secondary: #777;
 		--color-button-secondary-text: #000;
+		--color-button-hover: rgba(0, 0, 0, 0.2);
 		--color-dialog: #f4f4f4;
 		--color-dialog-border: #000;
 		--color-input: #fff;
@@ -47,7 +48,7 @@
 		--color-progress-indicator: green;
 		--color-toolbar-toggled: #D9E6F3;
 		--color-search-highlight: #ffc147;
-		--color-info-bar: #B4CDE6;
+		--color-info-bar: #D9E6F3;
 		--color-info-bar-accented: #ffc147;
 		--color-good: green;
 		--color-bad: red;
@@ -82,6 +83,7 @@
 		--color-button-disabled-text: #777;
 		--color-button-secondary: #222;
 		--color-button-secondary-text: #fff;
+		--color-button-hover: rgba(255, 255, 255, 0.2);
 		--color-dialog: #3f3f3f;
 		--color-dialog-border: #8e8e8e;
 		--color-input: #1e1e1e;
@@ -92,10 +94,10 @@
 		--color-toolbar-separator: #555;
 		--color-toolbar-disabled: #666;
 		--color-toolbar-hover: #454646;
-		--color-toolbar-toggled: #224161;
+		--color-toolbar-toggled: #555;
 		--color-progress-indicator: #8e8e8e;
 		--color-search-highlight: #bf5116;
-		--color-info-bar: #284D74;
+		--color-info-bar: #555;
 		--color-info-bar-accented: #bf5116;
 		--color-good: green;
 		--color-bad: #ff2222;

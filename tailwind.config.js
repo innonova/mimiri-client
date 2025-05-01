@@ -52,6 +52,7 @@ export default {
 			'dialog-border': 'var(--color-dialog-border)',
 			'button-secondary': 'var(--color-button-secondary)',
 			'button-secondary-text': 'var(--color-button-secondary-text)',
+			'button-hover': 'var(--color-button-hover)',
 			'input': 'var(--color-input)',
 			'input-text': 'var(--color-input-text)',
 			'input-selection': 'var(--color-input-selection)',
