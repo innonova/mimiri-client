@@ -15,7 +15,8 @@
 				:icon="settingsManager.wordwrap ? 'wordwrap-on' : 'wordwrap-off'"
 				:hoverEffect="true"
 				:disabled="noteManager.selectedNote?.isRecycleBin"
-				title="Toggle Wordwrap"
+				:title="settingsManager.wordwrap ? 'Disable Word Wrap' : 'Enable Word Wrap'"
+				:toggledOn="settingsManager.wordwrap"
 				@click="toggleWordWrap"
 			></ToolbarIcon>
 			<ToolbarIcon
@@ -36,8 +37,9 @@
 			<ToolbarIcon
 				icon="history"
 				:hoverEffect="true"
-				title="Show History"
+				:title="historyVisible ? 'Hide History' : 'Show History'"
 				:disabled="noteManager.selectedNote?.isRecycleBin"
+				:toggledOn="historyVisible"
 				@click="showHistory"
 			></ToolbarIcon>
 			<ToolbarIcon
@@ -49,9 +51,23 @@
 			></ToolbarIcon>
 		</div>
 		<div class="relative flex-auto flex flex-col items-stretch overflow-hidden">
+			<div v-if="historyVisible && selectedHistoryItem" class="px-2 py-1 bg-info-bar cursor-default text-size-menu">
+				{{ selectedHistoryItem.username }} - {{ formatDate(selectedHistoryItem.timestamp) }} (read-only)
+			</div>
 			<div class="overflow-hidden flex-1" ref="editorContainer"></div>
 			<SelectionControl></SelectionControl>
 			<div v-if="historyVisible" class="w-full h-1/3 flex flex-col">
+				<div
+					class="flex items-center justify-between bg-toolbar border-b border-solid border-toolbar cursor-default text-size-menu p-0.5"
+				>
+					<div>History entries:</div>
+					<button
+						class="h-7 w-7 p-1 text-text bg-[inherit] hover:bg-button-hover hover:rounded-none"
+						@click="showHistory"
+					>
+						<CloseIcon />
+					</button>
+				</div>
 				<div class="flex-auto overflow-y-auto h-0 pb-5 w-full bg-input">
 					<template v-for="(historyItem, index) of mimiriEditor.history.historyItems" :key="historyItem.timestamp">
 						<div
@@ -83,12 +99,14 @@ import SelectionControl from './SelectionControl.vue'
 import { VersionConflictError } from '../services/mimer-client'
 import { settingsManager } from '../services/settings-manager'
 import { useEventListener } from '@vueuse/core'
+import CloseIcon from '../icons/close.vue'
 
 let activeViewModelStopWatch: WatchStopHandle = undefined
 let activeViewModel: NoteViewModel = undefined
 const editorContainer = ref(null)
 const windowFocus = ref(true)
 const historyVisible = ref(false)
+const selectedHistoryItem = computed(() => mimiriEditor.history.state.selectedHistoryItem)
 
 const biCif = value => {
 	if (value < 10) {
