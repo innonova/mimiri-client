@@ -8,6 +8,7 @@ import type {
 } from './types/payment-requests'
 import type { Country, Invoice, PaymentMethod, Subscription, SubscriptionProduct } from './types/subscription'
 import type { Guid } from './types/guid'
+import { add } from 'date-fns'
 
 export class PaymentClient {
 	private _countries: Country[] | undefined
@@ -56,6 +57,15 @@ export class PaymentClient {
 		request.username = this.mimerClient.username
 		await this.mimerClient.signRequest(request)
 		return btoa(JSON.stringify(request))
+	}
+
+	public async getPdfUrl(invoice: Invoice) {
+		const auth = await this.createAuthQuery({
+			request: 'invoice',
+			timestamp: new Date(),
+			validUntil: add(new Date(), { hours: 12 }),
+		})
+		return `${this.host}/invoice/${invoice.id}/pdf/mimiri_${invoice.no}.pdf?auth=${auth}`
 	}
 
 	public async getCountries() {

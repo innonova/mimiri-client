@@ -16,6 +16,9 @@ const host = env.VITE_MIMER_API_HOST
 const paymentHost = env.VITE_PAYMENT_API_HOST
 const serverKey = env.VITE_API_PUBLIC_KEY
 const serverKeyId = env.VITE_API_PUBLIC_KEY_ID
+export const pdfEnvironment = env.VITE_PDF_ENV
+export const accountHost = env.VITE_ACCOUNT_HOST
+
 export const ipcClient = new IpcClient()
 export const browserHistory = new BrowserHistory()
 export const noteManager = new NoteManager(host, paymentHost, serverKey, serverKeyId)

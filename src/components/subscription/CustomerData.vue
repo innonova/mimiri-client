@@ -108,13 +108,14 @@ watch([givenNameValid, familyNameValid, emailValid, countryValid, stateValid], (
 		givenNameValid.value && familyNameValid.value && emailValid.value && countryValid.value && stateValid.value
 })
 
-watch([customer, givenName, familyName, company, email, countryCode, city, postalCode, address], () => {
+watch([customer, givenName, familyName, company, email, countryCode, stateCode, city, postalCode, address], () => {
 	changed.value =
 		givenName.value !== customer.value?.givenName ||
 		familyName.value !== customer.value?.familyName ||
 		company.value !== customer.value?.company ||
 		email.value !== customer.value?.email ||
 		countryCode.value !== customer.value?.countryCode ||
+		stateCode.value !== customer.value?.stateCode ||
 		city.value !== customer.value?.city ||
 		postalCode.value !== customer.value?.postalCode ||
 		address.value !== customer.value?.address
@@ -144,8 +145,8 @@ const save = async (termsAccepted?: boolean, privacyPolicyAccepted?: boolean) =>
 			email: email.value,
 			countryCode: countryCode.value,
 			country: countryName.value,
-			stateCode: countryCode.value,
-			state: countryName.value,
+			stateCode: stateCode.value,
+			state: stateCode.value,
 			city: city.value,
 			postalCode: postalCode.value,
 			address: address.value,
@@ -167,6 +168,7 @@ const loadCustomer = async () => {
 		company.value = customer.value.company
 		email.value = customer.value.email
 		countryCode.value = customer.value.countryCode
+		stateCode.value = customer.value.stateCode
 		city.value = customer.value.city
 		postalCode.value = customer.value.postalCode
 		address.value = customer.value.address
@@ -178,19 +180,24 @@ onMounted(async () => {
 	await loadCustomer()
 })
 
-watch([givenName, familyName, company, email, countryCode, countryName, city, postalCode, address], () => {
-	model.value = {
-		givenName: givenName.value,
-		familyName: familyName.value,
-		company: company.value,
-		email: email.value,
-		countryCode: countryCode.value,
-		country: countryName.value,
-		city: city.value,
-		postalCode: postalCode.value,
-		address: address.value,
-	}
-})
+watch(
+	[givenName, familyName, company, email, countryCode, countryName, stateCode, stateName, city, postalCode, address],
+	() => {
+		model.value = {
+			givenName: givenName.value,
+			familyName: familyName.value,
+			company: company.value,
+			email: email.value,
+			countryCode: countryCode.value,
+			country: countryName.value,
+			stateCode: stateCode.value,
+			state: stateCode.value,
+			city: city.value,
+			postalCode: postalCode.value,
+			address: address.value,
+		}
+	},
+)
 
 watch(countryCode, async () => {
 	const countries = await noteManager.paymentClient.getCountries()

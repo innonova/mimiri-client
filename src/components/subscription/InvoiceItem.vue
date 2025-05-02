@@ -50,7 +50,7 @@ import { computed, onMounted, ref } from 'vue'
 import { currentTime, formatCurrency, formatInvoiceDate } from '../../services/helpers'
 import { InvoiceStatus, RenewalType, type Invoice } from '../../services/types/subscription'
 import { add, isAfter } from 'date-fns'
-import { noteManager } from '../../global'
+import { accountHost, noteManager, pdfEnvironment } from '../../global'
 
 const props = defineProps<{
 	invoice: Invoice
@@ -80,21 +80,13 @@ const showInvoice = async () => {
 		validUntil: add(new Date(), { hours: 12 }),
 	})
 	window.open(
-		`http://localhost:5174/invoice/${props.invoice.id}?auth=${auth}&status=true&username=${noteManager.username}&environment=local`,
+		`${accountHost}/invoice/${props.invoice.id}?auth=${auth}&status=true&username=${noteManager.username}&environment=${pdfEnvironment}`,
 		'_blank',
 	)
 }
 
 const showInvoicePdf = async () => {
-	const auth = await noteManager.paymentClient.createAuthQuery({
-		request: 'invoice',
-		timestamp: new Date(),
-		validUntil: add(new Date(), { hours: 12 }),
-	})
-	window.open(
-		`http://localhost:3000/invoice/${props.invoice.id}/pdf/mimri_${props.invoice.no}.pdf?auth=${auth}`,
-		'_blank',
-	)
+	window.open(await noteManager.paymentClient.getPdfUrl(props.invoice), '_blank')
 }
 
 const payNow = async () => {
