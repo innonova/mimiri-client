@@ -267,7 +267,8 @@ export class MimerClient {
 					loginData.rootSignature.publicKey,
 					loginData.rootSignature.privateKey,
 				)
-				return await this.goOnline()
+				await this.goOnline()
+				return true
 			} catch {}
 		}
 		return false

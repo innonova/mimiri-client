@@ -233,6 +233,8 @@ export class NoteManager {
 				await this.connectForNotifications()
 				this.loadShareOffers()
 				updateManager.good()
+			} else {
+				this.logout()
 			}
 		} finally {
 			this.state.initInProgress = false

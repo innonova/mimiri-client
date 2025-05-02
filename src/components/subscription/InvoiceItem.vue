@@ -79,7 +79,10 @@ const showInvoice = async () => {
 		timestamp: new Date(),
 		validUntil: add(new Date(), { hours: 12 }),
 	})
-	window.open(`http://localhost:5174/invoice/${props.invoice.id}?auth=${auth}&status=true`, '_blank')
+	window.open(
+		`http://localhost:5174/invoice/${props.invoice.id}?auth=${auth}&status=true&username=${noteManager.username}&environment=local`,
+		'_blank',
+	)
 }
 
 const showInvoicePdf = async () => {

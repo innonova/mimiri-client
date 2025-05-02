@@ -12,7 +12,7 @@
 				<input v-model="email" name="email" autocomplete="email" type="text" class="w-full" data-testid="email" />
 				<div
 					v-if="showEmailVerification && emailVerified"
-					class="text-green-600 mb-[-0.5em]"
+					class="text-good mb-[-0.5em] mt-0.5"
 					data-testid="email-verified"
 				>
 					Verified
