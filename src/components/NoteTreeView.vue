@@ -8,21 +8,31 @@
 	>
 		<TreeNode v-for="node of noteManager.root?.viewModel.children" :node="node" :key="node.id"></TreeNode>
 		<NewTreeNode v-if="createNewRootNode"></NewTreeNode>
+		<div v-if="noSearchResults" class="text-center text-text text-size-menu mt-2 cursor-default">No results found</div>
 	</div>
 </template>
 
 <script setup lang="ts">
-import { clipboardNote, createNewRootNode, deleteNodeDialog, isCut, noteManager } from '../global'
+import { clipboardNote, createNewRootNode, deleteNodeDialog, isCut, noteManager, showSearchBox } from '../global'
 import type { MimerNote } from '../services/types/mimer-note'
 import TreeNode from './TreeNode.vue'
 import NewTreeNode from './NewTreeNode.vue'
 import { MenuItems, menuManager } from '../services/menu-manager'
 import { Debounce } from '../services/helpers'
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { persistedState } from '../services/persisted-state'
+import { searchManager } from '../services/search-manager'
 
 const mainElement = ref(null)
 let stateLoaded = false
+
+const noSearchResults = computed(
+	() =>
+		showSearchBox.value &&
+		searchManager.state.searchActive &&
+		!searchManager.state.searchRunning &&
+		Object.keys(searchManager.state.notes).length === 0,
+)
 
 const stopWatching = watch(noteManager.state, () => {
 	if (noteManager.state.stateLoaded && !stateLoaded) {
