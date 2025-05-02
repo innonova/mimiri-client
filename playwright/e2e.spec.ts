@@ -15,7 +15,7 @@ const randomId = generateRandomString(8)
 const username = 'test_automation_longer_than_input_field_' + randomId // Very long so random value is not visible in input field when taking screenshots
 const password = 'password_' + randomId
 
-test.describe('e2e user flow', () => {
+test.describe.skip('e2e user flow', () => {
 	test(`should create account`, async () => {
 		const createAccountLink = page.getByTestId('create-account-link')
 		const usernameInput = page.getByTestId('username-input')

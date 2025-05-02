@@ -33,7 +33,8 @@ import { pwState } from './pw-state'
 
 export const reset = async () => {
 	resetData()
-	config.payUrl = 'http://localhost:3001/'
+	config.payUrl = 'https://mock-payrexx.mimiri.io'
+	config.invoiceUrl = 'https://account.mimiri.io/invoice'
 	await orch.useMockPayrexx()
 	setVisaSuccess()
 	await orch.resetDatabaseSoft(username)

@@ -16,7 +16,7 @@ import {
 } from './selectors'
 import { differenceInDays, isBefore } from 'date-fns'
 
-const NEVER = new Date(2100, 0, 1)
+const NEVER = new Date('2100-01-01T00:00:00.000Z')
 
 export const firstRenewal = async () => {
 	await screenMenu.subscription().click()

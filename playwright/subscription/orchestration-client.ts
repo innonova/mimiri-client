@@ -37,8 +37,8 @@ export interface LoginResponse {
 }
 
 export class OrchestrationClient {
-	private _host = 'http://localhost:3000'
-	private _mockPayrexx = 'http://localhost:3001'
+	private _host = 'https://dev-payment.mimiri.io'
+	private _mockPayrexx = 'https://mock-payrexx.mimiri.io'
 
 	constructor() {}
 

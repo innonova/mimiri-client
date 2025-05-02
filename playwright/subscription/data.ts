@@ -17,6 +17,7 @@ export const config = {
 	cardExpiration: '1026',
 	cardCvc: '123',
 	payUrl: 'http://localhost:3001/',
+	invoiceUrl: 'http://localhost:5174/invoice/',
 }
 
 export const customer = {

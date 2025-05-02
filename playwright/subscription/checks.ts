@@ -41,7 +41,7 @@ export const checkInvoices = async () => {
 	await expect(invoiceItem.total(config.invoiceNo)).toBeVisible()
 	await expect(invoiceItem.total(config.invoiceNo)).toContainText(config.currency)
 
-	await pwState.expectTab('http://localhost:5174/invoice')
+	await pwState.expectTab(config.invoiceUrl)
 	await invoiceItem.viewLink(config.invoiceNo).click()
 	await pwState.enterTab()
 	await expect(invoiceView.container()).toBeVisible()
