@@ -11,7 +11,7 @@
 		@dragleave="onDragLeave"
 	>
 		<div
-			class="rounded overflow-hidden h-[30px] md:h-[25px] flex items-center py-4 md:py-0"
+			class="rounded overflow-hidden h-[30px] md:h-[25px] flex items-center py-[19px] md:py-0"
 			:class="{
 				'bg-item-selected': isSelected && !createNewNode && !createNewRootNode,
 				'text-menu-disabled': node.isRecycleBin && !hasChildren && !isSelected,
@@ -72,8 +72,8 @@
 			>
 				{{ node.title }}
 			</div>
-			<div class="md:hidden pl-14 flex justify-end" @click="selectNode(true)">
-				<OpenIcon class="w-[23px] h-[23px] p-0.5"></OpenIcon>
+			<div class="md:hidden pl-10 py-[7px] flex justify-end" @click="selectNode(true)">
+				<OpenIcon class="w-[23px] h-[23px] p-0.5 mr-1"></OpenIcon>
 			</div>
 		</div>
 		<template v-for="childNode of node.children" :key="childNode.id">
