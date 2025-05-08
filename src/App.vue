@@ -279,6 +279,10 @@ const handleShortcut = event => {
 			}
 		}
 	}
+	if (event.key === 'r' && ctrlActive) {
+		event.preventDefault()
+		event.stopPropagation()
+	}
 	if (event.key === 's' && ctrlActive) {
 		event.preventDefault()
 		noteEditor.value.save()

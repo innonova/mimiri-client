@@ -105,8 +105,12 @@ const controlPanelTreeWithSubscription = [
 ]
 
 export const createControlPanelTree = (owner: NoteManager, parent: MimerNote): MimerNote[] => {
-	if (owner.featureEnabled('subscription')) {
-		return controlPanelTreeWithSubscription.map(tree => new VirtualNote(owner, parent, tree))
-	}
-	return controlPanelTree.map(tree => new VirtualNote(owner, parent, tree))
+	const items = owner.featureEnabled('subscription') ? controlPanelTreeWithSubscription : controlPanelTree
+	return items.map(tree => {
+		const existing = owner.getNoteById(tree.id)
+		if (existing) {
+			return existing
+		}
+		return new VirtualNote(owner, parent, tree)
+	})
 }
