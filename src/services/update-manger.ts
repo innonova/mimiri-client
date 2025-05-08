@@ -386,4 +386,8 @@ export class UpdateManager {
 	public get downloadName() {
 		return this.state.downloadName
 	}
+
+	public get isUpdateAvailable() {
+		return !!this.state.latestVersion
+	}
 }

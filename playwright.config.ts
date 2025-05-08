@@ -10,28 +10,26 @@ const config: PlaywrightTestConfig = {
 		headless: true,
 		viewport: { width: 1280, height: 720 },
 		ignoreHTTPSErrors: true,
-		trace: 'retain-on-failure',
-		video: 'retain-on-failure',
+		trace: 'on-first-retry',
+		video: 'on-first-retry',
 		baseURL: testServerUrl,
 		screenshot: 'only-on-failure',
 	},
 	testMatch: 'playwright/*.spec.ts',
 	retries: 0,
-	workers: 1,
-	fullyParallel: false,
+	workers: 10,
+	fullyParallel: true,
 	projects: [
 		{
 			name: 'chromium',
 			use: { ...devices['Desktop Chrome'], channel: 'chromium' },
 		},
 	],
-	// webServer: useWebServer && {
-	// 	command: `npm run dev -- --port ${port}`,
-	// 	url: testServerUrl,
-	// 	timeout: 30_000,
-	// },
-	// fail fast on ci to keep ci-minutes low
 	maxFailures: isCi ? 1 : undefined,
+	timeout: 40_000,
+	expect: {
+		timeout: 10_000,
+	},
 }
 
 export default config

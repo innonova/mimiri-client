@@ -3,6 +3,7 @@
 		:class="{ invisible: !visible }"
 		class="block absolute h-full w-full left-0 top-back-drop select-none no-drag"
 		@mouseup="close"
+		data-testid="context-menu-backdrop"
 	>
 		<div
 			ref="contextMenu"

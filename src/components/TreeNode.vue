@@ -9,6 +9,7 @@
 		@dragover="onDragOver"
 		@dragenter="onDragEnter"
 		@dragleave="onDragLeave"
+		:data-testid="dataTestId"
 	>
 		<div
 			class="rounded overflow-hidden h-[30px] md:h-[25px] flex items-center py-[19px] md:py-0"
@@ -39,17 +40,47 @@
 				></MinusIcon>
 			</div>
 			<NoteIcon
-				v-if="!node.isRecycleBin"
+				v-if="node.icon === 'note'"
 				class="w-[30px] h-[30px] md:w-[23px] md:h-[23px] p-0.5 mr-1 md:mr-0.5"
 				:class="{ 'text-shared': node.shared }"
 			></NoteIcon>
+			<CogIcon
+				v-if="node.icon === 'cog'"
+				class="w-[30px] h-[30px] md:w-[23px] md:h-[23px] p-0.5 mr-1 md:mr-0.5"
+				:class="{ 'text-shared': node.shared }"
+			></CogIcon>
+			<CoinsIcon
+				v-if="node.icon === 'coins'"
+				class="w-[30px] h-[30px] md:w-[23px] md:h-[23px] p-0.5 mr-1 md:mr-0.5"
+				:class="{ 'text-shared': node.shared }"
+			></CoinsIcon>
+			<InfoIcon
+				v-if="node.icon === 'info'"
+				class="w-[30px] h-[30px] md:w-[23px] md:h-[23px] p-0.5 mr-1 md:mr-0.5"
+				:class="{ 'text-shared': node.shared }"
+			></InfoIcon>
+			<DownloadIcon
+				v-if="node.icon === 'download'"
+				class="w-[30px] h-[30px] md:w-[23px] md:h-[23px] p-0.5 mr-1 md:mr-0.5"
+				:class="{ 'text-shared': node.shared }"
+			></DownloadIcon>
+			<LockIcon
+				v-if="node.icon === 'lock'"
+				class="w-[30px] h-[30px] md:w-[23px] md:h-[23px] p-0.5 mr-1 md:mr-0.5"
+				:class="{ 'text-shared': node.shared }"
+			></LockIcon>
+			<AccountIcon
+				v-if="node.icon === 'account'"
+				class="w-[30px] h-[30px] md:w-[23px] md:h-[23px] p-0.5 mr-1 md:mr-0.5"
+				:class="{ 'text-shared': node.shared }"
+			></AccountIcon>
 			<RecycleBinIcon
-				v-if="node.isRecycleBin && hasChildren"
+				v-if="node.icon === 'recycle-bin' && hasChildren"
 				class="w-[30px] h-[30px] md:w-[23px] md:h-[23px] p-0.5 mr-1 md:mr-0.5"
 				:class="{ 'text-shared': node.shared }"
 			></RecycleBinIcon>
 			<RecycleBinEmptyIcon
-				v-if="node.isRecycleBin && !hasChildren"
+				v-if="node.icon === 'recycle-bin' && !hasChildren"
 				class="w-[30px] h-[30px] md:w-[23px] md:h-[23px] p-0.5 mr-1 md:mr-0.5"
 				:class="{ 'text-shared': node.shared }"
 			></RecycleBinEmptyIcon>
@@ -99,6 +130,12 @@ import PlusIcon from '../icons/plus.vue'
 import MinusIcon from '../icons/minus.vue'
 import OpenIcon from '../icons/open.vue'
 import { MenuItems, menuManager } from '../services/menu-manager'
+import CogIcon from '../icons/cog.vue'
+import AccountIcon from '../icons/account.vue'
+import CoinsIcon from '../icons/coins.vue'
+import InfoIcon from '../icons/info.vue'
+import DownloadIcon from '../icons/download.vue'
+import LockIcon from '../icons/lock.vue'
 
 const visualElement = ref(null)
 const renameInput = ref(null)
@@ -106,6 +143,16 @@ const indicatorTop = ref('0px')
 const indicatorVisible = ref(false)
 let dragOver = 0
 let target = 0
+
+const dataTestId = computed(() => {
+	if (props.node.isControlPanel) {
+		return `node-control-panel`
+	}
+	if (props.node.isRecycleBin) {
+		return `node-recycle-bin`
+	}
+	return `node-${props.node.id}`
+})
 
 const props = defineProps<{
 	node: NoteViewModel
@@ -141,7 +188,7 @@ const searchModeActive = computed(() => {
 
 const startDrag = event => {
 	event.stopPropagation()
-	if (noteManager.isOnline && !props.node.isRecycleBin) {
+	if (noteManager.isOnline && !props.node.isSystem) {
 		event.dataTransfer.dropEffect = 'move'
 		event.dataTransfer.effectAllowed = 'move'
 		dragId.value = props.node.id
@@ -180,7 +227,7 @@ const onDragOver = event => {
 			const top = height / 3
 			const bottom = (2 * height) / 3
 
-			if (event.offsetY < top && !props.node.isRecycleBin) {
+			if (event.offsetY < top && !props.node.isSystem) {
 				indicatorTop.value = '0px'
 				target = -1
 			} else if (event.offsetY > bottom) {
@@ -278,9 +325,9 @@ const showContextMenu = async e => {
 	e.preventDefault()
 	await selectNode(false)
 
-	if (props.node.isRecycleBin) {
+	if (props.node.isSystem) {
 		menuManager.showMenu({ x: e.x, y: e.y }, [
-			...(props.node.children.length > 0 ? [MenuItems.EmptyRecycleBin] : []),
+			...(props.node.children.length > 0 && props.node.isRecycleBin ? [MenuItems.EmptyRecycleBin] : []),
 			MenuItems.Refresh,
 		])
 	} else {

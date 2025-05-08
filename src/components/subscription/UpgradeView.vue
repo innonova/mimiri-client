@@ -5,7 +5,7 @@
 		</div>
 		<div class="bg-info w-full h-2 mb-4"></div>
 		<div class="flex flex-col overflow-y-auto pr-2" data-testid="upgrade-view">
-			<form v-on:submit.prevent="submit">
+			<form v-on:submit.prevent="submit" class="max-w-[30rem]">
 				<ItemHeader>Chosen subscription</ItemHeader>
 				<div class="flex justify-center pb-5">
 					<Subscription
@@ -33,7 +33,11 @@
 					v-model:privacy="privacyAccepted"
 				></PaymentSummary>
 				<div class="text-right mb-20">
-					<button type="submit" :disabled="!valid || !termsAccepted || !privacyAccepted" data-testid="pay-button">
+					<button
+						type="submit"
+						:disabled="!valid || !termsAccepted || !privacyAccepted || !method"
+						data-testid="pay-button"
+					>
 						Pay now
 					</button>
 				</div>
@@ -58,7 +62,7 @@ const props = defineProps<{
 	currency: Currency
 }>()
 
-const emit = defineEmits(['pay-in-progress'])
+const emit = defineEmits(['pay-in-progress', 'change-plan'])
 
 const changed = ref()
 const valid = ref()
@@ -68,7 +72,9 @@ const customerElement = ref<typeof CustomerData>()
 
 const method = ref('')
 
-const changePlan = () => {}
+const changePlan = () => {
+	emit('change-plan')
+}
 
 const populate = async () => {}
 
@@ -77,7 +83,7 @@ onMounted(async () => {
 })
 
 const submit = async () => {
-	if (customerElement.value && valid && termsAccepted.value && privacyAccepted.value && props.product) {
+	if (customerElement.value && valid && termsAccepted.value && privacyAccepted.value && props.product && method.value) {
 		await customerElement.value.save(termsAccepted.value, privacyAccepted.value)
 		await customerElement.value.verifyEmail()
 		const newSubResult = await noteManager.paymentClient.newSubscription({
@@ -93,7 +99,7 @@ const submit = async () => {
 				clientRef: 'upgrade',
 			})
 			window.open(createPayResult.link, '_blank')
-			emit('pay-in-progress', newSubResult.invoiceId, true)
+			emit('pay-in-progress', newSubResult.invoiceId, true, createPayResult.link)
 		} else {
 			const methodId = method.value
 			assertGuid(methodId)

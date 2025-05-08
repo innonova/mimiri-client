@@ -22,6 +22,7 @@
 		<div
 			v-if="mimiriPlatform.isPc && !mimiriPlatform.isMac"
 			class="hover:bg-title-hover cursor-default rounded px-2 no-drag"
+			data-testid="title-menu-file"
 			@click="menuClick($event, 'file')"
 			@mouseenter="menuHover($event, 'file')"
 		>
@@ -30,6 +31,7 @@
 		<div
 			v-if="mimiriPlatform.isPc && !mimiriPlatform.isMac"
 			class="hover:bg-title-hover cursor-default rounded px-2 no-drag"
+			data-testid="title-menu-edit"
 			@click="menuClick($event, 'edit')"
 			@mouseenter="menuHover($event, 'edit')"
 		>
@@ -38,6 +40,7 @@
 		<div
 			v-if="mimiriPlatform.isPc && !mimiriPlatform.isMac"
 			class="hover:bg-title-hover cursor-default rounded px-2 no-drag"
+			data-testid="title-menu-view"
 			@click="menuClick($event, 'view')"
 			@mouseenter="menuHover($event, 'view')"
 		>
@@ -46,6 +49,7 @@
 		<div
 			v-if="mimiriPlatform.isPc && !mimiriPlatform.isMac"
 			class="hover:bg-title-hover cursor-default rounded px-2 no-drag"
+			data-testid="title-menu-tools"
 			@click="menuClick($event, 'tools')"
 			@mouseenter="menuHover($event, 'tools')"
 		>
@@ -54,6 +58,7 @@
 		<div
 			v-if="mimiriPlatform.isPc && !mimiriPlatform.isMac"
 			class="hover:bg-title-hover cursor-default rounded px-2 no-drag"
+			data-testid="title-menu-help"
 			@click="menuClick($event, 'help')"
 			@mouseenter="menuHover($event, 'help')"
 		>

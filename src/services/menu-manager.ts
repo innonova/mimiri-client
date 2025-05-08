@@ -1,7 +1,5 @@
 import { reactive } from 'vue'
 import {
-	aboutDialog,
-	checkUpdateDialog,
 	clipboardNote,
 	contextMenu,
 	deleteNodeDialog,
@@ -14,17 +12,14 @@ import {
 	notificationManager,
 	passwordGeneratorDialog,
 	searchInput,
-	settingsScreen,
 	shareDialog,
-	showDeleteAccount,
 	showShareOffers,
-	showUpdate,
-	subscriptionsScreen,
 	updateManager,
 } from '../global'
 import type { ContextMenuItem, ContextMenuPosition } from './types/context-menu'
 import { settingsManager } from './settings-manager'
 import { mimiriPlatform } from './mimiri-platform'
+import type { Guid } from './types/guid'
 
 export enum MenuItems {
 	Separator = 'separator',
@@ -97,13 +92,13 @@ class MenuManager {
 
 	public async menuIdActivated(itemId: string) {
 		if (itemId === 'change-username') {
-			settingsScreen.value.show('username')
+			noteManager.getNoteById('settings-username' as Guid)?.select()
 		} else if (itemId === 'change-password') {
-			settingsScreen.value.show('password')
+			noteManager.getNoteById('settings-password' as Guid)?.select()
 		} else if (itemId === 'delete-account') {
-			showDeleteAccount.value = true
+			noteManager.getNoteById('settings-delete' as Guid)?.select()
 		} else if (itemId === 'manage-subscription') {
-			subscriptionsScreen.value.show()
+			noteManager.getNoteById('settings-plan' as Guid)?.select()
 		} else if (itemId === 'tray-double-click') {
 			ipcClient.menu.show()
 		} else if (itemId === 'tray-click') {
@@ -150,7 +145,7 @@ class MenuManager {
 			settingsManager.wordwrap = !settingsManager.wordwrap
 			void settingsManager.save()
 		} else if (itemId === 'about') {
-			aboutDialog.value.show()
+			noteManager.getNoteById(noteManager.controlPanelId)?.select()
 		} else if (itemId === 'show-dev-tools') {
 			ipcClient.menu.showDevTools()
 		}
@@ -205,10 +200,10 @@ class MenuManager {
 		} else if (itemId === 'mark-as-read') {
 			notificationManager.markAllAsRead()
 		} else if (itemId === 'update-available') {
-			showUpdate.value = true
+			noteManager.getNoteById('settings-update' as Guid)?.select()
 		} else if (itemId === 'check-for-update') {
 			await updateManager.check()
-			checkUpdateDialog.value.show()
+			noteManager.getNoteById('settings-update' as Guid)?.select()
 		} else if (itemId === 'add-getting-started') {
 			await noteManager.addGettingStarted()
 		} else if (itemId === 'empty-recycle-bin') {
@@ -216,9 +211,9 @@ class MenuManager {
 		} else if (itemId === 'password-generator') {
 			passwordGeneratorDialog.value.show()
 		} else if (itemId === 'set-pin') {
-			settingsScreen.value.show('pin')
+			noteManager.getNoteById('settings-pin' as Guid)?.select()
 		} else if (itemId === 'settings') {
-			settingsScreen.value.show('general')
+			noteManager.getNoteById('settings-general' as Guid)?.select()
 		}
 	}
 
@@ -257,7 +252,7 @@ class MenuManager {
 						title: 'New Note',
 						icon: 'add-note',
 						shortcut: ipcClient.isAvailable ? 'Ctrl+N' : undefined,
-						enabled: noteManager.isLoggedIn && !!noteManager.selectedNote && !noteManager.selectedNote.isRecycleBin,
+						enabled: noteManager.isLoggedIn && !!noteManager.selectedNote && !noteManager.selectedNote.isSystem,
 					})
 					break
 				case MenuItems.NewRootNote:

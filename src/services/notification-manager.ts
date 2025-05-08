@@ -1,6 +1,7 @@
 import { reactive } from 'vue'
-import { notificationList, showUpdate } from '../global'
+import { noteManager, notificationList } from '../global'
 import { settingsManager } from './settings-manager'
+import type { Guid } from './types/guid'
 
 export interface NotificationManagerState {
 	unread: number
@@ -46,7 +47,7 @@ export class NotificationManager {
 	public activateNotification(id: number) {
 		const notification = this.state.notifications.find(item => item.id === id)
 		if (notification.type === 'update') {
-			showUpdate.value = true
+			noteManager.getNoteById('settings-update' as Guid)?.select()
 			notificationList.value.close()
 		}
 	}

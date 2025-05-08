@@ -4,29 +4,13 @@
 		<div class="flex items-center justify-center h-full text-text pb-10">Loading...</div>
 	</div>
 	<div v-if="!loading" class="flex flex-col h-full bg-back text-text dark-mode safe-area-padding">
-		<TitleBar
-			v-if="
-				authenticated && !showUpdate && !showDeleteAccount && !showCreateAccount && !showSettings && !showSubscriptions
-			"
-			ref="titleBar"
-		></TitleBar>
+		<TitleBar v-if="authenticated && !showCreateAccount" ref="titleBar"></TitleBar>
 		<Login v-if="!authenticated && !showCreateAccount && !showConvertAccount && !noteManager.initInProgress"></Login>
 		<CreateEditAccount ref="createEditAccountScreen"></CreateEditAccount>
-		<Settings v-if="authenticated" ref="settingsScreen"></Settings>
-		<Subscriptions v-if="authenticated" ref="subscriptionsScreen"></Subscriptions>
 		<ConvertAccount v-if="showConvertAccount"></ConvertAccount>
-		<DeleteAccount v-if="showDeleteAccount"></DeleteAccount>
-		<Update v-if="authenticated && showUpdate"></Update>
 		<div
 			v-if="authenticated && !showConvertAccount"
-			v-show="
-				!showUpdate &&
-				!showDeleteAccount &&
-				!showCreateAccount &&
-				!localAuth.locked &&
-				!showSettings &&
-				!showSubscriptions
-			"
+			v-show="!showCreateAccount && !localAuth.locked"
 			class="flex h-full overflow-hidden"
 			@mouseup="endDragging"
 		>
@@ -41,8 +25,11 @@
 			</div>
 			<div class="w-2.5 min-w-2.5 bg-toolbar cursor-ew-resize hidden md:block" @mousedown="startDragging"></div>
 			<div class="h-full flex flex-col w-full divider-right" :class="{ 'hidden md:flex': !showEditor }">
-				<div class="h-full flex flex-col flex-1">
+				<div v-show="noteManager.selectedNote?.type === 'note-text'" class="h-full flex flex-col flex-1">
 					<NoteEditor ref="noteEditor"></NoteEditor>
+				</div>
+				<div v-if="noteManager.selectedNote?.type.startsWith('settings-')" class="h-full flex flex-col flex-1">
+					<SystemPage></SystemPage>
 				</div>
 			</div>
 		</div>
@@ -55,11 +42,10 @@
 		<ContextMenu ref="contextMenu"></ContextMenu>
 		<NotificationList ref="notificationList"></NotificationList>
 		<DeleteNodeDialog ref="deleteNodeDialog"></DeleteNodeDialog>
+		<DeleteMethodDialog ref="deletePaymentMethodDialog"></DeleteMethodDialog>
 		<EmptyRecycleBinDialog ref="emptyRecycleBinDialog"></EmptyRecycleBinDialog>
 		<PasswordGeneratorDialog ref="passwordGeneratorDialog"></PasswordGeneratorDialog>
 		<ShareDialog ref="shareDialog"></ShareDialog>
-		<AboutDialog ref="aboutDialog"></AboutDialog>
-		<CheckUpdateDialog ref="checkUpdateDialog"></CheckUpdateDialog>
 		<SaveEmptyNodeDialog ref="saveEmptyNodeDialog"></SaveEmptyNodeDialog>
 		<LimitDialog ref="limitDialog"></LimitDialog>
 		<PasswordDialog ref="passwordDialog"></PasswordDialog>
@@ -78,19 +64,15 @@ import { computed, ref, watch } from 'vue'
 import NoteTreeView from './components/NoteTreeView.vue'
 import NoteEditor from './components/NoteEditor.vue'
 import MainToolbar from './components/MainToolbar.vue'
-import Update from './components/Update.vue'
 import TitleBar from './components/TitleBar.vue'
 import Login from './components/Login.vue'
 import CreateEditAccount from './components/CreateAccount.vue'
-import Settings from './components/SettingsScreen.vue'
-import Subscriptions from './components/SubscriptionsScreen.vue'
 import ContextMenu from './components/ContextMenu.vue'
 import NotificationList from './components/NotificationList.vue'
 import DeleteNodeDialog from './components/dialogs/DeleteNodeDialog.vue'
+import DeleteMethodDialog from './components/dialogs/DeleteMethodDialog.vue'
 import ShareDialog from './components/dialogs/ShareDialog.vue'
 import ShareOfferView from './components/ShareOfferView.vue'
-import AboutDialog from './components/dialogs/AboutDialog.vue'
-import CheckUpdateDialog from './components/dialogs/CheckUpdateDialog.vue'
 import SaveEmptyNodeDialog from './components/dialogs/SaveEmptyNodeDialog.vue'
 import LimitDialog from './components/dialogs/LimitDialog.vue'
 import PasswordDialog from './components/dialogs/PasswordDialog.vue'
@@ -110,36 +92,29 @@ import {
 	passwordGeneratorDialog,
 	showCreateAccount,
 	showConvertAccount,
-	showUpdate,
 	mainToolbar,
 	noteEditor,
-	aboutDialog,
-	checkUpdateDialog,
 	noteTreeView,
 	notificationList,
 	titleBar,
 	ipcClient,
 	mimiriEditor,
 	saveEmptyNodeDialog,
-	limitDialog,
 	passwordDialog,
-	showDeleteAccount,
+	limitDialog,
 	updateManager,
 	mobileLog,
-	settingsScreen,
-	subscriptionsScreen,
-	showSettings,
-	showSubscriptions,
+	deletePaymentMethodDialog,
 } from './global'
 import { settingsManager } from './services/settings-manager'
 import LoadingIcon from './icons/loading.vue'
 import { mimiriPlatform } from './services/mimiri-platform'
-import DeleteAccount from './components/DeleteAccount.vue'
 import { menuManager } from './services/menu-manager'
 import { Debounce } from './services/helpers'
 import { localAuth } from './services/local-auth'
 import LockScreen from './components/LockScreen.vue'
 import { useEventListener } from '@vueuse/core'
+import SystemPage from './components/SystemPage.vue'
 
 mobileLog.log(`App Loading ${settingsManager.channel} ${updateManager.currentVersion}`)
 
@@ -200,17 +175,8 @@ if (ipcClient.isAvailable) {
 	menuManager.updateAppMenu()
 }
 
-// noteManager.beginTest('import-test')
-
 const handleShortcut = event => {
-	if (
-		!authenticated ||
-		localAuth.locked ||
-		showSettings.value ||
-		showUpdate.value ||
-		showDeleteAccount.value ||
-		showCreateAccount.value
-	) {
+	if (!authenticated || localAuth.locked || showCreateAccount.value) {
 		return
 	}
 	const treeViewShortCutsActive =

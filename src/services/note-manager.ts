@@ -2,7 +2,7 @@ import { reactive, ref } from 'vue'
 import { MimerClient, VersionConflictError, type LoginData } from './mimer-client'
 import { dateTimeNow } from './types/date-time'
 import { newGuid, type Guid } from './types/guid'
-import { MimerNote } from './types/mimer-note'
+import { controlPanel, MimerNote } from './types/mimer-note'
 import { Note } from './types/note'
 import type { NoteShareInfo } from './types/note-share-info'
 import type { ICacheManager } from './types/cache-manager'
@@ -24,6 +24,7 @@ import { persistedState } from './persisted-state'
 import { ProofOfWork } from './proof-of-work'
 import { PaymentClient } from './payment-client'
 import type { ClientConfig } from './types/responses'
+import { createControlPanelTree } from './types/control-panel'
 
 export enum ActionType {
 	Save,
@@ -65,6 +66,10 @@ export interface LoginListener {
 	online()
 }
 
+export interface ActionListener {
+	select(id: Guid)
+}
+
 export class NoteManager {
 	public ignoreFirstWALError: boolean = false
 
@@ -81,8 +86,12 @@ export class NoteManager {
 	private _ensureWhenOnline: Note[] = []
 	private _proofBits = 15
 	private _listener: LoginListener
+	private _actionListeners: ActionListener[] = []
 
 	constructor(host: string, paymentHost: string, serverKey: string, serverKeyId: string) {
+		controlPanel.createChildren = (owner: NoteManager, parent: MimerNote) => {
+			return createControlPanelTree(owner, parent)
+		}
 		this._isMobile = !window.matchMedia?.('(min-width: 768px)')?.matches
 		window.addEventListener('resize', () => {
 			this._isMobile = !window.matchMedia?.('(min-width: 768px)')?.matches
@@ -144,6 +153,16 @@ export class NoteManager {
 		this._listener = listener
 	}
 
+	public registerActionListener(listener: ActionListener) {
+		this._actionListeners.push(listener)
+	}
+
+	private emitSelected(id: Guid) {
+		for (const listener of this._actionListeners) {
+			listener.select(id)
+		}
+	}
+
 	public beginAction() {
 		this.outstandingActions++
 		if (this.outstandingActions > 0) {
@@ -173,6 +192,9 @@ export class NoteManager {
 	}
 
 	public async checkUsername(username: string) {
+		if (env.DEV && username.startsWith('auto_test_')) {
+			return true
+		}
 		while (true) {
 			const pow = await ProofOfWork.compute(username, this._proofBits)
 			const res = await this.client.checkUsername(username, pow)
@@ -192,7 +214,12 @@ export class NoteManager {
 			rootKey: newGuid(),
 			createComplete: false,
 		}
-		const pow = await ProofOfWork.compute(username, this._proofBits)
+		let pow = ''
+		if (env.DEV && username.startsWith('auto_test_')) {
+			pow = 'test-mode'
+		} else {
+			pow = await ProofOfWork.compute(username, this._proofBits)
+		}
 		await this.client.createUser(username, password, userData, pow, iterations)
 
 		// const keyMetadata = {
@@ -287,18 +314,27 @@ export class NoteManager {
 				recycleBin.changeItem('metadata').notes = []
 				recycleBin.changeItem('metadata').isRecycleBin = true
 				await this.client.createNote(recycleBin)
+
+				const controlPanel = new Note()
+				controlPanel.keyName = this.client.getKeyById(this.client.userData.rootKey).name
+				controlPanel.changeItem('metadata').notes = []
+				controlPanel.changeItem('metadata').isControlPanel = true
+				await this.client.createNote(controlPanel)
+
 				const rootNote = new Note()
 				rootNote.id = this.client.userData.rootNote
 				rootNote.keyName = this.client.getKeyById(this.client.userData.rootKey).name
 				rootNote.changeItem('metadata').recycleBin = recycleBin.id
-				rootNote.changeItem('metadata').notes = [recycleBin.id]
+				rootNote.changeItem('metadata').controlPanel = controlPanel.id
+				rootNote.changeItem('metadata').notes = [controlPanel.id, recycleBin.id]
 				await this.addGettingStarted(rootNote)
 				await this.client.createNote(rootNote)
 			}
 			this.client.userData.createComplete = true
 			await this.client.updateUserData()
 		}
-		this.ensureRecycleBin()
+		await this.ensureControlPanel()
+		await this.ensureRecycleBin()
 	}
 
 	private async ensureRecycleBin() {
@@ -316,10 +352,31 @@ export class NoteManager {
 		}
 	}
 
+	private async ensureControlPanel() {
+		const root = await this.client.readNote(this.client.userData.rootNote, false)
+		if (!root.getItem('metadata').controlPanel) {
+			const controlPanel = new Note()
+			controlPanel.keyName = root.keyName
+			controlPanel.changeItem('metadata').notes = []
+			controlPanel.changeItem('metadata').isControlPanel = true
+			await this.client.createNote(controlPanel)
+			root.changeItem('metadata').controlPanel = controlPanel.id
+			const rootChildren = root.changeItem('metadata').notes
+			root.changeItem('metadata').notes = [controlPanel.id, ...rootChildren]
+			await this.client.updateNote(root)
+		}
+	}
+
 	private async loadRootNote() {
 		const note = await this.client.readNote(this.client.userData.rootNote, true)
 		if (note) {
 			this.root = new MimerNote(this, undefined, note)
+			if (note.getItem('metadata').controlPanel) {
+				this.ensureControlPanel()
+			}
+			if (note.getItem('metadata').recycleBin) {
+				this.ensureRecycleBin()
+			}
 			this.emitStatusUpdated()
 		} else {
 			this.root = undefined
@@ -522,6 +579,7 @@ export class NoteManager {
 		if (!this._isMobile) {
 			browserHistory.open(id)
 		}
+		this.emitSelected(id)
 	}
 
 	public closeNote() {
@@ -1160,5 +1218,9 @@ export class NoteManager {
 
 	public get clientConfig(): ClientConfig {
 		return this.client.clientConfig
+	}
+
+	public get controlPanelId(): Guid {
+		return this._root.note.getItem('metadata').controlPanel
 	}
 }

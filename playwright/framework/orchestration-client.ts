@@ -1,5 +1,4 @@
 import { add } from 'date-fns'
-import { config } from './data'
 import { Guid } from './guid'
 import { passwordHasher } from './password-hasher'
 
@@ -38,29 +37,40 @@ export interface LoginResponse {
 
 export class OrchestrationClient {
 	private _host = 'https://dev-payment.mimiri.io'
+	// private _host = 'http://localhost:3000'
 	private _mockPayrexx = 'https://mock-payrexx.mimiri.io'
 
 	constructor() {}
 
+	public async cleanUp(username: string) {
+		const text = await fetch(`${this._host}/clean-up/${username}`).then(res => res.text())
+	}
+
 	public async resetDatabaseSoft(username: string) {
 		await fetch(`${this._host}/reset-database-soft/${username}`).then(res => res.text())
+	}
+
+	public async enableSubscription(username: string) {
+		await fetch(`${this._host}/enable-subscription/${username}`).then(res => res.text())
 	}
 
 	public async grandfather(username: string) {
 		await fetch(`${this._host}/set-grand-fathered-sharing/${username}`).then(res => res.text())
 	}
 
-	public async triggerRenewals(now?: Date) {
+	public async triggerRenewals(username: string, now?: Date) {
 		if (now) {
-			return await fetch(`${this._host}/subscription/trigger-renewals?now=${now.toISOString()}`).then(res => res.text())
+			return await fetch(`${this._host}/subscription/trigger-renewals/${username}?now=${now.toISOString()}`).then(res =>
+				res.text(),
+			)
 		} else {
-			return await fetch(`${this._host}/subscription/trigger-renewals`).then(res => res.text())
+			return await fetch(`${this._host}/subscription/trigger-renewals/${username}`).then(res => res.text())
 		}
 	}
 
 	public async triggerNextRenewalsFor(username: string) {
 		const now = add((await this.nextRenewalDate(username)).time, { hours: 3 })
-		return this.triggerRenewals(now)
+		return this.triggerRenewals(username, now)
 	}
 
 	public async nextRenewalDate(username: string): Promise<{ action: string; time: Date }> {
@@ -71,30 +81,32 @@ export class OrchestrationClient {
 		}
 	}
 
-	public async failNextCharge(mode: string) {
+	public async waitForMailQueue(email: string) {
+		return await fetch(`${this._host}/email/wait-for-queue/${email}`).then(res => res.text())
+	}
+
+	public async failNextCharge(mode: string, username: string) {
 		await fetch(`${this._mockPayrexx}/fail-next`, {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ mode }),
+			body: JSON.stringify({ mode, username }),
 		}).then(res => res.json())
 	}
 
-	public async useRealPayrexx() {
+	public async useRealPayrexx(username: string) {
 		await fetch(`${this._host}/payment/set-host`, {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ mock: false }),
+			body: JSON.stringify({ mock: false, username }),
 		}).then(res => res.json())
-		config.payrexxMode = 'real'
 	}
 
-	public async useMockPayrexx() {
+	public async useMockPayrexx(username: string) {
 		await fetch(`${this._host}/payment/set-host`, {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ mock: true }),
+			body: JSON.stringify({ mock: true, username }),
 		}).then(res => res.json())
-		config.payrexxMode = 'mock'
 	}
 
 	public async login(username: string, password: string) {

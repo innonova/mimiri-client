@@ -299,5 +299,35 @@
 		"license": "CC0",
 		"attribution": "",
 		"collection": "https://www.svgrepo.com/collection/ui-oval-interface-icons/"
+	},
+	"cog": {
+		"url": "https://www.svgrepo.com/download/471872/settings-01.svg",
+		"license": "CC0",
+		"attribution": "",
+		"collection": "https://www.svgrepo.com/collection/ui-oval-interface-icons/"
+	},
+	"coins": {
+		"url": "https://www.svgrepo.com/download/471225/coins-03.svg",
+		"license": "CC0",
+		"attribution": "",
+		"collection": "https://www.svgrepo.com/collection/ui-oval-interface-icons/"
+	},
+	"info": {
+		"url": "https://www.svgrepo.com/download/471560/info-square.svg",
+		"license": "CC0",
+		"attribution": "",
+		"collection": "https://www.svgrepo.com/collection/ui-oval-interface-icons/"
+	},
+	"download": {
+		"url": "https://www.svgrepo.com/download/471348/download-cloud-01.svg",
+		"license": "CC0",
+		"attribution": "",
+		"collection": "https://www.svgrepo.com/collection/ui-oval-interface-icons/"
+	},
+	"lock": {
+		"url": "https://www.svgrepo.com/download/471625/lock-02.svg",
+		"license": "CC0",
+		"attribution": "",
+		"collection": "https://www.svgrepo.com/collection/ui-oval-interface-icons/"
 	}
 }

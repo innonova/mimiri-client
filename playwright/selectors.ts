@@ -1,11 +1,11 @@
-import { config } from './data'
-import { pwState } from './pw-state'
+import { deleteAccount } from './core/actions'
+import { mimiri } from './framework/mimiri-context'
 
 const tid = (id: string) => {
-	return pwState.getByTestId(id)
+	return mimiri().getByTestId(id)
 }
 
-export const homeView = {
+export const subHomeView = {
 	container: () => tid('home-view'),
 	currentSubscriptionSku: () => tid('current-subscription-sku'),
 	currentSubscriptionPaidUntil: () => tid('current-subscription-paid-until'),
@@ -18,17 +18,64 @@ export const mainToolbar = {
 export const titleBar = {
 	container: () => tid('title-bar'),
 	accountButton: () => tid('account-button'),
+	file: () => tid('title-menu-file'),
+	edit: () => tid('title-menu-edit'),
+	view: () => tid('title-menu-view'),
+	tools: () => tid('title-menu-tools'),
+	help: () => tid('title-menu-help'),
 }
 
 export const menu = {
+	backdrop: () => tid('context-menu-backdrop'),
 	manageSubscription: () => tid('menu-manage-subscription'),
+	changeUsername: () => tid('menu-change-username'),
+	changePassword: () => tid('menu-change-password'),
+	deleteAccount: () => tid('menu-delete-account'),
+	about: () => tid('menu-about'),
+	settings: () => tid('menu-settings'),
+	refresh: () => tid('menu-refresh'),
+	delete: () => tid('menu-delete'),
+	rename: () => tid('menu-rename'),
+	copy: () => tid('menu-copy'),
+	cut: () => tid('menu-cut'),
+	paste: () => tid('menu-paste'),
+	share: () => tid('menu-share'),
+	newNote: () => tid('menu-new-note'),
+	newRootNote: () => tid('menu-new-root-note'),
 }
 
-export const screenMenu = {
-	subscription: () => tid('screen-menu-subscription'),
-	account: () => tid('screen-menu-account'),
-	methods: () => tid('screen-menu-methods'),
-	invoices: () => tid('screen-menu-invoices'),
+export const dialog = {
+	deletePaymentMethod: () => tid('dialog-delete-payment-method'),
+	yes: () => tid('dialog-yes'),
+	no: () => tid('dialog-no'),
+}
+
+export const settingNodes = {
+	controlPanel: () => tid('node-control-panel'),
+	recycleBin: () => tid('node-recycle-bin'),
+	update: () => tid('node-settings-update'),
+	settingGroup: () => tid('node-settings-group'),
+	general: () => tid('node-settings-general'),
+	pin: () => tid('node-settings-pin'),
+	account: () => tid('node-settings-account'),
+	username: () => tid('node-settings-username'),
+	password: () => tid('node-settings-password'),
+	delete: () => tid('node-settings-delete'),
+	subscriptionGroup: () => tid('node-settings-plan-group'),
+	subscription: () => tid('node-settings-plan'),
+	billingAddress: () => tid('node-settings-billing-address'),
+	methods: () => tid('node-settings-payment-methods'),
+	invoices: () => tid('node-settings-invoices'),
+}
+
+export const settingView = {
+	about: () => tid('settings-view-about'),
+	update: () => tid('settings-view-update'),
+	general: () => tid('settings-view-general'),
+	pinCode: () => tid('settings-view-pin-code'),
+	username: () => tid('settings-view-username'),
+	password: () => tid('settings-view-password'),
+	deleteAccount: () => tid('settings-view-delete-account'),
 }
 
 export const loginCtrl = {
@@ -36,6 +83,19 @@ export const loginCtrl = {
 	username: () => tid('username-input'),
 	password: () => tid('password-input'),
 	button: () => tid('login-button'),
+	createAccountLink: () => tid('create-account-link'),
+}
+
+export const createCtrl = {
+	container: () => tid('create-account-view'),
+	username: () => tid('username-input'),
+	password: () => tid('password-input'),
+	repeat: () => tid('repeat-input'),
+	terms: () => tid('terms-checkbox'),
+	privacy: () => tid('privacy-checkbox'),
+	weak: () => tid('weak-checkbox'),
+	noRecover: () => tid('no-recover-checkbox'),
+	button: () => tid('create-button'),
 }
 
 export const subItem = {
@@ -102,6 +162,7 @@ export const payInvoiceView = {
 export const paymentSelector = {
 	container: () => tid('payment-method-selector'),
 	new: () => tid('payment-method-NEW'),
+	loaded: () => tid('payment-methods-loaded'),
 }
 
 export const paymentMethodsView = {
@@ -115,6 +176,7 @@ export const paymentMethodsView = {
 export const invoicesView = {
 	container: () => tid('invoices-view'),
 	none: () => tid('invoices-none'),
+	numbers: () => tid('invoice-numbers'),
 }
 
 export const invoiceItem = {
@@ -144,6 +206,11 @@ export const accountView = {
 	verifyEmail: () => tid(`verify-email`),
 }
 
+export const accountServer = {
+	emailVerified: () => tid(`email-verified`),
+	paymentResult: () => tid(`payment-result-view`),
+}
+
 export const payrexx = {
 	successVisa: () => tid('payrexx-success-visa'),
 	successMastercard: () => tid('payrexx-success-mastercard'),
@@ -154,26 +221,27 @@ export const payrexx = {
 }
 
 export const payrexxView = {
-	container: () => pwState.locator('.theme-outer-wrapper'),
-	visa: () => pwState.locator('#payment-methods').locator('[data-payment-method-id=visa]').getByRole('img'),
-	twint: () => pwState.locator('#payment-methods').locator('[data-payment-method-id=twint]').getByRole('img'),
-	mastercard: () => pwState.locator('#payment-methods').locator('[data-payment-method-id=mastercard]').getByRole('img'),
+	container: () => mimiri().locator('.theme-outer-wrapper'),
+	visa: () => mimiri().locator('#payment-methods').locator('[data-payment-method-id=visa]').getByRole('img'),
+	twint: () => mimiri().locator('#payment-methods').locator('[data-payment-method-id=twint]').getByRole('img'),
+	mastercard: () =>
+		mimiri().locator('#payment-methods').locator('[data-payment-method-id=mastercard]').getByRole('img'),
 	cardNumber: () =>
-		pwState
-			.locator(`#payment-form-${config.paymentMethod} iframe`)
+		mimiri()
+			.locator(`#payment-form-${mimiri().config.paymentMethod} iframe`)
 			.contentFrame()
 			.getByRole('textbox', { name: 'Card number *' }),
 	cardExpiration: () =>
-		pwState
-			.locator(`#payment-form-${config.paymentMethod} iframe`)
+		mimiri()
+			.locator(`#payment-form-${mimiri().config.paymentMethod} iframe`)
 			.contentFrame()
 			.getByRole('textbox', { name: 'Expiration *' }),
 	cardCvc: () =>
-		pwState
-			.locator(`#payment-form-${config.paymentMethod} iframe`)
+		mimiri()
+			.locator(`#payment-form-${mimiri().config.paymentMethod} iframe`)
 			.contentFrame()
 			.getByRole('textbox', { name: 'CVC *' }),
-	button: () => pwState.getByRole('button', { name: 'Save means of payment CHF' }),
+	button: () => mimiri().getByRole('button', { name: 'Save means of payment CHF' }),
 }
 
 export const waitingView = {

@@ -127,6 +127,9 @@ export class MimerClient {
 		if (serverKey) {
 			CryptSignature.fromPem('RSA;3072', serverKey).then(sig => (this.serverSignature = sig))
 		}
+		if (env.VITE_DEFAULT_ITERATIONS) {
+			MimerClient.DEFAULT_ITERATIONS = env.VITE_DEFAULT_ITERATIONS
+		}
 	}
 
 	private getKey(name: Guid) {
@@ -307,7 +310,7 @@ export class MimerClient {
 
 			if (!loginResponse || !preLoginResponse) {
 				try {
-					preLoginResponse = await this.get<PreLoginResponse>(`/user/pre-login/${data.username}`)
+					preLoginResponse = await this.get<PreLoginResponse>(`/user/pre-login/${data.username}?q=${Date.now()}`)
 				} catch (exi) {
 					throw exi
 				}
@@ -376,7 +379,7 @@ export class MimerClient {
 
 	public async verifyPassword(password: string) {
 		try {
-			const preLoginResponse = await this.get<PreLoginResponse>(`/user/pre-login/${this.username}`)
+			const preLoginResponse = await this.get<PreLoginResponse>(`/user/pre-login/${this.username}?q=${Date.now()}`)
 			const passwordHash = await passwordHasher.hashPassword(
 				password,
 				preLoginResponse.salt,
@@ -428,7 +431,7 @@ export class MimerClient {
 	}
 
 	public async deleteAccount(password: string, deleteLocal: boolean) {
-		const preLoginResponse = await this.get<PreLoginResponse>(`/user/pre-login/${this.username}`)
+		const preLoginResponse = await this.get<PreLoginResponse>(`/user/pre-login/${this.username}?q=${Date.now()}`)
 		const passwordHash = await passwordHasher.hashPassword(
 			password,
 			preLoginResponse.salt,
@@ -556,7 +559,7 @@ export class MimerClient {
 		if (!this.rootCrypt) {
 			throw new Error('Not Logged in')
 		}
-		const preLoginResponse = await this.get<PreLoginResponse>(`/user/pre-login/${this.username}`)
+		const preLoginResponse = await this.get<PreLoginResponse>(`/user/pre-login/${this.username}?q=${Date.now()}`)
 		const oldPasswordHash = await passwordHasher.hashPassword(
 			oldPassword,
 			preLoginResponse.salt,

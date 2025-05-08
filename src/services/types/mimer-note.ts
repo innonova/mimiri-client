@@ -1,7 +1,7 @@
 import { reactive } from 'vue'
 import type { NoteManager } from '../note-manager'
 import { dateTimeNow, type DateTime } from './date-time'
-import type { Guid } from './guid'
+import { newGuid, type Guid } from './guid'
 import type { Note } from './note'
 import { fromBase64, toBase64 } from '../hex-base64'
 import { persistedState } from '../persisted-state'
@@ -30,6 +30,12 @@ const isNoteNewerThan = (note: Note, than: Note) => {
 	return false
 }
 
+export const controlPanel = {
+	createChildren: (owner: NoteManager, parent: MimerNote) => {
+		return [] as MimerNote[]
+	},
+}
+
 interface History {
 	active?: HistoryItem[]
 	hotArchive?: HistoryItem[]
@@ -44,6 +50,8 @@ export interface HistoryItem {
 
 export interface NoteViewModel {
 	id: Guid
+	type: string
+	icon: string
 	title: string
 	text: string
 	children: NoteViewModel[]
@@ -55,6 +63,8 @@ export interface NoteViewModel {
 	cache: boolean
 	hasMoreHistory: boolean
 	isRecycleBin: boolean
+	isControlPanel: boolean
+	isSystem: boolean
 }
 
 export class MimerNote {
@@ -67,17 +77,21 @@ export class MimerNote {
 	private _children: MimerNote[] = []
 	private isUpdatingChildren: boolean = false
 	private shouldRerunChildren: boolean = false
+	private controlPanelLoadedAfterFeatures: boolean = false
 
 	constructor(
 		private owner: NoteManager,
 		private _parent: MimerNote | undefined,
 		private _note: Note,
+		updateViewModel = true,
 	) {
 		this.owner.register(_note.id, this)
 		this.beforeChangeText = this.text
 		if (this.parent) {
 			this.viewModel = reactive({
 				id: this.id,
+				type: this.type,
+				icon: this.icon,
 				title: this.title,
 				text: this.text,
 				children: [],
@@ -89,11 +103,15 @@ export class MimerNote {
 				cache: this.isCache,
 				hasMoreHistory: true,
 				isRecycleBin: this.isRecycleBin,
+				isControlPanel: this.isControlPanel,
+				isSystem: this.isSystem,
 			})
 			this._historyItems = this.viewModel.history
 		} else {
 			this.viewModel = reactive({
 				id: this.id,
+				type: this.type,
+				icon: this.icon,
 				title: this.title,
 				text: this.text,
 				children: [],
@@ -105,10 +123,18 @@ export class MimerNote {
 				cache: this.isCache,
 				hasMoreHistory: true,
 				isRecycleBin: this.isRecycleBin,
+				isControlPanel: this.isControlPanel,
+				isSystem: this.isSystem,
 			})
 			this._historyItems = this.viewModel.history
 		}
-		this.updateViewModel()
+		if (this.isControlPanel) {
+			this._children = controlPanel.createChildren(owner, this)
+			this.childrenPopulated = true
+		}
+		if (updateViewModel) {
+			this.updateViewModel()
+		}
 	}
 
 	public async update(note: Note) {
@@ -128,9 +154,15 @@ export class MimerNote {
 		}
 	}
 
-	private updateViewModel() {
+	protected updateViewModel() {
 		if (this.viewModel.title !== this.title) {
 			this.viewModel.title = this.title
+		}
+		if (this.viewModel.type !== this.type) {
+			this.viewModel.type = this.type
+		}
+		if (this.viewModel.icon !== this.icon) {
+			this.viewModel.icon = this.icon
 		}
 		if (this.viewModel.text !== this.text) {
 			this.viewModel.text = this.text
@@ -148,6 +180,8 @@ export class MimerNote {
 			if (!this.viewModel.children.find(c => c.id === childId)) {
 				this.viewModel.children.push({
 					id: childId,
+					type: '',
+					icon: '',
 					title: 'Loading...',
 					text: '',
 					children: [],
@@ -159,6 +193,8 @@ export class MimerNote {
 					cache: false,
 					hasMoreHistory: true,
 					isRecycleBin: this.isRecycleBin,
+					isControlPanel: this.isControlPanel,
+					isSystem: this.isSystem,
 				})
 			}
 		}
@@ -195,6 +231,13 @@ export class MimerNote {
 	}
 
 	public async ensureChildren(skipUpdateViewModel: boolean = false) {
+		if (this.isControlPanel) {
+			if (this.owner.clientConfig && !this.controlPanelLoadedAfterFeatures) {
+				this.controlPanelLoadedAfterFeatures = true
+				this._children = controlPanel.createChildren(this.owner, this)
+			}
+			return
+		}
 		if (this.isUpdatingChildren) {
 			this.shouldRerunChildren = true
 			return
@@ -375,8 +418,6 @@ export class MimerNote {
 				this.parent.select()
 			}
 			if (!this.owner.recycleBin.hasChildren) {
-				console.log('collapse recycle bin')
-
 				this.owner.recycleBin.collapse()
 			}
 			await this.owner.move(this.parent.id, this.owner.recycleBin.id, this, -1, this.isShareRoot, false)
@@ -493,13 +534,16 @@ export class MimerNote {
 	}
 
 	public get isChildrenLoaded() {
-		if (this.note.getItem('metadata').notes.length == 0) {
+		if (!this.isControlPanel && this.note.getItem('metadata').notes.length == 0) {
 			return true
 		}
 		return this.children.length > 0
 	}
 
 	public get childIds() {
+		if (this.isControlPanel) {
+			return this._children.map(c => c.id)
+		}
 		return this.note.getItem('metadata').notes as Guid[]
 	}
 
@@ -542,6 +586,9 @@ export class MimerNote {
 	}
 
 	public get hasChildren() {
+		if (this.isControlPanel) {
+			return true
+		}
 		return this.note.getItem('metadata').notes.length > 0
 	}
 
@@ -561,19 +608,50 @@ export class MimerNote {
 		this._note = value
 	}
 
+	public get isSystem() {
+		return this.isRecycleBin || this.isControlPanel
+	}
+
 	public get isRecycleBin() {
 		return !!this.note.getItem('metadata').isRecycleBin
 	}
 
+	public get isControlPanel() {
+		return !!this.note.getItem('metadata').isControlPanel
+	}
+
+	public get type(): string {
+		if (this.isRecycleBin) {
+			return 'recycle-bin'
+		}
+		if (this.isControlPanel) {
+			return 'settings-about'
+		}
+		return 'note-text'
+	}
+
+	public get icon(): string {
+		if (this.isRecycleBin) {
+			return 'recycle-bin'
+		}
+		if (this.isControlPanel) {
+			return 'cog'
+		}
+		return 'note'
+	}
+
 	public get title() {
-		if (this.note.getItem('metadata').isRecycleBin) {
+		if (this.isRecycleBin) {
 			return 'Recycle Bin'
+		}
+		if (this.isControlPanel) {
+			return 'System'
 		}
 		return this.note.getItem('metadata').title as string
 	}
 
 	public set title(value: string) {
-		if (!this.note.getItem('metadata').isRecycleBin) {
+		if (!this.isSystem) {
 			this.note.changeItem('metadata').title = value
 		}
 	}

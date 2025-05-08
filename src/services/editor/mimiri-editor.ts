@@ -482,7 +482,7 @@ export class MimiriEditor {
 				this.monacoEditorModel.setValue(note.text)
 			}
 		}
-		this.monacoEditor.updateOptions({ readOnly: note.isCache || note.isRecycleBin })
+		this.monacoEditor.updateOptions({ readOnly: note.isCache || note.isSystem })
 	}
 
 	public reloadNode() {
@@ -505,7 +505,7 @@ export class MimiriEditor {
 
 	public resetModel() {
 		this.monacoEditor.setModel(this.monacoEditorModel)
-		this.monacoEditor.updateOptions({ readOnly: (this.note?.isCache || this.note?.isRecycleBin) ?? true })
+		this.monacoEditor.updateOptions({ readOnly: (this.note?.isCache || this.note?.isSystem) ?? true })
 	}
 
 	public undo() {

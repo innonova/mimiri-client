@@ -1,5 +1,5 @@
 <template>
-	<div v-if="showSubscriptions" class="flex flex-col h-full">
+	<div class="flex flex-col h-full">
 		<div
 			class="flex items-center bg-title-bar select-none drag"
 			:class="{
@@ -60,6 +60,7 @@
 							:invoice-id="invoiceId"
 							@close="closeWaiting"
 							:waiting-for-user="waitingForUser"
+							link=""
 						></WaitingForPayment>
 					</div>
 				</div>
@@ -70,7 +71,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { noteManager, showSubscriptions } from '../global'
+import { noteManager } from '../global'
 import { mimiriPlatform } from '../services/mimiri-platform'
 import SubHome from './subscription/SubHome.vue'
 import Account from './subscription/Account.vue'
@@ -130,13 +131,13 @@ const menuClick = (id: string) => {
 }
 
 const close = () => {
-	showSubscriptions.value = false
+	// showSubscriptions.value = false
 }
 
 const show = () => {
 	if (noteManager.featureEnabled('subscription')) {
 		selectedId.value = 'subscription'
-		showSubscriptions.value = true
+		// showSubscriptions.value = true
 	}
 }
 

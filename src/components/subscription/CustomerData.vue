@@ -209,5 +209,6 @@ defineExpose({
 	save,
 	cancel,
 	verifyEmail,
+	loadCustomer,
 })
 </script>

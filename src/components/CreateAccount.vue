@@ -4,7 +4,11 @@
 		id="title-bar"
 		class="w-full h-[36px] pl-px select-none drag"
 	></div>
-	<div v-if="showCreateAccount && (!mimiriPlatform.isWeb || env.DEV)" class="mx-auto px-10 pt-1 md:pt-10 md:my-auto">
+	<div
+		v-if="showCreateAccount && (!mimiriPlatform.isWeb || env.DEV)"
+		class="mx-auto px-10 pt-1 md:pt-10 md:my-auto"
+		data-testid="create-account-view"
+	>
 		<div class="mb-14">
 			<h1 class="text-center font-bold text-size-header">Create Mimiri Account</h1>
 		</div>
@@ -127,6 +131,7 @@
 						v-model="acceptWeakPassword"
 						class="mr-1 relative top-0.5"
 						:disabled="!passwordIsWeak"
+						data-testid="weak-checkbox"
 						:class="{ 'opacity-50': !passwordIsWeak }"
 					/>
 					I know that my password is weak
@@ -324,6 +329,7 @@ const hidePassword = () => {
 }
 
 const createAccount = async () => {
+	const start = performance.now()
 	if (!canCreate.value) {
 		return
 	}
@@ -361,6 +367,7 @@ const createAccount = async () => {
 	} else {
 		await noteManager.root.ensureChildren()
 	}
+	console.log('total create account', performance.now() - start)
 }
 
 const login = () => {

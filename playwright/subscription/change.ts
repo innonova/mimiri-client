@@ -1,14 +1,12 @@
 import { executePayment, reloadApp } from './actions'
-import { mail, orch } from './clients'
-import { config, username } from './data'
-import { expect } from './fixtures'
-import { pwState } from './pw-state'
-import { homeView, newSubView, paymentSelector, screenMenu, subItem, upgradeView } from './selectors'
+import { expect } from '../framework/fixtures'
+import { subHomeView, newSubView, paymentSelector, settingNodes, subItem, upgradeView } from '../selectors'
+import { mimiri } from '../framework/mimiri-context'
 
 export const upgradeSubscription = async () => {
-	await mail.hideTagged(config.testId)
-	await screenMenu.subscription().click()
-	await expect(homeView.container()).toBeVisible()
+	await mimiri().deleteTagged()
+	await settingNodes.subscription().click()
+	await expect(subHomeView.container()).toBeVisible()
 	await expect(subItem.yearlyChange(1)).toBeVisible()
 	await subItem.yearlyChange(1).click()
 	await expect(subItem.yearlyChangeTo(2)).toBeVisible()
@@ -17,23 +15,22 @@ export const upgradeSubscription = async () => {
 	await upgradeView.acceptTerms().click()
 	await upgradeView.acceptPrivacy().click()
 
-	if (await paymentSelector.container().isVisible()) {
-		await expect(paymentSelector.new()).toBeVisible()
-		await paymentSelector.new().click()
-	}
+	await expect(paymentSelector.new()).toBeVisible()
+	await paymentSelector.new().click()
 
-	pwState.expectTab(config.payUrl)
+	await expect(upgradeView.payButton()).toBeEnabled()
+	mimiri().expectTab(mimiri().config.payUrl)
 	await upgradeView.payButton().click()
 	await executePayment()
-	await expect(homeView.container()).toBeVisible()
+	await expect(subHomeView.container()).toBeVisible()
 	await expect(subItem.yearly(2)).toBeVisible()
-	await orch.triggerRenewals()
-	await mail.waitForSubjectToInclude('has been renewed', config.testId)
+	await mimiri().triggerRenewals()
+	await mimiri().waitForSubjectToInclude('has been renewed')
 
 	await reloadApp()
-	await expect(homeView.currentSubscriptionPaidUntil()).not.toBeEmpty()
-	const paidUntil = new Date((await homeView.currentSubscriptionPaidUntil().inputValue()) ?? '')
-	const nextRenewal = await orch.nextRenewalDate(username)
+	await expect(subHomeView.currentSubscriptionPaidUntil()).not.toBeEmpty()
+	const paidUntil = new Date((await subHomeView.currentSubscriptionPaidUntil().inputValue()) ?? '')
+	const nextRenewal = await mimiri().nextRenewalDate()
 	expect((await nextRenewal).action).toBe('notify-will-renew')
 
 	await expect(paidUntil).toBeInMonths(1, nextRenewal.time)
@@ -41,9 +38,9 @@ export const upgradeSubscription = async () => {
 }
 
 export const downgradeSubscription = async () => {
-	await mail.hideTagged(config.testId)
-	await screenMenu.subscription().click()
-	await expect(homeView.container()).toBeVisible()
+	await mimiri().deleteTagged()
+	await settingNodes.subscription().click()
+	await expect(subHomeView.container()).toBeVisible()
 	await expect(subItem.yearlyChange(2)).toBeVisible()
 	await subItem.yearlyChange(2).click()
 	await expect(subItem.yearlyChangeTo(1)).toBeVisible()
@@ -52,23 +49,23 @@ export const downgradeSubscription = async () => {
 	await upgradeView.acceptTerms().click()
 	await upgradeView.acceptPrivacy().click()
 
-	if (await paymentSelector.container().isVisible()) {
-		await expect(paymentSelector.new()).toBeVisible()
-		await paymentSelector.new().click()
-	}
+	await expect(paymentSelector.new()).toBeVisible()
+	await paymentSelector.new().click()
 
-	pwState.expectTab(config.payUrl)
+	await expect(upgradeView.payButton()).toBeEnabled()
+	mimiri().expectTab(mimiri().config.payUrl)
 	await upgradeView.payButton().click()
 	await executePayment()
-	await expect(homeView.container()).toBeVisible()
+	await expect(subHomeView.container()).toBeVisible()
+	await expect(subHomeView.currentSubscriptionSku()).toHaveValue('ABO-001-Y')
 	await expect(subItem.yearly(1)).toBeVisible()
-	await orch.triggerRenewals()
-	await mail.waitForSubjectToInclude('has been renewed', config.testId)
+	await mimiri().triggerRenewals()
+	await mimiri().waitForSubjectToInclude('has been renewed')
 
 	await reloadApp()
-	await expect(homeView.currentSubscriptionPaidUntil()).not.toBeEmpty()
-	const paidUntil = new Date((await homeView.currentSubscriptionPaidUntil().inputValue()) ?? '')
-	const nextRenewal = await orch.nextRenewalDate(username)
+	await expect(subHomeView.currentSubscriptionPaidUntil()).not.toBeEmpty()
+	const paidUntil = new Date((await subHomeView.currentSubscriptionPaidUntil().inputValue()) ?? '')
+	const nextRenewal = await mimiri().nextRenewalDate()
 	expect((await nextRenewal).action).toBe('notify-will-renew')
 
 	await expect(paidUntil).toBeInMonths(1, nextRenewal.time)
@@ -76,9 +73,9 @@ export const downgradeSubscription = async () => {
 }
 
 export const changePeriodToMonthly = async () => {
-	await mail.hideTagged(config.testId)
-	await screenMenu.subscription().click()
-	await expect(homeView.container()).toBeVisible()
+	await mimiri().deleteTagged()
+	await settingNodes.subscription().click()
+	await expect(subHomeView.container()).toBeVisible()
 	await expect(subItem.yearlyChange(1)).toBeVisible()
 	await subItem.yearlyChange(1).click()
 	await newSubView.monthly().click()
@@ -87,23 +84,23 @@ export const changePeriodToMonthly = async () => {
 	await upgradeView.acceptTerms().click()
 	await upgradeView.acceptPrivacy().click()
 
-	if (await paymentSelector.container().isVisible()) {
-		await expect(paymentSelector.new()).toBeVisible()
-		await paymentSelector.new().click()
-	}
+	await expect(paymentSelector.new()).toBeVisible()
+	await paymentSelector.new().click()
 
-	pwState.expectTab(config.payUrl)
+	await expect(upgradeView.payButton()).toBeEnabled()
+	mimiri().expectTab(mimiri().config.payUrl)
 	await upgradeView.payButton().click()
 	await executePayment()
-	await expect(homeView.container()).toBeVisible()
+	await expect(subHomeView.container()).toBeVisible()
+	await expect(subHomeView.currentSubscriptionSku()).toHaveValue('ABO-001-M')
 	await expect(subItem.monthly(1)).toBeVisible()
-	await orch.triggerRenewals()
-	await mail.waitForSubjectToInclude('has been renewed', config.testId)
+	await mimiri().triggerRenewals()
+	await mimiri().waitForSubjectToInclude('has been renewed')
 
 	await reloadApp()
-	await expect(homeView.currentSubscriptionPaidUntil()).not.toBeEmpty()
-	const paidUntil = new Date((await homeView.currentSubscriptionPaidUntil().inputValue()) ?? '')
-	const nextRenewal = await orch.nextRenewalDate(username)
+	await expect(subHomeView.currentSubscriptionPaidUntil()).not.toBeEmpty()
+	const paidUntil = new Date((await subHomeView.currentSubscriptionPaidUntil().inputValue()) ?? '')
+	const nextRenewal = await mimiri().nextRenewalDate()
 	expect((await nextRenewal).action).toBe('notify-will-renew')
 
 	await expect(paidUntil).toBeInWeeks(1, nextRenewal.time)
@@ -111,9 +108,9 @@ export const changePeriodToMonthly = async () => {
 }
 
 export const changePeriodToYearly = async () => {
-	await mail.hideTagged(config.testId)
-	await screenMenu.subscription().click()
-	await expect(homeView.container()).toBeVisible()
+	await mimiri().deleteTagged()
+	await settingNodes.subscription().click()
+	await expect(subHomeView.container()).toBeVisible()
 	await expect(subItem.monthlyChange(1)).toBeVisible()
 	await subItem.monthlyChange(1).click()
 	await newSubView.yearly().click()
@@ -122,23 +119,23 @@ export const changePeriodToYearly = async () => {
 	await upgradeView.acceptTerms().click()
 	await upgradeView.acceptPrivacy().click()
 
-	if (await paymentSelector.container().isVisible()) {
-		await expect(paymentSelector.new()).toBeVisible()
-		await paymentSelector.new().click()
-	}
+	await expect(paymentSelector.new()).toBeVisible()
+	await paymentSelector.new().click()
 
-	pwState.expectTab(config.payUrl)
+	await expect(upgradeView.payButton()).toBeEnabled()
+	mimiri().expectTab(mimiri().config.payUrl)
 	await upgradeView.payButton().click()
 	await executePayment()
-	await expect(homeView.container()).toBeVisible()
+	await expect(subHomeView.container()).toBeVisible()
+	await expect(subHomeView.currentSubscriptionSku()).toHaveValue('ABO-001-Y')
 	await expect(subItem.yearly(1)).toBeVisible()
-	await orch.triggerRenewals()
-	await mail.waitForSubjectToInclude('has been renewed', config.testId)
+	await mimiri().triggerRenewals()
+	await mimiri().waitForSubjectToInclude('has been renewed')
 
 	await reloadApp()
-	await expect(homeView.currentSubscriptionPaidUntil()).not.toBeEmpty()
-	const paidUntil = new Date((await homeView.currentSubscriptionPaidUntil().inputValue()) ?? '')
-	const nextRenewal = await orch.nextRenewalDate(username)
+	await expect(subHomeView.currentSubscriptionPaidUntil()).not.toBeEmpty()
+	const paidUntil = new Date((await subHomeView.currentSubscriptionPaidUntil().inputValue()) ?? '')
+	const nextRenewal = await mimiri().nextRenewalDate()
 	expect((await nextRenewal).action).toBe('notify-will-renew')
 
 	await expect(paidUntil).toBeInMonths(1, nextRenewal.time)
@@ -146,14 +143,14 @@ export const changePeriodToYearly = async () => {
 }
 
 export const changePeriodAndTier = async () => {
-	await mail.hideTagged(config.testId)
-	await screenMenu.subscription().click()
-	await expect(homeView.currentSubscriptionSku()).not.toBeEmpty()
-	const isMonthlyInitially = (await homeView.currentSubscriptionSku().inputValue()) === 'ABO-001-M'
+	await mimiri().deleteTagged()
+	await settingNodes.subscription().click()
+	await expect(subHomeView.currentSubscriptionSku()).not.toBeEmpty()
+	const isMonthlyInitially = (await subHomeView.currentSubscriptionSku().inputValue()) === 'ABO-001-M'
 	if (!isMonthlyInitially) {
-		await expect(homeView.currentSubscriptionSku()).toHaveValue('ABO-001-Y')
+		await expect(subHomeView.currentSubscriptionSku()).toHaveValue('ABO-001-Y')
 	}
-	await expect(homeView.container()).toBeVisible()
+	await expect(subHomeView.container()).toBeVisible()
 	if (isMonthlyInitially) {
 		await expect(subItem.monthlyChange(1)).toBeVisible()
 		await subItem.monthlyChange(1).click()
@@ -169,27 +166,29 @@ export const changePeriodAndTier = async () => {
 	await upgradeView.acceptTerms().click()
 	await upgradeView.acceptPrivacy().click()
 
+	await expect(paymentSelector.loaded()).toHaveValue('true')
 	if (await paymentSelector.container().isVisible()) {
 		await expect(paymentSelector.new()).toBeVisible()
 		await paymentSelector.new().click()
 	}
 
-	pwState.expectTab(config.payUrl)
+	await expect(upgradeView.payButton()).toBeEnabled()
+	mimiri().expectTab(mimiri().config.payUrl)
 	await upgradeView.payButton().click()
 	await executePayment()
-	await expect(homeView.container()).toBeVisible()
+	await expect(subHomeView.container()).toBeVisible()
 	if (isMonthlyInitially) {
 		await expect(subItem.yearly(2)).toBeVisible()
 	} else {
 		await expect(subItem.monthly(2)).toBeVisible()
 	}
-	await orch.triggerRenewals()
-	await mail.waitForSubjectToInclude('has been renewed', config.testId)
+	await mimiri().triggerRenewals()
+	await mimiri().waitForSubjectToInclude('has been renewed')
 
 	await reloadApp()
-	await expect(homeView.currentSubscriptionPaidUntil()).not.toBeEmpty()
-	const paidUntil = new Date((await homeView.currentSubscriptionPaidUntil().inputValue()) ?? '')
-	const nextRenewal = await orch.nextRenewalDate(username)
+	await expect(subHomeView.currentSubscriptionPaidUntil()).not.toBeEmpty()
+	const paidUntil = new Date((await subHomeView.currentSubscriptionPaidUntil().inputValue()) ?? '')
+	const nextRenewal = await mimiri().nextRenewalDate()
 	expect((await nextRenewal).action).toBe('notify-will-renew')
 	if (isMonthlyInitially) {
 		await expect(paidUntil).toBeInMonths(1, nextRenewal.time)

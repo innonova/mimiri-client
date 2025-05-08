@@ -5,7 +5,7 @@
 		</div>
 		<div class="bg-info w-full h-2 mb-4"></div>
 		<div class="flex flex-col overflow-y-auto pr-2" data-testid="pay-invoice-view">
-			<form v-on:submit.prevent="submit">
+			<form v-on:submit.prevent="submit" class="max-w-[30rem]">
 				<ItemHeader>Billing address</ItemHeader>
 				<CustomerData
 					ref="customerElement"
@@ -21,7 +21,11 @@
 					v-model:privacy="privacyAccepted"
 				></PaymentSummary>
 				<div class="text-right mb-20">
-					<button type="submit" :disabled="!valid || !termsAccepted || !privacyAccepted" data-testid="pay-button">
+					<button
+						type="submit"
+						:disabled="!valid || !termsAccepted || !privacyAccepted || !method"
+						data-testid="pay-button"
+					>
 						Pay now
 					</button>
 				</div>
@@ -66,7 +70,7 @@ const submit = async () => {
 				clientRef: 'pay-invoice',
 			})
 			window.open(createPayResult.link, '_blank')
-			emit('pay-in-progress', props.invoice.id, true)
+			emit('pay-in-progress', props.invoice.id, true, createPayResult.link)
 		} else {
 			const methodId = method.value
 			assertGuid(methodId)

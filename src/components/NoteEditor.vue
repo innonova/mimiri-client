@@ -14,7 +14,7 @@
 			<ToolbarIcon
 				:icon="settingsManager.wordwrap ? 'wordwrap-on' : 'wordwrap-off'"
 				:hoverEffect="true"
-				:disabled="noteManager.selectedNote?.isRecycleBin"
+				:disabled="noteManager.selectedNote?.isSystem"
 				:title="settingsManager.wordwrap ? 'Disable Word Wrap' : 'Enable Word Wrap'"
 				:toggledOn="settingsManager.wordwrap"
 				@click="toggleWordWrap"
@@ -38,7 +38,7 @@
 				icon="history"
 				:hoverEffect="true"
 				:title="historyVisible ? 'Hide History' : 'Show History'"
-				:disabled="noteManager.selectedNote?.isRecycleBin"
+				:disabled="noteManager.selectedNote?.isSystem"
 				:toggledOn="historyVisible"
 				@click="showHistory"
 			></ToolbarIcon>

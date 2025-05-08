@@ -1,9 +1,9 @@
 <template>
 	<div class="flex select-none">
-		<div class="py-2 px-4 bg-info cursor-default">PIN Code</div>
+		<div class="py-2 px-4 bg-info cursor-default" data-testid="settings-view-pin-code">PIN Code</div>
 	</div>
-	<div class="bg-info w-full h-2 mb-2"></div>
-	<div class="flex flex-col items-center mt-10">
+	<div class="bg-info h-2 mb-2 mr-2"></div>
+	<div class="flex flex-col items-center mt-10 max-w-[30rem]">
 		<div class="flex">
 			<div class="border-2 w-10 h-16 rounded-lg flex items-center justify-center mr-2">
 				<h1 v-if="pin.length > 0">*</h1>
@@ -23,11 +23,11 @@
 			</label>
 		</div>
 	</div>
-	<div class="mt-10 w-full">
+	<div class="mt-10 max-w-[30rem] mr-2">
 		<hr />
 		<div class="w-full flex justify-end mt-2 gap-2">
 			<button :disabled="!canSave" @click="save">Save</button>
-			<button class="secondary" @click="close">Close</button>
+			<!-- <button class="secondary" @click="close">Close</button> -->
 		</div>
 	</div>
 </template>

@@ -18,7 +18,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { showUpdate, updateManager } from '../../global'
+import { updateManager } from '../../global'
 import DialogTitle from '../elements/DialogTitle.vue'
 const dialog = ref(null)
 
@@ -27,7 +27,6 @@ const show = () => {
 }
 
 const update = () => {
-	showUpdate.value = true
 	dialog.value.close()
 }
 

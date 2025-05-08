@@ -2,8 +2,8 @@
 	<div class="flex select-none">
 		<div class="py-2 px-4 bg-info cursor-default">Current Plan</div>
 	</div>
-	<div class="bg-info w-full h-2 mb-2"></div>
-	<div class="p-1 pt-2 flex" data-testid="home-view">
+	<div class="bg-info h-2 mb-2 mr-2"></div>
+	<div class="p-1 pt-2 flex" :data-testid="populated ? 'home-view' : ''">
 		<SubscriptionItem
 			v-if="product"
 			:product="product"
@@ -33,6 +33,7 @@ import { onMounted, ref } from 'vue'
 
 const product = ref<SubscriptionProduct>()
 const subscription = ref<Subscription>()
+const populated = ref(false)
 
 const emit = defineEmits(['change', 'pay-invoice'])
 
@@ -41,8 +42,10 @@ onMounted(async () => {
 })
 
 const populate = async () => {
+	populated.value = false
 	product.value = await noteManager.paymentClient.getCurrentSubscriptionProduct()
 	subscription.value = await noteManager.paymentClient.getCurrentSubscription()
+	populated.value = true
 }
 
 const change = async () => {
@@ -62,4 +65,8 @@ const resume = async () => {
 const payInvoice = (invoice: Invoice) => {
 	emit('pay-invoice', invoice)
 }
+
+defineExpose({
+	populate,
+})
 </script>
