@@ -297,13 +297,7 @@ export class MimerNote {
 		}
 	}
 
-	public static async addHistoryEntry(
-		note: Note,
-		text: string,
-		username: string,
-		timestamp: DateTime,
-		maxHistoryEntries: number = -1,
-	) {
+	public static async addHistoryEntry(note: Note, text: string, username: string, timestamp: DateTime) {
 		const history: History = note.changeItem('history')
 		if (!history.active) {
 			history.active = []
@@ -314,10 +308,6 @@ export class MimerNote {
 			text,
 		})
 		while (history.active.length > 10) {
-			if (maxHistoryEntries === 10) {
-				history.active.shift()
-				continue
-			}
 			if (!history.hotArchive) {
 				history.hotArchive = []
 			}
@@ -340,13 +330,7 @@ export class MimerNote {
 		if (this.beforeChangeText !== this.text) {
 			this.owner.beginAction()
 			try {
-				await MimerNote.addHistoryEntry(
-					this.note,
-					this.text,
-					this.owner.username,
-					dateTimeNow(),
-					this.owner.maxHistoryEntries,
-				)
+				await MimerNote.addHistoryEntry(this.note, this.text, this.owner.username, dateTimeNow())
 				await this.owner.saveNote(this)
 			} finally {
 				this.owner.endAction()

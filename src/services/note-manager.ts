@@ -1208,10 +1208,6 @@ export class NoteManager {
 		return this.client.maxNoteSize
 	}
 
-	public get maxHistoryEntries() {
-		return this.client.maxHistoryEntries
-	}
-
 	public get initInProgress() {
 		return this.state.initInProgress
 	}

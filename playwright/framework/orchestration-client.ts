@@ -32,7 +32,6 @@ export interface LoginResponse {
 	maxTotalBytes: number
 	maxNoteBytes: number
 	maxNoteCount: number
-	maxHistoryEntries: number
 }
 
 export class OrchestrationClient {

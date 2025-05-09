@@ -64,7 +64,6 @@ export interface UserStats {
 	maxTotalBytes: number
 	maxNoteBytes: number
 	maxNoteCount: number
-	maxHistoryEntries: number
 }
 
 export class HttpRequestError extends Error {
@@ -115,7 +114,6 @@ export class MimerClient {
 		maxTotalBytes: 0,
 		maxNoteBytes: 0,
 		maxNoteCount: 0,
-		maxHistoryEntries: 0,
 	}
 	private _clientConfig: ClientConfig
 
@@ -362,7 +360,6 @@ export class MimerClient {
 			this._userStats.maxTotalBytes = loginResponse.maxTotalBytes
 			this._userStats.maxNoteBytes = loginResponse.maxNoteBytes
 			this._userStats.maxNoteCount = loginResponse.maxNoteCount
-			this._userStats.maxHistoryEntries = loginResponse.maxHistoryEntries
 			await this.loadAllKeys(data.preferOffline)
 			await this.persistLogin()
 			return true
@@ -413,7 +410,6 @@ export class MimerClient {
 			this._userStats.maxTotalBytes = response.maxTotalBytes
 			this._userStats.maxNoteBytes = response.maxNoteBytes
 			this._userStats.maxNoteCount = response.maxNoteCount
-			this._userStats.maxHistoryEntries = response.maxHistoryEntries
 			this.userData = JSON.parse(await this.rootCrypt.decrypt(response.data))
 			await this.loadAllKeys()
 			this.online = true
@@ -468,7 +464,6 @@ export class MimerClient {
 			maxTotalBytes: 0,
 			maxNoteBytes: 0,
 			maxNoteCount: 0,
-			maxHistoryEntries: 0,
 		}
 		this.online = false
 		this.workOffline = false
@@ -1375,10 +1370,6 @@ export class MimerClient {
 
 	public get maxNoteSize() {
 		return +this._userStats.maxNoteBytes
-	}
-
-	public get maxHistoryEntries() {
-		return +this._userStats.maxHistoryEntries
 	}
 
 	public get clientConfig(): ClientConfig {

@@ -39,7 +39,6 @@ export interface LoginResponse {
 	maxTotalBytes: number
 	maxNoteBytes: number
 	maxNoteCount: number
-	maxHistoryEntries: number
 }
 
 export interface UserDataResponse {
@@ -50,7 +49,6 @@ export interface UserDataResponse {
 	maxTotalBytes: number
 	maxNoteBytes: number
 	maxNoteCount: number
-	maxHistoryEntries: number
 }
 
 export interface PreLoginResponse {
