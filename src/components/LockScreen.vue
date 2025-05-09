@@ -1,5 +1,5 @@
 <template>
-	<div v-if="localAuth.pinEnabled" class="flex flex-col items-center select-none">
+	<div v-if="localAuth.pinEnabled && localAuth.elapsed" class="flex flex-col items-center select-none">
 		<h2 class="mb-4">Enter PIN to unlock</h2>
 		<div class="flex">
 			<div class="border-2 w-10 h-16 rounded-lg flex items-center justify-center mr-2">
@@ -15,6 +15,7 @@
 		</div>
 		<div class="mt-5">Attempts remaining: 1</div>
 	</div>
+	<div v-if="!localAuth.elapsed" class="bg-input h-full w-full"></div>
 </template>
 
 <script setup lang="ts">

@@ -290,9 +290,66 @@ export const verifyEmail = async () => {
 	await mimiri().goto(verifyLink!.url)
 	await expect(accountServer.emailVerified()).toBeVisible()
 	await mimiri().closeTab()
-	await reloadApp()
 	await settingNodes.billingAddress().click()
 	await expect(accountView.emailVerified()).toBeVisible()
+}
+
+export const createBillingAddress = async () => {
+	await expect(settingNodes.controlPanel()).toBeVisible()
+	await settingNodes.controlPanel().dblclick()
+	await expect(settingNodes.subscriptionGroup()).toBeVisible()
+	await settingNodes.subscriptionGroup().dblclick()
+	await settingNodes.billingAddress().click()
+
+	await expect(accountView.save()).toBeDisabled()
+
+	await customerCtrl.givenName().fill(mimiri().customer.givenName)
+	await customerCtrl.familyName().fill(mimiri().customer.familyName)
+	await customerCtrl.company().fill(mimiri().customer.company)
+	await customerCtrl.email().fill(mimiri().customer.email)
+	await customerCtrl.countrySelector().selectOption(mimiri().customer.countryCode)
+	await customerCtrl.stateText().fill(mimiri().customer.state)
+	await customerCtrl.city().fill(mimiri().customer.city)
+	await customerCtrl.postalCode().fill(mimiri().customer.postalCode)
+	await customerCtrl.address().fill(mimiri().customer.address)
+
+	await expect(accountView.save()).toBeEnabled()
+	await accountView.save().click()
+	await expect(accountView.save()).toBeDisabled()
+
+	await expect(accountView.verifyEmail()).toBeVisible()
+	await accountView.verifyEmail().click()
+	await expect(accountView.verifyEmail()).not.toBeVisible()
+	const message = await mimiri().waitForSubjectToInclude('Verify your Mimiri email')
+	const verifyLink = message.Links.find(l => l.text.includes('Verify Email'))
+	expect(verifyLink).toBeDefined()
+	await mimiri().openTab()
+	await mimiri().goto(verifyLink!.url)
+	await expect(accountServer.emailVerified()).toBeVisible()
+	await mimiri().closeTab()
+	await settingNodes.billingAddress().click()
+	await expect(accountView.emailVerified()).toBeVisible()
+}
+
+export const changeBillingAddress = async () => {
+	await settingNodes.billingAddress().click()
+	await mimiri().waitForTimeout(200)
+	await expect(accountView.save()).toBeDisabled()
+	await expect(accountServer.emailVerified()).toBeVisible()
+	await customerCtrl.givenName().fill(mimiri().customer.givenName + '2')
+	await customerCtrl.familyName().fill(mimiri().customer.familyName + '2')
+	await expect(accountView.save()).toBeEnabled()
+	await accountView.save().click()
+	await expect(accountView.save()).toBeDisabled()
+	await expect(accountServer.emailVerified()).toBeVisible()
+	await customerCtrl.email().fill(mimiri().customer.email.replace('@', 'b@'))
+	await expect(accountServer.emailVerified()).not.toBeVisible()
+	await expect(accountView.save()).toBeEnabled()
+	await accountView.save().click()
+	await expect(accountView.save()).toBeDisabled()
+	await expect(accountView.verifyEmail()).toBeVisible()
+	await accountView.verifyEmail().click()
+	await expect(accountView.verifyEmail()).not.toBeVisible()
 }
 
 export const failCreateSubscription = async () => {

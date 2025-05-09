@@ -38,8 +38,6 @@ import { useEventListener } from '@vueuse/core'
 import { localAuth } from '../../services/local-auth'
 import { passwordDialog } from '../../global'
 
-const emit = defineEmits(['close'])
-
 let inputEnabled = false
 
 const pin = ref('')
@@ -94,10 +92,6 @@ useEventListener(document, 'keypress', e => {
 		}
 	}
 })
-
-const close = () => {
-	emit('close')
-}
 
 const save = () => {
 	inputEnabled = false

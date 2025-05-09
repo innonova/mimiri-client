@@ -7,7 +7,7 @@
 		<div class="p-1 pt-2 text-left overflow-y-auto" data-testid="account-view">
 			<CustomerData ref="customerElement" mode="edit" v-model:changed="changed" v-model:valid="valid"></CustomerData>
 			<div class="flex gap-2 justify-end mt-10 max-w-[30rem]">
-				<button :disabled="!valid || !changed" @click="save">Save</button>
+				<button :disabled="!valid || !changed" @click="save" data-testid="account-save">Save</button>
 				<!-- <button :disabled="!changed" @click="cancel">Cancel</button> -->
 			</div>
 		</div>
@@ -28,7 +28,7 @@ onMounted(() => {
 	noteManager.registerActionListener({
 		select: (id: Guid) => {
 			if (id === 'settings-billing-address') {
-				customerElement.value.loadCustomer()
+				customerElement.value?.loadCustomer()
 			}
 		},
 	})

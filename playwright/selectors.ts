@@ -204,6 +204,7 @@ export const accountView = {
 	container: () => tid(`account-view`),
 	emailVerified: () => tid(`email-verified`),
 	verifyEmail: () => tid(`verify-email`),
+	save: () => tid(`account-save`),
 }
 
 export const accountServer = {

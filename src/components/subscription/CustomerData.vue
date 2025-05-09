@@ -173,6 +173,7 @@ const loadCustomer = async () => {
 		postalCode.value = customer.value.postalCode
 		address.value = customer.value.address
 		emailVerified.value = customer.value.emailVerified
+		emailVerificationEmailSent.value = false
 	}
 }
 

@@ -1,6 +1,8 @@
 import { test } from '@playwright/test'
 import {
 	cancelCreateSubscription,
+	changeBillingAddress,
+	createBillingAddress,
 	createMonthlySubscription,
 	createSubscription,
 	failCreateSubscription,
@@ -64,6 +66,15 @@ test.describe('subscription', () => {
 			await verifyEmail()
 			await checkAccount()
 			await checkUserTier1()
+		})
+	})
+
+	test('set billing address from empty', async () => {
+		await withMimiriContext(async () => {
+			await mimiri().home()
+			await createAccount()
+			await createBillingAddress()
+			await changeBillingAddress()
 		})
 	})
 

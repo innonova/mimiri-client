@@ -176,14 +176,24 @@ if (ipcClient.isAvailable) {
 }
 
 const handleShortcut = event => {
-	if (!authenticated || localAuth.locked || showCreateAccount.value) {
+	const ctrlActive = (event.ctrlKey && !mimiriPlatform.isMac) || (event.metaKey && mimiriPlatform.isMac)
+
+	if (event.key === 'r' && ctrlActive) {
+		event.preventDefault()
+		event.stopPropagation()
+	}
+	if (
+		!authenticated ||
+		localAuth.locked ||
+		showCreateAccount.value ||
+		noteManager.selectedNote?.id === 'settings-pin'
+	) {
 		return
 	}
+
 	const treeViewShortCutsActive =
 		(document.activeElement.tagName === 'BODY' || !noteEditor.value?.$el.contains(document.activeElement)) &&
 		event.target.tagName === 'BODY'
-
-	const ctrlActive = (event.ctrlKey && !mimiriPlatform.isMac) || (event.metaKey && mimiriPlatform.isMac)
 
 	if (event.key === 'd' && ctrlActive) {
 		if (treeViewShortCutsActive) {
@@ -278,10 +288,6 @@ const handleShortcut = event => {
 				noteTreeView.value.moveSelectionRight()
 			}
 		}
-	}
-	if (event.key === 'r' && ctrlActive) {
-		event.preventDefault()
-		event.stopPropagation()
 	}
 	if (event.key === 's' && ctrlActive) {
 		event.preventDefault()

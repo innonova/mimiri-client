@@ -6,14 +6,14 @@ import type { LoginListener } from './note-manager'
 import type { HideShowListener } from './ipc-client'
 
 class LocalAuth implements LoginListener, HideShowListener {
-	private _state: any = reactive({ locked: false })
+	private _state: any = reactive({ locked: false, elapsed: true })
 	private _lockTimeout: number = 60000
 	private _timer
 
 	constructor() {
 		noteManager.registerListener(this)
 		this._state.locked = sessionStorage.getItem('locked') === 'true'
-		void this.init()
+		ipcClient.menu.registerHideShowListener(this)
 	}
 
 	login() {
@@ -29,11 +29,6 @@ class LocalAuth implements LoginListener, HideShowListener {
 
 	online() {}
 
-	public async init() {
-		ipcClient.menu.registerHideShowListener(this)
-		await this.showing()
-	}
-
 	public async unlockWithPin(pin: string) {
 		const pinCode = noteManager.root.note.getItem('config')?.pinCode
 		if (pin === pinCode) {
@@ -48,6 +43,7 @@ class LocalAuth implements LoginListener, HideShowListener {
 	public async unlock() {
 		this.lastPause = -1
 		this._state.locked = false
+		this._state.elapsed = true
 		sessionStorage.setItem('locked', 'false')
 		if (noteManager.isLoggedIn) {
 			updateManager.check()
@@ -64,6 +60,7 @@ class LocalAuth implements LoginListener, HideShowListener {
 	public async showing() {
 		if (this._timer) {
 			clearTimeout(this._timer)
+			this._state.elapsed = true
 			this._timer = undefined
 		}
 		if (!this._state.locked) {
@@ -89,9 +86,11 @@ class LocalAuth implements LoginListener, HideShowListener {
 			this.lastPause = Date.now()
 			if (mimiriPlatform.isElectron) {
 				if (!this._timer && this.pinEnabled) {
+					this.lock()
+					this._state.elapsed = false
 					this._timer = setTimeout(() => {
 						this._timer = undefined
-						this.lock()
+						this._state.elapsed = true
 					}, this._lockTimeout)
 				}
 			} else {
@@ -116,6 +115,10 @@ class LocalAuth implements LoginListener, HideShowListener {
 
 	public get locked() {
 		return this._state.locked
+	}
+
+	public get elapsed() {
+		return this._state.elapsed && this._state.locked
 	}
 
 	public get pin() {
