@@ -41,20 +41,22 @@ import {
 import { mimiri, withMimiriContext } from './framework/mimiri-context'
 import { createAccount } from './core/actions'
 
-test.describe.skip('setup ui for dev', () => {
-	// test(`login`, doLogin)
-	// test(`navigate away create subscription`, navigateAwayCreateSubscription)
-	// test(`use real payrexx`, useRealPayrexx)
-	// test(`use failing visa`, useVisaFailure)
-	// test(`use twint`, useTwint)
-	// test(`use mastercard`, useMastercard)
-	test(`create subscription`, createSubscription)
-	// test(`first renewal`, firstRenewal)
-	// test(`second renewal`, secondRenewal)
-	// test(`fail renewal`, failRenewalDeclined)
-})
-
 test.describe('subscription', () => {
+	test.skip('setup ui for dev', async () => {
+		await withMimiriContext(async () => {
+			// test(`login`, doLogin)
+			// test(`navigate away create subscription`, navigateAwayCreateSubscription)
+			await mimiri().orchestrationClient.useMockPayrexx('pgtest')
+			// test(`use failing visa`, useVisaFailure)
+			// test(`use twint`, useTwint)
+			// test(`use mastercard`, useMastercard)
+			// test(`create subscription`, createSubscription)
+			// test(`first renewal`, firstRenewal)
+			// test(`second renewal`, secondRenewal)
+			// test(`fail renewal`, failRenewalDeclined)
+		})
+	})
+
 	test('create subscription', async () => {
 		await withMimiriContext(async () => {
 			await mimiri().home()

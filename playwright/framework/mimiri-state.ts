@@ -267,6 +267,10 @@ export class MimiriState {
 	public get customer() {
 		return this._customer
 	}
+
+	public get orchestrationClient() {
+		return this._orchestrationClient
+	}
 }
 
 // export const mimiriState = new MimiriState()
