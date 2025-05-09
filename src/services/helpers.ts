@@ -72,10 +72,13 @@ export const currentTime = () => {
 	return new Date()
 }
 
-export const calculateReverseVat = (total: number) => {
-	return Math.round(total - total / 1.081)
+export const calculateReverseVat = (total: number, vatRate: number) => {
+	return Math.round(total - total / (1 + vatRate / 100))
 }
 
-export const vatRate = () => {
-	return 8.1
+export const vatRate = (country: string) => {
+	if (!country || country.toUpperCase() === 'CH') {
+		return 8.1
+	}
+	return 0
 }

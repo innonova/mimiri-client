@@ -143,12 +143,17 @@ const customer = ref<Customer>()
 
 const valid = defineModel('valid')
 const changed = defineModel('changed')
+const countryCodeOut = defineModel('countryCode')
 
 const givenNameValid = computed(() => givenName.value?.length > 0)
 const familyNameValid = computed(() => familyName.value?.length > 0)
 const emailValid = computed(() => email.value?.length > 0)
 const countryValid = computed(() => countryName.value?.length > 0)
 const stateValid = computed(() => stateMode.value === 'text' || stateName.value?.length > 0)
+
+watch(countryCode, () => {
+	countryCodeOut.value = countryCode.value
+})
 
 watch([givenNameValid, familyNameValid, emailValid, countryValid, stateValid], () => {
 	valid.value =

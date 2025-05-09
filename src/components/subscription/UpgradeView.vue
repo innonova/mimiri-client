@@ -24,6 +24,7 @@
 					mode="create"
 					v-model:changed="changed"
 					v-model:valid="valid"
+					v-model:country-code="countryCode"
 					:disabled="payInProgress"
 				></CustomerData>
 				<PaymentMethodSelector v-model="method" :disabled="payInProgress"></PaymentMethodSelector>
@@ -31,6 +32,7 @@
 					v-if="product"
 					:items="[{ sku: product.sku, text: product.name, price: product.price, quantity: 1 }]"
 					:currency="currency"
+					:countryCode="countryCode"
 					:disabled="payInProgress"
 					v-model:terms="termsAccepted"
 					v-model:privacy="privacyAccepted"
@@ -75,6 +77,7 @@ const termsAccepted = ref(false)
 const privacyAccepted = ref(false)
 const customerElement = ref<typeof CustomerData>()
 const payInProgress = ref(false)
+const countryCode = ref('')
 
 const method = ref('')
 

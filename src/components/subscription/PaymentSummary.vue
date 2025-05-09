@@ -14,10 +14,10 @@
 				{{ formatCurrency(total, currency) }}
 			</div>
 		</div>
-		<div class="flex justify-between mt-1">
+		<div v-if="vatRate(countryCode) > 0" class="flex justify-between mt-1">
 			<div>Of this VAT:</div>
 			<div data-testid="upgrade-vat">
-				{{ formatCurrency(calculateReverseVat(total), currency) }}
+				{{ formatCurrency(calculateReverseVat(total, vatRate(countryCode)), currency) }}
 			</div>
 		</div>
 		<div class="flex justify-between mt-1">
@@ -54,11 +54,12 @@
 import { computed, ref } from 'vue'
 import type { Currency, SummaryItem } from '../../services/types/subscription'
 import ItemHeader from './ItemHeader.vue'
-import { calculateReverseVat, formatCurrency } from '../../services/helpers'
+import { calculateReverseVat, formatCurrency, vatRate } from '../../services/helpers'
 
 const props = defineProps<{
 	items: SummaryItem[]
 	currency: Currency
+	countryCode: string
 	disabled?: boolean
 }>()
 
