@@ -12,6 +12,7 @@
 					mode="create"
 					v-model:changed="changed"
 					v-model:valid="valid"
+					v-model:country-code="countryCode"
 				></CustomerData>
 				<PaymentMethodSelector v-model="method"></PaymentMethodSelector>
 				<PaymentSummary
@@ -19,6 +20,7 @@
 					:currency="invoice.currency"
 					v-model:terms="termsAccepted"
 					v-model:privacy="privacyAccepted"
+					:country-code="countryCode"
 				></PaymentSummary>
 				<div class="text-right mb-20">
 					<button
@@ -55,6 +57,7 @@ const valid = ref()
 const termsAccepted = ref(false)
 const privacyAccepted = ref(false)
 const customerElement = ref<typeof CustomerData>()
+const countryCode = ref()
 
 const method = ref('')
 
