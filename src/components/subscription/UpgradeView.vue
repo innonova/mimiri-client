@@ -5,7 +5,7 @@
 		</div>
 		<div class="bg-info w-full h-2 mb-4"></div>
 		<div class="flex flex-col overflow-y-auto pr-2" data-testid="upgrade-view">
-			<form v-on:submit.prevent="submit" class="max-w-[30rem]">
+			<form v-on:submit.prevent="submit" class="max-w-[30rem] relative">
 				<ItemHeader>Chosen subscription</ItemHeader>
 				<div class="flex justify-center pb-5">
 					<Subscription
@@ -14,6 +14,7 @@
 						:compact="true"
 						:showChange="true"
 						:currency="currency"
+						:disabled="payInProgress"
 						@change="changePlan"
 					></Subscription>
 				</div>
@@ -23,19 +24,22 @@
 					mode="create"
 					v-model:changed="changed"
 					v-model:valid="valid"
+					:disabled="payInProgress"
 				></CustomerData>
-				<PaymentMethodSelector v-model="method"></PaymentMethodSelector>
+				<PaymentMethodSelector v-model="method" :disabled="payInProgress"></PaymentMethodSelector>
 				<PaymentSummary
 					v-if="product"
 					:items="[{ sku: product.sku, text: product.name, price: product.price, quantity: 1 }]"
 					:currency="currency"
+					:disabled="payInProgress"
 					v-model:terms="termsAccepted"
 					v-model:privacy="privacyAccepted"
 				></PaymentSummary>
-				<div class="text-right mb-20">
+				<div class="mb-20 flex items-center justify-end">
+					<LoadingIcon v-if="payInProgress" class="animate-spin w-8 h-8 mr-2 inline-block"></LoadingIcon>
 					<button
 						type="submit"
-						:disabled="!valid || !termsAccepted || !privacyAccepted || !method"
+						:disabled="!valid || !termsAccepted || !privacyAccepted || !method || payInProgress"
 						data-testid="pay-button"
 					>
 						Pay now
@@ -56,6 +60,7 @@ import { Currency, RenewalType, type SubscriptionProduct } from '../../services/
 import { noteManager } from '../../global'
 import { assertGuid } from '../../services/types/guid'
 import PaymentSummary from './PaymentSummary.vue'
+import LoadingIcon from '../../icons/loading.vue'
 
 const props = defineProps<{
 	product: SubscriptionProduct
@@ -69,6 +74,7 @@ const valid = ref()
 const termsAccepted = ref(false)
 const privacyAccepted = ref(false)
 const customerElement = ref<typeof CustomerData>()
+const payInProgress = ref(false)
 
 const method = ref('')
 
@@ -76,7 +82,9 @@ const changePlan = () => {
 	emit('change-plan')
 }
 
-const populate = async () => {}
+const populate = async () => {
+	payInProgress.value = false
+}
 
 onMounted(async () => {
 	await populate()
@@ -84,6 +92,7 @@ onMounted(async () => {
 
 const submit = async () => {
 	if (customerElement.value && valid && termsAccepted.value && privacyAccepted.value && props.product && method.value) {
+		payInProgress.value = true
 		await customerElement.value.save(termsAccepted.value, privacyAccepted.value)
 		await customerElement.value.verifyEmail()
 		const newSubResult = await noteManager.paymentClient.newSubscription({
@@ -91,7 +100,6 @@ const submit = async () => {
 			renewalType: RenewalType.Automatic,
 			currency: props.currency,
 		})
-
 		if (method.value === 'NEW') {
 			const createPayResult = await noteManager.paymentClient.createPaymentLink({
 				invoiceId: newSubResult.invoiceId,

@@ -142,6 +142,12 @@ button.secondary[disabled] {
 	@apply bg-button-disabled text-button-disabled-text hover:brightness-100 select-none;
 }
 
+select:disabled,
+input:disabled,
+textarea:disabled {
+	@apply bg-input opacity-60;
+}
+
 h1,
 h2 {
 	@apply font-display text-size-header;

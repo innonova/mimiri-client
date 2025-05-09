@@ -29,11 +29,23 @@
 		<label class="flex items-center gap-2 justify-end">
 			I have read and accept the
 			<a href="https://mimiri.io/terms" target="_blank">Terms & Conditions</a
-			><input v-model="termsAccepted" name="accept-terms" class="mt-1" type="checkbox" data-testid="accept-terms"
+			><input
+				v-model="termsAccepted"
+				name="accept-terms"
+				:disabled="disabled"
+				class="mt-1"
+				type="checkbox"
+				data-testid="accept-terms"
 		/></label>
 		<label class="flex items-center mt-1.5 gap-2 justify-end"
 			>I have read and accept the <a href="https://mimiri.io/privacy" target="_blank">Privacy Policy</a
-			><input v-model="privacyAccepted" name="accept-privacy" class="mt-1" type="checkbox" data-testid="accept-privacy"
+			><input
+				v-model="privacyAccepted"
+				name="accept-privacy"
+				:disabled="disabled"
+				class="mt-1"
+				type="checkbox"
+				data-testid="accept-privacy"
 		/></label>
 	</div>
 </template>
@@ -47,6 +59,7 @@ import { calculateReverseVat, formatCurrency } from '../../services/helpers'
 const props = defineProps<{
 	items: SummaryItem[]
 	currency: Currency
+	disabled?: boolean
 }>()
 
 const termsAccepted = defineModel('terms')

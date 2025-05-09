@@ -2,14 +2,43 @@
 	<div data-testid="customer-data">
 		<div class="grid grid-cols-[9em_18em] gap-4 items-baseline">
 			<div class="text-right" :class="{ 'text-red-500': !givenNameValid }">First name *</div>
-			<input v-model="givenName" name="givenName" autocomplete="given-name" type="text" data-testid="given-name" />
+			<input
+				v-model="givenName"
+				:disabled="disabled"
+				name="givenName"
+				autocomplete="given-name"
+				type="text"
+				data-testid="given-name"
+			/>
 			<div class="text-right" :class="{ 'text-red-500': !familyNameValid }">Last name *</div>
-			<input v-model="familyName" name="familyName" autocomplete="family-name" type="text" data-testid="family-name" />
+			<input
+				v-model="familyName"
+				:disabled="disabled"
+				name="familyName"
+				autocomplete="family-name"
+				type="text"
+				data-testid="family-name"
+			/>
 			<div class="text-right">Company <sup>1)</sup></div>
-			<input v-model="company" name="company" autocomplete="company" type="text" data-testid="company" />
+			<input
+				v-model="company"
+				:disabled="disabled"
+				name="company"
+				autocomplete="company"
+				type="text"
+				data-testid="company"
+			/>
 			<div class="text-right" :class="{ 'text-red-500': !emailValid }">Email *</div>
 			<div class="flex flex-col items-end">
-				<input v-model="email" name="email" autocomplete="email" type="text" class="w-full" data-testid="email" />
+				<input
+					v-model="email"
+					:disabled="disabled"
+					name="email"
+					autocomplete="email"
+					type="text"
+					class="w-full"
+					data-testid="email"
+				/>
 				<div
 					v-if="showEmailVerification && emailVerified"
 					class="text-good mb-[-0.5em] mt-0.5"
@@ -29,12 +58,13 @@
 					class="mt-1 mb-[-0.5em] w-52"
 					@click="verifyEmail"
 					data-testid="verify-email"
+					:disabled="disabled"
 				>
 					Send verification email
 				</button>
 			</div>
 			<div class="text-right" :class="{ 'text-red-500': !countryValid }">Country *</div>
-			<CountrySelector v-model:code="countryCode" v-model:name="countryName"></CountrySelector>
+			<CountrySelector v-model:code="countryCode" v-model:name="countryName" :disabled="disabled"></CountrySelector>
 			<div class="text-right" :class="{ 'text-red-500': !stateValid }">
 				State/Province <span v-if="stateRequired">*</span><sup v-if="!stateRequired">1)</sup>
 			</div>
@@ -43,11 +73,26 @@
 				v-model:code="stateCode"
 				v-model:name="stateName"
 				v-model:mode="stateMode"
+				:disabled="disabled"
 			></StateSelector>
 			<div class="text-right">City <sup>1)</sup></div>
-			<input v-model="city" name="city" autocomplete="address-level2" type="text" data-testid="city" />
+			<input
+				v-model="city"
+				name="city"
+				:disabled="disabled"
+				autocomplete="address-level2"
+				type="text"
+				data-testid="city"
+			/>
 			<div class="text-right">Postal Code <sup>1)</sup></div>
-			<input v-model="postalCode" name="postalCode" autocomplete="postal-code" type="text" data-testid="postal-code" />
+			<input
+				v-model="postalCode"
+				name="postalCode"
+				:disabled="disabled"
+				autocomplete="postal-code"
+				type="text"
+				data-testid="postal-code"
+			/>
 			<div class="text-right">Address <sup>1)</sup></div>
 			<textarea
 				v-model="address"
@@ -55,6 +100,7 @@
 				class="p-1 h-20"
 				autocomplete="street-address"
 				data-testid="address"
+				:disabled="disabled"
 			></textarea>
 			<div></div>
 			<div>* required</div>
@@ -74,6 +120,7 @@ import type { Customer } from '../../services/types/subscription'
 
 const props = defineProps<{
 	mode: 'edit' | 'create'
+	disabled?: boolean
 }>()
 
 const model = defineModel()

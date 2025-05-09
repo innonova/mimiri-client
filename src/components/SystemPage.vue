@@ -1,6 +1,8 @@
 <template>
 	<div class="flex flex-col h-full">
-		<div class="flex items-center py-px px-1 bg-toolbar border-b border-solid border-toolbar h-9 select-none"></div>
+		<div class="flex items-center py-px px-1 bg-toolbar border-b border-solid border-toolbar min-h-9 select-none">
+			<ToolbarIcon icon="back" :hoverEffect="true" title="Back" class="md:hidden" @click="onBack"></ToolbarIcon>
+		</div>
 		<div class="flex overflow-hidden pl-2 pt-2">
 			<div class="w-full">
 				<General v-if="type === 'settings-general'"></General>
@@ -33,8 +35,14 @@ import Update from './settings/Update.vue'
 import SubscriptionFlow from './subscription/SubscriptionFlow.vue'
 import InvoiceFlow from './subscription/InvoiceFlow.vue'
 import PaymentMethodsFlow from './subscription/PaymentMethodsFlow.vue'
+import ToolbarIcon from './ToolbarIcon.vue'
 
 const type = computed(() => {
 	return noteManager.selectedNote?.type ?? ''
 })
+
+const onBack = () => {
+	window.history.back()
+	noteManager.closeEditorIfMobile()
+}
 </script>

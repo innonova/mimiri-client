@@ -3,7 +3,7 @@
 		<div class="py-2 px-4 bg-info cursor-default" data-testid="settings-view-about">About</div>
 	</div>
 	<div class="bg-info h-2 mb-2 mr-2"></div>
-	<div>
+	<div @click="boxClicked">
 		<div class="p-1 pl-4">Bundle Version: {{ updateManager.currentVersion }}</div>
 		<div class="p-1 pl-4 pt-2">Host Version: {{ updateManager.hostVersion }}</div>
 		<div class="p-1 pl-4 pt-2">Released: {{ formatDate(updateManager.releaseDate) }}</div>
@@ -40,7 +40,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { noteManager, updateManager, mobileLog } from '../../global'
 import { settingsManager } from '../../services/settings-manager'
 import { iconAttributions } from '../../icons/attributions'
@@ -86,7 +86,7 @@ const toPercent = (used, max) => {
 	return `${Math.round(10 * percent) / 10} %`
 }
 
-const show = () => {
+onMounted(() => {
 	if (noteManager.isLoggedIn) {
 		usedBytes.value = toMB(noteManager.usedBytes)
 		maxBytes.value = toMB(noteManager.maxBytes)
@@ -103,12 +103,7 @@ const show = () => {
 			currentNotePercent.value = '0 %'
 		}
 	}
-	// dialog.value.showModal()
-}
-
-const close = () => {
-	// dialog.value.close()
-}
+})
 
 let clickCount = 0
 let firstClick = Date.now() - 60000
@@ -138,8 +133,4 @@ const changeChannel = () => {
 		settingsManager.channel = 'stable'
 	}
 }
-
-defineExpose({
-	show,
-})
 </script>

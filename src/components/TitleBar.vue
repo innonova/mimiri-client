@@ -255,7 +255,9 @@ const showMenu = (rect, menu) => {
 			MenuItems.ChangePassword,
 			...(mimiriPlatform.isElectron ? [MenuItems.SetPin] : []),
 			MenuItems.DeleteAccount,
-			...(noteManager.featureEnabled('subscription') ? [MenuItems.Separator, MenuItems.ManageSubscription] : []),
+			...(noteManager.featureEnabled('subscription') && mimiriPlatform.isPc
+				? [MenuItems.Separator, MenuItems.ManageSubscription]
+				: []),
 			MenuItems.Separator,
 			MenuItems.Logout,
 			...(ipcClient.isAvailable ? [MenuItems.Separator, MenuItems.GoOnline] : []),

@@ -95,18 +95,54 @@
 		>
 			<hr class="w-[95%]" />
 			<div class="pt-4 h-10 flex gap-2 items-center mb-2 px-2">
-				<button v-if="showResume" @click="emit('resume')" :data-testid="`sub-${product.sku}-resume`">Resume</button>
-				<button v-if="showBuy" @click="emit('buy', product.sku)" :data-testid="`sub-${product.sku}-buy`">Buy</button>
-				<button v-if="showUpgrade" @click="emit('change', product.sku)" :data-testid="`sub-${product.sku}-upgrade`">
+				<button
+					v-if="showResume"
+					:disabled="disabled"
+					@click="emit('resume')"
+					:data-testid="`sub-${product.sku}-resume`"
+				>
+					Resume
+				</button>
+				<button
+					v-if="showBuy"
+					:disabled="disabled"
+					@click="emit('buy', product.sku)"
+					:data-testid="`sub-${product.sku}-buy`"
+				>
+					Buy
+				</button>
+				<button
+					v-if="showUpgrade"
+					:disabled="disabled"
+					@click="emit('change', product.sku)"
+					:data-testid="`sub-${product.sku}-upgrade`"
+				>
 					upgrade
 				</button>
-				<button v-if="showChange" @click="emit('change', product.sku)" :data-testid="`sub-${product.sku}-change`">
+				<button
+					v-if="showChange"
+					:disabled="disabled"
+					@click="emit('change', product.sku)"
+					:data-testid="`sub-${product.sku}-change`"
+				>
 					change
 				</button>
-				<button v-if="showChangeTo" @click="emit('buy', product.sku)" :data-testid="`sub-${product.sku}-change-to`">
+				<button
+					v-if="showChangeTo"
+					:disabled="disabled"
+					@click="emit('buy', product.sku)"
+					:data-testid="`sub-${product.sku}-change-to`"
+				>
 					change to
 				</button>
-				<button v-if="showCancel" @click="emit('cancel')" :data-testid="`sub-${product.sku}-cancel`">cancel</button>
+				<button
+					v-if="showCancel"
+					:disabled="disabled"
+					@click="emit('cancel')"
+					:data-testid="`sub-${product.sku}-cancel`"
+				>
+					cancel
+				</button>
 				<div v-if="showCurrent">Current</div>
 			</div>
 		</div>
@@ -140,6 +176,7 @@ const props = defineProps<{
 	compact?: boolean
 	showStatus?: boolean
 	currency?: Currency
+	disabled?: boolean
 }>()
 
 const emit = defineEmits(['buy', 'change', 'cancel', 'resume', 'pay-invoice'])

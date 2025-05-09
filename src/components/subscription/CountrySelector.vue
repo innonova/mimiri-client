@@ -5,6 +5,7 @@
 		autocomplete="country"
 		id="country"
 		name="country"
+		:disabled="disabled"
 		data-testid="country-selector"
 	>
 		<option value=""></option>
@@ -18,6 +19,9 @@ import { ref, watch } from 'vue'
 import type { Country } from '../../services/types/subscription'
 import { noteManager } from '../../global'
 const selectElement = ref<HTMLSelectElement>(undefined!)
+const props = defineProps<{
+	disabled?: boolean
+}>()
 const code = defineModel('code')
 const name = defineModel('name')
 

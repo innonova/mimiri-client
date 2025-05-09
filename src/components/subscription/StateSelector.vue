@@ -6,6 +6,7 @@
 		autocomplete="state"
 		id="state"
 		name="state"
+		:disabled="disabled"
 		data-testid="state-selector"
 	>
 		<option value=""></option>
@@ -13,7 +14,7 @@
 			<option :value="state.code">{{ state.name }}</option>
 		</template>
 	</select>
-	<input v-if="states.length === 0" v-model="name" type="text" data-testid="state-text" />
+	<input v-if="states.length === 0" v-model="name" :disabled="disabled" type="text" data-testid="state-text" />
 </template>
 <script setup lang="ts">
 import { ref, watch } from 'vue'
@@ -22,6 +23,7 @@ import type { State } from '../../services/types/subscription'
 
 const props = defineProps<{
 	countryCode: string
+	disabled?: boolean
 }>()
 
 const selectElement = ref<HTMLSelectElement>(undefined!)

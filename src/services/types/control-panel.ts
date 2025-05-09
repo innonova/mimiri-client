@@ -1,3 +1,4 @@
+import { mimiriPlatform } from '../mimiri-platform'
 import type { NoteManager } from '../note-manager'
 import type { Guid } from './guid'
 import type { MimerNote } from './mimer-note'
@@ -105,7 +106,8 @@ const controlPanelTreeWithSubscription = [
 ]
 
 export const createControlPanelTree = (owner: NoteManager, parent: MimerNote): MimerNote[] => {
-	const items = owner.featureEnabled('subscription') ? controlPanelTreeWithSubscription : controlPanelTree
+	const items =
+		owner.featureEnabled('subscription') && mimiriPlatform.isPc ? controlPanelTreeWithSubscription : controlPanelTree
 	return items.map(tree => {
 		const existing = owner.getNoteById(tree.id)
 		if (existing) {
