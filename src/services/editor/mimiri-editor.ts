@@ -474,7 +474,9 @@ export class MimiriEditor {
 			this.state.changed = false
 			this.monacoEditorModel.setValue(note.text)
 			this.skipScrollOnce = true
-			setTimeout(() => this.monacoEditor.setScrollTop(this.note.scrollTop, editor.ScrollType.Immediate))
+			const scrollTop = this.note.scrollTop
+			this.monacoEditor.setScrollTop(scrollTop, editor.ScrollType.Immediate)
+			setTimeout(() => this.monacoEditor.setScrollTop(scrollTop, editor.ScrollType.Immediate))
 		} else {
 			this.state.initialText = note.text
 			this.state.text = note.text
