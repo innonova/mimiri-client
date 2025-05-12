@@ -46,7 +46,7 @@ import { dateTimeNow } from './types/date-time'
 import { fromBase64, toBase64, toHex } from './hex-base64'
 import type { NoteShareInfo } from './types/note-share-info'
 import type { ICacheManager } from './types/cache-manager'
-import { env, ipcClient } from '../global'
+import { env, ipcClient, updateManager } from '../global'
 import { mimiriPlatform } from './mimiri-platform'
 
 export const DEFAULT_SALT_SIZE = 32
@@ -154,6 +154,9 @@ export class MimerClient {
 		// console.log('GET', `${this.host}${path}`, window.location.origin)
 		const response = await fetch(`${this.host}${path}`, {
 			method: 'GET',
+			headers: {
+				'X-Mimiri-Version': `${updateManager.platformString}`,
+			},
 		})
 		if (response.status !== 200) {
 			throw new HttpRequestError(`Get of ${path} failed with status code ${response.status}`, response.status)
@@ -175,6 +178,9 @@ export class MimerClient {
 		// console.log('POST', `${this.host}${path}`, data)
 		const response = await fetch(`${this.host}${path}`, {
 			method: 'POST',
+			headers: {
+				'X-Mimiri-Version': `${updateManager.platformString}`,
+			},
 			body: JSON.stringify(body),
 		})
 		if (response.status !== 200) {

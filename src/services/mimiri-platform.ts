@@ -198,6 +198,49 @@ class MimiriPlatform {
 	public get supportsBiometry() {
 		return this._platformInfo?.biometrics ?? false
 	}
+
+	public get platform() {
+		if (this.isElectron) {
+			if (this.isWindows) {
+				return `Electron-Windows`
+			}
+			if (this.isMac) {
+				return `Electron-Mac`
+			}
+			if (this.isFlatpak) {
+				return `Electron-Flatpak`
+			}
+			if (this.isSnap) {
+				return `Electron-Snap`
+			}
+			if (this.isLinux) {
+				return `Electron-Linux`
+			}
+			return `Electron`
+		}
+		if (this.isWeb) {
+			return `Web`
+		}
+		if (this.isIos) {
+			if (this.isPhone) {
+				return `iOS-Phone`
+			}
+			if (this.isTablet) {
+				return `iOS-Tablet`
+			}
+			return `iOS`
+		}
+		if (this.isAndroid) {
+			if (this.isPhone) {
+				return `Android-Phone`
+			}
+			if (this.isTablet) {
+				return `Android-Tablet`
+			}
+			return `Android`
+		}
+		return 'unknown'
+	}
 }
 
 export const mimiriPlatform = new MimiriPlatform()

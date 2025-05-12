@@ -420,4 +420,8 @@ export class UpdateManager {
 	public get features() {
 		return this.state.features
 	}
+
+	public get platformString() {
+		return `${mimiriPlatform.platform};${this.currentVersion};${this.hostVersion}`
+	}
 }

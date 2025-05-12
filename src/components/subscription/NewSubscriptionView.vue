@@ -54,7 +54,6 @@ const populate = async () => {
 	if (!currentLoaded) {
 		currentProduct.value = await noteManager.paymentClient.getCurrentSubscriptionProduct()
 		currentSubscription.value = await noteManager.paymentClient.getCurrentSubscription()
-
 		currentLoaded = true
 	}
 	products.value = (await noteManager.paymentClient.getSubscriptionProducts()).filter(

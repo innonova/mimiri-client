@@ -9,6 +9,7 @@ import type {
 import type { Country, Invoice, PaymentMethod, Subscription, SubscriptionProduct } from './types/subscription'
 import type { Guid } from './types/guid'
 import { add } from 'date-fns'
+import { updateManager } from '../global'
 
 export class PaymentClient {
 	private _countries: Country[] | undefined
@@ -23,6 +24,9 @@ export class PaymentClient {
 		// console.log('GET', `${this.host}${path}`, window.location.origin)
 		const response = await fetch(`${this.host}${path}`, {
 			method: 'GET',
+			headers: {
+				'X-Mimiri-Version': `${updateManager.platformString}`,
+			},
 		})
 		if (response.status !== 200) {
 			throw new HttpRequestError(`Get of ${path} failed with status code ${response.status}`, response.status)
@@ -37,6 +41,7 @@ export class PaymentClient {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
+				'X-Mimiri-Version': `${updateManager.platformString}`,
 			},
 			body: JSON.stringify(body),
 		})
