@@ -2,6 +2,7 @@ import { reactive } from 'vue'
 import { noteManager, notificationList } from '../global'
 import { settingsManager } from './settings-manager'
 import type { Guid } from './types/guid'
+import { mimiriPlatform } from './mimiri-platform'
 
 export interface NotificationManagerState {
 	unread: number
@@ -49,6 +50,9 @@ export class NotificationManager {
 		if (notification.type === 'update') {
 			noteManager.getNoteById('settings-update' as Guid)?.select()
 			notificationList.value.close()
+			if (mimiriPlatform.isPhone) {
+				noteManager.openNote()
+			}
 		}
 	}
 

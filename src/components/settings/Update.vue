@@ -65,12 +65,32 @@
 			<div class="py-2"><a href="https://mimiri.io/#downloads" target="_blank">Other download options</a></div>
 		</div>
 	</div>
+	<div v-if="updateManager.features.length || updateManager.fixes.length" class="py-5 px-2">
+		<ItemHeader>New in this update</ItemHeader>
+		<div class="mt-5 mb-1 font-semibold">Version:</div>
+		<ul class="list-disc ml-5">
+			<li class="py-1">{{ updateManager.currentVersion }} -> {{ updateManager.latestVersion }}</li>
+		</ul>
+		<div class="mt-5 mb-1 font-semibold">New features and changes:</div>
+		<ul class="list-disc ml-5">
+			<template v-for="item of updateManager.features" :key="item.id">
+				<li class="py-1">Feature: {{ item.text }}</li>
+			</template>
+		</ul>
+		<div class="mt-4 mb-1 font-semibold">Fixes:</div>
+		<ul class="list-disc ml-5">
+			<template v-for="item of updateManager.fixes" :key="item.id">
+				<li class="py-1">Fix: {{ item.text }}</li>
+			</template>
+		</ul>
+	</div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
 import { updateManager } from '../../global'
 import { mimiriPlatform } from '../../services/mimiri-platform'
+import ItemHeader from '../subscription/ItemHeader.vue'
 
 const running = ref(false)
 const stage = ref('')

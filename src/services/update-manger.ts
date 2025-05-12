@@ -33,6 +33,10 @@ export interface Bundle extends BundleInfo {
 	signatures: BundleSignature[]
 }
 
+export class ChangeItem {
+	text: string
+}
+
 export interface UpdateManagerState {
 	activeVersion?: InstalledBundleInfo
 	version: string
@@ -41,6 +45,8 @@ export interface UpdateManagerState {
 	isHostUpdate: boolean
 	downloadUrl: string
 	downloadName: string
+	fixes: ChangeItem[]
+	features: ChangeItem[]
 }
 
 export interface ElectronInfo {
@@ -58,6 +64,8 @@ export class UpdateManager {
 		isHostUpdate: false,
 		downloadUrl: undefined,
 		downloadName: undefined,
+		fixes: [],
+		features: [],
 	})
 	private installingElectronUpdate = false
 
@@ -232,9 +240,23 @@ export class UpdateManager {
 						}
 					}
 				}
+				await this.updateChangeLog()
 			} catch (ex) {
 				console.log('error', ex)
 			}
+		}
+	}
+
+	public async updateChangeLog() {
+		const changelog = await this.get<any>(`/changelog.canary.json?r=${Date.now()}`)
+		this.state.fixes = []
+		this.state.features = []
+		for (const version of changelog.versions) {
+			if (this.compareVersions(version.version, this.currentVersion) <= 0) {
+				break
+			}
+			this.state.fixes.push(...version.fixes)
+			this.state.features.push(...version.features)
 		}
 	}
 
@@ -389,5 +411,13 @@ export class UpdateManager {
 
 	public get isUpdateAvailable() {
 		return !!this.state.latestVersion
+	}
+
+	public get fixes() {
+		return this.state.fixes
+	}
+
+	public get features() {
+		return this.state.features
 	}
 }

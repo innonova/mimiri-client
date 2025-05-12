@@ -93,12 +93,24 @@ class MenuManager {
 	public async menuIdActivated(itemId: string) {
 		if (itemId === 'change-username') {
 			noteManager.getNoteById('settings-username' as Guid)?.select()
+			if (mimiriPlatform.isPhone) {
+				noteManager.openNote()
+			}
 		} else if (itemId === 'change-password') {
 			noteManager.getNoteById('settings-password' as Guid)?.select()
+			if (mimiriPlatform.isPhone) {
+				noteManager.openNote()
+			}
 		} else if (itemId === 'delete-account') {
 			noteManager.getNoteById('settings-delete' as Guid)?.select()
+			if (mimiriPlatform.isPhone) {
+				noteManager.openNote()
+			}
 		} else if (itemId === 'manage-subscription') {
 			noteManager.getNoteById('settings-plan' as Guid)?.select()
+			if (mimiriPlatform.isPhone) {
+				noteManager.openNote()
+			}
 		} else if (itemId === 'tray-double-click') {
 			ipcClient.menu.show()
 		} else if (itemId === 'tray-click') {
@@ -146,6 +158,9 @@ class MenuManager {
 			void settingsManager.save()
 		} else if (itemId === 'about') {
 			noteManager.getNoteById(noteManager.controlPanelId)?.select()
+			if (mimiriPlatform.isPhone) {
+				noteManager.openNote()
+			}
 		} else if (itemId === 'show-dev-tools') {
 			ipcClient.menu.showDevTools()
 		}
@@ -201,9 +216,15 @@ class MenuManager {
 			notificationManager.markAllAsRead()
 		} else if (itemId === 'update-available') {
 			noteManager.getNoteById('settings-update' as Guid)?.select()
+			if (mimiriPlatform.isPhone) {
+				noteManager.openNote()
+			}
 		} else if (itemId === 'check-for-update') {
 			await updateManager.check()
 			noteManager.getNoteById('settings-update' as Guid)?.select()
+			if (mimiriPlatform.isPhone) {
+				noteManager.openNote()
+			}
 		} else if (itemId === 'add-getting-started') {
 			await noteManager.addGettingStarted()
 		} else if (itemId === 'empty-recycle-bin') {
@@ -212,8 +233,14 @@ class MenuManager {
 			passwordGeneratorDialog.value.show()
 		} else if (itemId === 'set-pin') {
 			noteManager.getNoteById('settings-pin' as Guid)?.select()
+			if (mimiriPlatform.isPhone) {
+				noteManager.openNote()
+			}
 		} else if (itemId === 'settings') {
 			noteManager.getNoteById('settings-general' as Guid)?.select()
+			if (mimiriPlatform.isPhone) {
+				noteManager.openNote()
+			}
 		}
 	}
 
