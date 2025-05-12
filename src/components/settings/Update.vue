@@ -65,7 +65,10 @@
 			<div class="py-2"><a href="https://mimiri.io/#downloads" target="_blank">Other download options</a></div>
 		</div>
 	</div>
-	<div v-if="updateManager.features.length || updateManager.fixes.length" class="py-5 px-2">
+	<div
+		v-if="(updateManager.features.length || updateManager.fixes.length) && updateManager.latestVersion"
+		class="py-5 px-2"
+	>
 		<ItemHeader>New in this update</ItemHeader>
 		<div class="mt-5 mb-1 font-semibold">Version:</div>
 		<ul class="list-disc ml-5">
