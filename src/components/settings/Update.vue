@@ -3,6 +3,11 @@
 		<div class="py-2 px-4 bg-info cursor-default" data-testid="settings-view-update">Update</div>
 	</div>
 	<div class="bg-info h-2 mb-2 mr-2"></div>
+	<div v-if="showNoUpdatesFound" class="p-2 mt-4 leading-5">
+		<div>No new updates found</div>
+		<div class="mt-2">Current version: {{ updateManager.currentVersion }}</div>
+		<div>Latest version: {{ updateManager.latestVersion ?? updateManager.currentVersion }}</div>
+	</div>
 	<div v-if="!updateManager.isUpdateAvailable" class="max-w-[30rem] pt-5 pl-1">
 		<button @click="checkUpdates" class="w-52">Check for updates</button>
 	</div>
@@ -103,6 +108,7 @@ const progress = ref('0px')
 const downloadedBytes = ref('')
 const totalBytes = ref('')
 const bytesPerSec = ref('')
+const showNoUpdatesFound = ref(false)
 
 let cancelled = false
 let version = ''
@@ -125,6 +131,7 @@ const bytesToText = (bytes: number) => {
 
 const checkUpdates = async () => {
 	await updateManager.check()
+	showNoUpdatesFound.value = !updateManager.isUpdateAvailable
 }
 
 const update = async () => {
