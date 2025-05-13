@@ -1,3 +1,4 @@
+import { updateManager } from '../../global'
 import type { NoteManager } from '../note-manager'
 import { dateTimeNow } from './date-time'
 import type { Guid } from './guid'
@@ -74,6 +75,10 @@ export class VirtualNote extends MimerNote {
 
 	public get isShareRoot() {
 		return false
+	}
+
+	public get hasInfo() {
+		return this.id === 'settings-update' && updateManager.isUpdateAvailable
 	}
 
 	public get title() {

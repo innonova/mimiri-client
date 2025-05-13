@@ -65,6 +65,7 @@ export interface NoteViewModel {
 	isRecycleBin: boolean
 	isControlPanel: boolean
 	isSystem: boolean
+	hasInfo: boolean
 }
 
 export class MimerNote {
@@ -105,6 +106,7 @@ export class MimerNote {
 				isRecycleBin: this.isRecycleBin,
 				isControlPanel: this.isControlPanel,
 				isSystem: this.isSystem,
+				hasInfo: this.hasInfo,
 			})
 			this._historyItems = this.viewModel.history
 		} else {
@@ -125,6 +127,7 @@ export class MimerNote {
 				isRecycleBin: this.isRecycleBin,
 				isControlPanel: this.isControlPanel,
 				isSystem: this.isSystem,
+				hasInfo: this.hasInfo,
 			})
 			this._historyItems = this.viewModel.history
 		}
@@ -195,6 +198,7 @@ export class MimerNote {
 					isRecycleBin: this.isRecycleBin,
 					isControlPanel: this.isControlPanel,
 					isSystem: this.isSystem,
+					hasInfo: this.hasInfo,
 				})
 			}
 		}
@@ -602,6 +606,10 @@ export class MimerNote {
 
 	public get isControlPanel() {
 		return !!this.note.getItem('metadata').isControlPanel
+	}
+
+	public get hasInfo() {
+		return false
 	}
 
 	public get type(): string {
