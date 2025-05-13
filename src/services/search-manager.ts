@@ -23,6 +23,12 @@ class SearchManager {
 		term: '',
 	})
 
+	public updateTerm(text: string) {
+		if (!this.state.searchRunning) {
+			this.state.term = text.trim()
+		}
+	}
+
 	public search(text: string) {
 		if (!text.trim()) {
 			this.state.searchActive = false

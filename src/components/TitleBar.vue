@@ -198,7 +198,9 @@ const checkSearch = e => {
 	}
 }
 
-const endEdit = e => {}
+const endEdit = e => {
+	searchManager.updateTerm(searchInput.value.value)
+}
 
 const notificationsClick = () => {
 	if (notificationManager.count > 0) {
