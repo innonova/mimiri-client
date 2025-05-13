@@ -166,8 +166,4 @@ export class PaymentClient {
 	public async verifyEmail() {
 		return await this.post<any>(`/email/verify`, await this.sign({}))
 	}
-
-	public async verifyEmailResponse(token: string) {
-		return await this.get<any>(`/email/verify-response?token=${encodeURIComponent(token)}`)
-	}
 }

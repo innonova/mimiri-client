@@ -1,5 +1,5 @@
 import { add } from 'date-fns'
-import { Guid } from './guid'
+import { emptyGuid, Guid } from './guid'
 import { passwordHasher } from './password-hasher'
 
 export interface PreLoginResponse {
@@ -130,5 +130,21 @@ export class OrchestrationClient {
 			method: 'POST',
 			body: JSON.stringify(loginRequest),
 		}).then(res => res.json())) as LoginResponse
+	}
+
+	public async triggerDeletions() {
+		return await fetch(`${this._host}/customer/trigger-deletions`).then(res => res.text())
+	}
+
+	public async associatedObjects(customerId: Guid) {
+		return await fetch(`${this._host}/customer/associated-objects/${customerId}`).then(res => res.json())
+	}
+
+	public async getCustomerId(username: string) {
+		const res = await fetch(`${this._host}/customer/id/${username}`)
+		if (res.status === 200) {
+			return (await res.text()) as Guid
+		}
+		return emptyGuid()
 	}
 }

@@ -1,4 +1,3 @@
-import { deleteAccount } from './core/actions'
 import { mimiri } from './framework/mimiri-context'
 
 const tid = (id: string) => {
@@ -42,6 +41,7 @@ export const menu = {
 	share: () => tid('menu-share'),
 	newNote: () => tid('menu-new-note'),
 	newRootNote: () => tid('menu-new-root-note'),
+	logout: () => tid('menu-logout'),
 }
 
 export const dialog = {
@@ -84,6 +84,7 @@ export const loginCtrl = {
 	password: () => tid('password-input'),
 	button: () => tid('login-button'),
 	createAccountLink: () => tid('create-account-link'),
+	loginError: () => tid('login-error'),
 }
 
 export const createCtrl = {
@@ -205,6 +206,15 @@ export const accountView = {
 	emailVerified: () => tid(`email-verified`),
 	verifyEmail: () => tid(`verify-email`),
 	save: () => tid(`account-save`),
+}
+export const deleteView = {
+	container: () => tid(`settings-view-delete-account`),
+	deleteAccount: () => tid(`delete-account-checkbox`),
+	deleteData: () => tid(`delete-data-checkbox`),
+	noRecovery: () => tid(`no-recovery-checkbox`),
+	deleteLocal: () => tid(`delete-local-checkbox`),
+	password: () => tid(`password-input`),
+	submit: () => tid(`submit-button`),
 }
 
 export const accountServer = {

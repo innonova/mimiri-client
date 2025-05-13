@@ -3,6 +3,7 @@ import { MailPitClient } from './mailpit-client'
 import { OrchestrationClient } from './orchestration-client'
 import 'dotenv/config'
 import { start } from 'repl'
+import { Guid } from './guid'
 
 const createId = () => {
 	const rnd = Math.floor(Math.random() * 10000)
@@ -186,12 +187,24 @@ export class MimiriState {
 		await this._orchestrationClient.triggerNextRenewalsFor(this._config.username)
 	}
 
+	public async triggerDeletions() {
+		await this._orchestrationClient.triggerDeletions()
+	}
+
 	public async nextRenewalDate() {
 		return this._orchestrationClient.nextRenewalDate(this._config.username)
 	}
 
 	public async failNextCharge(mode: string) {
 		return this._orchestrationClient.failNextCharge(mode, this._config.username)
+	}
+
+	public async customerId() {
+		return this._orchestrationClient.getCustomerId(this._config.username)
+	}
+
+	public async associatedObjects(customerId: Guid) {
+		return this._orchestrationClient.associatedObjects(customerId)
 	}
 
 	public async waitForMailQueue() {

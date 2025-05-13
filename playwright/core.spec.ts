@@ -1,6 +1,6 @@
 import { test } from '@playwright/test'
 import { mimiri, withMimiriContext } from './framework/mimiri-context'
-import { createAccount } from './core/actions'
+import { createAccount, login, logout } from './core/actions'
 import {
 	verifySettings,
 	verifySettingsFromAccountMenu,
@@ -37,6 +37,14 @@ test.describe('core', () => {
 			await mimiri().home()
 			await createAccount()
 			await verifySystemContextMenu()
+		})
+	})
+	test('login again', async () => {
+		await withMimiriContext(async () => {
+			await mimiri().home()
+			await createAccount()
+			await logout()
+			await login()
 		})
 	})
 })

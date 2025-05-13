@@ -1,5 +1,5 @@
 import { expect } from '@playwright/test'
-import { createCtrl, loginCtrl, mainToolbar, titleBar } from '../selectors'
+import { createCtrl, loginCtrl, mainToolbar, menu, titleBar } from '../selectors'
 import { mimiri } from '../framework/mimiri-context'
 
 export const createAccount = async (enableSub = true) => {
@@ -21,6 +21,12 @@ export const createAccount = async (enableSub = true) => {
 	await mimiri().reload()
 }
 
+export const logout = async () => {
+	await titleBar.accountButton().click()
+	await menu.logout().click()
+	await expect(loginCtrl.container()).toBeVisible()
+}
+
 export const login = async () => {
 	await expect(loginCtrl.container()).toBeVisible()
 	await expect(loginCtrl.username()).toBeVisible()
@@ -32,5 +38,3 @@ export const login = async () => {
 	await expect(mainToolbar.container()).toBeVisible()
 	await expect(titleBar.container()).toBeVisible()
 }
-
-export const deleteAccount = async () => {}

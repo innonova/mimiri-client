@@ -57,7 +57,12 @@
 					<div class="pt-2 pb-6 text-right">
 						<label>
 							Also delete local data from this device
-							<input type="checkbox" v-model="deleteLocal" class="ml-1 relative top-0.5" />
+							<input
+								type="checkbox"
+								v-model="deleteLocal"
+								class="ml-1 relative top-0.5"
+								data-testid="delete-local-checkbox"
+							/>
 						</label>
 					</div>
 

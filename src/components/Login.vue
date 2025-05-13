@@ -30,7 +30,7 @@
 					/>
 				</div>
 			</div>
-			<div class="p-1 m-auto" v-if="error">
+			<div class="p-1 m-auto" v-if="error" data-testid="login-error">
 				<div class="text-error w-64 py-2.5 text-right">Incorrect username or password</div>
 			</div>
 			<div class="p-1 m-auto">
