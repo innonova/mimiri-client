@@ -30,6 +30,12 @@
 			Keep Tray Icon Visible
 		</label>
 	</div>
+	<div v-if="mimiriPlatform.isElectron" class="p-1 pt-2 m-auto text-left">
+		<label>
+			<input type="checkbox" v-model="closeOnX" class="mr-1 relative top-0.5" />
+			Quit when closing application window
+		</label>
+	</div>
 	<div class="mt-10 max-w-[30rem] mr-2">
 		<hr />
 		<div class="w-full flex justify-end mt-2 gap-2">
@@ -50,12 +56,15 @@ const darkMode = ref(false)
 const openAtLogin = ref(false)
 const showInTaskBar = ref(false)
 const keepTrayIconVisible = ref(false)
+const closeOnX = ref(false)
+
 const canSave = computed(
 	() =>
 		darkMode.value !== settingsManager.darkMode ||
 		keepTrayIconVisible.value !== settingsManager.keepTrayIconVisible ||
 		showInTaskBar.value !== settingsManager.showInTaskBar ||
-		openAtLogin.value !== settingsManager.openAtLogin,
+		openAtLogin.value !== settingsManager.openAtLogin ||
+		closeOnX.value !== settingsManager.closeOnX,
 )
 
 onMounted(() => {
@@ -63,6 +72,7 @@ onMounted(() => {
 	keepTrayIconVisible.value = settingsManager.keepTrayIconVisible
 	showInTaskBar.value = settingsManager.showInTaskBar
 	openAtLogin.value = settingsManager.openAtLogin
+	closeOnX.value = settingsManager.closeOnX
 })
 
 const close = () => {
@@ -74,5 +84,6 @@ const save = () => {
 	settingsManager.keepTrayIconVisible = keepTrayIconVisible.value
 	settingsManager.showInTaskBar = showInTaskBar.value
 	settingsManager.openAtLogin = openAtLogin.value
+	settingsManager.closeOnX = closeOnX.value
 }
 </script>

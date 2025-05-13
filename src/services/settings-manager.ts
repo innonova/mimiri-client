@@ -19,6 +19,7 @@ export interface MimerConfiguration {
 	developerMode: boolean | undefined
 	showInTaskBar: boolean
 	pinEnabled: boolean
+	closeOnX: boolean
 }
 
 class SettingsManager {
@@ -39,6 +40,7 @@ class SettingsManager {
 		developerMode: undefined,
 		showInTaskBar: true,
 		pinEnabled: false,
+		closeOnX: false,
 	})
 
 	constructor() {
@@ -184,6 +186,15 @@ class SettingsManager {
 
 	public set pinEnabled(value: boolean) {
 		this.state.pinEnabled = value
+		void this.save()
+	}
+
+	public get closeOnX() {
+		return this.state.closeOnX
+	}
+
+	public set closeOnX(value: boolean) {
+		this.state.closeOnX = value
 		void this.save()
 	}
 }
