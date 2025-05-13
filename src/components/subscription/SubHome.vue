@@ -23,17 +23,42 @@
 		<input type="hidden" data-testid="current-subscription-sku" :value="product?.sku" />
 		<input type="hidden" data-testid="current-subscription-paid-until" :value="subscription?.paidUntil" />
 	</div>
+	<div class="p-1 mt-4">
+		Read more about subscriptions <a href="https://mimiri.io/subscription" target="_blank">here</a>
+	</div>
+	<div class="p-1 mt-4 leading-6">
+		<ItemHeader>Beta information</ItemHeader>
+		<p>We are currently working to perfect the subscription processes.</p>
+		<p>If you encounter any issues please don't hesitate to contact us:</p>
+		<ul class="mt-1">
+			<li><a href="https://discord.gg/pg69qPAVZR" target="_blank">Discord</a></li>
+			<li><a href="https://www.reddit.com/r/mimiri/" target="_blank">Reddit</a></li>
+			<li class="flex gap-2">
+				info@innonova.ch<CopyIcon
+					v-if="!copied"
+					title="copy"
+					@click="copyEmail"
+					class="w-5 hover:w-6 cursor-pointer"
+				></CopyIcon>
+				<div v-if="copied" class="ml-1 cursor-default select-none">Copied</div>
+			</li>
+		</ul>
+	</div>
 </template>
 
 <script setup lang="ts">
+import { Capacitor, registerPlugin } from '@capacitor/core'
 import { noteManager } from '../../global'
 import { type Invoice, type Subscription, type SubscriptionProduct } from '../../services/types/subscription'
+import ItemHeader from './ItemHeader.vue'
+import CopyIcon from '../../icons/copy.vue'
 import SubscriptionItem from './SubscriptionItem.vue'
 import { onMounted, ref } from 'vue'
 
 const product = ref<SubscriptionProduct>()
 const subscription = ref<Subscription>()
 const populated = ref(false)
+const copied = ref(false)
 
 const emit = defineEmits(['change', 'pay-invoice'])
 
@@ -64,6 +89,21 @@ const resume = async () => {
 
 const payInvoice = (invoice: Invoice) => {
 	emit('pay-invoice', invoice)
+}
+
+let clipboard
+if (Capacitor.isPluginAvailable('MimiriClipboard')) {
+	clipboard = registerPlugin<any>('MimiriClipboard')
+}
+
+const copyEmail = () => {
+	if (clipboard) {
+		clipboard.write({ text: 'info@innonova.ch' })
+	} else {
+		navigator.clipboard.writeText('info@innonova.ch')
+	}
+	copied.value = true
+	setTimeout(() => (copied.value = false), 1000)
 }
 
 defineExpose({

@@ -1,12 +1,7 @@
 import { test } from '@playwright/test'
 import { mimiri, withMimiriContext } from './framework/mimiri-context'
 import { createAccount, login, logout } from './core/actions'
-import {
-	verifySettings,
-	verifySettingsFromAccountMenu,
-	verifySubscriptionToggle,
-	verifySystemContextMenu,
-} from './core/checks'
+import { verifySettings, verifySettingsFromAccountMenu, verifySystemContextMenu } from './core/checks'
 
 // test.describe.configure({ mode: 'serial' })
 
@@ -23,13 +18,6 @@ test.describe('core', () => {
 			await mimiri().home()
 			await createAccount()
 			await verifySettingsFromAccountMenu()
-		})
-	})
-	test('verify subscription feature toggle', async () => {
-		await withMimiriContext(async () => {
-			await mimiri().home()
-			await createAccount(false)
-			await verifySubscriptionToggle()
 		})
 	})
 	test('verify system context menu', async () => {

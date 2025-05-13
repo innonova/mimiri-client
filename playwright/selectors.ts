@@ -127,6 +127,7 @@ export const newSubView = {
 	monthly: () => tid('period-month'),
 	yearly: () => tid('period-year'),
 	currencySelector: () => tid('currency-selector'),
+	loaded: () => tid('subscriptions-loaded'),
 }
 
 export const customerCtrl = {

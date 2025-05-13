@@ -402,7 +402,7 @@ export const failCreateSubscription = async () => {
 			url = item.url()
 			return true
 		})
-	expect(url).toContain('/invoice/')
+	expect(url).toContain('/payment/status/')
 	await mimiri().waitForTimeout(250)
 	await expect(waitingView.container()).toBeVisible()
 	await waitingView.cancel().click()
@@ -471,7 +471,7 @@ export const cancelCreateSubscription = async () => {
 			url = item.url()
 			return true
 		})
-	expect(url).toContain('/invoice/')
+	expect(url).toContain('/payment/status/')
 	await mimiri().waitForTimeout(250)
 	await expect(waitingView.container()).toBeVisible()
 	await waitingView.cancel().click()
@@ -536,7 +536,7 @@ export const navigateAwayCreateSubscription = async () => {
 			url = item.url()
 			return true
 		})
-	expect(url).toContain('/invoice/')
+	expect(url).toContain('/payment/status/')
 	await mimiri().waitForTimeout(250)
 	await expect(waitingView.container()).toBeVisible()
 	await waitingView.cancel().click()

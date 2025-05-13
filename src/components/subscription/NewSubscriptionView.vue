@@ -29,6 +29,7 @@
 					@buy="buy"
 				></SubscriptionItem>
 			</template>
+			<input type="hidden" data-testid="subscriptions-loaded" :value="!!products?.length" />
 		</div>
 	</div>
 </template>
@@ -55,6 +56,9 @@ const populate = async () => {
 		currentProduct.value = await noteManager.paymentClient.getCurrentSubscriptionProduct()
 		currentSubscription.value = await noteManager.paymentClient.getCurrentSubscription()
 		currentLoaded = true
+		if (currentSubscription.value) {
+			period.value = currentSubscription.value.period
+		}
 	}
 	products.value = (await noteManager.paymentClient.getSubscriptionProducts()).filter(
 		prod => prod.data.period === period.value,

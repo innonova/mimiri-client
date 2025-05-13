@@ -78,6 +78,7 @@ export const changePeriodToMonthly = async () => {
 	await expect(subHomeView.container()).toBeVisible()
 	await expect(subItem.yearlyChange(1)).toBeVisible()
 	await subItem.yearlyChange(1).click()
+	await expect(newSubView.loaded()).toHaveValue('true')
 	await newSubView.monthly().click()
 	await subItem.monthlyChangeTo(1).click()
 	await expect(upgradeView.container()).toBeVisible()
@@ -113,6 +114,7 @@ export const changePeriodToYearly = async () => {
 	await expect(subHomeView.container()).toBeVisible()
 	await expect(subItem.monthlyChange(1)).toBeVisible()
 	await subItem.monthlyChange(1).click()
+	await expect(newSubView.loaded()).toHaveValue('true')
 	await newSubView.yearly().click()
 	await subItem.yearlyChangeTo(1).click()
 	await expect(upgradeView.container()).toBeVisible()
@@ -154,11 +156,13 @@ export const changePeriodAndTier = async () => {
 	if (isMonthlyInitially) {
 		await expect(subItem.monthlyChange(1)).toBeVisible()
 		await subItem.monthlyChange(1).click()
+		await expect(newSubView.loaded()).toHaveValue('true')
 		await newSubView.yearly().click()
 		await subItem.yearlyChangeTo(2).click()
 	} else {
 		await expect(subItem.yearlyChange(1)).toBeVisible()
 		await subItem.yearlyChange(1).click()
+		await expect(newSubView.loaded()).toHaveValue('true')
 		await newSubView.monthly().click()
 		await subItem.monthlyChangeTo(2).click()
 	}

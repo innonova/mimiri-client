@@ -49,10 +49,6 @@ export class OrchestrationClient {
 		await fetch(`${this._host}/reset-database-soft/${username}`).then(res => res.text())
 	}
 
-	public async enableSubscription(username: string) {
-		await fetch(`${this._host}/enable-subscription/${username}`).then(res => res.text())
-	}
-
 	public async grandfather(username: string) {
 		await fetch(`${this._host}/set-grand-fathered-sharing/${username}`).then(res => res.text())
 	}

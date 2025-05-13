@@ -2,7 +2,7 @@ import { expect } from '@playwright/test'
 import { createCtrl, loginCtrl, mainToolbar, menu, titleBar } from '../selectors'
 import { mimiri } from '../framework/mimiri-context'
 
-export const createAccount = async (enableSub = true) => {
+export const createAccount = async () => {
 	await loginCtrl.createAccountLink().click()
 	await expect(createCtrl.container()).toBeVisible()
 	await createCtrl.username().fill(mimiri().config.username)
@@ -15,9 +15,6 @@ export const createAccount = async (enableSub = true) => {
 	await createCtrl.button().click()
 	await expect(mainToolbar.container()).toBeVisible({ timeout: 30000 })
 	await expect(titleBar.container()).toBeVisible()
-	if (enableSub) {
-		await mimiri().enableSubscription()
-	}
 	await mimiri().reload()
 }
 

@@ -175,10 +175,6 @@ export class MimiriState {
 		return await this._orchestrationClient.login(username, password)
 	}
 
-	public async enableSubscription() {
-		await this._orchestrationClient.enableSubscription(this._config.username)
-	}
-
 	public async triggerRenewals(now?: Date) {
 		await this._orchestrationClient.triggerRenewals(this._config.username, now)
 	}

@@ -104,35 +104,6 @@ export const verifySettingsFromAccountMenu = async () => {
 	await expect(settingView.general()).toBeVisible()
 }
 
-export const verifySubscriptionToggle = async () => {
-	await expect(settingNodes.controlPanel()).toBeVisible()
-	await expect(titleBar.accountButton()).toBeVisible()
-	await titleBar.accountButton().click()
-	await expect(menu.manageSubscription()).not.toBeVisible()
-	await titleBar.accountButton().click()
-	await settingNodes.controlPanel().dblclick()
-
-	await expect(settingNodes.update()).toBeVisible()
-	await expect(settingNodes.settingGroup()).toBeVisible()
-	await expect(settingNodes.account()).toBeVisible()
-	await expect(settingNodes.subscriptionGroup()).not.toBeVisible()
-
-	await mimiri().enableSubscription()
-	await mimiri().reload()
-	await expect(titleBar.container()).toBeVisible()
-
-	await expect(settingNodes.controlPanel()).toBeVisible()
-	await expect(titleBar.accountButton()).toBeVisible()
-	await titleBar.accountButton().click()
-	await expect(menu.manageSubscription()).toBeVisible()
-	await titleBar.accountButton().click()
-
-	await expect(settingNodes.update()).toBeVisible()
-	await expect(settingNodes.settingGroup()).toBeVisible()
-	await expect(settingNodes.account()).toBeVisible()
-	await expect(settingNodes.subscriptionGroup()).toBeVisible()
-}
-
 export const verifySystemMenu = async () => {
 	await expect(menu.refresh()).toBeVisible()
 	await expect(menu.delete()).not.toBeVisible()

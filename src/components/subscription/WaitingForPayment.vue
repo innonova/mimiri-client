@@ -44,12 +44,18 @@ let timerActive = false
 const check = async () => {
 	status.value = 'Checking...'
 	if (props.invoiceId) {
-		const inv = await noteManager.paymentClient.getInvoice(props.invoiceId)
-		if (inv.status === 'paid') {
+		const inv = await noteManager.paymentClient.getInvoicePaymentStatus(props.invoiceId)
+		if (inv.status === 'confirmed') {
 			running.value = false
 			status.value = 'Success'
 			await new Promise(resolve => setTimeout(resolve, 1000))
 			await noteManager.updateUserStats()
+			emit('close')
+			return
+		} else if (inv.status !== 'pending') {
+			running.value = false
+			status.value = 'Failure'
+			await new Promise(resolve => setTimeout(resolve, 1000))
 			emit('close')
 			return
 		}
@@ -65,7 +71,7 @@ const check = async () => {
 		}
 	}
 	await new Promise(resolve => setTimeout(resolve, 250))
-	if (running) {
+	if (running && props.invoiceId) {
 		status.value = 'Waiting...'
 		nextCheck()
 	}

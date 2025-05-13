@@ -7,7 +7,7 @@ import { VirtualNote } from './virtual-note'
 export const createControlPanelTree = (owner: NoteManager, parent: MimerNote): MimerNote[] => {
 	const showUpdate = !mimiriPlatform.isWeb || location.host === 'localhost:5173'
 	const showPin = mimiriPlatform.isElectron || location.host === 'localhost:5173'
-	const showSubscription = owner.featureEnabled('subscription') && mimiriPlatform.isPc
+	const showSubscription = mimiriPlatform.isPc
 
 	const items = [
 		...(showUpdate
@@ -80,7 +80,7 @@ export const createControlPanelTree = (owner: NoteManager, parent: MimerNote): M
 			? [
 					{
 						id: 'settings-plan-group' as Guid,
-						title: 'Subscription',
+						title: 'Subscription (BETA)',
 						type: 'settings-plan',
 						icon: 'coins',
 						children: [

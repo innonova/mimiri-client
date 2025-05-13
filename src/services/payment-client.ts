@@ -119,6 +119,10 @@ export class PaymentClient {
 		}
 	}
 
+	public async getInvoicePaymentStatus(invoiceId: Guid) {
+		return this.post<{ status: string }>(`/payment/status/${invoiceId}`, await this.sign({}))
+	}
+
 	public async createNewPaymentMethod(request: CreatePaymentMethodRequest) {
 		return await this.post<any>(`/payment/create-method`, await this.sign(request))
 	}
