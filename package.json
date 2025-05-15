@@ -1,11 +1,11 @@
 {
 	"name": "webclient-vue",
-	"version": "2.1.103",
+	"version": "2.1.104",
 	"minElectronVersionWin32": "2.1.102",
 	"minElectronVersionDarwin": "2.1.102",
 	"minElectronVersionLinux": "2.1.102",
-	"minIosVersion": "2.0.1",
-	"minAndroidVersion": "2.0.1",
+	"minIosVersion": "2.1.0",
+	"minAndroidVersion": "2.1.0",
 	"private": true,
 	"type": "module",
 	"scripts": {
