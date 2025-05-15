@@ -1,5 +1,7 @@
+import { computed } from 'vue'
 import { updateManager } from '../../global'
 import type { NoteManager } from '../note-manager'
+import { settingsManager, UpdateMode } from '../settings-manager'
 import { dateTimeNow } from './date-time'
 import type { Guid } from './guid'
 import { MimerNote } from './mimer-note'
@@ -78,7 +80,15 @@ export class VirtualNote extends MimerNote {
 	}
 
 	public get hasInfo() {
-		return this.id === 'settings-update' && updateManager.isUpdateAvailable
+		if (this.id === 'settings-update') {
+			return computed(
+				() =>
+					updateManager.isUpdateAvailable &&
+					(settingsManager.updateMode === UpdateMode.StrongNotify ||
+						settingsManager.updateMode === UpdateMode.DiscreteNotify),
+			)
+		}
+		return false
 	}
 
 	public get title() {

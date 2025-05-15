@@ -106,7 +106,7 @@
 			></ScreenShareDisabledIcon>
 		</div>
 		<div
-			class="h-full flex items-center justify-center"
+			class="h-full flex items-center justify-center relative"
 			:class="{
 				'hover:bg-toolbar-hover active:bg-toolbar-hover': notificationManager.count > 0,
 				'min-w-[28px] w-[28px]': mimiriPlatform.isPc,
@@ -126,6 +126,14 @@
 				v-if="notificationManager.unread > 0"
 				class="w-9 h-7 p-px no-drag pointer-events-none"
 			></NotificationActiveIcon>
+			<div
+				v-if="
+					notificationManager.unread > 0 &&
+					updateManager.isUpdateAvailable &&
+					settingsManager.updateMode === UpdateMode.StrongNotify
+				"
+				class="absolute bottom-1 left-px w-2 h-2 rounded bg-bad"
+			></div>
 		</div>
 		<div
 			class="h-full flex items-center justify-center"
@@ -153,7 +161,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { noteManager, searchInput, showSearchBox, ipcClient, notificationManager } from '../global'
+import { noteManager, searchInput, showSearchBox, ipcClient, notificationManager, updateManager } from '../global'
 import ScreenShareEnabledIcon from '../icons/screen-sharing-enabled.vue'
 import ScreenShareDisabledIcon from '../icons/screen-sharing-disabled.vue'
 import AccountIcon from '../icons/account.vue'
@@ -161,7 +169,7 @@ import NotificationIcon from '../icons/notification.vue'
 import NotificationActiveIcon from '../icons/notification-active.vue'
 import { searchManager } from '../services/search-manager'
 import { MenuItems, menuManager } from '../services/menu-manager'
-import { settingsManager } from '../services/settings-manager'
+import { settingsManager, UpdateMode } from '../services/settings-manager'
 import { mimiriPlatform } from '../services/mimiri-platform'
 import { useEventListener } from '@vueuse/core'
 

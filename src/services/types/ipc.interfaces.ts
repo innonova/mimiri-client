@@ -1,5 +1,5 @@
 import type { MimerConfiguration } from '../settings-manager'
-import type { Bundle, BundleInfo } from '../update-manger'
+import type { Bundle, BundleInfo } from '../update-manager'
 import type { Guid } from './guid'
 
 export interface InstalledBundleInfo extends BundleInfo {
@@ -47,11 +47,12 @@ export interface IpcCacheApi {
 export interface IpcBundleApi {
 	getInstalledVersions(): Promise<InstalledBundleInfo[]>
 	save(version: string, bundle: Bundle): Promise<void>
-	use(version: string): Promise<void>
+	use(version: string, noActivate: boolean): Promise<void>
+	activate(): Promise<void>
 	delete(version: string): Promise<void>
 	good(version: string): Promise<void>
 	saveElectronUpdate(release: string, data: Uint8Array): Promise<void>
-	updateElectron(): Promise<void>
+	updateElectron(noRestart: boolean): Promise<void>
 }
 
 export interface IpcWindowApi {

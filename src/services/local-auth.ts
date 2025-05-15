@@ -58,6 +58,9 @@ class LocalAuth implements LoginListener, HideShowListener {
 	}
 
 	public async showing() {
+		if (updateManager.pendingActivation) {
+			await updateManager.idleActivate()
+		}
 		if (this._timer) {
 			clearTimeout(this._timer)
 			this._state.elapsed = true

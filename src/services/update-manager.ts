@@ -1,10 +1,10 @@
 import { reactive } from 'vue'
-import { ipcClient, notificationManager, updateKeys } from '../global'
+import { ipcClient, noteManager, notificationManager, updateKeys } from '../global'
 import { version, releaseDate } from '../version'
 import { CryptSignature } from './crypt-signature'
 import type { InstalledBundleInfo } from './types/ipc.interfaces'
 import { mimiriPlatform } from './mimiri-platform'
-import { settingsManager } from './settings-manager'
+import { settingsManager, UpdateMode } from './settings-manager'
 
 export interface BundleInfo {
 	version: string
@@ -47,6 +47,7 @@ export interface UpdateManagerState {
 	downloadName: string
 	fixes: ChangeItem[]
 	features: ChangeItem[]
+	pendingActivation: boolean
 }
 
 export interface ElectronInfo {
@@ -66,6 +67,7 @@ export class UpdateManager {
 		downloadName: undefined,
 		fixes: [],
 		features: [],
+		pendingActivation: false,
 	})
 	private installingElectronUpdate = false
 
@@ -177,6 +179,29 @@ export class UpdateManager {
 		return false
 	}
 
+	private async performAutomaticUpdate() {
+		const installedVersions = await ipcClient.bundle.getInstalledVersions()
+		const installedVersion = installedVersions.find(ver => ver.version === this.latestVersion)
+		if (installedVersion?.active) {
+			return
+		}
+		await this.download(this.latestVersion)
+		await this.use(this.latestVersion, false)
+		if (!this.isHostUpdate) {
+			if (noteManager.isLoggedIn) {
+				this.state.pendingActivation = true
+			} else {
+				await this.idleActivate()
+			}
+		}
+	}
+
+	public async idleActivate() {
+		if (settingsManager.updateMode === UpdateMode.AutomaticOnIdle) {
+			await this.activate()
+		}
+	}
+
 	public async check() {
 		if (ipcClient.isAvailable) {
 			try {
@@ -197,7 +222,17 @@ export class UpdateManager {
 							if (hostSupportsVersion) {
 								this.state.latestVersion = bundleInfo.version
 								this.state.isHostUpdate = false
-								notificationManager.updateAvailable(bundleInfo.version, new Date(bundleInfo.releaseDate))
+								if (
+									settingsManager.updateMode === UpdateMode.AutomaticOnIdle ||
+									settingsManager.updateMode === UpdateMode.AutomaticOnStart
+								) {
+									this.performAutomaticUpdate()
+								} else if (
+									settingsManager.updateMode === UpdateMode.StrongNotify ||
+									settingsManager.updateMode === UpdateMode.DiscreteNotify
+								) {
+									notificationManager.updateAvailable(bundleInfo.version, new Date(bundleInfo.releaseDate))
+								}
 							} else if (!mimiriPlatform.isHostUpdateManaged) {
 								this.state.latestVersion = bundleInfo.version
 								this.state.isHostUpdate = true
@@ -218,8 +253,27 @@ export class UpdateManager {
 									}
 									this.state.downloadUrl = link?.url
 									this.state.downloadName = link?.name
+									if (
+										settingsManager.updateMode === UpdateMode.AutomaticOnIdle ||
+										settingsManager.updateMode === UpdateMode.AutomaticOnStart ||
+										settingsManager.updateMode === UpdateMode.StrongNotify ||
+										settingsManager.updateMode === UpdateMode.DiscreteNotify
+									) {
+										notificationManager.updateAvailable(bundleInfo.version, new Date(bundleInfo.releaseDate))
+									}
+								} else {
+									if (
+										settingsManager.updateMode === UpdateMode.AutomaticOnIdle ||
+										settingsManager.updateMode === UpdateMode.AutomaticOnStart
+									) {
+										this.performAutomaticUpdate()
+									} else if (
+										settingsManager.updateMode === UpdateMode.StrongNotify ||
+										settingsManager.updateMode === UpdateMode.DiscreteNotify
+									) {
+										notificationManager.updateAvailable(bundleInfo.version, new Date(bundleInfo.releaseDate))
+									}
 								}
-								notificationManager.updateAvailable(bundleInfo.version, new Date(bundleInfo.releaseDate))
 							}
 						} else if (mimiriPlatform.isIos) {
 							const hostSupportsVersion =
@@ -227,7 +281,17 @@ export class UpdateManager {
 							if (hostSupportsVersion) {
 								this.state.latestVersion = bundleInfo.version
 								this.state.isHostUpdate = false
-								notificationManager.updateAvailable(bundleInfo.version, new Date(bundleInfo.releaseDate))
+								if (
+									settingsManager.updateMode === UpdateMode.AutomaticOnIdle ||
+									settingsManager.updateMode === UpdateMode.AutomaticOnStart
+								) {
+									this.performAutomaticUpdate()
+								} else if (
+									settingsManager.updateMode === UpdateMode.StrongNotify ||
+									settingsManager.updateMode === UpdateMode.DiscreteNotify
+								) {
+									notificationManager.updateAvailable(bundleInfo.version, new Date(bundleInfo.releaseDate))
+								}
 							}
 						} else if (mimiriPlatform.isAndroid) {
 							const hostSupportsVersion =
@@ -235,7 +299,17 @@ export class UpdateManager {
 							if (hostSupportsVersion) {
 								this.state.latestVersion = bundleInfo.version
 								this.state.isHostUpdate = false
-								notificationManager.updateAvailable(bundleInfo.version, new Date(bundleInfo.releaseDate))
+								if (
+									settingsManager.updateMode === UpdateMode.AutomaticOnIdle ||
+									settingsManager.updateMode === UpdateMode.AutomaticOnStart
+								) {
+									this.performAutomaticUpdate()
+								} else if (
+									settingsManager.updateMode === UpdateMode.StrongNotify ||
+									settingsManager.updateMode === UpdateMode.DiscreteNotify
+								) {
+									notificationManager.updateAvailable(bundleInfo.version, new Date(bundleInfo.releaseDate))
+								}
 							}
 						}
 					}
@@ -373,12 +447,17 @@ export class UpdateManager {
 		}
 	}
 
-	public async use(version: string) {
+	public async use(version: string, activateImmediately: boolean = true) {
 		if (this.installingElectronUpdate) {
-			await ipcClient.bundle.updateElectron()
+			await ipcClient.bundle.updateElectron(!activateImmediately)
 		} else {
-			await ipcClient.bundle.use(version)
+			await ipcClient.bundle.use(version, !activateImmediately)
 		}
+	}
+
+	public async activate() {
+		this.state.pendingActivation = false
+		await ipcClient.bundle.activate()
 	}
 
 	public get hostVersion() {
@@ -419,6 +498,10 @@ export class UpdateManager {
 
 	public get features() {
 		return this.state.features
+	}
+
+	public get pendingActivation() {
+		return this.state.pendingActivation
 	}
 
 	public get platformString() {

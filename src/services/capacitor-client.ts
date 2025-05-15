@@ -12,7 +12,7 @@ import type {
 } from './types/ipc.interfaces'
 import type { Guid } from './types/guid'
 import type { MimerConfiguration } from './settings-manager'
-import type { Bundle } from './update-manger'
+import type { Bundle } from './update-manager'
 
 class NoOpMenu implements IpcMenuApi {
 	show() {}
@@ -65,6 +65,7 @@ interface MimiriUpdatePlugin {
 	getInstalledVersions(): Promise<{ bundles: InstalledBundleInfo[] }>
 	save(data: { version: string; bundle: Bundle }): Promise<void>
 	use(data: { version: string }): Promise<void>
+	activate(): Promise<void>
 	delete(data: { version: string }): Promise<void>
 	good(data: { version: string }): Promise<void>
 }
@@ -151,6 +152,9 @@ class MimiriBundle implements IpcBundleApi {
 	}
 	use(version: string): Promise<void> {
 		return this.bundle.use({ version })
+	}
+	activate(): Promise<void> {
+		return this.bundle.activate()
 	}
 	delete(version: string): Promise<void> {
 		return this.bundle.delete({ version })

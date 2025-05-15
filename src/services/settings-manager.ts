@@ -4,6 +4,15 @@ import { menuManager } from './menu-manager'
 import { toRaw } from 'vue'
 import { mimiriPlatform } from './mimiri-platform'
 
+export enum UpdateMode {
+	AutomaticOnIdle = 'auto-idle',
+	AutomaticOnStart = 'auto-start',
+	StrongNotify = 'manual-strong',
+	DiscreteNotify = 'manual-discrete',
+	ManualOnly = 'manual-only',
+	Off = 'off',
+}
+
 export interface MimerConfiguration {
 	openAtLogin: boolean
 	allowScreenSharing: boolean
@@ -20,6 +29,7 @@ export interface MimerConfiguration {
 	showInTaskBar: boolean
 	pinEnabled: boolean
 	closeOnX: boolean
+	updateMode: UpdateMode
 }
 
 class SettingsManager {
@@ -41,6 +51,7 @@ class SettingsManager {
 		showInTaskBar: true,
 		pinEnabled: false,
 		closeOnX: false,
+		updateMode: UpdateMode.AutomaticOnIdle,
 	})
 
 	constructor() {
@@ -153,6 +164,15 @@ class SettingsManager {
 
 	public set channel(value: string) {
 		this.state.channel = value
+		void this.save()
+	}
+
+	public get updateMode() {
+		return this.state.updateMode
+	}
+
+	public set updateMode(value: UpdateMode) {
+		this.state.updateMode = value
 		void this.save()
 	}
 

@@ -147,6 +147,9 @@ export class NoteManager {
 			this.whenOnlineCallbacks = []
 			callbacks.forEach(cb => cb())
 		}
+		if (updateManager.pendingActivation) {
+			updateManager.idleActivate()
+		}
 	}
 
 	public registerListener(listener: LoginListener) {

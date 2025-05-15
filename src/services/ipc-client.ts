@@ -4,7 +4,7 @@ import type { Guid } from './types/guid'
 import type { AllKeysResponse, KeyResponse, LoginResponse, PreLoginResponse, ReadNoteResponse } from './types/responses'
 import type { InstalledBundleInfo, IpcApi } from './types/ipc.interfaces'
 import { capacitorClient } from './capacitor-client'
-import type { Bundle } from './update-manger'
+import type { Bundle } from './update-manager'
 import { menuManager } from './menu-manager'
 import { toRaw } from 'vue'
 import { watchDog } from './watch-dog'
@@ -149,8 +149,11 @@ export class MimerBundle {
 	public save(version: string, bundle: Bundle) {
 		return this.api.bundle.save(version, bundle)
 	}
-	public use(version: string) {
-		return this.api.bundle.use(version)
+	public use(version: string, noActivate: boolean) {
+		return this.api.bundle.use(version, noActivate)
+	}
+	public activate() {
+		return this.api.bundle.activate()
 	}
 	public delete(version: string) {
 		return this.api.bundle.delete(version)
@@ -161,8 +164,8 @@ export class MimerBundle {
 	public saveElectronUpdate(release: string, data: Uint8Array) {
 		return this.api.bundle.saveElectronUpdate(release, data)
 	}
-	public updateElectron() {
-		return this.api.bundle.updateElectron()
+	public updateElectron(noRestart: boolean) {
+		return this.api.bundle.updateElectron(noRestart)
 	}
 }
 
