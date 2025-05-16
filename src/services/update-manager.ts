@@ -180,18 +180,20 @@ export class UpdateManager {
 	}
 
 	private async performAutomaticUpdate() {
-		const installedVersions = await ipcClient.bundle.getInstalledVersions()
-		const installedVersion = installedVersions.find(ver => ver.version === this.latestVersion)
-		if (installedVersion?.active) {
-			return
-		}
-		await this.download(this.latestVersion)
-		await this.use(this.latestVersion, false)
-		if (!this.isHostUpdate) {
-			if (noteManager.isLoggedIn) {
-				this.state.pendingActivation = true
-			} else {
-				await this.idleActivate()
+		if (this.currentVersion !== '0.0.0') {
+			const installedVersions = await ipcClient.bundle.getInstalledVersions()
+			const installedVersion = installedVersions.find(ver => ver.version === this.latestVersion)
+			if (installedVersion?.active) {
+				return
+			}
+			await this.download(this.latestVersion)
+			await this.use(this.latestVersion, false)
+			if (!this.isHostUpdate) {
+				if (noteManager.isLoggedIn) {
+					this.state.pendingActivation = true
+				} else {
+					await this.idleActivate()
+				}
 			}
 		}
 	}

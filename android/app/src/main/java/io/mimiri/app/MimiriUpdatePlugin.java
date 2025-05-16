@@ -36,7 +36,9 @@ public class MimiriUpdatePlugin extends Plugin {
       _initialized = true;
       try {
         _bundlesPath = new File(getContext().getFilesDir(), "bundles");
+        System.out.println(_bundlesPath);
         _configPath = new File(_bundlesPath, "config.json");
+        System.out.println(_configPath);
         if (_bundlesPath.exists() || _bundlesPath.mkdirs()) {
           if (_configPath.exists()) {
             _config = FileUtil.readJson(_configPath);
@@ -46,6 +48,7 @@ public class MimiriUpdatePlugin extends Plugin {
           _config = new JSObject();
           _config.put("activeVersion", "base");
         }
+        System.out.println(_config);
       } catch (Exception e) {
         _bundlesPath = new File("");
         _configPath = new File("");
