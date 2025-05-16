@@ -345,6 +345,7 @@ export class NoteManager {
 		if (!root.getItem('metadata').recycleBin) {
 			const recycleBin = new Note()
 			recycleBin.keyName = root.keyName
+			recycleBin.changeItem('metadata').title = 'Recycle Bin'
 			recycleBin.changeItem('metadata').notes = []
 			recycleBin.changeItem('metadata').isRecycleBin = true
 			await this.client.createNote(recycleBin)
@@ -360,6 +361,7 @@ export class NoteManager {
 		if (!root.getItem('metadata').controlPanel) {
 			const controlPanel = new Note()
 			controlPanel.keyName = root.keyName
+			controlPanel.changeItem('metadata').title = 'System'
 			controlPanel.changeItem('metadata').notes = []
 			controlPanel.changeItem('metadata').isControlPanel = true
 			await this.client.createNote(controlPanel)
