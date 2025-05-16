@@ -30,6 +30,7 @@ export interface MimerConfiguration {
 	pinEnabled: boolean
 	closeOnX: boolean
 	updateMode: UpdateMode
+	trayIcon: string
 }
 
 class SettingsManager {
@@ -51,6 +52,7 @@ class SettingsManager {
 		showInTaskBar: true,
 		pinEnabled: false,
 		closeOnX: false,
+		trayIcon: 'system',
 		updateMode: UpdateMode.AutomaticOnIdle,
 	})
 
@@ -215,6 +217,15 @@ class SettingsManager {
 
 	public set closeOnX(value: boolean) {
 		this.state.closeOnX = value
+		void this.save()
+	}
+
+	public get trayIcon() {
+		return this.state.trayIcon
+	}
+
+	public set trayIcon(value: string) {
+		this.state.trayIcon = value
 		void this.save()
 	}
 }

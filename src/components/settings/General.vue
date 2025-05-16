@@ -36,6 +36,14 @@
 			Quit when closing application window
 		</label>
 	</div>
+	<div v-if="mimiriPlatform.isLinux" class="p-1 pt-2 m-auto text-left flex gap-2 items-center">
+		<div>Tray icon color:</div>
+		<select v-model="trayIcon">
+			<option value="system">Auto</option>
+			<option value="white">White</option>
+			<option value="black">Black</option>
+		</select>
+	</div>
 	<div class="mt-10 max-w-[30rem] mr-2">
 		<hr />
 		<div class="w-full flex justify-end mt-2 gap-2">
@@ -57,6 +65,7 @@ const openAtLogin = ref(false)
 const showInTaskBar = ref(false)
 const keepTrayIconVisible = ref(false)
 const closeOnX = ref(false)
+const trayIcon = ref('system')
 
 const canSave = computed(
 	() =>
@@ -64,7 +73,8 @@ const canSave = computed(
 		keepTrayIconVisible.value !== settingsManager.keepTrayIconVisible ||
 		showInTaskBar.value !== settingsManager.showInTaskBar ||
 		openAtLogin.value !== settingsManager.openAtLogin ||
-		closeOnX.value !== settingsManager.closeOnX,
+		closeOnX.value !== settingsManager.closeOnX ||
+		trayIcon.value !== settingsManager.trayIcon,
 )
 
 onMounted(() => {
@@ -73,6 +83,7 @@ onMounted(() => {
 	showInTaskBar.value = settingsManager.showInTaskBar
 	openAtLogin.value = settingsManager.openAtLogin
 	closeOnX.value = settingsManager.closeOnX
+	trayIcon.value = settingsManager.trayIcon
 })
 
 const close = () => {
@@ -85,5 +96,6 @@ const save = () => {
 	settingsManager.showInTaskBar = showInTaskBar.value
 	settingsManager.openAtLogin = openAtLogin.value
 	settingsManager.closeOnX = closeOnX.value
+	settingsManager.trayIcon = trayIcon.value
 }
 </script>

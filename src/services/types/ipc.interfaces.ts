@@ -23,7 +23,7 @@ export interface IpcMenuApi {
 	onToggleScreenSharing(callback: () => void)
 	onToggleOpenAtLogin(callback: () => void)
 	setAppMenu(value: any)
-	seTrayMenu(value: any)
+	seTrayMenu(value: any, colors: any)
 	onMenuItemActivated(callback: (menuItemIdd: string) => void)
 }
 

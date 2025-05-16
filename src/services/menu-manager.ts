@@ -558,57 +558,62 @@ class MenuManager {
 
 	public updateTrayMenu() {
 		if (ipcClient.isAvailable) {
-			ipcClient.menu.seTrayMenu([
+			ipcClient.menu.seTrayMenu(
+				[
+					{
+						id: 'show',
+						title: 'Show',
+					},
+					{
+						id: 'show-dev-tools',
+						title: 'Dev Tools',
+					},
+					...(!mimiriPlatform.isLinux
+						? [
+								{
+									id: 'toggle-screen-sharing',
+									title: 'Allow Screen Sharing',
+									type: 'checkbox',
+									checked: settingsManager.allowScreenSharing,
+								},
+							]
+						: []),
+					...(mimiriPlatform.isWindows
+						? [
+								{
+									id: 'toggle-notify-promoted',
+									title: 'Keep Tray Icon Visible',
+									type: 'checkbox',
+									checked: settingsManager.keepTrayIconVisible,
+								},
+								{
+									id: 'toggle-show-in-taskbar',
+									title: 'Show In Taskbar',
+									type: 'checkbox',
+									checked: settingsManager.showInTaskBar,
+								},
+							]
+						: []),
+					...(!mimiriPlatform.isFlatpak
+						? [
+								{
+									id: 'open-at-login',
+									title: 'Launch on Startup',
+									type: 'checkbox',
+									checked: settingsManager.openAtLogin,
+								},
+							]
+						: []),
+					{ type: 'separator' },
+					{
+						id: 'quit',
+						title: 'Quit',
+					},
+				],
 				{
-					id: 'show',
-					title: 'Show',
+					trayIcon: settingsManager.trayIcon,
 				},
-				{
-					id: 'show-dev-tools',
-					title: 'Dev Tools',
-				},
-				...(!mimiriPlatform.isLinux
-					? [
-							{
-								id: 'toggle-screen-sharing',
-								title: 'Allow Screen Sharing',
-								type: 'checkbox',
-								checked: settingsManager.allowScreenSharing,
-							},
-						]
-					: []),
-				...(mimiriPlatform.isWindows
-					? [
-							{
-								id: 'toggle-notify-promoted',
-								title: 'Keep Tray Icon Visible',
-								type: 'checkbox',
-								checked: settingsManager.keepTrayIconVisible,
-							},
-							{
-								id: 'toggle-show-in-taskbar',
-								title: 'Show In Taskbar',
-								type: 'checkbox',
-								checked: settingsManager.showInTaskBar,
-							},
-						]
-					: []),
-				...(!mimiriPlatform.isFlatpak
-					? [
-							{
-								id: 'open-at-login',
-								title: 'Launch on Startup',
-								type: 'checkbox',
-								checked: settingsManager.openAtLogin,
-							},
-						]
-					: []),
-				{ type: 'separator' },
-				{
-					id: 'quit',
-					title: 'Quit',
-				},
-			])
+			)
 		}
 	}
 

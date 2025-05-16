@@ -112,8 +112,8 @@ export class MimerMenu {
 		this.api.menu.setAppMenu(value)
 	}
 
-	public seTrayMenu(value: any) {
-		this.api.menu.seTrayMenu(value)
+	public seTrayMenu(value: any, colors: any) {
+		this.api.menu.seTrayMenu(value, colors)
 	}
 
 	registerHideShowListener(listener: HideShowListener) {
