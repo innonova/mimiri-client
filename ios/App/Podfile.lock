@@ -1,10 +1,10 @@
 PODS:
-  - Capacitor (6.1.2):
+  - Capacitor (7.2.0):
     - CapacitorCordova
-  - CapacitorApp (6.0.1):
+  - CapacitorApp (7.0.1):
     - Capacitor
-  - CapacitorCordova (6.1.2)
-  - CapacitorKeyboard (6.0.2):
+  - CapacitorCordova (7.2.0)
+  - CapacitorKeyboard (7.0.1):
     - Capacitor
   - SQLite.swift (0.15.3):
     - SQLite.swift/standard (= 0.15.3)
@@ -32,12 +32,12 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/@capacitor/keyboard"
 
 SPEC CHECKSUMS:
-  Capacitor: 679f9673fdf30597493a6362a5d5bf233d46abc2
-  CapacitorApp: 0bc633b4eae40a1f32cd2834788fad3bc42da6a1
-  CapacitorCordova: f48c89f96c319101cd2f0ce8a2b7449b5fb8b3dd
-  CapacitorKeyboard: 2700f9b18687be021e28b5a09b59eb151a46d5e0
+  Capacitor: 106e7a4205f4618d582b886a975657c61179138d
+  CapacitorApp: d63334c052278caf5d81585d80b21905c6f93f39
+  CapacitorCordova: 5967b9ba03915ef1d585469d6e31f31dc49be96f
+  CapacitorKeyboard: 969647d0ca2e5c737d7300088e2517aa832434e2
   SQLite.swift: 8d054987f02728cc912b0eb5a9659650573a65a2
 
-PODFILE CHECKSUM: b85c5bcb5f0d1a956ef2b35b3c9c83f11114d247
+PODFILE CHECKSUM: cdecad80c2850d593aef4fb655ae7a10769eec51
 
 COCOAPODS: 1.15.2
