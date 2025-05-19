@@ -36,9 +36,7 @@ public class MimiriUpdatePlugin extends Plugin {
       _initialized = true;
       try {
         _bundlesPath = new File(getContext().getFilesDir(), "bundles");
-        System.out.println(_bundlesPath);
         _configPath = new File(_bundlesPath, "config.json");
-        System.out.println(_configPath);
         if (_bundlesPath.exists() || _bundlesPath.mkdirs()) {
           if (_configPath.exists()) {
             _config = FileUtil.readJson(_configPath);
@@ -48,11 +46,9 @@ public class MimiriUpdatePlugin extends Plugin {
           _config = new JSObject();
           _config.put("activeVersion", "base");
         }
-        System.out.println(_config);
       } catch (Exception e) {
         _bundlesPath = new File("");
         _configPath = new File("");
-        System.out.println(e.toString());
       }
 
     }
@@ -119,7 +115,6 @@ public class MimiriUpdatePlugin extends Plugin {
       JSObject bundle = call.getObject("bundle");
       if (version != null && bundle != null) {
         File bundlePath = new File(_bundlesPath, version);
-        System.out.println("save " + bundlePath);
         if (bundlePath.exists() || bundlePath.mkdirs()) {
           JSONArray files = bundle.getJSONArray("files");
           for (int i = 0; i < files.length(); i++) {
@@ -150,7 +145,6 @@ public class MimiriUpdatePlugin extends Plugin {
       if (!version.equals("base")) {
         serverBasePath = new File(_bundlesPath, version).toString();
       }
-      System.out.println("use " + serverBasePath);
       SharedPreferences.Editor webViewSettingsEditor = getContext().getSharedPreferences("CapWebViewSettings", Activity.MODE_PRIVATE).edit();
       webViewSettingsEditor.putString("serverBasePath", serverBasePath);
       webViewSettingsEditor.commit();
