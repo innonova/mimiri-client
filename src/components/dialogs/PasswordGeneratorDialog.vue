@@ -41,7 +41,7 @@ import { ref } from 'vue'
 import PasswordGeneratorComp from '../elements/PasswordGenerator.vue'
 import ShowPasswordIcon from '../../icons/show-password.vue'
 import ShowingPasswordIcon from '../../icons/showing-password.vue'
-import { Capacitor, registerPlugin } from '@capacitor/core'
+import { clipboardManager } from '../../global'
 import DialogTitle from '../elements/DialogTitle.vue'
 import RefreshIcon from '../../icons/refresh.vue'
 
@@ -50,21 +50,12 @@ const password = ref('')
 const dialog = ref(null)
 const passwordFieldType = ref('password')
 
-let clipboard
-if (Capacitor.isPluginAvailable('MimiriClipboard')) {
-	clipboard = registerPlugin<any>('MimiriClipboard')
-}
-
 const onPasswordGenerated = pwd => {
 	password.value = pwd
 }
 
 const copyPassword = () => {
-	if (clipboard) {
-		clipboard.write({ text: password.value })
-	} else {
-		navigator.clipboard.writeText(password.value)
-	}
+	clipboardManager.write(password.value)
 }
 
 const regeneratePassword = () => {

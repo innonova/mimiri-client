@@ -191,11 +191,7 @@ export class UpdateManager {
 			await this.download(this.latestVersion)
 			await this.use(this.latestVersion, false)
 			if (!this.isHostUpdate) {
-				if (noteManager.isLoggedIn) {
-					this.state.pendingActivation = true
-				} else {
-					await this.idleActivate()
-				}
+				this.state.pendingActivation = true
 			}
 		}
 	}

@@ -10,6 +10,7 @@ import { NotificationManager } from './services/notification-manager'
 import { MimiriEditor } from './services/editor/mimiri-editor'
 import { MobileLog } from './services/mobile-log'
 import { PasswordGenerator } from './services/password-generator'
+import { ClipboardManager } from './services/clipboard-manager'
 
 export const env = import.meta.env
 const host = env.VITE_MIMER_API_HOST
@@ -56,6 +57,8 @@ export const showShareOffers = ref(false)
 export const showSearchBox = ref(false)
 
 export const mimiriEditor = new MimiriEditor()
+
+export const clipboardManager = new ClipboardManager()
 
 export const updateKeys = [
 	{

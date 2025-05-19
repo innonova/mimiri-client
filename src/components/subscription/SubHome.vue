@@ -47,8 +47,7 @@
 </template>
 
 <script setup lang="ts">
-import { Capacitor, registerPlugin } from '@capacitor/core'
-import { noteManager } from '../../global'
+import { clipboardManager, noteManager } from '../../global'
 import { type Invoice, type Subscription, type SubscriptionProduct } from '../../services/types/subscription'
 import ItemHeader from './ItemHeader.vue'
 import CopyIcon from '../../icons/copy.vue'
@@ -91,17 +90,8 @@ const payInvoice = (invoice: Invoice) => {
 	emit('pay-invoice', invoice)
 }
 
-let clipboard
-if (Capacitor.isPluginAvailable('MimiriClipboard')) {
-	clipboard = registerPlugin<any>('MimiriClipboard')
-}
-
 const copyEmail = () => {
-	if (clipboard) {
-		clipboard.write({ text: 'info@innonova.ch' })
-	} else {
-		navigator.clipboard.writeText('info@innonova.ch')
-	}
+	clipboardManager.write('info@innonova.ch')
 	copied.value = true
 	setTimeout(() => (copied.value = false), 1000)
 }

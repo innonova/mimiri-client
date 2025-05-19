@@ -1,7 +1,12 @@
 <template>
-	<div v-if="loading" class="h-full">
+	<div v-if="loading" class="h-full bg-back text-text dark-mode safe-area-padding">
 		<div id="title-bar" class="w-full h-[36px] pl-px select-none drag"></div>
-		<div class="flex items-center justify-center h-full text-text pb-10">Loading...</div>
+		<div class="flex flex-col items-center justify-center h-full pb-10">
+			<div class="text-size-header">Initializing</div>
+			<div class="text-size-title mt-5">
+				This might take a moment if this is the first time you are starting Mimiri Notes
+			</div>
+		</div>
 	</div>
 	<div v-if="!loading" class="flex flex-col h-full bg-back text-text dark-mode safe-area-padding">
 		<TitleBar v-if="authenticated && !showCreateAccount" ref="titleBar"></TitleBar>
