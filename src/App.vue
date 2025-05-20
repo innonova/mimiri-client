@@ -115,7 +115,7 @@ import { settingsManager } from './services/settings-manager'
 import LoadingIcon from './icons/loading.vue'
 import { mimiriPlatform } from './services/mimiri-platform'
 import { menuManager } from './services/menu-manager'
-import { Debounce } from './services/helpers'
+import { Debounce, deObfuscate } from './services/helpers'
 import { localAuth } from './services/local-auth'
 import LockScreen from './components/LockScreen.vue'
 import { useEventListener } from '@vueuse/core'
@@ -347,6 +347,16 @@ useEventListener(window, 'resize', async () => {
 
 	updateTheme()
 	await updateManager.checkUpdateInitial()
+	try {
+		if (!noteManager.isLoggedIn && settingsManager.autoLogin && settingsManager.autoLoginData) {
+			await noteManager.setLoginData(await deObfuscate(settingsManager.autoLoginData))
+			if (noteManager.isLoggedIn) {
+				await noteManager.loadState()
+			}
+		}
+	} catch (ex) {
+		console.log(ex)
+	}
 	loading.value = false
 	await settingsManager.save()
 })()

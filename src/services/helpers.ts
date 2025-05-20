@@ -1,4 +1,5 @@
 import { format } from 'date-fns'
+import { SymmetricCrypt } from './symmetric-crypt'
 
 export class Debounce {
 	private lastActivate = 0
@@ -81,4 +82,23 @@ export const vatRate = (country: string) => {
 		return 8.1
 	}
 	return 0
+}
+
+let obfuscator: SymmetricCrypt | undefined
+
+const ensureObfuscator = async () => {
+	obfuscator = await SymmetricCrypt.fromKeyString(
+		SymmetricCrypt.DEFAULT_SYMMETRIC_ALGORITHM,
+		'3nVDkHOFedngN9hSs3mb8E1Bb6imMTy2xQOEe6DnvGs=',
+	)
+}
+
+export const obfuscate = async (data: string) => {
+	await ensureObfuscator()
+	return obfuscator.encrypt(data)
+}
+
+export const deObfuscate = async (data: string) => {
+	await ensureObfuscator()
+	return obfuscator.decrypt(data)
 }

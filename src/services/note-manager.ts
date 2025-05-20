@@ -225,19 +225,6 @@ export class NoteManager {
 		}
 		await this.client.createUser(username, password, userData, pow, iterations)
 
-		// const keyMetadata = {
-		// 	shared: false,
-		// 	root: true,
-		// }
-		// await this.client.createKey(this.client.userData.rootKey, keyMetadata)
-
-		// const rootNote = new Note()
-		// rootNote.id = userData.rootNote
-		// rootNote.keyName = this.client.getKeyById(this.client.userData.rootKey).name
-		// rootNote.changeItem('metadata').notes = []
-
-		// await this.client.createNote(rootNote)
-
 		await this.ensureCreateComplete()
 
 		const note = await this.client.readNote(this.client.userData.rootNote)
@@ -250,6 +237,15 @@ export class NoteManager {
 			this.emitStatusUpdated()
 			throw new MimerError('Login Error', 'Failed to read root node')
 		}
+	}
+
+	public async setLoginData(data: string) {
+		await this.client.setLoginData(data)
+		await this.recoverLogin()
+	}
+
+	public async getLoginData() {
+		return this.client.getLoginData()
 	}
 
 	private async recoverLogin() {
@@ -1223,5 +1219,9 @@ export class NoteManager {
 
 	public get controlPanelId(): Guid {
 		return this._root.note.getItem('metadata').controlPanel
+	}
+
+	public get isAnonymous() {
+		return this.client.username.startsWith('mimiri_a_')
 	}
 }

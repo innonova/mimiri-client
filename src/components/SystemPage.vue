@@ -7,6 +7,7 @@
 			<div class="w-full">
 				<General v-if="type === 'settings-general'"></General>
 				<PinCode v-if="type === 'settings-pin'"></PinCode>
+				<PromoteAccount v-if="type === 'settings-create-account'"></PromoteAccount>
 				<Username v-if="type === 'settings-username'"></Username>
 				<Password v-if="type === 'settings-password'"></Password>
 				<DeleteAccount v-if="type === 'settings-delete'"></DeleteAccount>
@@ -30,6 +31,7 @@ import Username from './settings/Username.vue'
 import Password from './settings/Password.vue'
 import DeleteAccount from './settings/DeleteAccount.vue'
 import Account from './subscription/Account.vue'
+import PromoteAccount from './settings/PromoteAccount.vue'
 import About from './settings/About.vue'
 import Update from './settings/Update.vue'
 import SubscriptionFlow from './subscription/SubscriptionFlow.vue'

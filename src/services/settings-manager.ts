@@ -31,6 +31,10 @@ export interface MimerConfiguration {
 	closeOnX: boolean
 	updateMode: UpdateMode
 	trayIcon: string
+	autoLogin: boolean
+	autoLoginData: string | undefined
+	anonymousUsername: string | undefined
+	anonymousPassword: string | undefined
 }
 
 class SettingsManager {
@@ -54,6 +58,10 @@ class SettingsManager {
 		closeOnX: false,
 		trayIcon: 'system',
 		updateMode: UpdateMode.AutomaticOnIdle,
+		autoLogin: false,
+		autoLoginData: undefined,
+		anonymousUsername: undefined,
+		anonymousPassword: undefined,
 	})
 
 	constructor() {
@@ -226,6 +234,42 @@ class SettingsManager {
 
 	public set trayIcon(value: string) {
 		this.state.trayIcon = value
+		void this.save()
+	}
+
+	public get autoLogin() {
+		return this.state.autoLogin
+	}
+
+	public set autoLogin(value: boolean) {
+		this.state.autoLogin = value
+		void this.save()
+	}
+
+	public get autoLoginData() {
+		return this.state.autoLoginData
+	}
+
+	public set autoLoginData(value: string | undefined) {
+		this.state.autoLoginData = value
+		void this.save()
+	}
+
+	public get anonymousUsername() {
+		return this.state.anonymousUsername
+	}
+
+	public set anonymousUsername(value: string | undefined) {
+		this.state.anonymousUsername = value
+		void this.save()
+	}
+
+	public get anonymousPassword() {
+		return this.state.anonymousPassword
+	}
+
+	public set anonymousPassword(value: string | undefined) {
+		this.state.anonymousPassword = value
 		void this.save()
 	}
 }

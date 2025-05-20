@@ -49,6 +49,7 @@ export enum MenuItems {
 	ManageSubscription = 'manage-subscription',
 	SetPin = 'set-pin',
 	Logout = 'logout',
+	Login = 'login',
 	Quit = 'quit',
 	GoOnline = 'go-online',
 	WordWrap = 'word-wrap',
@@ -130,6 +131,11 @@ class MenuManager {
 				ipcClient.menu.hide()
 			}
 		} else if (itemId === 'logout') {
+			noteManager.logout()
+			window.location.reload()
+		} else if (itemId === 'login') {
+			settingsManager.autoLogin = false
+			settingsManager.autoLoginData = undefined
 			noteManager.logout()
 			window.location.reload()
 		} else if (itemId === 'go-online') {
@@ -468,6 +474,7 @@ class MenuManager {
 						id: 'manage-subscription',
 						title: 'Subscription',
 						enabled: noteManager.isLoggedIn && noteManager.isOnline,
+						visible: !noteManager.isAnonymous,
 					})
 					break
 				case MenuItems.SetPin:
@@ -477,12 +484,22 @@ class MenuManager {
 						enabled: noteManager.isLoggedIn && noteManager.isOnline,
 					})
 					break
+				case MenuItems.Login:
+					result.push({
+						id: 'login',
+						title: 'Log In',
+						icon: 'login',
+						enabled: noteManager.isLoggedIn,
+						visible: noteManager.isAnonymous,
+					})
+					break
 				case MenuItems.Logout:
 					result.push({
 						id: 'logout',
 						title: 'Logout',
 						icon: 'logout',
 						enabled: noteManager.isLoggedIn,
+						visible: !noteManager.isAnonymous,
 					})
 					break
 				case MenuItems.Quit:
@@ -618,14 +635,21 @@ class MenuManager {
 	}
 
 	public get appleMenu() {
-		return [MenuItems.About, MenuItems.Separator, MenuItems.Logout, MenuItems.Quit]
+		return [MenuItems.About, MenuItems.Separator, MenuItems.Login, MenuItems.Logout, MenuItems.Quit]
 	}
 
 	public get fileMenu() {
 		if (mimiriPlatform.isMac) {
 			return [MenuItems.NewRootNote, MenuItems.NewNote]
 		}
-		return [MenuItems.NewRootNote, MenuItems.NewNote, MenuItems.Separator, MenuItems.Logout, MenuItems.Quit]
+		return [
+			MenuItems.NewRootNote,
+			MenuItems.NewNote,
+			MenuItems.Separator,
+			MenuItems.Login,
+			MenuItems.Logout,
+			MenuItems.Quit,
+		]
 	}
 
 	public get editMenu() {

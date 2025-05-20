@@ -281,6 +281,31 @@ export class MimerClient {
 		return false
 	}
 
+	public async setLoginData(data: string) {
+		if (ipcClient.isAvailable && ipcClient.session.isAvailable) {
+			await ipcClient.session.set('mimiri-login-data', data)
+		} else if (mimiriPlatform.isIos || mimiriPlatform.isAndroid) {
+			localStorage.setItem('mimiri-login-data', data)
+		} else {
+			sessionStorage.setItem('mimiri-login-data', data)
+		}
+	}
+
+	public async getLoginData() {
+		let str
+		if (ipcClient.isAvailable && ipcClient.session.isAvailable) {
+			str = await ipcClient.session.get('mimiri-login-data')
+		} else if (mimiriPlatform.isIos || mimiriPlatform.isAndroid) {
+			if (!(await mimiriPlatform.verifyBiometry())) {
+				return
+			}
+			str = localStorage.getItem('mimiri-login-data')
+		} else {
+			str = sessionStorage.getItem('mimiri-login-data')
+		}
+		return str
+	}
+
 	public async login(data: LoginData) {
 		if (this.rootCrypt) {
 			throw new Error('Already logged in')

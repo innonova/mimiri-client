@@ -30,7 +30,7 @@
 					</div>
 				</div>
 				<div
-					v-if="item.separatorAfter && item.visible !== false"
+					v-if="item.separatorAfter && item.visible !== false && isVisibleAfter(item)"
 					class="inline-block h-0 w-full border border-solid border-menu-separator mb-0.5"
 				></div>
 			</template>
@@ -63,6 +63,17 @@ const close = e => {
 		console.log(ex)
 	}
 	activationCallback = undefined
+}
+
+const isVisibleAfter = (item: ContextMenuItem) => {
+	const items = config.value.items
+	const index = items.indexOf(item)
+	for (let i = index + 1; i < items.length; i++) {
+		if (items[i].visible !== false) {
+			return true
+		}
+	}
+	return false
 }
 
 const adjustPosition = (position: ContextMenuPosition, windowWidth: number, windowHeight: number) => {

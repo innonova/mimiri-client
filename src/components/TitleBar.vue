@@ -266,8 +266,8 @@ const showMenu = (rect, menu) => {
 			...(mimiriPlatform.isElectron ? [MenuItems.SetPin] : []),
 			MenuItems.DeleteAccount,
 			...(mimiriPlatform.isPc ? [MenuItems.Separator, MenuItems.ManageSubscription] : []),
-			MenuItems.Separator,
-			MenuItems.Logout,
+			...(!noteManager.isAnonymous && ipcClient.isAvailable ? [MenuItems.Separator] : []),
+			...(noteManager.isAnonymous ? [MenuItems.Login] : [MenuItems.Logout]),
 			...(ipcClient.isAvailable ? [MenuItems.Separator, MenuItems.GoOnline] : []),
 		])
 	}

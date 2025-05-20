@@ -1,3 +1,4 @@
+import { noteManager } from '../../global'
 import { mimiriPlatform } from '../mimiri-platform'
 import type { NoteManager } from '../note-manager'
 import type { Guid } from './guid'
@@ -47,36 +48,51 @@ export const createControlPanelTree = (owner: NoteManager, parent: MimerNote): M
 					: []),
 			],
 		},
-		{
-			id: 'settings-account' as Guid,
-			title: 'Account',
-			type: 'settings-username',
-			icon: 'account',
-			children: [
-				{
-					id: 'settings-username' as Guid,
-					title: 'Username',
-					type: 'settings-username',
-					icon: 'account',
-					children: [],
-				},
-				{
-					id: 'settings-password' as Guid,
-					title: 'Password',
-					type: 'settings-password',
-					icon: 'account',
-					children: [],
-				},
-				{
-					id: 'settings-delete' as Guid,
-					title: 'Delete',
-					type: 'settings-delete',
-					icon: 'account',
-					children: [],
-				},
-			],
-		},
-		...(showSubscription
+		...(!noteManager.isAnonymous
+			? [
+					{
+						id: 'settings-account' as Guid,
+						title: 'Account',
+						type: 'settings-username',
+						icon: 'account',
+						children: [
+							{
+								id: 'settings-username' as Guid,
+								title: 'Username',
+								type: 'settings-username',
+								icon: 'account',
+								children: [],
+							},
+							{
+								id: 'settings-password' as Guid,
+								title: 'Password',
+								type: 'settings-password',
+								icon: 'account',
+								children: [],
+							},
+							{
+								id: 'settings-delete' as Guid,
+								title: 'Delete',
+								type: 'settings-delete',
+								icon: 'account',
+								children: [],
+							},
+						],
+					},
+				]
+			: []),
+		...(noteManager.isAnonymous
+			? [
+					{
+						id: 'settings-create-account' as Guid,
+						title: 'Create Account',
+						type: 'settings-create-account',
+						icon: 'account',
+						children: [],
+					},
+				]
+			: []),
+		...(showSubscription && !noteManager.isAnonymous
 			? [
 					{
 						id: 'settings-plan-group' as Guid,

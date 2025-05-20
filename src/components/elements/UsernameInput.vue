@@ -77,6 +77,13 @@ const checkUsernameDebounce = new Debounce(async () => {
 			usernameUnavailable.value = false
 			return
 		}
+		if (username.value?.toLowerCase().startsWith('mimiri')) {
+			usernameInvalid.value = true
+			usernameInProgress.value = false
+			usernameAvailable.value = false
+			usernameUnavailable.value = false
+			return
+		}
 		usernameInvalid.value = false
 		usernameInProgress.value = true
 		usernameAvailable.value = false
