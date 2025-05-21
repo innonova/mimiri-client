@@ -113,6 +113,7 @@ class PersistedState {
 			const state = this.loadState()
 			return state.expanded ?? []
 		}
+		return []
 	}
 
 	get enabled() {

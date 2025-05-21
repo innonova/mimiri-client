@@ -50,7 +50,7 @@
 						<button tabindex="3" :disabled="loading || !canLogin" data-testid="login-button" type="submit">
 							Login
 						</button>
-						<button v-if="!showCreate" :disabled="loading" class="secondary" type="button" @click="cancel">
+						<button v-if="showCancel" :disabled="loading" class="secondary" type="button" @click="cancel">
 							Cancel
 						</button>
 					</div>
@@ -79,6 +79,9 @@ const isInitial = ref(false)
 
 const showCreate = computed(
 	() => isInitial.value && settingsManager.showCreateOverCancel && (!mimiriPlatform.isWeb || env.DEV),
+)
+const showCancel = computed(
+	() => (!isInitial.value || !settingsManager.showCreateOverCancel) && (!mimiriPlatform.isWeb || env.DEV),
 )
 
 const canLogin = computed(() => !!username.value && !!password.value)

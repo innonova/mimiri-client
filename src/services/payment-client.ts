@@ -28,6 +28,9 @@ export class PaymentClient {
 				'X-Mimiri-Version': `${updateManager.platformString}`,
 			},
 		})
+		if (response.status == 404) {
+			return undefined
+		}
 		if (response.status !== 200) {
 			throw new HttpRequestError(`Get of ${path} failed with status code ${response.status}`, response.status)
 		}
@@ -45,6 +48,9 @@ export class PaymentClient {
 			},
 			body: JSON.stringify(body),
 		})
+		if (response.status == 404) {
+			return undefined
+		}
 		if (response.status < 200 || response.status > 299) {
 			throw new HttpRequestError(`Post to ${path} failed with status code ${response.status}`, response.status)
 		}
