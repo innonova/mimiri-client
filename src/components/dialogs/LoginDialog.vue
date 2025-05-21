@@ -1,7 +1,7 @@
 <template>
 	<dialog class="modal bg-dialog text-text border border-solid border-dialog-border backdrop-grayscale" ref="dialog">
 		<div class="grid grid-rows-[auto_1fr_auto] gap-6">
-			<DialogTitle @close="cancel" :disabled="loading || showCreate">Login</DialogTitle>
+			<DialogTitle @close="cancel" :disabled="loading || showCreate || !showCancel">Login</DialogTitle>
 			<form v-on:submit.prevent="login">
 				<main class="pl-6 pr-2">
 					<div class="flex w-[21rem] items-center justify-between m-1 pr-5">
@@ -58,13 +58,14 @@
 			</form>
 		</div>
 	</dialog>
+	<div v-if="showVersion" class="fixed bottom-4 right-4">v {{ updateManager.currentVersion }}</div>
 </template>
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import DialogTitle from '../elements/DialogTitle.vue'
 import LoadingIcon from '../../icons/loading.vue'
-import { env, noteManager } from '../../global'
+import { env, noteManager, updateManager } from '../../global'
 import { settingsManager } from '../../services/settings-manager'
 import { mimiriPlatform } from '../../services/mimiri-platform'
 import type { Guid } from '../../services/types/guid'
@@ -76,6 +77,7 @@ const error = ref(false)
 const timeElapsed = ref('')
 const longTime = ref(false)
 const isInitial = ref(false)
+const showVersion = ref(false)
 
 const showCreate = computed(
 	() => isInitial.value && settingsManager.showCreateOverCancel && (!mimiriPlatform.isWeb || env.DEV),
@@ -89,6 +91,7 @@ const canLogin = computed(() => !!username.value && !!password.value)
 const show = (initial: boolean = false) => {
 	isInitial.value = initial
 	dialog.value.showModal()
+	showVersion.value = true
 }
 
 const cancel = async () => {
@@ -99,6 +102,7 @@ const cancel = async () => {
 			noteManager.getNoteById('settings-create-account' as Guid)?.select()
 		}
 	}
+	showVersion.value = false
 	dialog.value.close()
 }
 
@@ -114,6 +118,7 @@ const login = async () => {
 		}
 		loading.value = false
 		await noteManager.loadState()
+		showVersion.value = false
 		dialog.value.close()
 	} else {
 		error.value = true
