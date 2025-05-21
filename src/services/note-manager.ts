@@ -252,9 +252,7 @@ export class NoteManager {
 
 	public async recoverLogin() {
 		try {
-			console.log('recoverLogin')
 			if (await this.client.restoreLogin()) {
-				console.log('recoverLogin.1')
 				this.state.noteOpen = !this._isMobile
 				browserHistory.openTree(ipcClient.isAvailable && Capacitor.getPlatform() === 'web')
 				await this.ensureCreateComplete()
@@ -263,19 +261,15 @@ export class NoteManager {
 				await this.connectForNotifications()
 				this.loadShareOffers()
 				updateManager.good()
-				console.log('recoverLogin.good')
 			} else {
-				console.log('recoverLogin.logout')
 				this.logout()
 			}
-			console.log('recoverLogin.end')
 		} finally {
 			this.state.initInProgress = false
 		}
 	}
 
 	public async loginAnonymousAccount() {
-		console.log('loginAnonymousAccount')
 		if (settingsManager.anonymousUsername && settingsManager.anonymousPassword) {
 			const password = await deObfuscate(settingsManager.anonymousPassword)
 			await settingsManager.save()
@@ -335,7 +329,6 @@ export class NoteManager {
 	}
 
 	private async ensureCreateComplete() {
-		console.log('ensureCreateComplete', this.client.isLoggedIn, this.client.isOnline, this.client.userData)
 		if (!this.client.userData.createComplete) {
 			if (!this.client.keyWithIdExists(this.client.userData.rootKey)) {
 				const keyMetadata = {
