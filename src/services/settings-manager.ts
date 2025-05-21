@@ -99,6 +99,7 @@ class SettingsManager {
 			}
 		}
 		if (this.state.isNewInstall === undefined) {
+			console.log(compareVersions(this.state.lastRunHostVersion, '2.3.1'), this.state.lastRunHostVersion, env.DEV)
 			if (compareVersions(this.state.lastRunHostVersion, '2.3.1') <= 0 && !env.DEV) {
 				this.state.isNewInstall = false
 			} else {
