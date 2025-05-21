@@ -1,5 +1,5 @@
 import { reactive } from 'vue'
-import { ipcClient, noteManager, notificationManager, updateKeys } from '../global'
+import { ipcClient, noteManager, notificationManager, updateKeys, updateManager } from '../global'
 import { version, releaseDate } from '../version'
 import { CryptSignature } from './crypt-signature'
 import type { InstalledBundleInfo } from './types/ipc.interfaces'
@@ -412,6 +412,9 @@ export class UpdateManager {
 			await ipcClient.bundle.updateElectron(!activateImmediately)
 		} else {
 			await ipcClient.bundle.use(version, !activateImmediately)
+			if (activateImmediately && compareVersions(updateManager.currentVersion, '2.3.1') === 0) {
+				await ipcClient.bundle.activate()
+			}
 		}
 	}
 
