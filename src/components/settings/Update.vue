@@ -312,7 +312,7 @@ const later = () => {
 }
 
 const restart = async () => {
-	await updateManager.use(version)
+	await updateManager.use(version, true)
 }
 
 const cancel = () => {
