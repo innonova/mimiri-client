@@ -412,7 +412,7 @@ export class UpdateManager {
 			await ipcClient.bundle.updateElectron(!activateImmediately)
 		} else {
 			await ipcClient.bundle.use(version, !activateImmediately)
-			if (activateImmediately && compareVersions(updateManager.currentVersion, '2.3.1') === 0) {
+			if (activateImmediately && compareVersions(updateManager.hostVersion, '2.3.1') === 0) {
 				await ipcClient.bundle.activate()
 			}
 		}
