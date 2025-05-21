@@ -99,11 +99,7 @@ class SettingsManager {
 			}
 		}
 		if (this.state.isNewInstall === undefined) {
-			if (
-				this.state.lastRunHostVersion !== '0.0.0' &&
-				compareVersions(this.state.lastRunHostVersion, '2.3.1') <= 0 &&
-				!env.DEV
-			) {
+			if (this.state.lastRunHostVersion !== '0.0.0') {
 				this.state.isNewInstall = false
 			} else {
 				this.state.isNewInstall = true
