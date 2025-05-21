@@ -343,6 +343,7 @@ useEventListener(window, 'resize', async () => {
 	await updateManager.checkUpdateInitial()
 	try {
 		if (!noteManager.isLoggedIn && settingsManager.autoLogin && settingsManager.autoLoginData) {
+			console.log('setLoginData', !noteManager.isLoggedIn, settingsManager.autoLogin, settingsManager.autoLoginData)
 			await noteManager.setLoginData(await deObfuscate(settingsManager.autoLoginData))
 			if (noteManager.isLoggedIn) {
 				await noteManager.loadState()
