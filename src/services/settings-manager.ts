@@ -1,8 +1,9 @@
 import { reactive } from 'vue'
-import { ipcClient } from '../global'
+import { env, ipcClient } from '../global'
 import { menuManager } from './menu-manager'
 import { toRaw } from 'vue'
 import { mimiriPlatform } from './mimiri-platform'
+import { compareVersions } from './helpers'
 
 export enum UpdateMode {
 	AutomaticOnIdle = 'auto-idle',
@@ -35,6 +36,8 @@ export interface MimerConfiguration {
 	autoLoginData: string | undefined
 	anonymousUsername: string | undefined
 	anonymousPassword: string | undefined
+	isNewInstall: boolean | undefined
+	showCreateOverCancel: boolean | undefined
 }
 
 class SettingsManager {
@@ -62,6 +65,8 @@ class SettingsManager {
 		autoLoginData: undefined,
 		anonymousUsername: undefined,
 		anonymousPassword: undefined,
+		isNewInstall: undefined,
+		showCreateOverCancel: false,
 	})
 
 	constructor() {
@@ -92,6 +97,14 @@ class SettingsManager {
 			if (settings) {
 				Object.assign(this.state, JSON.parse(settings))
 			}
+		}
+		if (this.state.isNewInstall === undefined) {
+			if (compareVersions(this.state.lastRunHostVersion, '2.3.1') <= 0 && !env.DEV) {
+				this.state.isNewInstall = false
+			} else {
+				this.state.isNewInstall = true
+			}
+			await this.save()
 		}
 	}
 
@@ -270,6 +283,24 @@ class SettingsManager {
 
 	public set anonymousPassword(value: string | undefined) {
 		this.state.anonymousPassword = value
+		void this.save()
+	}
+
+	public get isNewInstall() {
+		return !!this.state.isNewInstall
+	}
+
+	public set isNewInstall(value: boolean) {
+		this.state.isNewInstall = value
+		void this.save()
+	}
+
+	public get showCreateOverCancel() {
+		return !!this.state.showCreateOverCancel
+	}
+
+	public set showCreateOverCancel(value: boolean) {
+		this.state.showCreateOverCancel = value
 		void this.save()
 	}
 }

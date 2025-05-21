@@ -5,14 +5,20 @@
 	<div class="bg-info h-2 mb-2 mr-2"></div>
 	<div @click="boxClicked">
 		<div class="p-1 pl-4">Bundle Version: {{ updateManager.currentVersion }}</div>
-		<div class="p-1 pl-4 pt-2">Host Version: {{ updateManager.hostVersion }}</div>
+		<div class="p-1 pl-4 pt-2">Host Version: {{ mimiriPlatform.isWeb ? browserName : updateManager.hostVersion }}</div>
 		<div class="p-1 pl-4 pt-2">Released: {{ formatDate(updateManager.releaseDate) }}</div>
 		<div class="p-1 pl-4 pt-6">Notes: {{ noteCount }} / {{ maxNoteCount }} ({{ notesPercent }})</div>
 		<div class="p-1 pl-4 pt-2">Space Used: {{ usedBytes }} / {{ maxBytes }} ({{ bytesPercent }})</div>
-		<!-- <div class="p-1 pl-4 pt-2">Note Size: {{ currentNoteSize }} / {{ maxNoteSize }} ({{ currentNotePercent }})</div> -->
+		<div class="pt-6 pl-4"><a href="https://mimiri.io/terms" target="_blank">Terms & Conditions</a></div>
+		<div class="pt-3 pl-4"><a href="https://mimiri.io/privacy" target="_blank">Privacy Policy</a></div>
 		<div class="pt-6 pl-4"><a href="https://mimiri.io" target="_blank">https://mimiri.io</a></div>
-		<div class="pt-3 pl-4"><a href="https://discord.gg/pg69qPAVZR" target="_blank">Join us on Discord</a></div>
-		<div class="pt-6 pl-4">Copyright &copy;2024 innonova GmbH</div>
+		<div class="pt-6 pl-4"><a href="https://discord.gg/pg69qPAVZR" target="_blank">Join us on Discord</a></div>
+		<div class="pt-3 pl-4"><a href="https://www.reddit.com/r/mimiri/" target="_blank">Join us on Reddit</a></div>
+		<div class="pt-3 pl-4">
+			<a href="https://github.com/innonova/mimiri-client" target="_blank">Source on GitHub</a>
+		</div>
+
+		<div class="pt-6 pl-4">Copyright &copy;2024-{{ new Date().getFullYear() }} innonova GmbH</div>
 		<div class="inline-flex flex-col mx-4 p-3 mt-4 bg-info">
 			<b>Attributions:</b>
 			<template v-for="att of iconAttributions">
@@ -44,6 +50,7 @@ import { onMounted, ref } from 'vue'
 import { noteManager, updateManager, mobileLog } from '../../global'
 import { settingsManager } from '../../services/settings-manager'
 import { iconAttributions } from '../../icons/attributions'
+import { mimiriPlatform } from '../../services/mimiri-platform'
 
 const dialog = ref(null)
 
@@ -57,6 +64,7 @@ const maxNoteSize = ref('1 MB')
 const currentNoteSize = ref('0 MB')
 const currentNotePercent = ref('0 %')
 const showLog = ref(false)
+const browserName = ref(navigator.userAgent)
 
 const biCif = value => {
 	if (value < 10) {

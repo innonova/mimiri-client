@@ -7,6 +7,7 @@ import {
 	env,
 	ipcClient,
 	isCut,
+	loginDialog,
 	noteEditor,
 	noteManager,
 	notificationManager,
@@ -50,7 +51,7 @@ export enum MenuItems {
 	SetPin = 'set-pin',
 	Logout = 'logout',
 	Login = 'login',
-	CreateAccount = 'create-account',
+	CreatePassword = 'create-password',
 	Quit = 'quit',
 	GoOnline = 'go-online',
 	WordWrap = 'word-wrap',
@@ -135,13 +136,10 @@ class MenuManager {
 			noteManager.logout()
 			window.location.reload()
 		} else if (itemId === 'login') {
-			settingsManager.autoLogin = false
-			settingsManager.autoLoginData = undefined
-			noteManager.logout()
-			window.location.reload()
-		} else if (itemId === 'create-account') {
+			loginDialog.value.show()
+		} else if (itemId === 'create-password') {
 			noteManager.controlPanel.expand()
-			noteManager.getNoteById('settings-create-account' as Guid)?.select()
+			noteManager.getNoteById('settings-create-password' as Guid)?.select()
 			if (mimiriPlatform.isPhone) {
 				noteManager.openNote()
 			}
@@ -503,17 +501,17 @@ class MenuManager {
 				case MenuItems.Login:
 					result.push({
 						id: 'login',
-						title: 'Log In',
+						title: 'Log In / Switch User',
 						icon: 'login',
 						enabled: noteManager.isLoggedIn,
 						visible: noteManager.isAnonymous,
 					})
 					break
-				case MenuItems.CreateAccount:
+				case MenuItems.CreatePassword:
 					result.push({
-						id: 'create-account',
-						title: 'Create Account',
-						icon: 'create-account',
+						id: 'create-password',
+						title: 'Create Password',
+						icon: 'create-password',
 						visible: noteManager.isAnonymous,
 					})
 					break
@@ -653,7 +651,7 @@ class MenuManager {
 		return [
 			MenuItems.About,
 			MenuItems.Separator,
-			MenuItems.CreateAccount,
+			MenuItems.CreatePassword,
 			MenuItems.Login,
 			MenuItems.Logout,
 			MenuItems.Quit,
@@ -668,7 +666,7 @@ class MenuManager {
 			MenuItems.NewRootNote,
 			MenuItems.NewNote,
 			MenuItems.Separator,
-			MenuItems.CreateAccount,
+			MenuItems.CreatePassword,
 			MenuItems.Login,
 			MenuItems.Logout,
 			MenuItems.Quit,

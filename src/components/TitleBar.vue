@@ -262,7 +262,7 @@ const showMenu = (rect, menu) => {
 	if (menu === 'account') {
 		menuManager.showMenu({ x: rect.right, y: rect.bottom - 30, backdropTop: 32, alignRight: true }, [
 			...(noteManager.isAnonymous
-				? [MenuItems.CreateAccount]
+				? [MenuItems.CreatePassword, MenuItems.DeleteAccount]
 				: [
 						MenuItems.ChangeUsername,
 						MenuItems.ChangePassword,

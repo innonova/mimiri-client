@@ -23,9 +23,7 @@
 		<input type="hidden" data-testid="current-subscription-sku" :value="product?.sku" />
 		<input type="hidden" data-testid="current-subscription-paid-until" :value="subscription?.paidUntil" />
 	</div>
-	<div class="p-1 mt-4">
-		Read more about subscriptions <a href="https://mimiri.io/subscription" target="_blank">here</a>
-	</div>
+	<div class="p-1 mt-4">Read more about plans <a href="https://mimiri.io/subscription" target="_blank">here</a></div>
 	<div class="p-1 mt-4 leading-6">
 		<ItemHeader>Beta information</ItemHeader>
 		<p>We are currently working to perfect the subscription processes.</p>

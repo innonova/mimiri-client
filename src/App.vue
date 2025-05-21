@@ -9,16 +9,9 @@
 		</div>
 	</div>
 	<div v-if="!loading" class="flex flex-col h-full bg-back text-text dark-mode safe-area-padding">
-		<TitleBar v-if="authenticated && !showCreateAccount" ref="titleBar"></TitleBar>
-		<Login v-if="!authenticated && !showCreateAccount && !showConvertAccount && !noteManager.initInProgress"></Login>
-		<CreateEditAccount ref="createEditAccountScreen"></CreateEditAccount>
+		<TitleBar ref="titleBar"></TitleBar>
 		<ConvertAccount v-if="showConvertAccount"></ConvertAccount>
-		<div
-			v-if="authenticated && !showConvertAccount"
-			v-show="!showCreateAccount && !localAuth.locked"
-			class="flex h-full overflow-hidden"
-			@mouseup="endDragging"
-		>
+		<div v-show="!localAuth.locked" class="flex h-full overflow-hidden" @mouseup="endDragging">
 			<div
 				class="h-full overflow-y-hidden flex flex-col w-full divider-left"
 				:class="{ 'hidden md:flex': !showNavigation }"
@@ -54,6 +47,7 @@
 		<SaveEmptyNodeDialog ref="saveEmptyNodeDialog"></SaveEmptyNodeDialog>
 		<LimitDialog ref="limitDialog"></LimitDialog>
 		<PasswordDialog ref="passwordDialog"></PasswordDialog>
+		<LoginDialog ref="loginDialog"></LoginDialog>
 		<div
 			v-if="noteManager.state.busy"
 			class="absolute left-0 top-0 w-full h-full flex items-center justify-around text-white"
@@ -70,8 +64,6 @@ import NoteTreeView from './components/NoteTreeView.vue'
 import NoteEditor from './components/NoteEditor.vue'
 import MainToolbar from './components/MainToolbar.vue'
 import TitleBar from './components/TitleBar.vue'
-import Login from './components/Login.vue'
-import CreateEditAccount from './components/CreateAccount.vue'
 import ContextMenu from './components/ContextMenu.vue'
 import NotificationList from './components/NotificationList.vue'
 import DeleteNodeDialog from './components/dialogs/DeleteNodeDialog.vue'
@@ -81,6 +73,7 @@ import ShareOfferView from './components/ShareOfferView.vue'
 import SaveEmptyNodeDialog from './components/dialogs/SaveEmptyNodeDialog.vue'
 import LimitDialog from './components/dialogs/LimitDialog.vue'
 import PasswordDialog from './components/dialogs/PasswordDialog.vue'
+import LoginDialog from './components/dialogs/LoginDialog.vue'
 import ConvertAccount from './components/ConvertAccount.vue'
 import SearchBox from './components/SearchBox.vue'
 import EmptyRecycleBinDialog from './components/dialogs/EmptyRecycleBinDialog.vue'
@@ -88,7 +81,6 @@ import PasswordGeneratorDialog from './components/dialogs/PasswordGeneratorDialo
 import {
 	noteManager,
 	contextMenu,
-	createEditAccountScreen,
 	shareDialog,
 	showShareOffers,
 	showSearchBox,
@@ -106,6 +98,7 @@ import {
 	mimiriEditor,
 	saveEmptyNodeDialog,
 	passwordDialog,
+	loginDialog,
 	limitDialog,
 	updateManager,
 	mobileLog,
@@ -120,6 +113,7 @@ import { localAuth } from './services/local-auth'
 import LockScreen from './components/LockScreen.vue'
 import { useEventListener } from '@vueuse/core'
 import SystemPage from './components/SystemPage.vue'
+import { toHex } from './services/hex-base64'
 
 mobileLog.log(`App Loading ${settingsManager.channel} ${updateManager.currentVersion}`)
 
@@ -357,8 +351,30 @@ useEventListener(window, 'resize', async () => {
 	} catch (ex) {
 		console.log(ex)
 	}
+
+	if (!noteManager.isLoggedIn) {
+		await noteManager.recoverLogin()
+	}
+
+	let showLogin = !noteManager.isLoggedIn
+
+	if (!noteManager.isLoggedIn) {
+		if (settingsManager.isNewInstall) {
+			await noteManager.loginAnonymousAccount()
+			if (noteManager.isLoggedIn) {
+				settingsManager.isNewInstall = false
+				showLogin = false
+			}
+		} else {
+			showLogin = true
+		}
+	}
+
 	loading.value = false
 	await settingsManager.save()
+	if (showLogin) {
+		loginDialog.value.show(true)
+	}
 })()
 
 const handleDragging = e => {

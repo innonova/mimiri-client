@@ -48,14 +48,14 @@ export const createControlPanelTree = (owner: NoteManager, parent: MimerNote): M
 					: []),
 			],
 		},
-		...(!noteManager.isAnonymous
-			? [
-					{
-						id: 'settings-account' as Guid,
-						title: 'Account',
-						type: 'settings-username',
-						icon: 'account',
-						children: [
+		{
+			id: 'settings-account' as Guid,
+			title: 'Account',
+			type: noteManager.isAnonymous ? 'settings-create-password' : 'settings-username',
+			icon: 'account',
+			children: [
+				...(!noteManager.isAnonymous
+					? [
 							{
 								id: 'settings-username' as Guid,
 								title: 'Username',
@@ -70,33 +70,30 @@ export const createControlPanelTree = (owner: NoteManager, parent: MimerNote): M
 								icon: 'account',
 								children: [],
 							},
+						]
+					: [
 							{
-								id: 'settings-delete' as Guid,
-								title: 'Delete',
-								type: 'settings-delete',
+								id: 'settings-create-password' as Guid,
+								title: 'Create Password',
+								type: 'settings-create-password',
 								icon: 'account',
 								children: [],
 							},
-						],
-					},
-				]
-			: []),
-		...(noteManager.isAnonymous
-			? [
-					{
-						id: 'settings-create-account' as Guid,
-						title: 'Create Account',
-						type: 'settings-create-account',
-						icon: 'account',
-						children: [],
-					},
-				]
-			: []),
-		...(showSubscription && !noteManager.isAnonymous
+						]),
+				{
+					id: 'settings-delete' as Guid,
+					title: 'Delete',
+					type: 'settings-delete',
+					icon: 'account',
+					children: [],
+				},
+			],
+		},
+		...(showSubscription
 			? [
 					{
 						id: 'settings-plan-group' as Guid,
-						title: 'Subscription (BETA)',
+						title: 'Plan (BETA)',
 						type: 'settings-plan',
 						icon: 'coins',
 						children: [

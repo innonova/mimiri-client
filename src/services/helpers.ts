@@ -102,3 +102,43 @@ export const deObfuscate = async (data: string) => {
 	await ensureObfuscator()
 	return obfuscator.decrypt(data)
 }
+
+export const compareVersions = (a: string, b: string) => {
+	const matchA = /([0-9]+)\.([0-9]+)\.([0-9]+)(?:-(beta|rc)([0-9]+))?/.exec(a)
+	const matchB = /([0-9]+)\.([0-9]+)\.([0-9]+)(?:-(beta|rc)([0-9]+))?/.exec(b)
+	const majorA = parseInt(matchA[1])
+	const minorA = parseInt(matchA[2])
+	const patchA = parseInt(matchA[3])
+	const labelTypeA = matchA[4]
+	const labelA = parseInt(matchA[5])
+	const majorB = parseInt(matchB[1])
+	const minorB = parseInt(matchB[2])
+	const patchB = parseInt(matchB[3])
+	const labelTypeB = matchB[4]
+	const labelB = parseInt(matchB[5])
+
+	if (majorA !== majorB) {
+		return majorA - majorB
+	}
+	if (minorA !== minorB) {
+		return minorA - minorB
+	}
+	if (patchA !== patchB) {
+		return patchA - patchB
+	}
+	if (labelTypeA !== labelTypeB) {
+		return labelTypeA === 'rc' ? 1 : -1
+	}
+	if (labelA !== labelB) {
+		if (!isNaN(labelA) && !isNaN(labelA)) {
+			return labelA - labelB
+		}
+		if (!isNaN(labelA) && isNaN(labelA)) {
+			return 1
+		}
+		if (isNaN(labelA) && !isNaN(labelA)) {
+			return -1
+		}
+	}
+	return 0
+}

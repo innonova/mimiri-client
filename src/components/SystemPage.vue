@@ -1,5 +1,5 @@
 <template>
-	<div class="flex flex-col h-full">
+	<div v-if="noteManager.authenticated" class="flex flex-col h-full">
 		<div class="flex items-center py-px px-1 bg-toolbar border-b border-solid border-toolbar min-h-9 select-none">
 			<ToolbarIcon icon="back" :hoverEffect="true" title="Back" class="md:hidden" @click="onBack"></ToolbarIcon>
 		</div>
@@ -7,7 +7,7 @@
 			<div class="w-full">
 				<General v-if="type === 'settings-general'"></General>
 				<PinCode v-if="type === 'settings-pin'"></PinCode>
-				<PromoteAccount v-if="type === 'settings-create-account'"></PromoteAccount>
+				<PromoteAccount v-if="type === 'settings-create-password'"></PromoteAccount>
 				<Username v-if="type === 'settings-username'"></Username>
 				<Password v-if="type === 'settings-password'"></Password>
 				<DeleteAccount v-if="type === 'settings-delete'"></DeleteAccount>

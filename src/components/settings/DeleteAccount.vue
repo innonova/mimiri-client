@@ -42,7 +42,7 @@
 				</div>
 				<div class="max-w-[30rem]">
 					<hr class="my-5" />
-					<div class="flex justify-end items-baseline">
+					<div v-if="!noteManager.isAnonymous" class="flex justify-end items-baseline">
 						<div class="mr-2">Password:</div>
 						<div class="text-right">
 							<input
@@ -54,7 +54,7 @@
 							/>
 						</div>
 					</div>
-					<div class="pt-2 pb-6 text-right">
+					<div v-if="(!mimiriPlatform.isWeb || env.DEV) && !noteManager.isAnonymous" class="pt-2 pb-6 text-right">
 						<label>
 							Also delete local data from this device
 							<input
@@ -84,7 +84,6 @@
 						>
 							Delete Account
 						</button>
-						<!-- <button class="secondary" :disabled="loading" @click="close">Cancel</button> -->
 					</div>
 				</div>
 			</div>
@@ -93,9 +92,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
-import { noteManager } from '../../global'
+import { ref } from 'vue'
+import { env, noteManager } from '../../global'
 import LoadingIcon from '../../icons/loading.vue'
+import { mimiriPlatform } from '../../services/mimiri-platform'
+import { settingsManager } from '../../services/settings-manager'
+import { deObfuscate } from '../../services/helpers'
 const understandDeleteAccount = ref(false)
 const understandDeleteData = ref(false)
 const understandRoRecovery = ref(false)
@@ -105,25 +107,23 @@ const error = ref('')
 const loading = ref(false)
 const password = ref('')
 
-// watch(showDeleteAccount, newValue => {
-// 	if (newValue) {
-// 		understandDeleteAccount.value = false
-// 		understandDeleteData.value = false
-// 		understandRoRecovery.value = false
-// 		deleteLocal.value = false
-// 	}
-// })
-
 const deleteAccount = async () => {
 	loading.value = true
 	error.value = ''
-	if (password.value) {
+	if (password.value || noteManager.isAnonymous) {
 		try {
-			await noteManager.deleteAccount(password.value, deleteLocal.value)
+			if (noteManager.isAnonymous) {
+				await noteManager.deleteAccount(await deObfuscate(settingsManager.anonymousPassword), true)
+				settingsManager.anonymousUsername = undefined
+				settingsManager.anonymousPassword = undefined
+				settingsManager.showCreateOverCancel = true
+			} else {
+				await noteManager.deleteAccount(password.value, deleteLocal.value)
+			}
 			loading.value = false
-			// showDeleteAccount.value = false
-			if (deleteLocal.value) {
+			if (deleteLocal.value || noteManager.isAnonymous) {
 				noteManager.logout()
+				location.reload()
 			}
 		} catch {
 			loading.value = false
@@ -134,14 +134,4 @@ const deleteAccount = async () => {
 		error.value = 'Password required'
 	}
 }
-
-const show = (limit: string) => {}
-
-const close = () => {
-	// showDeleteAccount.value = false
-}
-
-defineExpose({
-	show,
-})
 </script>

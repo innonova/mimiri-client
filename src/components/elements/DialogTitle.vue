@@ -2,20 +2,24 @@
 	<header class="flex items-center bg-title-bar select-none">
 		<div
 			ref="titleBar"
-			class="pl-2 text-size-title w-full h-full flex items-center"
+			class="pl-2 text-size-title w-full h-10 flex items-center"
 			@pointerdown="down"
 			@pointerup="up"
 			@pointermove="move"
 		>
 			<slot></slot>
 		</div>
-		<button class="cursor-default w-8 outline-none m-1" @click="close" type="button">X</button>
+		<button :disabled="disabled" class="cursor-default w-8 outline-none m-1" @click="close" type="button">X</button>
 	</header>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
 const titleBar = ref(null)
+
+const props = defineProps<{
+	disabled?: boolean
+}>()
 
 let dialog
 let captured = false

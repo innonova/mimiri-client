@@ -25,6 +25,9 @@ import { ProofOfWork } from './proof-of-work'
 import { PaymentClient } from './payment-client'
 import type { ClientConfig } from './types/responses'
 import { createControlPanelTree } from './types/control-panel'
+import { settingsManager } from './settings-manager'
+import { deObfuscate, obfuscate } from './helpers'
+import { toHex } from './hex-base64'
 
 export enum ActionType {
 	Save,
@@ -124,7 +127,6 @@ export class NoteManager {
 			}
 		})
 		setTimeout(() => this.checkBusyLength(), 100)
-		setTimeout(() => this.recoverLogin(), 100)
 	}
 
 	private checkBusyLength() {
@@ -248,7 +250,7 @@ export class NoteManager {
 		return this.client.getLoginData()
 	}
 
-	private async recoverLogin() {
+	public async recoverLogin() {
 		try {
 			if (await this.client.restoreLogin()) {
 				this.state.noteOpen = !this._isMobile
@@ -267,15 +269,48 @@ export class NoteManager {
 		}
 	}
 
-	private async addNotesRecursive(parent: Note, notes: any[]) {
+	public async loginAnonymousAccount() {
+		if (settingsManager.anonymousUsername && settingsManager.anonymousPassword) {
+			const password = await deObfuscate(settingsManager.anonymousPassword)
+			await settingsManager.save()
+			await this.login({
+				username: settingsManager.anonymousUsername,
+				password: password,
+			})
+			if (this.isLoggedIn) {
+				settingsManager.autoLoginData = await obfuscate(await this.getLoginData())
+				settingsManager.autoLogin = true
+				await settingsManager.save()
+				await this.loadState()
+			}
+		} else if (!mimiriPlatform.isWeb || env.DEV) {
+			const username = `mimiri_a_${Date.now()}_${`${Math.random()}`.substring(2, 6)}`
+			const password = toHex(crypto.getRandomValues(new Uint8Array(128)))
+			// high password complexity obviates the need for high iteration count so we can save time here
+			await this.createAccount(username, password, 100)
+			settingsManager.anonymousUsername = username
+			settingsManager.anonymousPassword = await obfuscate(password)
+			settingsManager.autoLoginData = await obfuscate(await this.getLoginData())
+			settingsManager.autoLogin = true
+			await settingsManager.save()
+			settingsManager.autoLogin = true
+			if (this.isLoggedIn) {
+				console.log('ensureChildren')
+				await this.root.ensureChildren()
+			}
+		}
+	}
+
+	private async addGettingStartedNotesRecursive(parent: Note, notes: any[]) {
 		for (const noteData of notes) {
 			const note = new Note()
 			note.keyName = parent.keyName
 			note.changeItem('metadata').title = noteData.title
 			note.changeItem('metadata').created = dateTimeNow()
+			note.changeItem('metadata').isGettingStarted = true
 			note.changeItem('metadata').notes = []
 			note.changeItem('text').text = noteData.content
-			await this.addNotesRecursive(note, noteData.notes)
+			await this.addGettingStartedNotesRecursive(note, noteData.notes)
 			await this.client.createNote(note)
 			parent.changeItem('metadata').notes.push(note.id)
 		}
@@ -284,7 +319,7 @@ export class NoteManager {
 	public async addGettingStarted(note?: Note) {
 		try {
 			const json = await fetch(`${env.VITE_MIMER_UPDATE_HOST}/getting-started.json`).then(res => res.json())
-			await this.addNotesRecursive(note ?? this._root.note, json.notes)
+			await this.addGettingStartedNotesRecursive(note ?? this._root.note, json.notes)
 			if (!note) {
 				await this.client.updateNote(this._root.note)
 				await this.refreshNote(this._root.note.id)
@@ -466,6 +501,8 @@ export class NoteManager {
 
 	public logout() {
 		mobileLog.log('Logging out')
+		settingsManager.autoLogin = false
+		settingsManager.autoLoginData = undefined
 		this._listener?.logout()
 		this.root = undefined
 		this.client.logout()
@@ -1125,6 +1162,37 @@ export class NoteManager {
 		return this.client.clientConfig?.features?.includes(name)
 	}
 
+	private async isNotePristine(note: MimerNote) {
+		const metadata = note.note.getItem('metadata')
+		const history = note.note.getItem('history')
+
+		if (!metadata.isGettingStarted || history.active) {
+			return false
+		}
+		await note.ensureChildren()
+		for (const child of note.children) {
+			if (!(await this.isNotePristine(child))) {
+				return false
+			}
+		}
+		return true
+	}
+
+	public async isAccountPristine() {
+		if (!this.isAnonymous) {
+			return false
+		}
+		const userNotes = this.root.children.filter(child => !child.isSystem)
+		if (userNotes.length !== 1) {
+			return false
+		}
+		if (!(await this.isNotePristine(userNotes[0]))) {
+			return false
+		}
+
+		return true
+	}
+
 	public get paymentClient() {
 		return this._paymentClient
 	}
@@ -1167,6 +1235,10 @@ export class NoteManager {
 
 	public get isLoggedIn() {
 		return this.client.isLoggedIn
+	}
+
+	public get authenticated() {
+		return this.state.authenticated
 	}
 
 	public get root() {
@@ -1226,6 +1298,6 @@ export class NoteManager {
 	}
 
 	public get isAnonymous() {
-		return this.client.username.startsWith('mimiri_a_')
+		return !!this.client.username?.startsWith('mimiri_a_')
 	}
 }

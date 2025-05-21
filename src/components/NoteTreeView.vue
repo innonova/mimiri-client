@@ -7,7 +7,7 @@
 		data-testid="note-tree"
 	>
 		<TreeNode
-			v-if="noteManager.root?.viewModel.children.length"
+			v-if="noteManager.authenticated && noteManager.root?.viewModel.children.length"
 			v-for="node of noteManager.root.viewModel.children"
 			:node="node"
 			:key="node.id"

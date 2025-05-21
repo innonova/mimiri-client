@@ -5,6 +5,7 @@ import { CryptSignature } from './crypt-signature'
 import type { InstalledBundleInfo } from './types/ipc.interfaces'
 import { mimiriPlatform } from './mimiri-platform'
 import { settingsManager, UpdateMode } from './settings-manager'
+import { compareVersions } from './helpers'
 
 export interface BundleInfo {
 	version: string
@@ -108,46 +109,6 @@ export class UpdateManager {
 		}
 	}
 
-	private compareVersions(a: string, b: string) {
-		const matchA = /([0-9]+)\.([0-9]+)\.([0-9]+)(?:-(beta|rc)([0-9]+))?/.exec(a)
-		const matchB = /([0-9]+)\.([0-9]+)\.([0-9]+)(?:-(beta|rc)([0-9]+))?/.exec(b)
-		const majorA = parseInt(matchA[1])
-		const minorA = parseInt(matchA[2])
-		const patchA = parseInt(matchA[3])
-		const labelTypeA = matchA[4]
-		const labelA = parseInt(matchA[5])
-		const majorB = parseInt(matchB[1])
-		const minorB = parseInt(matchB[2])
-		const patchB = parseInt(matchB[3])
-		const labelTypeB = matchB[4]
-		const labelB = parseInt(matchB[5])
-
-		if (majorA !== majorB) {
-			return majorA - majorB
-		}
-		if (minorA !== minorB) {
-			return minorA - minorB
-		}
-		if (patchA !== patchB) {
-			return patchA - patchB
-		}
-		if (labelTypeA !== labelTypeB) {
-			return labelTypeA === 'rc' ? 1 : -1
-		}
-		if (labelA !== labelB) {
-			if (!isNaN(labelA) && !isNaN(labelA)) {
-				return labelA - labelB
-			}
-			if (!isNaN(labelA) && isNaN(labelA)) {
-				return 1
-			}
-			if (isNaN(labelA) && !isNaN(labelA)) {
-				return -1
-			}
-		}
-		return 0
-	}
-
 	private updateMinElectronVersion(info: BundleInfo) {
 		if (mimiriPlatform.isWindows && info.minElectronVersionWin32) {
 			info.minElectronVersion = info.minElectronVersionWin32
@@ -166,7 +127,7 @@ export class UpdateManager {
 				const lastRunHostVersion = settingsManager.lastRunHostVersion
 				await this.check()
 				if (
-					this.compareVersions(this.state.activeVersion.hostVersion, lastRunHostVersion) &&
+					compareVersions(this.state.activeVersion.hostVersion, lastRunHostVersion) &&
 					this.state.latestVersion &&
 					!this.state.isHostUpdate
 				) {
@@ -214,11 +175,11 @@ export class UpdateManager {
 				)
 				this.updateMinElectronVersion(bundleInfo)
 				if (bundleInfo.version !== this.state.activeVersion.version) {
-					const newerVersionExists = this.compareVersions(bundleInfo.version, this.state.activeVersion.version) > 0
+					const newerVersionExists = compareVersions(bundleInfo.version, this.state.activeVersion.version) > 0
 					if (newerVersionExists) {
 						if (mimiriPlatform.isElectron) {
 							const hostSupportsVersion =
-								this.compareVersions(bundleInfo.minElectronVersion, this.state.activeVersion.hostVersion) <= 0
+								compareVersions(bundleInfo.minElectronVersion, this.state.activeVersion.hostVersion) <= 0
 							if (hostSupportsVersion) {
 								this.state.latestVersion = bundleInfo.version
 								this.state.isHostUpdate = false
@@ -277,7 +238,7 @@ export class UpdateManager {
 							}
 						} else if (mimiriPlatform.isIos) {
 							const hostSupportsVersion =
-								this.compareVersions(bundleInfo.minIosVersion, this.state.activeVersion.hostVersion) <= 0
+								compareVersions(bundleInfo.minIosVersion, this.state.activeVersion.hostVersion) <= 0
 							if (hostSupportsVersion) {
 								this.state.latestVersion = bundleInfo.version
 								this.state.isHostUpdate = false
@@ -295,7 +256,7 @@ export class UpdateManager {
 							}
 						} else if (mimiriPlatform.isAndroid) {
 							const hostSupportsVersion =
-								this.compareVersions(bundleInfo.minAndroidVersion, this.state.activeVersion.hostVersion) <= 0
+								compareVersions(bundleInfo.minAndroidVersion, this.state.activeVersion.hostVersion) <= 0
 							if (hostSupportsVersion) {
 								this.state.latestVersion = bundleInfo.version
 								this.state.isHostUpdate = false
@@ -326,7 +287,7 @@ export class UpdateManager {
 		this.state.fixes = []
 		this.state.features = []
 		for (const version of changelog.versions) {
-			if (this.compareVersions(version.version, this.currentVersion) <= 0) {
+			if (compareVersions(version.version, this.currentVersion) <= 0) {
 				break
 			}
 			this.state.fixes.push(...version.fixes)
@@ -351,8 +312,7 @@ export class UpdateManager {
 					const installedVersions = await ipcClient.bundle.getInstalledVersions()
 					this.state.activeVersion = installedVersions.find(ver => ver.active)
 				}
-				const hostSupportsVersion =
-					this.compareVersions(info.minElectronVersion, this.state.activeVersion.hostVersion) <= 0
+				const hostSupportsVersion = compareVersions(info.minElectronVersion, this.state.activeVersion.hostVersion) <= 0
 
 				if (!hostSupportsVersion) {
 					const latest = await this.get<any>(`/latest.json`)
