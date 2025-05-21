@@ -3,7 +3,7 @@
 	<div class="mb-0.5">Items</div>
 	<template v-for="item of items" :key="item.sku">
 		<div class="flex flex-row justify-between border-t border-b py-3">
-			<div>Subscription - {{ item.text }} - ({{ item.sku }})</div>
+			<div>{{ item.sku }} - {{ item.text }}</div>
 			<div class="text-right">{{ formatCurrency(item.price, currency) }}</div>
 		</div>
 	</template>

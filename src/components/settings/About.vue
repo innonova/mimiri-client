@@ -14,8 +14,11 @@
 		<div class="pt-6 pl-4"><a href="https://mimiri.io" target="_blank">https://mimiri.io</a></div>
 		<div class="pt-6 pl-4"><a href="https://discord.gg/pg69qPAVZR" target="_blank">Join us on Discord</a></div>
 		<div class="pt-3 pl-4"><a href="https://www.reddit.com/r/mimiri/" target="_blank">Join us on Reddit</a></div>
-		<div class="pt-3 pl-4">
+		<div class="pt-6 pl-4">
 			<a href="https://github.com/innonova/mimiri-client" target="_blank">Source on GitHub</a>
+		</div>
+		<div class="pt-3 pl-4">
+			<a href="https://github.com/innonova/mimiri-client/issues" target="_blank">Issue Tracker on GitHub</a>
 		</div>
 
 		<div class="pt-6 pl-4">Copyright &copy;2024-{{ new Date().getFullYear() }} innonova GmbH</div>

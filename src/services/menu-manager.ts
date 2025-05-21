@@ -477,7 +477,7 @@ class MenuManager {
 				case MenuItems.ManageSubscription:
 					result.push({
 						id: 'manage-subscription',
-						title: 'Subscription',
+						title: 'Plan',
 						enabled: noteManager.isLoggedIn && noteManager.isOnline,
 						visible: !noteManager.isAnonymous,
 					})

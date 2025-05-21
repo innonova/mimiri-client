@@ -6,7 +6,7 @@
 		<div class="bg-info w-full h-2 mb-4"></div>
 		<div class="flex flex-col overflow-y-auto pr-2" data-testid="upgrade-view">
 			<form v-on:submit.prevent="submit" class="max-w-[30rem] relative">
-				<ItemHeader>Chosen subscription</ItemHeader>
+				<ItemHeader>Chosen Plan</ItemHeader>
 				<div class="flex justify-center pb-5">
 					<Subscription
 						v-if="product"
