@@ -91,7 +91,13 @@ onMounted(() => {
 		usedBytes.value = toMB(noteManager.usedBytes)
 		maxBytes.value = toMB(noteManager.maxBytes)
 		bytesPercent.value = toPercent(noteManager.usedBytes, noteManager.maxBytes)
-		noteCount.value = noteManager.noteCount
+		if (noteManager.noteCount < 1000) {
+			// don't count root node, system, and recycle bin
+			noteCount.value = noteManager.noteCount - 3
+		} else {
+			// show real count until server has been updated when close to the limit
+			noteCount.value = noteManager.noteCount
+		}
 		maxNoteCount.value = noteManager.maxNoteCount
 		notesPercent.value = toPercent(noteManager.noteCount, noteManager.maxNoteCount)
 		maxNoteSize.value = toMB(noteManager.maxNoteSize)

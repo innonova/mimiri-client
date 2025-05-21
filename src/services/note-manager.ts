@@ -1177,6 +1177,10 @@ export class NoteManager {
 		this._root = value
 	}
 
+	public get controlPanel() {
+		return this.root.children.find(child => child.id === this.root.note.getItem('metadata').controlPanel)
+	}
+
 	public get recycleBin() {
 		return this.root.children.find(child => child.id === this.root.note.getItem('metadata').recycleBin)
 	}

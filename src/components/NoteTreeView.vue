@@ -6,7 +6,12 @@
 		ref="mainElement"
 		data-testid="note-tree"
 	>
-		<TreeNode v-for="node of noteManager.root?.viewModel.children" :node="node" :key="node.id"></TreeNode>
+		<TreeNode
+			v-if="noteManager.root?.viewModel.children.length"
+			v-for="node of noteManager.root.viewModel.children"
+			:node="node"
+			:key="node.id"
+		></TreeNode>
 		<NewTreeNode v-if="createNewRootNode"></NewTreeNode>
 		<div v-if="noSearchResults" class="text-center text-text text-size-menu mt-2 cursor-default">No results found</div>
 	</div>

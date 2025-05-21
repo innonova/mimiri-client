@@ -50,6 +50,7 @@ export enum MenuItems {
 	SetPin = 'set-pin',
 	Logout = 'logout',
 	Login = 'login',
+	CreateAccount = 'create-account',
 	Quit = 'quit',
 	GoOnline = 'go-online',
 	WordWrap = 'word-wrap',
@@ -138,6 +139,12 @@ class MenuManager {
 			settingsManager.autoLoginData = undefined
 			noteManager.logout()
 			window.location.reload()
+		} else if (itemId === 'create-account') {
+			noteManager.controlPanel.expand()
+			noteManager.getNoteById('settings-create-account' as Guid)?.select()
+			if (mimiriPlatform.isPhone) {
+				noteManager.openNote()
+			}
 		} else if (itemId === 'go-online') {
 			noteManager.goOnline()
 		} else if (itemId === 'toggle-screen-sharing') {
@@ -484,6 +491,15 @@ class MenuManager {
 						enabled: noteManager.isLoggedIn && noteManager.isOnline,
 					})
 					break
+				case MenuItems.Logout:
+					result.push({
+						id: 'logout',
+						title: 'Logout',
+						icon: 'logout',
+						enabled: noteManager.isLoggedIn,
+						visible: !noteManager.isAnonymous,
+					})
+					break
 				case MenuItems.Login:
 					result.push({
 						id: 'login',
@@ -493,13 +509,12 @@ class MenuManager {
 						visible: noteManager.isAnonymous,
 					})
 					break
-				case MenuItems.Logout:
+				case MenuItems.CreateAccount:
 					result.push({
-						id: 'logout',
-						title: 'Logout',
-						icon: 'logout',
-						enabled: noteManager.isLoggedIn,
-						visible: !noteManager.isAnonymous,
+						id: 'create-account',
+						title: 'Create Account',
+						icon: 'create-account',
+						visible: noteManager.isAnonymous,
 					})
 					break
 				case MenuItems.Quit:
@@ -635,7 +650,14 @@ class MenuManager {
 	}
 
 	public get appleMenu() {
-		return [MenuItems.About, MenuItems.Separator, MenuItems.Login, MenuItems.Logout, MenuItems.Quit]
+		return [
+			MenuItems.About,
+			MenuItems.Separator,
+			MenuItems.CreateAccount,
+			MenuItems.Login,
+			MenuItems.Logout,
+			MenuItems.Quit,
+		]
 	}
 
 	public get fileMenu() {
@@ -646,6 +668,7 @@ class MenuManager {
 			MenuItems.NewRootNote,
 			MenuItems.NewNote,
 			MenuItems.Separator,
+			MenuItems.CreateAccount,
 			MenuItems.Login,
 			MenuItems.Logout,
 			MenuItems.Quit,

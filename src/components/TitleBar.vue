@@ -261,10 +261,14 @@ const showMenu = (rect, menu) => {
 	}
 	if (menu === 'account') {
 		menuManager.showMenu({ x: rect.right, y: rect.bottom - 30, backdropTop: 32, alignRight: true }, [
-			MenuItems.ChangeUsername,
-			MenuItems.ChangePassword,
-			...(mimiriPlatform.isElectron ? [MenuItems.SetPin] : []),
-			MenuItems.DeleteAccount,
+			...(noteManager.isAnonymous
+				? [MenuItems.CreateAccount]
+				: [
+						MenuItems.ChangeUsername,
+						MenuItems.ChangePassword,
+						...(mimiriPlatform.isElectron ? [MenuItems.SetPin] : []),
+						MenuItems.DeleteAccount,
+					]),
 			...(mimiriPlatform.isPc ? [MenuItems.Separator, MenuItems.ManageSubscription] : []),
 			...(!noteManager.isAnonymous && ipcClient.isAvailable ? [MenuItems.Separator] : []),
 			...(noteManager.isAnonymous ? [MenuItems.Login] : [MenuItems.Logout]),
