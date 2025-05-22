@@ -35,6 +35,9 @@
 				<button class="secondary" @click="closeLog">Close Log</button>
 			</div>
 			<div class="text-center">
+				<button @click="reload">reload</button>
+			</div>
+			<div class="text-center">
 				<button @click="changeChannel">
 					{{ settingsManager.channel }}
 				</button>
@@ -137,6 +140,10 @@ const boxClicked = () => {
 			showLog.value = true
 		}
 	}
+}
+
+const reload = () => {
+	location.reload()
 }
 
 const closeLog = () => {
