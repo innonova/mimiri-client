@@ -37,7 +37,7 @@ public class MimiriUpdatePlugin: CAPPlugin, CAPBridgedPlugin {
 
       } catch {
         print(error.localizedDescription)
-        #imageLiteral(resourceName: "simulator_screenshot_9AFC7BDE-219F-4072-B613-8A86DD282042.png")      }
+      }
     }
   }
 
