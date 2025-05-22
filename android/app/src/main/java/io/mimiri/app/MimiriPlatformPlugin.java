@@ -24,12 +24,15 @@ import java.util.concurrent.Executor;
 
 @CapacitorPlugin(name = "MimiriPlatform")
 public class MimiriPlatformPlugin extends Plugin {
+  private boolean isEmulator = false;
 
   @PluginMethod()
   public void info(PluginCall call) {
     JSObject info = new JSObject();
     WindowMetrics metrics = WindowMetricsCalculator.getOrCreate()
             .computeCurrentWindowMetrics(getActivity());
+
+    isEmulator = Build.MANUFACTURER.equals("Google") && Build.MODEL.equals("sdk_gphone64_x86_64") && Build.HARDWARE.equals("ranchu");
 
     int width = metrics.getBounds().width();
     int height = metrics.getBounds().height();
@@ -49,7 +52,7 @@ public class MimiriPlatformPlugin extends Plugin {
             BiometricManager.Authenticators.BIOMETRIC_STRONG |
             BiometricManager.Authenticators.BIOMETRIC_WEAK
     );
-    info.put("biometrics", biometrics == BiometricManager.BIOMETRIC_SUCCESS);
+    info.put("biometrics", isEmulator || biometrics == BiometricManager.BIOMETRIC_SUCCESS);
     call.resolve(info);
   }
 
@@ -61,6 +64,11 @@ public class MimiriPlatformPlugin extends Plugin {
     final Runnable verifyBiometryRunnable = new Runnable() {
       public void run() {
         try {
+          if (isEmulator) {
+            call.resolve(new JSObject().put("verified", true));
+            return;
+          }
+
           BiometricPrompt.PromptInfo.Builder builder = new BiometricPrompt.PromptInfo.Builder()
                   .setTitle("Authenticate")
                   .setSubtitle(null)
