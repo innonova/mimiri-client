@@ -30,11 +30,6 @@
 		</div>
 	</div>
 	<div v-if="showLog" class="flex flex-col">
-		<div class="h-[600px] overflow-y-scroll p-2">
-			<template v-for="message of mobileLog.messages">
-				<div>{{ message }}</div>
-			</template>
-		</div>
 		<div class="flex justify-around">
 			<div class="text-center">
 				<button class="secondary" @click="closeLog">Close Log</button>
@@ -44,6 +39,11 @@
 					{{ settingsManager.channel }}
 				</button>
 			</div>
+		</div>
+		<div class="h-[600px] overflow-y-scroll p-2">
+			<template v-for="message of mobileLog.messages">
+				<div>{{ message }}</div>
+			</template>
 		</div>
 	</div>
 </template>
