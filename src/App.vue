@@ -1,5 +1,12 @@
 <template>
-	<div v-if="loading" class="h-full bg-splash text-white dark-mode safe-area-padding">
+	<div
+		v-if="loading"
+		class="h-full bg-splash dark-mode safe-area-padding"
+		:class="{
+			'bg-splash text-white': !mimiriPlatform.isElectron,
+			'bg-back text-text': mimiriPlatform.isElectron,
+		}"
+	>
 		<div id="title-bar" class="w-full h-[36px] pl-px select-none drag"></div>
 		<div v-if="secondPassed" class="flex flex-col items-center justify-center h-full pb-10">
 			<img class="ml-1.5 mr-1 mt-px p-1 w-32 h-32" src="/img/logo-big.png" />
