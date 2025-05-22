@@ -300,6 +300,9 @@ export class NoteManager {
 			if (this.isLoggedIn) {
 				await this.root.ensureChildren()
 			}
+			const gettingStartedNote = this.root.children.find(note => note.note.getItem('metadata').isGettingStarted)
+			gettingStartedNote.expand()
+			gettingStartedNote.select()
 		}
 	}
 

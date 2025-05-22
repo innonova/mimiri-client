@@ -9,6 +9,7 @@
 		<div class="p-1 pl-4 pt-2">Released: {{ formatDate(updateManager.releaseDate) }}</div>
 		<div class="p-1 pl-4 pt-6">Notes: {{ noteCount }} / {{ maxNoteCount }} ({{ notesPercent }})</div>
 		<div class="p-1 pl-4 pt-2">Space Used: {{ usedBytes }} / {{ maxBytes }} ({{ bytesPercent }})</div>
+		<div class="p-1 pl-4 pt-2">Account: {{ noteManager.username }}</div>
 		<div class="pt-6 pl-4"><a href="https://mimiri.io/terms" target="_blank">Terms & Conditions</a></div>
 		<div class="pt-3 pl-4"><a href="https://mimiri.io/privacy" target="_blank">Privacy Policy</a></div>
 		<div class="pt-6 pl-4"><a href="https://mimiri.io" target="_blank">https://mimiri.io</a></div>
