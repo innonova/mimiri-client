@@ -1,6 +1,7 @@
 import { Capacitor, registerPlugin } from '@capacitor/core'
 import { Keyboard } from '@capacitor/keyboard'
 import { reactive } from 'vue'
+import { env } from '../global'
 
 interface PlatformInfo {
 	mode: string
@@ -98,6 +99,9 @@ class MimiriPlatform {
 	}
 
 	public async verifyBiometry() {
+		if (env.DEV) {
+			return true
+		}
 		const result = await this._nativePlatform.verifyBiometry()
 		return result.verified
 	}

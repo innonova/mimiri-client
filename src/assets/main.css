@@ -52,6 +52,7 @@
 		--color-info-bar-accented: #ffc147;
 		--color-good: green;
 		--color-bad: red;
+		--color-splash: #4381c1;
 	}
 
 	html[data-theme='dark'] {
@@ -101,6 +102,7 @@
 		--color-info-bar-accented: #bf5116;
 		--color-good: green;
 		--color-bad: #ff2222;
+		--color-splash: #4381c1;
 	}
 }
 
@@ -203,4 +205,12 @@ div {
 
 .no-drag {
 	-webkit-app-region: no-drag;
+}
+
+dialog {
+	@apply max-md:mt-[33%];
+}
+
+dialog::backdrop {
+	background-color: rgba(0, 0, 0, 0.6);
 }

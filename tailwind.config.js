@@ -67,6 +67,7 @@ export default {
 			'info-bar': 'var(--color-info-bar)',
 			'good': 'var(--color-good)',
 			'bad': 'var(--color-bad)',
+			'splash': 'var(--color-splash)',
 		},
 		extend: {},
 	},

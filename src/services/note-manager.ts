@@ -278,8 +278,10 @@ export class NoteManager {
 				password: password,
 			})
 			if (this.isLoggedIn) {
-				settingsManager.autoLoginData = await obfuscate(await this.getLoginData())
-				settingsManager.autoLogin = true
+				if (mimiriPlatform.isElectron || (mimiriPlatform.isWeb && env.DEV)) {
+					settingsManager.autoLoginData = await obfuscate(await this.getLoginData())
+					settingsManager.autoLogin = true
+				}
 				await settingsManager.save()
 				await this.loadState()
 			}
@@ -290,10 +292,11 @@ export class NoteManager {
 			await this.createAccount(username, password, 100)
 			settingsManager.anonymousUsername = username
 			settingsManager.anonymousPassword = await obfuscate(password)
-			settingsManager.autoLoginData = await obfuscate(await this.getLoginData())
-			settingsManager.autoLogin = true
+			if (mimiriPlatform.isElectron || (mimiriPlatform.isWeb && env.DEV)) {
+				settingsManager.autoLoginData = await obfuscate(await this.getLoginData())
+				settingsManager.autoLogin = true
+			}
 			await settingsManager.save()
-			settingsManager.autoLogin = true
 			if (this.isLoggedIn) {
 				await this.root.ensureChildren()
 			}

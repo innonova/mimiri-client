@@ -1,9 +1,13 @@
 <template>
-	<div v-if="loading" class="h-full bg-back text-text dark-mode safe-area-padding">
+	<div v-if="loading" class="h-full bg-splash text-white dark-mode safe-area-padding">
 		<div id="title-bar" class="w-full h-[36px] pl-px select-none drag"></div>
-		<div class="flex flex-col items-center justify-center h-full pb-10">
-			<div class="text-size-header">Initializing</div>
-			<div class="text-size-title mt-5">
+		<div v-if="secondPassed" class="flex flex-col items-center justify-center h-full pb-10">
+			<img class="ml-1.5 mr-1 mt-px p-1 w-32 h-32" src="/img/logo-big.png" />
+			<div class="flex text-size-header">
+				<div>Initializing</div>
+				<div class="w-0">{{ activity }}</div>
+			</div>
+			<div class="text-size-title mt-5 px-5 leading-6 text-center max-w-96">
 				This might take a moment if this is the first time you are starting Mimiri Notes
 			</div>
 		</div>
@@ -119,6 +123,8 @@ mobileLog.log(`App Loading ${settingsManager.channel} ${updateManager.currentVer
 
 const colorScheme = ref('only light')
 const loading = ref(true)
+const secondPassed = ref(false)
+const activity = ref('')
 
 const authenticated = computed(() => noteManager.state.authenticated)
 
@@ -140,6 +146,16 @@ const updateTheme = () => {
 }
 
 updateTheme()
+
+const progressActivity = () => {
+	if (loading.value) {
+		activity.value += '.'
+		if (activity.value.length > 3) {
+			activity.value = ''
+		}
+		setTimeout(progressActivity, 500)
+	}
+}
 
 if (!mimiriPlatform.isElectron) {
 	if (mimiriPlatform.isIos) {
@@ -334,6 +350,9 @@ useEventListener(window, 'resize', async () => {
 	resizeDebounce.activate()
 })
 ;(async () => {
+	setTimeout(() => (secondPassed.value = true), 1000)
+	progressActivity()
+
 	await settingsManager.load()
 	if (settingsManager.mainWindowSize.width > 100 && settingsManager.mainWindowSize.height > 100) {
 		await ipcClient.window.setMainWindowSize(settingsManager.mainWindowSize)
