@@ -1,7 +1,7 @@
 <template>
 	<div
 		v-if="loading"
-		class="h-full bg-splash dark-mode safe-area-padding"
+		class="h-full dark-mode safe-area-padding"
 		:class="{
 			'bg-splash text-white': !mimiriPlatform.isElectron,
 			'bg-back text-text': mimiriPlatform.isElectron,

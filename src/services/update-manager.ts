@@ -71,6 +71,7 @@ export class UpdateManager {
 		pendingActivation: false,
 	})
 	private installingElectronUpdate = false
+	private installedVersions: InstalledBundleInfo[] = []
 
 	constructor(private host: string) {}
 
@@ -97,12 +98,12 @@ export class UpdateManager {
 
 	public async good() {
 		if (ipcClient.isAvailable) {
-			const installedVersions = await ipcClient.bundle.getInstalledVersions()
-			this.state.activeVersion = installedVersions.find(ver => ver.active)
+			this.installedVersions = await ipcClient.bundle.getInstalledVersions()
+			this.state.activeVersion = this.installedVersions.find(ver => ver.active)
 			if (!this.state.activeVersion.good) {
 				await ipcClient.bundle.good(this.state.activeVersion.version)
 			}
-			for (const version of installedVersions.filter(ver => !ver.base && !ver.active && !ver.previous)) {
+			for (const version of this.installedVersions.filter(ver => !ver.base && !ver.active && !ver.previous)) {
 				await ipcClient.bundle.delete(version.version)
 			}
 			await this.check()
@@ -166,8 +167,8 @@ export class UpdateManager {
 	public async check() {
 		if (ipcClient.isAvailable) {
 			try {
-				const installedVersions = await ipcClient.bundle.getInstalledVersions()
-				this.state.activeVersion = installedVersions.find(ver => ver.active)
+				this.installedVersions = await ipcClient.bundle.getInstalledVersions()
+				this.state.activeVersion = this.installedVersions.find(ver => ver.active)
 				const currentKey = updateKeys.find(item => item.current)
 
 				const bundleInfo = await this.get<BundleInfo>(
@@ -306,11 +307,11 @@ export class UpdateManager {
 			this.updateMinElectronVersion(info)
 			let bundlePath = `/${currentKey.name}.${version}.json`
 			let electronInfo: ElectronInfo = undefined
+			this.installedVersions = await ipcClient.bundle.getInstalledVersions()
 
 			if (mimiriPlatform.isElectron) {
 				if (!this.hostVersion) {
-					const installedVersions = await ipcClient.bundle.getInstalledVersions()
-					this.state.activeVersion = installedVersions.find(ver => ver.active)
+					this.state.activeVersion = this.installedVersions.find(ver => ver.active)
 				}
 				const hostSupportsVersion = compareVersions(info.minElectronVersion, this.state.activeVersion.hostVersion) <= 0
 
@@ -333,6 +334,11 @@ export class UpdateManager {
 						bundlePath = `/${zipUrl[zipUrl.length - 1]}`
 					}
 				}
+			}
+
+			if (this.installedVersions.find(v => v.version === version)) {
+				status?.({ total: 100, downloaded: 100, stage: 'install', error: '' })
+				return
 			}
 
 			const reader = await this.getReader(bundlePath)
