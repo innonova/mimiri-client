@@ -55,7 +55,7 @@
 				</div>
 				<button
 					v-if="showEmailVerification && !emailVerified"
-					class="mt-1 mb-[-0.5em] w-52"
+					class="mt-1 mb-[-0.5em] min-w-52"
 					@click="verifyEmail"
 					data-testid="verify-email"
 					:disabled="disabled"

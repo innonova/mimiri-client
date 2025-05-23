@@ -509,6 +509,8 @@ export class NoteManager {
 		settingsManager.autoLoginData = undefined
 		this._listener?.logout()
 		this.root = undefined
+		this.notes = {}
+		this._ensureWhenOnline = []
 		this.client.logout()
 		this.emitStatusUpdated()
 	}

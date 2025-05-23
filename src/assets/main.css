@@ -186,6 +186,10 @@ input::selection {
 	@apply bg-input-selection text-input-selected-text;
 }
 
+textarea {
+	@apply bg-input;
+}
+
 div.info {
 	@apply bg-info pl-1 pr-2 pb-2 pt-1;
 }

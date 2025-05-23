@@ -15,6 +15,7 @@
 				@click="emit('make-default')"
 				:disabled="disabled"
 				:data-testid="`payment-method-${method.name}-make-default`"
+				class="min-w-28"
 			>
 				Make default
 			</button>

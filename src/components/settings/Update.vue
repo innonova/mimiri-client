@@ -129,7 +129,7 @@
 		v-if="!updateManager.isUpdateAvailable && settingsManager.updateMode !== UpdateMode.Off"
 		class="max-w-120 pt-5 pl-1"
 	>
-		<button @click="checkUpdates" class="w-52">Check for updates</button>
+		<button @click="checkUpdates" class="min-w-52">Check for updates</button>
 	</div>
 	<div v-if="updateManager.isUpdateAvailable && settingsManager.updateMode !== UpdateMode.Off" class="p-1 mt-4">
 		<div class="mb-14 max-w-120">
@@ -171,10 +171,7 @@
 				</div>
 			</div>
 		</div>
-		<div
-			v-if="!updateManager.isHostUpdate || !mimiriPlatform.isLinux"
-			class="mt-2 flex justify-end gap-2 max-w-120"
-		>
+		<div v-if="!updateManager.isHostUpdate || !mimiriPlatform.isLinux" class="mt-2 flex justify-end gap-2 max-w-120">
 			<button v-if="!running" @click="update">Update</button>
 			<!-- <button class="secondary w-32" v-if="!running" @click="later">Maybe Later</button> -->
 			<button v-if="running && stage === 'ready'" @click="restart">Restart</button>
