@@ -3,7 +3,7 @@ import { env, ipcClient } from '../global'
 import { menuManager } from './menu-manager'
 import { toRaw } from 'vue'
 import { mimiriPlatform } from './mimiri-platform'
-import { compareVersions } from './helpers'
+import { compareVersions, delay } from './helpers'
 
 export enum UpdateMode {
 	AutomaticOnIdle = 'auto-idle',
@@ -42,6 +42,8 @@ export interface MimerConfiguration {
 
 class SettingsManager {
 	private defaultThemeIsDark: boolean
+	private _saveInProgress = false
+	private _outstandingSaves = 0
 
 	public state: MimerConfiguration = reactive({
 		openAtLogin: true,
@@ -109,11 +111,27 @@ class SettingsManager {
 	}
 
 	public async save() {
-		if (ipcClient.isAvailable) {
-			await ipcClient.settings.save(toRaw(this.state))
-			menuManager.updateTrayMenu()
-		} else if (localStorage) {
-			localStorage.setItem('mimer-settings', JSON.stringify(toRaw(this.state)))
+		this._outstandingSaves++
+		while (this._saveInProgress) {
+			await delay(25)
+		}
+		try {
+			this._saveInProgress = true
+			if (ipcClient.isAvailable) {
+				await ipcClient.settings.save(toRaw(this.state))
+				menuManager.updateTrayMenu()
+			} else if (localStorage) {
+				localStorage.setItem('mimer-settings', JSON.stringify(toRaw(this.state)))
+			}
+		} finally {
+			this._outstandingSaves--
+			this._saveInProgress = false
+		}
+	}
+
+	public async waitForSaveComplete() {
+		while (this._outstandingSaves > 0) {
+			await delay(25)
 		}
 	}
 

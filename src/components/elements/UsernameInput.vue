@@ -42,6 +42,10 @@ import UnavailableIcon from '../../icons/unavailable.vue'
 const disallowString = '!"#$:%&@\'()*/=?[]{}~^`'
 const disallowRegex = /[!"#$:%&@'()*/=?[\]{}~\^\\`\s]/
 
+const props = defineProps<{
+	displayCurrent: boolean
+}>()
+
 const emit = defineEmits(['changed'])
 
 const canSave = ref(false)
@@ -114,7 +118,9 @@ onMounted(() => {
 		usernameInProgress.value = false
 		usernameAvailable.value = false
 		usernameUnavailable.value = false
-		username.value = noteManager.username
+		if (props.displayCurrent) {
+			username.value = noteManager.username
+		}
 		canSave.value = false
 		emit('changed', canSave.value)
 	}

@@ -167,10 +167,8 @@ class MenuManager {
 			showShareOffers.value = !showShareOffers.value
 		} else if (itemId === 'dark-mode') {
 			settingsManager.darkMode = !settingsManager.darkMode
-			void settingsManager.save()
 		} else if (itemId === 'word-wrap') {
 			settingsManager.wordwrap = !settingsManager.wordwrap
-			void settingsManager.save()
 		} else if (itemId === 'about') {
 			noteManager.getNoteById(noteManager.controlPanelId)?.select()
 			if (mimiriPlatform.isPhone) {
@@ -511,7 +509,7 @@ class MenuManager {
 					result.push({
 						id: 'create-password',
 						title: 'Create Password',
-						icon: 'create-password',
+						icon: 'account',
 						visible: noteManager.isAnonymous,
 					})
 					break

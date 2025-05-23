@@ -26,6 +26,8 @@ export class Debounce {
 	}
 }
 
+export const delay = async (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
+
 export const biCif = (value: number) => {
 	if (value < 10) {
 		return `0${value}`

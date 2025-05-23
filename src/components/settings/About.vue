@@ -59,6 +59,8 @@ import { settingsManager } from '../../services/settings-manager'
 import { iconAttributions } from '../../icons/attributions'
 import { mimiriPlatform } from '../../services/mimiri-platform'
 
+const SYSTEM_NOTE_COUNT = 3
+
 const dialog = ref(null)
 
 const usedBytes = ref('0 MB')
@@ -106,13 +108,7 @@ onMounted(() => {
 		usedBytes.value = toMB(noteManager.usedBytes)
 		maxBytes.value = toMB(noteManager.maxBytes)
 		bytesPercent.value = toPercent(noteManager.usedBytes, noteManager.maxBytes)
-		if (noteManager.noteCount < 1000) {
-			// don't count root node, system, and recycle bin
-			noteCount.value = noteManager.noteCount - 3
-		} else {
-			// show real count until server has been updated when close to the limit
-			noteCount.value = noteManager.noteCount
-		}
+		noteCount.value = noteManager.noteCount - SYSTEM_NOTE_COUNT
 		maxNoteCount.value = noteManager.maxNoteCount
 		notesPercent.value = toPercent(noteManager.noteCount, noteManager.maxNoteCount)
 		maxNoteSize.value = toMB(noteManager.maxNoteSize)

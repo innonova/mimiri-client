@@ -8,36 +8,7 @@
 	</div>
 	<div class="max-w-[30rem]" data-testid="promote-account-view">
 		<form class="w-96" v-on:submit.prevent="createAccount">
-			<div class="p-1 m-auto flex">
-				<div class="w-24 flex items-center">Username:</div>
-				<div class="w-52 text-right relative md:flex">
-					<input
-						v-model="username"
-						tabindex="1"
-						type="text"
-						class="bg-input text-input-text"
-						autofocus
-						data-testid="username-input"
-					/>
-					<div v-if="username" class="md:w-0 md:h-0 pt-1 overflow-visible">
-						<div v-if="usernameCurrent" class="flex items-center w-52 md:ml-2 mt-1.5 md:mt-0">
-							<AvailableIcon class="w-6 h-6 mr-1 inline-block"></AvailableIcon> Current
-						</div>
-						<div v-if="usernameInProgress" class="flex items-center w-52 md:ml-2 mt-1.5 md:mt-0">
-							<LoadingIcon class="animate-spin w-6 h-6 mr-1 inline-block"></LoadingIcon> Checking
-						</div>
-						<div v-if="usernameAvailable" class="flex items-center w-52 md:ml-2 mt-1.5 md:mt-0">
-							<AvailableIcon class="w-6 h-6 mr-1 inline-block"></AvailableIcon> Available
-						</div>
-						<div v-if="usernameUnavailable" class="flex items-center w-52 md:ml-2 mt-1.5 md:mt-0">
-							<UnavailableIcon class="w-6 h-6 mr-1 inline-block"></UnavailableIcon> Unavailable
-						</div>
-						<div v-if="usernameInvalid" class="flex items-center w-52 md:ml-2 mt-1.5 md:mt-0">
-							<UnavailableIcon class="w-6 h-6 mr-1 inline-block"></UnavailableIcon> Invalid
-						</div>
-					</div>
-				</div>
-			</div>
+			<UsernameInput :display-current="false" @changed="usernameChanged"></UsernameInput>
 			<div class="p-1 m-aut0 flex">
 				<div class="w-24 flex items-center">Password:</div>
 				<div class="w-52 text-right relative md:flex">
@@ -155,7 +126,6 @@
 import { computed, ref, watch } from 'vue'
 import { noteManager } from '../../global'
 import zxcvbn from 'zxcvbn'
-import { Debounce } from '../../services/helpers'
 import LoadingIcon from '../../icons/loading.vue'
 import AvailableIcon from '../../icons/available.vue'
 import UnavailableIcon from '../../icons/unavailable.vue'
@@ -166,26 +136,20 @@ import CasualOnlyIcon from '../../icons/casual-only.vue'
 import LightSecurityIcon from '../../icons/light-security.vue'
 import { passwordTimeFactor } from '../../services/password-generator'
 import { MimerClient } from '../../services/mimer-client'
-import { useEventListener } from '@vueuse/core'
 import { settingsManager } from '../../services/settings-manager'
 import { persistedState } from '../../services/persisted-state'
 import { deObfuscate } from '../../services/helpers'
+import UsernameInput from '../elements/UsernameInput.vue'
+import type { Guid } from '../../services/types/guid'
 
 const disallowString = '!"#$:%&@\'()*/=?[]{}~^`'
 const disallowRegex = /[!"#$:%&@'()*/=?[\]{}~\^\\`\s]/
 
-const username = ref('')
 const password = ref('')
 const passwordRepeat = ref('')
-const passwordCurrent = ref('')
 const loading = ref(false)
 const errorText = ref('')
 const successText = ref('')
-const usernameCurrent = ref(false)
-const usernameInvalid = ref(false)
-const usernameAvailable = ref(false)
-const usernameUnavailable = ref(false)
-const usernameInProgress = ref(false)
 const passwordQuality = ref('')
 const passwordMatch = ref(true)
 const understandNoRecover = ref(false)
@@ -199,70 +163,19 @@ const time20M = computed(() => `~${passwordTimeFactor.time20M}s`)
 
 const emit = defineEmits(['create'])
 
-const canSave = computed(
-	() =>
-		passwordMatch.value &&
-		!usernameInvalid.value &&
-		(usernameAvailable.value || usernameCurrent.value) &&
-		!usernameUnavailable.value &&
-		!usernameInProgress.value &&
-		!!passwordCurrent.value,
-)
-const canCreate = computed(
-	() =>
-		understandNoRecover.value &&
-		passwordMatch.value &&
-		!usernameInvalid.value &&
-		usernameAvailable.value &&
-		!usernameUnavailable.value &&
-		!usernameInProgress.value,
-)
+const usernameValid = ref(false)
+let newUsername = ''
 
-const checkUsernameDebounce = new Debounce(async () => {
-	usernameCurrent.value = false
-	if (username.value.trim().length === 0) {
-		usernameInvalid.value = false
-		usernameInProgress.value = false
-		usernameAvailable.value = false
-		usernameUnavailable.value = false
-		return
-	}
-	if (disallowRegex.test(username.value)) {
-		usernameInvalid.value = true
-		usernameInProgress.value = false
-		usernameAvailable.value = false
-		usernameUnavailable.value = false
-		return
-	}
-	if (username.value?.toLowerCase().startsWith('mimiri')) {
-		usernameInvalid.value = true
-		usernameInProgress.value = false
-		usernameAvailable.value = false
-		usernameUnavailable.value = false
-		return
-	}
-	usernameInvalid.value = false
-	usernameInProgress.value = true
-	usernameAvailable.value = false
-	usernameUnavailable.value = false
-	const value = username.value
-	const available = await noteManager.checkUsername(value)
-	if (value === username.value) {
-		usernameAvailable.value = available
-		usernameUnavailable.value = !available
-		usernameInProgress.value = false
-	}
-}, 500)
+const usernameChanged = (valid: boolean, username: string) => {
+	usernameValid.value = valid
+	newUsername = username
+}
 
-useEventListener(window, 'resize', async () => {})
-
-watch(username, () => {
-	checkUsernameDebounce.activate()
-})
+const canCreate = computed(() => understandNoRecover.value && passwordMatch.value && usernameValid.value)
 
 watch(password, value => {
 	if (value) {
-		const result = zxcvbn(value, [username.value])
+		const result = zxcvbn(value, [newUsername])
 		const days = result.crack_times_seconds.offline_slow_hashing_1e4_per_second / 60 / 60 / 24
 		if (days < 0.0001) {
 			passwordQuality.value = 'free-access'
@@ -294,15 +207,14 @@ const hidePassword = () => {
 }
 
 const createAccount = async () => {
-	const start = performance.now()
 	if (!canCreate.value) {
 		return
 	}
-	if (disallowRegex.test(username.value)) {
+	if (disallowRegex.test(newUsername)) {
 		errorText.value = 'Invalid username'
 		return
 	}
-	if (!username.value) {
+	if (!newUsername) {
 		errorText.value = 'Must enter a username'
 		return
 	}
@@ -319,17 +231,17 @@ const createAccount = async () => {
 	try {
 		try {
 			await noteManager.changeUserNameAndPassword(
-				username.value,
+				newUsername,
 				await deObfuscate(settingsManager.anonymousPassword),
 				password.value,
 				MimerClient.DEFAULT_ITERATIONS,
 			)
-			persistedState.storeSelectedNote(noteManager.getNoteById(noteManager.controlPanelId))
+			persistedState.storeSelectedNote(noteManager.getNoteById('settings-account' as Guid))
 			settingsManager.anonymousUsername = undefined
 			settingsManager.anonymousPassword = undefined
 			settingsManager.autoLoginData = undefined
 			settingsManager.autoLogin = false
-			await settingsManager.save()
+			await settingsManager.waitForSaveComplete()
 			location.reload()
 		} catch (ex) {
 			errorText.value = ex.message
@@ -343,6 +255,5 @@ const createAccount = async () => {
 	} else {
 		await noteManager.root.ensureChildren()
 	}
-	console.log('createAccount', username, password, iterations)
 }
 </script>

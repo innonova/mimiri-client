@@ -272,7 +272,6 @@ export class NoteManager {
 	public async loginAnonymousAccount() {
 		if (settingsManager.anonymousUsername && settingsManager.anonymousPassword) {
 			const password = await deObfuscate(settingsManager.anonymousPassword)
-			await settingsManager.save()
 			await this.login({
 				username: settingsManager.anonymousUsername,
 				password: password,
@@ -282,7 +281,7 @@ export class NoteManager {
 					settingsManager.autoLoginData = await obfuscate(await this.getLoginData())
 					settingsManager.autoLogin = true
 				}
-				await settingsManager.save()
+				await settingsManager.waitForSaveComplete()
 				await this.loadState()
 			}
 		} else if (!mimiriPlatform.isWeb || env.DEV) {
@@ -296,7 +295,7 @@ export class NoteManager {
 				settingsManager.autoLoginData = await obfuscate(await this.getLoginData())
 				settingsManager.autoLogin = true
 			}
-			await settingsManager.save()
+			await settingsManager.waitForSaveComplete()
 			if (this.isLoggedIn) {
 				await this.root.ensureChildren()
 			}

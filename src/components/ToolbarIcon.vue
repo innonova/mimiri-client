@@ -43,6 +43,7 @@ import BackIcon from '../icons/back.vue'
 import CheckmarkIcon from '../icons/check-mark.vue'
 import MenuIcon from '../icons/menu.vue'
 import LogoutIcon from '../icons/logout.vue'
+import LoginIcon from '../icons/login.vue'
 import HelpIcon from '../icons/help.vue'
 import AccountIcon from '../icons/account.vue'
 import NotificationIcon from '../icons/notification.vue'
@@ -122,6 +123,9 @@ const getComponent = () => {
 	}
 	if (props.icon === 'logout') {
 		return LogoutIcon
+	}
+	if (props.icon === 'login') {
+		return LoginIcon
 	}
 	if (props.icon === 'help') {
 		return HelpIcon

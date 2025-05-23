@@ -3,7 +3,7 @@
 		<div class="py-2 px-4 bg-info cursor-default" data-testid="settings-view-username">Username</div>
 	</div>
 	<div class="bg-info h-2 mb-2 mr-2"></div>
-	<UsernameInput ref="usernameInput" @changed="usernameChanged"></UsernameInput>
+	<UsernameInput ref="usernameInput" :display-current="true" @changed="usernameChanged"></UsernameInput>
 	<div class="mt-10 max-w-[30rem] mr-2">
 		<hr />
 		<div class="w-full flex justify-end mt-2 gap-2">
