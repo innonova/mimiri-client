@@ -44,7 +44,7 @@
 			<option value="black">Black</option>
 		</select>
 	</div>
-	<div class="mt-10 max-w-[30rem] mr-2">
+	<div class="mt-10 max-w-120 mr-2">
 		<hr />
 		<div class="w-full flex justify-end mt-2 gap-2">
 			<button :disabled="!canSave" @click="save">Save</button>

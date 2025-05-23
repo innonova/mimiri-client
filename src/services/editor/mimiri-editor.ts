@@ -205,7 +205,7 @@ export class MimiriEditor {
 			this.infoElement.style.position = 'absolute'
 			this.infoElement.style.left = '-2000px'
 			this.infoElement.style.top = '0'
-			this.infoElement.className = 'bg-warning p-1 rounded shadow'
+			this.infoElement.className = 'bg-warning p-1 rounded-sm shadow-sm'
 			this.infoElement.innerHTML = 'copied'
 			document.body.appendChild(this.infoElement)
 		}

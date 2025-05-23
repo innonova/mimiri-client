@@ -6,7 +6,7 @@
 		<div class="bg-info h-2 mb-2 mr-2"></div>
 		<div class="p-1 pt-2 text-left overflow-y-auto" data-testid="account-view">
 			<CustomerData ref="customerElement" mode="edit" v-model:changed="changed" v-model:valid="valid"></CustomerData>
-			<div class="flex gap-2 justify-end mt-10 max-w-[30rem]">
+			<div class="flex gap-2 justify-end mt-10 max-w-120">
 				<button :disabled="!valid || !changed" @click="save" data-testid="account-save">Save</button>
 				<!-- <button :disabled="!changed" @click="cancel">Cancel</button> -->
 			</div>

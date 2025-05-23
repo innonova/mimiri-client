@@ -9,7 +9,7 @@
 		>
 			<slot></slot>
 		</div>
-		<button :disabled="disabled" class="cursor-default w-8 outline-none m-1" @click="close" type="button">X</button>
+		<button :disabled="disabled" class="cursor-default max-w-8 outline-none m-1" @click="close" type="button">X</button>
 	</header>
 </template>
 

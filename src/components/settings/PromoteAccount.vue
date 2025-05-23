@@ -6,7 +6,7 @@
 	<div class="px-1 pt-3 pb-5 max-w-[20rem] leading-5">
 		Choose a username and password to allow you to access your data from anywhere
 	</div>
-	<div class="max-w-[30rem]" data-testid="promote-account-view">
+	<div class="max-w-120" data-testid="promote-account-view">
 		<form class="w-96" v-on:submit.prevent="createAccount">
 			<UsernameInput :display-current="false" @changed="usernameChanged"></UsernameInput>
 			<div class="p-1 m-aut0 flex">

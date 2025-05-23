@@ -1,7 +1,5 @@
+@import 'tailwindcss';
 @config "../../tailwind.config.js";
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
 
 /* Blue color scale based on logo: https://maketintsandshades.com/#4381C1 */
 
@@ -128,7 +126,7 @@ html[data-env-support='false'] {
 }
 
 button {
-	@apply bg-button-primary text-button-primary-text hover:brightness-125 hover:rounded select-none;
+	@apply bg-button-primary text-button-primary-text hover:brightness-125 hover:rounded-sm select-none;
 }
 
 button:disabled,
@@ -209,9 +207,9 @@ div {
 }
 
 dialog {
-	@apply max-md:mt-[33%];
+	@apply m-auto max-md:mt-[33%];
 }
 
 dialog::backdrop {
-	background-color: rgba(0, 0, 0, 0.6);
+	background-color: rgba(0, 0, 0, 0.4);
 }

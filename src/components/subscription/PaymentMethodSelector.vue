@@ -16,7 +16,7 @@
 				:disabled="disabled"
 				data-testid="payment-method-NEW"
 			/>
-			<div class="border shadow px-3 pt-3 pb-4 w-80">Create new payment method</div></label
+			<div class="border shadow-sm px-3 pt-3 pb-4 w-80">Create new payment method</div></label
 		>
 		<template v-for="method of methods" :key="method.id">
 			<label class="p-2 flex gap-1 cursor-pointer items-start"

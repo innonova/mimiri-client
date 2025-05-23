@@ -1,6 +1,6 @@
 <template>
 	<div
-		class="flex flex-col items-center border shadow"
+		class="flex flex-col items-center border shadow-sm"
 		:class="{ 'min-h-86': !compact, 'w-48': compact }"
 		:data-testid="`sub-${product.sku}`"
 	>

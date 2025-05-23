@@ -5,7 +5,7 @@
 		@mouseup="close"
 	>
 		<div
-			class="absolute right-0 top-menu w-80 cursor-default rounded shadow py-2 px-2 bg-menu text-menu-text"
+			class="absolute right-0 top-menu w-80 cursor-default rounded-sm shadow-sm py-2 px-2 bg-menu text-menu-text"
 			:class="{ invisible: !visible }"
 			@mouseup="stopPropagation"
 		>
@@ -13,7 +13,7 @@
 				<Notification :notification="item"></Notification>
 			</template>
 			<div
-				class="w-full text-center mt-2 py-2 bg-button-secondary hover:opacity-80 rounded"
+				class="w-full text-center mt-2 py-2 bg-button-secondary hover:opacity-80 rounded-sm"
 				@click="markAllRead"
 				@mouseup="stopPropagation"
 			>

@@ -21,7 +21,7 @@
 		/>
 		<div
 			v-if="mimiriPlatform.isPc && !mimiriPlatform.isMac"
-			class="hover:bg-title-hover cursor-default rounded px-2 no-drag"
+			class="hover:bg-title-hover cursor-default rounded-sm px-2 no-drag"
 			data-testid="title-menu-file"
 			@click="menuClick($event, 'file')"
 			@mouseenter="menuHover($event, 'file')"
@@ -30,7 +30,7 @@
 		</div>
 		<div
 			v-if="mimiriPlatform.isPc && !mimiriPlatform.isMac"
-			class="hover:bg-title-hover cursor-default rounded px-2 no-drag"
+			class="hover:bg-title-hover cursor-default rounded-sm px-2 no-drag"
 			data-testid="title-menu-edit"
 			@click="menuClick($event, 'edit')"
 			@mouseenter="menuHover($event, 'edit')"
@@ -39,7 +39,7 @@
 		</div>
 		<div
 			v-if="mimiriPlatform.isPc && !mimiriPlatform.isMac"
-			class="hover:bg-title-hover cursor-default rounded px-2 no-drag"
+			class="hover:bg-title-hover cursor-default rounded-sm px-2 no-drag"
 			data-testid="title-menu-view"
 			@click="menuClick($event, 'view')"
 			@mouseenter="menuHover($event, 'view')"
@@ -48,7 +48,7 @@
 		</div>
 		<div
 			v-if="mimiriPlatform.isPc && !mimiriPlatform.isMac"
-			class="hover:bg-title-hover cursor-default rounded px-2 no-drag"
+			class="hover:bg-title-hover cursor-default rounded-sm px-2 no-drag"
 			data-testid="title-menu-tools"
 			@click="menuClick($event, 'tools')"
 			@mouseenter="menuHover($event, 'tools')"
@@ -57,7 +57,7 @@
 		</div>
 		<div
 			v-if="mimiriPlatform.isPc && !mimiriPlatform.isMac"
-			class="hover:bg-title-hover cursor-default rounded px-2 no-drag"
+			class="hover:bg-title-hover cursor-default rounded-sm px-2 no-drag"
 			data-testid="title-menu-help"
 			@click="menuClick($event, 'help')"
 			@mouseenter="menuHover($event, 'help')"
@@ -77,7 +77,7 @@
 				placeholder="Search Notes"
 				:value="searchManager.state.term"
 				:disabled="!noteManager.state.authenticated"
-				class="rounded-md text-center no-drag text-size-base outline-none"
+				class="rounded-md text-center no-drag text-size-base! outline-none"
 				:class="{
 					'w-2/3 max-w-80': mimiriPlatform.isPc,
 					'w-full': !mimiriPlatform.isPc,
@@ -132,7 +132,7 @@
 					updateManager.isUpdateAvailable &&
 					settingsManager.updateMode === UpdateMode.StrongNotify
 				"
-				class="absolute bottom-1 left-px w-2 h-2 rounded bg-bad"
+				class="absolute bottom-1 left-px w-2 h-2 rounded-sm bg-bad"
 			></div>
 		</div>
 		<div
@@ -151,8 +151,8 @@
 				class="w-9 h-7 p-0.5 px-1 no-drag pointer-events-none"
 				:class="{
 					'text-title-text-blur': !noteManager.state.authenticated,
-					'p-px text-online active:p-[1px]': noteManager.state.online && noteManager.state.authenticated,
-					'p-px text-offline active:p-[1px]': !noteManager.state.online && noteManager.state.authenticated,
+					'p-px text-online active:p-px': noteManager.state.online && noteManager.state.authenticated,
+					'p-px text-offline active:p-px': !noteManager.state.online && noteManager.state.authenticated,
 				}"
 			></AccountIcon>
 		</div>
@@ -184,7 +184,7 @@ const updateTitleBar = () => {
 
 updateTitleBar()
 
-useEventListener(window, 'blur', () => updateTitleBar())
+useEventListener(window, 'blur-sm', () => updateTitleBar())
 useEventListener(window, 'focus', () => updateTitleBar())
 
 const toggleScreenSharing = () => {

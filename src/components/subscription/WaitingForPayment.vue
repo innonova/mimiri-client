@@ -3,7 +3,7 @@
 		<div class="py-2 px-4 bg-info cursor-default">Payment in progress</div>
 	</div>
 	<div class="bg-info w-full h-2 mb-2"></div>
-	<div class="p-1 pt-2 mt-5 text-center max-w-[30rem]" data-testid="waiting-view">
+	<div class="p-1 pt-2 mt-5 text-center max-w-120" data-testid="waiting-view">
 		<div v-if="waitingForUser">
 			<div>Waiting for payment to be completed in browser window</div>
 			<div class="mt-2">

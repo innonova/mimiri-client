@@ -51,17 +51,17 @@
 				Notification will be shown like this
 				<div class="inline-block relative ml-2 top-1">
 					<NotificationActiveIcon class="w-9 h-7 p-px no-drag"></NotificationActiveIcon>
-					<div class="absolute bottom-0 left-px w-2 h-2 rounded bg-bad"></div>
+					<div class="absolute bottom-0 left-px w-2 h-2 rounded-sm bg-bad"></div>
 				</div>
 				in the titlebar and like this
 				<div class="inline-block relative ml-2 top-1">
 					<CogIcon class="w-9 h-7 p-px no-drag"></CogIcon>
-					<div class="absolute bottom-0 right-px w-2 h-2 rounded bg-bad"></div>
+					<div class="absolute bottom-0 right-px w-2 h-2 rounded-sm bg-bad"></div>
 				</div>
 				and this
 				<div class="inline-block relative ml-2 top-1">
 					<DownloadIcon class="w-9 h-7 p-px no-drag"></DownloadIcon>
-					<div class="absolute bottom-0 right-px w-2 h-2 rounded bg-bad"></div>
+					<div class="absolute bottom-0 right-px w-2 h-2 rounded-sm bg-bad"></div>
 				</div>
 				the System area in the treeview
 			</li>
@@ -86,7 +86,7 @@
 				in the titlebar and like this
 				<div class="inline-block relative ml-2 top-1">
 					<DownloadIcon class="w-9 h-7 p-px no-drag"></DownloadIcon>
-					<div class="absolute bottom-0 right-px w-2 h-2 rounded bg-bad"></div>
+					<div class="absolute bottom-0 right-px w-2 h-2 rounded-sm bg-bad"></div>
 				</div>
 				the System area in the treeview
 			</li>
@@ -127,12 +127,12 @@
 	</div>
 	<div
 		v-if="!updateManager.isUpdateAvailable && settingsManager.updateMode !== UpdateMode.Off"
-		class="max-w-[30rem] pt-5 pl-1"
+		class="max-w-120 pt-5 pl-1"
 	>
 		<button @click="checkUpdates" class="w-52">Check for updates</button>
 	</div>
 	<div v-if="updateManager.isUpdateAvailable && settingsManager.updateMode !== UpdateMode.Off" class="p-1 mt-4">
-		<div class="mb-14 max-w-[30rem]">
+		<div class="mb-14 max-w-120">
 			<h1 class="font-bold text-size-header">Update available</h1>
 			<div class="flex flex-col w-full items-center">
 				<div class="pb-1 pt-4 flex">
@@ -145,8 +145,8 @@
 				</div>
 			</div>
 		</div>
-		<div v-if="!updateManager.isHostUpdate || !mimiriPlatform.isLinux" class="max-w-[30rem]">
-			<div class="relative max-w-[30rem] h-[30px] border border-solid border-dialog-border">
+		<div v-if="!updateManager.isHostUpdate || !mimiriPlatform.isLinux" class="max-w-120">
+			<div class="relative max-w-120 h-[30px] border border-solid border-dialog-border">
 				<div class="h-[30px] bg-progress-indicator progress"></div>
 				<div
 					v-if="running && stage === 'download'"
@@ -173,7 +173,7 @@
 		</div>
 		<div
 			v-if="!updateManager.isHostUpdate || !mimiriPlatform.isLinux"
-			class="mt-2 flex justify-end gap-2 max-w-[30rem]"
+			class="mt-2 flex justify-end gap-2 max-w-120"
 		>
 			<button v-if="!running" @click="update">Update</button>
 			<!-- <button class="secondary w-32" v-if="!running" @click="later">Maybe Later</button> -->
@@ -182,7 +182,7 @@
 				Cancel
 			</button>
 		</div>
-		<div v-if="updateManager.isHostUpdate && mimiriPlatform.isLinux" class="max-w-[30rem]">
+		<div v-if="updateManager.isHostUpdate && mimiriPlatform.isLinux" class="max-w-120">
 			<div class="py-3">An update of the Electron Client is available here:</div>
 			<div class="py-2">
 				Direct download: <a :href="updateManager.downloadUrl" target="_blank">{{ updateManager.downloadName }}</a>

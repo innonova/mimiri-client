@@ -9,7 +9,7 @@
 					type="text"
 					@keydown="keyDown"
 				/>
-				<button class="cursor-default w-8" @click="close">X</button>
+				<button class="cursor-default max-w-8" @click="close">X</button>
 			</div>
 			<div
 				v-if="searchManager.state.searchRunning"
@@ -21,11 +21,14 @@
 				v-if="searchManager.state.searchRunning"
 				class="progress-bar-value absolute left-0 top-0 w-full h-full"
 			></div>
-			<div class="flex absolute left-0 top-0 w-full justify-start items-center text-size-base pl-1 select-none">
+			<div class="flex absolute left-0 top-0 w-full justify-start items-center text-size-base! pl-1 select-none">
 				<SearchIcon class="h-7 w-7 p-px mr-1"></SearchIcon>
 				<div>{{ searchManager.state.term }}</div>
 				<div class="w-full flex justify-end">
-					<button class="h-7 w-7 p-1 text-text bg-[inherit] hover:bg-button-hover hover:rounded-none" @click="close">
+					<button
+						class="max-h-7 max-w-7 p-1 text-text bg-inherit! hover:bg-button-hover hover:rounded-none"
+						@click="close"
+					>
 						<CloseIcon />
 					</button>
 				</div>

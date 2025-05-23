@@ -12,7 +12,7 @@
 		:data-testid="dataTestId"
 	>
 		<div
-			class="rounded relative overflow-hidden h-[30px] md:h-[25px] flex items-center py-[19px] md:py-0"
+			class="rounded-sm relative overflow-hidden h-[30px] md:h-[25px] flex items-center py-[19px] md:py-0"
 			:class="{
 				'bg-item-selected': isSelected && !createNewNode && !createNewRootNode,
 				'text-menu-disabled': node.isRecycleBin && !hasChildren && !isSelected,
@@ -84,10 +84,10 @@
 				class="w-[30px] h-[30px] md:w-[23px] md:h-[23px] p-0.5 mr-1 md:mr-0.5"
 				:class="{ 'text-shared': node.shared }"
 			></RecycleBinEmptyIcon>
-			<div v-if="node.hasInfo" class="absolute bottom-0.5 left-[35px] w-2 h-2 rounded bg-bad"></div>
+			<div v-if="node.hasInfo" class="absolute bottom-0.5 left-[35px] w-2 h-2 rounded-sm bg-bad"></div>
 			<input
 				v-if="editName"
-				class="outline-none bg-item-selected border-collapse flex-1 min-w-1 text-size-base"
+				class="outline-hidden bg-item-selected! border-collapse p-0! pt-px! flex-1 min-w-1 text-size-base!"
 				ref="renameInput"
 				type="text"
 				:value="node.title"
@@ -96,7 +96,7 @@
 			/>
 			<div
 				v-if="!editName"
-				class="select-none flex-1 overflow-hidden overflow-ellipsis"
+				class="select-none flex-1 overflow-hidden text-ellipsis"
 				:class="{
 					'text-search-parent': isOnlyParent,
 					'text-error': !shouldShow,

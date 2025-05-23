@@ -50,6 +50,16 @@
 					"url": "https://tailwindcss.com/docs/functions-and-directives#variants"
 				}
 			]
+		},
+		{
+			"name": "@config",
+			"description": "config",
+			"references": [
+				{
+					"name": "Tailwind Documentation",
+					"url": "https://tailwindcss.com/docs/"
+				}
+			]
 		}
 	]
 }

@@ -1,6 +1,6 @@
 <template>
 	<div
-		class="grid grid-cols-[9em_9em] gap-1 border shadow p-3 w-80"
+		class="grid grid-cols-[9em_9em] gap-1 border shadow-sm p-3 w-80"
 		:data-testid="`payment-method-${method.name}-container`"
 		:disabled="disabled"
 	>

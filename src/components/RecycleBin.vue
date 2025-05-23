@@ -11,7 +11,7 @@
 		@dragleave="onDragLeave"
 	>
 		<div
-			class="rounded overflow-hidden h-[30px] md:h-[25px] flex items-center py-4 md:py-0"
+			class="rounded-sm overflow-hidden h-[30px] md:h-[25px] flex items-center py-4 md:py-0"
 			:class="{
 				'bg-item-selected': isSelected && !createNewNode && !createNewRootNode,
 				'text-menu-disabled': !hasChildren,
@@ -48,7 +48,7 @@
 				:class="{ 'text-shared': node.shared }"
 			></RecycleBinEmptyIcon>
 			<div
-				class="select-none flex-1 overflow-hidden overflow-ellipsis"
+				class="select-none flex-1 overflow-hidden text-ellipsis"
 				:class="{
 					'text-search-parent': isOnlyParent,
 					'text-error': !shouldShow,

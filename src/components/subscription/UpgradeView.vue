@@ -5,7 +5,7 @@
 		</div>
 		<div class="bg-info w-full h-2 mb-4"></div>
 		<div class="flex flex-col overflow-y-auto pr-2" data-testid="upgrade-view">
-			<form v-on:submit.prevent="submit" class="max-w-[30rem] relative">
+			<form v-on:submit.prevent="submit" class="max-w-120 relative">
 				<ItemHeader>Chosen Plan</ItemHeader>
 				<div class="flex justify-center pb-5">
 					<Subscription

@@ -1,5 +1,5 @@
 <template>
-	<div class="grid grid-cols-[9em_9em_9em] gap-4 border shadow p-2 w-[30em]" :data-testid="`invoice-${invoice.no}`">
+	<div class="grid grid-cols-[9em_9em_9em] gap-4 border shadow-sm p-2 w-[30em]" :data-testid="`invoice-${invoice.no}`">
 		<div>Invoice No: {{ invoice.no }}</div>
 		<div>Issued: {{ formatInvoiceDate(invoice.issued) }}</div>
 		<div v-if="invoice.status === 'paid'" class="text-right" :data-testid="`invoice-${invoice.no}-status-paid`">

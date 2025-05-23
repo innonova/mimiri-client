@@ -5,7 +5,7 @@
 		</div>
 		<div class="bg-info w-full h-2 mb-4"></div>
 		<div class="flex flex-col overflow-y-auto pr-2" data-testid="pay-invoice-view">
-			<form v-on:submit.prevent="submit" class="max-w-[30rem]">
+			<form v-on:submit.prevent="submit" class="max-w-120">
 				<ItemHeader>Billing address</ItemHeader>
 				<CustomerData
 					ref="customerElement"

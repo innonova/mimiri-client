@@ -7,12 +7,12 @@
 	>
 		<div
 			ref="contextMenu"
-			class="block absolute left-menu top-menu text-size-menu cursor-default rounded shadow py-2 px-0.5 bg-menu text-menu-text"
+			class="block absolute left-menu top-menu text-size-menu cursor-default rounded-sm shadow-sm py-2 px-0.5 bg-menu text-menu-text"
 		>
 			<template v-for="item of config.items" :key="item.id">
 				<div
 					v-if="item.visible !== false"
-					class="flex justify-between py-1 pr-5 rounded"
+					class="flex justify-between py-1 pr-5 rounded-sm"
 					:class="{
 						'hover:bg-menu-hover': item.enabled !== false,
 						'text-menu-disabled': item.enabled === false,

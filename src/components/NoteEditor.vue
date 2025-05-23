@@ -62,7 +62,7 @@
 				>
 					<div>History entries:</div>
 					<button
-						class="h-7 w-7 p-1 text-text bg-[inherit] hover:bg-button-hover hover:rounded-none"
+						class="max-h-7 max-w-7 p-1 text-text bg-inherit! over hover:bg-button-hover hover:rounded-none"
 						@click="showHistory"
 					>
 						<CloseIcon />
@@ -81,7 +81,7 @@
 						</div>
 					</template>
 				</div>
-				<button class="w-full" :disabled="!mimiriEditor.history.hasMoreHistory" @click="loadMoreHistory">
+				<button class="min-w-full" :disabled="!mimiriEditor.history.hasMoreHistory" @click="loadMoreHistory">
 					Read More Entries
 				</button>
 			</div>
