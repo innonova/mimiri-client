@@ -1,59 +1,75 @@
 @import 'tailwindcss';
-@config "../../tailwind.config.js";
 
 /* Blue color scale based on logo: https://maketintsandshades.com/#4381C1 */
+@theme {
+	--font-display: 'Segoe UI', 'Verdana', 'Ubuntu', 'Noto Sans';
+	--font-editor: 'Consolas', 'Courier New', 'monospace';
+
+	--text-size-base: 14px;
+	--text-size-base--line-height: 1rem;
+	--text-size-menu: 13px;
+	--text-size-menu--line-height: 20px;
+	--text-size-secondary: 12px;
+	--text-size-secondary--line-height: 16px;
+	--text-size-title: 16px;
+	--text-size-title--line-height: 1rem;
+	--text-size-product: 18px;
+	--text-size-product--line-height: 1rem;
+	--text-size-header: 24px;
+	--text-size-header--line-height: 1.3rem;
+	--text-size-input: 16px;
+	--text-size-input--line-height: 1.5rem;
+
+	--color-back: #e3e3e3;
+	--color-info: #d2d2d8;
+	--color-backdrop: rgba(0, 0, 0, 0.2);
+	--color-text: #000;
+	--color-logo: #000;
+	--color-title-bar: #f4f4f4;
+	--color-title-text: #000;
+	--color-title-text-blur: #000;
+	--color-title-hover: #dfecf9;
+	--color-menu: #f4f4f4;
+	--color-menu-text: #000;
+	--color-menu-disabled: #b7b7b7;
+	--color-menu-hover: #d2dfec;
+	--color-menu-separator: #d8d8d8;
+	--color-item-selected: #d9e6f3;
+	--color-drop-indicator: #000;
+	--color-shared: #d78af6;
+	--color-search-parent: #888;
+	--color-error: red;
+	--color-online: green;
+	--color-offline: red;
+	--color-warning: #f6ba00;
+	--color-button-primary: #4381c1;
+	--color-button-primary-text: #fff;
+	--color-button-disabled: #aaa;
+	--color-button-disabled-text: #ccc;
+	--color-button-secondary: #777;
+	--color-button-secondary-text: #000;
+	--color-button-hover: rgba(0, 0, 0, 0.2);
+	--color-dialog: #f4f4f4;
+	--color-dialog-border: #000;
+	--color-input: #fff;
+	--color-input-text: #000;
+	--color-input-selection: #0078d7;
+	--color-input-selected-text: #fff;
+	--color-toolbar: #f4f4f4;
+	--color-toolbar-separator: #555;
+	--color-toolbar-disabled: #b7b7b7;
+	--color-toolbar-hover: #dfecf9;
+	--color-progress-indicator: green;
+	--color-toolbar-toggled: #d9e6f3;
+	--color-search-highlight: #ffc147;
+	--color-info-bar: #d9e6f3;
+	--color-info-bar-accented: #ffc147;
+	--color-good: green;
+	--color-bad: red;
+	--color-splash: #4381c1;
+}
 
 @layer base {
-	html[data-theme='light'] {
-		--color-back: #e3e3e3;
-		--color-info: #d2d2d8;
-		--color-backdrop: rgba(0, 0, 0, 0.2);
-		--color-text: #000;
-		--color-logo: #000;
-		--color-title-bar: #f4f4f4;
-		--color-title-text: #000;
-		--color-title-text-blur: #000;
-		--color-title-hover: #dfecf9;
-		--color-menu: #f4f4f4;
-		--color-menu-text: #000;
-		--color-menu-disabled: #b7b7b7;
-		--color-menu-hover: #d2dfec;
-		--color-menu-separator: #d8d8d8;
-		--color-item-selected: #d9e6f3;
-		--color-drop-indicator: #000;
-		--color-shared: #d78af6;
-		--color-search-parent: #888;
-		--color-error: red;
-		--color-online: green;
-		--color-offline: red;
-		--color-warning: #f6ba00;
-		--color-button-primary: #4381c1;
-		--color-button-primary-text: #fff;
-		--color-button-disabled: #aaa;
-		--color-button-disabled-text: #ccc;
-		--color-button-secondary: #777;
-		--color-button-secondary-text: #000;
-		--color-button-hover: rgba(0, 0, 0, 0.2);
-		--color-dialog: #f4f4f4;
-		--color-dialog-border: #000;
-		--color-input: #fff;
-		--color-input-text: #000;
-		--color-input-selection: #0078d7;
-		--color-input-selected-text: #fff;
-		--color-toolbar: #f4f4f4;
-		--color-toolbar-separator: #555;
-		--color-toolbar-disabled: #b7b7b7;
-		--color-toolbar-hover: #dfecf9;
-		--color-progress-indicator: green;
-		--color-toolbar-toggled: #d9e6f3;
-		--color-search-highlight: #ffc147;
-		--color-info-bar: #d9e6f3;
-		--color-info-bar-accented: #ffc147;
-		--color-good: green;
-		--color-bad: red;
-		--color-splash: #4381c1;
-	}
-
 	html[data-theme='dark'] {
 		--color-back: #3f3f3f;
 		--color-info: #505059;

@@ -60,6 +60,16 @@
 					"url": "https://tailwindcss.com/docs/"
 				}
 			]
+		},
+		{
+			"name": "@theme",
+			"description": "theme",
+			"references": [
+				{
+					"name": "Tailwind Documentation",
+					"url": "https://tailwindcss.com/docs/"
+				}
+			]
 		}
 	]
 }
