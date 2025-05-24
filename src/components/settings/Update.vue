@@ -127,12 +127,12 @@
 	</div>
 	<div
 		v-if="!updateManager.isUpdateAvailable && settingsManager.updateMode !== UpdateMode.Off"
-		class="max-w-120 pt-5 pl-1"
+		class="max-w-110 pt-5 pl-1"
 	>
 		<button @click="checkUpdates" class="min-w-52">Check for updates</button>
 	</div>
 	<div v-if="updateManager.isUpdateAvailable && settingsManager.updateMode !== UpdateMode.Off" class="p-1 mt-4">
-		<div class="mb-14 max-w-120">
+		<div class="mb-14 max-w-110">
 			<h1 class="font-bold text-size-header">Update available</h1>
 			<div class="flex flex-col w-full items-center">
 				<div class="pb-1 pt-4 flex">
@@ -145,8 +145,8 @@
 				</div>
 			</div>
 		</div>
-		<div v-if="!updateManager.isHostUpdate || !mimiriPlatform.isLinux" class="max-w-120">
-			<div class="relative max-w-120 h-[30px] border border-solid border-dialog-border">
+		<div v-if="!updateManager.isHostUpdate || !mimiriPlatform.isLinux" class="max-w-110">
+			<div class="relative max-w-110 h-[30px] border border-solid border-dialog-border">
 				<div class="h-[30px] bg-progress-indicator progress"></div>
 				<div
 					v-if="running && stage === 'download'"
@@ -171,7 +171,7 @@
 				</div>
 			</div>
 		</div>
-		<div v-if="!updateManager.isHostUpdate || !mimiriPlatform.isLinux" class="mt-2 flex justify-end gap-2 max-w-120">
+		<div v-if="!updateManager.isHostUpdate || !mimiriPlatform.isLinux" class="mt-2 flex justify-end gap-2 max-w-110">
 			<button v-if="!running" @click="update">Update</button>
 			<!-- <button class="secondary w-32" v-if="!running" @click="later">Maybe Later</button> -->
 			<button v-if="running && stage === 'ready'" @click="restart">Restart</button>
@@ -179,7 +179,7 @@
 				Cancel
 			</button>
 		</div>
-		<div v-if="updateManager.isHostUpdate && mimiriPlatform.isLinux" class="max-w-120">
+		<div v-if="updateManager.isHostUpdate && mimiriPlatform.isLinux" class="max-w-110">
 			<div class="py-3">An update of the Electron Client is available here:</div>
 			<div class="py-2">
 				Direct download: <a :href="updateManager.downloadUrl" target="_blank">{{ updateManager.downloadName }}</a>

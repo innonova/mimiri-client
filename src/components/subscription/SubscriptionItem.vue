@@ -117,7 +117,7 @@
 					@click="emit('change', product.sku)"
 					:data-testid="`sub-${product.sku}-upgrade`"
 				>
-					upgrade
+					Upgrade
 				</button>
 				<button
 					v-if="showChange"
@@ -125,7 +125,7 @@
 					@click="emit('change', product.sku)"
 					:data-testid="`sub-${product.sku}-change`"
 				>
-					change
+					Change
 				</button>
 				<button
 					v-if="showChangeTo"
@@ -133,7 +133,7 @@
 					@click="emit('buy', product.sku)"
 					:data-testid="`sub-${product.sku}-change-to`"
 				>
-					change to
+					Change to
 				</button>
 				<button
 					v-if="showCancel"
@@ -141,7 +141,7 @@
 					@click="emit('cancel')"
 					:data-testid="`sub-${product.sku}-cancel`"
 				>
-					cancel
+					Cancel
 				</button>
 				<div v-if="showCurrent">Current</div>
 			</div>

@@ -40,7 +40,7 @@
 						that there is <b>no way</b> to recover my data
 					</label>
 				</div>
-				<div class="max-w-120">
+				<div class="max-w-110">
 					<hr class="my-5" />
 					<div v-if="!noteManager.isAnonymous" class="flex justify-end items-baseline">
 						<div class="mr-2">Password:</div>

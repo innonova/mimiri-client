@@ -22,13 +22,13 @@
 		</div>
 	</div>
 	<div class="bg-info h-2 mb-2 mr-2"></div>
-	<div v-if="passwordMode === 'generate'" class="max-w-120 mr-2">
+	<div v-if="passwordMode === 'generate'" class="max-w-110 mr-2">
 		<PasswordGenerator ref="passwordGenerator" mode="mimiri" @password="onPasswordGenerated"></PasswordGenerator>
 		<div class="p-1 mt-8 m-aut0 flex">
 			<div class="w-24 flex items-center">Generated:</div>
 			<div class="w-52 text-right relative flex">
 				<input v-model="generatedPassword" tabindex="2" type="text" class="bg-input text-input-text" />
-				<div class="w-0 h-0 pt-1 overflow-visible select-none">
+				<div class="w-0 h-0 pt-0.5 overflow-visible select-none">
 					<RefreshIcon class="w-6 h-6 ml-2" @click="regeneratePassword"></RefreshIcon>
 				</div>
 			</div>
@@ -37,7 +37,7 @@
 			<div class="w-24 flex items-center">Repeat:</div>
 			<div class="w-52 text-right relative md:flex">
 				<input v-model="generatedPasswordRepeat" tabindex="3" type="password" class="bg-input text-input-text" />
-				<div v-if="generatedPassword" class="md:w-0 md:h-0 pt-1 overflow-visible">
+				<div v-if="generatedPassword" class="md:w-0 md:h-0 pt-0.5 overflow-visible">
 					<div v-if="generatedPasswordMatch" class="flex items-center w-52 md:ml-2 mt-1.5 md:mt-0">
 						<AvailableIcon class="w-6 h-6 mr-1 inline-block"></AvailableIcon> Matching
 					</div>
@@ -60,7 +60,7 @@
 					data-testid="password-input"
 				/>
 				<div class="md:w-0 md:h-0 overflow-visible">
-					<div class="absolute right-1 invisible md:visible" @mousedown="showPassword" @mouseup="hidePassword">
+					<div class="absolute right-6 invisible md:visible" @mousedown="showPassword" @mouseup="hidePassword">
 						<ShowPasswordIcon v-if="passwordFieldType === 'password'" class="w-6 h-6 mt-0.5"></ShowPasswordIcon>
 						<ShowingPasswordIcon v-if="passwordFieldType === 'text'" class="w-6 h-6 mt-0.5"></ShowingPasswordIcon>
 					</div>
@@ -117,7 +117,7 @@
 			</select>
 		</div>
 	</div>
-	<div class="mt-10 max-w-120 mr-2">
+	<div class="mt-10 max-w-110 mr-2">
 		<hr />
 		<div class="w-full flex justify-end mt-2 gap-2">
 			<button :disabled="!canSave" @click="save">Save</button>

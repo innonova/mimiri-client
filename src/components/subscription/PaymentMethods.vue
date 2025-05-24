@@ -5,7 +5,7 @@
 		</div>
 		<div class="bg-info h-2 mb-2 mr-2"></div>
 		<div v-if="!methods?.length" class="m-5" data-testid="payment-methods-none">No Payments Methods Yet</div>
-		<div class="flex flex-col gap-3 overflow-y-auto">
+		<div class="flex flex-col gap-3 items-start overflow-y-auto">
 			<template v-for="method of methods" :key="method.id">
 				<PaymentMethodItem
 					:method="method"
@@ -15,7 +15,7 @@
 					@delete="deleteMethod(method)"
 				></PaymentMethodItem>
 			</template>
-			<div v-if="showCreate" class="flex justify-end w-80 pt-10 pb-10">
+			<div v-if="showCreate" class="py-8 px-2 text-right w-[18rem]">
 				<button @click="createNew">Create New</button>
 			</div>
 		</div>

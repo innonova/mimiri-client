@@ -6,7 +6,7 @@
 	<div class="px-1 pt-3 pb-5 max-w-[20rem] leading-5">
 		Choose a username and password to allow you to access your data from anywhere
 	</div>
-	<div class="max-w-120" data-testid="promote-account-view">
+	<div class="max-w-110" data-testid="promote-account-view">
 		<form class="w-96" v-on:submit.prevent="createAccount">
 			<UsernameInput :display-current="false" @changed="usernameChanged"></UsernameInput>
 			<div class="p-1 m-aut0 flex">
@@ -20,7 +20,7 @@
 						data-testid="password-input"
 					/>
 					<div class="md:w-0 md:h-0 overflow-visible">
-						<div class="absolute right-1 invisible md:visible" @mousedown="showPassword" @mouseup="hidePassword">
+						<div class="absolute right-6 invisible md:visible" @mousedown="showPassword" @mouseup="hidePassword">
 							<ShowPasswordIcon v-if="passwordFieldType === 'password'" class="w-6 h-6 mt-0.5"></ShowPasswordIcon>
 							<ShowingPasswordIcon v-if="passwordFieldType === 'text'" class="w-6 h-6 mt-0.5"></ShowingPasswordIcon>
 						</div>
@@ -57,7 +57,7 @@
 						class="bg-input text-input-text"
 						data-testid="repeat-input"
 					/>
-					<div v-if="password" class="md:w-0 md:h-0 pt-1 overflow-visible">
+					<div v-if="password" class="md:w-0 md:h-0 pt-0.5 overflow-visible">
 						<div v-if="passwordMatch" class="flex items-center w-52 md:ml-2 mt-1.5 md:mt-0">
 							<AvailableIcon class="w-6 h-6 mr-1 inline-block"></AvailableIcon> Matching
 						</div>

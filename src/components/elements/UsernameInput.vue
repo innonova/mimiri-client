@@ -10,7 +10,7 @@
 				autofocus
 				data-testid="username-input"
 			/>
-			<div v-if="username" class="md:w-0 md:h-0 pt-1 overflow-visible">
+			<div v-if="username" class="md:w-0 md:h-0 pt-0.5 overflow-visible">
 				<div v-if="usernameCurrent" class="flex items-center w-52 md:ml-2 mt-1.5 md:mt-0">
 					<AvailableIcon class="w-6 h-6 mr-1 inline-block"></AvailableIcon> Current
 				</div>

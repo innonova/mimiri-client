@@ -2,7 +2,7 @@
 	<ItemHeader v-if="methods?.length > 0">Choose payment method</ItemHeader>
 	<div
 		v-if="methods?.length > 0"
-		class="flex flex-col gap-2 mb-4"
+		class="flex flex-col gap-2 mb-4 items-end w-[26rem] pr-[0.85rem]"
 		:class="{ 'opacity-60': disabled }"
 		data-testid="payment-method-selector"
 	>

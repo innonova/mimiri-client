@@ -1,46 +1,52 @@
 <template>
-	<div class="grid grid-cols-[9em_9em_9em] gap-4 border shadow-sm p-2 w-[30em]" :data-testid="`invoice-${invoice.no}`">
-		<div>Invoice No: {{ invoice.no }}</div>
-		<div>Issued: {{ formatInvoiceDate(invoice.issued) }}</div>
-		<div v-if="invoice.status === 'paid'" class="text-right" :data-testid="`invoice-${invoice.no}-status-paid`">
-			Status: <span class="text-good font-bold">PAID</span>
-		</div>
-		<div
-			v-if="invoice.status === 'issued' && !overdue"
-			class="text-right"
-			:data-testid="`invoice-${invoice.no}-status-open`"
-		>
-			Status: <span class="text-good font-bold">OPEN</span>
-		</div>
-		<div v-if="overdue" class="text-right" :data-testid="`invoice-${invoice.no}-status-overdue`">
-			Status: <span class="text-bad font-bold">OVERDUE</span>
-		</div>
-		<div v-if="invoice.status === 'credited'" class="text-right" :data-testid="`invoice-${invoice.no}-status-credited`">
-			Status: <span class="text-good font-bold">CREDITED</span>
-		</div>
-		<div
-			v-if="invoice.status === 'credit-note'"
-			class="text-right"
-			:data-testid="`invoice-${invoice.no}-status-credit-note`"
-		>
-			Status: <span class="text-good font-bold">CREDIT NOTE</span>
-		</div>
-		<div v-if="invoice.status === 'issued'"></div>
-		<div v-if="invoice.status === 'issued'">Due: {{ formatInvoiceDate(invoice.due) }}</div>
-		<div v-if="invoice.status === 'issued'" class="text-right">
-			<button @click="payNow" :data-testid="`invoice-${invoice.no}-pay-now`">Pay Now</button>
-		</div>
-		<div v-if="invoice.status === 'issued' && autoPay && !overdue" class="col-span-full text-right italic">
-			Will be paid automatically on {{ formatInvoiceDate(invoice.due) }}
-		</div>
+	<div class="flex">
+		<div class="grid grid-cols-[8rem_8rem_6rem] gap-4 border shadow-sm p-2" :data-testid="`invoice-${invoice.no}`">
+			<div>Invoice No: {{ invoice.no }}</div>
+			<div>Issued: {{ formatInvoiceDate(invoice.issued) }}</div>
+			<div v-if="invoice.status === 'paid'" class="text-right" :data-testid="`invoice-${invoice.no}-status-paid`">
+				Status: <span class="text-good font-bold">PAID</span>
+			</div>
+			<div
+				v-if="invoice.status === 'issued' && !overdue"
+				class="text-right"
+				:data-testid="`invoice-${invoice.no}-status-open`"
+			>
+				Status: <span class="text-good font-bold">OPEN</span>
+			</div>
+			<div v-if="overdue" class="text-right" :data-testid="`invoice-${invoice.no}-status-overdue`">
+				Status: <span class="text-bad font-bold">OVERDUE</span>
+			</div>
+			<div
+				v-if="invoice.status === 'credited'"
+				class="text-right"
+				:data-testid="`invoice-${invoice.no}-status-credited`"
+			>
+				Status: <span class="text-good font-bold">CREDITED</span>
+			</div>
+			<div
+				v-if="invoice.status === 'credit-note'"
+				class="text-right"
+				:data-testid="`invoice-${invoice.no}-status-credit-note`"
+			>
+				Status: <span class="text-good font-bold">CREDIT NOTE</span>
+			</div>
+			<div v-if="invoice.status === 'issued'"></div>
+			<div v-if="invoice.status === 'issued'">Due: {{ formatInvoiceDate(invoice.due) }}</div>
+			<div v-if="invoice.status === 'issued'" class="text-right">
+				<button @click="payNow" :data-testid="`invoice-${invoice.no}-pay-now`">Pay Now</button>
+			</div>
+			<div v-if="invoice.status === 'issued' && autoPay && !overdue" class="col-span-full text-right italic">
+				Will be paid automatically on {{ formatInvoiceDate(invoice.due) }}
+			</div>
 
-		<div class="flex gap-2">
-			<button @click="showInvoice" :data-testid="`invoice-${invoice.no}-view-link`">View</button>
-			<button @click="showInvoicePdf" :data-testid="`invoice-${invoice.no}-pdf-link`">PDF</button>
-		</div>
-		<div></div>
-		<div class="text-right" :data-testid="`invoice-${invoice.no}-total`">
-			{{ invoice.currency }} {{ formatCurrency(invoice.data.total) }}
+			<div class="flex gap-2">
+				<button @click="showInvoice" :data-testid="`invoice-${invoice.no}-view-link`">View</button>
+				<button @click="showInvoicePdf" :data-testid="`invoice-${invoice.no}-pdf-link`">PDF</button>
+			</div>
+			<div></div>
+			<div class="text-right" :data-testid="`invoice-${invoice.no}-total`">
+				{{ invoice.currency }} {{ formatCurrency(invoice.data.total) }}
+			</div>
 		</div>
 	</div>
 </template>

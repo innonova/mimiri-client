@@ -1,5 +1,5 @@
 <template>
-	<div data-testid="customer-data">
+	<div data-testid="customer-data" class="flex">
 		<div class="grid grid-cols-[9em_18em] gap-4 items-baseline">
 			<div class="text-right" :class="{ 'text-red-500': !givenNameValid }">First name *</div>
 			<input
