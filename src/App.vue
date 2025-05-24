@@ -1,7 +1,7 @@
 <template>
 	<div
 		v-if="loading"
-		class="h-full dark-mode safe-area-padding"
+		class="h-full dark-mode safe-area-padding text-size-base"
 		:class="{
 			'bg-splash text-white': !mimiriPlatform.isElectron,
 			'bg-back text-text': mimiriPlatform.isElectron,
@@ -19,7 +19,7 @@
 			</div>
 		</div>
 	</div>
-	<div v-if="!loading" class="flex flex-col h-full bg-back text-text dark-mode safe-area-padding">
+	<div v-if="!loading" class="flex flex-col h-full bg-back text-text dark-mode safe-area-padding text-size-base">
 		<TitleBar ref="titleBar"></TitleBar>
 		<ConvertAccount v-if="showConvertAccount"></ConvertAccount>
 		<div v-show="!localAuth.locked" class="flex h-full overflow-hidden" @mouseup="endDragging">

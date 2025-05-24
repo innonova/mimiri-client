@@ -69,7 +69,7 @@
 	--color-splash: #4381c1;
 }
 
-@layer base {
+@layer theme {
 	html[data-theme='dark'] {
 		--color-back: #3f3f3f;
 		--color-info: #505059;
@@ -143,6 +143,8 @@ html[data-env-support='false'] {
 
 button {
 	@apply bg-button-primary text-button-primary-text hover:brightness-125 hover:rounded-sm select-none;
+	@apply font-display text-size-base;
+	@apply w-24 h-8 cursor-default;
 }
 
 button:disabled,
@@ -181,13 +183,8 @@ a:hover {
 html,
 body,
 #app {
-	@apply font-display text-size-base;
+	@apply font-display;
 	@apply overflow-hidden h-full w-full font-display;
-}
-
-button {
-	@apply font-display text-size-base;
-	@apply w-24 h-8 cursor-default;
 }
 
 input {
