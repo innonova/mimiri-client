@@ -1,46 +1,52 @@
 <template>
-	<div class="flex select-none">
-		<div class="py-2 px-4 bg-info cursor-default">Current Plan</div>
-	</div>
-	<div class="bg-info h-2 mb-2 mr-2"></div>
-	<div class="p-1 pt-2 flex" :data-testid="populated ? 'home-view' : ''">
-		<SubscriptionItem
-			v-if="product"
-			:product="product"
-			:subscription="subscription"
-			:showFeatures="true"
-			:showResume="subscription?.renewalType === 'none'"
-			:showUpgrade="product.sku === 'free' && subscription?.renewalType !== 'none'"
-			:showChange="product.sku !== 'free' && subscription?.renewalType !== 'none'"
-			:showCancel="product.sku !== 'free' && subscription?.renewalType !== 'none'"
-			:currency="subscription?.renewalCurrency"
-			:showStatus="true"
-			@change="change"
-			@cancel="cancel"
-			@resume="resume"
-			@pay-invoice="payInvoice"
-		></SubscriptionItem>
-		<input type="hidden" data-testid="current-subscription-sku" :value="product?.sku" />
-		<input type="hidden" data-testid="current-subscription-paid-until" :value="subscription?.paidUntil" />
-	</div>
-	<div class="p-1 mt-4">Read more about plans <a href="https://mimiri.io/subscription" target="_blank">here</a></div>
-	<div class="p-1 mt-4 leading-6">
-		<ItemHeader>Beta information</ItemHeader>
-		<p>We are currently working to perfect the subscription processes.</p>
-		<p>If you encounter any issues please don't hesitate to contact us:</p>
-		<ul class="mt-1">
-			<li><a href="https://discord.gg/pg69qPAVZR" target="_blank">Discord</a></li>
-			<li><a href="https://www.reddit.com/r/mimiri/" target="_blank">Reddit</a></li>
-			<li class="flex gap-2">
-				info@innonova.ch<CopyIcon
-					v-if="!copied"
-					title="copy"
-					@click="copyEmail"
-					class="w-5 hover:w-6 cursor-pointer"
-				></CopyIcon>
-				<div v-if="copied" class="ml-1 cursor-default select-none">Copied</div>
-			</li>
-		</ul>
+	<div class="flex flex-col h-full">
+		<div class="flex select-none">
+			<div class="py-2 px-4 bg-info cursor-default">Current Plan</div>
+		</div>
+		<div class="bg-info h-2 mb-2 mr-2"></div>
+		<div class="flex flex-col overflow-y-auto">
+			<div class="p-1 pt-2 flex" :data-testid="populated ? 'home-view' : ''">
+				<SubscriptionItem
+					v-if="product"
+					:product="product"
+					:subscription="subscription"
+					:showFeatures="true"
+					:showResume="subscription?.renewalType === 'none'"
+					:showUpgrade="product.sku === 'free' && subscription?.renewalType !== 'none'"
+					:showChange="product.sku !== 'free' && subscription?.renewalType !== 'none'"
+					:showCancel="product.sku !== 'free' && subscription?.renewalType !== 'none'"
+					:currency="subscription?.renewalCurrency"
+					:showStatus="true"
+					@change="change"
+					@cancel="cancel"
+					@resume="resume"
+					@pay-invoice="payInvoice"
+				></SubscriptionItem>
+				<input type="hidden" data-testid="current-subscription-sku" :value="product?.sku" />
+				<input type="hidden" data-testid="current-subscription-paid-until" :value="subscription?.paidUntil" />
+			</div>
+			<div class="p-1 mt-4">
+				Read more about plans <a href="https://mimiri.io/subscription" target="_blank">here</a>
+			</div>
+			<div class="p-1 mt-4 leading-6 mb-10">
+				<ItemHeader>Beta information</ItemHeader>
+				<p>We are currently working to perfect the subscription processes.</p>
+				<p>If you encounter any issues please don't hesitate to contact us:</p>
+				<ul class="mt-1">
+					<li><a href="https://discord.gg/pg69qPAVZR" target="_blank">Discord</a></li>
+					<li><a href="https://www.reddit.com/r/mimiri/" target="_blank">Reddit</a></li>
+					<li class="flex gap-2">
+						info@innonova.ch<CopyIcon
+							v-if="!copied"
+							title="copy"
+							@click="copyEmail"
+							class="w-5 hover:w-6 cursor-pointer"
+						></CopyIcon>
+						<div v-if="copied" class="ml-1 cursor-default select-none">Copied</div>
+					</li>
+				</ul>
+			</div>
+		</div>
 	</div>
 </template>
 

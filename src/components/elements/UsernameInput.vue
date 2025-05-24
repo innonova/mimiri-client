@@ -6,7 +6,7 @@
 				v-model="username"
 				tabindex="1"
 				type="text"
-				class="bg-input text-input-text"
+				class="bg-input text-input-text w-48"
 				autofocus
 				data-testid="username-input"
 			/>

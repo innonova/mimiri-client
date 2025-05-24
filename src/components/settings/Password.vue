@@ -27,7 +27,7 @@
 		<div class="p-1 mt-8 m-aut0 flex">
 			<div class="w-24 flex items-center">Generated:</div>
 			<div class="w-52 text-right relative flex">
-				<input v-model="generatedPassword" tabindex="2" type="text" class="bg-input text-input-text" />
+				<input v-model="generatedPassword" tabindex="2" type="text" class="bg-input text-input-text w-48" />
 				<div class="w-0 h-0 pt-0.5 overflow-visible select-none">
 					<RefreshIcon class="w-6 h-6 ml-2" @click="regeneratePassword"></RefreshIcon>
 				</div>
@@ -36,7 +36,7 @@
 		<div class="p-1 m-auto flex">
 			<div class="w-24 flex items-center">Repeat:</div>
 			<div class="w-52 text-right relative md:flex">
-				<input v-model="generatedPasswordRepeat" tabindex="3" type="password" class="bg-input text-input-text" />
+				<input v-model="generatedPasswordRepeat" tabindex="3" type="password" class="bg-input text-input-text w-48" />
 				<div v-if="generatedPassword" class="md:w-0 md:h-0 pt-0.5 overflow-visible">
 					<div v-if="generatedPasswordMatch" class="flex items-center w-52 md:ml-2 mt-1.5 md:mt-0">
 						<AvailableIcon class="w-6 h-6 mr-1 inline-block"></AvailableIcon> Matching
@@ -56,7 +56,7 @@
 					v-model="createdPassword"
 					tabindex="2"
 					:type="passwordFieldType"
-					class="bg-input text-input-text"
+					class="bg-input text-input-text w-48"
 					data-testid="password-input"
 				/>
 				<div class="md:w-0 md:h-0 overflow-visible">
@@ -94,7 +94,7 @@
 					v-model="createdPasswordRepeat"
 					tabindex="3"
 					type="password"
-					class="bg-input text-input-text"
+					class="bg-input text-input-text w-48"
 					data-testid="repeat-input"
 				/>
 				<div v-if="createdPassword" class="md:w-0 md:h-0 pt-1 overflow-visible">

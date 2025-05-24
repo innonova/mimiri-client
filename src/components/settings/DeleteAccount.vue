@@ -49,7 +49,7 @@
 								v-model="password"
 								tabindex="2"
 								type="password"
-								class="bg-input text-input-text"
+								class="bg-input text-input-text w-48"
 								data-testid="password-input"
 							/>
 						</div>

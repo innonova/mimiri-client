@@ -16,7 +16,7 @@
 						v-model="password"
 						tabindex="2"
 						:type="passwordFieldType"
-						class="bg-input text-input-text"
+						class="bg-input text-input-text w-48"
 						data-testid="password-input"
 					/>
 					<div class="md:w-0 md:h-0 overflow-visible">
@@ -54,7 +54,7 @@
 						v-model="passwordRepeat"
 						tabindex="3"
 						type="password"
-						class="bg-input text-input-text"
+						class="bg-input text-input-text w-48"
 						data-testid="repeat-input"
 					/>
 					<div v-if="password" class="md:w-0 md:h-0 pt-0.5 overflow-visible">

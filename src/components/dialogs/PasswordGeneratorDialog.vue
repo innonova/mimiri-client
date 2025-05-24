@@ -1,5 +1,5 @@
 <template>
-	<dialog class="min-w-96 bg-dialog text-text border border-solid border-dialog-border" ref="dialog">
+	<dialog class="bg-dialog text-text border border-solid border-dialog-border" ref="dialog">
 		<div class="grid grid-rows-[auto_1fr_auto] gap-6">
 			<DialogTitle @close="close">Generate Password</DialogTitle>
 			<main class="px-3">
@@ -14,13 +14,17 @@
 				<div class="p-1 mt-4 m-aut0 flex">
 					<div class="w-24 flex items-center">Password:</div>
 					<div class="w-52 text-right relative md:flex">
-						<input v-model="password" tabindex="2" :type="passwordFieldType" class="bg-input text-input-text" />
+						<input v-model="password" tabindex="2" :type="passwordFieldType" class="bg-input w-48 text-input-text" />
 						<div class="w-0 h-0 pt-0.5 overflow-visible select-none">
 							<RefreshIcon class="w-6 h-6 ml-2" @click="regeneratePassword"></RefreshIcon>
 						</div>
 
 						<div class="md:w-0 md:h-0 overflow-visible">
-							<div class="absolute right-6 invisible md:visible" @mousedown="showPassword" @mouseup="hidePassword">
+							<div
+								class="absolute right-[1.5rem] invisible md:visible"
+								@mousedown="showPassword"
+								@mouseup="hidePassword"
+							>
 								<ShowPasswordIcon v-if="passwordFieldType === 'password'" class="w-6 h-6 mt-0.5"></ShowPasswordIcon>
 								<ShowingPasswordIcon v-if="passwordFieldType === 'text'" class="w-6 h-6 mt-0.5"></ShowingPasswordIcon>
 							</div>

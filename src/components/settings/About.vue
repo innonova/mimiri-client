@@ -1,53 +1,59 @@
 <template>
-	<div class="flex select-none">
-		<div class="py-2 px-4 bg-info cursor-default" data-testid="settings-view-about">About</div>
-	</div>
-	<div class="bg-info h-2 mb-2 mr-2"></div>
-	<div @click="boxClicked">
-		<div class="p-1 pl-4">Bundle Version: {{ updateManager.currentVersion }}</div>
-		<div class="p-1 pl-4 pt-2">Host Version: {{ mimiriPlatform.isWeb ? browserName : updateManager.hostVersion }}</div>
-		<div class="p-1 pl-4 pt-2">Released: {{ formatDate(updateManager.releaseDate) }}</div>
-		<div class="p-1 pl-4 pt-6">Notes: {{ noteCount }} / {{ maxNoteCount }} ({{ notesPercent }})</div>
-		<div class="p-1 pl-4 pt-2">Space Used: {{ usedBytes }} / {{ maxBytes }} ({{ bytesPercent }})</div>
-		<div class="p-1 pl-4 pt-2">Account: {{ noteManager.username }}</div>
-		<div class="pt-6 pl-4"><a href="https://mimiri.io/terms" target="_blank">Terms & Conditions</a></div>
-		<div class="pt-3 pl-4"><a href="https://mimiri.io/privacy" target="_blank">Privacy Policy</a></div>
-		<div class="pt-6 pl-4"><a href="https://mimiri.io" target="_blank">https://mimiri.io</a></div>
-		<div class="pt-6 pl-4"><a href="https://discord.gg/pg69qPAVZR" target="_blank">Join us on Discord</a></div>
-		<div class="pt-3 pl-4"><a href="https://www.reddit.com/r/mimiri/" target="_blank">Join us on Reddit</a></div>
-		<div class="pt-6 pl-4">
-			<a href="https://github.com/innonova/mimiri-client" target="_blank">Source on GitHub</a>
+	<div class="flex flex-col h-full">
+		<div class="flex select-none">
+			<div class="py-2 px-4 bg-info cursor-default" data-testid="settings-view-about">About</div>
 		</div>
-		<div class="pt-3 pl-4">
-			<a href="https://github.com/innonova/mimiri-client/issues" target="_blank">Issue Tracker on GitHub</a>
-		</div>
+		<div class="bg-info h-2 mb-2 mr-2"></div>
+		<div class="flex flex-col overflow-y-auto">
+			<div @click="boxClicked">
+				<div class="p-1 pl-4">Bundle Version: {{ updateManager.currentVersion }}</div>
+				<div class="p-1 pl-4 pt-2">
+					Host Version: {{ mimiriPlatform.isWeb ? browserName : updateManager.hostVersion }}
+				</div>
+				<div class="p-1 pl-4 pt-2">Released: {{ formatDate(updateManager.releaseDate) }}</div>
+				<div class="p-1 pl-4 pt-6">Notes: {{ noteCount }} / {{ maxNoteCount }} ({{ notesPercent }})</div>
+				<div class="p-1 pl-4 pt-2">Space Used: {{ usedBytes }} / {{ maxBytes }} ({{ bytesPercent }})</div>
+				<div class="p-1 pl-4 pt-2">Account: {{ noteManager.username }}</div>
+				<div class="pt-6 pl-4"><a href="https://mimiri.io/terms" target="_blank">Terms & Conditions</a></div>
+				<div class="pt-3 pl-4"><a href="https://mimiri.io/privacy" target="_blank">Privacy Policy</a></div>
+				<div class="pt-6 pl-4"><a href="https://mimiri.io" target="_blank">https://mimiri.io</a></div>
+				<div class="pt-6 pl-4"><a href="https://discord.gg/pg69qPAVZR" target="_blank">Join us on Discord</a></div>
+				<div class="pt-3 pl-4"><a href="https://www.reddit.com/r/mimiri/" target="_blank">Join us on Reddit</a></div>
+				<div class="pt-6 pl-4">
+					<a href="https://github.com/innonova/mimiri-client" target="_blank">Source on GitHub</a>
+				</div>
+				<div class="pt-3 pl-4">
+					<a href="https://github.com/innonova/mimiri-client/issues" target="_blank">Issue Tracker on GitHub</a>
+				</div>
 
-		<div class="pt-6 pl-4">Copyright &copy;2024-{{ new Date().getFullYear() }} innonova GmbH</div>
-		<div class="inline-flex flex-col mx-4 p-3 mt-4 bg-info">
-			<b>Attributions:</b>
-			<template v-for="att of iconAttributions">
-				<div class="mt-2 leading-5" v-html="att"></div>
-			</template>
-		</div>
-	</div>
-	<div v-if="showLog" class="flex flex-col">
-		<div class="flex justify-around">
-			<div class="text-center">
-				<button class="secondary" @click="closeLog">Close Log</button>
+				<div class="pt-6 pl-4">Copyright &copy;2024-{{ new Date().getFullYear() }} innonova GmbH</div>
+				<div class="inline-flex flex-col mx-4 p-3 mt-4 bg-info">
+					<b>Attributions:</b>
+					<template v-for="att of iconAttributions">
+						<div class="mt-2 leading-5" v-html="att"></div>
+					</template>
+				</div>
 			</div>
-			<div class="text-center">
-				<button @click="reload">reload</button>
+			<div v-if="showLog" class="flex flex-col">
+				<div class="flex justify-around">
+					<div class="text-center">
+						<button class="secondary" @click="closeLog">Close Log</button>
+					</div>
+					<div class="text-center">
+						<button @click="reload">reload</button>
+					</div>
+					<div class="text-center">
+						<button @click="changeChannel">
+							{{ settingsManager.channel }}
+						</button>
+					</div>
+				</div>
+				<div class="h-[600px] overflow-y-scroll p-2">
+					<template v-for="message of mobileLog.messages">
+						<div>{{ message }}</div>
+					</template>
+				</div>
 			</div>
-			<div class="text-center">
-				<button @click="changeChannel">
-					{{ settingsManager.channel }}
-				</button>
-			</div>
-		</div>
-		<div class="h-[600px] overflow-y-scroll p-2">
-			<template v-for="message of mobileLog.messages">
-				<div>{{ message }}</div>
-			</template>
 		</div>
 	</div>
 </template>
