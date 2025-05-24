@@ -133,7 +133,7 @@ export class UpdateManager {
 					!this.state.isHostUpdate
 				) {
 					await this.download(this.state.latestVersion)
-					await this.use(this.state.latestVersion)
+					await this.use(this.state.latestVersion, true)
 				}
 				if (settingsManager.lastRunHostVersion !== this.state.activeVersion.hostVersion) {
 					settingsManager.lastRunHostVersion = this.state.activeVersion.hostVersion

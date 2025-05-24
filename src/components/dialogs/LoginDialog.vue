@@ -9,7 +9,7 @@
 						v-model="username"
 						tabindex="1"
 						type="text"
-						class="bg-input text-input-text ml-2"
+						class="bg-input text-input-text ml-2 w-48"
 						data-testid="username-input"
 						autofocus
 					/>
@@ -21,7 +21,7 @@
 						tabindex="2"
 						type="password"
 						data-testid="password-input"
-						class="bg-input text-input-text ml-2"
+						class="bg-input text-input-text ml-2 w-48"
 					/>
 				</div>
 				<div class="m-1 pr-5" v-if="error" data-testid="login-error">
