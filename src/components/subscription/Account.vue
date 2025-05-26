@@ -6,7 +6,7 @@
 			<div class="mt-4 grid grid-cols-[9em_18em] gap-4">
 				<div></div>
 				<div class="text-right">
-					<button :disabled="!valid || !changed" @click="save" data-testid="account-save">Save</button>
+					<button class="primary" :disabled="!valid || !changed" @click="save" data-testid="account-save">Save</button>
 				</div>
 			</div>
 		</div>

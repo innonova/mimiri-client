@@ -22,7 +22,7 @@
 				</main>
 				<footer class="flex justify-end gap-2 pr-2 pb-2">
 					<LoadingIcon v-if="busy" class="animate-spin w-8 h-8 mr-8 inline-block"></LoadingIcon>
-					<button v-if="!busy" type="submit">OK</button>
+					<button class="primary" v-if="!busy" type="submit">OK</button>
 					<button class="secondary" @click="close" :disabled="busy" type="button">Cancel</button>
 				</footer>
 			</div>

@@ -26,6 +26,7 @@
 					<button
 						type="submit"
 						:disabled="!valid || !termsAccepted || !privacyAccepted || !method"
+						class="primary"
 						data-testid="pay-button"
 					>
 						Pay now

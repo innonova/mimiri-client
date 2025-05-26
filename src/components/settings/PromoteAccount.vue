@@ -101,6 +101,7 @@
 						v-if="!loading"
 						tabindex="3"
 						:disabled="loading || !canCreate"
+						class="primary"
 						type="submit"
 						data-testid="create-button"
 					>

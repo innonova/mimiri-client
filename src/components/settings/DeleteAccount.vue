@@ -74,7 +74,7 @@
 						<button
 							v-else
 							tabindex="3"
-							class="min-w-32"
+							class="primary"
 							:disabled="loading || !understandDeleteAccount || !understandDeleteData || !understandRoRecovery"
 							data-testid="delete-account-submit-button"
 							type="submit"

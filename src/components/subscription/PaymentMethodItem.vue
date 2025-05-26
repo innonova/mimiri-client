@@ -15,7 +15,7 @@
 				@click="emit('make-default')"
 				:disabled="disabled"
 				:data-testid="`payment-method-${method.name}-make-default`"
-				class="min-w-28"
+				class="primary"
 			>
 				Make default
 			</button>
@@ -24,7 +24,12 @@
 			Default
 		</div>
 		<div v-if="showActions" class="text-right pt-3">
-			<button @click="emit('delete')" :disabled="disabled" :data-testid="`payment-method-${method.name}-delete`">
+			<button
+				class="primary"
+				@click="emit('delete')"
+				:disabled="disabled"
+				:data-testid="`payment-method-${method.name}-delete`"
+			>
 				Delete
 			</button>
 		</div>

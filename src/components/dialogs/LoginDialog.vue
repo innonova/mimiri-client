@@ -47,7 +47,15 @@
 					>
 						Create New
 					</a>
-					<button tabindex="3" :disabled="loading || !canLogin" data-testid="login-button" type="submit">Login</button>
+					<button
+						tabindex="3"
+						:disabled="loading || !canLogin"
+						data-testid="login-button"
+						class="primary"
+						type="submit"
+					>
+						Login
+					</button>
 					<button v-if="showCancel" :disabled="loading" class="secondary" type="button" @click="cancel">Cancel</button>
 				</div>
 			</form>

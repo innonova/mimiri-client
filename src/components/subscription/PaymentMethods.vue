@@ -13,7 +13,7 @@
 				></PaymentMethodItem>
 			</template>
 			<div v-if="showCreate" class="py-8 px-2 text-right w-[18rem]">
-				<button @click="createNew">Create New</button>
+				<button class="primary" @click="createNew">Create New</button>
 			</div>
 		</div>
 	</div>

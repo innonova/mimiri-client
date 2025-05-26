@@ -15,9 +15,8 @@
 			<LoadingIcon class="animate-spin w-8 h-8 mr-2 inline-block"></LoadingIcon> {{ status }}
 		</div>
 		<div v-if="running" class="flex justify-center gap-2 mt-8">
-			<!-- <button class="w-36" data-testid="waiting-report">Report Problem</button> -->
-			<button @click="check" data-testid="waiting-check">Check</button>
-			<button @click="emit('close')" data-testid="waiting-cancel">Cancel</button>
+			<button class="primary" @click="check" data-testid="waiting-check">Check</button>
+			<button class="primary" @click="emit('close')" data-testid="waiting-cancel">Cancel</button>
 		</div>
 	</div>
 </template>

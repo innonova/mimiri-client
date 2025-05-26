@@ -99,6 +99,7 @@
 					v-if="showResume"
 					:disabled="disabled"
 					@click="emit('resume')"
+					class="primary"
 					:data-testid="`sub-${product.sku}-resume`"
 				>
 					Resume
@@ -107,6 +108,7 @@
 					v-if="showBuy"
 					:disabled="disabled"
 					@click="emit('buy', product.sku)"
+					class="primary"
 					:data-testid="`sub-${product.sku}-buy`"
 				>
 					Buy
@@ -115,6 +117,7 @@
 					v-if="showUpgrade"
 					:disabled="disabled"
 					@click="emit('change', product.sku)"
+					class="primary"
 					:data-testid="`sub-${product.sku}-upgrade`"
 				>
 					Upgrade
@@ -123,6 +126,7 @@
 					v-if="showChange"
 					:disabled="disabled"
 					@click="emit('change', product.sku)"
+					class="primary"
 					:data-testid="`sub-${product.sku}-change`"
 				>
 					Change
@@ -131,6 +135,7 @@
 					v-if="showChangeTo"
 					:disabled="disabled"
 					@click="emit('buy', product.sku)"
+					class="primary"
 					:data-testid="`sub-${product.sku}-change-to`"
 				>
 					Change to
@@ -139,6 +144,7 @@
 					v-if="showCancel"
 					:disabled="disabled"
 					@click="emit('cancel')"
+					class="primary"
 					:data-testid="`sub-${product.sku}-cancel`"
 				>
 					Cancel

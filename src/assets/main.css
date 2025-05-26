@@ -145,19 +145,21 @@ html[data-env-support='false'] {
 	color: inherit !important;
 }
 
-button {
+button.primary {
 	@apply bg-button-primary text-button-primary-text hover:brightness-125 rounded-sm select-none;
 	@apply font-display text-size-base;
-	@apply w-24 h-8 cursor-default;
+	@apply cursor-default;
+	@apply py-2 px-4 min-w-24;
 }
 
-button:disabled,
-button[disabled] {
+button.primary:disabled,
+button.primary[disabled] {
 	@apply bg-button-disabled text-button-disabled-text hover:brightness-100 select-none;
 }
 
 button.secondary {
-	@apply bg-button-secondary text-button-secondary-text hover:brightness-125 select-none;
+	@apply bg-button-secondary text-button-secondary-text hover:brightness-125 rounded-sm select-none;
+	@apply py-2 px-4  min-w-24;
 }
 
 button.secondary:disabled,

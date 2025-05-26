@@ -19,7 +19,7 @@
 			</div>
 		</div>
 		<div class="w-[300px] mt-2 m-auto flex justify-end">
-			<button tabindex="1" :disabled="running" @click="convert">Convert</button>
+			<button tabindex="1" class="primary" :disabled="running" @click="convert">Convert</button>
 			<button tabindex="2" class="secondary" :disabled="running" @click="cancel">Cancel</button>
 		</div>
 	</div>

@@ -33,15 +33,15 @@
 			<div v-if="invoice.status === 'issued'"></div>
 			<div v-if="invoice.status === 'issued'">Due: {{ formatInvoiceDate(invoice.due) }}</div>
 			<div v-if="invoice.status === 'issued'" class="text-right">
-				<button @click="payNow" :data-testid="`invoice-${invoice.no}-pay-now`">Pay Now</button>
+				<button class="primary" @click="payNow" :data-testid="`invoice-${invoice.no}-pay-now`">Pay Now</button>
 			</div>
 			<div v-if="invoice.status === 'issued' && autoPay && !overdue" class="col-span-full text-right italic">
 				Will be paid automatically on {{ formatInvoiceDate(invoice.due) }}
 			</div>
 
 			<div class="flex gap-2">
-				<button @click="showInvoice" :data-testid="`invoice-${invoice.no}-view-link`">View</button>
-				<button @click="showInvoicePdf" :data-testid="`invoice-${invoice.no}-pdf-link`">PDF</button>
+				<button class="primary" @click="showInvoice" :data-testid="`invoice-${invoice.no}-view-link`">View</button>
+				<button class="primary" @click="showInvoicePdf" :data-testid="`invoice-${invoice.no}-pdf-link`">PDF</button>
 			</div>
 			<div></div>
 			<div class="text-right" :data-testid="`invoice-${invoice.no}-total`">

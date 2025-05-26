@@ -13,7 +13,7 @@
 				</div>
 			</main>
 			<footer class="flex justify-end gap-2 pr-2 pb-2">
-				<button @click="submitDialog" data-testid="dialog-yes">Yes</button>
+				<button class="primary" @click="submitDialog" data-testid="dialog-yes">Yes</button>
 				<button class="secondary" data-testid="dialog-no" @click="close">No</button>
 			</footer>
 		</div>

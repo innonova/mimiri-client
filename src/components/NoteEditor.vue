@@ -76,7 +76,7 @@
 						</div>
 					</template>
 				</div>
-				<button class="min-w-full" :disabled="!mimiriEditor.history.hasMoreHistory" @click="loadMoreHistory">
+				<button class="primary rounded-none!" :disabled="!mimiriEditor.history.hasMoreHistory" @click="loadMoreHistory">
 					Read More Entries
 				</button>
 			</div>

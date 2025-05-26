@@ -23,7 +23,7 @@
 				</div>
 			</main>
 			<footer class="flex justify-end gap-2 pr-2 pb-2">
-				<button @click="submitDialog">OK</button>
+				<button class="primary" @click="submitDialog">OK</button>
 				<button class="secondary" @click="close">Cancel</button>
 			</footer>
 		</div>

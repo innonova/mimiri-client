@@ -6,7 +6,7 @@
 				<div>Are you sure you want to permanently delete all items int the recycle bin?</div>
 			</main>
 			<footer class="flex justify-end gap-2 pr-2 pb-2">
-				<button @click="submitDialog">Yes</button>
+				<button class="primary" @click="submitDialog">Yes</button>
 				<button class="secondary" @click="close">No</button>
 			</footer>
 		</div>

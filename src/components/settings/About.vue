@@ -37,10 +37,10 @@
 						<button class="secondary" @click="closeLog">Close Log</button>
 					</div>
 					<div class="text-center">
-						<button @click="reload">reload</button>
+						<button class="primary" @click="reload">reload</button>
 					</div>
 					<div class="text-center">
-						<button @click="changeChannel">
+						<button class="primary" @click="changeChannel">
 							{{ settingsManager.channel }}
 						</button>
 					</div>

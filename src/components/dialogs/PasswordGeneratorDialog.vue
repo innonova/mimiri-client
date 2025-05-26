@@ -29,7 +29,7 @@
 				</div>
 			</main>
 			<footer class="flex justify-end items-center gap-2 pr-2 pb-2">
-				<button @click="copyPassword">Copy</button>
+				<button class="primary" @click="copyPassword">Copy</button>
 				<button class="secondary" @click="close">Close</button>
 			</footer>
 		</div>

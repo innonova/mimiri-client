@@ -44,8 +44,7 @@
 	<div class="mt-10 max-w-110 mr-2">
 		<hr />
 		<div class="w-full flex justify-end mt-2 gap-2">
-			<button :disabled="!canSave" @click="save">Save</button>
-			<!-- <button class="secondary" @click="close">Close</button> -->
+			<button :disabled="!canSave" @click="save" class="primary">Save</button>
 		</div>
 	</div>
 </template>

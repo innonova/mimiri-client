@@ -6,7 +6,7 @@
 				<div>{{ text }}</div>
 			</main>
 			<footer class="flex justify-end gap-2 pr-2 pb-2">
-				<button @click="close">OK</button>
+				<button class="primary" @click="close">OK</button>
 			</footer>
 		</div>
 	</dialog>

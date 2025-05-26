@@ -41,6 +41,7 @@
 					<LoadingIcon v-if="payInProgress" class="animate-spin w-8 h-8 mr-2 inline-block"></LoadingIcon>
 					<button
 						type="submit"
+						class="primary"
 						:disabled="!valid || !termsAccepted || !privacyAccepted || !method || payInProgress"
 						data-testid="pay-button"
 					>

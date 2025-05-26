@@ -9,7 +9,7 @@
 				</div>
 			</main>
 			<footer class="flex justify-end gap-2 pt-3 pr-2 pb-2">
-				<button v-if="updateManager.latestVersion" @click="update">Update</button>
+				<button class="primary" v-if="updateManager.latestVersion" @click="update">Update</button>
 				<button class="secondary" @click="close">Close</button>
 			</footer>
 		</div>
