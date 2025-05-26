@@ -8,7 +8,7 @@
 				:hoverEffect="true"
 				:disabled="!saveEnabled"
 				title="Save Note"
-				@click="save"
+				@click="saveClicked"
 			></ToolbarIcon>
 			<div class="inline-block h-4/5 w-0 border border-solid border-toolbar-separator m-0.5"></div>
 			<ToolbarIcon
@@ -214,10 +214,12 @@ watch(searchManager.state, (newVal, _) => {
 
 const undo = () => {
 	mimiriEditor.undo()
+	mimiriEditor.focus()
 }
 
 const redo = () => {
 	mimiriEditor.redo()
+	mimiriEditor.focus()
 }
 
 const find = () => {
@@ -228,6 +230,25 @@ const onBack = () => {
 	window.history.back()
 	noteManager.closeEditorIfMobile()
 }
+
+const saveClicked = async () => {
+	mimiriEditor.focus()
+	// blur saves
+}
+
+const toggleWordWrap = event => {
+	settingsManager.wordwrap = !settingsManager.wordwrap
+	mimiriEditor.focus()
+}
+
+const showHistory = () => {
+	historyVisible.value = !historyVisible.value
+}
+
+const saveEnabled = computed(() => {
+	const winFocus = windowFocus.value // ensure that compute knows to trigger on this even if the first part of the next statement is false - AEK
+	return mimiriEditor.state.changed && winFocus && activeViewModel
+})
 
 const save = async () => {
 	if (activeViewModel && saveEnabled) {
@@ -267,19 +288,6 @@ const save = async () => {
 		}
 	}
 }
-
-const toggleWordWrap = () => {
-	settingsManager.wordwrap = !settingsManager.wordwrap
-}
-
-const showHistory = () => {
-	historyVisible.value = !historyVisible.value
-}
-
-const saveEnabled = computed(() => {
-	const winFocus = windowFocus.value // ensure that compute knows to trigger on this even if the first part of the next statement is false - AEK
-	return mimiriEditor.state.changed && winFocus && activeViewModel
-})
 
 defineExpose({
 	save,

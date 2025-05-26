@@ -1,6 +1,6 @@
 <template>
 	<TabBar :items="['Username']"></TabBar>
-	<div class="grid grid-cols-[5rem_12rem] gap-3 items-baseline m-1 mt-5">
+	<div class="grid grid-cols-[5rem_14rem] gap-3 items-baseline m-1 mt-5">
 		<div class="flex items-center">Username:</div>
 		<UsernameInput ref="usernameInput" :display-current="true" @changed="usernameChanged"></UsernameInput>
 	</div>

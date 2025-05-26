@@ -3,7 +3,7 @@
 		<component
 			:is="getComponent()"
 			:class="{
-				'w-14 h-14 p-3': !props.keepSizeOnMobile,
+				'w-13 h-13 p-3': !props.keepSizeOnMobile,
 				'md:w-6 md:h-6 md:p-0.5 md:m-0.5 md:mr-1': !props.keepSizeOnMobile && !mimiriPlatform.isTablet,
 				'w-5 h-5 p-px': props.keepSizeOnMobile,
 				'text-toolbar-disabled': props.disabled,
