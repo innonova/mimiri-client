@@ -77,7 +77,7 @@
 				placeholder="Search Notes"
 				:value="searchManager.state.term"
 				:disabled="!noteManager.state.authenticated"
-				class="rounded-md! text-center no-drag text-size-base! h-6 outline-none"
+				class="bg-input rounded-md text-center no-drag text-size-base h-full pb-1 outline-none"
 				:class="{
 					'w-2/3 max-w-80': mimiriPlatform.isPc,
 					'w-full': !mimiriPlatform.isPc,
