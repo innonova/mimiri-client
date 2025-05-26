@@ -96,10 +96,34 @@ export class UpdateManager {
 		return response.body.getReader()
 	}
 
+	private setActive() {
+		this.state.activeVersion =
+			this.installedVersions.find(ver => ver.active) ??
+			this.installedVersions.find(ver => ver.base) ??
+			(this.installedVersions.length > 0
+				? this.installedVersions[0]
+				: {
+						version: '0.0.0',
+						minElectronVersion: '0.0.0',
+						minElectronVersionWin32: '0.0.0',
+						minElectronVersionDarwin: '0.0.0',
+						minElectronVersionLinux: '0.0.0',
+						minIosVersion: '0.0.0',
+						minAndroidVersion: '0.0.0',
+						releaseDate: '0.0.0',
+						size: 0,
+						active: true,
+						previous: false,
+						good: true,
+						base: true,
+						hostVersion: '2.3.0',
+					})
+	}
+
 	public async good() {
 		if (ipcClient.isAvailable) {
 			this.installedVersions = await ipcClient.bundle.getInstalledVersions()
-			this.state.activeVersion = this.installedVersions.find(ver => ver.active)
+			this.setActive()
 			if (!this.state.activeVersion.good) {
 				await ipcClient.bundle.good(this.state.activeVersion.version)
 			}
@@ -168,7 +192,7 @@ export class UpdateManager {
 		if (ipcClient.isAvailable) {
 			try {
 				this.installedVersions = await ipcClient.bundle.getInstalledVersions()
-				this.state.activeVersion = this.installedVersions.find(ver => ver.active)
+				this.setActive()
 				const currentKey = updateKeys.find(item => item.current)
 
 				const bundleInfo = await this.get<BundleInfo>(
@@ -311,7 +335,7 @@ export class UpdateManager {
 
 			if (mimiriPlatform.isElectron) {
 				if (!this.hostVersion) {
-					this.state.activeVersion = this.installedVersions.find(ver => ver.active)
+					this.setActive()
 				}
 				const hostSupportsVersion = compareVersions(info.minElectronVersion, this.state.activeVersion.hostVersion) <= 0
 
