@@ -1,28 +1,26 @@
 <template>
-	<div class="flex select-none">
-		<div class="py-2 px-4 bg-info cursor-default" data-testid="settings-view-username">Create Password</div>
-	</div>
-	<div class="bg-info h-2 mb-2 mr-2"></div>
+	<TabBar :items="['Create Password']"></TabBar>
 	<div class="px-1 pt-3 pb-5 max-w-[20rem] leading-5">
 		Choose a username and password to allow you to access your data from anywhere
 	</div>
 	<div class="max-w-110" data-testid="promote-account-view">
 		<form class="w-96" v-on:submit.prevent="createAccount">
-			<UsernameInput :display-current="false" @changed="usernameChanged"></UsernameInput>
-			<div class="p-1 m-aut0 flex">
-				<div class="w-24 flex items-center">Password:</div>
-				<div class="w-52 text-right relative md:flex">
+			<div class="grid grid-cols-[5rem_12rem] gap-3 items-baseline">
+				<div class="flex items-center">Username:</div>
+				<UsernameInput :display-current="false" @changed="usernameChanged"></UsernameInput>
+				<div class="flex items-center">Password:</div>
+				<div class="text-right relative md:flex">
 					<input
 						v-model="password"
 						tabindex="2"
 						:type="passwordFieldType"
-						class="bg-input text-input-text w-48"
+						class="basic-input"
 						data-testid="password-input"
 					/>
 					<div class="md:w-0 md:h-0 overflow-visible">
-						<div class="absolute right-6 invisible md:visible" @mousedown="showPassword" @mouseup="hidePassword">
-							<ShowPasswordIcon v-if="passwordFieldType === 'password'" class="w-6 h-6 mt-0.5"></ShowPasswordIcon>
-							<ShowingPasswordIcon v-if="passwordFieldType === 'text'" class="w-6 h-6 mt-0.5"></ShowingPasswordIcon>
+						<div class="absolute right-2 invisible md:visible" @mousedown="showPassword" @mouseup="hidePassword">
+							<ShowPasswordIcon v-if="passwordFieldType === 'password'" class="w-5 h-5 mt-1"></ShowPasswordIcon>
+							<ShowingPasswordIcon v-if="passwordFieldType === 'text'" class="w-5 h-5 mt-1"></ShowingPasswordIcon>
 						</div>
 					</div>
 					<div v-if="passwordQuality" class="md:w-0 md:h-0 overflow-visible">
@@ -30,39 +28,31 @@
 							v-if="passwordQuality === 'free-access'"
 							class="flex items-center w-52 h-7 md:ml-2 mt-1.5 md:mt-0 text-left"
 						>
-							<FreeAccessIcon class="w-6 h-6 mr-1 inline-block"></FreeAccessIcon> Not really a password
+							<FreeAccessIcon class="w-5 h-5 mr-1 inline-block"></FreeAccessIcon> Not really a password
 						</div>
 						<div
 							v-if="passwordQuality === 'casual-use-only'"
 							class="flex items-center w-52 h-7 md:ml-2 mt-1.5 md:mt-0 text-left"
 						>
-							<CasualOnlyIcon class="w-6 h-6 mr-1 inline-block"></CasualOnlyIcon> Very limited security
+							<CasualOnlyIcon class="w-5 h-5 mr-1 inline-block"></CasualOnlyIcon> Very limited security
 						</div>
 						<div
 							v-if="passwordQuality === 'acceptable-security'"
 							class="flex items-center w-52 h-7 md:ml-2 mt-1.5 md:mt-0 text-left"
 						>
-							<LightSecurityIcon class="w-6 h-6 mr-1 inline-block"></LightSecurityIcon> Acceptable
+							<LightSecurityIcon class="w-5 h-5 mr-1 inline-block"></LightSecurityIcon> Acceptable
 						</div>
 					</div>
 				</div>
-			</div>
-			<div class="p-1 m-auto flex">
-				<div class="w-24 flex items-center">Repeat:</div>
-				<div class="w-52 text-right relative md:flex">
-					<input
-						v-model="passwordRepeat"
-						tabindex="3"
-						type="password"
-						class="bg-input text-input-text w-48"
-						data-testid="repeat-input"
-					/>
+				<div class="flex items-center">Repeat:</div>
+				<div class="text-right relative md:flex">
+					<input v-model="passwordRepeat" tabindex="3" type="password" class="basic-input" data-testid="repeat-input" />
 					<div v-if="password" class="md:w-0 md:h-0 pt-0.5 overflow-visible">
-						<div v-if="passwordMatch" class="flex items-center w-52 md:ml-2 mt-1.5 md:mt-0">
-							<AvailableIcon class="w-6 h-6 mr-1 inline-block"></AvailableIcon> Matching
+						<div v-if="passwordMatch" class="flex items-center w-52 md:ml-2 mt-1.5 md:mt-0.5">
+							<AvailableIcon class="w-5 h-5 mr-1 inline-block"></AvailableIcon> Matching
 						</div>
-						<div v-if="!passwordMatch" class="flex items-center w-52 md:ml-2 mt-1.5 md:mt-0">
-							<UnavailableIcon class="w-6 h-6 mr-1 inline-block"></UnavailableIcon> Not matching
+						<div v-if="!passwordMatch" class="flex items-center w-52 md:ml-2 mt-1.5 md:mt-0.5">
+							<UnavailableIcon class="w-5 h-5 mr-1 inline-block"></UnavailableIcon> Not matching
 						</div>
 					</div>
 				</div>
@@ -141,6 +131,7 @@ import { persistedState } from '../../services/persisted-state'
 import { deObfuscate } from '../../services/helpers'
 import UsernameInput from '../elements/UsernameInput.vue'
 import type { Guid } from '../../services/types/guid'
+import TabBar from '../elements/TabBar.vue'
 
 const disallowString = '!"#$:%&@\'()*/=?[]{}~^`'
 const disallowRegex = /[!"#$:%&@'()*/=?[\]{}~\^\\`\s]/

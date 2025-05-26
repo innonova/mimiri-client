@@ -1,8 +1,5 @@
 <template>
-	<div class="flex select-none">
-		<div class="py-2 px-4 bg-info cursor-default" data-testid="settings-view-pin-code">PIN Code</div>
-	</div>
-	<div class="bg-info h-2 mb-2 mr-2"></div>
+	<TabBar :items="['PIN Code']"></TabBar>
 	<div class="flex flex-col items-center mt-10 max-w-110">
 		<div class="flex">
 			<div class="border-2 w-10 h-16 rounded-lg flex items-center justify-center mr-2">
@@ -39,6 +36,7 @@ import { computed, onMounted, ref, watch } from 'vue'
 import { useEventListener } from '@vueuse/core'
 import { localAuth } from '../../services/local-auth'
 import { passwordDialog } from '../../global'
+import TabBar from '../elements/TabBar.vue'
 
 let inputEnabled = false
 

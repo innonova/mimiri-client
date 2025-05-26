@@ -1,9 +1,6 @@
 <template>
 	<div class="flex flex-col h-full">
-		<div class="flex select-none">
-			<div class="py-2 px-4 bg-info cursor-default" data-testid="payment-methods-view">Payment Methods</div>
-		</div>
-		<div class="bg-info h-2 mb-2 mr-2"></div>
+		<TabBar :items="['Payment Methods']"></TabBar>
 		<div v-if="!methods?.length" class="m-5" data-testid="payment-methods-none">No Payments Methods Yet</div>
 		<div class="flex flex-col gap-3 items-start overflow-y-auto">
 			<template v-for="method of methods" :key="method.id">
@@ -28,6 +25,7 @@ import type { PaymentMethod } from '../../services/types/subscription'
 import PaymentMethodItem from './PaymentMethodItem.vue'
 import { deletePaymentMethodDialog, noteManager } from '../../global'
 import { emptyGuid } from '../../services/types/guid'
+import TabBar from '../elements/TabBar.vue'
 
 const emit = defineEmits(['pay-in-progress'])
 

@@ -81,7 +81,7 @@ const recycleActiveNote = () => {
 }
 
 const renameActiveNote = () => {
-	if (noteManager.selectedNote) {
+	if (noteManager.selectedNote && !noteManager.selectedNote.isSystem) {
 		noteManager.selectedNote.viewModel.renaming = true
 	}
 }

@@ -14,7 +14,14 @@
 			<option :value="state.code">{{ state.name }}</option>
 		</template>
 	</select>
-	<input v-if="states.length === 0" v-model="name" :disabled="disabled" type="text" data-testid="state-text" />
+	<input
+		v-if="states.length === 0"
+		v-model="name"
+		:disabled="disabled"
+		type="text"
+		class="basic-input"
+		data-testid="state-text"
+	/>
 </template>
 <script setup lang="ts">
 import { ref, watch } from 'vue'

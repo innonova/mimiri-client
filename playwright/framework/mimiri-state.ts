@@ -2,7 +2,6 @@ import { chromium, type Browser, type BrowserContext, type Page } from '@playwri
 import { MailPitClient } from './mailpit-client'
 import { OrchestrationClient } from './orchestration-client'
 import 'dotenv/config'
-import { start } from 'repl'
 import { Guid } from './guid'
 
 const createId = () => {
@@ -13,7 +12,7 @@ const createId = () => {
 
 export class MimiriState {
 	private static _browser: Browser | undefined
-	private static _context: BrowserContext
+	private _context: BrowserContext
 	private _mainPage: Page
 	private _pageStack: Page[] = []
 	private _expectedPage: Promise<Page> | undefined
@@ -62,9 +61,9 @@ export class MimiriState {
 		this._start = performance.now()
 		if (!MimiriState._browser) {
 			MimiriState._browser = await chromium.launch()
-			MimiriState._context = await MimiriState._browser.newContext()
 		}
-		this._mainPage = await MimiriState._context.newPage()
+		this._context = await MimiriState._browser.newContext()
+		this._mainPage = await this._context.newPage()
 		// this._mainPage.on('console', msg => console.log(msg.text()));
 		this._pageStack.push(this._mainPage)
 		await this.useMockPayrexx()
@@ -76,6 +75,7 @@ export class MimiriState {
 		await new Promise(resolve => setTimeout(resolve, 250))
 		await this._mailClient.cleanUp()
 		this._mainPage.close()
+		this._context.close()
 	}
 
 	public get page() {
@@ -139,7 +139,7 @@ export class MimiriState {
 	}
 
 	public async openTab() {
-		const page = await MimiriState._context.newPage()
+		const page = await this._context.newPage()
 		this._pageStack.push(page)
 		await this.page.bringToFront()
 	}

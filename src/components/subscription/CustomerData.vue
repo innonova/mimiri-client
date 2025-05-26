@@ -1,22 +1,24 @@
 <template>
 	<div data-testid="customer-data" class="flex">
-		<div class="grid grid-cols-[9em_18em] gap-4 items-baseline">
-			<div class="text-right" :class="{ 'text-red-500': !givenNameValid }">First name *</div>
+		<div class="grid grid-cols-[9em_18em] gap-3 items-baseline">
+			<div class="text-right" :class="{ 'text-red-500': changed && !givenNameValid }">First name *</div>
 			<input
 				v-model="givenName"
 				:disabled="disabled"
 				name="givenName"
 				autocomplete="given-name"
 				type="text"
+				class="basic-input"
 				data-testid="given-name"
 			/>
-			<div class="text-right" :class="{ 'text-red-500': !familyNameValid }">Last name *</div>
+			<div class="text-right" :class="{ 'text-red-500': changed && !familyNameValid }">Last name *</div>
 			<input
 				v-model="familyName"
 				:disabled="disabled"
 				name="familyName"
 				autocomplete="family-name"
 				type="text"
+				class="basic-input"
 				data-testid="family-name"
 			/>
 			<div class="text-right">Company <sup>1)</sup></div>
@@ -26,9 +28,10 @@
 				name="company"
 				autocomplete="company"
 				type="text"
+				class="basic-input"
 				data-testid="company"
 			/>
-			<div class="text-right" :class="{ 'text-red-500': !emailValid }">Email *</div>
+			<div class="text-right" :class="{ 'text-red-500': changed && !emailValid }">Email *</div>
 			<div class="flex flex-col items-end">
 				<input
 					v-model="email"
@@ -36,7 +39,7 @@
 					name="email"
 					autocomplete="email"
 					type="text"
-					class="w-full"
+					class="basic-input w-full!"
 					data-testid="email"
 				/>
 				<div
@@ -63,9 +66,9 @@
 					Send verification email
 				</button>
 			</div>
-			<div class="text-right" :class="{ 'text-red-500': !countryValid }">Country *</div>
+			<div class="text-right" :class="{ 'text-red-500': changed && !countryValid }">Country *</div>
 			<CountrySelector v-model:code="countryCode" v-model:name="countryName" :disabled="disabled"></CountrySelector>
-			<div class="text-right" :class="{ 'text-red-500': !stateValid }">
+			<div class="text-right" :class="{ 'text-red-500': changed && !stateValid }">
 				State/Province <span v-if="stateRequired">*</span><sup v-if="!stateRequired">1)</sup>
 			</div>
 			<StateSelector
@@ -82,6 +85,7 @@
 				:disabled="disabled"
 				autocomplete="address-level2"
 				type="text"
+				class="basic-input"
 				data-testid="city"
 			/>
 			<div class="text-right">Postal Code <sup>1)</sup></div>
@@ -91,6 +95,7 @@
 				:disabled="disabled"
 				autocomplete="postal-code"
 				type="text"
+				class="basic-input"
 				data-testid="postal-code"
 			/>
 			<div class="text-right">Address <sup>1)</sup></div>
@@ -162,15 +167,15 @@ watch([givenNameValid, familyNameValid, emailValid, countryValid, stateValid], (
 
 watch([customer, givenName, familyName, company, email, countryCode, stateCode, city, postalCode, address], () => {
 	changed.value =
-		givenName.value !== customer.value?.givenName ||
-		familyName.value !== customer.value?.familyName ||
-		company.value !== customer.value?.company ||
-		email.value !== customer.value?.email ||
-		countryCode.value !== customer.value?.countryCode ||
-		stateCode.value !== customer.value?.stateCode ||
-		city.value !== customer.value?.city ||
-		postalCode.value !== customer.value?.postalCode ||
-		address.value !== customer.value?.address
+		givenName.value !== (customer.value?.givenName ?? '') ||
+		familyName.value !== (customer.value?.familyName ?? '') ||
+		company.value !== (customer.value?.company ?? '') ||
+		email.value !== (customer.value?.email ?? '') ||
+		countryCode.value !== (customer.value?.countryCode ?? '') ||
+		stateCode.value !== (customer.value?.stateCode ?? '') ||
+		city.value !== (customer.value?.city ?? '') ||
+		postalCode.value !== (customer.value?.postalCode ?? '') ||
+		address.value !== (customer.value?.address ?? '')
 })
 
 const showEmailVerification = computed(

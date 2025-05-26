@@ -1,9 +1,6 @@
 <template>
 	<div class="flex flex-col h-full">
-		<div class="flex select-none">
-			<div class="py-2 px-4 bg-info cursor-default">Invoices</div>
-		</div>
-		<div class="bg-info h-2 mb-2 mr-2"></div>
+		<TabBar :items="['Invoices']"></TabBar>
 		<div v-if="!invoices?.length" class="m-5" data-testid="invoices-none">No Invoices Yet</div>
 		<div class="p-1 pt-2 text-left overflow-y-auto" data-testid="invoices-view">
 			<div class="flex flex-col gap-2">
@@ -21,6 +18,7 @@ import { onMounted, ref } from 'vue'
 import type { Invoice } from '../../services/types/subscription'
 import { noteManager } from '../../global'
 import InvoiceItem from './InvoiceItem.vue'
+import TabBar from '../elements/TabBar.vue'
 
 const emit = defineEmits(['pay-invoice'])
 

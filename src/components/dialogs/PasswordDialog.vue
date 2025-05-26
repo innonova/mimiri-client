@@ -14,7 +14,7 @@
 								:disabled="busy"
 								autofocus
 								type="password"
-								class="bg-input text-input-text w-48"
+								class="basic-input"
 							/>
 						</div>
 					</div>

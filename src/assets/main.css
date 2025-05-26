@@ -17,8 +17,10 @@
 	--text-size-product--line-height: 1rem;
 	--text-size-header: 24px;
 	--text-size-header--line-height: 1.3rem;
-	--text-size-input: 16px;
+	--text-size-input: 14px;
 	--text-size-input--line-height: 1.5rem;
+	--text-size-info: 14px;
+	--text-size-info--line-height: 1.15em;
 
 	--color-back: #e3e3e3;
 	--color-info: #d2d2d8;
@@ -47,7 +49,7 @@
 	--color-button-disabled: #aaa;
 	--color-button-disabled-text: #ccc;
 	--color-button-secondary: #777;
-	--color-button-secondary-text: #000;
+	--color-button-secondary-text: #fff;
 	--color-button-hover: rgba(0, 0, 0, 0.2);
 	--color-dialog: #f4f4f4;
 	--color-dialog-border: #000;
@@ -67,6 +69,7 @@
 	--color-good: green;
 	--color-bad: red;
 	--color-splash: #4381c1;
+	--color-checkbox: #4381c1;
 }
 
 @layer theme {
@@ -93,11 +96,11 @@
 		--color-online: green;
 		--color-offline: red;
 		--color-warning: #f6ba00;
-		--color-button-primary: #666;
+		--color-button-primary: #777;
 		--color-button-primary-text: #fff;
 		--color-button-disabled: #484848;
 		--color-button-disabled-text: #777;
-		--color-button-secondary: #222;
+		--color-button-secondary: #282828;
 		--color-button-secondary-text: #fff;
 		--color-button-hover: rgba(255, 255, 255, 0.2);
 		--color-dialog: #3f3f3f;
@@ -118,6 +121,7 @@
 		--color-good: green;
 		--color-bad: #ff2222;
 		--color-splash: #4381c1;
+		--color-checkbox: #4381c1;
 	}
 }
 
@@ -142,7 +146,7 @@ html[data-env-support='false'] {
 }
 
 button {
-	@apply bg-button-primary text-button-primary-text hover:brightness-125 hover:rounded-sm select-none;
+	@apply bg-button-primary text-button-primary-text hover:brightness-125 rounded-sm select-none;
 	@apply font-display text-size-base;
 	@apply w-24 h-8 cursor-default;
 }
@@ -153,7 +157,7 @@ button[disabled] {
 }
 
 button.secondary {
-	@apply bg-button-secondary text-button-primary-text hover:brightness-150 select-none;
+	@apply bg-button-secondary text-button-secondary-text hover:brightness-125 select-none;
 }
 
 button.secondary:disabled,
@@ -187,12 +191,16 @@ body,
 	@apply overflow-hidden h-full w-full font-display;
 }
 
-input {
-	@apply bg-input text-input-text text-size-input px-1 pt-px pb-[2px];
+input.basic-input {
+	@apply bg-input text-input-text text-size-input px-1.5 pt-px pb-[2px] rounded-sm w-full;
+}
+
+input[type='checkbox'] {
+	@apply w-[0.9rem] h-[0.9rem] accent-checkbox;
 }
 
 select {
-	@apply bg-input text-input-text px-1 pt-px pb-[2px];
+	@apply bg-input text-input-text text-size-input py-1 px-px rounded-sm;
 }
 
 input::selection {
@@ -204,7 +212,7 @@ textarea {
 }
 
 div.info {
-	@apply bg-info pl-1 pr-2 pb-2 pt-1;
+	@apply bg-info pl-3 pr-4 pb-4 pt-3 text-size-info rounded-sm;
 }
 
 div {

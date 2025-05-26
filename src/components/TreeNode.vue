@@ -9,7 +9,6 @@
 		@dragover="onDragOver"
 		@dragenter="onDragEnter"
 		@dragleave="onDragLeave"
-		:data-testid="dataTestId"
 	>
 		<div
 			class="rounded-sm relative overflow-hidden h-[30px] md:h-[25px] flex items-center py-[19px] md:py-0"
@@ -18,7 +17,7 @@
 				'text-menu-disabled': node.isRecycleBin && !hasChildren && !isSelected,
 			}"
 			ref="visualElement"
-			data-testid="tree-node"
+			:data-testid="dataTestId"
 			@click="selectNode(false)"
 			@dblclick="toggleNode"
 		>
@@ -30,11 +29,13 @@
 			<div v-show="!searchModeActive" class="flex items-center pl-1 pr-0.5 h-full" @click="toggleNode">
 				<PlusIcon
 					v-if="!node.expanded"
+					:data-testid="`${dataTestId}-closed`"
 					class="h-5 w-5 md:h-4 md:w-4 mt-px"
 					:class="{ invisible: !hasChildren }"
 				></PlusIcon>
 				<MinusIcon
 					v-if="node.expanded"
+					:data-testid="`${dataTestId}-open`"
 					class="h-5 w-5 md:h-4 md:w-4 mt-px"
 					:class="{ invisible: !hasChildren }"
 				></MinusIcon>

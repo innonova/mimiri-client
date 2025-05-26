@@ -16,7 +16,9 @@ export const verifySettings = async () => {
 	await expect(settingNodes.recycleBin()).toBeVisible()
 	await settingNodes.controlPanel().click()
 	await expect(settingView.about()).toBeVisible()
-	await settingNodes.controlPanel().dblclick()
+	if (await settingNodes.controlPanelClosed().isVisible()) {
+		await settingNodes.controlPanel().dblclick()
+	}
 
 	await expect(settingNodes.update()).toBeVisible()
 	await settingNodes.update().click()

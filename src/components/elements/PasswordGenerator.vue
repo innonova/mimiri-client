@@ -136,13 +136,13 @@
 				</div>
 			</div>
 		</div>
-		<div v-if="props.mode === '3rdp'" class="info mt-4">
+		<div v-if="props.mode === '3rdp'" class="info mt-4 rounded-sm">
 			<div class="mb-1.5 font-bold">How likely to be cracked in case of:</div>
-			<div class="mt-1 pl-1 flex justify-between w-80">
+			<div class="mt-1 pl-1 flex justify-between w-76">
 				<div>Online attack:</div>
 				not happening
 			</div>
-			<div class="mt-2 pl-1 flex justify-between w-80">
+			<div class="mt-2 pl-1 flex justify-between w-76">
 				<div>Data breach:</div>
 				{{ breachLikelyHood }}
 			</div>

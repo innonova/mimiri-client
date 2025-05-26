@@ -77,7 +77,7 @@
 				placeholder="Search Notes"
 				:value="searchManager.state.term"
 				:disabled="!noteManager.state.authenticated"
-				class="rounded-md text-center no-drag text-size-base! outline-none"
+				class="rounded-md! text-center no-drag text-size-base! h-6 outline-none"
 				:class="{
 					'w-2/3 max-w-80': mimiriPlatform.isPc,
 					'w-full': !mimiriPlatform.isPc,
@@ -98,11 +98,11 @@
 		>
 			<ScreenShareEnabledIcon
 				v-if="settingsManager.allowScreenSharing"
-				class="w-9 h-7 p-0.5 px-1 no-drag pointer-events-none text-warning"
+				class="w-9 h-6 p-0.5 px-1 no-drag pointer-events-none text-warning"
 			></ScreenShareEnabledIcon>
 			<ScreenShareDisabledIcon
 				v-if="!settingsManager.allowScreenSharing"
-				class="w-9 h-7 p-0.5 px-1 no-drag pointer-events-none text-title-text-blur"
+				class="w-9 h-6 p-0.5 px-1 no-drag pointer-events-none text-title-text-blur"
 			></ScreenShareDisabledIcon>
 		</div>
 		<div
@@ -117,14 +117,14 @@
 		>
 			<NotificationIcon
 				v-if="notificationManager.unread === 0"
-				class="w-9 h-7 p-px mt-0.5 no-drag pointer-events-none"
+				class="w-9 h-6 p-px mt-0.5 no-drag pointer-events-none"
 				:class="{
 					'text-title-text-blur': notificationManager.count <= 0,
 				}"
 			></NotificationIcon>
 			<NotificationActiveIcon
 				v-if="notificationManager.unread > 0"
-				class="w-9 h-7 p-px no-drag pointer-events-none"
+				class="w-9 h-6 p-px no-drag pointer-events-none"
 			></NotificationActiveIcon>
 			<div
 				v-if="
@@ -148,7 +148,7 @@
 			@mouseenter="menuHover($event, 'account')"
 		>
 			<AccountIcon
-				class="w-9 h-7 p-0.5 px-1 no-drag pointer-events-none"
+				class="w-9 h-6 p-0.5 px-1 no-drag pointer-events-none"
 				:class="{
 					'text-title-text-blur': !noteManager.state.authenticated,
 					'p-px text-online active:p-px': noteManager.state.online && noteManager.state.authenticated,

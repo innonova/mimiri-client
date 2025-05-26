@@ -1,31 +1,21 @@
 <template>
-	<div class="p-1 m-auto flex">
-		<div class="w-24 flex items-center">Username:</div>
-		<div class="w-52 text-right relative md:flex">
-			<input
-				v-model="username"
-				tabindex="1"
-				type="text"
-				class="bg-input text-input-text w-48"
-				autofocus
-				data-testid="username-input"
-			/>
-			<div v-if="username" class="md:w-0 md:h-0 pt-0.5 overflow-visible">
-				<div v-if="usernameCurrent" class="flex items-center w-52 md:ml-2 mt-1.5 md:mt-0">
-					<AvailableIcon class="w-6 h-6 mr-1 inline-block"></AvailableIcon> Current
-				</div>
-				<div v-if="usernameInProgress" class="flex items-center w-52 md:ml-2 mt-1.5 md:mt-0">
-					<LoadingIcon class="animate-spin w-6 h-6 mr-1 inline-block"></LoadingIcon> Checking
-				</div>
-				<div v-if="usernameAvailable" class="flex items-center w-52 md:ml-2 mt-1.5 md:mt-0">
-					<AvailableIcon class="w-6 h-6 mr-1 inline-block"></AvailableIcon> Available
-				</div>
-				<div v-if="usernameUnavailable" class="flex items-center w-52 md:ml-2 mt-1.5 md:mt-0">
-					<UnavailableIcon class="w-6 h-6 mr-1 inline-block"></UnavailableIcon> Unavailable
-				</div>
-				<div v-if="usernameInvalid" class="flex items-center w-52 md:ml-2 mt-1.5 md:mt-0">
-					<UnavailableIcon class="w-6 h-6 mr-1 inline-block"></UnavailableIcon> Invalid
-				</div>
+	<div class="relative md:flex">
+		<input v-model="username" tabindex="1" type="text" class="basic-input" autofocus data-testid="username-input" />
+		<div v-if="username" class="md:w-0 md:h-0 pt-0.5 overflow-visible">
+			<div v-if="usernameCurrent" class="flex items-center w-52 md:ml-2 mt-1.5 md:mt-0.5">
+				<AvailableIcon class="w-5 h-5 mr-1 inline-block"></AvailableIcon> Current
+			</div>
+			<div v-if="usernameInProgress" class="flex items-center w-52 md:ml-2 mt-1.5 md:mt-0">
+				<LoadingIcon class="animate-spin w-5 h-5 mr-1 inline-block"></LoadingIcon> Checking
+			</div>
+			<div v-if="usernameAvailable" class="flex items-center w-52 md:ml-2 mt-1.5 md:mt-0.5">
+				<AvailableIcon class="w-5 h-5 mr-1 inline-block"></AvailableIcon> Available
+			</div>
+			<div v-if="usernameUnavailable" class="flex items-center w-52 md:ml-2 mt-1.5 md:mt-0.5">
+				<UnavailableIcon class="w-5 h-5 mr-1 inline-block"></UnavailableIcon> Unavailable
+			</div>
+			<div v-if="usernameInvalid" class="flex items-center w-52 md:ml-2 mt-1.5 md:mt-0.5">
+				<UnavailableIcon class="w-5 h-5 mr-1 inline-block"></UnavailableIcon> Invalid
 			</div>
 		</div>
 	</div>

@@ -1,9 +1,6 @@
 <template>
 	<div class="flex flex-col h-full">
-		<div class="flex select-none">
-			<div class="py-2 px-4 bg-info cursor-default" data-testid="settings-view-about">About</div>
-		</div>
-		<div class="bg-info h-2 mb-2 mr-2"></div>
+		<TabBar :items="['About']"></TabBar>
 		<div class="flex flex-col overflow-y-auto">
 			<div @click="boxClicked">
 				<div class="p-1 pl-4">Bundle Version: {{ updateManager.currentVersion }}</div>
@@ -27,7 +24,7 @@
 				</div>
 
 				<div class="pt-6 pl-4">Copyright &copy;2024-{{ new Date().getFullYear() }} innonova GmbH</div>
-				<div class="inline-flex flex-col mx-4 p-3 mt-4 bg-info">
+				<div class="inline-flex info flex-col mx-4 mt-4 bg-info">
 					<b>Attributions:</b>
 					<template v-for="att of iconAttributions">
 						<div class="mt-2 leading-5" v-html="att"></div>
@@ -64,6 +61,7 @@ import { noteManager, updateManager, mobileLog } from '../../global'
 import { settingsManager } from '../../services/settings-manager'
 import { iconAttributions } from '../../icons/attributions'
 import { mimiriPlatform } from '../../services/mimiri-platform'
+import TabBar from '../elements/TabBar.vue'
 
 const SYSTEM_NOTE_COUNT = 3
 

@@ -1,48 +1,26 @@
 <template>
-	<div class="flex select-none" data-testid="settings-view-password">
-		<div
-			class="py-2 px-4"
-			:class="{
-				'bg-info cursor-default': passwordMode === 'generate',
-				'cursor-pointer': passwordMode !== 'generate',
-			}"
-			@click="tabGenerateClick"
-		>
-			Generate
-		</div>
-		<div
-			class="py-2 px-4"
-			:class="{
-				'bg-info cursor-default': passwordMode === 'create',
-				'cursor-pointer': passwordMode !== 'create',
-			}"
-			@click="tabCreateClick"
-		>
-			Create
-		</div>
-	</div>
-	<div class="bg-info h-2 mb-2 mr-2"></div>
-	<div v-if="passwordMode === 'generate'" class="max-w-110 mr-2">
+	<TabBar @selected="tabSelected" :items="['Generate', 'Create']"></TabBar>
+	<div v-if="passwordMode === 'generate'" class="max-w-110 mr-2" data-testid="settings-view-password">
 		<PasswordGenerator ref="passwordGenerator" mode="mimiri" @password="onPasswordGenerated"></PasswordGenerator>
 		<div class="p-1 mt-8 m-aut0 flex">
 			<div class="w-24 flex items-center">Generated:</div>
 			<div class="w-52 text-right relative flex">
-				<input v-model="generatedPassword" tabindex="2" type="text" class="bg-input text-input-text w-48" />
-				<div class="w-0 h-0 pt-0.5 overflow-visible select-none">
-					<RefreshIcon class="w-6 h-6 ml-2" @click="regeneratePassword"></RefreshIcon>
+				<input v-model="generatedPassword" tabindex="2" type="text" class="basic-input" />
+				<div class="w-0 h-0 pt-1 overflow-visible select-none">
+					<RefreshIcon class="w-5 h-5 ml-2" @click="regeneratePassword"></RefreshIcon>
 				</div>
 			</div>
 		</div>
 		<div class="p-1 m-auto flex">
 			<div class="w-24 flex items-center">Repeat:</div>
-			<div class="w-52 text-right relative md:flex">
-				<input v-model="generatedPasswordRepeat" tabindex="3" type="password" class="bg-input text-input-text w-48" />
+			<div class="w-52 relative md:flex">
+				<input v-model="generatedPasswordRepeat" tabindex="3" type="password" class="basic-input" />
 				<div v-if="generatedPassword" class="md:w-0 md:h-0 pt-0.5 overflow-visible">
-					<div v-if="generatedPasswordMatch" class="flex items-center w-52 md:ml-2 mt-1.5 md:mt-0">
-						<AvailableIcon class="w-6 h-6 mr-1 inline-block"></AvailableIcon> Matching
+					<div v-if="generatedPasswordMatch" class="flex items-center w-52 md:ml-2 mt-1.5 md:mt-0.5">
+						<AvailableIcon class="w-5 h-5 mr-1 inline-block"></AvailableIcon> Matching
 					</div>
-					<div v-if="!generatedPasswordMatch" class="flex items-center w-52 md:ml-2 mt-1.5 md:mt-0">
-						<UnavailableIcon class="w-6 h-6 mr-1 inline-block"></UnavailableIcon> Not matching
+					<div v-if="!generatedPasswordMatch" class="flex items-center w-52 md:ml-2 mt-1.5 md:mt-0.5">
+						<UnavailableIcon class="w-5 h-5 mr-1 inline-block"></UnavailableIcon> Not matching
 					</div>
 				</div>
 			</div>
@@ -51,18 +29,18 @@
 	<div v-if="passwordMode === 'create'">
 		<div class="p-1 m-aut0 flex">
 			<div class="w-24 flex items-center">New:</div>
-			<div class="w-52 text-right relative md:flex">
+			<div class="w-52 relative md:flex">
 				<input
 					v-model="createdPassword"
 					tabindex="2"
 					:type="passwordFieldType"
-					class="bg-input text-input-text w-48"
+					class="basic-input"
 					data-testid="password-input"
 				/>
 				<div class="md:w-0 md:h-0 overflow-visible">
-					<div class="absolute right-6 invisible md:visible" @mousedown="showPassword" @mouseup="hidePassword">
-						<ShowPasswordIcon v-if="passwordFieldType === 'password'" class="w-6 h-6 mt-0.5"></ShowPasswordIcon>
-						<ShowingPasswordIcon v-if="passwordFieldType === 'text'" class="w-6 h-6 mt-0.5"></ShowingPasswordIcon>
+					<div class="absolute right-2 invisible md:visible" @mousedown="showPassword" @mouseup="hidePassword">
+						<ShowPasswordIcon v-if="passwordFieldType === 'password'" class="w-5 h-5 mt-1"></ShowPasswordIcon>
+						<ShowingPasswordIcon v-if="passwordFieldType === 'text'" class="w-5 h-5 mt-1"></ShowingPasswordIcon>
 					</div>
 				</div>
 				<div v-if="passwordQuality" class="md:w-0 md:h-0 overflow-visible">
@@ -70,39 +48,39 @@
 						v-if="passwordQuality === 'free-access'"
 						class="flex items-center w-52 h-7 md:ml-2 mt-1.5 md:mt-0 text-left"
 					>
-						<FreeAccessIcon class="w-6 h-6 mr-1 inline-block"></FreeAccessIcon> Not really a password
+						<FreeAccessIcon class="w-5 h-5 mr-1 inline-block"></FreeAccessIcon> Not really a password
 					</div>
 					<div
 						v-if="passwordQuality === 'casual-use-only'"
 						class="flex items-center w-52 h-7 md:ml-2 mt-1.5 md:mt-0 text-left"
 					>
-						<CasualOnlyIcon class="w-6 h-6 mr-1 inline-block"></CasualOnlyIcon> Very limited security
+						<CasualOnlyIcon class="w-5 h-5 mr-1 inline-block"></CasualOnlyIcon> Very limited security
 					</div>
 					<div
 						v-if="passwordQuality === 'acceptable-security'"
 						class="flex items-center w-52 h-7 md:ml-2 mt-1.5 md:mt-0 text-left"
 					>
-						<LightSecurityIcon class="w-6 h-6 mr-1 inline-block"></LightSecurityIcon> Acceptable
+						<LightSecurityIcon class="w-5 h-5 mr-1 inline-block"></LightSecurityIcon> Acceptable
 					</div>
 				</div>
 			</div>
 		</div>
 		<div class="p-1 m-auto flex">
 			<div class="w-24 flex items-center">Repeat:</div>
-			<div class="w-52 text-right relative md:flex">
+			<div class="w-52 relative md:flex">
 				<input
 					v-model="createdPasswordRepeat"
 					tabindex="3"
 					type="password"
-					class="bg-input text-input-text w-48"
+					class="basic-input"
 					data-testid="repeat-input"
 				/>
 				<div v-if="createdPassword" class="md:w-0 md:h-0 pt-1 overflow-visible">
-					<div v-if="createdPasswordMatch" class="flex items-center w-52 md:ml-2 mt-1.5 md:mt-0">
-						<AvailableIcon class="w-6 h-6 mr-1 inline-block"></AvailableIcon> Matching
+					<div v-if="createdPasswordMatch" class="flex items-center w-52 md:ml-2 mt-1.5 md:mt-0.5">
+						<AvailableIcon class="w-5 h-5 mr-1 inline-block"></AvailableIcon> Matching
 					</div>
-					<div v-if="!createdPasswordMatch" class="flex items-center w-52 md:ml-2 mt-1.5 md:mt-0">
-						<UnavailableIcon class="w-6 h-6 mr-1 inline-block"></UnavailableIcon> Not matching
+					<div v-if="!createdPasswordMatch" class="flex items-center w-52 md:ml-2 mt-1.5 md:mt-0.5">
+						<UnavailableIcon class="w-5 h-5 mr-1 inline-block"></UnavailableIcon> Not matching
 					</div>
 				</div>
 			</div>
@@ -140,6 +118,7 @@ import UnavailableIcon from '../../icons/unavailable.vue'
 import FreeAccessIcon from '../../icons/free-access.vue'
 import CasualOnlyIcon from '../../icons/casual-only.vue'
 import LightSecurityIcon from '../../icons/light-security.vue'
+import TabBar from '../elements/TabBar.vue'
 
 const emit = defineEmits(['close'])
 
@@ -207,6 +186,14 @@ const tabGenerateClick = () => {
 
 const tabCreateClick = () => {
 	passwordMode.value = 'create'
+}
+
+const tabSelected = item => {
+	if (item === 'Create') {
+		passwordMode.value = 'create'
+	} else {
+		passwordMode.value = 'generate'
+	}
 }
 
 const regeneratePassword = () => {

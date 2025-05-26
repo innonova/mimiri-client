@@ -1,8 +1,5 @@
 <template>
-	<div class="flex select-none">
-		<div class="py-2 px-4 bg-info cursor-default" data-testid="settings-view-update">Update</div>
-	</div>
-	<div class="bg-info h-2 mb-2 mr-2"></div>
+	<TabBar :items="['Update']"></TabBar>
 	<div class="leading-7">
 		<div class="mt-4 px-1">
 			<select v-model="settingsManager.updateMode">
@@ -224,6 +221,7 @@ import { settingsManager, UpdateMode } from '../../services/settings-manager'
 import NotificationActiveIcon from '../../icons/notification-active.vue'
 import CogIcon from '../../icons/cog.vue'
 import DownloadIcon from '../../icons/download.vue'
+import TabBar from '../elements/TabBar.vue'
 
 const running = ref(false)
 const stage = ref('')

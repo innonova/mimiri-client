@@ -27,7 +27,7 @@
 			@click="toggleSearchAllNotes"
 		></ToolbarIcon>
 		<ToolbarIcon
-			class="hidden md:block"
+			class="hidden! md:block!"
 			icon="search-all-notes"
 			:hoverEffect="true"
 			title="Search All Notes"

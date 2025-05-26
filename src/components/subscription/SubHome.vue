@@ -1,9 +1,6 @@
 <template>
 	<div class="flex flex-col h-full">
-		<div class="flex select-none">
-			<div class="py-2 px-4 bg-info cursor-default">Current Plan</div>
-		</div>
-		<div class="bg-info h-2 mb-2 mr-2"></div>
+		<TabBar :items="['Current Plan']"></TabBar>
 		<div class="flex flex-col overflow-y-auto">
 			<div class="p-1 pt-2 flex" :data-testid="populated ? 'home-view' : ''">
 				<SubscriptionItem
@@ -57,6 +54,7 @@ import ItemHeader from './ItemHeader.vue'
 import CopyIcon from '../../icons/copy.vue'
 import SubscriptionItem from './SubscriptionItem.vue'
 import { onMounted, ref } from 'vue'
+import TabBar from '../elements/TabBar.vue'
 
 const product = ref<SubscriptionProduct>()
 const subscription = ref<Subscription>()

@@ -13,20 +13,16 @@
 				</div>
 				<div class="p-1 mt-4 m-aut0 flex">
 					<div class="w-24 flex items-center">Password:</div>
-					<div class="w-52 text-right relative md:flex">
-						<input v-model="password" tabindex="2" :type="passwordFieldType" class="bg-input w-48 text-input-text" />
-						<div class="w-0 h-0 pt-0.5 overflow-visible select-none">
-							<RefreshIcon class="w-6 h-6 ml-2" @click="regeneratePassword"></RefreshIcon>
+					<div class="w-48 text-right relative md:flex">
+						<input v-model="password" tabindex="2" :type="passwordFieldType" class="basic-input" />
+						<div class="w-0 h-0 pt-1 overflow-visible select-none">
+							<RefreshIcon class="w-5 h-5 ml-2" @click="regeneratePassword"></RefreshIcon>
 						</div>
 
 						<div class="md:w-0 md:h-0 overflow-visible">
-							<div
-								class="absolute right-[1.5rem] invisible md:visible"
-								@mousedown="showPassword"
-								@mouseup="hidePassword"
-							>
-								<ShowPasswordIcon v-if="passwordFieldType === 'password'" class="w-6 h-6 mt-0.5"></ShowPasswordIcon>
-								<ShowingPasswordIcon v-if="passwordFieldType === 'text'" class="w-6 h-6 mt-0.5"></ShowingPasswordIcon>
+							<div class="absolute right-2 invisible md:visible" @mousedown="showPassword" @mouseup="hidePassword">
+								<ShowPasswordIcon v-if="passwordFieldType === 'password'" class="w-5 h-5 mt-1"></ShowPasswordIcon>
+								<ShowingPasswordIcon v-if="passwordFieldType === 'text'" class="w-5 h-5 mt-1"></ShowingPasswordIcon>
 							</div>
 						</div>
 					</div>

@@ -1,21 +1,22 @@
 import { expect } from '@playwright/test'
-import { createCtrl, loginCtrl, mainToolbar, menu, titleBar } from '../selectors'
+import { loginCtrl, mainToolbar, menu, promoteAccount, settingNodes, settingView, titleBar } from '../selectors'
 import { mimiri } from '../framework/mimiri-context'
 
 export const createAccount = async () => {
-	await loginCtrl.createAccountLink().click()
-	await expect(createCtrl.container()).toBeVisible()
-	await createCtrl.username().fill(mimiri().config.username)
-	await createCtrl.password().fill(mimiri().config.password)
-	await createCtrl.repeat().fill(mimiri().config.password)
-	await createCtrl.terms().check()
-	await createCtrl.privacy().check()
-	await createCtrl.weak().check()
-	await createCtrl.noRecover().check()
-	await createCtrl.button().click()
+	await settingNodes.controlPanel().dblclick()
+	await settingNodes.account().click()
+	await expect(promoteAccount.container()).toBeVisible()
+	await promoteAccount.username().fill(mimiri().config.username)
+	await promoteAccount.password().fill(mimiri().config.password)
+	await promoteAccount.repeat().fill(mimiri().config.password)
+	await promoteAccount.noRecover().check()
+	await promoteAccount.button().click()
+	await expect(settingView.username()).toBeVisible()
 	await expect(mainToolbar.container()).toBeVisible({ timeout: 30000 })
 	await expect(titleBar.container()).toBeVisible()
-	await mimiri().reload()
+	if (await settingNodes.controlPanelOpen().isVisible()) {
+		await settingNodes.controlPanel().dblclick()
+	}
 }
 
 export const logout = async () => {

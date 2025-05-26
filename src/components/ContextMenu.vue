@@ -20,8 +20,8 @@
 					:data-testid="`menu-${item.id}`"
 					@mouseup="activateItem(item)"
 				>
-					<div class="flex items-center w-full h-7">
-						<div class="min-w-8 pl-0.5 leading-3">
+					<div class="flex items-center w-full h-6">
+						<div class="min-w-8 pl-1.5 leading-3">
 							<ToolbarIcon v-if="item.icon" :keep-size-on-mobile="true" :icon="item.icon"></ToolbarIcon>
 						</div>
 						<!-- <img v-if="item.icon" class="toolbar-icon" :src="item.icon" draggable="false" /> -->

@@ -8,7 +8,7 @@
 						<span>Share with:</span>
 						<input
 							ref="nameInput"
-							class="w-48 bg-input text-input-text ml-2"
+							class="basic-input ml-2"
 							type="text"
 							autofocus
 							v-model="name"

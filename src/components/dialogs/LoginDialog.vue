@@ -1,33 +1,31 @@
 <template>
 	<dialog class="modal bg-dialog text-text border border-solid border-dialog-border backdrop-grayscale" ref="dialog">
-		<div class="grid grid-rows-[auto_1fr_auto] gap-3 content-between">
+		<div class="grid grid-rows-[auto_1fr_auto] gap-3 content-between" data-testid="login-view">
 			<DialogTitle @close="cancel" :disabled="loading || showCreate || !showCancel">Login</DialogTitle>
-			<form v-on:submit.prevent="login" class="grid mx-2">
-				<div class="flex items-center justify-between m-1">
+			<form v-on:submit.prevent="login" class="mx-2">
+				<div class="grid grid-cols-[4rem_10rem] items-center gap-2 mx-2 mb-2">
 					<div>Username:</div>
 					<input
 						v-model="username"
 						tabindex="1"
 						type="text"
-						class="bg-input text-input-text ml-2 w-48"
+						class="basic-input ml-2"
 						data-testid="username-input"
 						autofocus
 					/>
-				</div>
-				<div class="flex items-center justify-between m-1 pb-2">
 					<div>Password:</div>
 					<input
 						v-model="password"
 						tabindex="2"
 						type="password"
 						data-testid="password-input"
-						class="bg-input text-input-text ml-2 w-48"
+						class="basic-input ml-2"
 					/>
 				</div>
-				<div class="m-1 pr-5" v-if="error" data-testid="login-error">
+				<div class="text-right pr-1" v-if="error" data-testid="login-error">
 					<div class="text-error text-right">Incorrect username or password</div>
 				</div>
-				<div v-if="loading" class="flex items-center justify-end m-1 pr-5">
+				<div v-if="loading" class="flex items-center justify-end m-1 pr-1 mt-2">
 					<LoadingIcon class="animate-spin w-8 h-8 mr-2 inline-block"></LoadingIcon>
 					<div class="flex flex-col items-center">
 						<div>Please wait</div>
@@ -35,7 +33,7 @@
 					</div>
 				</div>
 				<div
-					class="flex items-center gap-2 m-1"
+					class="flex items-center gap-2 mt-3"
 					:class="{
 						'justify-end': !showCreate,
 						'justify-between': showCreate,
@@ -45,9 +43,7 @@
 						v-if="showCreate"
 						:disabled="loading"
 						@click="cancel"
-						class="text-link hover:underline"
-						href="https://mimiri.com/login"
-						target="_blank"
+						class="text-link hover:underline ml-2 cursor-pointer"
 					>
 						Create New
 					</a>

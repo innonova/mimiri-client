@@ -1,8 +1,5 @@
 <template>
-	<div class="flex select-none">
-		<div class="py-2 px-4 bg-info cursor-default" data-testid="settings-view-general">General</div>
-	</div>
-	<div class="bg-info h-2 mb-2 mr-2"></div>
+	<TabBar :items="['General']"></TabBar>
 	<div class="p-1 pt-2 m-auto text-left">
 		<label>
 			<input type="checkbox" v-model="darkMode" class="mr-1 relative top-0.5" />
@@ -57,6 +54,7 @@
 import { computed, onMounted, ref } from 'vue'
 import { settingsManager } from '../../services/settings-manager'
 import { mimiriPlatform } from '../../services/mimiri-platform'
+import TabBar from '../elements/TabBar.vue'
 
 const emit = defineEmits(['close'])
 

@@ -52,6 +52,8 @@ export const dialog = {
 
 export const settingNodes = {
 	controlPanel: () => tid('node-control-panel'),
+	controlPanelOpen: () => tid('node-control-panel-open'),
+	controlPanelClosed: () => tid('node-control-panel-closed'),
 	recycleBin: () => tid('node-recycle-bin'),
 	update: () => tid('node-settings-update'),
 	settingGroup: () => tid('node-settings-group'),
@@ -62,6 +64,8 @@ export const settingNodes = {
 	password: () => tid('node-settings-password'),
 	delete: () => tid('node-settings-delete'),
 	subscriptionGroup: () => tid('node-settings-plan-group'),
+	subscriptionGroupOpen: () => tid('node-settings-plan-group-open'),
+	subscriptionGroupClosed: () => tid('node-settings-plan-group-closed'),
 	subscription: () => tid('node-settings-plan'),
 	billingAddress: () => tid('node-settings-billing-address'),
 	methods: () => tid('node-settings-payment-methods'),
@@ -85,6 +89,15 @@ export const loginCtrl = {
 	button: () => tid('login-button'),
 	createAccountLink: () => tid('create-account-link'),
 	loginError: () => tid('login-error'),
+}
+
+export const promoteAccount = {
+	container: () => tid('promote-account-view'),
+	username: () => tid('promote-account-view').getByTestId('username-input'),
+	password: () => tid('promote-account-view').getByTestId('password-input'),
+	repeat: () => tid('promote-account-view').getByTestId('repeat-input'),
+	noRecover: () => tid('promote-account-view').getByTestId('no-recover-checkbox'),
+	button: () => tid('promote-account-view').getByTestId('create-button'),
 }
 
 export const createCtrl = {
@@ -168,7 +181,7 @@ export const paymentSelector = {
 }
 
 export const paymentMethodsView = {
-	container: () => tid('payment-methods-view'),
+	container: () => tid('settings-view-payment-methods'),
 	card4242: () => tid('payment-method-4242xxxxxxxx4242-container'),
 	card4242IsDefault: () => tid('payment-method-4242xxxxxxxx4242-is-default'),
 	card4242Delete: () => tid('payment-method-4242xxxxxxxx4242-delete'),
@@ -214,8 +227,8 @@ export const deleteView = {
 	deleteData: () => tid(`delete-data-checkbox`),
 	noRecovery: () => tid(`no-recovery-checkbox`),
 	deleteLocal: () => tid(`delete-local-checkbox`),
-	password: () => tid(`password-input`),
-	submit: () => tid(`submit-button`),
+	password: () => tid(`delete-account-password-input`),
+	submit: () => tid(`delete-account-submit-button`),
 }
 
 export const accountServer = {

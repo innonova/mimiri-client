@@ -34,9 +34,13 @@ export const setNow = async (now: Date) => {
 
 export const createSubscription = async () => {
 	await expect(settingNodes.controlPanel()).toBeVisible()
-	await settingNodes.controlPanel().dblclick()
+	if (await settingNodes.controlPanelClosed().isVisible()) {
+		await settingNodes.controlPanel().dblclick()
+	}
 	await expect(settingNodes.subscriptionGroup()).toBeVisible()
-	await settingNodes.subscriptionGroup().dblclick()
+	if (await settingNodes.subscriptionGroupClosed().isVisible()) {
+		await settingNodes.subscriptionGroup().dblclick()
+	}
 	await settingNodes.subscription().click()
 	await expect(subHomeView.container()).toBeVisible()
 	await expect(subItem.free()).toBeVisible()

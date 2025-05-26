@@ -1,10 +1,10 @@
 <template>
 	<div
-		class="flex flex-col items-center border shadow-sm"
-		:class="{ 'min-h-86': !compact, 'w-48': compact }"
+		class="flex flex-col items-center border shadow-sm rounded-xs"
+		:class="{ 'w-48': compact }"
 		:data-testid="`sub-${product.sku}`"
 	>
-		<div class="pt-2 text-center h-10">
+		<div class="pt-2 text-center h-9">
 			<div class="text-size-product">{{ product.name }}</div>
 			<!-- <div v-if="product.current" class="relative top-[-8px] text-sm italic">(current)</div> -->
 		</div>

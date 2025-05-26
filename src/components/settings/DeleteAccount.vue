@@ -1,9 +1,6 @@
 <template>
 	<div class="flex flex-col h-full">
-		<div class="flex select-none">
-			<div class="py-2 px-4 bg-info cursor-default" data-testid="settings-view-delete-account">Delete Account</div>
-		</div>
-		<div class="bg-info h-2 mb-2 mr-2"></div>
+		<TabBar :items="['Delete Account']"></TabBar>
 		<form v-on:submit.prevent="deleteAccount" class="mr-2">
 			<div class="flex flex-col">
 				<div class="py-1">I understand that</div>
@@ -49,8 +46,8 @@
 								v-model="password"
 								tabindex="2"
 								type="password"
-								class="bg-input text-input-text w-48"
-								data-testid="password-input"
+								class="basic-input"
+								data-testid="delete-account-password-input"
 							/>
 						</div>
 					</div>
@@ -79,7 +76,7 @@
 							tabindex="3"
 							class="min-w-32"
 							:disabled="loading || !understandDeleteAccount || !understandDeleteData || !understandRoRecovery"
-							data-testid="submit-button"
+							data-testid="delete-account-submit-button"
 							type="submit"
 						>
 							Delete Account
@@ -98,6 +95,8 @@ import LoadingIcon from '../../icons/loading.vue'
 import { mimiriPlatform } from '../../services/mimiri-platform'
 import { settingsManager } from '../../services/settings-manager'
 import { deObfuscate } from '../../services/helpers'
+import TabBar from '../elements/TabBar.vue'
+
 const understandDeleteAccount = ref(false)
 const understandDeleteData = ref(false)
 const understandRoRecovery = ref(false)
