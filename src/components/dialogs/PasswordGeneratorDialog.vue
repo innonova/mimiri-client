@@ -14,7 +14,7 @@
 				<div class="p-1 mt-4 m-aut0 flex">
 					<div class="w-24 flex items-center">Password:</div>
 					<div class="w-48 text-right relative md:flex">
-						<input v-model="password" tabindex="2" :type="passwordFieldType" class="basic-input" />
+						<input v-model="password" tabindex="2" :type="passwordFieldType" class="basic-input" autofocus />
 						<div class="w-0 h-0 pt-1 overflow-visible select-none">
 							<RefreshIcon class="w-5 h-5 ml-2" @click="regeneratePassword"></RefreshIcon>
 						</div>
@@ -37,7 +37,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import PasswordGeneratorComp from '../elements/PasswordGenerator.vue'
 import ShowPasswordIcon from '../../icons/show-password.vue'
 import ShowingPasswordIcon from '../../icons/showing-password.vue'
@@ -49,6 +49,8 @@ const passwordGenerator = ref(null)
 const password = ref('')
 const dialog = ref(null)
 const passwordFieldType = ref('password')
+
+onMounted(() => {})
 
 const onPasswordGenerated = pwd => {
 	password.value = pwd

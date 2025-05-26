@@ -61,12 +61,7 @@
 					class="flex items-center justify-between bg-toolbar border-b border-solid border-toolbar cursor-default text-size-menu p-0.5"
 				>
 					<div>History entries:</div>
-					<button
-						class="max-h-7 max-w-7 p-1 text-text bg-inherit! over hover:bg-button-hover hover:rounded-none"
-						@click="showHistory"
-					>
-						<CloseIcon />
-					</button>
+					<CloseButton @click="showHistory" class="w-6 h-6"></CloseButton>
 				</div>
 				<div class="flex-auto overflow-y-auto h-0 pb-5 w-full bg-input">
 					<template v-for="(historyItem, index) of mimiriEditor.history.historyItems" :key="historyItem.timestamp">
@@ -99,7 +94,7 @@ import SelectionControl from './SelectionControl.vue'
 import { VersionConflictError } from '../services/mimer-client'
 import { settingsManager } from '../services/settings-manager'
 import { useEventListener } from '@vueuse/core'
-import CloseIcon from '../icons/close.vue'
+import CloseButton from './elements/CloseButton.vue'
 
 let activeViewModelStopWatch: WatchStopHandle = undefined
 let activeViewModel: NoteViewModel = undefined

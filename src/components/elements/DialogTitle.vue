@@ -1,5 +1,5 @@
 <template>
-	<header class="flex items-center bg-title-bar select-none">
+	<header class="flex items-center bg-title-bar select-none h-10">
 		<div
 			ref="titleBar"
 			class="pl-2 text-size-title w-full h-10 flex items-center"
@@ -9,19 +9,14 @@
 		>
 			<slot></slot>
 		</div>
-		<button
-			:disabled="disabled"
-			class="cursor-default secondary max-w-7 max-h-7 outline-none m-1 mr-1.5"
-			@click="close"
-			type="button"
-		>
-			X
-		</button>
+		<CloseButton :disabled="disabled" @click="close" class="mr-1.5 w-7"></CloseButton>
 	</header>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import CloseButton from '../elements/CloseButton.vue'
+
 const titleBar = ref(null)
 
 const props = defineProps<{

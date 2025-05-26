@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<div class="flex flex-col md:hidden relative">
+		<div class="flex flex-col md:hidden relative h-11">
 			<div class="flex p-px" tabindex="2">
 				<input
 					ref="searchInput"
@@ -9,7 +9,7 @@
 					type="text"
 					@keydown="keyDown"
 				/>
-				<button class="cursor-default max-w-8" @click="close">X</button>
+				<CloseButton @click="close" class="w-10"></CloseButton>
 			</div>
 			<div
 				v-if="searchManager.state.searchRunning"
@@ -21,16 +21,11 @@
 				v-if="searchManager.state.searchRunning"
 				class="progress-bar-value absolute left-0 top-0 w-full h-full"
 			></div>
-			<div class="flex absolute left-0 top-0 w-full justify-start items-center text-size-base! pl-1 select-none">
+			<div class="flex absolute left-0 top-0 w-full justify-between items-center text-size-base! pl-1 select-none">
 				<SearchIcon class="h-7 w-7 p-px mr-1"></SearchIcon>
 				<div>{{ searchManager.state.term }}</div>
-				<div class="w-full flex justify-end">
-					<button
-						class="max-h-7 max-w-7 p-1 text-text bg-inherit! hover:bg-button-hover hover:rounded-none"
-						@click="close"
-					>
-						<CloseIcon />
-					</button>
+				<div class="w-7 h-7 flex justify-end bg-info-bar-accented">
+					<CloseButton @click="close"></CloseButton>
 				</div>
 			</div>
 		</div>
@@ -42,7 +37,7 @@ import { ref, watch } from 'vue'
 import { showSearchBox } from '../global'
 import { searchManager } from '../services/search-manager'
 import SearchIcon from '../icons/search.vue'
-import CloseIcon from '../icons/close.vue'
+import CloseButton from './elements/CloseButton.vue'
 
 const searchInput = ref(null)
 
