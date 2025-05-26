@@ -334,45 +334,49 @@ export class NoteManager {
 	}
 
 	private async ensureCreateComplete() {
-		if (!this.client.userData.createComplete) {
-			if (!this.client.keyWithIdExists(this.client.userData.rootKey)) {
-				const keyMetadata = {
-					shared: false,
-					root: true,
+		try {
+			if (!this.client.userData.createComplete) {
+				if (!this.client.keyWithIdExists(this.client.userData.rootKey)) {
+					const keyMetadata = {
+						shared: false,
+						root: true,
+					}
+					await this.client.createKey(this.client.userData.rootKey, keyMetadata)
 				}
-				await this.client.createKey(this.client.userData.rootKey, keyMetadata)
-			}
-			let rootNote
-			try {
-				rootNote = await this.client.readNote(this.client.userData.rootNote, false)
-			} catch {}
-			if (!rootNote) {
-				const recycleBin = new Note()
-				recycleBin.keyName = this.client.getKeyById(this.client.userData.rootKey).name
-				recycleBin.changeItem('metadata').notes = []
-				recycleBin.changeItem('metadata').isRecycleBin = true
-				await this.client.createNote(recycleBin)
+				let rootNote
+				try {
+					rootNote = await this.client.readNote(this.client.userData.rootNote, false)
+				} catch {}
+				if (!rootNote) {
+					const recycleBin = new Note()
+					recycleBin.keyName = this.client.getKeyById(this.client.userData.rootKey).name
+					recycleBin.changeItem('metadata').notes = []
+					recycleBin.changeItem('metadata').isRecycleBin = true
+					await this.client.createNote(recycleBin)
 
-				const controlPanel = new Note()
-				controlPanel.keyName = this.client.getKeyById(this.client.userData.rootKey).name
-				controlPanel.changeItem('metadata').notes = []
-				controlPanel.changeItem('metadata').isControlPanel = true
-				await this.client.createNote(controlPanel)
+					const controlPanel = new Note()
+					controlPanel.keyName = this.client.getKeyById(this.client.userData.rootKey).name
+					controlPanel.changeItem('metadata').notes = []
+					controlPanel.changeItem('metadata').isControlPanel = true
+					await this.client.createNote(controlPanel)
 
-				const rootNote = new Note()
-				rootNote.id = this.client.userData.rootNote
-				rootNote.keyName = this.client.getKeyById(this.client.userData.rootKey).name
-				rootNote.changeItem('metadata').recycleBin = recycleBin.id
-				rootNote.changeItem('metadata').controlPanel = controlPanel.id
-				rootNote.changeItem('metadata').notes = [controlPanel.id, recycleBin.id]
-				await this.addGettingStarted(rootNote)
-				await this.client.createNote(rootNote)
+					const rootNote = new Note()
+					rootNote.id = this.client.userData.rootNote
+					rootNote.keyName = this.client.getKeyById(this.client.userData.rootKey).name
+					rootNote.changeItem('metadata').recycleBin = recycleBin.id
+					rootNote.changeItem('metadata').controlPanel = controlPanel.id
+					rootNote.changeItem('metadata').notes = [controlPanel.id, recycleBin.id]
+					await this.addGettingStarted(rootNote)
+					await this.client.createNote(rootNote)
+				}
+				this.client.userData.createComplete = true
+				await this.client.updateUserData()
 			}
-			this.client.userData.createComplete = true
-			await this.client.updateUserData()
+			await this.ensureControlPanel()
+			await this.ensureRecycleBin()
+		} catch (ex) {
+			console.log(ex)
 		}
-		await this.ensureControlPanel()
-		await this.ensureRecycleBin()
 	}
 
 	private async ensureRecycleBin() {
@@ -1229,14 +1233,6 @@ export class NoteManager {
 
 	public set workOffline(value: boolean) {
 		this.client.workOffline = value
-	}
-
-	public get simulateOffline() {
-		return this.client.simulateOffline
-	}
-
-	public set simulateOffline(value: boolean) {
-		this.client.simulateOffline = value
 	}
 
 	public get testId() {

@@ -90,6 +90,14 @@ export class VersionConflictError extends Error {
 	}
 }
 
+;(window as any).simulateNoNetwork = (value: boolean) => {
+	if (value) {
+		localStorage.setItem('mimiri_simulate_no_network', 'true')
+	} else {
+		localStorage.removeItem('mimiri_simulate_no_network')
+	}
+}
+
 export class MimerClient {
 	public static DEFAULT_ITERATIONS = 1000000
 	public suppressErrorLog = false
@@ -105,7 +113,6 @@ export class MimerClient {
 	private cacheManager: ICacheManager
 	private online: boolean = false
 	private _workOffline: boolean = false
-	private _simulateOffline: boolean = false
 	private _sizeDelta = 0
 	private _noteCountDelta = 0
 	private _userStats: UserStats = {
@@ -226,7 +233,16 @@ export class MimerClient {
 					publicKey: await this.rootSignature.publicKeyPem(),
 					privateKey: await this.rootSignature.privateKeyPem(),
 				},
+				data: await this.rootCrypt.encrypt(
+					JSON.stringify({
+						clientConfig: this._clientConfig,
+						userStats: this._userStats,
+						userData: this.userData,
+					}),
+					true,
+				),
 			}
+
 			const zipped = await new Response(
 				new Blob([new TextEncoder().encode(JSON.stringify(loginData))])
 					.stream()
@@ -278,9 +294,18 @@ export class MimerClient {
 					loginData.rootSignature.publicKey,
 					loginData.rootSignature.privateKey,
 				)
-				await this.goOnline()
+				const data = JSON.parse(await this.rootCrypt.decrypt(loginData.data))
+				this._clientConfig = data.clientConfig
+				this._userStats = data.userStats
+				this.userData = data.userData
+
+				if (!(await this.goOnline())) {
+					await this.loadAllKeys(true)
+				}
 				return true
-			} catch {}
+			} catch (ex) {
+				console.log(ex)
+			}
 		}
 		return false
 	}
@@ -447,7 +472,7 @@ export class MimerClient {
 			this.online = true
 			return true
 		} catch {
-			if (password) {
+			if (password && !this.rootCrypt) {
 				return await this.login({
 					username: this.username,
 					password,
@@ -1361,11 +1386,7 @@ export class MimerClient {
 	}
 
 	public get simulateOffline(): boolean {
-		return this._simulateOffline
-	}
-
-	public set simulateOffline(value: boolean) {
-		this._simulateOffline = value
+		return !!localStorage?.getItem('mimiri_simulate_no_network')
 	}
 
 	public get cacheEnabled(): boolean {

@@ -357,49 +357,57 @@ useEventListener(window, 'resize', async () => {
 	resizeDebounce.activate()
 })
 ;(async () => {
-	setTimeout(() => (secondPassed.value = true), 1000)
-	progressActivity()
-
-	await settingsManager.load()
-	if (settingsManager.mainWindowSize.width > 100 && settingsManager.mainWindowSize.height > 100) {
-		await ipcClient.window.setMainWindowSize(settingsManager.mainWindowSize)
-	}
-
-	updateTheme()
-	await updateManager.checkUpdateInitial()
 	try {
-		if (!noteManager.isLoggedIn && settingsManager.autoLogin && settingsManager.autoLoginData) {
-			await noteManager.setLoginData(await deObfuscate(settingsManager.autoLoginData))
-			if (noteManager.isLoggedIn) {
-				await noteManager.loadState()
+		setTimeout(() => (secondPassed.value = true), 1000)
+		progressActivity()
+
+		await settingsManager.load()
+		if (settingsManager.mainWindowSize.width > 100 && settingsManager.mainWindowSize.height > 100) {
+			await ipcClient.window.setMainWindowSize(settingsManager.mainWindowSize)
+		}
+
+		updateTheme()
+		await updateManager.checkUpdateInitial()
+		try {
+			if (!noteManager.isLoggedIn && settingsManager.autoLogin && settingsManager.autoLoginData) {
+				await noteManager.setLoginData(await deObfuscate(settingsManager.autoLoginData))
+				if (noteManager.isLoggedIn) {
+					await noteManager.loadState()
+				}
 			}
+		} catch (ex) {
+			console.log(ex)
+		}
+
+		if (!noteManager.isLoggedIn) {
+			try {
+				await noteManager.recoverLogin()
+			} catch (ex) {
+				console.log(ex)
+			}
+		}
+
+		let showLogin = !noteManager.isLoggedIn
+
+		if (!noteManager.isLoggedIn) {
+			if (settingsManager.isNewInstall) {
+				await noteManager.loginAnonymousAccount()
+				if (noteManager.isLoggedIn) {
+					settingsManager.isNewInstall = false
+					showLogin = false
+				}
+			} else {
+				showLogin = true
+			}
+		}
+
+		loading.value = false
+		await settingsManager.save()
+		if (showLogin) {
+			loginDialog.value.show(true)
 		}
 	} catch (ex) {
-		console.log(ex)
-	}
-
-	if (!noteManager.isLoggedIn) {
-		await noteManager.recoverLogin()
-	}
-
-	let showLogin = !noteManager.isLoggedIn
-
-	if (!noteManager.isLoggedIn) {
-		if (settingsManager.isNewInstall) {
-			await noteManager.loginAnonymousAccount()
-			if (noteManager.isLoggedIn) {
-				settingsManager.isNewInstall = false
-				showLogin = false
-			}
-		} else {
-			showLogin = true
-		}
-	}
-
-	loading.value = false
-	await settingsManager.save()
-	if (showLogin) {
-		loginDialog.value.show(true)
+		setTimeout(() => location.reload(), 1000)
 	}
 })()
 

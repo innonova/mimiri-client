@@ -1,9 +1,9 @@
 <template>
 	<dialog class="modal bg-dialog text-text border border-solid border-dialog-border backdrop-grayscale" ref="dialog">
-		<div class="grid grid-rows-[auto_1fr_auto] gap-6">
+		<div class="grid grid-rows-[auto_1fr_auto] gap-3 content-between">
 			<DialogTitle @close="cancel" :disabled="loading || showCreate || !showCancel">Login</DialogTitle>
 			<form v-on:submit.prevent="login" class="grid mx-2">
-				<div class="flex items-center justify-between m-1 pr-5">
+				<div class="flex items-center justify-between m-1">
 					<div>Username:</div>
 					<input
 						v-model="username"
@@ -14,7 +14,7 @@
 						autofocus
 					/>
 				</div>
-				<div class="flex items-center justify-between m-1 pr-5 pb-2">
+				<div class="flex items-center justify-between m-1 pb-2">
 					<div>Password:</div>
 					<input
 						v-model="password"
@@ -35,15 +35,22 @@
 					</div>
 				</div>
 				<div
-					class="flex items-center gap-2 m-1 pr-5"
+					class="flex items-center gap-2 m-1"
 					:class="{
 						'justify-end': !showCreate,
 						'justify-between': showCreate,
 					}"
 				>
-					<button v-if="showCreate" :disabled="loading" class="secondary min-w-28" type="button" @click="cancel">
+					<a
+						v-if="showCreate"
+						:disabled="loading"
+						@click="cancel"
+						class="text-link hover:underline"
+						href="https://mimiri.com/login"
+						target="_blank"
+					>
 						Create New
-					</button>
+					</a>
 					<button tabindex="3" :disabled="loading || !canLogin" data-testid="login-button" type="submit">Login</button>
 					<button v-if="showCancel" :disabled="loading" class="secondary" type="button" @click="cancel">Cancel</button>
 				</div>
