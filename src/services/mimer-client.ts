@@ -294,12 +294,11 @@ export class MimerClient {
 					loginData.rootSignature.publicKey,
 					loginData.rootSignature.privateKey,
 				)
-				const data = JSON.parse(await this.rootCrypt.decrypt(loginData.data))
-				this._clientConfig = data.clientConfig
-				this._userStats = data.userStats
-				this.userData = data.userData
-
 				if (!(await this.goOnline())) {
+					const data = JSON.parse(await this.rootCrypt.decrypt(loginData.data))
+					this._clientConfig = data.clientConfig
+					this._userStats = data.userStats
+					this.userData = data.userData
 					await this.loadAllKeys(true)
 				}
 				return true
