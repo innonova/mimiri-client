@@ -132,9 +132,11 @@ export class MimiriEditor {
 
 	public hideHistory() {
 		this._editorAdvanced.hideHistory()
+		this._editorAdvanced.readonly = (this.note?.isCache || this.note?.isSystem) ?? true
 	}
 
 	public showHistory() {
+		this._editorAdvanced.readonly = true
 		this._editorAdvanced.showHistory()
 	}
 

@@ -415,7 +415,6 @@ export class EditorAdvanced implements TextEditor {
 
 	public showHistory() {
 		this.monacoEditor.setModel(this.monacoEditorHistoryModel)
-		this.monacoEditor.updateOptions({ readOnly: true })
 	}
 
 	public clearSearchHighlights() {
