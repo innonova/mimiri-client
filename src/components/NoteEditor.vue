@@ -243,6 +243,7 @@ const toggleWordWrap = event => {
 
 const showHistory = () => {
 	historyVisible.value = !historyVisible.value
+	mimiriEditor.focus()
 }
 
 const saveEnabled = computed(() => {

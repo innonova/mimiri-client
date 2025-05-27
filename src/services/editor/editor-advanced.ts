@@ -1,4 +1,4 @@
-import { editor, KeyCode, languages } from 'monaco-editor'
+import { editor, KeyCode, languages, Selection } from 'monaco-editor'
 import type { EditorState, TextEditor, TextEditorListener } from './type'
 import { settingsManager } from '../settings-manager'
 import { mobileLog } from '../../global'
@@ -21,6 +21,9 @@ export class EditorAdvanced implements TextEditor {
 	private styleUpdateStartTime = Date.now()
 	private _state: EditorState
 	private skipScrollOnce = false
+	private historyShowing = false
+	private lastScrollTop = 0
+	private lastSelection: Selection | null = null
 
 	constructor(private listener: TextEditorListener) {
 		this._state = reactive({
@@ -131,7 +134,7 @@ export class EditorAdvanced implements TextEditor {
 		this.updateStyleOverrides()
 
 		this.monacoEditor.onKeyDown(e => {
-			if (e.keyCode === KeyCode.KeyS && e.ctrlKey) {
+			if (e.keyCode === KeyCode.KeyS && e.ctrlKey && !this.historyShowing) {
 				this.listener.onSaveRequested()
 			}
 			if (e.keyCode === KeyCode.KeyF && e.ctrlKey && e.shiftKey) {
@@ -190,11 +193,14 @@ export class EditorAdvanced implements TextEditor {
 		})
 
 		this.monacoEditor.onDidBlurEditorText(e => {
-			this.listener.onBlur()
+			if (!this.historyShowing) {
+				this.listener.onBlur()
+			}
 		})
 
 		const scrollDebounce = new Debounce(async () => {
-			if (this.monacoEditor.getScrollWidth() > 100) {
+			if (this.monacoEditor.getScrollWidth() > 100 && !this.historyShowing) {
+				this.lastScrollTop = this.monacoEditor.getScrollTop()
 				this.listener.onScroll(this.monacoEditor.getScrollTop())
 			}
 		}, 250)
@@ -366,6 +372,7 @@ export class EditorAdvanced implements TextEditor {
 		this._state.changed = false
 		this.monacoEditorModel.setValue(text)
 		this.skipScrollOnce = true
+		this.lastScrollTop = scrollTop
 		this.monacoEditor.setScrollTop(scrollTop, editor.ScrollType.Immediate)
 		setTimeout(() => {
 			this.skipScrollOnce = true
@@ -411,9 +418,16 @@ export class EditorAdvanced implements TextEditor {
 
 	public hideHistory() {
 		this.monacoEditor.setModel(this.monacoEditorModel)
+		this.monacoEditor.setScrollTop(this.lastScrollTop, editor.ScrollType.Immediate)
+		if (this.lastSelection) {
+			this.monacoEditor.setSelection(this.lastSelection)
+		}
+		this.historyShowing = false
 	}
 
 	public showHistory() {
+		this.lastSelection = this.monacoEditor.getSelection()
+		this.historyShowing = true
 		this.monacoEditor.setModel(this.monacoEditorHistoryModel)
 	}
 
