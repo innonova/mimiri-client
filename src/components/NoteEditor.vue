@@ -22,14 +22,14 @@
 			<ToolbarIcon
 				icon="undo"
 				:hoverEffect="true"
-				:disabled="!mimiriEditor.state.canUndo"
+				:disabled="!mimiriEditor.canUndo"
 				title="Undo"
 				@click="undo"
 			></ToolbarIcon>
 			<ToolbarIcon
 				icon="redo"
 				:hoverEffect="true"
-				:disabled="!mimiriEditor.state.canRedo"
+				:disabled="!mimiriEditor.canRedo"
 				title="Redo"
 				@click="redo"
 			></ToolbarIcon>
@@ -247,13 +247,13 @@ const showHistory = () => {
 
 const saveEnabled = computed(() => {
 	const winFocus = windowFocus.value // ensure that compute knows to trigger on this even if the first part of the next statement is false - AEK
-	return mimiriEditor.state.changed && winFocus && activeViewModel
+	return mimiriEditor.changed && winFocus && activeViewModel
 })
 
 const save = async () => {
 	if (activeViewModel && saveEnabled) {
 		let note = mimiriEditor.note
-		const textValue = mimiriEditor.state.text
+		const textValue = mimiriEditor.text
 		if (note && note.text !== textValue) {
 			if (note.text.length > 5 && textValue.length === 0) {
 				saveEmptyNodeDialog.value.show(note)

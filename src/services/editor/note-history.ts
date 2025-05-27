@@ -1,7 +1,6 @@
 import { reactive } from 'vue'
-import type { MimiriEditor } from './mimiri-editor'
-import { editor } from 'monaco-editor'
 import type { HistoryItem } from '../types/mimer-note'
+import type { MimiriEditor } from './mimiri-editor'
 
 export interface NoteHistoryState {
 	showingHistory: boolean
@@ -11,7 +10,6 @@ export interface NoteHistoryState {
 
 export class NoteHistory {
 	public state: NoteHistoryState
-	private monacoEditorHistoryModel: editor.ITextModel
 
 	constructor(private mimiriEditor: MimiriEditor) {
 		this.state = reactive({
@@ -19,14 +17,13 @@ export class NoteHistory {
 			selectedHistoryIndex: 0,
 			selectedHistoryItem: null,
 		})
-		this.monacoEditorHistoryModel = editor.createModel('', 'mimiri')
 	}
 
 	public reset() {
 		this.state.showingHistory = false
 		this.state.selectedHistoryIndex = 0
-		this.monacoEditorHistoryModel.setValue('')
-		this.mimiriEditor.resetModel()
+		this.mimiriEditor.setHistoryText('')
+		this.mimiriEditor.hideHistory()
 	}
 
 	public async loadMoreHistory() {
@@ -47,7 +44,7 @@ export class NoteHistory {
 	public selectHistoryItem(index: number) {
 		this.state.selectedHistoryIndex = index
 		this.state.selectedHistoryItem = this.mimiriEditor.note?.historyItems[index]
-		this.monacoEditorHistoryModel.setValue(this.state.selectedHistoryItem?.text ?? '')
+		this.mimiriEditor.setHistoryText(this.state.selectedHistoryItem?.text ?? '')
 	}
 
 	public get isShowing() {
@@ -58,10 +55,10 @@ export class NoteHistory {
 		if (this.state.showingHistory !== value) {
 			this.state.showingHistory = value
 			if (value) {
-				this.mimiriEditor.displayModel(this.monacoEditorHistoryModel, true)
+				this.mimiriEditor.showHistory()
 				void this.checkLoadHistory()
 			} else {
-				this.mimiriEditor.resetModel()
+				this.mimiriEditor.hideHistory()
 			}
 		}
 	}
