@@ -54,9 +54,9 @@
 			<div v-if="historyVisible && selectedHistoryItem" class="px-2 py-1 bg-info-bar cursor-default text-size-menu">
 				{{ selectedHistoryItem.username }} - {{ formatDate(selectedHistoryItem.timestamp) }} (read-only)
 			</div>
-			<div class="overflow-hidden flex-1" ref="monacoContainer"></div>
-			<div class="overflow-hidden flex-1" ref="simpleContainer"></div>
-			<div class="overflow-hidden flex-1 flex flex-col" ref="displayContainer"></div>
+			<div class="overflow-hidden flex-1" style="display: none" ref="monacoContainer"></div>
+			<div class="overflow-hidden flex-1" style="display: none" ref="simpleContainer"></div>
+			<div class="overflow-hidden flex-1 flex flex-col" style="display: none" ref="displayContainer"></div>
 			<div v-if="!historyVisible && mimiriEditor.mode === 'display'" class="display-editor-toolbar flex flex-row gap-1">
 				<button
 					@click="activateEdit"
@@ -259,6 +259,8 @@ const find = () => {
 }
 
 const onBack = () => {
+	save()
+	mimiriEditor.mobileClosing()
 	window.history.back()
 	noteManager.closeEditorIfMobile()
 }

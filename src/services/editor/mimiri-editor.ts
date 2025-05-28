@@ -8,6 +8,7 @@ import { reactive } from 'vue'
 import { EditorSimple } from './editor-simple'
 import { EditorDisplay } from './editor-display'
 import { settingsManager } from '../settings-manager'
+import { noteManager } from '../../global'
 
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms))
 
@@ -21,6 +22,12 @@ export class MimiriEditor {
 	private _editorDisplay: EditorDisplay
 	private _activeEditor: TextEditor
 	private _state: EditorState
+	private _monacoElement: HTMLElement
+	private _simpleElement: HTMLElement
+	private _displayElement: HTMLElement
+	private _monacoInitialized: boolean = false
+	private _simpleInitialized: boolean = false
+	private _displayInitialized: boolean = false
 
 	private saveListener: () => void
 	public onSave(listener: () => void) {
@@ -101,6 +108,10 @@ export class MimiriEditor {
 	}
 
 	private activateAdvanced() {
+		if (!this._monacoInitialized) {
+			this._monacoInitialized = true
+			this._editorAdvanced.init(this._monacoElement)
+		}
 		this._editorAdvanced.active = true
 		this._editorSimple.active = false
 		this._editorDisplay.active = false
@@ -109,6 +120,10 @@ export class MimiriEditor {
 	}
 
 	private activateSimple() {
+		if (!this._simpleInitialized) {
+			this._simpleInitialized = true
+			this._editorSimple.init(this._simpleElement)
+		}
 		this._editorAdvanced.active = false
 		this._editorSimple.active = true
 		this._editorDisplay.active = false
@@ -117,6 +132,10 @@ export class MimiriEditor {
 	}
 
 	private activateDisplay() {
+		if (!this._displayInitialized) {
+			this._displayInitialized = true
+			this._editorDisplay.init(this._displayElement)
+		}
 		this._editorAdvanced.active = false
 		this._editorSimple.active = false
 		this._editorDisplay.active = true
@@ -144,11 +163,18 @@ export class MimiriEditor {
 			this.infoElement.innerHTML = 'copied'
 			document.body.appendChild(this.infoElement)
 		}
-		this._editorAdvanced.init(monacoElement)
-		this._editorSimple.init(simpleElement)
-		this._editorDisplay.init(displayElement)
+
+		this._monacoElement = monacoElement
+		this._simpleElement = simpleElement
+		this._displayElement = displayElement
 
 		this.activateEditor()
+	}
+
+	public mobileClosing() {
+		if (!settingsManager.alwaysEdit && this.note.text.trim().length > 0) {
+			this.activateDisplay()
+		}
 	}
 
 	public open(note: MimerNote) {
@@ -171,6 +197,9 @@ export class MimiriEditor {
 			this.history.reset()
 			this._activeEditor.show(note.text, this.note.scrollTop)
 		} else {
+			if (!settingsManager.alwaysEdit && note.text.trim().length > 0) {
+				this.activateDisplay()
+			}
 			this._activeEditor.updateText(note.text)
 		}
 		this._activeEditor.readonly = note.isCache || note.isSystem
@@ -226,9 +255,15 @@ export class MimiriEditor {
 	}
 
 	public syncSettings() {
-		this._editorAdvanced.syncSettings()
-		this._editorSimple.syncSettings()
-		this._editorDisplay.syncSettings()
+		if (this._monacoInitialized) {
+			this._editorAdvanced.syncSettings()
+		}
+		if (this._simpleInitialized) {
+			this._editorSimple.syncSettings()
+		}
+		if (this._displayInitialized) {
+			this._editorDisplay.syncSettings()
+		}
 	}
 
 	public expandSelection(type: SelectionExpansion) {

@@ -246,7 +246,7 @@ dialog::backdrop {
 }
 
 .display-editor-toolbar {
-	@apply h-10;
+	@apply h-24 pb-10 md:h-10 md:pb-0;
 }
 
 .simple-editor {
