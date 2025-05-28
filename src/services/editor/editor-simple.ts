@@ -54,51 +54,53 @@ export class EditorSimple implements TextEditor {
 		})
 
 		document.addEventListener('selectionchange', () => {
-			if (document.activeElement === this._element) {
-				let canUnMarkAsPassword = false
-				let canMarkAsPassword = false
-				const selection = document.getSelection()
-				this.lastSelection = {
-					startNode: selection.anchorNode,
-					start: selection.anchorOffset,
-					endNode: selection.focusNode,
-					end: selection.focusOffset,
-				}
+			try {
+				if (document.activeElement === this._element) {
+					let canUnMarkAsPassword = false
+					let canMarkAsPassword = false
+					const selection = document.getSelection()
+					this.lastSelection = {
+						startNode: selection.anchorNode,
+						start: selection.anchorOffset,
+						endNode: selection.focusNode,
+						end: selection.focusOffset,
+					}
 
-				if (selection.anchorNode?.textContent && selection.anchorNode === selection.focusNode) {
-					const lineContent = selection.anchorNode.textContent
-					const empty = selection.anchorOffset === selection.focusOffset
-					const selectedRange =
-						selection.anchorOffset <= selection.focusOffset
-							? { start: selection.anchorOffset, end: selection.focusOffset }
-							: { start: selection.focusOffset, end: selection.anchorOffset }
+					if (selection.anchorNode?.textContent && selection.anchorNode === selection.focusNode) {
+						const lineContent = selection.anchorNode.textContent
+						const empty = selection.anchorOffset === selection.focusOffset
+						const selectedRange =
+							selection.anchorOffset <= selection.focusOffset
+								? { start: selection.anchorOffset, end: selection.focusOffset }
+								: { start: selection.focusOffset, end: selection.anchorOffset }
 
-					canUnMarkAsPassword = !!this.findMatchingPasswordRange(lineContent, selectedRange.start, selectedRange.end)
+						canUnMarkAsPassword = !!this.findMatchingPasswordRange(lineContent, selectedRange.start, selectedRange.end)
 
-					const selectionContent = lineContent.substring(selectedRange.start, selectedRange.end)
-					canMarkAsPassword = !canUnMarkAsPassword && !selectionContent.includes('`') && !empty
+						const selectionContent = lineContent.substring(selectedRange.start, selectedRange.end)
+						canMarkAsPassword = !canUnMarkAsPassword && !selectionContent.includes('`') && !empty
 
-					if (canMarkAsPassword || canUnMarkAsPassword) {
-						this._activePasswordEntry = {
-							node: selection.anchorNode,
-							start: selectedRange.start,
-							end: selectedRange.end,
+						if (canMarkAsPassword || canUnMarkAsPassword) {
+							this._activePasswordEntry = {
+								node: selection.anchorNode,
+								start: selectedRange.start,
+								end: selectedRange.end,
+							}
+						} else {
+							this._activePasswordEntry = undefined
 						}
-					} else {
-						this._activePasswordEntry = undefined
+					}
+					if (
+						this._state.canMarkAsPassword !== canMarkAsPassword ||
+						this._state.canUnMarkAsPassword !== canUnMarkAsPassword
+					) {
+						this._state.canMarkAsPassword = canMarkAsPassword
+						this._state.canUnMarkAsPassword = canUnMarkAsPassword
+						if (this._active) {
+							this.listener.onStateUpdated(this._state)
+						}
 					}
 				}
-				if (
-					this._state.canMarkAsPassword !== canMarkAsPassword ||
-					this._state.canUnMarkAsPassword !== canUnMarkAsPassword
-				) {
-					this._state.canMarkAsPassword = canMarkAsPassword
-					this._state.canUnMarkAsPassword = canUnMarkAsPassword
-					if (this._active) {
-						this.listener.onStateUpdated(this._state)
-					}
-				}
-			}
+			} catch {}
 		})
 		this._element.addEventListener('focus', () => {
 			if (this.lastSelection) {
@@ -114,20 +116,24 @@ export class EditorSimple implements TextEditor {
 		})
 
 		const scrollDebounce = new Debounce(async () => {
-			if (this._element.offsetWidth > 100 && !this.historyShowing) {
-				this.lastScrollTop = Math.round(this._element.scrollTop)
-				if (this._active) {
-					this.listener.onScroll(this.lastScrollTop)
+			try {
+				if (this._element.offsetWidth > 100 && !this.historyShowing) {
+					this.lastScrollTop = Math.round(this._element.scrollTop)
+					if (this._active) {
+						this.listener.onScroll(this.lastScrollTop)
+					}
 				}
-			}
+			} catch {}
 		}, 250)
 
 		this._element.addEventListener('scroll', () => {
-			if (this.skipScrollOnce) {
-				this.skipScrollOnce = false
-				return
-			}
-			scrollDebounce.activate()
+			try {
+				if (this.skipScrollOnce) {
+					this.skipScrollOnce = false
+					return
+				}
+				scrollDebounce.activate()
+			} catch {}
 		})
 	}
 
@@ -156,51 +162,58 @@ export class EditorSimple implements TextEditor {
 	}
 
 	public unMarkSelectionAsPassword() {
-		if (this._activePasswordEntry) {
-			const lineContent = this._activePasswordEntry.node.textContent
-			const activePwRange = this.findMatchingPasswordRange(
-				lineContent,
-				this._activePasswordEntry.start,
-				this._activePasswordEntry.end,
-			)
-			if (activePwRange) {
-				const pre = lineContent.substring(0, activePwRange.start)
-				const pw = lineContent.substring(activePwRange.start, activePwRange.end + 1)
-				const post = lineContent.substring(activePwRange.end + 1, lineContent.length)
-				if (pw.startsWith('p`') && pw.endsWith('`')) {
-					this._activePasswordEntry.node.textContent = `${pre}${pw.substring(2, pw.length - 1)}${post}`
-					this._state.canMarkAsPassword = false
-					this._state.canUnMarkAsPassword = false
-					if (this._active) {
-						this.listener.onStateUpdated(this._state)
+		try {
+			if (this._activePasswordEntry) {
+				const lineContent = this._activePasswordEntry.node.textContent
+				const activePwRange = this.findMatchingPasswordRange(
+					lineContent,
+					this._activePasswordEntry.start,
+					this._activePasswordEntry.end,
+				)
+				if (activePwRange) {
+					const pre = lineContent.substring(0, activePwRange.start)
+					const pw = lineContent.substring(activePwRange.start, activePwRange.end + 1)
+					const post = lineContent.substring(activePwRange.end + 1, lineContent.length)
+					if (pw.startsWith('p`') && pw.endsWith('`')) {
+						this._activePasswordEntry.node.textContent = `${pre}${pw.substring(2, pw.length - 1)}${post}`
+						this._state.canMarkAsPassword = false
+						this._state.canUnMarkAsPassword = false
+						if (this._active) {
+							this.listener.onStateUpdated(this._state)
+						}
+						this.lastSelection = undefined
+						const range = document.createRange()
+						range.setStart(this._activePasswordEntry.node, pre.length)
+						range.setEnd(
+							this._activePasswordEntry.node,
+							this._activePasswordEntry.node.textContent.length - post.length,
+						)
+						const selection = document.getSelection()
+						selection.empty()
+						selection.addRange(range)
 					}
-					this.lastSelection = undefined
-					const range = document.createRange()
-					range.setStart(this._activePasswordEntry.node, pre.length)
-					range.setEnd(this._activePasswordEntry.node, this._activePasswordEntry.node.textContent.length - post.length)
-					const selection = document.getSelection()
-					selection.empty()
-					selection.addRange(range)
 				}
 			}
-		}
+		} catch {}
 	}
 
 	public markSelectionAsPassword() {
-		if (this._activePasswordEntry) {
-			const lineContent = this._activePasswordEntry.node.textContent
-			const pre = lineContent.substring(0, this._activePasswordEntry.start)
-			const pw = lineContent.substring(this._activePasswordEntry.start, this._activePasswordEntry.end)
-			const post = lineContent.substring(this._activePasswordEntry.end, lineContent.length)
-			this._activePasswordEntry.node.textContent = `${pre}p\`${pw}\`${post}`
-			this.lastSelection = undefined
-			const range = document.createRange()
-			range.setStart(this._activePasswordEntry.node, pre.length)
-			range.setEnd(this._activePasswordEntry.node, this._activePasswordEntry.node.textContent.length - post.length)
-			const selection = document.getSelection()
-			selection.empty()
-			selection.addRange(range)
-		}
+		try {
+			if (this._activePasswordEntry) {
+				const lineContent = this._activePasswordEntry.node.textContent
+				const pre = lineContent.substring(0, this._activePasswordEntry.start)
+				const pw = lineContent.substring(this._activePasswordEntry.start, this._activePasswordEntry.end)
+				const post = lineContent.substring(this._activePasswordEntry.end, lineContent.length)
+				this._activePasswordEntry.node.textContent = `${pre}p\`${pw}\`${post}`
+				this.lastSelection = undefined
+				const range = document.createRange()
+				range.setStart(this._activePasswordEntry.node, pre.length)
+				range.setEnd(this._activePasswordEntry.node, this._activePasswordEntry.node.textContent.length - post.length)
+				const selection = document.getSelection()
+				selection.empty()
+				selection.addRange(range)
+			}
+		} catch {}
 	}
 
 	public get active(): boolean {
@@ -287,11 +300,15 @@ export class EditorSimple implements TextEditor {
 	}
 
 	public undo() {
-		document.execCommand('undo')
+		try {
+			document.execCommand('undo')
+		} catch {}
 	}
 
 	public redo() {
-		document.execCommand('redo')
+		try {
+			document.execCommand('redo')
+		} catch {}
 	}
 
 	public clearSearchHighlights() {}
@@ -326,15 +343,21 @@ export class EditorSimple implements TextEditor {
 	}
 
 	public cut() {
-		document.execCommand('cut')
+		try {
+			document.execCommand('cut')
+		} catch {}
 	}
 
 	public copy() {
-		document.execCommand('copy')
+		try {
+			document.execCommand('copy')
+		} catch {}
 	}
 
 	public paste(text: string) {
-		document.execCommand('paste')
+		try {
+			document.execCommand('paste')
+		} catch {}
 	}
 	public get readonly() {
 		return this._element.contentEditable === 'false'
