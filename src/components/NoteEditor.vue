@@ -56,7 +56,7 @@
 			</div>
 			<div class="overflow-hidden flex-1" style="display: none" ref="monacoContainer"></div>
 			<div class="overflow-hidden flex-1" style="display: none" ref="simpleContainer"></div>
-			<div class="overflow-hidden flex-1 flex flex-col" style="display: none" ref="displayContainer"></div>
+			<div class="overflow-hidden flex-1" style="display: none" ref="displayContainer"></div>
 			<div v-if="!historyVisible && mimiriEditor.mode === 'display'" class="display-editor-toolbar flex flex-row gap-1">
 				<button
 					@click="activateEdit"
