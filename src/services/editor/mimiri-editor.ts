@@ -81,7 +81,8 @@ export class MimiriEditor {
 
 		this._editorAdvanced = new EditorAdvanced(editorListener)
 		this._editorSimple = new EditorSimple(editorListener)
-		this._editorDisplay = new EditorDisplay(editorListener)
+		// this._editorDisplay = new EditorDisplay(editorListener)
+		this._editorDisplay = new EditorSimple(editorListener) as unknown as EditorDisplay
 	}
 
 	private animateNotification(top: number, left: number, text: string) {
