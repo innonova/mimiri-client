@@ -68,7 +68,7 @@
 					<SettingIcon class="w-6 h-6 my-1 mx-3"></SettingIcon>
 				</button>
 			</div>
-			<SelectionControl></SelectionControl>
+			<SelectionControl v-if="mimiriEditor.mode === 'advanced'"></SelectionControl>
 			<div v-if="historyVisible" class="w-full h-1/3 flex flex-col">
 				<div
 					class="flex items-center justify-between bg-toolbar border-b border-solid border-toolbar cursor-default text-size-menu p-0.5"
@@ -265,7 +265,7 @@ const onBack = () => {
 
 const saveClicked = async () => {
 	mimiriEditor.focus()
-	// blur saves
+	save()
 }
 
 const toggleWordWrap = event => {
