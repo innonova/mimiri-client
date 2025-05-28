@@ -180,11 +180,15 @@ export class EditorDisplay implements TextEditor {
 	}
 
 	public undo() {
-		document.execCommand('undo')
+		try {
+			document.execCommand('undo')
+		} catch {}
 	}
 
 	public redo() {
-		document.execCommand('redo')
+		try {
+			document.execCommand('redo')
+		} catch {}
 	}
 
 	public clearSearchHighlights() {}
@@ -206,24 +210,22 @@ export class EditorDisplay implements TextEditor {
 	}
 
 	public expandSelection(type: SelectionExpansion) {}
-	public focus() {
-		if (this.historyShowing) {
-			this._history.focus()
-		} else {
-			this._element.focus()
-		}
-	}
+	public focus() {}
 
 	public selectAll() {
 		document.getSelection().selectAllChildren(this._element)
 	}
 
 	public cut() {
-		document.execCommand('cut')
+		try {
+			document.execCommand('cut')
+		} catch {}
 	}
 
 	public copy() {
-		document.execCommand('copy')
+		try {
+			document.execCommand('copy')
+		} catch {}
 	}
 
 	public paste(text: string) {}

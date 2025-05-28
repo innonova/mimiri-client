@@ -1,6 +1,5 @@
 import type { MimerNote } from '../types/mimer-note'
 import { NoteHistory } from './note-history'
-import { Capacitor, registerPlugin } from '@capacitor/core'
 import { mimiriPlatform } from '../mimiri-platform'
 import { EditorAdvanced } from './editor-advanced'
 import type { EditorState, SelectionExpansion, TextEditor, TextEditorListener } from './type'
@@ -8,7 +7,7 @@ import { reactive } from 'vue'
 import { EditorSimple } from './editor-simple'
 import { EditorDisplay } from './editor-display'
 import { settingsManager } from '../settings-manager'
-import { noteManager } from '../../global'
+import { clipboardManager } from '../../global'
 
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms))
 
@@ -16,7 +15,6 @@ export class MimiriEditor {
 	private _history = new NoteHistory(this)
 	private _note: MimerNote
 	private infoElement: HTMLDivElement
-	private clipboard: any
 	private _editorAdvanced: EditorAdvanced
 	private _editorSimple: EditorSimple
 	private _editorDisplay: EditorDisplay
@@ -56,10 +54,6 @@ export class MimiriEditor {
 			mode: '',
 		})
 
-		if (Capacitor.isPluginAvailable('MimiriClipboard')) {
-			this.clipboard = registerPlugin<any>('MimiriClipboard')
-		}
-
 		const editorListener: TextEditorListener = {
 			onSaveRequested: () => {
 				if (!this.history.isShowing) {
@@ -91,19 +85,15 @@ export class MimiriEditor {
 	}
 
 	private animateNotification(top: number, left: number, text: string) {
-		if (this.clipboard) {
-			this.clipboard.write({ text })
-		} else {
-			navigator.clipboard.writeText(text)
-			if (!mimiriPlatform.isAndroid) {
-				this.infoElement.style.top = `${top - this.infoElement.offsetHeight}px`
-				this.infoElement.style.left = `${left}px`
-				this.infoElement.classList.add('animate-ping')
-				setTimeout(() => {
-					this.infoElement.style.left = '-2000px'
-					this.infoElement.classList.remove('animate-ping')
-				}, 900)
-			}
+		clipboardManager.write(text)
+		if (!mimiriPlatform.isAndroid) {
+			this.infoElement.style.top = `${top - this.infoElement.offsetHeight}px`
+			this.infoElement.style.left = `${left}px`
+			this.infoElement.classList.add('animate-ping')
+			setTimeout(() => {
+				this.infoElement.style.left = '-2000px'
+				this.infoElement.classList.remove('animate-ping')
+			}, 900)
 		}
 	}
 
@@ -280,7 +270,7 @@ export class MimiriEditor {
 	public cut() {
 		const text = this._activeEditor.cut()
 		if (text) {
-			navigator.clipboard.writeText(text)
+			clipboardManager.write(text)
 		}
 		this._activeEditor.focus()
 	}
@@ -288,7 +278,7 @@ export class MimiriEditor {
 	public copy() {
 		const text = this._activeEditor.copy()
 		if (text) {
-			navigator.clipboard.writeText(text)
+			clipboardManager.write(text)
 		}
 		this._activeEditor.focus()
 	}
