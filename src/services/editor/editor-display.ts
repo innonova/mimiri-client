@@ -32,7 +32,7 @@ export class EditorDisplay implements TextEditor {
 		this._element = document.createElement('div')
 		this._domElement.appendChild(this._element)
 		this._element.classList.add('simple-editor')
-		this._element.contentEditable = 'false'
+		this._element.contentEditable = 'plaintext-only'
 
 		this._history = document.createElement('div')
 		this._history.style.display = 'none'
@@ -365,7 +365,7 @@ export class EditorDisplay implements TextEditor {
 	}
 
 	public set readonly(value: boolean) {
-		// this._element.contentEditable = value ? 'false' : 'plaintext-only'
+		this._element.contentEditable = value ? 'false' : 'plaintext-only'
 	}
 	public get scrollTop(): number {
 		return this._element.scrollTop
