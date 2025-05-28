@@ -226,7 +226,9 @@ export class MimiriEditor {
 	}
 
 	public syncSettings() {
-		this._activeEditor.syncSettings()
+		this._editorAdvanced.syncSettings()
+		this._editorSimple.syncSettings()
+		this._editorDisplay.syncSettings()
 	}
 
 	public expandSelection(type: SelectionExpansion) {

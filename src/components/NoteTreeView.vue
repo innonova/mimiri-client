@@ -1,6 +1,6 @@
 <template>
 	<div
-		class="flex-auto pt-1.5 pr-2.5 pb-5 pl-1 bg-input overflow-y-auto overflow-x-hidden"
+		class="flex-auto pt-1.5 pr-2.5 pb-25 pl-1 bg-input overflow-y-auto overflow-x-hidden"
 		@contextmenu="showContextMenu"
 		@scroll="onScroll"
 		ref="mainElement"
