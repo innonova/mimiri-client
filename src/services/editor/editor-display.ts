@@ -7,13 +7,16 @@ export class EditorDisplay implements TextEditor {
 	private _domElement: HTMLElement | undefined
 	private _element: HTMLDivElement | undefined
 	private _history: HTMLDivElement | undefined
+	private _initialText: string = ''
 	private lastScrollTop: number
 	private historyShowing: boolean = false
+	private lastSelection: { startNode: Node; start: number; endNode: Node; end: number } | undefined | undefined
 	private skipScrollOnce = false
 	private _active = true
+	private _activePasswordEntry: { node: Node; start: number; end: number } | undefined
 	private _state: Omit<EditorState, 'mode'> = {
-		canUndo: false,
-		canRedo: false,
+		canUndo: true,
+		canRedo: true,
 		changed: false,
 		canMarkAsPassword: false,
 		canUnMarkAsPassword: false,
@@ -29,6 +32,7 @@ export class EditorDisplay implements TextEditor {
 		this._element = document.createElement('div')
 		this._domElement.appendChild(this._element)
 		this._element.classList.add('simple-editor')
+		this._element.contentEditable = 'false'
 
 		this._history = document.createElement('div')
 		this._history.style.display = 'none'
@@ -43,57 +47,175 @@ export class EditorDisplay implements TextEditor {
 			this._history.classList.add('simple-editor-no-wrap')
 		}
 
-		const scrollDebounce = new Debounce(async () => {
-			if (this._element.offsetWidth > 100 && !this.historyShowing) {
-				this.lastScrollTop = Math.round(this._element.scrollTop)
-				if (this._active) {
-					this.listener.onScroll(this.lastScrollTop)
-				}
+		this._element.addEventListener('input', () => {
+			if (this._active) {
+				this._state.changed = this._element.innerText.trimEnd() !== this._initialText.trimEnd()
+				this.listener.onStateUpdated(this._state)
 			}
+		})
+
+		document.addEventListener('selectionchange', () => {
+			try {
+				if (document.activeElement === this._element) {
+					let canUnMarkAsPassword = false
+					let canMarkAsPassword = false
+					const selection = document.getSelection()
+					this.lastSelection = {
+						startNode: selection.anchorNode,
+						start: selection.anchorOffset,
+						endNode: selection.focusNode,
+						end: selection.focusOffset,
+					}
+
+					if (selection.anchorNode?.textContent && selection.anchorNode === selection.focusNode) {
+						const lineContent = selection.anchorNode.textContent
+						const empty = selection.anchorOffset === selection.focusOffset
+						const selectedRange =
+							selection.anchorOffset <= selection.focusOffset
+								? { start: selection.anchorOffset, end: selection.focusOffset }
+								: { start: selection.focusOffset, end: selection.anchorOffset }
+
+						canUnMarkAsPassword = !!this.findMatchingPasswordRange(lineContent, selectedRange.start, selectedRange.end)
+
+						const selectionContent = lineContent.substring(selectedRange.start, selectedRange.end)
+						canMarkAsPassword = !canUnMarkAsPassword && !selectionContent.includes('`') && !empty
+
+						if (canMarkAsPassword || canUnMarkAsPassword) {
+							this._activePasswordEntry = {
+								node: selection.anchorNode,
+								start: selectedRange.start,
+								end: selectedRange.end,
+							}
+						} else {
+							this._activePasswordEntry = undefined
+						}
+					}
+					if (
+						this._state.canMarkAsPassword !== canMarkAsPassword ||
+						this._state.canUnMarkAsPassword !== canUnMarkAsPassword
+					) {
+						this._state.canMarkAsPassword = canMarkAsPassword
+						this._state.canUnMarkAsPassword = canUnMarkAsPassword
+						if (this._active) {
+							this.listener.onStateUpdated(this._state)
+						}
+					}
+				}
+			} catch {}
+		})
+		this._element.addEventListener('focus', () => {
+			if (this.lastSelection) {
+				try {
+					const range = document.createRange()
+					range.setStart(this.lastSelection.startNode, this.lastSelection.start)
+					range.setEnd(this.lastSelection.endNode, this.lastSelection.end)
+					const selection = document.getSelection()
+					selection.empty()
+					selection.addRange(range)
+				} catch {}
+			}
+		})
+
+		const scrollDebounce = new Debounce(async () => {
+			try {
+				if (this._element.offsetWidth > 100 && !this.historyShowing) {
+					this.lastScrollTop = Math.round(this._element.scrollTop)
+					if (this._active) {
+						this.listener.onScroll(this.lastScrollTop)
+					}
+				}
+			} catch {}
 		}, 250)
 
 		this._element.addEventListener('scroll', () => {
-			if (this.skipScrollOnce) {
-				this.skipScrollOnce = false
-				return
-			}
-			scrollDebounce.activate()
-		})
-
-		this._element.addEventListener('click', event => {
-			if (!mimiriPlatform.isDesktop) {
-				const elm = this.getPasswordElement(event)
-				if (elm) {
-					const rect = elm.getBoundingClientRect()
-					this.listener.onPasswordClicked(rect.top, rect.right, elm.textContent)
+			try {
+				if (this.skipScrollOnce) {
+					this.skipScrollOnce = false
+					return
 				}
-			}
-		})
-
-		this._element.addEventListener('dblclick', event => {
-			if (mimiriPlatform.isDesktop) {
-				const elm = this.getPasswordElement(event)
-				if (elm) {
-					const rect = elm.getBoundingClientRect()
-					this.listener.onPasswordClicked(rect.top, rect.right, elm.textContent)
-				}
-			}
+				scrollDebounce.activate()
+			} catch {}
 		})
 	}
 
-	private getPasswordElement(event: MouseEvent) {
-		const elm = event.target as HTMLElement
-		if (elm.className === 'password-secret') {
-			return elm.children[0] as HTMLElement
+	private findMatchingPasswordRange(text: string, start: number, end: number) {
+		const pwRanges = this.findPasswordRanges(text)
+		if (start === end) {
+			return pwRanges.find(pw => pw.start < start && pw.end >= end)
 		}
-		if (elm.className === 'password-secret-content') {
-			return elm
-		}
-		return undefined
+		return pwRanges.find(pw => pw.start <= start && pw.end + 1 >= end)
 	}
 
-	public unMarkSelectionAsPassword() {}
-	public markSelectionAsPassword() {}
+	private findPasswordRanges(text: string) {
+		let pwStart = -1
+		const pwRanges: { start: number; end: number }[] = []
+		for (let i = 1; i < text.length; i++) {
+			if (text.charAt(i) === '`') {
+				if (text.charAt(i - 1) === 'p') {
+					pwStart = i - 1
+				} else if (pwStart >= 0) {
+					pwRanges.push({ start: pwStart, end: i })
+					pwStart = -1
+				}
+			}
+		}
+		return pwRanges
+	}
+
+	public unMarkSelectionAsPassword() {
+		try {
+			if (this._activePasswordEntry) {
+				const lineContent = this._activePasswordEntry.node.textContent
+				const activePwRange = this.findMatchingPasswordRange(
+					lineContent,
+					this._activePasswordEntry.start,
+					this._activePasswordEntry.end,
+				)
+				if (activePwRange) {
+					const pre = lineContent.substring(0, activePwRange.start)
+					const pw = lineContent.substring(activePwRange.start, activePwRange.end + 1)
+					const post = lineContent.substring(activePwRange.end + 1, lineContent.length)
+					if (pw.startsWith('p`') && pw.endsWith('`')) {
+						this._activePasswordEntry.node.textContent = `${pre}${pw.substring(2, pw.length - 1)}${post}`
+						this._state.canMarkAsPassword = false
+						this._state.canUnMarkAsPassword = false
+						if (this._active) {
+							this.listener.onStateUpdated(this._state)
+						}
+						this.lastSelection = undefined
+						const range = document.createRange()
+						range.setStart(this._activePasswordEntry.node, pre.length)
+						range.setEnd(
+							this._activePasswordEntry.node,
+							this._activePasswordEntry.node.textContent.length - post.length,
+						)
+						const selection = document.getSelection()
+						selection.empty()
+						selection.addRange(range)
+					}
+				}
+			}
+		} catch {}
+	}
+
+	public markSelectionAsPassword() {
+		try {
+			if (this._activePasswordEntry) {
+				const lineContent = this._activePasswordEntry.node.textContent
+				const pre = lineContent.substring(0, this._activePasswordEntry.start)
+				const pw = lineContent.substring(this._activePasswordEntry.start, this._activePasswordEntry.end)
+				const post = lineContent.substring(this._activePasswordEntry.end, lineContent.length)
+				this._activePasswordEntry.node.textContent = `${pre}p\`${pw}\`${post}`
+				this.lastSelection = undefined
+				const range = document.createRange()
+				range.setStart(this._activePasswordEntry.node, pre.length)
+				range.setEnd(this._activePasswordEntry.node, this._activePasswordEntry.node.textContent.length - post.length)
+				const selection = document.getSelection()
+				selection.empty()
+				selection.addRange(range)
+			}
+		} catch {}
+	}
 
 	public get active(): boolean {
 		return this._active
@@ -111,16 +233,10 @@ export class EditorDisplay implements TextEditor {
 		}
 	}
 
-	private formatText(text: string) {
-		return text.replace(
-			/p`([^`]+)`/g,
-			'<span class="password-secret">p`<span class="password-secret-content">$1</span></span>`',
-		)
-	}
-
 	public show(text: string, scrollTop: number) {
 		this._state.changed = false
-		this._element.innerHTML = this.formatText(text)
+		this._element.innerText = text
+		this._initialText = this._element.innerText
 		this.lastScrollTop = scrollTop
 		this._element.scrollTop = scrollTop
 		if (this._active) {
@@ -130,13 +246,17 @@ export class EditorDisplay implements TextEditor {
 
 	public updateText(text: string) {
 		this._state.changed = false
-		this._element.innerHTML = this.formatText(text)
+		if (this._element.innerText !== text) {
+			this._element.innerText = text
+			this._initialText = this._element.innerText
+		}
 		if (this._active) {
 			this.listener.onStateUpdated(this._state)
 		}
 	}
 
 	public resetChanged() {
+		this._initialText = this._element.innerText
 		this._state.changed = false
 		if (this._active) {
 			this.listener.onStateUpdated(this._state)
@@ -144,10 +264,11 @@ export class EditorDisplay implements TextEditor {
 	}
 
 	public clear() {
+		this._initialText = ''
 		this._state.changed = false
 		this._state.canUndo = false
 		this._state.canRedo = false
-		this._element.innerHTML = ''
+		this._element.innerText = ''
 		this.readonly = true
 		if (this._active) {
 			this.listener.onStateUpdated(this._state)
@@ -210,7 +331,13 @@ export class EditorDisplay implements TextEditor {
 	}
 
 	public expandSelection(type: SelectionExpansion) {}
-	public focus() {}
+	public focus() {
+		if (this.historyShowing) {
+			this._history.focus()
+		} else {
+			this._element.focus()
+		}
+	}
 
 	public selectAll() {
 		document.getSelection().selectAllChildren(this._element)
@@ -228,18 +355,23 @@ export class EditorDisplay implements TextEditor {
 		} catch {}
 	}
 
-	public paste(text: string) {}
-
+	public paste(text: string) {
+		try {
+			document.execCommand('paste')
+		} catch {}
+	}
 	public get readonly() {
-		return true
+		return this._element.contentEditable === 'false'
 	}
 
-	public set readonly(value: boolean) {}
+	public set readonly(value: boolean) {
+		// this._element.contentEditable = value ? 'false' : 'plaintext-only'
+	}
 	public get scrollTop(): number {
 		return this._element.scrollTop
 	}
 
 	public get text(): any {
-		throw new Error('attempt to save from display mode')
+		return this._element.innerText
 	}
 }
