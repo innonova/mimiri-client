@@ -107,6 +107,7 @@ export class MimiriEditor {
 		this._editorDisplay.active = false
 		this._activeEditor = this._editorAdvanced
 		this._state.mode = 'advanced'
+		this._activeEditor.syncSettings()
 	}
 
 	private activateSimple() {
@@ -119,6 +120,7 @@ export class MimiriEditor {
 		this._editorDisplay.active = false
 		this._activeEditor = this._editorSimple
 		this._state.mode = 'simple'
+		this._activeEditor.syncSettings()
 	}
 
 	private activateDisplay() {
@@ -131,6 +133,7 @@ export class MimiriEditor {
 		this._editorDisplay.active = true
 		this._activeEditor = this._editorDisplay
 		this._state.mode = 'display'
+		this._activeEditor.syncSettings()
 	}
 
 	private activateEditor() {
@@ -248,15 +251,16 @@ export class MimiriEditor {
 	}
 
 	public syncSettings() {
-		if (this._monacoInitialized) {
-			this._editorAdvanced.syncSettings()
-		}
-		if (this._simpleInitialized) {
-			this._editorSimple.syncSettings()
-		}
-		if (this._displayInitialized) {
-			this._editorDisplay.syncSettings()
-		}
+		this._activeEditor.syncSettings()
+		// if (this._monacoInitialized) {
+		// 	this._editorAdvanced.syncSettings()
+		// }
+		// if (this._simpleInitialized) {
+		// 	this._editorSimple.syncSettings()
+		// }
+		// if (this._displayInitialized) {
+		// 	this._editorDisplay.syncSettings()
+		// }
 	}
 
 	public expandSelection(type: SelectionExpansion) {
