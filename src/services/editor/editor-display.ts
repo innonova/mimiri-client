@@ -119,39 +119,39 @@ export class EditorDisplay implements TextEditor {
 	}
 
 	public show(text: string, scrollTop: number) {
-		this._state.changed = false
-		this._element.innerText = this.formatText(text)
-		this.lastScrollTop = scrollTop
-		this._element.scrollTop = scrollTop
-		if (this._active) {
-			this.listener.onStateUpdated(this._state)
-		}
+		// this._state.changed = false
+		// this._element.innerHTML = this.formatText(text)
+		// this.lastScrollTop = scrollTop
+		// this._element.scrollTop = scrollTop
+		// if (this._active) {
+		// 	this.listener.onStateUpdated(this._state)
+		// }
 	}
 
 	public updateText(text: string) {
-		this._state.changed = false
-		this._element.innerText = this.formatText(text)
-		if (this._active) {
-			this.listener.onStateUpdated(this._state)
-		}
+		// this._state.changed = false
+		// this._element.innerHTML = this.formatText(text)
+		// if (this._active) {
+		// 	this.listener.onStateUpdated(this._state)
+		// }
 	}
 
 	public resetChanged() {
-		this._state.changed = false
-		if (this._active) {
-			this.listener.onStateUpdated(this._state)
-		}
+		// this._state.changed = false
+		// if (this._active) {
+		// 	this.listener.onStateUpdated(this._state)
+		// }
 	}
 
 	public clear() {
-		this._state.changed = false
-		this._state.canUndo = false
-		this._state.canRedo = false
-		this._element.innerText = ''
-		this.readonly = true
-		if (this._active) {
-			this.listener.onStateUpdated(this._state)
-		}
+		// this._state.changed = false
+		// this._state.canUndo = false
+		// this._state.canRedo = false
+		// this._element.innerHTML = ''
+		// this.readonly = true
+		// if (this._active) {
+		// 	this.listener.onStateUpdated(this._state)
+		// }
 	}
 
 	public setHistoryText(text: string) {

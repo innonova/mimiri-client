@@ -57,7 +57,7 @@
 			<div class="overflow-hidden flex-1" style="display: none" ref="monacoContainer"></div>
 			<div class="overflow-hidden flex-1" style="display: none" ref="simpleContainer"></div>
 			<div class="overflow-hidden flex-1" style="display: none" ref="displayContainer"></div>
-			<!-- <div v-if="!historyVisible && mimiriEditor.mode === 'display'" class="display-editor-toolbar flex flex-row gap-1">
+			<div v-if="!historyVisible && mimiriEditor.mode === 'display'" class="display-editor-toolbar flex flex-row gap-1">
 				<button
 					@click="activateEdit"
 					class="bg-button-primary text-button-primary-text hover:brightness-125 select-none; font-display text-size-base; cursor-default; py-2 px-4; w-full"
@@ -67,7 +67,7 @@
 				<button @click="activateSettings" class="bg-button-primary text-button-primary-text hover:brightness-125">
 					<SettingIcon class="w-6 h-6 my-1 mx-3"></SettingIcon>
 				</button>
-			</div> -->
+			</div>
 			<SelectionControl v-if="mimiriEditor.mode === 'advanced'"></SelectionControl>
 			<div v-if="historyVisible" class="w-full h-1/3 flex flex-col">
 				<div
