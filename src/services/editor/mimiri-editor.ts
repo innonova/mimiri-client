@@ -208,16 +208,19 @@ export class MimiriEditor {
 	public activateEdit() {
 		this.activateEditor()
 		this._activeEditor.show(this.note.text, this.note.scrollTop)
+		this._activeEditor.readonly = this.note.isCache || this.note.isSystem
 	}
 
 	public reloadNode() {
 		if (this.note) {
 			this._activeEditor.updateText(this.note.text)
+			this._activeEditor.readonly = this.note.isCache || this.note.isSystem
 		}
 	}
 
 	public resetChanged() {
 		this._activeEditor.resetChanged()
+		this._activeEditor.readonly = this.note.isCache || this.note.isSystem
 	}
 
 	public setHistoryText(text: string) {
