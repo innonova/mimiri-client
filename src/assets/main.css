@@ -240,3 +240,31 @@ dialog {
 dialog::backdrop {
 	background-color: rgba(0, 0, 0, 0.4);
 }
+
+.display-editor-container {
+	@apply h-full w-full flex flex-col;
+}
+
+.display-editor-toolbar {
+	@apply h-10;
+}
+
+.simple-editor {
+	@apply bg-input p-1.5 leading-5 font-editor outline-0 overflow-y-auto h-full w-full;
+}
+
+.simple-editor::selection {
+	@apply bg-input-selection text-input-selected-text;
+}
+
+.simple-editor-no-wrap {
+	@apply whitespace-pre overflow-x-auto;
+}
+
+.simple-editor-wrap {
+	@apply whitespace-pre-wrap overflow-x-hidden;
+}
+
+.password-secret-content {
+	-webkit-text-security: disc;
+}

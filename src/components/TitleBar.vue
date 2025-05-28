@@ -9,18 +9,18 @@
 			'h-[36px] pr-[138px] pl-px': mimiriPlatform.isWindows,
 			'h-[36px] pr-[95px] pl-px': mimiriPlatform.isLinux,
 			'h-[36px] pr-[5px] pl-[65px]': mimiriPlatform.isMac,
-			'h-14': !mimiriPlatform.isPc,
+			'h-14': !mimiriPlatform.isDesktop,
 		}"
 		@click="titleBarClick"
 		data-testid="title-bar"
 	>
 		<img
-			v-if="mimiriPlatform.isPc && !mimiriPlatform.isMac"
+			v-if="mimiriPlatform.isDesktop && !mimiriPlatform.isMac"
 			class="ml-1.5 mr-1 mt-px p-1 min-w-7 w-7 h-7"
 			src="/img/logo.png"
 		/>
 		<div
-			v-if="mimiriPlatform.isPc && !mimiriPlatform.isMac"
+			v-if="mimiriPlatform.isDesktop && !mimiriPlatform.isMac"
 			class="hover:bg-title-hover cursor-default rounded-sm px-2 no-drag"
 			data-testid="title-menu-file"
 			@click="menuClick($event, 'file')"
@@ -29,7 +29,7 @@
 			File
 		</div>
 		<div
-			v-if="mimiriPlatform.isPc && !mimiriPlatform.isMac"
+			v-if="mimiriPlatform.isDesktop && !mimiriPlatform.isMac"
 			class="hover:bg-title-hover cursor-default rounded-sm px-2 no-drag"
 			data-testid="title-menu-edit"
 			@click="menuClick($event, 'edit')"
@@ -38,7 +38,7 @@
 			Edit
 		</div>
 		<div
-			v-if="mimiriPlatform.isPc && !mimiriPlatform.isMac"
+			v-if="mimiriPlatform.isDesktop && !mimiriPlatform.isMac"
 			class="hover:bg-title-hover cursor-default rounded-sm px-2 no-drag"
 			data-testid="title-menu-view"
 			@click="menuClick($event, 'view')"
@@ -47,7 +47,7 @@
 			View
 		</div>
 		<div
-			v-if="mimiriPlatform.isPc && !mimiriPlatform.isMac"
+			v-if="mimiriPlatform.isDesktop && !mimiriPlatform.isMac"
 			class="hover:bg-title-hover cursor-default rounded-sm px-2 no-drag"
 			data-testid="title-menu-tools"
 			@click="menuClick($event, 'tools')"
@@ -56,7 +56,7 @@
 			Tools
 		</div>
 		<div
-			v-if="mimiriPlatform.isPc && !mimiriPlatform.isMac"
+			v-if="mimiriPlatform.isDesktop && !mimiriPlatform.isMac"
 			class="hover:bg-title-hover cursor-default rounded-sm px-2 no-drag"
 			data-testid="title-menu-help"
 			@click="menuClick($event, 'help')"
@@ -67,8 +67,8 @@
 		<div
 			class="w-full flex mr-30 h-full py-[5px]"
 			:class="{
-				'justify-around': mimiriPlatform.isPc,
-				'justify-start pl-1': !mimiriPlatform.isPc,
+				'justify-around': mimiriPlatform.isDesktop,
+				'justify-start pl-1': !mimiriPlatform.isDesktop,
 			}"
 		>
 			<input
@@ -79,8 +79,8 @@
 				:disabled="!noteManager.state.authenticated"
 				class="bg-input rounded-md text-center no-drag text-size-base h-full pb-1 outline-none"
 				:class="{
-					'w-2/3 max-w-80': mimiriPlatform.isPc,
-					'w-full': !mimiriPlatform.isPc,
+					'w-2/3 max-w-80': mimiriPlatform.isDesktop,
+					'w-full': !mimiriPlatform.isDesktop,
 				}"
 				@blur="endEdit"
 				@keydown="checkSearch"
@@ -109,8 +109,8 @@
 			class="h-full flex items-center justify-center relative"
 			:class="{
 				'hover:bg-toolbar-hover active:bg-toolbar-hover': notificationManager.count > 0,
-				'min-w-[28px] w-[28px]': mimiriPlatform.isPc,
-				'w-14 ml-2': !mimiriPlatform.isPc,
+				'min-w-[28px] w-[28px]': mimiriPlatform.isDesktop,
+				'w-14 ml-2': !mimiriPlatform.isDesktop,
 			}"
 			@click="notificationsClick()"
 			title="Notifications"
@@ -139,8 +139,8 @@
 			class="h-full flex items-center justify-center"
 			:class="{
 				'hover:bg-toolbar-hover active:bg-toolbar-hover': noteManager.isLoggedIn,
-				'min-w-[44px] w-[55px]': mimiriPlatform.isPc,
-				'w-16': !mimiriPlatform.isPc,
+				'min-w-[44px] w-[55px]': mimiriPlatform.isDesktop,
+				'w-16': !mimiriPlatform.isDesktop,
 			}"
 			data-testid="account-button"
 			title="Account"
@@ -269,7 +269,7 @@ const showMenu = (rect, menu) => {
 						...(mimiriPlatform.isElectron ? [MenuItems.SetPin] : []),
 						MenuItems.DeleteAccount,
 					]),
-			...(mimiriPlatform.isPc ? [MenuItems.Separator, MenuItems.ManageSubscription] : []),
+			...(mimiriPlatform.isDesktop ? [MenuItems.Separator, MenuItems.ManageSubscription] : []),
 			...(!noteManager.isAnonymous && ipcClient.isAvailable ? [MenuItems.Separator] : []),
 			...(noteManager.isAnonymous ? [MenuItems.Login] : [MenuItems.Logout]),
 			...(ipcClient.isAvailable ? [MenuItems.Separator, MenuItems.GoOnline] : []),

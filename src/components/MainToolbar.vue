@@ -5,9 +5,9 @@
 		:class="{ 'justify-between': mimiriPlatform.isPhone }"
 		data-testid="main-toolbar"
 	>
-		<ToolbarIcon v-if="!mimiriPlatform.isPc" icon="menu" @click="showMobileMenu"></ToolbarIcon>
+		<ToolbarIcon v-if="!mimiriPlatform.isDesktop" icon="menu" @click="showMobileMenu"></ToolbarIcon>
 		<div
-			v-if="!mimiriPlatform.isPc"
+			v-if="!mimiriPlatform.isDesktop"
 			class="inline-block h-4/5 w-0 border border-solid border-toolbar-separator m-0.5"
 		></div>
 		<ToolbarIcon icon="add-root-note" :hoverEffect="true" title="New Root Note" @click="createRootNote"></ToolbarIcon>

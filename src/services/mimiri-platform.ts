@@ -126,7 +126,7 @@ class MimiriPlatform {
 		return false
 	}
 
-	public get isPc() {
+	public get isDesktop() {
 		if (this.isElectron) {
 			return true
 		}

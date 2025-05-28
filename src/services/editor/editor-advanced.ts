@@ -1,11 +1,10 @@
 import { editor, KeyCode, languages, Selection } from 'monaco-editor'
-import type { EditorState, TextEditor, TextEditorListener } from './type'
+import { SelectionExpansion, type EditorState, type TextEditor, type TextEditorListener } from './type'
 import { settingsManager } from '../settings-manager'
 import { mobileLog } from '../../global'
 import { mimiriPlatform } from '../mimiri-platform'
 import { Debounce } from '../helpers'
 import { reactive } from 'vue'
-import { SelectionExpansion } from './mimiri-editor'
 
 export class EditorAdvanced implements TextEditor {
 	private backgroundEditor: editor.IStandaloneCodeEditor
@@ -19,23 +18,23 @@ export class EditorAdvanced implements TextEditor {
 	private styleOverridesDirty = false
 	private styleUpdateRunning = false
 	private styleUpdateStartTime = Date.now()
-	private _state: EditorState
+	private _state: Omit<EditorState, 'mode'> = {
+		canUndo: false,
+		canRedo: false,
+		changed: false,
+		canMarkAsPassword: false,
+		canUnMarkAsPassword: false,
+	}
 	private skipScrollOnce = false
 	private historyShowing = false
 	private lastScrollTop = 0
 	private lastSelection: Selection | null = null
+	private _text: string = ''
+	private _initialText: string = ''
+	private _domElement: HTMLElement | undefined
+	private _active = true
 
 	constructor(private listener: TextEditorListener) {
-		this._state = reactive({
-			text: '',
-			initialText: '',
-			canUndo: false,
-			canRedo: false,
-			changed: false,
-			canMarkAsPassword: false,
-			canUnMarkAsPassword: false,
-		})
-
 		this.styleElement = document.getElementById('mimiri-style-overrides') as HTMLStyleElement
 		if (!this.styleElement) {
 			this.styleElement = document.createElement('style')
@@ -75,6 +74,7 @@ export class EditorAdvanced implements TextEditor {
 	}
 
 	public init(domElement: HTMLElement) {
+		this._domElement = domElement
 		this.backgroundElement = document.getElementById('mimiri-background-editor') as HTMLDivElement
 		if (this.backgroundElement) {
 			this.backgroundElement.remove()
@@ -126,6 +126,9 @@ export class EditorAdvanced implements TextEditor {
 
 		this.monacoEditorModel = editor.createModel('', 'mimiri')
 		this.backgroundModel = editor.createModel('', 'mimiri')
+		this.monacoEditorModel.setEOL(editor.EndOfLineSequence.LF)
+		this.backgroundModel.setEOL(editor.EndOfLineSequence.LF)
+
 		this.monacoEditor.setModel(this.monacoEditorModel)
 		this.backgroundEditor.setModel(this.backgroundModel)
 
@@ -134,19 +137,24 @@ export class EditorAdvanced implements TextEditor {
 		this.updateStyleOverrides()
 
 		this.monacoEditor.onKeyDown(e => {
-			if (e.keyCode === KeyCode.KeyS && e.ctrlKey && !this.historyShowing) {
-				this.listener.onSaveRequested()
-			}
-			if (e.keyCode === KeyCode.KeyF && e.ctrlKey && e.shiftKey) {
-				this.listener.onSearchAllRequested()
+			if (this._active) {
+				if (e.keyCode === KeyCode.KeyS && e.ctrlKey && !this.historyShowing) {
+					this.listener.onSaveRequested()
+				}
+				if (e.keyCode === KeyCode.KeyF && e.ctrlKey && e.shiftKey) {
+					this.listener.onSearchAllRequested()
+				}
 			}
 		})
 
 		this.monacoEditorModel.onDidChangeContent(event => {
-			this._state.text = this.monacoEditorModel.getValue()
-			this._state.canUndo = (this.monacoEditorModel as any).canUndo()
-			this._state.canRedo = (this.monacoEditorModel as any).canRedo()
-			this._state.changed = this._state.text !== this._state.initialText
+			if (this._active) {
+				this._text = this.monacoEditorModel.getValue()
+				this._state.canUndo = (this.monacoEditorModel as any).canUndo()
+				this._state.canRedo = (this.monacoEditorModel as any).canRedo()
+				this._state.changed = this._text !== this._initialText
+				this.listener.onStateUpdated(this._state)
+			}
 		})
 
 		this.monacoEditor.onDidChangeCursorSelection(e => {
@@ -158,7 +166,7 @@ export class EditorAdvanced implements TextEditor {
 				const line = this.monacoEditor.getModel().getLineContent(e.selection.startLineNumber)
 				const selectionStart = e.selection.startColumn
 				const selectionEnd = e.selection.endColumn
-				if (selectionEnd - selectionStart > 0 || !mimiriPlatform.isPc) {
+				if (selectionEnd - selectionStart > 0 || !mimiriPlatform.isDesktop) {
 					const tokens = editor.tokenize(line, 'mimiri')[0]
 					for (let i = 0; i < tokens.length; i++) {
 						const token = tokens[i]
@@ -175,14 +183,16 @@ export class EditorAdvanced implements TextEditor {
 									},
 									e.source,
 								)
-								if (!mimiriPlatform.isPc) {
-									const text = line.substring(tokenStart - 1, tokenEnd - 1)
-									const rect = this.monacoEditor.getDomNode().getBoundingClientRect()
-									const lineTop = this.monacoEditor.getTopForLineNumber(e.selection.startLineNumber)
-									const columnOffset = this.monacoEditor.getOffsetForColumn(e.selection.startLineNumber, tokenEnd)
-									const left = columnOffset + rect.left - this.monacoEditor.getScrollLeft()
-									const top = lineTop + rect.top - this.monacoEditor.getScrollTop()
-									this.listener.onPasswordClicked(top, left, text)
+								if (!mimiriPlatform.isDesktop) {
+									if (this._active) {
+										const text = line.substring(tokenStart - 1, tokenEnd - 1)
+										const rect = this.monacoEditor.getDomNode().getBoundingClientRect()
+										const lineTop = this.monacoEditor.getTopForLineNumber(e.selection.startLineNumber)
+										const columnOffset = this.monacoEditor.getOffsetForColumn(e.selection.startLineNumber, tokenEnd)
+										const left = columnOffset + rect.left - this.monacoEditor.getScrollLeft()
+										const top = lineTop + rect.top - this.monacoEditor.getScrollTop()
+										this.listener.onPasswordClicked(top, left, text)
+									}
 								}
 							}
 						}
@@ -194,14 +204,16 @@ export class EditorAdvanced implements TextEditor {
 
 		this.monacoEditor.onDidBlurEditorText(e => {
 			if (!this.historyShowing) {
-				this.listener.onBlur()
+				this.listener.onEditorBlur()
 			}
 		})
 
 		const scrollDebounce = new Debounce(async () => {
 			if (this.monacoEditor.getScrollWidth() > 100 && !this.historyShowing) {
 				this.lastScrollTop = this.monacoEditor.getScrollTop()
-				this.listener.onScroll(this.monacoEditor.getScrollTop())
+				if (this._active) {
+					this.listener.onScroll(this.monacoEditor.getScrollTop())
+				}
 			}
 		}, 250)
 
@@ -267,6 +279,7 @@ export class EditorAdvanced implements TextEditor {
 				}
 			}
 		})
+		this._domElement.style.display = this._active ? 'block' : 'none'
 	}
 
 	private executeUpdateStyleOverrides() {
@@ -355,11 +368,15 @@ export class EditorAdvanced implements TextEditor {
 				!selection.isEmpty() &&
 				selection.startColumn !== selection.endColumn
 		}
-		if (this._state.canMarkAsPassword !== canMarkAsPassword) {
+		if (
+			this._state.canMarkAsPassword !== canMarkAsPassword ||
+			this._state.canUnMarkAsPassword !== canUnMarkAsPassword
+		) {
 			this._state.canMarkAsPassword = canMarkAsPassword
-		}
-		if (this._state.canUnMarkAsPassword !== canUnMarkAsPassword) {
 			this._state.canUnMarkAsPassword = canUnMarkAsPassword
+			if (this._active) {
+				this.listener.onStateUpdated(this._state)
+			}
 		}
 	}
 
@@ -367,8 +384,8 @@ export class EditorAdvanced implements TextEditor {
 		if (this.styleOverridesDirty && !this.styleUpdateRunning) {
 			this.updateStyleOverrides()
 		}
-		this._state.initialText = text
-		this._state.text = text
+		this._initialText = text
+		this._text = text
 		this._state.changed = false
 		this.monacoEditorModel.setValue(text)
 		this.skipScrollOnce = true
@@ -378,30 +395,42 @@ export class EditorAdvanced implements TextEditor {
 			this.skipScrollOnce = true
 			this.monacoEditor.setScrollTop(scrollTop, editor.ScrollType.Immediate)
 		})
+		if (this._active) {
+			this.listener.onStateUpdated(this._state)
+		}
 	}
 
-	public updateText(text) {
-		this._state.initialText = text
-		this._state.text = text
+	public updateText(text: string) {
+		this._initialText = text
+		this._text = text
 		this._state.changed = false
 		if (this.monacoEditorModel.getValue() !== text) {
 			this.monacoEditorModel.setValue(text)
 		}
+		if (this._active) {
+			this.listener.onStateUpdated(this._state)
+		}
 	}
 
 	public resetChanged() {
-		this._state.initialText = this._state.text
+		this._initialText = this._text
 		this._state.changed = false
+		if (this._active) {
+			this.listener.onStateUpdated(this._state)
+		}
 	}
 
 	public clear() {
-		this._state.initialText = ''
-		this._state.text = ''
+		this._initialText = ''
+		this._text = ''
 		this._state.changed = false
 		this._state.canUndo = false
 		this._state.canRedo = false
 		this.monacoEditorModel.setValue('')
-		this.monacoEditor.updateOptions({ readOnly: true })
+		this.readonly = true
+		if (this._active) {
+			this.listener.onStateUpdated(this._state)
+		}
 	}
 
 	public undo() {
@@ -637,6 +666,22 @@ export class EditorAdvanced implements TextEditor {
 		this.monacoEditor.focus()
 	}
 
+	public get active(): boolean {
+		return this._active
+	}
+
+	public set active(value: boolean) {
+		if (this._active !== value) {
+			this._active = value
+			if (this._domElement) {
+				this._domElement.style.display = this._active ? 'block' : 'none'
+			}
+			if (this._active) {
+				this.listener.onStateUpdated(this._state)
+			}
+		}
+	}
+
 	public get readonly() {
 		return this.monacoEditor.getOption(editor.EditorOption.readOnly)
 	}
@@ -645,31 +690,11 @@ export class EditorAdvanced implements TextEditor {
 		this.monacoEditor.updateOptions({ readOnly: value })
 	}
 
-	public get canUndo() {
-		return this._state.canUndo
-	}
-
-	public get canRedo() {
-		return this._state.canRedo
-	}
-
-	public get changed() {
-		return this._state.changed
-	}
-
-	public get canMarkAsPassword() {
-		return this._state.canMarkAsPassword
-	}
-
-	public get canUnMarkAsPassword() {
-		return this._state.canUnMarkAsPassword
-	}
-
 	public get scrollTop() {
 		return this.monacoEditor.getScrollTop()
 	}
 
 	public get text() {
-		return this._state.text
+		return this._text
 	}
 }

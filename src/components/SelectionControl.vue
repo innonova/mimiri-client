@@ -27,7 +27,7 @@ import ShrinkRight from '../icons/shrink-right.vue'
 import ExpandRight from '../icons/expand-right.vue'
 import LineDown from '../icons/line-down.vue'
 import { mimiriEditor } from '../global'
-import { SelectionExpansion } from '../services/editor/mimiri-editor'
+import { SelectionExpansion } from '../services/editor/type'
 import { ref } from 'vue'
 import { mimiriPlatform } from '../services/mimiri-platform'
 
@@ -39,7 +39,7 @@ const toolbarTop = ref('0px')
 const menuVisibility = ref('hidden')
 const toolbarVisibility = ref('hidden')
 
-if (!mimiriPlatform.isPc) {
+if (!mimiriPlatform.isDesktop) {
 	visualViewport.addEventListener('resize', e => {
 		const isPortrait = window.innerHeight > window.innerWidth
 		const viewPortHeight = visualViewport.height * visualViewport.scale

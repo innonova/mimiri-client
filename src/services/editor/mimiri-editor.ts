@@ -3,17 +3,13 @@ import { NoteHistory } from './note-history'
 import { Capacitor, registerPlugin } from '@capacitor/core'
 import { mimiriPlatform } from '../mimiri-platform'
 import { EditorAdvanced } from './editor-advanced'
+import type { EditorState, SelectionExpansion, TextEditor, TextEditorListener } from './type'
+import { reactive } from 'vue'
+import { EditorSimple } from './editor-simple'
+import { EditorDisplay } from './editor-display'
+import { settingsManager } from '../settings-manager'
 
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms))
-
-export enum SelectionExpansion {
-	LineUp,
-	ExpandLeft,
-	ShrinkLeft,
-	ShrinkRight,
-	ExpandRight,
-	LineDown,
-}
 
 export class MimiriEditor {
 	private _history = new NoteHistory(this)
@@ -21,6 +17,10 @@ export class MimiriEditor {
 	private infoElement: HTMLDivElement
 	private clipboard: any
 	private _editorAdvanced: EditorAdvanced
+	private _editorSimple: EditorSimple
+	private _editorDisplay: EditorDisplay
+	private _activeEditor: TextEditor
+	private _state: EditorState
 
 	private saveListener: () => void
 	public onSave(listener: () => void) {
@@ -38,10 +38,22 @@ export class MimiriEditor {
 	}
 
 	constructor() {
+		this._state = reactive({
+			text: '',
+			initialText: '',
+			canUndo: false,
+			canRedo: false,
+			changed: false,
+			canMarkAsPassword: false,
+			canUnMarkAsPassword: false,
+			mode: '',
+		})
+
 		if (Capacitor.isPluginAvailable('MimiriClipboard')) {
 			this.clipboard = registerPlugin<any>('MimiriClipboard')
 		}
-		this._editorAdvanced = new EditorAdvanced({
+
+		const editorListener: TextEditorListener = {
 			onSaveRequested: () => {
 				if (!this.history.isShowing) {
 					this.saveListener?.()
@@ -50,7 +62,7 @@ export class MimiriEditor {
 			onSearchAllRequested: () => {
 				this.searchAllListener?.()
 			},
-			onBlur: () => {
+			onEditorBlur: () => {
 				this.blurListener?.()
 			},
 			onScroll: (position: number) => {
@@ -61,7 +73,14 @@ export class MimiriEditor {
 			onPasswordClicked: (top: number, left: number, text: string) => {
 				this.animateNotification(top, left, text)
 			},
-		})
+			onStateUpdated: state => {
+				Object.assign(this._state, state)
+			},
+		}
+
+		this._editorAdvanced = new EditorAdvanced(editorListener)
+		this._editorSimple = new EditorSimple(editorListener)
+		this._editorDisplay = new EditorDisplay(editorListener)
 	}
 
 	private animateNotification(top: number, left: number, text: string) {
@@ -81,7 +100,39 @@ export class MimiriEditor {
 		}
 	}
 
-	public init(domElement: HTMLElement) {
+	private activateAdvanced() {
+		this._editorAdvanced.active = true
+		this._editorSimple.active = false
+		this._editorDisplay.active = false
+		this._activeEditor = this._editorAdvanced
+		this._state.mode = 'advanced'
+	}
+
+	private activateSimple() {
+		this._editorAdvanced.active = false
+		this._editorSimple.active = true
+		this._editorDisplay.active = false
+		this._activeEditor = this._editorSimple
+		this._state.mode = 'simple'
+	}
+
+	private activateDisplay() {
+		this._editorAdvanced.active = false
+		this._editorSimple.active = false
+		this._editorDisplay.active = true
+		this._activeEditor = this._editorDisplay
+		this._state.mode = 'display'
+	}
+
+	private activateEditor() {
+		if (settingsManager.simpleEditor) {
+			this.activateSimple()
+		} else {
+			this.activateAdvanced()
+		}
+	}
+
+	public init(monacoElement: HTMLElement, simpleElement: HTMLElement, displayElement: HTMLElement) {
 		this.infoElement = document.getElementById('mimiri-editor-info') as HTMLDivElement
 		if (!this.infoElement) {
 			this.infoElement = document.createElement('div')
@@ -93,126 +144,140 @@ export class MimiriEditor {
 			this.infoElement.innerHTML = 'copied'
 			document.body.appendChild(this.infoElement)
 		}
-		this._editorAdvanced.init(domElement)
+		this._editorAdvanced.init(monacoElement)
+		this._editorSimple.init(simpleElement)
+		this._editorDisplay.init(displayElement)
+
+		this.activateEditor()
 	}
 
 	public open(note: MimerNote) {
 		if (this.note && this.note.id !== note?.id) {
-			this.note.scrollTop = this._editorAdvanced.scrollTop
+			this.note.scrollTop = this._activeEditor.scrollTop
 		}
 		if (!note) {
 			this._note = undefined
 			this.history.reset()
-			this._editorAdvanced.clear()
+			this._activeEditor.clear()
 			return
 		}
 		if (note.id !== this.note?.id) {
+			if (!settingsManager.alwaysEdit && note.text.trim().length > 0) {
+				this.activateDisplay()
+			} else {
+				this.activateEditor()
+			}
 			this._note = note
 			this.history.reset()
-			this._editorAdvanced.show(note.text, this.note.scrollTop)
+			this._activeEditor.show(note.text, this.note.scrollTop)
 		} else {
-			this._editorAdvanced.updateText(note.text)
+			this._activeEditor.updateText(note.text)
 		}
-		this._editorAdvanced.readonly = note.isCache || note.isSystem
+		this._activeEditor.readonly = note.isCache || note.isSystem
+	}
+
+	public activateEdit() {
+		this.activateEditor()
+		this._activeEditor.show(this.note.text, this.note.scrollTop)
 	}
 
 	public reloadNode() {
 		if (this.note) {
-			this._editorAdvanced.updateText(this.note.text)
+			this._activeEditor.updateText(this.note.text)
 		}
 	}
 
 	public resetChanged() {
-		this._editorAdvanced.resetChanged()
+		this._activeEditor.resetChanged()
 	}
 
 	public setHistoryText(text: string) {
-		this._editorAdvanced.setHistoryText(text)
+		this._activeEditor.setHistoryText(text)
 	}
 
 	public hideHistory() {
-		this._editorAdvanced.hideHistory()
-		this._editorAdvanced.readonly = (this.note?.isCache || this.note?.isSystem) ?? true
+		this._activeEditor.hideHistory()
+		this._activeEditor.readonly = (this.note?.isCache || this.note?.isSystem) ?? true
 	}
 
 	public showHistory() {
-		this._editorAdvanced.readonly = true
-		this._editorAdvanced.showHistory()
+		this._activeEditor.readonly = true
+		this._activeEditor.showHistory()
 	}
 
 	public undo() {
-		this._editorAdvanced.undo()
+		this._activeEditor.undo()
 	}
 
 	public redo() {
-		this._editorAdvanced.redo()
+		this._activeEditor.redo()
 	}
 
 	public clearSearchHighlights() {
-		this._editorAdvanced.clearSearchHighlights()
+		this._activeEditor.clearSearchHighlights()
 	}
 
 	public setSearchHighlights(text: string) {
-		this._editorAdvanced.setSearchHighlights(text)
+		this._activeEditor.setSearchHighlights(text)
 	}
 
 	public find() {
-		this._editorAdvanced.find()
+		this._activeEditor.find()
 	}
 
 	public syncSettings() {
-		this._editorAdvanced.syncSettings()
+		this._activeEditor.syncSettings()
 	}
 
 	public expandSelection(type: SelectionExpansion) {
-		this._editorAdvanced.expandSelection(type)
+		this._activeEditor.expandSelection(type)
 	}
 
 	public selectAll() {
-		this._editorAdvanced.selectAll()
+		this._activeEditor.selectAll()
 	}
 
 	public cut() {
-		const text = this._editorAdvanced.cut()
+		const text = this._activeEditor.cut()
 		if (text) {
 			navigator.clipboard.writeText(text)
 		}
-		this._editorAdvanced.focus()
+		this._activeEditor.focus()
 	}
 
 	public copy() {
-		const text = this._editorAdvanced.copy()
+		const text = this._activeEditor.copy()
 		if (text) {
 			navigator.clipboard.writeText(text)
 		}
-		this._editorAdvanced.focus()
+		this._activeEditor.focus()
 	}
 
 	public async paste() {
 		const text = await navigator.clipboard.readText()
-		this._editorAdvanced.paste(text)
-		this._editorAdvanced.focus()
-		this._editorAdvanced.focus()
+		this._activeEditor.paste(text)
+		this._activeEditor.focus()
+		this._activeEditor.focus()
 	}
 
 	public toggleSelectionAsPassword() {
 		if (this.canUnMarkAsPassword) {
-			this._editorAdvanced.unMarkSelectionAsPassword()
+			this._activeEditor.unMarkSelectionAsPassword()
 		} else if (this.canMarkAsPassword) {
-			this._editorAdvanced.markSelectionAsPassword()
+			this._activeEditor.markSelectionAsPassword()
 		}
 	}
 
 	public focus() {
-		this._editorAdvanced.focus()
+		this._activeEditor.focus()
 	}
 
 	public get canUndo() {
-		return this._editorAdvanced.canUndo
+		return this._state.canUndo
 	}
 
 	public get canRedo() {
-		return this._editorAdvanced.canRedo
+		return this._state.canRedo
 	}
 
 	public get note() {
@@ -224,18 +289,22 @@ export class MimiriEditor {
 	}
 
 	public get canMarkAsPassword() {
-		return this._editorAdvanced.canMarkAsPassword
+		return this._state.canMarkAsPassword
 	}
 
 	public get canUnMarkAsPassword() {
-		return this._editorAdvanced.canUnMarkAsPassword
+		return this._state.canUnMarkAsPassword
 	}
 
 	public get changed() {
-		return this._editorAdvanced.changed
+		return this._state.changed
 	}
 
 	public get text() {
-		return this._editorAdvanced.text
+		return this._activeEditor.text
+	}
+
+	public get mode() {
+		return this._state.mode
 	}
 }

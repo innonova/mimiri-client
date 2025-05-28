@@ -54,7 +54,20 @@
 			<div v-if="historyVisible && selectedHistoryItem" class="px-2 py-1 bg-info-bar cursor-default text-size-menu">
 				{{ selectedHistoryItem.username }} - {{ formatDate(selectedHistoryItem.timestamp) }} (read-only)
 			</div>
-			<div class="overflow-hidden flex-1" ref="editorContainer"></div>
+			<div class="overflow-hidden flex-1" ref="monacoContainer"></div>
+			<div class="overflow-hidden flex-1" ref="simpleContainer"></div>
+			<div class="overflow-hidden flex-1 flex flex-col" ref="displayContainer"></div>
+			<div v-if="!historyVisible && mimiriEditor.mode === 'display'" class="display-editor-toolbar flex flex-row gap-1">
+				<button
+					@click="activateEdit"
+					class="bg-button-primary text-button-primary-text hover:brightness-125 select-none; font-display text-size-base; cursor-default; py-2 px-4; w-full"
+				>
+					Edit
+				</button>
+				<button @click="activateSettings" class="bg-button-primary text-button-primary-text hover:brightness-125">
+					<SettingIcon class="w-6 h-6 my-1 mx-3"></SettingIcon>
+				</button>
+			</div>
 			<SelectionControl></SelectionControl>
 			<div v-if="historyVisible" class="w-full h-1/3 flex flex-col">
 				<div
@@ -95,12 +108,18 @@ import { VersionConflictError } from '../services/mimer-client'
 import { settingsManager } from '../services/settings-manager'
 import { useEventListener } from '@vueuse/core'
 import CloseButton from './elements/CloseButton.vue'
+import SettingIcon from '../icons/cog.vue'
+import type { Guid } from '../services/types/guid'
+import { mimiriPlatform } from '../services/mimiri-platform'
 
 let activeViewModelStopWatch: WatchStopHandle = undefined
 let activeViewModel: NoteViewModel = undefined
-const editorContainer = ref(null)
+const monacoContainer = ref(null)
+const simpleContainer = ref(null)
+const displayContainer = ref(null)
 const windowFocus = ref(true)
 const historyVisible = ref(false)
+const displayMode = ref(true)
 const selectedHistoryItem = computed(() => mimiriEditor.history.state.selectedHistoryItem)
 
 const biCif = value => {
@@ -108,6 +127,18 @@ const biCif = value => {
 		return `0${value}`
 	}
 	return `${value}`
+}
+
+const activateEdit = () => {
+	displayMode.value = false
+	mimiriEditor.activateEdit()
+}
+
+const activateSettings = () => {
+	noteManager.getNoteById('settings-general' as Guid)?.select()
+	if (mimiriPlatform.isPhone) {
+		noteManager.openNote()
+	}
 }
 
 const formatDate = (value: string) => {
@@ -131,6 +162,7 @@ const checkLoadHistory = async () => {
 }
 
 const markAsPassword = () => {
+	mimiriEditor.focus()
 	mimiriEditor.toggleSelectionAsPassword()
 }
 
@@ -168,7 +200,7 @@ const setActiveViewModel = viewModel => {
 }
 
 onMounted(() => {
-	mimiriEditor.init(editorContainer.value)
+	mimiriEditor.init(monacoContainer.value, simpleContainer.value, displayContainer.value)
 	mimiriEditor.onSave(() => save())
 	mimiriEditor.onSearchAll(() => titleBar.value?.searchAllNotes())
 	mimiriEditor.onBlur(() => save())
@@ -248,11 +280,11 @@ const showHistory = () => {
 
 const saveEnabled = computed(() => {
 	const winFocus = windowFocus.value // ensure that compute knows to trigger on this even if the first part of the next statement is false - AEK
-	return mimiriEditor.changed && winFocus && activeViewModel
+	return mimiriEditor.changed && winFocus && !!activeViewModel
 })
 
 const save = async () => {
-	if (activeViewModel && saveEnabled) {
+	if (activeViewModel && saveEnabled.value && mimiriEditor.mode !== 'display') {
 		let note = mimiriEditor.note
 		const textValue = mimiriEditor.text
 		if (note && note.text !== textValue) {
