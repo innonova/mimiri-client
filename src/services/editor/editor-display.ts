@@ -120,7 +120,7 @@ export class EditorDisplay implements TextEditor {
 
 	public show(text: string, scrollTop: number) {
 		this._state.changed = false
-		this._element.innerHTML = this.formatText(text)
+		this._element.innerText = this.formatText(text)
 		this.lastScrollTop = scrollTop
 		this._element.scrollTop = scrollTop
 		if (this._active) {
@@ -130,7 +130,7 @@ export class EditorDisplay implements TextEditor {
 
 	public updateText(text: string) {
 		this._state.changed = false
-		this._element.innerHTML = this.formatText(text)
+		this._element.innerText = this.formatText(text)
 		if (this._active) {
 			this.listener.onStateUpdated(this._state)
 		}
@@ -147,7 +147,7 @@ export class EditorDisplay implements TextEditor {
 		this._state.changed = false
 		this._state.canUndo = false
 		this._state.canRedo = false
-		this._element.innerHTML = ''
+		this._element.innerText = ''
 		this.readonly = true
 		if (this._active) {
 			this.listener.onStateUpdated(this._state)
