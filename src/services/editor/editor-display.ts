@@ -332,11 +332,11 @@ export class EditorDisplay implements TextEditor {
 
 	public expandSelection(type: SelectionExpansion) {}
 	public focus() {
-		if (this.historyShowing) {
-			this._history.focus()
-		} else {
-			this._element.focus()
-		}
+		// if (this.historyShowing) {
+		// 	this._history.focus()
+		// } else {
+		// 	this._element.focus()
+		// }
 	}
 
 	public selectAll() {
