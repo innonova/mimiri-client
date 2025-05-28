@@ -35,13 +35,13 @@ export class EditorDisplay implements TextEditor {
 		this._domElement.appendChild(this._history)
 		this._history.classList.add('simple-editor')
 
-		if (settingsManager.wordwrap) {
-			this._element.classList.add('simple-editor-wrap')
-			this._history.classList.add('simple-editor-wrap')
-		} else {
-			this._element.classList.add('simple-editor-no-wrap')
-			this._history.classList.add('simple-editor-no-wrap')
-		}
+		// if (settingsManager.wordwrap) {
+		this._element.classList.add('simple-editor-wrap')
+		this._history.classList.add('simple-editor-wrap')
+		// } else {
+		// 	this._element.classList.add('simple-editor-no-wrap')
+		// 	this._history.classList.add('simple-editor-no-wrap')
+		// }
 
 		const scrollDebounce = new Debounce(async () => {
 			if (this._element.offsetWidth > 100 && !this.historyShowing) {
@@ -196,17 +196,17 @@ export class EditorDisplay implements TextEditor {
 	public find() {}
 
 	public syncSettings() {
-		if (settingsManager.wordwrap) {
-			this._element.classList.remove('simple-editor-no-wrap')
-			this._history.classList.remove('simple-editor-no-wrap')
-			this._element.classList.add('simple-editor-wrap')
-			this._history.classList.add('simple-editor-wrap')
-		} else {
-			this._element.classList.remove('simple-editor-wrap')
-			this._history.classList.remove('simple-editor-wrap')
-			this._element.classList.add('simple-editor-no-wrap')
-			this._history.classList.add('simple-editor-no-wrap')
-		}
+		// if (settingsManager.wordwrap) {
+		// 	this._element.classList.remove('simple-editor-no-wrap')
+		// 	this._history.classList.remove('simple-editor-no-wrap')
+		// 	this._element.classList.add('simple-editor-wrap')
+		// 	this._history.classList.add('simple-editor-wrap')
+		// } else {
+		// 	this._element.classList.remove('simple-editor-wrap')
+		// 	this._history.classList.remove('simple-editor-wrap')
+		// 	this._element.classList.add('simple-editor-no-wrap')
+		// 	this._history.classList.add('simple-editor-no-wrap')
+		// }
 	}
 
 	public expandSelection(type: SelectionExpansion) {}
