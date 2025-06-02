@@ -547,6 +547,9 @@ export class NoteManager {
 				}
 			}
 		}
+		if (this._isMobile && persistedState.noteOpen) {
+			this.openNote()
+		}
 		this.state.stateLoaded = true
 	}
 

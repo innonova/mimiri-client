@@ -283,6 +283,9 @@ export class EditorSimple implements TextEditor {
 			const scrollTop = this.lastScrollTop
 			this._element.style.display = 'block'
 			this._history.style.display = 'none'
+			this._state.canUndo = true
+			this._state.canRedo = true
+			this.listener.onStateUpdated(this._state)
 			this.historyShowing = false
 			this.focus()
 			setTimeout(() => {
@@ -293,17 +296,13 @@ export class EditorSimple implements TextEditor {
 
 	public showHistory() {
 		if (!this.historyShowing) {
+			this._element.focus()
+			this._element.blur()
 			this._element.style.display = 'none'
-			this._history.contentEditable = 'plaintext-only'
 			this._history.style.display = 'block'
-			this._history.focus()
-			if (settingsManager.wordwrap) {
-				this._history.style.whiteSpace = 'pre-wrap'
-			} else {
-				this._history.style.whiteSpace = 'pre'
-			}
-			this._history.blur()
-			this._history.contentEditable = 'false'
+			this._state.canUndo = false
+			this._state.canRedo = false
+			this.listener.onStateUpdated(this._state)
 			this.historyShowing = true
 		}
 	}
@@ -325,34 +324,18 @@ export class EditorSimple implements TextEditor {
 	public find() {}
 
 	public syncSettings() {
-		if (this.historyShowing) {
-			if (settingsManager.wordwrap) {
-				this._history.contentEditable = 'plaintext-only'
-				this._history.focus()
-				this._history.style.whiteSpace = 'pre-wrap'
-				this._history.blur()
-				this._history.contentEditable = 'false'
-			} else {
-				this._history.contentEditable = 'plaintext-only'
-				this._history.focus()
-				this._history.style.whiteSpace = 'pre'
-				this._history.blur()
-				this._history.contentEditable = 'false'
-			}
+		if (settingsManager.wordwrap) {
+			this._element.style.whiteSpace = 'pre-wrap'
+			this._history.style.whiteSpace = 'pre-wrap'
 		} else {
-			if (settingsManager.wordwrap) {
-				this._element.style.whiteSpace = 'pre-wrap'
-			} else {
-				this._element.style.whiteSpace = 'pre'
-			}
+			this._element.style.whiteSpace = 'pre'
+			this._history.style.whiteSpace = 'pre'
 		}
 	}
 
 	public expandSelection(type: SelectionExpansion) {}
 	public focus() {
-		if (this.historyShowing) {
-			this._history.focus()
-		} else {
+		if (!this.historyShowing) {
 			this._element.focus()
 		}
 	}

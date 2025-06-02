@@ -190,9 +190,6 @@ export class MimiriEditor {
 			this.history.reset()
 			this._activeEditor.show(note.text, this.note.scrollTop)
 		} else {
-			if (!settingsManager.alwaysEdit && note.text.trim().length > 0) {
-				this.activateDisplay()
-			}
 			this._activeEditor.updateText(note.text)
 		}
 		this._activeEditor.readonly = note.isCache || note.isSystem
