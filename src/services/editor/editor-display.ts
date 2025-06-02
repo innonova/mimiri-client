@@ -1,5 +1,4 @@
 import { Debounce } from '../helpers'
-import { mimiriPlatform } from '../mimiri-platform'
 import { settingsManager } from '../settings-manager'
 import type { EditorState, SelectionExpansion, TextEditor, TextEditorListener } from './type'
 
@@ -32,7 +31,7 @@ export class EditorDisplay implements TextEditor {
 		this._element = document.createElement('div')
 		this._domElement.appendChild(this._element)
 		this._element.classList.add('simple-editor')
-		this._element.contentEditable = 'plaintext-only'
+		// this._element.contentEditable = 'plaintext-only'
 
 		this._history = document.createElement('div')
 		this._history.style.display = 'none'
@@ -40,11 +39,15 @@ export class EditorDisplay implements TextEditor {
 		this._history.classList.add('simple-editor')
 
 		if (settingsManager.wordwrap) {
-			this._element.classList.add('simple-editor-wrap')
-			this._history.classList.add('simple-editor-wrap')
+			this._element.style.whiteSpace = 'pre-wrap'
+			this._history.style.whiteSpace = 'pre-wrap'
+			// this._element.classList.add('simple-editor-wrap')
+			// this._history.classList.add('simple-editor-wrap')
 		} else {
-			this._element.classList.add('simple-editor-no-wrap')
-			this._history.classList.add('simple-editor-no-wrap')
+			this._element.style.whiteSpace = 'pre'
+			this._history.style.whiteSpace = 'pre'
+			// this._element.classList.add('simple-editor-no-wrap')
+			// this._history.classList.add('simple-editor-no-wrap')
 		}
 
 		this._element.addEventListener('input', () => {
@@ -318,15 +321,19 @@ export class EditorDisplay implements TextEditor {
 
 	public syncSettings() {
 		if (settingsManager.wordwrap) {
-			this._element.classList.remove('simple-editor-no-wrap')
-			this._history.classList.remove('simple-editor-no-wrap')
-			this._element.classList.add('simple-editor-wrap')
-			this._history.classList.add('simple-editor-wrap')
+			this._element.style.whiteSpace = 'pre-wrap'
+			this._history.style.whiteSpace = 'pre-wrap'
+			// this._element.classList.remove('simple-editor-no-wrap')
+			// this._history.classList.remove('simple-editor-no-wrap')
+			// this._element.classList.add('simple-editor-wrap')
+			// this._history.classList.add('simple-editor-wrap')
 		} else {
-			this._element.classList.remove('simple-editor-wrap')
-			this._history.classList.remove('simple-editor-wrap')
-			this._element.classList.add('simple-editor-no-wrap')
-			this._history.classList.add('simple-editor-no-wrap')
+			this._element.style.whiteSpace = 'pre'
+			this._history.style.whiteSpace = 'pre'
+			// this._element.classList.remove('simple-editor-wrap')
+			// this._history.classList.remove('simple-editor-wrap')
+			// this._element.classList.add('simple-editor-no-wrap')
+			// this._history.classList.add('simple-editor-no-wrap')
 		}
 	}
 

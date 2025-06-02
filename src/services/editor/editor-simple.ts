@@ -39,11 +39,15 @@ export class EditorSimple implements TextEditor {
 		this._history.classList.add('simple-editor')
 
 		if (settingsManager.wordwrap) {
-			this._element.classList.add('simple-editor-wrap')
-			this._history.classList.add('simple-editor-wrap')
+			this._element.style.whiteSpace = 'pre-wrap'
+			this._history.style.whiteSpace = 'pre-wrap'
+			// this._element.classList.add('simple-editor-wrap')
+			// this._history.classList.add('simple-editor-wrap')
 		} else {
-			this._element.classList.add('simple-editor-no-wrap')
-			this._history.classList.add('simple-editor-no-wrap')
+			this._element.style.whiteSpace = 'pre'
+			this._history.style.whiteSpace = 'pre'
+			// this._element.classList.add('simple-editor-no-wrap')
+			// this._history.classList.add('simple-editor-no-wrap')
 		}
 
 		this._element.addEventListener('input', () => {
@@ -317,15 +321,19 @@ export class EditorSimple implements TextEditor {
 
 	public syncSettings() {
 		if (settingsManager.wordwrap) {
-			this._element.classList.remove('simple-editor-no-wrap')
-			this._history.classList.remove('simple-editor-no-wrap')
-			this._element.classList.add('simple-editor-wrap')
-			this._history.classList.add('simple-editor-wrap')
+			this._element.style.whiteSpace = 'pre-wrap'
+			this._history.style.whiteSpace = 'pre-wrap'
+			// this._element.classList.remove('simple-editor-no-wrap')
+			// this._history.classList.remove('simple-editor-no-wrap')
+			// this._element.classList.add('simple-editor-wrap')
+			// this._history.classList.add('simple-editor-wrap')
 		} else {
-			this._element.classList.remove('simple-editor-wrap')
-			this._history.classList.remove('simple-editor-wrap')
-			this._element.classList.add('simple-editor-no-wrap')
-			this._history.classList.add('simple-editor-no-wrap')
+			this._element.style.whiteSpace = 'pre'
+			this._history.style.whiteSpace = 'pre'
+			// this._element.classList.remove('simple-editor-wrap')
+			// this._history.classList.remove('simple-editor-wrap')
+			// this._element.classList.add('simple-editor-no-wrap')
+			// this._history.classList.add('simple-editor-no-wrap')
 		}
 	}
 
