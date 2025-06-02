@@ -281,7 +281,6 @@ export class EditorSimple implements TextEditor {
 	public hideHistory() {
 		if (this.historyShowing) {
 			const scrollTop = this.lastScrollTop
-			this._element.contentEditable = 'plaintext-only'
 			this._element.style.display = 'block'
 			this._history.style.display = 'none'
 			this._element.focus()
@@ -334,19 +333,26 @@ export class EditorSimple implements TextEditor {
 	public find() {}
 
 	public syncSettings() {
-		const elm = this.historyShowing ? this._history : this._element
-		if (settingsManager.wordwrap) {
-			elm.contentEditable = 'plaintext-only'
-			elm.focus()
-			elm.style.whiteSpace = 'pre-wrap'
-			elm.blur()
-			elm.contentEditable = 'false'
+		if (this.historyShowing) {
+			if (settingsManager.wordwrap) {
+				this._history.contentEditable = 'plaintext-only'
+				this._history.focus()
+				this._history.style.whiteSpace = 'pre-wrap'
+				this._history.blur()
+				this._history.contentEditable = 'false'
+			} else {
+				this._history.contentEditable = 'plaintext-only'
+				this._history.focus()
+				this._history.style.whiteSpace = 'pre'
+				this._history.blur()
+				this._history.contentEditable = 'false'
+			}
 		} else {
-			elm.contentEditable = 'plaintext-only'
-			elm.focus()
-			elm.style.whiteSpace = 'pre'
-			elm.blur()
-			elm.contentEditable = 'false'
+			if (settingsManager.wordwrap) {
+				this._element.style.whiteSpace = 'pre-wrap'
+			} else {
+				this._element.style.whiteSpace = 'pre'
+			}
 		}
 	}
 
