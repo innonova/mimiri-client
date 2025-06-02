@@ -497,6 +497,11 @@ export class EditorAdvanced implements TextEditor {
 		this.monacoEditor.focus()
 	}
 
+	public toggleWordWrap() {
+		settingsManager.wordwrap = !settingsManager.wordwrap
+		this.syncSettings()
+	}
+
 	public syncSettings() {
 		if (settingsManager.darkMode) {
 			this.monacoEditor.updateOptions({

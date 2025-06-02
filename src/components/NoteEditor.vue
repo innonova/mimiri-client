@@ -271,7 +271,7 @@ const saveClicked = async () => {
 }
 
 const toggleWordWrap = event => {
-	settingsManager.wordwrap = !settingsManager.wordwrap
+	mimiriEditor.toggleWordWrap()
 	mimiriEditor.focus()
 }
 

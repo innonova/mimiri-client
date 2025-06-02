@@ -11,6 +11,8 @@ export class EditorDisplay implements TextEditor {
 	private historyShowing: boolean = false
 	private skipScrollOnce = false
 	private _active = true
+	private _wordWrap = true
+	private _test: any
 	private _state: Omit<EditorState, 'mode'> = {
 		canUndo: false,
 		canRedo: false,
@@ -37,8 +39,10 @@ export class EditorDisplay implements TextEditor {
 		this._history.classList.add('simple-editor')
 
 		if (settingsManager.wordwrap) {
+			this._wordWrap = true
 			this._element.style.whiteSpace = 'pre-wrap'
 		} else {
+			this._wordWrap = false
 			this._element.style.whiteSpace = 'pre'
 		}
 
@@ -202,22 +206,31 @@ export class EditorDisplay implements TextEditor {
 	public setSearchHighlights(text: string) {}
 	public find() {}
 
+	public toggleWordWrap() {
+		settingsManager.wordwrap = !settingsManager.wordwrap
+		this.syncSettings()
+	}
+
 	public syncSettings() {
-		const elm = this.historyShowing ? this._history : this._element
-		if (settingsManager.wordwrap) {
-			elm.contentEditable = 'plaintext-only'
-			elm.focus()
-			this._history.style.whiteSpace = 'pre-wrap'
-			this._element.style.whiteSpace = 'pre-wrap'
-			elm.blur()
-			elm.contentEditable = 'false'
-		} else {
-			elm.contentEditable = 'plaintext-only'
-			elm.focus()
-			this._history.style.whiteSpace = 'pre'
-			this._element.style.whiteSpace = 'pre'
-			elm.blur()
-			elm.contentEditable = 'false'
+		if (this._wordWrap !== settingsManager.wordwrap) {
+			const elm = this.historyShowing ? this._history : this._element
+			if (settingsManager.wordwrap) {
+				elm.contentEditable = 'plaintext-only'
+				elm.focus()
+				this._element.style.whiteSpace = 'pre-wrap'
+				this._history.style.whiteSpace = 'pre-wrap'
+				this._wordWrap = true
+				elm.blur()
+				elm.contentEditable = 'false'
+			} else {
+				elm.contentEditable = 'plaintext-only'
+				elm.focus()
+				this._history.style.whiteSpace = 'pre'
+				this._element.style.whiteSpace = 'pre'
+				this._wordWrap = false
+				elm.blur()
+				elm.contentEditable = 'false'
+			}
 		}
 	}
 

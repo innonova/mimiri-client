@@ -12,6 +12,7 @@ export class EditorSimple implements TextEditor {
 	private lastSelection: { startNode: Node; start: number; endNode: Node; end: number } | undefined | undefined
 	private skipScrollOnce = false
 	private _active = true
+	private _wordWrap = true
 	private _activePasswordEntry: { node: Node; start: number; end: number } | undefined
 	private _state: Omit<EditorState, 'mode'> = {
 		canUndo: true,
@@ -39,9 +40,11 @@ export class EditorSimple implements TextEditor {
 		this._history.classList.add('simple-editor')
 
 		if (settingsManager.wordwrap) {
+			this._wordWrap = true
 			this._element.style.whiteSpace = 'pre-wrap'
 			this._history.style.whiteSpace = 'pre-wrap'
 		} else {
+			this._wordWrap = false
 			this._element.style.whiteSpace = 'pre'
 			this._history.style.whiteSpace = 'pre'
 		}
@@ -329,30 +332,41 @@ export class EditorSimple implements TextEditor {
 	public setSearchHighlights(text: string) {}
 	public find() {}
 
+	public toggleWordWrap() {
+		settingsManager.wordwrap = !settingsManager.wordwrap
+		this.syncSettings()
+	}
+
 	public syncSettings() {
-		if (this.historyShowing) {
-			if (settingsManager.wordwrap) {
-				this._history.contentEditable = 'plaintext-only'
-				this._history.focus()
-				this._history.style.whiteSpace = 'pre-wrap'
-				this._element.style.whiteSpace = 'pre-wrap'
-				this._history.blur()
-				this._history.contentEditable = 'false'
+		if (this._wordWrap !== settingsManager.wordwrap) {
+			if (this.historyShowing) {
+				if (settingsManager.wordwrap) {
+					this._history.contentEditable = 'plaintext-only'
+					this._history.focus()
+					this._wordWrap = true
+					this._history.style.whiteSpace = 'pre-wrap'
+					this._element.style.whiteSpace = 'pre-wrap'
+					this._history.blur()
+					this._history.contentEditable = 'false'
+				} else {
+					this._history.contentEditable = 'plaintext-only'
+					this._history.focus()
+					this._wordWrap = false
+					this._history.style.whiteSpace = 'pre'
+					this._element.style.whiteSpace = 'pre'
+					this._history.blur()
+					this._history.contentEditable = 'false'
+				}
 			} else {
-				this._history.contentEditable = 'plaintext-only'
-				this._history.focus()
-				this._history.style.whiteSpace = 'pre'
-				this._element.style.whiteSpace = 'pre'
-				this._history.blur()
-				this._history.contentEditable = 'false'
-			}
-		} else {
-			if (settingsManager.wordwrap) {
-				this._element.style.whiteSpace = 'pre-wrap'
-				this._history.style.whiteSpace = 'pre-wrap'
-			} else {
-				this._element.style.whiteSpace = 'pre'
-				this._history.style.whiteSpace = 'pre'
+				if (settingsManager.wordwrap) {
+					this._wordWrap = true
+					this._element.style.whiteSpace = 'pre-wrap'
+					this._history.style.whiteSpace = 'pre-wrap'
+				} else {
+					this._wordWrap = false
+					this._element.style.whiteSpace = 'pre'
+					this._history.style.whiteSpace = 'pre'
+				}
 			}
 		}
 	}

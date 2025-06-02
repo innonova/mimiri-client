@@ -547,9 +547,6 @@ export class NoteManager {
 				}
 			}
 		}
-		if (this._isMobile && persistedState.noteOpen) {
-			this.openNote()
-		}
 		this.state.stateLoaded = true
 	}
 
@@ -1311,5 +1308,9 @@ export class NoteManager {
 
 	public get isAnonymous() {
 		return !!this.client.username?.startsWith('mimiri_a_')
+	}
+
+	public get isMobile() {
+		return this._isMobile
 	}
 }

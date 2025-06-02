@@ -42,7 +42,14 @@ const noSearchResults = computed(
 const stopWatching = watch(noteManager.state, () => {
 	if (noteManager.state.stateLoaded && !stateLoaded) {
 		stateLoaded = true
-		mainElement.value.scrollTop = persistedState.getTreeScrollTop()
+		setTimeout(() => {
+			mainElement.value.scrollTop = persistedState.getTreeScrollTop()
+			setTimeout(() => {
+				if (noteManager.isMobile && persistedState.noteOpen && noteManager.selectedNote) {
+					noteManager.openNote()
+				}
+			}, 100)
+		}, 250)
 		stopWatching()
 	}
 })

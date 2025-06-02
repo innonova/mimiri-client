@@ -38,6 +38,7 @@ export interface TextEditor {
 	clearSearchHighlights()
 	setSearchHighlights(text: string)
 	find()
+	toggleWordWrap()
 	syncSettings()
 	expandSelection(type: SelectionExpansion)
 	focus()

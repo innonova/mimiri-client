@@ -247,6 +247,10 @@ export class MimiriEditor {
 		this._activeEditor.find()
 	}
 
+	public toggleWordWrap() {
+		this._activeEditor.toggleWordWrap()
+	}
+
 	public syncSettings() {
 		this._activeEditor.syncSettings()
 	}
