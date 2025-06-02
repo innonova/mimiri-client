@@ -41,9 +41,15 @@ export class EditorDisplay implements TextEditor {
 		if (settingsManager.wordwrap) {
 			this._wordWrap = true
 			this._element.style.whiteSpace = 'pre-wrap'
+			this._history.style.whiteSpace = 'pre-wrap'
+			this._element.style.overflowX = 'hidden'
+			this._history.style.overflowX = 'hidden'
 		} else {
 			this._wordWrap = false
 			this._element.style.whiteSpace = 'pre'
+			this._history.style.whiteSpace = 'pre'
+			this._element.style.overflowX = 'auto'
+			this._history.style.overflowX = 'auto'
 		}
 
 		const scrollDebounce = new Debounce(async () => {
@@ -219,6 +225,8 @@ export class EditorDisplay implements TextEditor {
 				elm.focus()
 				this._element.style.whiteSpace = 'pre-wrap'
 				this._history.style.whiteSpace = 'pre-wrap'
+				this._element.style.overflowX = 'hidden'
+				this._history.style.overflowX = 'hidden'
 				this._wordWrap = true
 				elm.blur()
 				elm.contentEditable = 'false'
@@ -227,6 +235,8 @@ export class EditorDisplay implements TextEditor {
 				elm.focus()
 				this._history.style.whiteSpace = 'pre'
 				this._element.style.whiteSpace = 'pre'
+				this._element.style.overflowX = 'auto'
+				this._history.style.overflowX = 'auto'
 				this._wordWrap = false
 				elm.blur()
 				elm.contentEditable = 'false'

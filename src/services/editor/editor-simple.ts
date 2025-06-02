@@ -43,10 +43,14 @@ export class EditorSimple implements TextEditor {
 			this._wordWrap = true
 			this._element.style.whiteSpace = 'pre-wrap'
 			this._history.style.whiteSpace = 'pre-wrap'
+			this._element.style.overflowX = 'hidden'
+			this._history.style.overflowX = 'hidden'
 		} else {
 			this._wordWrap = false
 			this._element.style.whiteSpace = 'pre'
 			this._history.style.whiteSpace = 'pre'
+			this._element.style.overflowX = 'auto'
+			this._history.style.overflowX = 'auto'
 		}
 
 		this._element.addEventListener('input', () => {
@@ -346,6 +350,8 @@ export class EditorSimple implements TextEditor {
 					this._wordWrap = true
 					this._history.style.whiteSpace = 'pre-wrap'
 					this._element.style.whiteSpace = 'pre-wrap'
+					this._element.style.overflowX = 'hidden'
+					this._history.style.overflowX = 'hidden'
 					this._history.blur()
 					this._history.contentEditable = 'false'
 				} else {
@@ -354,6 +360,8 @@ export class EditorSimple implements TextEditor {
 					this._wordWrap = false
 					this._history.style.whiteSpace = 'pre'
 					this._element.style.whiteSpace = 'pre'
+					this._element.style.overflowX = 'auto'
+					this._history.style.overflowX = 'auto'
 					this._history.blur()
 					this._history.contentEditable = 'false'
 				}
@@ -362,10 +370,14 @@ export class EditorSimple implements TextEditor {
 					this._wordWrap = true
 					this._element.style.whiteSpace = 'pre-wrap'
 					this._history.style.whiteSpace = 'pre-wrap'
+					this._element.style.overflowX = 'hidden'
+					this._history.style.overflowX = 'hidden'
 				} else {
 					this._wordWrap = false
 					this._element.style.whiteSpace = 'pre'
 					this._history.style.whiteSpace = 'pre'
+					this._element.style.overflowX = 'auto'
+					this._history.style.overflowX = 'auto'
 				}
 			}
 		}
