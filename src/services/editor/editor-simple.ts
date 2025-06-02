@@ -330,12 +330,30 @@ export class EditorSimple implements TextEditor {
 	public find() {}
 
 	public syncSettings() {
-		if (settingsManager.wordwrap) {
-			this._element.style.whiteSpace = 'pre-wrap'
-			this._history.style.whiteSpace = 'pre-wrap'
+		if (this.historyShowing) {
+			if (settingsManager.wordwrap) {
+				this._history.contentEditable = 'plaintext-only'
+				this._history.focus()
+				this._history.style.whiteSpace = 'pre-wrap'
+				this._element.style.whiteSpace = 'pre-wrap'
+				this._history.blur()
+				this._history.contentEditable = 'false'
+			} else {
+				this._history.contentEditable = 'plaintext-only'
+				this._history.focus()
+				this._history.style.whiteSpace = 'pre'
+				this._element.style.whiteSpace = 'pre'
+				this._history.blur()
+				this._history.contentEditable = 'false'
+			}
 		} else {
-			this._element.style.whiteSpace = 'pre'
-			this._history.style.whiteSpace = 'pre'
+			if (settingsManager.wordwrap) {
+				this._element.style.whiteSpace = 'pre-wrap'
+				this._history.style.whiteSpace = 'pre-wrap'
+			} else {
+				this._element.style.whiteSpace = 'pre'
+				this._history.style.whiteSpace = 'pre'
+			}
 		}
 	}
 
