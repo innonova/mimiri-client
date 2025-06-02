@@ -41,13 +41,9 @@ export class EditorSimple implements TextEditor {
 		if (settingsManager.wordwrap) {
 			this._element.style.whiteSpace = 'pre-wrap'
 			this._history.style.whiteSpace = 'pre-wrap'
-			// this._element.classList.add('simple-editor-wrap')
-			// this._history.classList.add('simple-editor-wrap')
 		} else {
 			this._element.style.whiteSpace = 'pre'
 			this._history.style.whiteSpace = 'pre'
-			// this._element.classList.add('simple-editor-no-wrap')
-			// this._history.classList.add('simple-editor-no-wrap')
 		}
 
 		this._element.addEventListener('input', () => {
@@ -285,8 +281,17 @@ export class EditorSimple implements TextEditor {
 	public hideHistory() {
 		if (this.historyShowing) {
 			const scrollTop = this.lastScrollTop
+			this._element.contentEditable = 'plaintext-only'
 			this._element.style.display = 'block'
 			this._history.style.display = 'none'
+			this._element.focus()
+			if (settingsManager.wordwrap) {
+				this._element.style.whiteSpace = 'pre-wrap'
+			} else {
+				this._element.style.whiteSpace = 'pre'
+			}
+			this._element.blur()
+			this._element.contentEditable = 'false'
 			this.historyShowing = false
 			this.focus()
 			setTimeout(() => {
@@ -298,7 +303,16 @@ export class EditorSimple implements TextEditor {
 	public showHistory() {
 		if (!this.historyShowing) {
 			this._element.style.display = 'none'
+			this._history.contentEditable = 'plaintext-only'
 			this._history.style.display = 'block'
+			this._history.focus()
+			if (settingsManager.wordwrap) {
+				this._history.style.whiteSpace = 'pre-wrap'
+			} else {
+				this._history.style.whiteSpace = 'pre'
+			}
+			this._history.blur()
+			this._history.contentEditable = 'false'
 			this.historyShowing = true
 		}
 	}
@@ -320,20 +334,19 @@ export class EditorSimple implements TextEditor {
 	public find() {}
 
 	public syncSettings() {
+		const elm = this.historyShowing ? this._history : this._element
 		if (settingsManager.wordwrap) {
-			this._element.style.whiteSpace = 'pre-wrap'
-			this._history.style.whiteSpace = 'pre-wrap'
-			// this._element.classList.remove('simple-editor-no-wrap')
-			// this._history.classList.remove('simple-editor-no-wrap')
-			// this._element.classList.add('simple-editor-wrap')
-			// this._history.classList.add('simple-editor-wrap')
+			elm.contentEditable = 'plaintext-only'
+			elm.focus()
+			elm.style.whiteSpace = 'pre-wrap'
+			elm.blur()
+			elm.contentEditable = 'false'
 		} else {
-			this._element.style.whiteSpace = 'pre'
-			this._history.style.whiteSpace = 'pre'
-			// this._element.classList.remove('simple-editor-wrap')
-			// this._history.classList.remove('simple-editor-wrap')
-			// this._element.classList.add('simple-editor-no-wrap')
-			// this._history.classList.add('simple-editor-no-wrap')
+			elm.contentEditable = 'plaintext-only'
+			elm.focus()
+			elm.style.whiteSpace = 'pre'
+			elm.blur()
+			elm.contentEditable = 'false'
 		}
 	}
 

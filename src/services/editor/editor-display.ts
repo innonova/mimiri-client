@@ -170,6 +170,7 @@ export class EditorDisplay implements TextEditor {
 				this._element.style.whiteSpace = 'pre'
 			}
 			this._element.blur()
+			this._element.contentEditable = 'false'
 			this.historyShowing = false
 			this.focus()
 			setTimeout(() => {
