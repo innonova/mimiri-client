@@ -15,8 +15,13 @@
 								autofocus
 								type="password"
 								class="basic-input"
+								@keydown="pwKeyDown"
 							/>
 						</div>
+					</div>
+					<div>
+						<div v-if="capsLockOn" class="inline-block w-24 items-center"></div>
+						<div v-if="capsLockOn" class="inline-block py-1">Caps Lock is on!</div>
 					</div>
 					<div v-if="error" class="mt-4 text-right mr-1 text-error">Incorrect Password</div>
 				</main>
@@ -40,10 +45,15 @@ const dialog = ref(null)
 const password = ref('')
 const busy = ref(false)
 const error = ref(false)
+const capsLockOn = ref(false)
 
 let actionCallback: (value: string) => Promise<boolean>
 let okCallback: () => void
 let cancelCallback: () => void
+
+const pwKeyDown = event => {
+	capsLockOn.value = event.getModifierState('CapsLock')
+}
 
 const show = (ok: () => void, cancel: () => void) => {
 	error.value = false

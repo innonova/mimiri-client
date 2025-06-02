@@ -14,7 +14,13 @@
 		<div class="p-1 m-auto flex">
 			<div class="w-24 flex items-center">Repeat:</div>
 			<div class="w-52 relative md:flex">
-				<input v-model="generatedPasswordRepeat" tabindex="3" type="password" class="basic-input" />
+				<input
+					v-model="generatedPasswordRepeat"
+					tabindex="3"
+					type="password"
+					class="basic-input"
+					@keydown="pwKeyDown"
+				/>
 				<div v-if="generatedPassword" class="md:w-0 md:h-0 pt-0.5 overflow-visible">
 					<div v-if="generatedPasswordMatch" class="flex items-center w-52 md:ml-2 mt-1.5 md:mt-0.5">
 						<AvailableIcon class="w-5 h-5 mr-1 inline-block"></AvailableIcon> Matching
@@ -24,6 +30,10 @@
 					</div>
 				</div>
 			</div>
+		</div>
+		<div class="px-1 m-auto flex">
+			<div v-if="capsLockOn" class="w-24 flex items-center"></div>
+			<div v-if="capsLockOn" class="py-1">Caps Lock is on!</div>
 		</div>
 	</div>
 	<div v-if="passwordMode === 'create'">
@@ -36,6 +46,7 @@
 					:type="passwordFieldType"
 					class="basic-input"
 					data-testid="password-input"
+					@keydown="pwKeyDown"
 				/>
 				<div class="md:w-0 md:h-0 overflow-visible">
 					<div class="absolute right-2 invisible md:visible" @mousedown="showPassword" @mouseup="hidePassword">
@@ -74,6 +85,7 @@
 					type="password"
 					class="basic-input"
 					data-testid="repeat-input"
+					@keydown="pwKeyDown"
 				/>
 				<div v-if="createdPassword" class="md:w-0 md:h-0 pt-1 overflow-visible">
 					<div v-if="createdPasswordMatch" class="flex items-center w-52 md:ml-2 mt-1.5 md:mt-0.5">
@@ -84,6 +96,10 @@
 					</div>
 				</div>
 			</div>
+		</div>
+		<div class="px-1 m-auto flex">
+			<div v-if="capsLockOn" class="w-24 flex items-center"></div>
+			<div v-if="capsLockOn" class="py-1">Caps Lock is on!</div>
 		</div>
 		<div class="p-1 m-auto flex">
 			<div class="w-24 flex items-center">Iterations:</div>
@@ -135,6 +151,7 @@ const passwordMode = ref('generate')
 const passwordQuality = ref('')
 const iterations = ref(1000000)
 const passwordIsWeak = ref(false)
+const capsLockOn = ref(false)
 const canSave = computed(
 	() =>
 		(passwordMode.value === 'generate' && generatedPasswordMatch.value && generatedPassword.value) ||
@@ -171,6 +188,10 @@ watch([createdPassword, createdPasswordRepeat], value => {
 watch([generatedPassword, generatedPasswordRepeat], value => {
 	generatedPasswordMatch.value = generatedPassword.value === generatedPasswordRepeat.value
 })
+
+const pwKeyDown = event => {
+	capsLockOn.value = event.getModifierState('CapsLock')
+}
 
 const showPassword = () => {
 	passwordFieldType.value = 'text'

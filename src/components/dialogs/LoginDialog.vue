@@ -20,7 +20,10 @@
 						type="password"
 						data-testid="password-input"
 						class="basic-input ml-2"
+						@keydown="pwKeyDown"
 					/>
+					<div v-if="capsLockOn"></div>
+					<div v-if="capsLockOn" class="ml-2">Caps Lock is on!</div>
 				</div>
 				<div class="text-right pr-1" v-if="error" data-testid="login-error">
 					<div class="text-error text-right">Incorrect username or password</div>
@@ -81,6 +84,7 @@ const timeElapsed = ref('')
 const longTime = ref(false)
 const isInitial = ref(false)
 const showVersion = ref(false)
+const capsLockOn = ref(false)
 
 const showCreate = computed(
 	() => isInitial.value && settingsManager.showCreateOverCancel && (!mimiriPlatform.isWeb || env.DEV),
@@ -127,6 +131,10 @@ const login = async () => {
 		error.value = true
 	}
 	loading.value = false
+}
+
+const pwKeyDown = event => {
+	capsLockOn.value = event.getModifierState('CapsLock')
 }
 
 defineExpose({

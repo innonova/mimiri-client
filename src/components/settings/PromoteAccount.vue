@@ -16,6 +16,7 @@
 						:type="passwordFieldType"
 						class="basic-input"
 						data-testid="password-input"
+						@keydown="pwKeyDown"
 					/>
 					<div class="md:w-0 md:h-0 overflow-visible">
 						<div class="absolute right-2 invisible md:visible" @mousedown="showPassword" @mouseup="hidePassword">
@@ -46,7 +47,14 @@
 				</div>
 				<div class="flex items-center">Repeat:</div>
 				<div class="text-right relative md:flex">
-					<input v-model="passwordRepeat" tabindex="3" type="password" class="basic-input" data-testid="repeat-input" />
+					<input
+						v-model="passwordRepeat"
+						tabindex="3"
+						type="password"
+						class="basic-input"
+						data-testid="repeat-input"
+						@keydown="pwKeyDown"
+					/>
 					<div v-if="password" class="md:w-0 md:h-0 pt-0.5 overflow-visible">
 						<div v-if="passwordMatch" class="flex items-center w-52 md:ml-2 mt-1.5 md:mt-0.5">
 							<AvailableIcon class="w-5 h-5 mr-1 inline-block"></AvailableIcon> Matching
@@ -56,6 +64,8 @@
 						</div>
 					</div>
 				</div>
+				<div v-if="capsLockOn"></div>
+				<div v-if="capsLockOn">Caps Lock is on!</div>
 			</div>
 			<div v-if="advancedSettingsVisible" class="p-1 m-auto flex">
 				<div class="w-24 flex items-center">Iterations:</div>
@@ -147,6 +157,7 @@ const passwordMatch = ref(true)
 const understandNoRecover = ref(false)
 const passwordFieldType = ref('password')
 const advancedSettingsVisible = ref(false)
+const capsLockOn = ref(false)
 const iterations = ref(1000000)
 const time1M = computed(() => `~${passwordTimeFactor.time1M}s`)
 const time2M = computed(() => `~${passwordTimeFactor.time2M}s`)
@@ -185,6 +196,10 @@ watch(password, value => {
 watch(passwordRepeat, value => {
 	checkPasswordMatch()
 })
+
+const pwKeyDown = event => {
+	capsLockOn.value = event.getModifierState('CapsLock')
+}
 
 const checkPasswordMatch = () => {
 	passwordMatch.value = password.value === passwordRepeat.value

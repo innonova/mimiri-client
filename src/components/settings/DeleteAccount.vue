@@ -48,8 +48,13 @@
 								type="password"
 								class="basic-input"
 								data-testid="delete-account-password-input"
+								@keydown="pwKeyDown"
 							/>
 						</div>
+					</div>
+					<div v-if="!noteManager.isAnonymous" class="flex justify-end items-baseline">
+						<div v-if="capsLockOn"></div>
+						<div v-if="capsLockOn" class="py-1">Caps Lock is on!</div>
 					</div>
 					<div v-if="(!mimiriPlatform.isWeb || env.DEV) && !noteManager.isAnonymous" class="pt-2 pb-6 text-right">
 						<label>
@@ -101,10 +106,15 @@ const understandDeleteAccount = ref(false)
 const understandDeleteData = ref(false)
 const understandRoRecovery = ref(false)
 const deleteLocal = ref(false)
+const capsLockOn = ref(false)
 const error = ref('')
 
 const loading = ref(false)
 const password = ref('')
+
+const pwKeyDown = event => {
+	capsLockOn.value = event.getModifierState('CapsLock')
+}
 
 const deleteAccount = async () => {
 	loading.value = true
