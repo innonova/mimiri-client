@@ -164,11 +164,6 @@ export class EditorDisplay implements TextEditor {
 			this._element.style.display = 'block'
 			this._history.style.display = 'none'
 			this._element.focus()
-			if (settingsManager.wordwrap) {
-				this._element.style.whiteSpace = 'pre-wrap'
-			} else {
-				this._element.style.whiteSpace = 'pre'
-			}
 			this._element.blur()
 			this._element.contentEditable = 'false'
 			this.historyShowing = false
@@ -185,11 +180,6 @@ export class EditorDisplay implements TextEditor {
 			this._history.contentEditable = 'plaintext-only'
 			this._history.style.display = 'block'
 			this._history.focus()
-			if (settingsManager.wordwrap) {
-				this._history.style.whiteSpace = 'pre-wrap'
-			} else {
-				this._history.style.whiteSpace = 'pre'
-			}
 			this._history.blur()
 			this._history.contentEditable = 'false'
 			this.historyShowing = true
@@ -217,13 +207,15 @@ export class EditorDisplay implements TextEditor {
 		if (settingsManager.wordwrap) {
 			elm.contentEditable = 'plaintext-only'
 			elm.focus()
-			elm.style.whiteSpace = 'pre-wrap'
+			this._history.style.whiteSpace = 'pre-wrap'
+			this._element.style.whiteSpace = 'pre-wrap'
 			elm.blur()
 			elm.contentEditable = 'false'
 		} else {
 			elm.contentEditable = 'plaintext-only'
 			elm.focus()
-			elm.style.whiteSpace = 'pre'
+			this._history.style.whiteSpace = 'pre'
+			this._element.style.whiteSpace = 'pre'
 			elm.blur()
 			elm.contentEditable = 'false'
 		}

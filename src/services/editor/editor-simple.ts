@@ -281,8 +281,12 @@ export class EditorSimple implements TextEditor {
 	public hideHistory() {
 		if (this.historyShowing) {
 			const scrollTop = this.lastScrollTop
-			this._element.style.display = 'block'
+			this._history.contentEditable = 'plaintext-only'
+			this._history.focus()
+			this._history.blur()
+			this._history.contentEditable = 'false'
 			this._history.style.display = 'none'
+			this._element.style.display = 'block'
 			this._state.canUndo = true
 			this._state.canRedo = true
 			this.listener.onStateUpdated(this._state)
@@ -296,10 +300,12 @@ export class EditorSimple implements TextEditor {
 
 	public showHistory() {
 		if (!this.historyShowing) {
-			this._element.focus()
-			this._element.blur()
+			this._history.contentEditable = 'plaintext-only'
 			this._element.style.display = 'none'
 			this._history.style.display = 'block'
+			this._history.focus()
+			this._history.blur()
+			this._history.contentEditable = 'false'
 			this._state.canUndo = false
 			this._state.canRedo = false
 			this.listener.onStateUpdated(this._state)
