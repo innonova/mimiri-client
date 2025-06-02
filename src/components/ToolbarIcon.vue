@@ -3,8 +3,9 @@
 		<component
 			:is="getComponent()"
 			:class="{
-				'w-13 h-13 p-3': !props.keepSizeOnMobile,
-				'md:w-6 md:h-6 md:p-0.5 md:m-0.5 md:mr-1': !props.keepSizeOnMobile && !mimiriPlatform.isTablet,
+				'w-12 h-12 p-3': !props.keepSizeOnMobile,
+				'desktop:w-6 desktop:h-6 desktop:p-0.5 desktop:m-0.5 desktop:mr-1':
+					!props.keepSizeOnMobile && !mimiriPlatform.isTablet,
 				'w-5 h-5 p-px': props.keepSizeOnMobile,
 				'text-toolbar-disabled': props.disabled,
 				'hover:bg-toolbar-hover active:bg-toolbar-hover active:p-[4px]': !props.disabled && props.hoverEffect,

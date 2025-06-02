@@ -1,9 +1,11 @@
 <template>
 	<div class="tree-indent relative whitespace-nowrap cursor-default">
-		<div class="rounded-sm overflow-hidden h-[30px] md:h-[25px] flex items-center py-[19px] md:py-0 bg-item-selected">
-			<div class="flex items-center ml-1 mr-0.5 h-full min-w-5 md:w-4 md:min-w-4"></div>
+		<div
+			class="rounded-sm overflow-hidden h-[30px] desktop:h-[25px] flex items-center py-[19px] desktop:py-0 bg-item-selected"
+		>
+			<div class="flex items-center ml-1 mr-0.5 h-full min-w-5 desktop:w-4 desktop:min-w-4"></div>
 			<NoteIcon
-				class="w-[30px] h-[30px] md:w-[23px] md:h-[23px] p-0.5 mr-1 md:mr-0.5"
+				class="w-[30px] h-[30px] desktop:w-[23px] desktop:h-[23px] p-0.5 mr-1 desktop:mr-0.5"
 				:class="{ 'text-shared': createNewNode && noteManager.selectedViewModel?.shared }"
 			></NoteIcon>
 			<input

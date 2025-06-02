@@ -135,6 +135,19 @@ class MimiriPlatform {
 		}
 	}
 
+	public get isPhoneSize() {
+		if (this.isElectron) {
+			return false
+		}
+		if (this.isIos || this.isAndroid) {
+			return !window.matchMedia?.('(min-width: 768px)')?.matches
+		}
+		if (this._isWeb && this.isMobileBrowser()) {
+			return !window.matchMedia?.('(min-width: 768px)')?.matches
+		}
+		return false
+	}
+
 	public get isCapacitor() {
 		return this._isCapacitor
 	}

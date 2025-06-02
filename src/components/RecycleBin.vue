@@ -11,7 +11,7 @@
 		@dragleave="onDragLeave"
 	>
 		<div
-			class="rounded-sm overflow-hidden h-[30px] md:h-[25px] flex items-center py-4 md:py-0"
+			class="rounded-sm overflow-hidden h-[30px] desktop:h-[25px] flex items-center py-4 desktop:py-0"
 			:class="{
 				'bg-item-selected': isSelected && !createNewNode && !createNewRootNode,
 				'text-menu-disabled': !hasChildren,
@@ -28,23 +28,23 @@
 			<div v-show="!searchModeActive" class="flex items-center pl-1 pr-0.5 h-full" @click="toggleNode">
 				<PlusIcon
 					v-if="!node.expanded"
-					class="h-5 w-5 md:h-4 md:w-4 mt-px"
+					class="h-5 w-5 desktop:h-4 desktop:w-4 mt-px"
 					:class="{ invisible: !hasChildren }"
 				></PlusIcon>
 				<MinusIcon
 					v-if="node.expanded"
-					class="h-5 w-5 md:h-4 md:w-4 mt-px"
+					class="h-5 w-5 desktop:h-4 desktop:w-4 mt-px"
 					:class="{ invisible: !hasChildren }"
 				></MinusIcon>
 			</div>
 			<RecycleBinIcon
 				v-if="hasChildren"
-				class="w-[30px] h-[30px] md:w-[23px] md:h-[23px] p-0.5 mr-1 md:mr-0.5"
+				class="w-[30px] h-[30px] desktop:w-[23px] desktop:h-[23px] p-0.5 mr-1 desktop:mr-0.5"
 				:class="{ 'text-shared': node.shared }"
 			></RecycleBinIcon>
 			<RecycleBinEmptyIcon
 				v-if="!hasChildren"
-				class="w-[30px] h-[30px] md:w-[23px] md:h-[23px] p-0.5 mr-1 md:mr-0.5"
+				class="w-[30px] h-[30px] desktop:w-[23px] desktop:h-[23px] p-0.5 mr-1 desktop:mr-0.5"
 				:class="{ 'text-shared': node.shared }"
 			></RecycleBinEmptyIcon>
 			<div
@@ -56,7 +56,7 @@
 			>
 				Recycle Bin
 			</div>
-			<div class="md:hidden pl-14 flex justify-end" @click="selectNode(true)">
+			<div class="desktop:hidden pl-14 flex justify-end" @click="selectNode(true)">
 				<OpenIcon class="w-[23px] h-[23px] p-0.5"></OpenIcon>
 			</div>
 		</div>

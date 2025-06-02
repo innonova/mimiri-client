@@ -70,6 +70,16 @@
 					"url": "https://tailwindcss.com/docs/"
 				}
 			]
+		},
+		{
+			"name": "@custom-variant",
+			"description": "custom-variant",
+			"references": [
+				{
+					"name": "Tailwind Documentation",
+					"url": "https://tailwindcss.com/docs/"
+				}
+			]
 		}
 	]
 }

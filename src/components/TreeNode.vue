@@ -11,7 +11,7 @@
 		@dragleave="onDragLeave"
 	>
 		<div
-			class="rounded-sm relative overflow-hidden h-[30px] md:h-[25px] flex items-center py-[19px] md:py-0"
+			class="rounded-sm relative overflow-hidden h-[30px] desktop:h-[25px] flex items-center py-[19px] desktop:py-0"
 			:class="{
 				'bg-item-selected': isSelected && !createNewNode && !createNewRootNode,
 				'text-menu-disabled': node.isRecycleBin && !hasChildren && !isSelected,
@@ -30,59 +30,59 @@
 				<PlusIcon
 					v-if="!node.expanded"
 					:data-testid="`${dataTestId}-closed`"
-					class="h-5 w-5 md:h-4 md:w-4 mt-px"
+					class="h-5 w-5 desktop:h-4 desktop:w-4 mt-px"
 					:class="{ invisible: !hasChildren }"
 				></PlusIcon>
 				<MinusIcon
 					v-if="node.expanded"
 					:data-testid="`${dataTestId}-open`"
-					class="h-5 w-5 md:h-4 md:w-4 mt-px"
+					class="h-5 w-5 desktop:h-4 desktop:w-4 mt-px"
 					:class="{ invisible: !hasChildren }"
 				></MinusIcon>
 			</div>
 			<NoteIcon
 				v-if="node.icon === 'note'"
-				class="w-[30px] h-[30px] md:w-[23px] md:h-[23px] p-0.5 mr-1 md:mr-0.5"
+				class="w-[30px] h-[30px] desktop:w-[23px] desktop:h-[23px] p-0.5 mr-1 desktop:mr-0.5"
 				:class="{ 'text-shared': node.shared }"
 			></NoteIcon>
 			<CogIcon
 				v-if="node.icon === 'cog'"
-				class="w-[30px] h-[30px] md:w-[23px] md:h-[23px] p-0.5 mr-1 md:mr-0.5"
+				class="w-[30px] h-[30px] desktop:w-[23px] desktop:h-[23px] p-0.5 mr-1 desktop:mr-0.5"
 				:class="{ 'text-shared': node.shared }"
 			></CogIcon>
 			<CoinsIcon
 				v-if="node.icon === 'coins'"
-				class="w-[30px] h-[30px] md:w-[23px] md:h-[23px] p-0.5 mr-1 md:mr-0.5"
+				class="w-[30px] h-[30px] desktop:w-[23px] desktop:h-[23px] p-0.5 mr-1 desktop:mr-0.5"
 				:class="{ 'text-shared': node.shared }"
 			></CoinsIcon>
 			<InfoIcon
 				v-if="node.icon === 'info'"
-				class="w-[30px] h-[30px] md:w-[23px] md:h-[23px] p-0.5 mr-1 md:mr-0.5"
+				class="w-[30px] h-[30px] desktop:w-[23px] desktop:h-[23px] p-0.5 mr-1 desktop:mr-0.5"
 				:class="{ 'text-shared': node.shared }"
 			></InfoIcon>
 			<DownloadIcon
 				v-if="node.icon === 'download'"
-				class="w-[30px] h-[30px] md:w-[23px] md:h-[23px] p-0.5 mr-1 md:mr-0.5"
+				class="w-[30px] h-[30px] desktop:w-[23px] desktop:h-[23px] p-0.5 mr-1 desktop:mr-0.5"
 				:class="{ 'text-shared': node.shared }"
 			></DownloadIcon>
 			<LockIcon
 				v-if="node.icon === 'lock'"
-				class="w-[30px] h-[30px] md:w-[23px] md:h-[23px] p-0.5 mr-1 md:mr-0.5"
+				class="w-[30px] h-[30px] desktop:w-[23px] desktop:h-[23px] p-0.5 mr-1 desktop:mr-0.5"
 				:class="{ 'text-shared': node.shared }"
 			></LockIcon>
 			<AccountIcon
 				v-if="node.icon === 'account'"
-				class="w-[30px] h-[30px] md:w-[23px] md:h-[23px] p-0.5 mr-1 md:mr-0.5"
+				class="w-[30px] h-[30px] desktop:w-[23px] desktop:h-[23px] p-0.5 mr-1 desktop:mr-0.5"
 				:class="{ 'text-shared': node.shared }"
 			></AccountIcon>
 			<RecycleBinIcon
 				v-if="node.icon === 'recycle-bin' && hasChildren"
-				class="w-[30px] h-[30px] md:w-[23px] md:h-[23px] p-0.5 mr-1 md:mr-0.5"
+				class="w-[30px] h-[30px] desktop:w-[23px] desktop:h-[23px] p-0.5 mr-1 desktop:mr-0.5"
 				:class="{ 'text-shared': node.shared }"
 			></RecycleBinIcon>
 			<RecycleBinEmptyIcon
 				v-if="node.icon === 'recycle-bin' && !hasChildren"
-				class="w-[30px] h-[30px] md:w-[23px] md:h-[23px] p-0.5 mr-1 md:mr-0.5"
+				class="w-[30px] h-[30px] desktop:w-[23px] desktop:h-[23px] p-0.5 mr-1 desktop:mr-0.5"
 				:class="{ 'text-shared': node.shared }"
 			></RecycleBinEmptyIcon>
 			<div v-if="node.hasInfo" class="absolute bottom-0.5 left-[35px] w-2 h-2 rounded-sm bg-bad"></div>
@@ -105,7 +105,7 @@
 			>
 				{{ node.title }}
 			</div>
-			<div class="md:hidden pl-10 py-[7px] flex justify-end" @click="selectNode(true)">
+			<div class="desktop:hidden pl-10 py-[7px] flex justify-end" @click="selectNode(true)">
 				<OpenIcon class="w-[23px] h-[23px] p-0.5 mr-1"></OpenIcon>
 			</div>
 		</div>

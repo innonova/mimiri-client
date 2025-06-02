@@ -1,8 +1,8 @@
 <template>
 	<div class="flex flex-col h-full">
-		<div class="flex items-center py-px px-2.5 bg-toolbar border-b border-solid border-toolbar">
-			<ToolbarIcon icon="back" :hoverEffect="true" title="Back" class="md:hidden" @click="onBack"></ToolbarIcon>
-			<div class="inline-block h-4 w-0 border border-solid border-toolbar-separator m-0.5 md:hidden"></div>
+		<div class="flex items-center py-px px-2.5 bg-toolbar border-b border-solid border-toolbar mobile:justify-between">
+			<ToolbarIcon icon="back" :hoverEffect="true" title="Back" class="desktop:hidden" @click="onBack"></ToolbarIcon>
+			<div class="inline-block h-4 w-0 border border-solid border-toolbar-separator m-0.5 desktop:hidden"></div>
 			<ToolbarIcon
 				icon="save"
 				:hoverEffect="true"

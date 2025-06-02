@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<div class="flex flex-col md:hidden relative h-11">
+		<div class="flex flex-col desktop:hidden relative h-11">
 			<div class="flex p-px" tabindex="2">
 				<input
 					ref="searchInput"
@@ -16,7 +16,7 @@
 				class="progress-bar-value absolute left-0 bottom-0 w-full h-1"
 			></div>
 		</div>
-		<div class="hidden md:block bg-info-bar-accented h-7 relative">
+		<div class="hidden desktop:block bg-info-bar-accented h-7 relative">
 			<div
 				v-if="searchManager.state.searchRunning"
 				class="progress-bar-value absolute left-0 top-0 w-full h-full"

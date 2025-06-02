@@ -95,13 +95,7 @@ export class NoteManager {
 		controlPanel.createChildren = (owner: NoteManager, parent: MimerNote) => {
 			return createControlPanelTree(owner, parent)
 		}
-		this._isMobile = !window.matchMedia?.('(min-width: 768px)')?.matches
-		window.addEventListener('resize', () => {
-			this._isMobile = !window.matchMedia?.('(min-width: 768px)')?.matches
-			if (!this._isMobile) {
-				this.state.noteOpen = true
-			}
-		})
+		this._isMobile = mimiriPlatform.isPhoneSize
 		this.state = reactive({
 			busy: false,
 			busyLong: false,

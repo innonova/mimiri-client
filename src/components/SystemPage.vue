@@ -1,7 +1,7 @@
 <template>
 	<div v-if="noteManager.authenticated" class="flex flex-col h-full">
 		<div class="flex items-center py-px px-1 bg-toolbar border-b border-solid border-toolbar min-h-9 select-none">
-			<ToolbarIcon icon="back" :hoverEffect="true" title="Back" class="md:hidden" @click="onBack"></ToolbarIcon>
+			<ToolbarIcon icon="back" :hoverEffect="true" title="Back" class="desktop:hidden" @click="onBack"></ToolbarIcon>
 		</div>
 		<div class="flex overflow-hidden pl-2 pt-2">
 			<div class="w-full">

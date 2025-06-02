@@ -1,8 +1,7 @@
 <template>
 	<div
 		ref="toolbar"
-		class="flex items-center py-px px-1.5 bg-toolbar border-b border-solid border-toolbar"
-		:class="{ 'justify-between': mimiriPlatform.isPhone }"
+		class="flex items-center py-px px-1.5 bg-toolbar border-b border-solid border-toolbar mobile:justify-between"
 		data-testid="main-toolbar"
 	>
 		<ToolbarIcon v-if="!mimiriPlatform.isDesktop" icon="menu" @click="showMobileMenu"></ToolbarIcon>
@@ -20,14 +19,14 @@
 		></ToolbarIcon>
 		<div class="inline-block h-4/5 w-0 border border-solid border-toolbar-separator m-0.5"></div>
 		<ToolbarIcon
-			class="md:hidden"
+			class="desktop:hidden"
 			icon="search-all-notes"
 			:hoverEffect="true"
 			title="Search All Notes"
 			@click="toggleSearchAllNotes"
 		></ToolbarIcon>
 		<ToolbarIcon
-			class="hidden! md:block!"
+			class="hidden! desktop:block!"
 			icon="search-all-notes"
 			:hoverEffect="true"
 			title="Search All Notes"

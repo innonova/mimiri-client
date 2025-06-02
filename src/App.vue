@@ -25,15 +25,15 @@
 		<div v-show="!localAuth.locked" class="flex h-full overflow-hidden" @mouseup="endDragging">
 			<div
 				class="h-full overflow-y-hidden flex flex-col w-full divider-left"
-				:class="{ 'hidden md:flex': !showNavigation }"
+				:class="{ 'hidden desktop:flex': !showNavigation }"
 			>
 				<MainToolbar ref="mainToolbar"></MainToolbar>
 				<SearchBox v-show="showSearchBox"></SearchBox>
 				<NoteTreeView ref="noteTreeView"></NoteTreeView>
 				<ShareOfferView v-show="showShareOffers"></ShareOfferView>
 			</div>
-			<div class="w-2.5 min-w-2.5 bg-toolbar cursor-ew-resize hidden md:block" @mousedown="startDragging"></div>
-			<div class="h-full flex flex-col w-full divider-right" :class="{ 'hidden md:flex': !showEditor }">
+			<div class="w-2.5 min-w-2.5 bg-toolbar cursor-ew-resize hidden desktop:block" @mousedown="startDragging"></div>
+			<div class="h-full flex flex-col w-full divider-right" :class="{ 'hidden desktop:flex': !showEditor }">
 				<div v-show="noteManager.selectedNote?.type === 'note-text'" class="h-full flex flex-col flex-1">
 					<NoteEditor ref="noteEditor"></NoteEditor>
 				</div>
@@ -146,6 +146,8 @@ const onResize = () => {
 	dividerPosition.value = `${splitterPos}px`
 	editorWidth.value = `${window.innerWidth - splitterPos - 10}px`
 }
+
+document.documentElement.setAttribute('data-device-type', noteManager.isMobile ? 'mobile' : 'desktop')
 
 const updateTheme = () => {
 	document.documentElement.setAttribute('data-theme', settingsManager.darkMode ? 'dark' : 'light')
@@ -416,7 +418,7 @@ const handleDragging = e => {
 	if (pos < 200) {
 		pos = 200
 	}
-	const maxWidth = window.innerWidth - 400
+	const maxWidth = window.innerWidth - 100
 	if (pos > maxWidth) {
 		pos = maxWidth
 	}
@@ -440,15 +442,13 @@ const endDragging = () => {
 	padding-top: var(--safe-area-top);
 }
 
-@media (min-width: 768px) {
-	.divider-left {
-		min-width: v-bind(dividerPosition);
-		width: v-bind(dividerPosition);
-	}
+.divider-left:where([data-device-type='desktop'] *) {
+	min-width: v-bind(dividerPosition);
+	width: v-bind(dividerPosition);
+}
 
-	.divider-right {
-		width: v-bind(editorWidth);
-	}
+.divider-right:where([data-device-type='desktop'] *) {
+	width: v-bind(editorWidth);
 }
 
 .dark-mode {

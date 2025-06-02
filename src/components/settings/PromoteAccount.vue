@@ -9,7 +9,7 @@
 				<div class="flex items-center">Username:</div>
 				<UsernameInput :display-current="false" @changed="usernameChanged"></UsernameInput>
 				<div class="flex items-center">Password:</div>
-				<div class="text-right relative md:flex">
+				<div class="text-right relative desktop:flex">
 					<input
 						v-model="password"
 						tabindex="2"
@@ -18,35 +18,35 @@
 						data-testid="password-input"
 						@keydown="pwKeyDown"
 					/>
-					<div class="md:w-0 md:h-0 overflow-visible">
-						<div class="absolute right-2 invisible md:visible" @mousedown="showPassword" @mouseup="hidePassword">
+					<div class="desktop:w-0 desktop:h-0 overflow-visible">
+						<div class="absolute right-2 invisible desktop:visible" @mousedown="showPassword" @mouseup="hidePassword">
 							<ShowPasswordIcon v-if="passwordFieldType === 'password'" class="w-5 h-5 mt-1"></ShowPasswordIcon>
 							<ShowingPasswordIcon v-if="passwordFieldType === 'text'" class="w-5 h-5 mt-1"></ShowingPasswordIcon>
 						</div>
 					</div>
-					<div v-if="passwordQuality" class="md:w-0 md:h-0 overflow-visible">
+					<div v-if="passwordQuality" class="desktop:w-0 desktop:h-0 overflow-visible">
 						<div
 							v-if="passwordQuality === 'free-access'"
-							class="flex items-center w-52 h-7 md:ml-2 mt-1.5 md:mt-0 text-left"
+							class="flex items-center w-52 h-7 desktop:ml-2 mt-1.5 desktop:mt-0 text-left"
 						>
 							<FreeAccessIcon class="w-5 h-5 mr-1 inline-block"></FreeAccessIcon> Not really a password
 						</div>
 						<div
 							v-if="passwordQuality === 'casual-use-only'"
-							class="flex items-center w-52 h-7 md:ml-2 mt-1.5 md:mt-0 text-left"
+							class="flex items-center w-52 h-7 desktop:ml-2 mt-1.5 desktop:mt-0 text-left"
 						>
 							<CasualOnlyIcon class="w-5 h-5 mr-1 inline-block"></CasualOnlyIcon> Very limited security
 						</div>
 						<div
 							v-if="passwordQuality === 'acceptable-security'"
-							class="flex items-center w-52 h-7 md:ml-2 mt-1.5 md:mt-0 text-left"
+							class="flex items-center w-52 h-7 desktop:ml-2 mt-1.5 desktop:mt-0 text-left"
 						>
 							<LightSecurityIcon class="w-5 h-5 mr-1 inline-block"></LightSecurityIcon> Acceptable
 						</div>
 					</div>
 				</div>
 				<div class="flex items-center">Repeat:</div>
-				<div class="text-right relative md:flex">
+				<div class="text-right relative desktop:flex">
 					<input
 						v-model="passwordRepeat"
 						tabindex="3"
@@ -55,11 +55,11 @@
 						data-testid="repeat-input"
 						@keydown="pwKeyDown"
 					/>
-					<div v-if="password" class="md:w-0 md:h-0 pt-0.5 overflow-visible">
-						<div v-if="passwordMatch" class="flex items-center w-52 md:ml-2 mt-1.5 md:mt-0.5">
+					<div v-if="password" class="desktop:w-0 desktop:h-0 pt-0.5 overflow-visible">
+						<div v-if="passwordMatch" class="flex items-center w-52 desktop:ml-2 mt-1.5 desktop:mt-0.5">
 							<AvailableIcon class="w-5 h-5 mr-1 inline-block"></AvailableIcon> Matching
 						</div>
-						<div v-if="!passwordMatch" class="flex items-center w-52 md:ml-2 mt-1.5 md:mt-0.5">
+						<div v-if="!passwordMatch" class="flex items-center w-52 desktop:ml-2 mt-1.5 desktop:mt-0.5">
 							<UnavailableIcon class="w-5 h-5 mr-1 inline-block"></UnavailableIcon> Not matching
 						</div>
 					</div>

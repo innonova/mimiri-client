@@ -125,20 +125,21 @@
 	}
 }
 
+@custom-variant mobile (&:where([data-device-type="mobile"] *));
+@custom-variant desktop (&:where([data-device-type="desktop"] *));
+
 html {
 	--sa-support: env(safe-area-inset-top);
 }
 
 html[data-env-support='true'] {
 	--safe-area-top: env(safe-area-inset-top);
+	--safe-area-bottom: env(safe-area-inset-bottom);
 }
 
 html[data-env-support='false'] {
 	--safe-area-top: 25px;
-}
-
-html[data-env-support='false'] {
-	--safe-area-top: 25px;
+	--safe-area-bottom: 25px;
 }
 
 .unexpected-closing-bracket {
@@ -234,7 +235,7 @@ div {
 }
 
 dialog {
-	@apply m-auto max-md:mt-[33%];
+	@apply m-auto mobile:mt-[33%];
 }
 
 dialog::backdrop {
@@ -246,7 +247,8 @@ dialog::backdrop {
 }
 
 .display-editor-toolbar {
-	@apply h-24 pb-10 md:h-10 md:pb-0;
+	@apply h-12 desktop:h-10 desktop:pb-0;
+	margin-bottom: var(--safe-area-bottom);
 }
 
 .simple-editor {

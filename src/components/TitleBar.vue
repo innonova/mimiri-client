@@ -1,7 +1,7 @@
 <template>
 	<div
 		id="title-bar"
-		class="w-full hidden md:flex flex-row items-center select-none bg-title-bar text-size-menu"
+		class="w-full hidden desktop:flex flex-row items-center select-none bg-title-bar text-size-menu"
 		:class="{
 			'text-title-text': hasFocus,
 			'text-title-text-blur': !hasFocus,
