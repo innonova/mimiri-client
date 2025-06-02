@@ -338,20 +338,22 @@ const showContextMenu = async e => {
 			const note = noteManager.getNoteById(props.node.id)
 			showShare = note.isShareRoot
 		}
+
+		const note = noteManager.getNoteById(props.node.id)
+		const isInRecycleBin = note.isInRecycleBin
+
 		menuManager.showMenu({ x: e.x, y: e.y }, [
-			MenuItems.NewNote,
-			MenuItems.Separator,
-			MenuItems.Duplicate,
+			...(isInRecycleBin ? [] : [MenuItems.NewNote, MenuItems.Separator, MenuItems.Duplicate]),
 			MenuItems.Cut,
 			MenuItems.Copy,
-			MenuItems.Paste,
-			MenuItems.CopyPath,
+			...(isInRecycleBin ? [] : [MenuItems.Paste, MenuItems.CopyPath]),
+
 			MenuItems.Separator,
-			...(showShare ? [MenuItems.Share] : []),
+			...(showShare && !isInRecycleBin ? [MenuItems.Share] : []),
 			MenuItems.Refresh,
 			MenuItems.Separator,
-			MenuItems.Rename,
-			e.shiftKey ? MenuItems.Delete : MenuItems.Recycle,
+			...(isInRecycleBin ? [] : [MenuItems.Rename]),
+			e.shiftKey || isInRecycleBin ? MenuItems.Delete : MenuItems.Recycle,
 		])
 	}
 }

@@ -617,6 +617,20 @@ export class MimerNote {
 		return false
 	}
 
+	public get isInRecycleBin() {
+		if (this.isRecycleBin || this.isSystem) {
+			return false
+		}
+		let current = this.parent
+		while (current) {
+			if (current.isRecycleBin) {
+				return true
+			}
+			current = current.parent
+		}
+		return false
+	}
+
 	public get type(): string {
 		if (this.isRecycleBin) {
 			return 'recycle-bin'
