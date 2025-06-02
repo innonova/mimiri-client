@@ -158,7 +158,7 @@ export class EditorDisplay implements TextEditor {
 	}
 
 	public setHistoryText(text: string) {
-		this._history.innerText = text
+		this._history.innerHTML = this.formatText(text)
 	}
 
 	public hideHistory() {

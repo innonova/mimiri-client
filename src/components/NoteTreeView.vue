@@ -18,7 +18,15 @@
 </template>
 
 <script setup lang="ts">
-import { clipboardNote, createNewRootNode, deleteNodeDialog, isCut, noteManager, showSearchBox } from '../global'
+import {
+	clipboardNote,
+	createNewRootNode,
+	deleteNodeDialog,
+	isCut,
+	mobileLog,
+	noteManager,
+	showSearchBox,
+} from '../global'
 import type { MimerNote } from '../services/types/mimer-note'
 import TreeNode from './TreeNode.vue'
 import NewTreeNode from './NewTreeNode.vue'
@@ -40,16 +48,18 @@ const noSearchResults = computed(
 )
 
 const stopWatching = watch(noteManager.state, () => {
-	if (noteManager.state.stateLoaded && !stateLoaded) {
+	if (
+		noteManager.state.stateLoaded &&
+		!stateLoaded &&
+		noteManager.authenticated &&
+		noteManager.root?.viewModel.children.length &&
+		noteManager.selectedNote
+	) {
 		stateLoaded = true
-		setTimeout(() => {
-			mainElement.value.scrollTop = persistedState.getTreeScrollTop()
-			setTimeout(() => {
-				if (noteManager.isMobile && persistedState.noteOpen && noteManager.selectedNote) {
-					noteManager.openNote()
-				}
-			}, 100)
-		}, 250)
+		mainElement.value.scrollTop = persistedState.getTreeScrollTop()
+		if (noteManager.isMobile && persistedState.noteOpen && noteManager.selectedNote) {
+			noteManager.openNote()
+		}
 		stopWatching()
 	}
 })
@@ -178,12 +188,16 @@ const hasFocus = () => {
 }
 
 const scrollDebounce = new Debounce(async () => {
-	const scrollTop = Math.round(mainElement.value?.scrollTop ?? 0)
-	persistedState.setTreeScrollTop(scrollTop)
+	if (mainElement.value && noteManager && (!noteManager.state.noteOpen || !noteManager.isMobile)) {
+		const scrollTop = Math.round(mainElement.value.scrollTop)
+		persistedState.setTreeScrollTop(scrollTop)
+	}
 }, 250)
 
 const onScroll = () => {
-	scrollDebounce.activate()
+	if (stateLoaded) {
+		scrollDebounce.activate()
+	}
 }
 
 defineExpose({
