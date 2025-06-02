@@ -6,6 +6,7 @@
 		<div class="flex overflow-hidden pl-2 pt-2">
 			<div class="w-full">
 				<General v-if="type === 'settings-general'"></General>
+				<FontsColors v-if="type === 'settings-fonts-colors'"></FontsColors>
 				<PinCode v-if="type === 'settings-pin'"></PinCode>
 				<PromoteAccount v-if="type === 'settings-create-password'"></PromoteAccount>
 				<Username v-if="type === 'settings-username'"></Username>
@@ -26,6 +27,7 @@
 import { computed } from 'vue'
 import { noteManager } from '../global'
 import General from './settings/General.vue'
+import FontsColors from './settings/FontsColors.vue'
 import PinCode from './settings/PinCode.vue'
 import Username from './settings/Username.vue'
 import Password from './settings/Password.vue'

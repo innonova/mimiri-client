@@ -40,6 +40,8 @@ export interface MimerConfiguration {
 	showCreateOverCancel: boolean | undefined
 	alwaysEdit: boolean
 	simpleEditor: boolean
+	editorFontFamily: string
+	editorFontSize: number
 }
 
 class SettingsManager {
@@ -73,6 +75,8 @@ class SettingsManager {
 		showCreateOverCancel: false,
 		alwaysEdit: mimiriPlatform.isDesktop,
 		simpleEditor: !mimiriPlatform.isDesktop,
+		editorFontFamily: 'Consolas',
+		editorFontSize: 14,
 	})
 
 	constructor() {
@@ -341,6 +345,24 @@ class SettingsManager {
 
 	public set simpleEditor(value: boolean) {
 		this.state.simpleEditor = value
+		void this.save()
+	}
+
+	public get editorFontFamily() {
+		return this.state.editorFontFamily
+	}
+
+	public set editorFontFamily(value: string) {
+		this.state.editorFontFamily = value
+		void this.save()
+	}
+
+	public get editorFontSize() {
+		return this.state.editorFontSize
+	}
+
+	public set editorFontSize(value: number) {
+		this.state.editorFontSize = value
 		void this.save()
 	}
 }

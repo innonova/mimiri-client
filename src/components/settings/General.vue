@@ -66,7 +66,7 @@ import { computed, onMounted, ref } from 'vue'
 import { settingsManager } from '../../services/settings-manager'
 import { mimiriPlatform } from '../../services/mimiri-platform'
 import TabBar from '../elements/TabBar.vue'
-import { env } from '../../global'
+import { env, fontManager } from '../../global'
 
 const emit = defineEmits(['close'])
 
@@ -107,7 +107,7 @@ const close = () => {
 	emit('close')
 }
 
-const save = () => {
+const save = async () => {
 	settingsManager.darkMode = darkMode.value
 	settingsManager.keepTrayIconVisible = keepTrayIconVisible.value
 	settingsManager.showInTaskBar = showInTaskBar.value

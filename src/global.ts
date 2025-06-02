@@ -11,6 +11,7 @@ import { MimiriEditor } from './services/editor/mimiri-editor'
 import { MobileLog } from './services/mobile-log'
 import { PasswordGenerator } from './services/password-generator'
 import { ClipboardManager } from './services/clipboard-manager'
+import { FontManager } from './services/font-manager'
 
 export const env = import.meta.env
 const host = env.VITE_MIMER_API_HOST
@@ -26,6 +27,7 @@ export const noteManager = new NoteManager(host, paymentHost, serverKey, serverK
 export const updateManager = new UpdateManager(env.VITE_MIMER_UPDATE_HOST)
 export const notificationManager = new NotificationManager()
 export const passwordGenerator = new PasswordGenerator()
+export const fontManager = new FontManager()
 export const noteTreeView = ref(null)
 export const mainToolbar = ref(null)
 export const noteEditor = ref(null)

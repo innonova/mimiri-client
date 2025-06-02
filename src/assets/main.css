@@ -6,7 +6,7 @@
 	--font-editor: 'Consolas', 'Courier New', 'monospace';
 
 	--text-size-base: 14px;
-	--text-size-base--line-height: 1rem;
+	--text-size-base--line-height: 1em;
 	--text-size-menu: 13px;
 	--text-size-menu--line-height: 20px;
 	--text-size-secondary: 12px;
@@ -21,6 +21,8 @@
 	--text-size-input--line-height: 1.5rem;
 	--text-size-info: 14px;
 	--text-size-info--line-height: 1.15em;
+	--text-size-editor: 14px;
+	--text-size-editor--line-height: 1em;
 
 	--color-back: #e3e3e3;
 	--color-info: #d2d2d8;

@@ -35,6 +35,13 @@ export const createControlPanelTree = (owner: NoteManager, parent: MimerNote): M
 					icon: 'cog',
 					children: [],
 				},
+				{
+					id: 'settings-fonts-colors' as Guid,
+					title: 'Fonts & Colors',
+					type: 'settings-fonts-colors',
+					icon: 'font',
+					children: [],
+				},
 				...(showPin
 					? [
 							{

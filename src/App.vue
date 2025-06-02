@@ -152,6 +152,12 @@ document.documentElement.setAttribute('data-device-type', noteManager.isMobile ?
 const updateTheme = () => {
 	document.documentElement.setAttribute('data-theme', settingsManager.darkMode ? 'dark' : 'light')
 	colorScheme.value = settingsManager.darkMode ? 'only dark' : 'only light'
+	var root = document.querySelector(':root') as HTMLElement
+	root.style.setProperty(
+		'--font-editor',
+		`'${settingsManager.editorFontFamily}', 'Consolas', 'Courier New', 'monospace'`,
+	)
+	root.style.setProperty('--text-size-editor', `${settingsManager.editorFontSize}px`)
 }
 
 updateTheme()

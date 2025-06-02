@@ -50,6 +50,11 @@
 				class="w-[30px] h-[30px] desktop:w-[23px] desktop:h-[23px] p-0.5 mr-1 desktop:mr-0.5"
 				:class="{ 'text-shared': node.shared }"
 			></CogIcon>
+			<FontIcon
+				v-if="node.icon === 'font'"
+				class="w-[30px] h-[30px] desktop:w-[23px] desktop:h-[23px] p-0.5 mr-1 desktop:mr-0.5"
+				:class="{ 'text-shared': node.shared }"
+			></FontIcon>
 			<CoinsIcon
 				v-if="node.icon === 'coins'"
 				class="w-[30px] h-[30px] desktop:w-[23px] desktop:h-[23px] p-0.5 mr-1 desktop:mr-0.5"
@@ -133,6 +138,7 @@ import MinusIcon from '../icons/minus.vue'
 import OpenIcon from '../icons/open.vue'
 import { MenuItems, menuManager } from '../services/menu-manager'
 import CogIcon from '../icons/cog.vue'
+import FontIcon from '../icons/font.vue'
 import AccountIcon from '../icons/account.vue'
 import CoinsIcon from '../icons/coins.vue'
 import InfoIcon from '../icons/info.vue'
