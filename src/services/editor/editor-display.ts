@@ -59,25 +59,25 @@ export class EditorDisplay implements TextEditor {
 			scrollDebounce.activate()
 		})
 
-		this._element.addEventListener('click', event => {
-			if (!mimiriPlatform.isDesktop) {
+		if (!mimiriPlatform.isDesktop) {
+			this._element.addEventListener('click', event => {
 				const elm = this.getPasswordElement(event)
 				if (elm) {
 					const rect = elm.getBoundingClientRect()
 					this.listener.onPasswordClicked(rect.top, rect.right, elm.textContent)
 				}
-			}
-		})
+			})
+		}
 
-		this._element.addEventListener('dblclick', event => {
-			if (mimiriPlatform.isDesktop) {
+		if (mimiriPlatform.isDesktop) {
+			this._element.addEventListener('dblclick', event => {
 				const elm = this.getPasswordElement(event)
 				if (elm) {
 					const rect = elm.getBoundingClientRect()
 					this.listener.onPasswordClicked(rect.top, rect.right, elm.textContent)
 				}
-			}
-		})
+			})
+		}
 	}
 
 	private getPasswordElement(event: MouseEvent) {
@@ -173,7 +173,17 @@ export class EditorDisplay implements TextEditor {
 	public showHistory() {
 		if (!this.historyShowing) {
 			this._element.style.display = 'none'
+
+			this._history.contentEditable = 'plaintext-only'
 			this._history.style.display = 'block'
+			this._element.focus()
+			if (settingsManager.wordwrap) {
+				this._history.style.whiteSpace = 'pre-wrap'
+			} else {
+				this._history.style.whiteSpace = 'pre'
+			}
+			this._element.blur()
+			this._element.contentEditable = 'false'
 			this.historyShowing = true
 		}
 	}
