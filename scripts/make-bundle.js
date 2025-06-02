@@ -38,6 +38,7 @@ const pemToArrayBuffer = (pem) => {
 }
 
 const keyName = process.argv[2];
+const channel = process.argv[3] ?? 'canary';
 
 const privatePem = readFileSync(`./certs/${keyName}.key`).toString()
 
@@ -115,13 +116,13 @@ if (!alreadyOnStable) {
 
 	await writeFile(`./bundles/${keyName}.${bundle.version}.json`, output)
 	await writeFile(`./bundles/${keyName}.${bundle.version}.info.json`, JSON.stringify(info))
-	await writeFile(`./bundles/${keyName}.canary.json`, JSON.stringify(info))
+	await writeFile(`./bundles/${keyName}.${channel}.json`, JSON.stringify(info))
 
 
 	await writeFile('./artifacts.json', JSON.stringify([
 		`./bundles/${keyName}.${bundle.version}.json`,
 		`./bundles/${keyName}.${bundle.version}.info.json`,
-		`./bundles/${keyName}.canary.json`,
+		`./bundles/${keyName}.${channel}.json`,
 	], undefined, '  '))
 
 	console.log(`Bundle Created ${pack.version} ${`./bundles/${keyName}.${bundle.version}.json`}`)

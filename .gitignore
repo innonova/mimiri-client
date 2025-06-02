@@ -38,3 +38,4 @@ artifacts.json
 src/icon-sources/
 src/icons.cache/
 bundle.json
+build-dev.sh

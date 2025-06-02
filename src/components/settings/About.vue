@@ -154,6 +154,8 @@ const closeLog = () => {
 const changeChannel = () => {
 	if (settingsManager.channel === 'stable') {
 		settingsManager.channel = 'canary'
+	} else if (settingsManager.channel === 'canary') {
+		settingsManager.channel = 'development'
 	} else {
 		settingsManager.channel = 'stable'
 	}
