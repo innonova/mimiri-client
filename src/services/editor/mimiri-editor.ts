@@ -252,15 +252,6 @@ export class MimiriEditor {
 
 	public syncSettings() {
 		this._activeEditor.syncSettings()
-		// if (this._monacoInitialized) {
-		// 	this._editorAdvanced.syncSettings()
-		// }
-		// if (this._simpleInitialized) {
-		// 	this._editorSimple.syncSettings()
-		// }
-		// if (this._displayInitialized) {
-		// 	this._editorDisplay.syncSettings()
-		// }
 	}
 
 	public expandSelection(type: SelectionExpansion) {

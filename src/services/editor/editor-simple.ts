@@ -283,14 +283,6 @@ export class EditorSimple implements TextEditor {
 			const scrollTop = this.lastScrollTop
 			this._element.style.display = 'block'
 			this._history.style.display = 'none'
-			this._element.focus()
-			if (settingsManager.wordwrap) {
-				this._element.style.whiteSpace = 'pre-wrap'
-			} else {
-				this._element.style.whiteSpace = 'pre'
-			}
-			this._element.blur()
-			this._element.contentEditable = 'false'
 			this.historyShowing = false
 			this.focus()
 			setTimeout(() => {

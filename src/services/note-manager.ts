@@ -637,12 +637,14 @@ export class NoteManager {
 	public closeNote() {
 		if (this._isMobile) {
 			this.state.noteOpen = false
+			persistedState.noteOpen = false
 		}
 	}
 
 	public openNote() {
 		if (this._isMobile) {
 			this.state.noteOpen = true
+			persistedState.noteOpen = true
 			browserHistory.open(this.state.selectedNoteId)
 		}
 	}
@@ -1165,6 +1167,7 @@ export class NoteManager {
 	public closeEditorIfMobile() {
 		if (this._isMobile && this.state.noteOpen) {
 			this.state.noteOpen = false
+			persistedState.noteOpen = false
 		}
 	}
 

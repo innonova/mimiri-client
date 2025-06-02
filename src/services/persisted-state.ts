@@ -122,6 +122,22 @@ class PersistedState {
 		}
 		return !!localStorage && !mimiriPlatform.isWeb
 	}
+
+	get noteOpen() {
+		if (this.enabled) {
+			const state = this.loadState()
+			return state.noteOpen ?? false
+		}
+		return false
+	}
+
+	set noteOpen(value: boolean) {
+		if (this.enabled) {
+			const state = this.loadState()
+			state.noteOpen = value
+			this.saveState(state)
+		}
+	}
 }
 
 export const persistedState = new PersistedState()
