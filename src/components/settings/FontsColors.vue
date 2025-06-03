@@ -87,7 +87,12 @@ watch([editorFontFamily], () => {
 })
 
 onMounted(async () => {
-	editorFontFamily.value = settingsManager.editorFontFamily
+	if (fontManager.exists(settingsManager.editorFontFamily)) {
+		editorFontFamily.value = settingsManager.editorFontFamily
+	} else {
+		editorFontFamily.value = 'CUSTOM'
+		customFontFamily.value = settingsManager.editorFontFamily
+	}
 	editorFontSize.value = settingsManager.editorFontSize
 })
 
@@ -99,7 +104,11 @@ const reset = async () => {
 }
 
 const save = async () => {
-	settingsManager.editorFontFamily = editorFontFamily.value
+	if (editorFontFamily.value !== 'CUSTOM') {
+		settingsManager.editorFontFamily = editorFontFamily.value
+	} else {
+		settingsManager.editorFontFamily = customFontFamily.value
+	}
 	settingsManager.editorFontSize = editorFontSize.value
 	var root = document.querySelector(':root') as HTMLElement
 	root.style.setProperty(

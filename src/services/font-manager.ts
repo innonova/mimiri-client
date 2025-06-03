@@ -64,6 +64,10 @@ export class FontManager {
 		return font.link
 	}
 
+	public exists(name: string) {
+		return !!this._fonts.find(f => f.name === name)
+	}
+
 	public get defaultEditorFontFace() {
 		if (mimiriPlatform.isMac || mimiriPlatform.isIos) {
 			return 'Menlo'
