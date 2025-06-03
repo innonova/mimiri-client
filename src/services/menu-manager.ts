@@ -596,7 +596,7 @@ class MenuManager {
 						id: 'show-dev-tools',
 						title: 'Dev Tools',
 					},
-					...(!mimiriPlatform.isLinux
+					...(!mimiriPlatform.isLinuxApp
 						? [
 								{
 									id: 'toggle-screen-sharing',
@@ -606,7 +606,7 @@ class MenuManager {
 								},
 							]
 						: []),
-					...(mimiriPlatform.isWindows
+					...(mimiriPlatform.isWindowsApp
 						? [
 								{
 									id: 'toggle-notify-promoted',
@@ -657,7 +657,7 @@ class MenuManager {
 	}
 
 	public get fileMenu() {
-		if (mimiriPlatform.isMac) {
+		if (mimiriPlatform.isMacApp) {
 			return [MenuItems.NewRootNote, MenuItems.NewNote]
 		}
 		return [
@@ -706,7 +706,7 @@ class MenuManager {
 	}
 
 	public updateAppMenu() {
-		if (ipcClient.isAvailable && mimiriPlatform.isMac) {
+		if (ipcClient.isAvailable && mimiriPlatform.isMacApp) {
 			ipcClient.menu.setAppMenu([
 				{
 					title: 'Mimiri Notes',

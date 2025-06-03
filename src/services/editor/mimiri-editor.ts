@@ -86,7 +86,7 @@ export class MimiriEditor {
 
 	private animateNotification(top: number, left: number, text: string) {
 		clipboardManager.write(text)
-		if (!mimiriPlatform.isAndroid) {
+		if (!mimiriPlatform.isAndroidApp) {
 			this.infoElement.style.top = `${top - this.infoElement.offsetHeight}px`
 			this.infoElement.style.left = `${left}px`
 			this.infoElement.classList.add('animate-ping')

@@ -142,7 +142,7 @@
 				</div>
 			</div>
 		</div>
-		<div v-if="!updateManager.isHostUpdate || !mimiriPlatform.isLinux" class="max-w-110">
+		<div v-if="!updateManager.isHostUpdate || !mimiriPlatform.isLinuxApp" class="max-w-110">
 			<div class="relative max-w-110 h-[30px] border border-solid border-dialog-border">
 				<div class="h-[30px] bg-progress-indicator progress"></div>
 				<div
@@ -168,14 +168,14 @@
 				</div>
 			</div>
 		</div>
-		<div v-if="!updateManager.isHostUpdate || !mimiriPlatform.isLinux" class="mt-2 flex justify-end gap-2 max-w-110">
+		<div v-if="!updateManager.isHostUpdate || !mimiriPlatform.isLinuxApp" class="mt-2 flex justify-end gap-2 max-w-110">
 			<button class="primary" v-if="!running" @click="update">Update</button>
 			<button class="primary" v-if="running && stage === 'ready'" @click="restart">Restart</button>
 			<button class="secondary" v-if="running && (stage === 'download' || stage === 'ready')" @click="cancel">
 				Cancel
 			</button>
 		</div>
-		<div v-if="updateManager.isHostUpdate && mimiriPlatform.isLinux" class="max-w-110">
+		<div v-if="updateManager.isHostUpdate && mimiriPlatform.isLinuxApp" class="max-w-110">
 			<div class="py-3">An update of the Electron Client is available here:</div>
 			<div class="py-2">
 				Direct download: <a :href="updateManager.downloadUrl" target="_blank">{{ updateManager.downloadName }}</a>
@@ -232,10 +232,10 @@ const totalBytes = ref('')
 const bytesPerSec = ref('')
 const showNoUpdatesFound = ref(false)
 
-const isLinux = computed(() => mimiriPlatform.isLinux)
-const isMacOrWindows = computed(() => mimiriPlatform.isWindows || mimiriPlatform.isMac)
-const isIos = computed(() => mimiriPlatform.isIos)
-const isAndroid = computed(() => mimiriPlatform.isAndroid)
+const isLinux = computed(() => mimiriPlatform.isLinuxApp)
+const isMacOrWindows = computed(() => mimiriPlatform.isWindowsApp || mimiriPlatform.isMacApp)
+const isIos = computed(() => mimiriPlatform.isIosApp)
+const isAndroid = computed(() => mimiriPlatform.isAndroidApp)
 
 let cancelled = false
 let version = ''

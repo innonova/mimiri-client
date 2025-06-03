@@ -173,7 +173,7 @@ const progressActivity = () => {
 }
 
 if (!mimiriPlatform.isElectron) {
-	if (mimiriPlatform.isIos) {
+	if (!mimiriPlatform.isWeb && mimiriPlatform.isIosApp) {
 		document.documentElement.setAttribute('data-env-support', 'true')
 	} else if (!mimiriPlatform.isWeb) {
 		const saSupport = getComputedStyle(document.documentElement).getPropertyValue('--sa-support')
@@ -183,7 +183,7 @@ if (!mimiriPlatform.isElectron) {
 	}
 }
 
-if (mimiriPlatform.isElectron && mimiriPlatform.isLinux) {
+if (mimiriPlatform.isElectron && mimiriPlatform.isLinuxApp) {
 	document.body.classList.add('rounded-lg')
 }
 
@@ -206,7 +206,7 @@ if (ipcClient.isAvailable) {
 }
 
 const handleShortcut = event => {
-	const ctrlActive = (event.ctrlKey && !mimiriPlatform.isMac) || (event.metaKey && mimiriPlatform.isMac)
+	const ctrlActive = (event.ctrlKey && !mimiriPlatform.isMacApp) || (event.metaKey && mimiriPlatform.isMacApp)
 
 	if (event.key === 'r' && ctrlActive) {
 		event.preventDefault()

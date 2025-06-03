@@ -1,0 +1,116 @@
+[
+	{
+		"name": "Cascadia Mono",
+		"url": "https://fonts.mimiri.io/CascadiaMono.woff2",
+		"license": "OFL-1.1",
+		"link": "https://github.com/microsoft/cascadia-code"
+	},
+	{
+		"name": "Agave",
+		"url": "https://fonts.mimiri.io/Agave-Regular.ttf",
+		"license": "MIT",
+		"link": "https://github.com/blobject/agave"
+	},
+	{
+		"name": "DejaVu Sans Mono",
+		"url": "https://fonts.mimiri.io/DejaVuSansMono.ttf",
+		"license": "Bitstream",
+		"link": "https://dejavu-fonts.github.io/"
+	},
+	{
+		"name": "Droid Sans Mono",
+		"url": "https://fonts.mimiri.io/DroidSansMono.ttf",
+		"license": "Apache-2.0",
+		"link": "https://www.fontsquirrel.com/fonts/droid-sans-mono"
+	},
+	{
+		"name": "Fira Code",
+		"url": "https://fonts.mimiri.io/FiraCode-VF.woff2",
+		"license": "OFL-1.1",
+		"link": "https://github.com/tonsky/FiraCode"
+	},
+	{
+		"name": "Hack",
+		"url": "https://fonts.mimiri.io/Hack-Regular.ttf",
+		"license": "MIT",
+		"link": "https://github.com/source-foundry/Hack"
+	},
+	{
+		"name": "Hasklig",
+		"url": "https://fonts.mimiri.io/Hasklig-Regular.ttf",
+		"license": "OFL-1.1",
+		"link": "https://github.com/i-tu/Hasklig"
+	},
+	{
+		"name": "Inconsolata",
+		"url": "https://fonts.mimiri.io/Inconsolata.otf",
+		"license": "OFL-1.1",
+		"link": "https://www.fontsquirrel.com/fonts/inconsolata"
+	},
+	{
+		"name": "Iosevka",
+		"url": "https://fonts.mimiri.io/Iosevka-Regular.woff2",
+		"license": "OFL-1.1",
+		"link": "https://typeof.net/Iosevka/"
+	},
+	{
+		"name": "JetBrains Mono",
+		"url": "https://fonts.mimiri.io/JetBrainsMono-Regular.woff2",
+		"license": "OFL-1.1",
+		"link": "https://www.jetbrains.com/lp/mono/"
+	},
+	{
+		"name": "Liberation Mono",
+		"url": "https://fonts.mimiri.io/LiberationMono-Regular.ttf",
+		"license": "OFL-1.1",
+		"link": "https://www.fontsquirrel.com/fonts/liberation-mono"
+	},
+	{
+		"name": "Monaspace Argon",
+		"url": "https://fonts.mimiri.io/MonaspaceArgonVarVF.ttf",
+		"license": "OFL-1.1",
+		"link": "https://github.com/githubnext/monaspace"
+	},
+	{
+		"name": "Monaspace Krypton",
+		"url": "https://fonts.mimiri.io/MonaspaceKryptonVarVF.ttf",
+		"license": "OFL-1.1",
+		"link": "https://github.com/githubnext/monaspace"
+	},
+	{
+		"name": "Monaspace Neon",
+		"url": "https://fonts.mimiri.io/MonaspaceNeonVarVF.ttf",
+		"license": "OFL-1.1",
+		"link": "https://github.com/githubnext/monaspace"
+	},
+	{
+		"name": "Monaspace Radon",
+		"url": "https://fonts.mimiri.io/MonaspaceRadonVarVF.ttf",
+		"license": "OFL-1.1",
+		"link": "https://github.com/githubnext/monaspace"
+	},
+	{
+		"name": "Monaspace Xenon",
+		"url": "https://fonts.mimiri.io/MonaspaceXenonVarVF.ttf",
+		"license": "OFL-1.1",
+		"link": "https://github.com/githubnext/monaspace"
+	},
+	{
+		"name": "Roboto Mono",
+		"url": "https://fonts.mimiri.io/RobotoMono-VariableFont.ttf",
+		"license": "OFL-1.1",
+		"link": "https://fonts.google.com/specimen/Roboto+Mono"
+	},
+	{
+		"name": "Sono",
+		"url": "https://fonts.mimiri.io/Sono-VariableFont_MONO.ttf",
+		"license": "OFL-1.1",
+		"link": "https://fonts.google.com/specimen/Sono"
+	},
+	{
+		"name": "Ubuntu Mono",
+		"url": "https://fonts.mimiri.io/UbuntuMono-R.ttf",
+		"license": "UFL-1.0",
+		"link": "https://design.ubuntu.com/font"
+	}
+]

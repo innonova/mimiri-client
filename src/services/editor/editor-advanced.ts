@@ -120,7 +120,7 @@ export class EditorAdvanced implements TextEditor {
 			},
 			renderLineHighlight: 'none',
 			theme: settingsManager.darkMode ? 'mimiri-dark' : 'mimiri-light',
-			fontFamily: `'${settingsManager.editorFontFamily}', 'Consolas', 'Courier New', 'monospace'`,
+			fontFamily: `'${settingsManager.editorFontFamily}', 'Consolas', 'Menlo', 'Droid Sans Mono', 'monospace', 'Courier New'`,
 			fontSize: settingsManager.editorFontSize,
 		}
 		this.backgroundEditor = editor.create(this.backgroundElement, config)
@@ -508,13 +508,13 @@ export class EditorAdvanced implements TextEditor {
 		if (settingsManager.darkMode) {
 			this.monacoEditor.updateOptions({
 				theme: 'mimiri-dark',
-				fontFamily: `'${settingsManager.editorFontFamily}', 'Consolas', 'Courier New', 'monospace'`,
+				fontFamily: `'${settingsManager.editorFontFamily}', 'Consolas', 'Menlo', 'Droid Sans Mono', 'monospace', 'Courier New'`,
 				fontSize: settingsManager.editorFontSize,
 			})
 		} else {
 			this.monacoEditor.updateOptions({
 				theme: 'mimiri-light',
-				fontFamily: `'${settingsManager.editorFontFamily}', 'Consolas', 'Courier New', 'monospace'`,
+				fontFamily: `'${settingsManager.editorFontFamily}', 'Consolas', 'Menlo', 'Droid Sans Mono', 'monospace', 'Courier New'`,
 				fontSize: settingsManager.editorFontSize,
 			})
 		}

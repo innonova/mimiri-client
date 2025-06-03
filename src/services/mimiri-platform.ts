@@ -62,6 +62,17 @@ class MimiriPlatform {
 			this._isFlatHub = (window as any).mimiri.isFlatHub
 			this._isSnapStore = (window as any).mimiri.isSnapStore
 		} else {
+			if (navigator.userAgent.includes('iPhone OS')) {
+				this._isIos = true
+			} else if (navigator.userAgent.includes('Android')) {
+				this._isAndroid = true
+			} else if (navigator.userAgent.includes('Linux')) {
+				this._isLinux = true
+			} else if (navigator.userAgent.includes('Mac OS')) {
+				this._isMac = true
+			} else if (navigator.userAgent.includes('Windows')) {
+				this._isWindows = true
+			}
 			this._isWeb = true
 		}
 		// TODO consider a global async init
@@ -107,7 +118,7 @@ class MimiriPlatform {
 	}
 
 	public get isPhone() {
-		if (this.isIos || this.isAndroid) {
+		if (this.isIosApp || this.isAndroidApp) {
 			return this._displayMode === 'phone'
 		}
 		if (this._isWeb && this.isMobileBrowser()) {
@@ -117,7 +128,7 @@ class MimiriPlatform {
 	}
 
 	public get isTablet() {
-		if (this.isIos || this.isAndroid) {
+		if (this.isIosApp || this.isAndroidApp) {
 			return this._displayMode === 'tablet'
 		}
 		if (this._isWeb && this.isMobileBrowser()) {
@@ -139,7 +150,7 @@ class MimiriPlatform {
 		if (this.isElectron) {
 			return false
 		}
-		if (this.isIos || this.isAndroid) {
+		if (this.isIosApp || this.isAndroidApp) {
 			return !window.matchMedia?.('(min-width: 768px)')?.matches
 		}
 		if (this._isWeb && this.isMobileBrowser()) {
@@ -156,8 +167,24 @@ class MimiriPlatform {
 		return this._isIos
 	}
 
+	public get isIosApp() {
+		return this._isIos && !this.isWeb
+	}
+
+	public get isIosWeb() {
+		return this._isIos && this.isWeb
+	}
+
 	public get isAndroid() {
 		return this._isAndroid
+	}
+
+	public get isAndroidApp() {
+		return this._isAndroid && !this.isWeb
+	}
+
+	public get isAndroidWeb() {
+		return this._isAndroid && this.isWeb
 	}
 
 	public get isWeb() {
@@ -172,12 +199,36 @@ class MimiriPlatform {
 		return this._isMac
 	}
 
+	public get isMacApp() {
+		return this._isMac && !this.isWeb
+	}
+
+	public get isMacWeb() {
+		return this._isMac && this.isWeb
+	}
+
 	public get isWindows() {
 		return this._isWindows
 	}
 
+	public get isWindowsApp() {
+		return this._isWindows && !this.isWeb
+	}
+
+	public get isWindowsWeb() {
+		return this._isWindows && this.isWeb
+	}
+
 	public get isLinux() {
 		return this._isLinux
+	}
+
+	public get isLinuxApp() {
+		return this._isLinux && !this.isWeb
+	}
+
+	public get isLinuxWeb() {
+		return this._isLinux && this.isWeb
 	}
 
 	public get isFlatpak() {
@@ -205,7 +256,7 @@ class MimiriPlatform {
 	}
 
 	public get isHostUpdateManaged() {
-		return this.isIos || this.isAndroid || this.isSnapStore || this.isFlatHub || this._isMacAppStore
+		return this.isIosApp || this.isAndroidApp || this.isSnapStore || this.isFlatHub || this._isMacAppStore
 	}
 
 	public get isLocked() {
@@ -218,10 +269,10 @@ class MimiriPlatform {
 
 	public get platform() {
 		if (this.isElectron) {
-			if (this.isWindows) {
+			if (this.isWindowsApp) {
 				return `Electron-Windows`
 			}
-			if (this.isMac) {
+			if (this.isMacApp) {
 				return `Electron-Mac`
 			}
 			if (this.isFlatpak) {
@@ -230,7 +281,7 @@ class MimiriPlatform {
 			if (this.isSnap) {
 				return `Electron-Snap`
 			}
-			if (this.isLinux) {
+			if (this.isLinuxApp) {
 				return `Electron-Linux`
 			}
 			return `Electron`
@@ -238,7 +289,7 @@ class MimiriPlatform {
 		if (this.isWeb) {
 			return `Web`
 		}
-		if (this.isIos) {
+		if (this.isIosApp) {
 			if (this.isPhone) {
 				return `iOS-Phone`
 			}
@@ -247,7 +298,7 @@ class MimiriPlatform {
 			}
 			return `iOS`
 		}
-		if (this.isAndroid) {
+		if (this.isAndroidApp) {
 			if (this.isPhone) {
 				return `Android-Phone`
 			}

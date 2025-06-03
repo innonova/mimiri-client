@@ -218,7 +218,7 @@ export class MimerClient {
 		if (
 			env.DEV ||
 			mimiriPlatform.isElectron ||
-			((mimiriPlatform.isIos || mimiriPlatform.isAndroid) && mimiriPlatform.supportsBiometry)
+			((mimiriPlatform.isIosApp || mimiriPlatform.isAndroidApp) && mimiriPlatform.supportsBiometry)
 		) {
 			const loginData = {
 				username: this._username,
@@ -251,7 +251,7 @@ export class MimerClient {
 			const str = toBase64(zipped)
 			if (ipcClient.isAvailable && ipcClient.session.isAvailable) {
 				await ipcClient.session.set('mimiri-login-data', str)
-			} else if (mimiriPlatform.isIos || mimiriPlatform.isAndroid) {
+			} else if (mimiriPlatform.isIosApp || mimiriPlatform.isAndroidApp) {
 				localStorage.setItem('mimiri-login-data', str)
 			} else {
 				sessionStorage.setItem('mimiri-login-data', str)
@@ -263,13 +263,13 @@ export class MimerClient {
 		if (
 			env.DEV ||
 			mimiriPlatform.isElectron ||
-			((mimiriPlatform.isIos || mimiriPlatform.isAndroid) && mimiriPlatform.supportsBiometry)
+			((mimiriPlatform.isIosApp || mimiriPlatform.isAndroidApp) && mimiriPlatform.supportsBiometry)
 		) {
 			try {
 				let str
 				if (ipcClient.isAvailable && ipcClient.session.isAvailable) {
 					str = await ipcClient.session.get('mimiri-login-data')
-				} else if (mimiriPlatform.isIos || mimiriPlatform.isAndroid) {
+				} else if (mimiriPlatform.isIosApp || mimiriPlatform.isAndroidApp) {
 					const localStr = localStorage.getItem('mimiri-login-data')
 					if (!localStr || !(await mimiriPlatform.verifyBiometry())) {
 						return
@@ -312,7 +312,7 @@ export class MimerClient {
 	public async setLoginData(data: string) {
 		if (ipcClient.isAvailable && ipcClient.session.isAvailable) {
 			await ipcClient.session.set('mimiri-login-data', data)
-		} else if (mimiriPlatform.isIos || mimiriPlatform.isAndroid) {
+		} else if (mimiriPlatform.isIosApp || mimiriPlatform.isAndroidApp) {
 			localStorage.setItem('mimiri-login-data', data)
 		} else {
 			sessionStorage.setItem('mimiri-login-data', data)
@@ -323,7 +323,7 @@ export class MimerClient {
 		let str
 		if (ipcClient.isAvailable && ipcClient.session.isAvailable) {
 			str = await ipcClient.session.get('mimiri-login-data')
-		} else if (mimiriPlatform.isIos || mimiriPlatform.isAndroid) {
+		} else if (mimiriPlatform.isIosApp || mimiriPlatform.isAndroidApp) {
 			str = localStorage.getItem('mimiri-login-data')
 		} else {
 			str = sessionStorage.getItem('mimiri-login-data')

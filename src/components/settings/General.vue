@@ -33,7 +33,7 @@
 			Show in Taskbar
 		</label>
 	</div>
-	<div v-if="mimiriPlatform.isWindows" class="p-1 pt-2 m-auto text-left">
+	<div v-if="mimiriPlatform.isWindowsApp" class="p-1 pt-2 m-auto text-left">
 		<label>
 			<input type="checkbox" v-model="keepTrayIconVisible" class="mr-1 relative top-0.5" />
 			Keep Tray Icon Visible
@@ -45,7 +45,7 @@
 			Quit when closing application window
 		</label>
 	</div>
-	<div v-if="mimiriPlatform.isLinux" class="p-1 pt-2 m-auto text-left flex gap-2 items-center">
+	<div v-if="mimiriPlatform.isLinuxApp" class="p-1 pt-2 m-auto text-left flex gap-2 items-center">
 		<div>Tray icon color:</div>
 		<select v-model="trayIcon">
 			<option value="system">Auto</option>

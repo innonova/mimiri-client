@@ -1,5 +1,5 @@
 import { reactive } from 'vue'
-import { env, ipcClient } from '../global'
+import { env, fontManager, ipcClient } from '../global'
 import { menuManager } from './menu-manager'
 import { toRaw } from 'vue'
 import { mimiriPlatform } from './mimiri-platform'
@@ -96,6 +96,8 @@ class SettingsManager {
 	}
 
 	public async load() {
+		this.state.editorFontFamily = fontManager.defaultEditorFontFace
+		this.state.editorFontSize = fontManager.defaultEditorFontSize
 		if (ipcClient.isAvailable) {
 			const settings = await ipcClient.settings.load()
 			if (settings) {
@@ -116,6 +118,7 @@ class SettingsManager {
 			}
 			await this.save()
 		}
+		fontManager.load(this.editorFontFamily)
 	}
 
 	public async save() {

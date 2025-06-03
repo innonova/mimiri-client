@@ -135,13 +135,13 @@ export class UpdateManager {
 	}
 
 	private updateMinElectronVersion(info: BundleInfo) {
-		if (mimiriPlatform.isWindows && info.minElectronVersionWin32) {
+		if (mimiriPlatform.isWindowsApp && info.minElectronVersionWin32) {
 			info.minElectronVersion = info.minElectronVersionWin32
 		}
-		if (mimiriPlatform.isMac && info.minElectronVersionDarwin) {
+		if (mimiriPlatform.isMacApp && info.minElectronVersionDarwin) {
 			info.minElectronVersion = info.minElectronVersionDarwin
 		}
-		if (mimiriPlatform.isLinux && info.minElectronVersionLinux) {
+		if (mimiriPlatform.isLinuxApp && info.minElectronVersionLinux) {
 			info.minElectronVersion = info.minElectronVersionLinux
 		}
 	}
@@ -222,7 +222,7 @@ export class UpdateManager {
 							} else if (!mimiriPlatform.isHostUpdateManaged) {
 								this.state.latestVersion = bundleInfo.version
 								this.state.isHostUpdate = true
-								if (mimiriPlatform.isLinux) {
+								if (mimiriPlatform.isLinuxApp) {
 									const latest = await this.get<any>(`/latest.json`)
 									const links = latest.systems.find(s => s.name === 'Linux')?.[settingsManager.channel]
 									this.state.downloadUrl = undefined
@@ -261,7 +261,7 @@ export class UpdateManager {
 									}
 								}
 							}
-						} else if (mimiriPlatform.isIos) {
+						} else if (mimiriPlatform.isIosApp) {
 							const hostSupportsVersion =
 								compareVersions(bundleInfo.minIosVersion, this.state.activeVersion.hostVersion) <= 0
 							if (hostSupportsVersion) {
@@ -279,7 +279,7 @@ export class UpdateManager {
 									notificationManager.updateAvailable(bundleInfo.version, new Date(bundleInfo.releaseDate))
 								}
 							}
-						} else if (mimiriPlatform.isAndroid) {
+						} else if (mimiriPlatform.isAndroidApp) {
 							const hostSupportsVersion =
 								compareVersions(bundleInfo.minAndroidVersion, this.state.activeVersion.hostVersion) <= 0
 							if (hostSupportsVersion) {
@@ -341,7 +341,7 @@ export class UpdateManager {
 
 				if (!hostSupportsVersion) {
 					const latest = await this.get<any>(`/latest.json`)
-					if (mimiriPlatform.isWindows) {
+					if (mimiriPlatform.isWindowsApp) {
 						const links = latest.systems.find(s => s.name === 'Windows')?.[settingsManager.channel]
 						const jsonUrl = links.find(l => l.url.endsWith('.json')).url.split('/')
 						const nupkgUrl = links.find(l => l.url.endsWith('.nupkg')).url.split('/')
@@ -349,7 +349,7 @@ export class UpdateManager {
 						electronInfo = await this.get<ElectronInfo>(`/${jsonUrl[jsonUrl.length - 1]}`)
 						bundlePath = `/${nupkgUrl[nupkgUrl.length - 1]}`
 					}
-					if (mimiriPlatform.isMac) {
+					if (mimiriPlatform.isMacApp) {
 						const links = latest.systems.find(s => s.name === 'MacOS')?.[settingsManager.channel]
 						const jsonUrl = links.find(l => l.url.endsWith('.json')).url.split('/')
 						const zipUrl = links.find(l => l.url.endsWith('.zip')).url.split('/')

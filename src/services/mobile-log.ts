@@ -10,7 +10,7 @@ const biCif = value => {
 export class MobileLog {
 	private _enabled = false
 	constructor() {
-		this._enabled = !!((mimiriPlatform.isIos || mimiriPlatform.isAndroid) && localStorage)
+		this._enabled = !!((mimiriPlatform.isIosApp || mimiriPlatform.isAndroidApp) && localStorage)
 		// this._enabled = true
 		if (this._enabled) {
 			if (sessionStorage) {

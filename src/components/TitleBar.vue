@@ -6,21 +6,21 @@
 			'text-title-text': hasFocus,
 			'text-title-text-blur': !hasFocus,
 			drag: !menuManager.state.menuShowing,
-			'h-[36px] pr-[138px] pl-px': mimiriPlatform.isWindows,
-			'h-[36px] pr-[95px] pl-px': mimiriPlatform.isLinux,
-			'h-[36px] pr-[5px] pl-[65px]': mimiriPlatform.isMac,
+			'h-[36px] pr-[138px] pl-px': mimiriPlatform.isWindowsApp,
+			'h-[36px] pr-[95px] pl-px': mimiriPlatform.isLinuxApp,
+			'h-[36px] pr-[5px] pl-[65px]': mimiriPlatform.isMacApp,
 			'h-14': !mimiriPlatform.isDesktop,
 		}"
 		@click="titleBarClick"
 		data-testid="title-bar"
 	>
 		<img
-			v-if="mimiriPlatform.isDesktop && !mimiriPlatform.isMac"
+			v-if="mimiriPlatform.isDesktop && !mimiriPlatform.isMacApp"
 			class="ml-1.5 mr-1 mt-px p-1 min-w-7 w-7 h-7"
 			src="/img/logo.png"
 		/>
 		<div
-			v-if="mimiriPlatform.isDesktop && !mimiriPlatform.isMac"
+			v-if="mimiriPlatform.isDesktop && !mimiriPlatform.isMacApp"
 			class="hover:bg-title-hover cursor-default rounded-sm px-2 no-drag"
 			data-testid="title-menu-file"
 			@click="menuClick($event, 'file')"
@@ -29,7 +29,7 @@
 			File
 		</div>
 		<div
-			v-if="mimiriPlatform.isDesktop && !mimiriPlatform.isMac"
+			v-if="mimiriPlatform.isDesktop && !mimiriPlatform.isMacApp"
 			class="hover:bg-title-hover cursor-default rounded-sm px-2 no-drag"
 			data-testid="title-menu-edit"
 			@click="menuClick($event, 'edit')"
@@ -38,7 +38,7 @@
 			Edit
 		</div>
 		<div
-			v-if="mimiriPlatform.isDesktop && !mimiriPlatform.isMac"
+			v-if="mimiriPlatform.isDesktop && !mimiriPlatform.isMacApp"
 			class="hover:bg-title-hover cursor-default rounded-sm px-2 no-drag"
 			data-testid="title-menu-view"
 			@click="menuClick($event, 'view')"
@@ -47,7 +47,7 @@
 			View
 		</div>
 		<div
-			v-if="mimiriPlatform.isDesktop && !mimiriPlatform.isMac"
+			v-if="mimiriPlatform.isDesktop && !mimiriPlatform.isMacApp"
 			class="hover:bg-title-hover cursor-default rounded-sm px-2 no-drag"
 			data-testid="title-menu-tools"
 			@click="menuClick($event, 'tools')"
@@ -56,7 +56,7 @@
 			Tools
 		</div>
 		<div
-			v-if="mimiriPlatform.isDesktop && !mimiriPlatform.isMac"
+			v-if="mimiriPlatform.isDesktop && !mimiriPlatform.isMacApp"
 			class="hover:bg-title-hover cursor-default rounded-sm px-2 no-drag"
 			data-testid="title-menu-help"
 			@click="menuClick($event, 'help')"
@@ -87,7 +87,7 @@
 			/>
 		</div>
 		<div
-			v-if="mimiriPlatform.isWindows || mimiriPlatform.isMac"
+			v-if="mimiriPlatform.isWindowsApp || mimiriPlatform.isMacApp"
 			class="h-full min-w-[44px] w-[55px] flex items-center justify-center hover:bg-toolbar-hover active:bg-toolbar-hover"
 			@click="toggleScreenSharing()"
 			:title="

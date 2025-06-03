@@ -24,11 +24,30 @@
 				</div>
 
 				<div class="pt-6 pl-4">Copyright &copy;2024-{{ new Date().getFullYear() }} innonova GmbH</div>
-				<div class="inline-flex info flex-col mx-4 mt-4 bg-info">
-					<b>Attributions:</b>
-					<template v-for="att of iconAttributions">
-						<div class="mt-2 leading-5" v-html="att"></div>
-					</template>
+				<div class="flex flex-col items-start">
+					<div class="flex info flex-col mx-4 mt-4 bg-info">
+						<b>Attributions:</b>
+						<template v-for="att of iconAttributions">
+							<div class="mt-2 leading-5" v-html="att"></div>
+						</template>
+					</div>
+					<div class="flex info flex-col mx-4 mt-4 mb-10 bg-info">
+						<b>Font Licenses:</b>
+						<div class="mt-2 mb-1 leading-5">
+							All fonts are directly referenced either from the operating system or fonts.mimiri.io <br />
+							Licenses and project links for fonts referenced from fonts.mimiri.io listed below
+						</div>
+						<select v-model="selectedFont" class="mt-2">
+							<option value="CHOOSE">Choose font to view license</option>
+							<template v-for="item of fontManager.licenses" :key="item.name">
+								<option :value="item.name">{{ item.name }} ({{ item.license }})</option>
+							</template>
+						</select>
+						<div v-if="fontLink" class="mt-3 mb-2 p-1">
+							Project Link: <a :href="fontLink" target="_blank">{{ fontLink }}</a>
+						</div>
+						<div class="whitespace-pre-wrap max-w-120 mt-3 p-1">{{ fontLicense }}</div>
+					</div>
 				</div>
 			</div>
 			<div v-if="showLog" class="flex flex-col">
@@ -56,12 +75,13 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { noteManager, updateManager, mobileLog } from '../../global'
 import { settingsManager } from '../../services/settings-manager'
 import { iconAttributions } from '../../icons/attributions'
 import { mimiriPlatform } from '../../services/mimiri-platform'
 import TabBar from '../elements/TabBar.vue'
+import { fontManager } from '../../global'
 
 const SYSTEM_NOTE_COUNT = 3
 
@@ -78,6 +98,9 @@ const currentNoteSize = ref('0 MB')
 const currentNotePercent = ref('0 %')
 const showLog = ref(false)
 const browserName = ref(navigator.userAgent)
+const selectedFont = ref('CHOOSE')
+const fontLicense = ref('')
+const fontLink = ref('')
 
 const biCif = value => {
 	if (value < 10) {
@@ -160,4 +183,14 @@ const changeChannel = () => {
 		settingsManager.channel = 'stable'
 	}
 }
+
+watch(selectedFont, async () => {
+	if (selectedFont.value !== 'CHOOSE') {
+		fontLicense.value = await fontManager.fetchLicense(selectedFont.value)
+		fontLink.value = fontManager.getLink(selectedFont.value)
+	} else {
+		fontLicense.value = ''
+		fontLink.value = ''
+	}
+})
 </script>

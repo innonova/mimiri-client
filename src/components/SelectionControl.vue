@@ -43,7 +43,8 @@ if (!mimiriPlatform.isDesktop) {
 	visualViewport.addEventListener('resize', e => {
 		const isPortrait = window.innerHeight > window.innerWidth
 		const viewPortHeight = visualViewport.height * visualViewport.scale
-		const screenHeight = isPortrait || mimiriPlatform.isAndroid ? window.screen.availHeight : window.screen.availWidth
+		const screenHeight =
+			isPortrait || mimiriPlatform.isAndroidApp ? window.screen.availHeight : window.screen.availWidth
 		if (viewPortHeight < screenHeight * 0.85) {
 			toolbarVisibility.value = 'visible'
 			const rect = containerElement.value.getBoundingClientRect()

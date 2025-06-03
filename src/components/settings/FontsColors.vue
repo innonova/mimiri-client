@@ -4,35 +4,19 @@
 		<div class="col-span-2">Editor</div>
 		<hr class="col-span-2 mt-[-0.4rem]" />
 		<div>Font Family:</div>
-		<select v-if="fontManager.hasPermission" v-model="editorFontFamily">
+		<select v-model="editorFontFamily">
 			<template v-for="item of fontManager.families" :key="item">
 				<option :value="item">{{ item }}</option>
 			</template>
+			<option value="CUSTOM">Custom</option>
 		</select>
-		<button v-if="fontManager.canGetPermission" @click="loadFonts" class="primary">
-			Grant permission to load fonts
-		</button>
-		<input
-			v-if="!fontManager.hasPermission && !fontManager.canGetPermission"
-			v-model="editorFontFamily"
-			type="text"
-			class="basic-input"
-		/>
+		<div v-if="editorFontFamily === 'CUSTOM'">Custom:</div>
+		<input v-if="editorFontFamily === 'CUSTOM'" type="text" class="basic-input" v-model="customFontFamily" />
 		<div>Font Size:</div>
 		<select v-model="editorFontSize">
-			<option value="8">8</option>
-			<option value="9">9</option>
-			<option value="10">10</option>
-			<option value="11">11</option>
-			<option value="12">12</option>
-			<option value="13">13</option>
-			<option value="14">14</option>
-			<option value="15">15</option>
-			<option value="16">16</option>
-			<option value="17">17</option>
-			<option value="18">18</option>
-			<option value="19">19</option>
-			<option value="20">20</option>
+			<template v-for="item of fontManager.sizes" :key="item">
+				<option :value="item">{{ item }}</option>
+			</template>
 		</select>
 		<!-- <div class="col-span-2 mt-5">User Interface</div>
 		<hr class="col-span-2 mt-[-0.4rem]" /> -->
@@ -44,12 +28,31 @@
 			<button :disabled="!canSave" @click="save" class="primary">Save</button>
 		</div>
 	</div>
-	<div class="mt-10 mb-2 ml-1 text-size-title">Editor Sample</div>
+	<div class="mt-10 mb-2 ml-1 text-size-title">{{ currentFontFamily }} ({{ editorFontSize }})</div>
 	<div
 		class="w-120 whitespace-pre-wrap bg-input p-2"
-		:style="`font-family: ${editorFontFamily}; font-size: ${editorFontSize}px; line-height:1em`"
+		:style="`font-family: '${currentFontFamily}', 'Courier New'; font-size: ${editorFontSize}px; line-height:1em`"
 	>
 		{{ sampleText }}
+		<br />
+		<span>normal text</span><br />
+		<b>bold text</b><br />
+		<i>italic text</i><br />
+		<i><b>bold italic text</b></i>
+	</div>
+	<div class="mt-10 mb-2 ml-1 text-size-title">
+		{{ settingsManager.editorFontFamily }} ({{ settingsManager.editorFontSize }})
+	</div>
+	<div
+		class="w-120 whitespace-pre-wrap bg-input p-2"
+		:style="`font-family: '${settingsManager.editorFontFamily}', 'Blackadder ITC'; font-size: ${settingsManager.editorFontSize}px; line-height:1em`"
+	>
+		{{ sampleText }}
+		<br />
+		<span>normal text</span><br />
+		<b>bold text</b><br />
+		<i>italic text</i><br />
+		<i><b>bold italic text</b></i>
 	</div>
 </template>
 
@@ -62,6 +65,7 @@ import { fontManager } from '../../global'
 const emit = defineEmits(['close'])
 
 const editorFontFamily = ref('')
+const customFontFamily = ref('')
 const editorFontSize = ref(14)
 const canSave = computed(
 	() =>
@@ -69,20 +73,19 @@ const canSave = computed(
 		editorFontSize.value !== settingsManager.editorFontSize,
 )
 
-watch(editorFontFamily, () => {
-	console.log(editorFontFamily.value)
-})
+const currentFontFamily = computed(() =>
+	editorFontFamily.value !== 'CUSTOM' ? editorFontFamily.value : customFontFamily.value,
+)
 
-const loadFonts = async () => {
-	await fontManager.load()
-}
+watch([editorFontFamily], () => {
+	if (editorFontFamily.value !== 'CUSTOM') {
+		fontManager.load(editorFontFamily.value)
+	}
+})
 
 onMounted(async () => {
 	editorFontFamily.value = settingsManager.editorFontFamily
 	editorFontSize.value = settingsManager.editorFontSize
-	if (fontManager.hasPermission) {
-		await loadFonts()
-	}
 })
 
 const reset = async () => {
@@ -96,7 +99,10 @@ const save = async () => {
 	settingsManager.editorFontFamily = editorFontFamily.value
 	settingsManager.editorFontSize = editorFontSize.value
 	var root = document.querySelector(':root') as HTMLElement
-	root.style.setProperty('--font-editor', `'${editorFontFamily.value}', 'Consolas', 'Courier New', 'monospace'`)
+	root.style.setProperty(
+		'--font-editor',
+		`'${editorFontFamily.value}', 'Consolas', 'Menlo', 'Droid Sans Mono', 'monospace', 'Courier New'`,
+	)
 	root.style.setProperty('--text-size-editor', `${editorFontSize.value}px`)
 	// var root = document.querySelector(':root') as HTMLElement
 	// root.style.setProperty('--text-size-base', `16px`)
