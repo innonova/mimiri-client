@@ -10,7 +10,10 @@
 			</template>
 			<option value="CUSTOM">Custom</option>
 		</select>
-		<div v-if="editorFontFamily === 'CUSTOM'">Custom:</div>
+		<div v-if="editorFontFamily === 'CUSTOM'" class="col-span-2 mt-1 mb-[-0.1rem]">
+			Name of a font installed on your system:
+		</div>
+		<div v-if="editorFontFamily === 'CUSTOM'">Font Name:</div>
 		<input v-if="editorFontFamily === 'CUSTOM'" type="text" class="basic-input" v-model="customFontFamily" />
 		<div>Font Size:</div>
 		<select v-model="editorFontSize">
