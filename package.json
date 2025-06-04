@@ -1,6 +1,6 @@
 {
 	"name": "webclient-vue",
-	"version": "2.3.173",
+	"version": "2.3.174",
 	"minElectronVersionWin32": "2.3.0",
 	"minElectronVersionDarwin": "2.3.0",
 	"minElectronVersionLinux": "2.3.0",
@@ -87,5 +87,13 @@
 		"vite": "^6.1.0",
 		"vite-plugin-vue-devtools": "^7.7.2",
 		"vue-tsc": "^2.2.2"
+	},
+	"overrides": {
+		"sharp": {
+			"tar-fs": "^3.0.9"
+		},
+		"prebuild-install": {
+			"tar-fs": "^2.1.3"
+		}
 	}
 }
