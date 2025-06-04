@@ -215,13 +215,13 @@
 				<div class="mt-5 mb-1 font-semibold">New features and changes:</div>
 				<ul class="list-disc ml-5">
 					<template v-for="item of updateManager.features" :key="item.id">
-						<li class="py-1">Feature: {{ item.text }}</li>
+						<li class="py-1">{{ item.text }}</li>
 					</template>
 				</ul>
 				<div class="mt-4 mb-1 font-semibold">Fixes:</div>
 				<ul class="list-disc ml-5">
 					<template v-for="item of updateManager.fixes" :key="item.id">
-						<li class="py-1">Fix: {{ item.text }}</li>
+						<li class="py-1">{{ item.text }}</li>
 					</template>
 				</ul>
 			</div>
