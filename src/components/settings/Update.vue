@@ -128,6 +128,10 @@
 				<div class="mt-2">Current version: {{ updateManager.currentVersion }}</div>
 				<div>Latest version: {{ updateManager.latestVersion ?? updateManager.currentVersion }}</div>
 			</div>
+			<div v-else class="pb-1 mt-3 pt-4 ml-2 flex">
+				<div class="w-32">Current Version:</div>
+				<div class="w-16 text-right">{{ updateManager.currentVersion }}</div>
+			</div>
 			<div
 				v-if="!updateManager.isUpdateAvailable && settingsManager.updateMode !== UpdateMode.Off"
 				class="max-w-110 pt-5 pl-1"
