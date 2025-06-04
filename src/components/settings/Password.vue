@@ -1,121 +1,125 @@
 <template>
-	<TabBar @selected="tabSelected" :items="['Generate', 'Create']"></TabBar>
-	<div v-if="passwordMode === 'generate'" class="max-w-110 mr-2" data-testid="settings-view-password">
-		<PasswordGenerator ref="passwordGenerator" mode="mimiri" @password="onPasswordGenerated"></PasswordGenerator>
-		<div class="p-1 mt-8 m-aut0 flex">
-			<div class="w-24 flex items-center">Generated:</div>
-			<div class="w-52 text-right relative flex">
-				<input v-model="generatedPassword" tabindex="2" type="text" class="basic-input" />
-				<div class="w-0 h-0 pt-1 overflow-visible select-none">
-					<RefreshIcon class="w-5 h-5 ml-2" @click="regeneratePassword"></RefreshIcon>
+	<div class="flex flex-col h-full">
+		<TabBar @selected="tabSelected" :items="['Generate', 'Create']"></TabBar>
+		<div class="overflow-y-auto pb-10">
+			<div v-if="passwordMode === 'generate'" class="max-w-110 mr-2" data-testid="settings-view-password">
+				<PasswordGenerator ref="passwordGenerator" mode="mimiri" @password="onPasswordGenerated"></PasswordGenerator>
+				<div class="p-1 mt-8 m-aut0 flex">
+					<div class="w-24 flex items-center">Generated:</div>
+					<div class="w-52 text-right relative flex">
+						<input v-model="generatedPassword" tabindex="2" type="text" class="basic-input" />
+						<div class="w-0 h-0 pt-1 overflow-visible select-none">
+							<RefreshIcon class="w-5 h-5 ml-2" @click="regeneratePassword"></RefreshIcon>
+						</div>
+					</div>
+				</div>
+				<div class="p-1 m-auto flex">
+					<div class="w-24 flex items-center">Repeat:</div>
+					<div class="w-52 relative desktop:flex">
+						<input
+							v-model="generatedPasswordRepeat"
+							tabindex="3"
+							type="password"
+							class="basic-input"
+							@keydown="pwKeyDown"
+						/>
+						<div v-if="generatedPassword" class="desktop:w-0 desktop:h-0 pt-0.5 overflow-visible">
+							<div v-if="generatedPasswordMatch" class="flex items-center w-52 desktop:ml-2 mt-1.5 desktop:mt-0.5">
+								<AvailableIcon class="w-5 h-5 mr-1 inline-block"></AvailableIcon> Matching
+							</div>
+							<div v-if="!generatedPasswordMatch" class="flex items-center w-52 desktop:ml-2 mt-1.5 desktop:mt-0.5">
+								<UnavailableIcon class="w-5 h-5 mr-1 inline-block"></UnavailableIcon> Not matching
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="px-1 m-auto flex">
+					<div v-if="capsLockOn" class="w-24 flex items-center"></div>
+					<div v-if="capsLockOn" class="py-1">Caps Lock is on!</div>
 				</div>
 			</div>
-		</div>
-		<div class="p-1 m-auto flex">
-			<div class="w-24 flex items-center">Repeat:</div>
-			<div class="w-52 relative desktop:flex">
-				<input
-					v-model="generatedPasswordRepeat"
-					tabindex="3"
-					type="password"
-					class="basic-input"
-					@keydown="pwKeyDown"
-				/>
-				<div v-if="generatedPassword" class="desktop:w-0 desktop:h-0 pt-0.5 overflow-visible">
-					<div v-if="generatedPasswordMatch" class="flex items-center w-52 desktop:ml-2 mt-1.5 desktop:mt-0.5">
-						<AvailableIcon class="w-5 h-5 mr-1 inline-block"></AvailableIcon> Matching
+			<div v-if="passwordMode === 'create'">
+				<div class="p-1 m-aut0 flex">
+					<div class="w-24 flex items-center">New:</div>
+					<div class="w-52 relative desktop:flex">
+						<input
+							v-model="createdPassword"
+							tabindex="2"
+							:type="passwordFieldType"
+							class="basic-input"
+							data-testid="password-input"
+							@keydown="pwKeyDown"
+						/>
+						<div class="desktop:w-0 desktop:h-0 overflow-visible">
+							<div class="absolute right-2 invisible desktop:visible" @mousedown="showPassword" @mouseup="hidePassword">
+								<ShowPasswordIcon v-if="passwordFieldType === 'password'" class="w-5 h-5 mt-1"></ShowPasswordIcon>
+								<ShowingPasswordIcon v-if="passwordFieldType === 'text'" class="w-5 h-5 mt-1"></ShowingPasswordIcon>
+							</div>
+						</div>
+						<div v-if="passwordQuality" class="desktop:w-0 desktop:h-0 overflow-visible">
+							<div
+								v-if="passwordQuality === 'free-access'"
+								class="flex items-center w-52 h-7 desktop:ml-2 mt-1.5 desktop:mt-0 text-left"
+							>
+								<FreeAccessIcon class="w-5 h-5 mr-1 inline-block"></FreeAccessIcon> Not really a password
+							</div>
+							<div
+								v-if="passwordQuality === 'casual-use-only'"
+								class="flex items-center w-52 h-7 desktop:ml-2 mt-1.5 desktop:mt-0 text-left"
+							>
+								<CasualOnlyIcon class="w-5 h-5 mr-1 inline-block"></CasualOnlyIcon> Very limited security
+							</div>
+							<div
+								v-if="passwordQuality === 'acceptable-security'"
+								class="flex items-center w-52 h-7 desktop:ml-2 mt-1.5 desktop:mt-0 text-left"
+							>
+								<LightSecurityIcon class="w-5 h-5 mr-1 inline-block"></LightSecurityIcon> Acceptable
+							</div>
+						</div>
 					</div>
-					<div v-if="!generatedPasswordMatch" class="flex items-center w-52 desktop:ml-2 mt-1.5 desktop:mt-0.5">
-						<UnavailableIcon class="w-5 h-5 mr-1 inline-block"></UnavailableIcon> Not matching
+				</div>
+				<div class="p-1 m-auto flex">
+					<div class="w-24 flex items-center">Repeat:</div>
+					<div class="w-52 relative desktop:flex">
+						<input
+							v-model="createdPasswordRepeat"
+							tabindex="3"
+							type="password"
+							class="basic-input"
+							data-testid="repeat-input"
+							@keydown="pwKeyDown"
+						/>
+						<div v-if="createdPassword" class="desktop:w-0 desktop:h-0 pt-1 overflow-visible">
+							<div v-if="createdPasswordMatch" class="flex items-center w-52 desktop:ml-2 mt-1.5 desktop:mt-0.5">
+								<AvailableIcon class="w-5 h-5 mr-1 inline-block"></AvailableIcon> Matching
+							</div>
+							<div v-if="!createdPasswordMatch" class="flex items-center w-52 desktop:ml-2 mt-1.5 desktop:mt-0.5">
+								<UnavailableIcon class="w-5 h-5 mr-1 inline-block"></UnavailableIcon> Not matching
+							</div>
+						</div>
 					</div>
+				</div>
+				<div class="px-1 m-auto flex">
+					<div v-if="capsLockOn" class="w-24 flex items-center"></div>
+					<div v-if="capsLockOn" class="py-1">Caps Lock is on!</div>
+				</div>
+				<div class="p-1 m-auto flex">
+					<div class="w-24 flex items-center">Iterations:</div>
+					<select v-model="iterations">
+						<option value="1000000">1M ({{ time1M }}) (default)</option>
+						<option value="2000000">2M ({{ time2M }})</option>
+						<option value="10000000">10M ({{ time10M }})</option>
+						<option value="20000000">20M ({{ time20M }})</option>
+					</select>
 				</div>
 			</div>
-		</div>
-		<div class="px-1 m-auto flex">
-			<div v-if="capsLockOn" class="w-24 flex items-center"></div>
-			<div v-if="capsLockOn" class="py-1">Caps Lock is on!</div>
-		</div>
-	</div>
-	<div v-if="passwordMode === 'create'">
-		<div class="p-1 m-aut0 flex">
-			<div class="w-24 flex items-center">New:</div>
-			<div class="w-52 relative desktop:flex">
-				<input
-					v-model="createdPassword"
-					tabindex="2"
-					:type="passwordFieldType"
-					class="basic-input"
-					data-testid="password-input"
-					@keydown="pwKeyDown"
-				/>
-				<div class="desktop:w-0 desktop:h-0 overflow-visible">
-					<div class="absolute right-2 invisible desktop:visible" @mousedown="showPassword" @mouseup="hidePassword">
-						<ShowPasswordIcon v-if="passwordFieldType === 'password'" class="w-5 h-5 mt-1"></ShowPasswordIcon>
-						<ShowingPasswordIcon v-if="passwordFieldType === 'text'" class="w-5 h-5 mt-1"></ShowingPasswordIcon>
-					</div>
-				</div>
-				<div v-if="passwordQuality" class="desktop:w-0 desktop:h-0 overflow-visible">
-					<div
-						v-if="passwordQuality === 'free-access'"
-						class="flex items-center w-52 h-7 desktop:ml-2 mt-1.5 desktop:mt-0 text-left"
-					>
-						<FreeAccessIcon class="w-5 h-5 mr-1 inline-block"></FreeAccessIcon> Not really a password
-					</div>
-					<div
-						v-if="passwordQuality === 'casual-use-only'"
-						class="flex items-center w-52 h-7 desktop:ml-2 mt-1.5 desktop:mt-0 text-left"
-					>
-						<CasualOnlyIcon class="w-5 h-5 mr-1 inline-block"></CasualOnlyIcon> Very limited security
-					</div>
-					<div
-						v-if="passwordQuality === 'acceptable-security'"
-						class="flex items-center w-52 h-7 desktop:ml-2 mt-1.5 desktop:mt-0 text-left"
-					>
-						<LightSecurityIcon class="w-5 h-5 mr-1 inline-block"></LightSecurityIcon> Acceptable
-					</div>
+			<div class="mt-10 max-w-110 mr-2">
+				<hr />
+				<div class="w-full flex justify-end mt-2 gap-2">
+					<button class="primary" :disabled="!canSave" @click="save">Save</button>
+					<button class="secondary" @click="close">Close</button>
 				</div>
 			</div>
-		</div>
-		<div class="p-1 m-auto flex">
-			<div class="w-24 flex items-center">Repeat:</div>
-			<div class="w-52 relative desktop:flex">
-				<input
-					v-model="createdPasswordRepeat"
-					tabindex="3"
-					type="password"
-					class="basic-input"
-					data-testid="repeat-input"
-					@keydown="pwKeyDown"
-				/>
-				<div v-if="createdPassword" class="desktop:w-0 desktop:h-0 pt-1 overflow-visible">
-					<div v-if="createdPasswordMatch" class="flex items-center w-52 desktop:ml-2 mt-1.5 desktop:mt-0.5">
-						<AvailableIcon class="w-5 h-5 mr-1 inline-block"></AvailableIcon> Matching
-					</div>
-					<div v-if="!createdPasswordMatch" class="flex items-center w-52 desktop:ml-2 mt-1.5 desktop:mt-0.5">
-						<UnavailableIcon class="w-5 h-5 mr-1 inline-block"></UnavailableIcon> Not matching
-					</div>
-				</div>
-			</div>
-		</div>
-		<div class="px-1 m-auto flex">
-			<div v-if="capsLockOn" class="w-24 flex items-center"></div>
-			<div v-if="capsLockOn" class="py-1">Caps Lock is on!</div>
-		</div>
-		<div class="p-1 m-auto flex">
-			<div class="w-24 flex items-center">Iterations:</div>
-			<select v-model="iterations">
-				<option value="1000000">1M ({{ time1M }}) (default)</option>
-				<option value="2000000">2M ({{ time2M }})</option>
-				<option value="10000000">10M ({{ time10M }})</option>
-				<option value="20000000">20M ({{ time20M }})</option>
-			</select>
-		</div>
-	</div>
-	<div class="mt-10 max-w-110 mr-2">
-		<hr />
-		<div class="w-full flex justify-end mt-2 gap-2">
-			<button class="primary" :disabled="!canSave" @click="save">Save</button>
-			<button class="secondary" @click="close">Close</button>
 		</div>
 	</div>
 </template>

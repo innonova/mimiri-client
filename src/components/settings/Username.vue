@@ -1,13 +1,17 @@
 <template>
-	<TabBar :items="['Username']"></TabBar>
-	<div class="grid grid-cols-[5rem_14rem] gap-3 items-baseline m-1 mt-5">
-		<div class="flex items-center">Username:</div>
-		<UsernameInput ref="usernameInput" :display-current="true" @changed="usernameChanged"></UsernameInput>
-	</div>
-	<div class="mt-10 max-w-110 mr-2">
-		<hr />
-		<div class="w-full flex justify-end mt-2 gap-2">
-			<button :disabled="!canSave" @click="save" class="primary">Save</button>
+	<div class="flex flex-col h-full">
+		<TabBar :items="['Username']"></TabBar>
+		<div class="overflow-y-auto pb-10">
+			<div class="grid grid-cols-[5rem_14rem] gap-3 items-baseline m-1 mt-5">
+				<div class="flex items-center">Username:</div>
+				<UsernameInput ref="usernameInput" :display-current="true" @changed="usernameChanged"></UsernameInput>
+			</div>
+			<div class="mt-10 max-w-110 mr-2">
+				<hr />
+				<div class="w-full flex justify-end mt-2 gap-2">
+					<button :disabled="!canSave" @click="save" class="primary">Save</button>
+				</div>
+			</div>
 		</div>
 	</div>
 </template>
