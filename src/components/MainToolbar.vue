@@ -12,7 +12,9 @@
 		<ToolbarIcon icon="plus-small" :hoverEffect="true" title="New Root Note" @click="showCreateMenu"></ToolbarIcon>
 		<ToolbarIcon
 			:icon="settingsManager.lastNoteCreateType === 'child' ? 'add-note' : 'add-sibling-note'"
-			:disabled="!noteManager.selectedNote || noteManager.selectedNote.isSystem"
+			:disabled="
+				!noteManager.selectedNote || noteManager.selectedNote.isSystem || noteManager.selectedNote.isInRecycleBin
+			"
 			:hoverEffect="true"
 			:title="settingsManager.lastNoteCreateType === 'child' ? 'New Child Note' : 'New Sibling Note'"
 			@click="createChildNote"
@@ -129,23 +131,32 @@ const showCreateMenu = () => {
 }
 
 const showMobileMenu = () => {
+	const isSystem = !!noteManager.selectedNote?.isSystem
+	const isRecycleBin = !!noteManager.selectedNote?.isRecycleBin
+	const isInRecycleBin = !!noteManager.selectedNote?.isInRecycleBin
 	const whenSelectedNote = [
 		MenuItems.About,
 		MenuItems.DarkMode,
+		...(isRecycleBin ? [MenuItems.Separator, MenuItems.EmptyRecycleBin] : []),
+		...(!isSystem && !isInRecycleBin
+			? [
+					MenuItems.Separator,
+					MenuItems.NewNote,
+					MenuItems.NewRootNote,
+					MenuItems.Separator,
+					MenuItems.Duplicate,
+					MenuItems.Cut,
+					MenuItems.Copy,
+					MenuItems.Paste,
+				]
+			: []),
+
+		...(!isSystem && isInRecycleBin ? [MenuItems.Separator, MenuItems.Cut, MenuItems.Copy] : []),
 		MenuItems.Separator,
-		MenuItems.NewNote,
-		MenuItems.NewRootNote,
-		MenuItems.Separator,
-		MenuItems.Duplicate,
-		MenuItems.Cut,
-		MenuItems.Copy,
-		MenuItems.Paste,
-		MenuItems.Separator,
-		MenuItems.Share,
+		...(!isSystem && !isInRecycleBin ? [MenuItems.Share] : []),
 		MenuItems.Refresh,
-		MenuItems.Separator,
-		MenuItems.Rename,
-		MenuItems.Delete,
+		...(!isSystem && !isInRecycleBin ? [MenuItems.Separator, MenuItems.Rename, MenuItems.Recycle] : []),
+		...(!isSystem && isInRecycleBin ? [MenuItems.Separator, MenuItems.Delete] : []),
 	]
 	const whenNoSelectedNote = [MenuItems.About, MenuItems.DarkMode]
 
