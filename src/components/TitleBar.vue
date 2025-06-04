@@ -16,7 +16,7 @@
 	>
 		<img
 			v-if="mimiriPlatform.isDesktop && !mimiriPlatform.isMacApp"
-			class="ml-1.5 mr-1 mt-px p-1 min-w-7 w-7 h-7"
+			class="ml-[0.3rem] mr-1 mt-px p-1 min-w-[1.6rem] w-[1.6rem] h-[1.6rem]"
 			src="/img/logo.png"
 		/>
 		<div
