@@ -37,7 +37,12 @@
 				<div v-show="noteManager.selectedNote?.type === 'note-text'" class="h-full flex flex-col flex-1">
 					<NoteEditor ref="noteEditor"></NoteEditor>
 				</div>
-				<div v-if="noteManager.selectedNote?.type.startsWith('settings-')" class="h-full flex flex-col flex-1">
+				<div
+					v-if="
+						noteManager.selectedNote?.type.startsWith('settings-') || noteManager.selectedNote?.type === 'recycle-bin'
+					"
+					class="h-full flex flex-col flex-1"
+				>
 					<SystemPage></SystemPage>
 				</div>
 			</div>

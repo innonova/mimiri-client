@@ -18,6 +18,7 @@
 				<InvoiceFlow v-if="type === 'settings-invoices'"></InvoiceFlow>
 				<About v-if="type === 'settings-about'"></About>
 				<Update v-if="type === 'settings-update'"></Update>
+				<RecycleBin v-if="type === 'recycle-bin'"></RecycleBin>
 			</div>
 		</div>
 	</div>
@@ -40,6 +41,7 @@ import SubscriptionFlow from './subscription/SubscriptionFlow.vue'
 import InvoiceFlow from './subscription/InvoiceFlow.vue'
 import PaymentMethodsFlow from './subscription/PaymentMethodsFlow.vue'
 import ToolbarIcon from './ToolbarIcon.vue'
+import RecycleBin from './settings/RecycleBin.vue'
 
 const type = computed(() => {
 	return noteManager.selectedNote?.type ?? ''
