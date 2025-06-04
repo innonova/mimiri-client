@@ -313,7 +313,6 @@ class MenuManager {
 						id: 'new-child-note',
 						title: 'New Child Note',
 						icon: 'add-note',
-						shortcut: ipcClient.isAvailable ? 'Ctrl+N' : undefined,
 						enabled: noteManager.isLoggedIn && !!noteManager.selectedNote && !noteManager.selectedNote.isSystem,
 					})
 					break
@@ -322,7 +321,6 @@ class MenuManager {
 						id: 'new-sibling-note',
 						title: 'New Sibling Note',
 						icon: 'add-sibling-note',
-						shortcut: ipcClient.isAvailable ? 'Ctrl+N' : undefined,
 						enabled: noteManager.isLoggedIn && !!noteManager.selectedNote && !noteManager.selectedNote.isSystem,
 					})
 					break
