@@ -42,6 +42,7 @@ export interface MimerConfiguration {
 	simpleEditor: boolean
 	editorFontFamily: string
 	editorFontSize: number
+	lastNoteCreateType: string
 }
 
 class SettingsManager {
@@ -77,6 +78,7 @@ class SettingsManager {
 		simpleEditor: !mimiriPlatform.isDesktop,
 		editorFontFamily: 'Consolas',
 		editorFontSize: 14,
+		lastNoteCreateType: 'child',
 	})
 
 	constructor() {
@@ -366,6 +368,15 @@ class SettingsManager {
 
 	public set editorFontSize(value: number) {
 		this.state.editorFontSize = value
+		void this.save()
+	}
+
+	public get lastNoteCreateType() {
+		return this.state.lastNoteCreateType
+	}
+
+	public set lastNoteCreateType(value: string) {
+		this.state.lastNoteCreateType = value
 		void this.save()
 	}
 }

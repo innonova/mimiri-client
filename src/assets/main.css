@@ -22,7 +22,7 @@
 	--text-size-info: 14px;
 	--text-size-info--line-height: 1.15em;
 	--text-size-editor: 14px;
-	--text-size-editor--line-height: 1em;
+	--text-size-editor--line-height: 1.35em;
 
 	--color-back: #e3e3e3;
 	--color-info: #d2d2d8;
@@ -254,20 +254,12 @@ dialog::backdrop {
 }
 
 .simple-editor {
-	@apply bg-input p-1.5 leading-5 font-editor outline-0 overflow-y-auto h-full w-full overflow-x-auto;
+	@apply bg-input p-1.5 font-editor text-size-editor outline-0 overflow-y-auto h-full w-full overflow-x-auto;
 }
 
 .simple-editor::selection {
 	@apply bg-input-selection text-input-selected-text;
 }
-
-/* .simple-editor-no-wrap {
-	@apply whitespace-pre overflow-x-auto;
-}
-
-.simple-editor-wrap {
-	@apply whitespace-pre-wrap overflow-x-hidden;
-} */
 
 .password-secret-content {
 	-webkit-text-security: disc;

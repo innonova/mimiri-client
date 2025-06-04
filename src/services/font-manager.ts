@@ -1,4 +1,3 @@
-import { reactive } from 'vue'
 import fonts from '../assets/fonts.json'
 import { mimiriPlatform } from './mimiri-platform'
 
@@ -27,10 +26,6 @@ export class FontManager {
 			this._fonts.push({ name: 'Consolas', url: '', loaded: true, license: '', link: '' })
 		}
 		this._fonts.sort((a, b) => a.name.localeCompare(b.name))
-		void this.init()
-	}
-
-	public async init() {
 		for (const font of fonts) {
 			this._fonts.push({ ...font, loaded: false })
 		}
@@ -41,7 +36,7 @@ export class FontManager {
 		const font = this._fonts.find(f => f.name === name)
 		if (font && !font.loaded) {
 			const elm = document.createElement('style')
-			elm.textContent = `@font-face {	font-family: '${font.name}'; src: url('${font.url}');	} `
+			elm.textContent = `@font-face {	font-family: '${font.name}'; src: local('${font.name}'), url('${font.url}');	} `
 			document.body.appendChild(elm)
 			font.loaded = true
 		}
@@ -97,35 +92,3 @@ export class FontManager {
 		return this._sizes
 	}
 }
-
-// private async init() {
-
-// try {
-// 	const { state } = await navigator.permissions.query({ name: 'local-fonts' as PermissionName })
-// 	this._state.hasPermission = state === 'granted'
-// 	this._state.canGetPermission = state === 'prompt'
-// 	// this._state.hasPermission = false
-// 	// this._state.canGetPermission = false
-// } catch (err) {
-// 	console.log(err)
-// }
-// }
-
-// public async load() {
-// 	this._fonts = await this.attemptFontApi()
-// 	if (this._fonts.length > 0) {
-// 		for (const font of this._fonts) {
-// 			if (!this._families[font.family]) {
-// 				this._state.families.push(font.family)
-// 				this._families[font.family] = {
-// 					family: font.family,
-// 					variants: [font.style],
-// 				}
-// 			} else {
-// 				this._families[font.family].variants.push(font.style)
-// 			}
-// 		}
-// 		this._state.hasPermission = true
-// 		this._state.canGetPermission = false
-// 	}
-// }

@@ -9,12 +9,12 @@
 			v-if="!mimiriPlatform.isDesktop"
 			class="inline-block h-4/5 w-0 border border-solid border-toolbar-separator m-0.5"
 		></div>
-		<ToolbarIcon icon="add-root-note" :hoverEffect="true" title="New Root Note" @click="createRootNote"></ToolbarIcon>
+		<ToolbarIcon icon="plus-small" :hoverEffect="true" title="New Root Note" @click="showCreateMenu"></ToolbarIcon>
 		<ToolbarIcon
-			icon="add-note"
+			:icon="settingsManager.lastNoteCreateType === 'child' ? 'add-note' : 'add-sibling-note'"
 			:disabled="!noteManager.selectedNote || noteManager.selectedNote.isSystem"
 			:hoverEffect="true"
-			title="New Note"
+			:title="settingsManager.lastNoteCreateType === 'child' ? 'New Child Note' : 'New Sibling Note'"
 			@click="createChildNote"
 		></ToolbarIcon>
 		<div class="inline-block h-4/5 w-0 border border-solid border-toolbar-separator m-0.5"></div>
@@ -57,11 +57,12 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { noteManager, showShareOffers, showSearchBox, ipcClient, searchInput } from '../global'
+import { noteManager, showSearchBox, ipcClient, searchInput } from '../global'
 import ToolbarIcon from './ToolbarIcon.vue'
 import { MenuItems, menuManager } from '../services/menu-manager'
 import { mimiriPlatform } from '../services/mimiri-platform'
 import { notificationManager } from '../global'
+import { settingsManager } from '../services/settings-manager'
 
 const toolbar = ref(null)
 const accountIcon = computed(() => {
@@ -92,11 +93,14 @@ const accountClick = () => {
 	])
 }
 
-const createRootNote = () => {
-	noteManager.newRootNote()
-}
-
 const createChildNote = () => {
+	if (settingsManager.lastNoteCreateType === 'sibling') {
+		if (noteManager.selectedNote.parent.isRoot) {
+			noteManager.newRootNote()
+			return
+		}
+		noteManager.selectedNote.parent.select()
+	}
 	noteManager.newNote()
 }
 
@@ -114,6 +118,14 @@ const gotoSearchAllNotes = () => {
 	setTimeout(() => {
 		searchInput.value.classList.remove('animate-ping')
 	}, 600)
+}
+
+const showCreateMenu = () => {
+	const createMenu = [MenuItems.NewRootNote, MenuItems.NewChildNote, MenuItems.NewSiblingNote]
+
+	const rect = toolbar.value.getBoundingClientRect()
+
+	menuManager.showMenu({ x: 10, y: rect.bottom }, noteManager.selectedNote ? createMenu : createMenu)
 }
 
 const showMobileMenu = () => {

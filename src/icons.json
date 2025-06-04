@@ -24,6 +24,12 @@
 		"attribution": "",
 		"collection": "https://www.svgrepo.com/collection/ui-oval-interface-icons/"
 	},
+	"add-sibling-note": {
+		"url": "https://www.svgrepo.com/download/471411/file-plus-01.svg",
+		"license": "CC0",
+		"attribution": "",
+		"collection": "https://www.svgrepo.com/collection/ui-oval-interface-icons/"
+	},
 	"rename": {
 		"url": "https://www.svgrepo.com/download/532786/file-pencil-alt.svg",
 		"license": "CC Attribution License",
@@ -347,5 +353,11 @@
 		"license": "CC0",
 		"attribution": "",
 		"collection": "https://www.svgrepo.com/collection/ui-oval-interface-icons/"
+	},
+	"plus-small": {
+		"url": "https://www.svgrepo.com/download/532994/plus.svg",
+		"license": "CC Attribution License",
+		"attribution": "Vectors and icons by <a href=\"https://dazzleui.gumroad.com/l/dazzleiconsfree?ref=svgrepo.com\" target=\"_blank\">Dazzle Ui</a> in CC Attribution License via <a href=\"https://www.svgrepo.com/\" target=\"_blank\">SVG Repo</a>",
+		"collection": "https://www.svgrepo.com/collection/dazzle-line-icons/"
 	}
 }

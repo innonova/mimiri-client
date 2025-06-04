@@ -116,9 +116,6 @@ const save = async () => {
 		`'${editorFontFamily.value}', 'Consolas', 'Menlo', 'Droid Sans Mono', 'monospace', 'Courier New'`,
 	)
 	root.style.setProperty('--text-size-editor', `${editorFontSize.value}px`)
-	// var root = document.querySelector(':root') as HTMLElement
-	// root.style.setProperty('--text-size-base', `16px`)
-	// root.style.setProperty('--text-size-menu', `16px`)
 }
 
 const sampleText = `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent elit augue,

@@ -28,6 +28,7 @@
 import CloudIcon from '../icons/cloud.vue'
 import AddRootIcon from '../icons/add-root.vue'
 import AddNoteIcon from '../icons/add-note.vue'
+import AddSiblingNoteIcon from '../icons/add-sibling-note.vue'
 import RenameIcon from '../icons/rename.vue'
 import DeleteIcon from '../icons/delete.vue'
 import RefreshIcon from '../icons/refresh.vue'
@@ -50,6 +51,8 @@ import AccountIcon from '../icons/account.vue'
 import NotificationIcon from '../icons/notification.vue'
 import NotificationActiveIcon from '../icons/notification-active.vue'
 import HideIcon from '../icons/hide.vue'
+import PlusIcon from '../icons/plus.vue'
+import PlusSmallIcon from '../icons/plus-small.vue'
 import { mimiriPlatform } from '../services/mimiri-platform'
 
 const props = defineProps<{
@@ -73,6 +76,9 @@ const getComponent = () => {
 	}
 	if (props.icon === 'add-note') {
 		return AddNoteIcon
+	}
+	if (props.icon === 'add-sibling-note') {
+		return AddSiblingNoteIcon
 	}
 	if (props.icon === 'rename-note') {
 		return RenameIcon
@@ -142,6 +148,12 @@ const getComponent = () => {
 	}
 	if (props.icon === 'hide') {
 		return HideIcon
+	}
+	if (props.icon === 'plus') {
+		return PlusIcon
+	}
+	if (props.icon === 'plus-small') {
+		return PlusSmallIcon
 	}
 }
 

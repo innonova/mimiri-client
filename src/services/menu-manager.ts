@@ -25,6 +25,8 @@ import type { Guid } from './types/guid'
 export enum MenuItems {
 	Separator = 'separator',
 	NewNote = 'new-note',
+	NewChildNote = 'new-child-note',
+	NewSiblingNote = 'new-sibling-note',
 	NewRootNote = 'new-root-note',
 	Duplicate = 'duplicate',
 	Cut = 'cut',
@@ -179,6 +181,17 @@ class MenuManager {
 		}
 		if (itemId === 'new-note') {
 			noteManager.newNote()
+		} else if (itemId === 'new-child-note') {
+			settingsManager.lastNoteCreateType = 'child'
+			noteManager.newNote()
+		} else if (itemId === 'new-sibling-note') {
+			settingsManager.lastNoteCreateType = 'sibling'
+			if (noteManager.selectedNote.parent.isRoot) {
+				noteManager.newRootNote()
+				return
+			}
+			noteManager.selectedNote.parent?.select()
+			noteManager.newNote()
 		} else if (itemId === 'new-root-note') {
 			noteManager.newRootNote()
 		} else if (itemId === 'share') {
@@ -291,6 +304,24 @@ class MenuManager {
 						id: 'new-note',
 						title: 'New Note',
 						icon: 'add-note',
+						shortcut: ipcClient.isAvailable ? 'Ctrl+N' : undefined,
+						enabled: noteManager.isLoggedIn && !!noteManager.selectedNote && !noteManager.selectedNote.isSystem,
+					})
+					break
+				case MenuItems.NewChildNote:
+					result.push({
+						id: 'new-child-note',
+						title: 'New Child Note',
+						icon: 'add-note',
+						shortcut: ipcClient.isAvailable ? 'Ctrl+N' : undefined,
+						enabled: noteManager.isLoggedIn && !!noteManager.selectedNote && !noteManager.selectedNote.isSystem,
+					})
+					break
+				case MenuItems.NewSiblingNote:
+					result.push({
+						id: 'new-sibling-note',
+						title: 'New Sibling Note',
+						icon: 'add-sibling-note',
 						shortcut: ipcClient.isAvailable ? 'Ctrl+N' : undefined,
 						enabled: noteManager.isLoggedIn && !!noteManager.selectedNote && !noteManager.selectedNote.isSystem,
 					})
