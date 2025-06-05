@@ -49,7 +49,7 @@
 					<SystemPage></SystemPage>
 				</div>
 				<div
-					v-if="!noteManager.selectedNote.isSystem && noteManager.viewMode === ViewMode.Properties"
+					v-if="!noteManager.selectedNote?.isSystem && noteManager.viewMode === ViewMode.Properties"
 					class="h-full flex flex-col flex-1"
 				>
 					<PropertiesPage></PropertiesPage>
