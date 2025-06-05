@@ -157,6 +157,7 @@ const showMobileMenu = () => {
 		MenuItems.Refresh,
 		...(!isSystem && !isInRecycleBin ? [MenuItems.Separator, MenuItems.Rename, MenuItems.Recycle] : []),
 		...(!isSystem && isInRecycleBin ? [MenuItems.Separator, MenuItems.Delete] : []),
+		...(!isSystem ? [MenuItems.Separator, MenuItems.Properties] : []),
 	]
 	const whenNoSelectedNote = [MenuItems.About, MenuItems.DarkMode]
 

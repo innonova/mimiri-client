@@ -294,7 +294,11 @@ const toggleNode = async e => {
 }
 
 const selectNode = async (mobileSwitch: boolean) => {
-	noteManager.openNote(props.node.id)
+	if (mobileSwitch) {
+		noteManager.openNote(props.node.id)
+	} else {
+		noteManager.getNoteById(props.node.id)?.select()
+	}
 }
 
 const checkCancelEdit = e => {

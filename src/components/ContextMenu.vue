@@ -16,6 +16,7 @@
 					:class="{
 						'hover:bg-menu-hover': item.enabled !== false,
 						'text-menu-disabled': item.enabled === false,
+						'mb-[-0.3rem]': item.separatorAfter,
 					}"
 					:data-testid="`menu-${item.id}`"
 					@mouseup="activateItem(item)"
@@ -31,7 +32,7 @@
 				</div>
 				<div
 					v-if="item.separatorAfter && item.visible !== false && isVisibleAfter(item)"
-					class="inline-block h-0 w-full border border-solid border-menu-separator mb-0.5"
+					class="inline-block h-0 w-full border border-solid border-menu-separator"
 				></div>
 			</template>
 		</div>
