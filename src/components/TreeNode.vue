@@ -126,7 +126,7 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { noteManager, dragId, showSearchBox, createNewNode, createNewRootNode } from '../global'
+import { noteManager, dragId, showSearchBox, createNewNode, createNewRootNode, features } from '../global'
 import type { NoteViewModel } from '../services/types/mimer-note'
 import { searchManager } from '../services/search-manager'
 import NewTreeNode from './NewTreeNode.vue'
@@ -340,9 +340,11 @@ const showContextMenu = async e => {
 		])
 	} else {
 		let showShare = true
+		let showAcceptShare = features.includes('share-code')
 		if (props.node.shared) {
 			const note = noteManager.getNoteById(props.node.id)
 			showShare = note.isShareRoot
+			showAcceptShare = false
 		}
 
 		const note = noteManager.getNoteById(props.node.id)
@@ -356,6 +358,7 @@ const showContextMenu = async e => {
 
 			MenuItems.Separator,
 			...(showShare && !isInRecycleBin ? [MenuItems.Share] : []),
+			...(showAcceptShare && !isInRecycleBin ? [MenuItems.ReceiveShareUnder] : []),
 			MenuItems.Refresh,
 			MenuItems.Separator,
 			...(isInRecycleBin ? [] : [MenuItems.Rename]),

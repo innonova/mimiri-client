@@ -61,6 +61,7 @@ export interface LoginRequest {
 }
 
 export interface PublicKeyRequest extends BasicRequest {
+	pow: string
 	keyOwnerName: string
 }
 
@@ -145,4 +146,8 @@ export interface CheckUsernameRequest {
 	pow: string
 	timestamp: DateTime
 	requestId: Guid
+}
+
+export interface ShareOfferRequest extends BasicRequest {
+	code: string
 }

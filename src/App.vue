@@ -60,6 +60,7 @@
 		<EmptyRecycleBinDialog ref="emptyRecycleBinDialog"></EmptyRecycleBinDialog>
 		<PasswordGeneratorDialog ref="passwordGeneratorDialog"></PasswordGeneratorDialog>
 		<ShareDialog ref="shareDialog"></ShareDialog>
+		<AcceptShareDialog ref="acceptShareDialog"></AcceptShareDialog>
 		<SaveEmptyNodeDialog ref="saveEmptyNodeDialog"></SaveEmptyNodeDialog>
 		<LimitDialog ref="limitDialog"></LimitDialog>
 		<PasswordDialog ref="passwordDialog"></PasswordDialog>
@@ -85,6 +86,7 @@ import NotificationList from './components/NotificationList.vue'
 import DeleteNodeDialog from './components/dialogs/DeleteNodeDialog.vue'
 import DeleteMethodDialog from './components/dialogs/DeleteMethodDialog.vue'
 import ShareDialog from './components/dialogs/ShareDialog.vue'
+import AcceptShareDialog from './components/dialogs/AcceptShareDialog.vue'
 import ShareOfferView from './components/ShareOfferView.vue'
 import SaveEmptyNodeDialog from './components/dialogs/SaveEmptyNodeDialog.vue'
 import LimitDialog from './components/dialogs/LimitDialog.vue'
@@ -98,6 +100,7 @@ import {
 	noteManager,
 	contextMenu,
 	shareDialog,
+	acceptShareDialog,
 	showShareOffers,
 	showSearchBox,
 	deleteNodeDialog,

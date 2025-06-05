@@ -107,3 +107,7 @@ export interface CheckUsernameResponse {
 	proofAccepted: boolean
 	bitsExpected: number
 }
+
+export interface ShareResponse {
+	code: string
+}

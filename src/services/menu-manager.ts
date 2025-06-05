@@ -1,10 +1,12 @@
 import { reactive } from 'vue'
 import {
+	acceptShareDialog,
 	clipboardNote,
 	contextMenu,
 	deleteNodeDialog,
 	emptyRecycleBinDialog,
 	env,
+	features,
 	ipcClient,
 	isCut,
 	loginDialog,
@@ -34,6 +36,8 @@ export enum MenuItems {
 	Paste = 'paste',
 	CopyPath = 'copy-path',
 	Share = 'share',
+	ReceiveShare = 'receive-share',
+	ReceiveShareUnder = 'receive-share-under',
 	Refresh = 'refresh',
 	RefreshRoot = 'refresh-root',
 	Rename = 'rename',
@@ -196,6 +200,10 @@ class MenuManager {
 			noteManager.newRootNote()
 		} else if (itemId === 'share') {
 			shareDialog.value.show()
+		} else if (itemId === 'receive-share') {
+			acceptShareDialog.value.show()
+		} else if (itemId === 'receive-share-under') {
+			acceptShareDialog.value.show(noteManager.selectedNote)
 		} else if (itemId === 'refresh') {
 			if (noteManager.selectedNote) {
 				await noteManager.selectedNote.refresh()
@@ -406,6 +414,22 @@ class MenuManager {
 							!!noteManager.selectedNote &&
 							!noteManager.selectedNote.isSystem &&
 							!noteManager.selectedNote.isInRecycleBin,
+					})
+					break
+				case MenuItems.ReceiveShare:
+					result.push({
+						id: 'receive-share',
+						title: 'Accept Share',
+						icon: 'note-shared',
+						enabled: noteManager.isLoggedIn,
+					})
+					break
+				case MenuItems.ReceiveShareUnder:
+					result.push({
+						id: 'receive-share-under',
+						title: 'Accept Share Here',
+						icon: 'note-shared',
+						enabled: noteManager.isLoggedIn,
 					})
 					break
 				case MenuItems.Refresh:
@@ -725,9 +749,13 @@ class MenuManager {
 		if (mimiriPlatform.isMacApp) {
 			return [MenuItems.NewRootNote, MenuItems.NewNote]
 		}
+
+		const codeEnabled = features.includes('share-code')
+
 		return [
 			MenuItems.NewRootNote,
 			MenuItems.NewNote,
+			...(codeEnabled ? [MenuItems.Separator, MenuItems.ReceiveShare] : []),
 			MenuItems.Separator,
 			MenuItems.CreatePassword,
 			MenuItems.Login,
@@ -755,7 +783,14 @@ class MenuManager {
 	}
 
 	public get viewMenu() {
-		return [MenuItems.History, MenuItems.ShareOffers, MenuItems.Separator, MenuItems.WordWrap, MenuItems.DarkMode]
+		const showShareOffers = !features.includes('share-code')
+		return [
+			MenuItems.History,
+			...(showShareOffers ? [MenuItems.ShareOffers] : []),
+			MenuItems.Separator,
+			MenuItems.WordWrap,
+			MenuItems.DarkMode,
+		]
 	}
 
 	public get toolsMenu() {

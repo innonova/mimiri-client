@@ -329,7 +329,7 @@ export class MimerNote {
 	}
 
 	public async shareWith(username: string) {
-		await this.owner.shareNote(this, username)
+		return this.owner.shareNote(this, username)
 	}
 
 	public async save() {

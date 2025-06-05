@@ -608,6 +608,10 @@ export class NoteManager {
 		return await this.client.getShareOffers()
 	}
 
+	public async getShareOffer(code: string) {
+		return await this.client.getShareOffer(code)
+	}
+
 	public async loadShareOffers() {
 		try {
 			this.state.shareOffers = await this.client.getShareOffers()
@@ -755,7 +759,8 @@ export class NoteManager {
 				}
 			}
 			await this.refreshNote(parent.id)
-			;(await this.getNoteById(note.id))?.select()
+			await parentNote.expand()
+			this.getNoteById(note.id).select()
 		} finally {
 			this.endAction()
 		}
@@ -844,8 +849,9 @@ export class NoteManager {
 		this.beginAction()
 		try {
 			const actions: NoteAction[] = []
+			const pow = await ProofOfWork.compute(recipient, this._proofBits)
 			await this.ensureShareAllowable(mimerNote)
-			await this.client.getPublicKey(recipient)
+			await this.client.getPublicKey(recipient, pow)
 
 			let sharedKey
 			if (mimerNote.isShared) {
@@ -863,16 +869,17 @@ export class NoteManager {
 				}
 			}
 			const affectedIds = await this.client.multiAction(actions)
-			await this.client.shareNote(recipient, sharedKey.name, mimerNote.id, mimerNote.title)
+			const response = await this.client.shareNote(recipient, sharedKey.name, mimerNote.id, mimerNote.title, pow)
 			for (const id of affectedIds) {
 				await this.refreshNote(id)
 			}
+			return response
 		} finally {
 			this.endAction()
 		}
 	}
 
-	public async acceptShare(share: NoteShareInfo) {
+	public async acceptShare(share: NoteShareInfo, parent?: MimerNote) {
 		if (!this.client.isOnline) {
 			throw new MimerError('Offline', 'Cannot share while offline')
 		}
@@ -885,17 +892,20 @@ export class NoteManager {
 				if (!this.client.keyWithNameExists(offer.keyName)) {
 					await this.client.createKeyFromNoteShare(newGuid(), offer, { shared: true })
 				}
-				const root = await this.client.readNote(this.root.id)
-				if (!root.getItem('metadata').notes.includes(offer.noteId)) {
-					root.changeItem('metadata').notes.push(offer.noteId)
+				const shareParent = parent?.note ?? (await this.client.readNote(this.root.id))
+
+				if (!shareParent.getItem('metadata').notes.includes(offer.noteId)) {
+					shareParent.changeItem('metadata').notes.push(offer.noteId)
 				}
-				actions.push(await this.client.createUpdateAction(root))
+				actions.push(await this.client.createUpdateAction(shareParent))
 
 				await this.client.multiAction(actions)
 
-				await this.refreshNote(this.root.id)
+				await this.refreshNote(shareParent.id)
 				await this.refreshNote(offer.noteId)
 				await this.client.deleteShareOffer(offer.id)
+				await parent?.expand()
+				this.getNoteById(offer.noteId)?.select()
 			}
 			await this.loadShareOffers()
 		} finally {

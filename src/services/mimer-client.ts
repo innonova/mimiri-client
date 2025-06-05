@@ -16,6 +16,7 @@ import type {
 	PublicKeyResponse,
 	ReadNoteResponse,
 	ShareOffersResponse,
+	ShareResponse,
 	UpdateNoteResponse,
 	UrlResponse,
 	UserDataResponse,
@@ -38,6 +39,7 @@ import {
 	type ReadKeyRequest,
 	type ReadNoteRequest,
 	type ShareNoteRequest,
+	type ShareOfferRequest,
 	type UpdateUserDataRequest,
 	type UpdateUserRequest,
 	type WriteNoteRequest,
@@ -849,12 +851,12 @@ export class MimerClient {
 		}
 	}
 
-	public async shareNote(recipient: string, keyName: Guid, noteId: Guid, name: string) {
+	public async shareNote(recipient: string, keyName: Guid, noteId: Guid, name: string, pow: string) {
 		if (!this.rootCrypt) {
 			throw new Error('Not Logged in')
 		}
 		const keySet = this.getKey(keyName)
-		const pub = await this.getPublicKey(recipient)
+		const pub = await this.getPublicKey(recipient, pow)
 		const info: NoteShareInfo = {
 			id: newGuid(),
 			sender: this.username,
@@ -879,7 +881,7 @@ export class MimerClient {
 		}
 		await this.rootSignature.sign('user', request)
 		await keySet.signature.sign('key', request)
-		await this.post<BasicResponse>('/note/share', request)
+		return await this.post<ShareResponse>('/note/share', request)
 	}
 
 	public async getShareOffers() {
@@ -914,6 +916,46 @@ export class MimerClient {
 		return result
 	}
 
+	public async getShareOffer(code: string) {
+		if (!this.rootCrypt) {
+			throw new Error('Not Logged in')
+		}
+		try {
+			const request: ShareOfferRequest = {
+				username: this.username,
+				timestamp: dateTimeNow(),
+				requestId: newGuid(),
+				code,
+				signatures: [],
+			}
+			await this.rootSignature.sign('user', request)
+			const response = await this.post<ShareOffersResponse>('/note/share-offer', request)
+			const result: NoteShareInfo[] = []
+			for (const offer of response.offers) {
+				let offerData: any = {}
+				try {
+					offerData = JSON.parse(await this.rootSignature.decrypt(offer.data))
+				} catch (ex) {
+					console.log(ex)
+					offerData.sender = 'error'
+					offerData.name = 'error'
+					offerData.error = ex
+				}
+				offerData.id = offer.id
+				result.push(offerData)
+				if (offerData.Sender !== offer.sender) {
+					offerData.Sender = `Warning sender mismatch Claims to be: '${offerData.sender}' Server says: '${offer.sender}'`
+				}
+			}
+			if (result.length > 0) {
+				return result[0]
+			}
+		} catch (ex) {
+			console.log(ex)
+		}
+		return undefined
+	}
+
 	public async deleteShareOffer(id: Guid) {
 		if (!this.rootCrypt) {
 			throw new Error('Not Logged in')
@@ -929,12 +971,13 @@ export class MimerClient {
 		await this.post<BasicResponse>('/note/share/delete', request)
 	}
 
-	public async getPublicKey(keyOwnerName: string) {
+	public async getPublicKey(keyOwnerName: string, pow: string) {
 		if (!this.rootCrypt) {
 			throw new Error('Not Logged in')
 		}
 		const request: PublicKeyRequest = {
 			username: this.username,
+			pow,
 			keyOwnerName,
 			timestamp: dateTimeNow(),
 			requestId: newGuid(),
@@ -942,6 +985,7 @@ export class MimerClient {
 		}
 		await this.rootSignature.sign('user', request)
 		const response = await this.post<PublicKeyResponse>('/user/public-key', request)
+
 		return await CryptSignature.fromPem(response.asymmetricAlgorithm, response.publicKey)
 	}
 

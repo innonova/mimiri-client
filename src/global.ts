@@ -40,6 +40,7 @@ export const passwordGeneratorDialog = ref(null)
 export const saveEmptyNodeDialog = ref(null)
 export const limitDialog = ref(null)
 export const shareDialog = ref(null)
+export const acceptShareDialog = ref(null)
 export const passwordDialog = ref(null)
 export const loginDialog = ref(null)
 export const titleBar = ref(null)
@@ -61,6 +62,8 @@ export const showSearchBox = ref(false)
 export const mimiriEditor = new MimiriEditor()
 
 export const clipboardManager = new ClipboardManager()
+
+export const features = ['share-code']
 
 export const updateKeys = [
 	{
