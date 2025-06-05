@@ -76,7 +76,7 @@ const customFontFamily = ref('')
 const editorFontSize = ref(14)
 const canSave = computed(
 	() =>
-		editorFontFamily.value !== settingsManager.editorFontFamily ||
+		currentFontFamily.value !== settingsManager.editorFontFamily ||
 		editorFontSize.value !== settingsManager.editorFontSize,
 )
 
