@@ -1,28 +1,28 @@
 <template>
-	<dialog class="bg-dialog border border-solid border-dialog-border text-text min-w-78" ref="dialog">
-		<div class="grid grid-rows-[auto_1fr_auto] gap-6">
+	<dialog class="bg-dialog border border-solid border-dialog-border text-text" ref="dialog">
+		<div class="grid grid-rows-[auto_1fr_auto]">
 			<DialogTitle @close="close">Accept Share</DialogTitle>
-			<main class="px-2">
-				<div>
-					<label class="flex justify-between items-center">
-						<span class="whitespace-nowrap">Share code:</span>
-						<input
-							ref="codeInput"
-							class="basic-input ml-2"
-							type="text"
-							autofocus
-							v-model="code"
-							:class="{ invalid: invalid }"
-							v-on:keyup.enter="submitDialog"
-						/>
-					</label>
+			<form v-on:submit.prevent="submitDialog" class="mx-2 mt-5 mb-2">
+				<div class="grid grid-cols-[4rem_10rem] items-center gap-2 mx-2 mb-2">
+					<span class="whitespace-nowrap">Code:</span>
+					<input
+						ref="codeInput"
+						class="basic-input"
+						type="text"
+						autofocus
+						v-model="code"
+						:class="{ invalid: invalid }"
+						v-on:keyup.enter="submitDialog"
+					/>
+					<div v-if="invalid"></div>
+					<div v-if="invalid" class="text-error leading-4">No share found</div>
+					<div class="col-span-2 flex justify-end gap-2 mt-2">
+						<LoadingIcon v-if="loading" class="animate-spin w-8 h-8 mr-2 inline-block"></LoadingIcon>
+						<button v-if="!loading" class="primary" @click="submitDialog">OK</button>
+						<button class="secondary" @click="close">Cancel</button>
+					</div>
 				</div>
-				<div v-if="invalid" class="mt-4 pr-1 text-right text-error">No share found!</div>
-			</main>
-			<footer class="flex justify-end gap-2 pr-2 pb-2">
-				<button class="primary" @click="submitDialog">OK</button>
-				<button class="secondary" @click="close">Cancel</button>
-			</footer>
+			</form>
 		</div>
 	</dialog>
 </template>
@@ -32,9 +32,11 @@ import { ref } from 'vue'
 import { noteManager } from '../../global'
 import DialogTitle from '../elements/DialogTitle.vue'
 import type { MimerNote } from '../../services/types/mimer-note'
+import LoadingIcon from '../../icons/loading.vue'
 const dialog = ref(null)
 const code = ref('')
 const codeInput = ref(null)
+const loading = ref(null)
 
 const invalid = ref(false)
 let parent: MimerNote
@@ -43,6 +45,7 @@ const show = (note?: MimerNote) => {
 	parent = note
 	code.value = ''
 	invalid.value = false
+	loading.value = false
 	dialog.value.showModal()
 }
 
@@ -57,12 +60,17 @@ const submitDialog = async () => {
 		codeInput.value.focus()
 		return
 	}
-	const offer = await noteManager.getShareOffer(code.value.trim())
-	if (offer) {
-		await noteManager.acceptShare(offer, parent)
-		close()
-	} else {
-		invalid.value = true
+	try {
+		loading.value = true
+		const offer = await noteManager.getShareOffer(code.value.trim())
+		if (offer) {
+			await noteManager.acceptShare(offer, parent)
+			close()
+		} else {
+			invalid.value = true
+		}
+	} finally {
+		loading.value = false
 	}
 }
 
