@@ -13,7 +13,7 @@
 				<div>{{ formatDateTime(note.created) }}</div>
 				<div>Last Modified:</div>
 				<div>{{ formatDateTime(note.updated) }}</div>
-				<div v-if="note.isShared && shareParticipants.length > 0" class="col-span-2 mt-4">
+				<div v-if="note.isShared && shareParticipants.length > 0" class="col-span-2 mt-4 leading-5">
 					This note is shared with:
 				</div>
 				<template v-for="participant in shareParticipants" :key="participant.username">
@@ -22,7 +22,7 @@
 						<div>{{ formatDateTime(new Date(participant.since)) }}</div>
 					</div>
 				</template>
-				<div v-if="note.isShared && shareParticipants.length === 0" class="col-span-2 mt-4">
+				<div v-if="note.isShared && shareParticipants.length === 0" class="col-span-2 mt-4 leading-5">
 					You have shared this not but no one has accepted
 				</div>
 			</div>

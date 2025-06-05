@@ -4,7 +4,7 @@
 		<div class="flex flex-col overflow-y-auto">
 			<div @click="boxClicked">
 				<div class="p-1 pl-4">Bundle Version: {{ updateManager.currentVersion }}</div>
-				<div class="p-1 pl-4 pt-2">
+				<div class="p-1 pl-4 pt-2 leading-5">
 					Host Version: {{ mimiriPlatform.isWeb ? browserName : updateManager.hostVersion }}
 				</div>
 				<div class="p-1 pl-4 pt-2">Released: {{ formatDate(updateManager.releaseDate) }}</div>
