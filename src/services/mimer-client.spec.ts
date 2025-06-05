@@ -95,7 +95,7 @@ describe('MimerClient', () => {
 		await _clientAlice.createNote(newNote)
 		rootNote.changeItem('metadata').notes.push(newNote.id)
 		await _clientAlice.updateNote(rootNote)
-		await _clientAlice.shareNote('bob', sharedKeyName, newNote.id, 'test')
+		await _clientAlice.shareNote('bob', sharedKeyName, newNote.id, 'test', '')
 	})
 
 	test('Bob RetrieveShare', async () => {
