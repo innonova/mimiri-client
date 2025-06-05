@@ -48,11 +48,8 @@ export class NotificationManager {
 	public activateNotification(id: number) {
 		const notification = this.state.notifications.find(item => item.id === id)
 		if (notification.type === 'update') {
-			noteManager.getNoteById('settings-update' as Guid)?.select()
 			notificationList.value.close()
-			if (mimiriPlatform.isPhone) {
-				noteManager.openNote()
-			}
+			noteManager.openNote('settings-update' as Guid)
 		}
 	}
 

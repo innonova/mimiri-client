@@ -16,6 +16,7 @@ import type {
 	PublicKeyResponse,
 	ReadNoteResponse,
 	ShareOffersResponse,
+	ShareParticipantsResponse,
 	ShareResponse,
 	UpdateNoteResponse,
 	UrlResponse,
@@ -40,6 +41,7 @@ import {
 	type ReadNoteRequest,
 	type ShareNoteRequest,
 	type ShareOfferRequest,
+	type ShareParticipantsRequest,
 	type UpdateUserDataRequest,
 	type UpdateUserRequest,
 	type WriteNoteRequest,
@@ -969,6 +971,22 @@ export class MimerClient {
 		}
 		await this.rootSignature.sign('user', request)
 		await this.post<BasicResponse>('/note/share/delete', request)
+	}
+
+	public async getShareParticipants(id: Guid) {
+		if (!this.rootCrypt) {
+			throw new Error('Not Logged in')
+		}
+		const request: ShareParticipantsRequest = {
+			username: this.username,
+			timestamp: dateTimeNow(),
+			requestId: newGuid(),
+			id,
+			signatures: [],
+		}
+		await this.rootSignature.sign('user', request)
+		const response = await this.post<ShareParticipantsResponse>('/note/share-participants', request)
+		return response.participants
 	}
 
 	public async getPublicKey(keyOwnerName: string, pow: string) {

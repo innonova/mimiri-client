@@ -58,7 +58,7 @@ const stopWatching = watch(noteManager.state, () => {
 		stateLoaded = true
 		mainElement.value.scrollTop = persistedState.getTreeScrollTop()
 		if (noteManager.isMobile && persistedState.noteOpen && noteManager.selectedNote) {
-			noteManager.openNote()
+			noteManager.openNote(noteManager.selectedNote.id)
 		}
 		stopWatching()
 	}

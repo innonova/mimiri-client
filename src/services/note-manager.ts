@@ -40,6 +40,11 @@ export enum ActionType {
 	DeleteShareOffer,
 }
 
+export enum ViewMode {
+	Content = 'content',
+	Properties = 'properties',
+}
+
 interface NoteManagerState {
 	authenticated: boolean
 	online: boolean
@@ -52,6 +57,7 @@ interface NoteManagerState {
 	shareOffers: NoteShareInfo[]
 	stateLoaded: boolean
 	initInProgress: boolean
+	viewMode: ViewMode
 }
 
 class MimerError extends Error {
@@ -107,6 +113,7 @@ export class NoteManager {
 			shareOffers: [],
 			stateLoaded: false,
 			initInProgress: true,
+			viewMode: ViewMode.Content,
 		})
 		this.client = new MimerClient(host, serverKey, serverKeyId)
 		this._paymentClient = new PaymentClient(this.client, paymentHost)
@@ -620,6 +627,10 @@ export class NoteManager {
 		}
 	}
 
+	public async getShareParticipants(id: Guid) {
+		return await this.client.getShareParticipants(id)
+	}
+
 	public register(id: Guid, note: MimerNote) {
 		this.notes[id] = note
 	}
@@ -639,11 +650,29 @@ export class NoteManager {
 		}
 	}
 
-	public openNote() {
-		if (this._isMobile) {
-			this.state.noteOpen = true
-			persistedState.noteOpen = true
-			browserHistory.open(this.state.selectedNoteId)
+	public openNote(id?: Guid) {
+		const note = id ? this.getNoteById(id) : this.selectedNote
+		if (note) {
+			note.select()
+			this.state.viewMode = ViewMode.Content
+			if (this._isMobile) {
+				this.state.noteOpen = true
+				persistedState.noteOpen = true
+				browserHistory.open(this.state.selectedNoteId)
+			}
+		}
+	}
+
+	public openProperties(id?: Guid) {
+		const note = id ? this.getNoteById(id) : this.selectedNote
+		if (note) {
+			note.select()
+			this.state.viewMode = ViewMode.Properties
+			if (this._isMobile) {
+				this.state.noteOpen = true
+				persistedState.noteOpen = true
+				browserHistory.open(this.state.selectedNoteId)
+			}
 		}
 	}
 
@@ -1316,5 +1345,9 @@ export class NoteManager {
 
 	public get isMobile() {
 		return this._isMobile
+	}
+
+	public get viewMode() {
+		return this.state.viewMode
 	}
 }

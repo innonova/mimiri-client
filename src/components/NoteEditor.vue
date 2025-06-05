@@ -135,10 +135,7 @@ const activateEdit = () => {
 }
 
 const activateSettings = () => {
-	noteManager.getNoteById('settings-general' as Guid)?.select()
-	if (mimiriPlatform.isPhone) {
-		noteManager.openNote()
-	}
+	noteManager.openNote('settings-general' as Guid)
 }
 
 const formatDate = (value: string) => {

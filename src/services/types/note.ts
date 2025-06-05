@@ -75,4 +75,34 @@ export class Note {
 		}
 		return total
 	}
+
+	public get historySize() {
+		const encoder = new TextEncoder()
+		let total = 0
+		for (const item of this.items.filter(i => i.type === 'history')) {
+			if (item.changed) {
+				const size = toBase64(encoder.encode(JSON.stringify(item.data))).length
+				// add 64 to (over)compensate for encryption padding and base64
+				total += size + 64
+			} else {
+				total += item.size
+			}
+		}
+		return total
+	}
+
+	public get dataSize() {
+		const encoder = new TextEncoder()
+		let total = 0
+		for (const item of this.items.filter(i => i.type !== 'history')) {
+			if (item.changed) {
+				const size = toBase64(encoder.encode(JSON.stringify(item.data))).length
+				// add 64 to (over)compensate for encryption padding and base64
+				total += size + 64
+			} else {
+				total += item.size
+			}
+		}
+		return total
+	}
 }

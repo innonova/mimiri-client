@@ -34,7 +34,10 @@
 			</div>
 			<div class="w-2.5 min-w-2.5 bg-toolbar cursor-ew-resize hidden desktop:block" @mousedown="startDragging"></div>
 			<div class="h-full flex flex-col w-full divider-right" :class="{ 'hidden desktop:flex': !showEditor }">
-				<div v-show="noteManager.selectedNote?.type === 'note-text'" class="h-full flex flex-col flex-1">
+				<div
+					v-show="noteManager.selectedNote?.type === 'note-text' && noteManager.viewMode === ViewMode.Content"
+					class="h-full flex flex-col flex-1"
+				>
 					<NoteEditor ref="noteEditor"></NoteEditor>
 				</div>
 				<div
@@ -44,6 +47,12 @@
 					class="h-full flex flex-col flex-1"
 				>
 					<SystemPage></SystemPage>
+				</div>
+				<div
+					v-if="!noteManager.selectedNote.isSystem && noteManager.viewMode === ViewMode.Properties"
+					class="h-full flex flex-col flex-1"
+				>
+					<PropertiesPage></PropertiesPage>
 				</div>
 			</div>
 		</div>
@@ -132,7 +141,8 @@ import { localAuth } from './services/local-auth'
 import LockScreen from './components/LockScreen.vue'
 import { useEventListener } from '@vueuse/core'
 import SystemPage from './components/SystemPage.vue'
-import { toHex } from './services/hex-base64'
+import { ViewMode } from './services/note-manager'
+import PropertiesPage from './components/PropertiesPage.vue'
 
 mobileLog.log(`App Loading ${settingsManager.channel} ${updateManager.currentVersion}`)
 

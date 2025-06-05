@@ -151,3 +151,7 @@ export interface CheckUsernameRequest {
 export interface ShareOfferRequest extends BasicRequest {
 	code: string
 }
+
+export interface ShareParticipantsRequest extends BasicRequest {
+	id: Guid
+}

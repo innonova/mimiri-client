@@ -294,10 +294,7 @@ const toggleNode = async e => {
 }
 
 const selectNode = async (mobileSwitch: boolean) => {
-	noteManager.getNoteById(props.node.id).select()
-	if (mobileSwitch) {
-		noteManager.openNote()
-	}
+	noteManager.openNote(props.node.id)
 }
 
 const checkCancelEdit = e => {
@@ -363,6 +360,8 @@ const showContextMenu = async e => {
 			MenuItems.Separator,
 			...(isInRecycleBin ? [] : [MenuItems.Rename]),
 			e.shiftKey || isInRecycleBin ? MenuItems.Delete : MenuItems.Recycle,
+			MenuItems.Separator,
+			MenuItems.Properties,
 		])
 	}
 }

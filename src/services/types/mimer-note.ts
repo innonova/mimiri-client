@@ -730,6 +730,14 @@ export class MimerNote {
 		return this.note.size
 	}
 
+	public get historySize() {
+		return this.note.historySize
+	}
+
+	public get dataSize() {
+		return this.note.dataSize
+	}
+
 	public get scrollTop() {
 		return persistedState.getScrollTop(this)
 	}

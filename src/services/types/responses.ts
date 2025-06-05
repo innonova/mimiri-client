@@ -79,6 +79,10 @@ export interface ShareOffersResponse {
 	offers: ShareOffer[]
 }
 
+export interface ShareParticipantsResponse {
+	participants: { username: string; since: string }[]
+}
+
 export interface NotificationUrlResponse {
 	url: string
 	token: string

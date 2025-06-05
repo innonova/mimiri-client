@@ -68,6 +68,7 @@ export enum MenuItems {
 	EmptyRecycleBin = 'empty-recycle-bin',
 	PasswordGenerator = 'password-generator',
 	Settings = 'settings',
+	Properties = 'properties',
 }
 
 class MenuManager {
@@ -101,25 +102,13 @@ class MenuManager {
 
 	public async menuIdActivated(itemId: string) {
 		if (itemId === 'change-username') {
-			noteManager.getNoteById('settings-username' as Guid)?.select()
-			if (mimiriPlatform.isPhone) {
-				noteManager.openNote()
-			}
+			noteManager.openNote('settings-username' as Guid)
 		} else if (itemId === 'change-password') {
-			noteManager.getNoteById('settings-password' as Guid)?.select()
-			if (mimiriPlatform.isPhone) {
-				noteManager.openNote()
-			}
+			noteManager.openNote('settings-password' as Guid)
 		} else if (itemId === 'delete-account') {
-			noteManager.getNoteById('settings-delete' as Guid)?.select()
-			if (mimiriPlatform.isPhone) {
-				noteManager.openNote()
-			}
+			noteManager.openNote('settings-delete' as Guid)
 		} else if (itemId === 'manage-subscription') {
-			noteManager.getNoteById('settings-plan' as Guid)?.select()
-			if (mimiriPlatform.isPhone) {
-				noteManager.openNote()
-			}
+			noteManager.openNote('settings-plan' as Guid)
 		} else if (itemId === 'tray-double-click') {
 			ipcClient.menu.show()
 		} else if (itemId === 'tray-click') {
@@ -145,10 +134,7 @@ class MenuManager {
 			loginDialog.value.show()
 		} else if (itemId === 'create-password') {
 			noteManager.controlPanel.expand()
-			noteManager.getNoteById('settings-create-password' as Guid)?.select()
-			if (mimiriPlatform.isPhone) {
-				noteManager.openNote()
-			}
+			noteManager.openNote('settings-create-password' as Guid)
 		} else if (itemId === 'go-online') {
 			noteManager.goOnline()
 		} else if (itemId === 'toggle-screen-sharing') {
@@ -176,10 +162,7 @@ class MenuManager {
 		} else if (itemId === 'word-wrap') {
 			settingsManager.wordwrap = !settingsManager.wordwrap
 		} else if (itemId === 'about') {
-			noteManager.getNoteById(noteManager.controlPanelId)?.select()
-			if (mimiriPlatform.isPhone) {
-				noteManager.openNote()
-			}
+			noteManager.openNote(noteManager.controlPanelId)
 		} else if (itemId === 'show-dev-tools') {
 			ipcClient.menu.showDevTools()
 		}
@@ -249,16 +232,10 @@ class MenuManager {
 		} else if (itemId === 'mark-as-read') {
 			notificationManager.markAllAsRead()
 		} else if (itemId === 'update-available') {
-			noteManager.getNoteById('settings-update' as Guid)?.select()
-			if (mimiriPlatform.isPhone) {
-				noteManager.openNote()
-			}
+			noteManager.openNote('settings-update' as Guid)
 		} else if (itemId === 'check-for-update') {
 			await updateManager.check()
-			noteManager.getNoteById('settings-update' as Guid)?.select()
-			if (mimiriPlatform.isPhone) {
-				noteManager.openNote()
-			}
+			noteManager.openNote('settings-update' as Guid)
 		} else if (itemId === 'add-getting-started') {
 			await noteManager.addGettingStarted()
 		} else if (itemId === 'empty-recycle-bin') {
@@ -266,15 +243,11 @@ class MenuManager {
 		} else if (itemId === 'password-generator') {
 			passwordGeneratorDialog.value.show()
 		} else if (itemId === 'set-pin') {
-			noteManager.getNoteById('settings-pin' as Guid)?.select()
-			if (mimiriPlatform.isPhone) {
-				noteManager.openNote()
-			}
+			noteManager.openNote('settings-pin' as Guid)
 		} else if (itemId === 'settings') {
-			noteManager.getNoteById('settings-general' as Guid)?.select()
-			if (mimiriPlatform.isPhone) {
-				noteManager.openNote()
-			}
+			noteManager.openNote('settings-general' as Guid)
+		} else if (itemId === 'properties') {
+			noteManager.openProperties()
 		}
 	}
 
@@ -666,6 +639,12 @@ class MenuManager {
 					result.push({
 						id: 'settings',
 						title: 'Settings',
+					})
+					break
+				case MenuItems.Properties:
+					result.push({
+						id: 'properties',
+						title: 'Properties',
 					})
 					break
 			}

@@ -67,6 +67,27 @@ export const formatExpirationDate = (date?: Date) => {
 	return ''
 }
 
+export const formatDateTime = (date?: Date) => {
+	if (date) {
+		return format(date, 'yyyy-MM-dd - HH:mm:ss')
+	}
+	return ''
+}
+
+export const formatDate = (date?: Date) => {
+	if (date) {
+		return format(date, 'yyyy-MM-dd')
+	}
+	return ''
+}
+
+export const formatTime = (date?: Date) => {
+	if (date) {
+		return format(date, 'H:mm:ss')
+	}
+	return ''
+}
+
 export const currentTime = () => {
 	const queryTimeMatch = /now=(\d{4}\.\d{2}\.\d{2})/.exec(location.search)
 	if (queryTimeMatch) {
@@ -143,4 +164,16 @@ export const compareVersions = (a: string, b: string) => {
 		}
 	}
 	return 0
+}
+
+export function formatBytes(bytes: number): string {
+	if (bytes < 1024) return `${bytes} B`
+	const kb = bytes / 1024
+	if (kb < 1024) return `${kb.toFixed(2)} kB`
+	const mb = kb / 1024
+	if (mb < 1024) return `${mb.toFixed(2)} MB`
+	const gb = mb / 1024
+	if (gb < 1024) return `${gb.toFixed(2)} GB`
+	const tb = gb / 1024
+	return `${tb.toFixed(2)} TB`
 }
