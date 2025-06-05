@@ -3,7 +3,7 @@
 		<div class="grid grid-rows-[auto_1fr_auto]">
 			<DialogTitle @close="close">Share Note</DialogTitle>
 			<form v-on:submit.prevent="submitDialog" class="mx-2 mt-5 mb-2">
-				<div class="grid grid-cols-[5rem_10rem] items-center gap-2 mx-2 mb-2">
+				<div class="grid grid-cols-[5.5rem_10rem] items-center gap-2 mx-2 mb-2">
 					<div v-if="code" class="col-span-2 flex flex-col items-center">
 						<div class="text-center leading-5">Share this code with {{ name }} to complete the share</div>
 						<div class="text-size-header my-5 flex gap-1 items-center">

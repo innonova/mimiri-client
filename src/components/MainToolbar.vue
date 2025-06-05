@@ -134,6 +134,8 @@ const showMobileMenu = () => {
 	const isSystem = !!noteManager.selectedNote?.isSystem
 	const isRecycleBin = !!noteManager.selectedNote?.isRecycleBin
 	const isInRecycleBin = !!noteManager.selectedNote?.isInRecycleBin
+	const isShared = !!noteManager.selectedNote?.isShared
+	const isShareRoot = !!noteManager.selectedNote?.isShareRoot
 	const whenSelectedNote = [
 		MenuItems.About,
 		MenuItems.DarkMode,
@@ -153,7 +155,8 @@ const showMobileMenu = () => {
 
 		...(!isSystem && isInRecycleBin ? [MenuItems.Separator, MenuItems.Cut, MenuItems.Copy] : []),
 		MenuItems.Separator,
-		...(!isSystem && !isInRecycleBin ? [MenuItems.Share] : []),
+		...(!isSystem && !isInRecycleBin && (!isShared || isShareRoot) ? [MenuItems.Share] : []),
+		...(!isSystem && !isInRecycleBin && !isShared ? [MenuItems.ReceiveShare] : []),
 		MenuItems.Refresh,
 		...(!isSystem && !isInRecycleBin ? [MenuItems.Separator, MenuItems.Rename, MenuItems.Recycle] : []),
 		...(!isSystem && isInRecycleBin ? [MenuItems.Separator, MenuItems.Delete] : []),
