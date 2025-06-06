@@ -48,7 +48,12 @@ export class EditorAdvanced implements TextEditor {
 
 		languages.setMonarchTokensProvider('mimiri', {
 			tokenizer: {
-				root: [[/(p`)([^``]+)(`)/, ['directive', 'password', 'directive']]],
+				root: [
+					// Password: p`secret`
+					[/(p`)([^`]+)(`)/, ['directive', 'password', 'directive']],
+					// Checkbox: [ ] or [X] or [x]
+					[/(\[)([\s|X|x])(\])/, ['checkbox', 'checkbox', 'checkbox']],
+				],
 			},
 		})
 
@@ -58,6 +63,7 @@ export class EditorAdvanced implements TextEditor {
 			rules: [
 				{ token: 'directive', foreground: '666666' },
 				{ token: 'password', foreground: 'd4d4d5' },
+				{ token: 'checkbox', foreground: '666666' },
 			],
 			colors: {},
 		})
@@ -68,6 +74,7 @@ export class EditorAdvanced implements TextEditor {
 			rules: [
 				{ token: 'directive', foreground: 'AAAAAA' },
 				{ token: 'password', foreground: '000001' },
+				{ token: 'checkbox', foreground: 'AAAAAA' },
 			],
 			colors: {},
 		})
@@ -172,6 +179,33 @@ export class EditorAdvanced implements TextEditor {
 					const tokens = editor.tokenize(line, 'mimiri')[0]
 					for (let i = 0; i < tokens.length; i++) {
 						const token = tokens[i]
+
+						if (token.type === 'checkbox.mimiri' && i + 1 < tokens.length) {
+							const tokenStart = token.offset + 1
+							const tokenEnd = tokens[i + 1].offset + 1
+							const checkboxText = line.substring(tokenStart - 1, tokenEnd - 1)
+							if (
+								(checkboxText === '[ ]' || checkboxText === '[X]' || checkboxText === '[x]') &&
+								selectionStart >= tokenStart &&
+								selectionEnd <= tokenEnd
+							) {
+								const range = {
+									startLineNumber: e.selection.startLineNumber,
+									startColumn: tokenStart,
+									endLineNumber: e.selection.startLineNumber,
+									endColumn: tokenEnd,
+								}
+								const newText = checkboxText === '[ ]' ? '[X]' : '[ ]'
+								this.monacoEditor.executeEdits(undefined, [{ range, text: newText, forceMoveMarkers: true }])
+								// Restore the previous cursor position
+								this.monacoEditor.setSelection({
+									startLineNumber: e.selection.startLineNumber,
+									startColumn: line.length + 1,
+									endLineNumber: e.selection.startLineNumber,
+									endColumn: line.length + 1,
+								})
+							}
+						}
 						if (token.type === 'password.mimiri' && i + 1 < tokens.length) {
 							const tokenStart = token.offset + 1
 							const tokenEnd = tokens[i + 1].offset + 1

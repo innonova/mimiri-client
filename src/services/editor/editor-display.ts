@@ -86,6 +86,11 @@ export class EditorDisplay implements TextEditor {
 					const rect = elm.getBoundingClientRect()
 					this.listener.onPasswordClicked(rect.top, rect.right, elm.textContent)
 				}
+				const elm2 = this.getCheckboxElement(event)
+				if (elm2) {
+					const rect = elm2.getBoundingClientRect()
+					this.listener.onCheckboxClicked(rect.top, rect.right, elm2.textContent)
+				}
 			})
 		}
 	}
@@ -96,6 +101,14 @@ export class EditorDisplay implements TextEditor {
 			return elm.children[0] as HTMLElement
 		}
 		if (elm.className === 'password-secret-content') {
+			return elm
+		}
+		return undefined
+	}
+
+	private getCheckboxElement(event: MouseEvent) {
+		const elm = event.target as HTMLElement
+		if (elm.className === 'editor-checkbox') {
 			return elm
 		}
 		return undefined
@@ -121,10 +134,9 @@ export class EditorDisplay implements TextEditor {
 	}
 
 	private formatText(text: string) {
-		return text.replace(
-			/p`([^`]+)`/g,
-			'<span class="password-secret">p`<span class="password-secret-content">$1</span></span>`',
-		)
+		return text
+			.replace(/p`([^`]+)`/g, '<span class="password-secret">p`<span class="password-secret-content">$1</span></span>`')
+			.replace(/\[(\s|X|x)\]/g, '<span class="editor-checkbox">[$1]</span>`')
 	}
 
 	public show(text: string, scrollTop: number) {

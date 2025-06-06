@@ -73,6 +73,9 @@ export class MimiriEditor {
 			onPasswordClicked: (top: number, left: number, text: string) => {
 				this.animateNotification(top, left, text)
 			},
+			onCheckboxClicked: (top: number, left: number, text: string) => {
+				this.toggleCheckbox(top, left, text)
+			},
 			onStateUpdated: state => {
 				Object.assign(this._state, state)
 			},
@@ -81,6 +84,12 @@ export class MimiriEditor {
 		this._editorAdvanced = new EditorAdvanced(editorListener)
 		this._editorSimple = new EditorSimple(editorListener)
 		this._editorDisplay = new EditorDisplay(editorListener)
+	}
+
+	private toggleCheckbox(top: number, left: number, text: string) {
+		if (text === '[ ]') {
+			// TODO: Implement checkbox toggle logic
+		}
 	}
 
 	private animateNotification(top: number, left: number, text: string) {

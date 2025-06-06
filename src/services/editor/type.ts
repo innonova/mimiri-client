@@ -22,6 +22,7 @@ export interface TextEditorListener {
 	onEditorBlur()
 	onScroll(position: number)
 	onPasswordClicked(top: number, left: number, text: string)
+	onCheckboxClicked(top: number, left: number, text: string)
 	onStateUpdated(state: Omit<EditorState, 'mode'>)
 }
 

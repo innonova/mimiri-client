@@ -264,3 +264,7 @@ dialog::backdrop {
 .password-secret-content {
 	-webkit-text-security: disc;
 }
+
+.editor-checkbox {
+	background-color: var(--color-checkbox);
+}
