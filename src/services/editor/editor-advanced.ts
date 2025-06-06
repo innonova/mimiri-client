@@ -167,68 +167,63 @@ export class EditorAdvanced implements TextEditor {
 		})
 
 		this.monacoEditor.onDidChangeCursorSelection(e => {
-			if (
-				e.reason === editor.CursorChangeReason.Explicit &&
-				e.selection &&
-				e.selection.startLineNumber === e.selection.endLineNumber
-			) {
+			if (e.reason === editor.CursorChangeReason.Explicit && e.selection && e.source !== 'keyboard') {
 				const line = this.monacoEditor.getModel().getLineContent(e.selection.startLineNumber)
 				const selectionStart = e.selection.startColumn
 				const selectionEnd = e.selection.endColumn
-				if (selectionEnd - selectionStart > 0 || !mimiriPlatform.isDesktop) {
-					const tokens = editor.tokenize(line, 'mimiri')[0]
-					for (let i = 0; i < tokens.length; i++) {
-						const token = tokens[i]
-
-						if (token.type === 'checkbox.mimiri' && i + 1 < tokens.length) {
-							const tokenStart = token.offset + 1
-							const tokenEnd = tokens[i + 1].offset + 1
-							const checkboxText = line.substring(tokenStart - 1, tokenEnd - 1)
-							if (
-								(checkboxText === '[ ]' || checkboxText === '[X]' || checkboxText === '[x]') &&
-								selectionStart >= tokenStart &&
-								selectionEnd <= tokenEnd
-							) {
-								const range = {
+				const isDoubleClick = selectionEnd - selectionStart > 0 || !mimiriPlatform.isDesktop
+				const tokens = editor.tokenize(line, 'mimiri')[0]
+				for (let i = 0; i < tokens.length; i++) {
+					const token = tokens[i]
+					console.log(token)
+					if (token.type === 'checkbox.mimiri' && i + 1 < tokens.length) {
+						const tokenStart = token.offset + 1
+						const tokenEnd = tokens[i + 1].offset + 1
+						const checkboxText = line.substring(tokenStart - 1, tokenEnd - 1)
+						if (
+							(checkboxText === '[ ]' || checkboxText === '[X]' || checkboxText === '[x]') &&
+							selectionStart >= tokenStart &&
+							selectionEnd <= tokenEnd
+						) {
+							const range = {
+								startLineNumber: e.selection.startLineNumber,
+								startColumn: tokenStart,
+								endLineNumber: e.selection.startLineNumber,
+								endColumn: tokenEnd,
+							}
+							const newText = checkboxText === '[ ]' ? '[X]' : '[ ]'
+							this.monacoEditor.executeEdits(undefined, [{ range, text: newText, forceMoveMarkers: true }])
+							// Restore the previous cursor position
+							this.monacoEditor.setSelection({
+								startLineNumber: e.selection.startLineNumber,
+								startColumn: line.length + 1,
+								endLineNumber: e.selection.startLineNumber,
+								endColumn: line.length + 1,
+							})
+						}
+					}
+					if (isDoubleClick && token.type === 'password.mimiri' && i + 1 < tokens.length) {
+						const tokenStart = token.offset + 1
+						const tokenEnd = tokens[i + 1].offset + 1
+						if (tokenStart <= selectionStart && selectionEnd <= tokenEnd) {
+							this.monacoEditor.setSelection(
+								{
 									startLineNumber: e.selection.startLineNumber,
 									startColumn: tokenStart,
 									endLineNumber: e.selection.startLineNumber,
 									endColumn: tokenEnd,
-								}
-								const newText = checkboxText === '[ ]' ? '[X]' : '[ ]'
-								this.monacoEditor.executeEdits(undefined, [{ range, text: newText, forceMoveMarkers: true }])
-								// Restore the previous cursor position
-								this.monacoEditor.setSelection({
-									startLineNumber: e.selection.startLineNumber,
-									startColumn: line.length + 1,
-									endLineNumber: e.selection.startLineNumber,
-									endColumn: line.length + 1,
-								})
-							}
-						}
-						if (token.type === 'password.mimiri' && i + 1 < tokens.length) {
-							const tokenStart = token.offset + 1
-							const tokenEnd = tokens[i + 1].offset + 1
-							if (tokenStart <= selectionStart && selectionEnd <= tokenEnd) {
-								this.monacoEditor.setSelection(
-									{
-										startLineNumber: e.selection.startLineNumber,
-										startColumn: tokenStart,
-										endLineNumber: e.selection.startLineNumber,
-										endColumn: tokenEnd,
-									},
-									e.source,
-								)
-								if (!mimiriPlatform.isDesktop) {
-									if (this._active) {
-										const text = line.substring(tokenStart - 1, tokenEnd - 1)
-										const rect = this.monacoEditor.getDomNode().getBoundingClientRect()
-										const lineTop = this.monacoEditor.getTopForLineNumber(e.selection.startLineNumber)
-										const columnOffset = this.monacoEditor.getOffsetForColumn(e.selection.startLineNumber, tokenEnd)
-										const left = columnOffset + rect.left - this.monacoEditor.getScrollLeft()
-										const top = lineTop + rect.top - this.monacoEditor.getScrollTop()
-										this.listener.onPasswordClicked(top, left, text)
-									}
+								},
+								e.source,
+							)
+							if (!mimiriPlatform.isDesktop) {
+								if (this._active) {
+									const text = line.substring(tokenStart - 1, tokenEnd - 1)
+									const rect = this.monacoEditor.getDomNode().getBoundingClientRect()
+									const lineTop = this.monacoEditor.getTopForLineNumber(e.selection.startLineNumber)
+									const columnOffset = this.monacoEditor.getOffsetForColumn(e.selection.startLineNumber, tokenEnd)
+									const left = columnOffset + rect.left - this.monacoEditor.getScrollLeft()
+									const top = lineTop + rect.top - this.monacoEditor.getScrollTop()
+									this.listener.onPasswordClicked(top, left, text)
 								}
 							}
 						}
@@ -325,7 +320,7 @@ export class EditorAdvanced implements TextEditor {
 					if (span.className !== 'mtk1') {
 						mobileLog.log('Styles Updated')
 						this.styleOverridesDirty = false
-						this.styleElement.innerHTML = `.${span.className} { -webkit-text-security: disc; }`
+						this.styleElement.innerHTML = `.${span.className} { -webkit-text-security: disc; } .mtk7 { cursor: pointer; }`
 					}
 					break
 				}
