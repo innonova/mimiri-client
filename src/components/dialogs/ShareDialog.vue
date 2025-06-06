@@ -52,12 +52,12 @@
 						</div>
 					</div>
 					<div v-if="code" class="col-span-2 flex justify-center gap-2 mt-4">
-						<button class="primary" @click="close">Close</button>
+						<button class="primary" type="button" @click="close">Close</button>
 					</div>
 					<div v-if="!code" class="col-span-2 flex justify-end gap-2 mt-2">
 						<LoadingIcon v-if="loading" class="animate-spin w-8 h-8 mr-2 inline-block"></LoadingIcon>
-						<button v-if="!loading" class="primary" @click="submitDialog">OK</button>
-						<button class="secondary" @click="close">Cancel</button>
+						<button v-if="!loading" class="primary">OK</button>
+						<button class="secondary" type="button" @click="close">Cancel</button>
 					</div>
 				</div>
 			</form>

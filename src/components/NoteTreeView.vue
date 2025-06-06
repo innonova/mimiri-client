@@ -94,7 +94,11 @@ const deleteActiveNote = () => {
 }
 
 const recycleActiveNote = () => {
-	noteManager.selectedNote.moveToRecycleBin()
+	if (noteManager.selectedNote.isShareRoot) {
+		deleteNodeDialog.value.show()
+	} else {
+		noteManager.selectedNote.moveToRecycleBin()
+	}
 }
 
 const renameActiveNote = () => {

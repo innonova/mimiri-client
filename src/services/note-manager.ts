@@ -650,12 +650,12 @@ export class NoteManager {
 		}
 	}
 
-	public openNote(id?: Guid) {
+	public openNote(id?: Guid, mobileOpen = true) {
 		const note = id ? this.getNoteById(id) : this.selectedNote
 		if (note) {
 			note.select()
 			this.state.viewMode = ViewMode.Content
-			if (this._isMobile) {
+			if (this._isMobile && mobileOpen) {
 				this.state.noteOpen = true
 				persistedState.noteOpen = true
 				browserHistory.open(this.state.selectedNoteId)

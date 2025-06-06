@@ -196,11 +196,7 @@ const toggleNode = async e => {
 }
 
 const selectNode = async (mobileSwitch: boolean) => {
-	if (mobileSwitch) {
-		noteManager.openNote(props.node.id)
-	} else {
-		noteManager.getNoteById(props.node.id).select()
-	}
+	noteManager.openNote(props.node.id, mobileSwitch)
 }
 
 const showContextMenu = async e => {

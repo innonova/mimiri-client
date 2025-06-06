@@ -203,7 +203,11 @@ class MenuManager {
 			}
 		} else if (itemId === 'recycle') {
 			if (noteManager.selectedNote) {
-				noteManager.selectedNote.moveToRecycleBin()
+				if (noteManager.selectedNote.isShareRoot) {
+					deleteNodeDialog.value.show()
+				} else {
+					noteManager.selectedNote.moveToRecycleBin()
+				}
 			}
 		} else if (itemId === 'copy') {
 			clipboardNote.value = noteManager.selectedNote
