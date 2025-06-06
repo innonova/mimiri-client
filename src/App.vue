@@ -65,6 +65,7 @@
 		<ContextMenu ref="contextMenu"></ContextMenu>
 		<NotificationList ref="notificationList"></NotificationList>
 		<DeleteNodeDialog ref="deleteNodeDialog"></DeleteNodeDialog>
+		<DeleteHistoryDialog ref="deleteHistoryDialog"></DeleteHistoryDialog>
 		<DeleteMethodDialog ref="deletePaymentMethodDialog"></DeleteMethodDialog>
 		<EmptyRecycleBinDialog ref="emptyRecycleBinDialog"></EmptyRecycleBinDialog>
 		<PasswordGeneratorDialog ref="passwordGeneratorDialog"></PasswordGeneratorDialog>
@@ -131,6 +132,7 @@ import {
 	updateManager,
 	mobileLog,
 	deletePaymentMethodDialog,
+	deleteHistoryDialog,
 } from './global'
 import { settingsManager } from './services/settings-manager'
 import LoadingIcon from './icons/loading.vue'
@@ -143,6 +145,7 @@ import { useEventListener } from '@vueuse/core'
 import SystemPage from './components/SystemPage.vue'
 import { ViewMode } from './services/note-manager'
 import PropertiesPage from './components/PropertiesPage.vue'
+import DeleteHistoryDialog from './components/dialogs/DeleteHistoryDialog.vue'
 
 mobileLog.log(`App Loading ${settingsManager.channel} ${updateManager.currentVersion}`)
 

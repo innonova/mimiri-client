@@ -1,7 +1,7 @@
 <template>
 	<dialog class="w-72 bg-dialog text-text border border-solid border-dialog-border" ref="dialog">
 		<div
-			v-if="!noteManager.selectedNote.isShared || shareParticipants.length == 0"
+			v-if="!noteManager.selectedNote?.isShared || shareParticipants.length == 0"
 			class="grid grid-rows-[auto_1fr_auto] gap-6"
 		>
 			<DialogTitle @close="close">Delete Note</DialogTitle>
@@ -10,7 +10,7 @@
 				<div class="mt-3 ml-3 mb-1 italic">
 					{{ noteManager.selectedViewModel?.title }}
 				</div>
-				<div v-if="noteManager.selectedNote.isShared" class="mt-5">No other users have access to this note</div>
+				<div v-if="noteManager.selectedNote?.isShared" class="mt-5">No other users have access to this note</div>
 			</main>
 			<footer class="flex justify-end gap-2 pr-2 pb-2">
 				<button class="primary" @click="submitDialog">Delete</button>
@@ -18,7 +18,7 @@
 			</footer>
 		</div>
 		<div
-			v-if="noteManager.selectedNote.isShareRoot && shareParticipants.length > 0"
+			v-if="noteManager.selectedNote?.isShareRoot && shareParticipants.length > 0"
 			class="grid grid-rows-[auto_1fr_auto] gap-6"
 		>
 			<DialogTitle @close="close">Leave Share</DialogTitle>
@@ -46,7 +46,7 @@
 			</footer>
 		</div>
 		<div
-			v-if="!noteManager.selectedNote.isShareRoot && shareParticipants.length > 0"
+			v-if="!noteManager.selectedNote?.isShareRoot && shareParticipants.length > 0"
 			class="grid grid-rows-[auto_1fr_auto] gap-6"
 		>
 			<DialogTitle @close="close">Delete Note</DialogTitle>
@@ -84,7 +84,7 @@ const dialog = ref(null)
 const shareParticipants = ref([])
 
 const show = async () => {
-	if (noteManager.selectedNote.isShared) {
+	if (noteManager.selectedNote?.isShared) {
 		shareParticipants.value = (await noteManager.getShareParticipants(noteManager.selectedNote.id)).filter(
 			item => item.username !== noteManager.username,
 		)

@@ -489,6 +489,21 @@ export class MimerNote {
 		return this.viewModel.hasMoreHistory
 	}
 
+	public async deleteHistory() {
+		const history: History = this.note.changeItem('history')
+		history.active = undefined
+		history.hotArchive = undefined
+		history.coldArchive = undefined
+		await this.save()
+	}
+
+	public async deleteArchivedHistory() {
+		const history: History = this.note.changeItem('history')
+		history.hotArchive = undefined
+		history.coldArchive = undefined
+		await this.save()
+	}
+
 	public async search(searchTerm: string, callback: (note: MimerNote) => void) {
 		if (
 			!this.isRoot &&
@@ -521,6 +536,10 @@ export class MimerNote {
 
 	private set historyItems(value) {
 		this._historyItems = value
+	}
+
+	public get hasMoreHistory() {
+		return this.viewModel.hasMoreHistory
 	}
 
 	public get isChildrenLoaded() {

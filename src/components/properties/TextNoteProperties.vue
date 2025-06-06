@@ -2,7 +2,7 @@
 	<div class="flex flex-col h-full">
 		<TabBar :items="['Properties']"></TabBar>
 		<div class="flex flex-col overflow-y-auto h-full">
-			<div class="grid grid-cols-[7rem_12rem] gap-3 items-baseline px-1 mt-2 mb-10">
+			<div class="grid grid-cols-[7rem_15rem] gap-3 items-baseline px-1 mt-2 mb-10">
 				<div>Data:</div>
 				<div>{{ formatBytes(note.dataSize) }}</div>
 				<div>History:</div>
@@ -13,6 +13,10 @@
 				<div>{{ formatDateTime(note.created) }}</div>
 				<div>Last Modified:</div>
 				<div>{{ formatDateTime(note.updated) }}</div>
+				<div class="col-span-2 flex gap-2">
+					<button v-if="showDeleteOldHistory" class="primary" @click="deleteOldHistory">Delete old history</button>
+					<button v-if="showDeleteAllHistory" class="primary" @click="deleteAllHistory">Delete all history</button>
+				</div>
 				<div v-if="note.isShared && shareParticipants.length > 0" class="col-span-2 mt-4 leading-5">
 					This note is shared with:
 				</div>
@@ -31,25 +35,48 @@
 </template>
 <script lang="ts" setup>
 import { computed, ref, watch } from 'vue'
-import { noteManager } from '../../global'
-import { formatBytes, formatDate, formatDateTime, formatTime } from '../../services/helpers'
+import { deleteHistoryDialog, noteManager } from '../../global'
+import { formatBytes, formatDateTime } from '../../services/helpers'
 import TabBar from '../elements/TabBar.vue'
 
 const shareParticipants = ref([])
+const showDeleteOldHistory = ref(false)
+const showDeleteAllHistory = ref(false)
 
 const note = computed(() => noteManager.selectedNote)
 
+const update = async () => {
+	if (note.value.isShared) {
+		shareParticipants.value = (await noteManager.getShareParticipants(note.value.id)).filter(
+			item => item.username !== noteManager.username,
+		)
+	} else {
+		shareParticipants.value = []
+	}
+	if (note.value.historyItems.length === 0) {
+		await note.value.loadHistory()
+	}
+	showDeleteOldHistory.value = note.value.historyItems.length > 10 || note.value.hasMoreHistory
+	showDeleteAllHistory.value = note.value.historyItems.length > 0
+}
+
 watch(
-	note,
+	[note],
 	async () => {
-		if (note.value.isShared) {
-			shareParticipants.value = (await noteManager.getShareParticipants(note.value.id)).filter(
-				item => item.username !== noteManager.username,
-			)
-		} else {
-			shareParticipants.value = []
-		}
+		await update()
 	},
 	{ immediate: true },
 )
+
+const deleteOldHistory = async () => {
+	deleteHistoryDialog.value.show(false, () => {
+		void update()
+	})
+}
+
+const deleteAllHistory = async () => {
+	deleteHistoryDialog.value.show(true, () => {
+		void update()
+	})
+}
 </script>
