@@ -7,7 +7,8 @@ import { reactive } from 'vue'
 import { EditorSimple } from './editor-simple'
 import { EditorDisplay } from './editor-display'
 import { settingsManager } from '../settings-manager'
-import { clipboardManager } from '../../global'
+import { clipboardManager, noteManager, saveEmptyNodeDialog } from '../../global'
+import { VersionConflictError } from '../mimer-client'
 
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms))
 
@@ -44,8 +45,6 @@ export class MimiriEditor {
 
 	constructor() {
 		this._state = reactive({
-			text: '',
-			initialText: '',
 			canUndo: false,
 			canRedo: false,
 			changed: false,
@@ -190,9 +189,64 @@ export class MimiriEditor {
 			this.history.reset()
 			this._activeEditor.show(note.text, this.note.scrollTop)
 		} else {
-			this._activeEditor.updateText(note.text)
+			if (!this._activeEditor.changed) {
+				this._activeEditor.updateText(note.text)
+			} else {
+				if (note.text === this._activeEditor.text) {
+					this._activeEditor.resetChanged()
+				}
+			}
 		}
 		this._activeEditor.readonly = note.isCache || note.isSystem
+	}
+
+	public async save(): Promise<string> {
+		let result = 'success'
+		const noteId = this.note?.id
+		const targetText = this._activeEditor.text
+		const initialText = this._activeEditor.initialText
+		if (noteId && targetText !== initialText) {
+			if (targetText.length === 0 && initialText.length > 5) {
+				const doSave = await saveEmptyNodeDialog.value.show(noteManager.getNoteById(noteId))
+				if (!doSave) {
+					return 'not-saved-empty'
+				}
+			}
+			while (true) {
+				try {
+					const note = noteManager.getNoteById(noteId)
+					if (targetText === note.text) {
+						if (note.id === this.note.id) {
+							this.resetChanged()
+						}
+						return 'success'
+					}
+					if (initialText !== note.text) {
+						result = 'lost-update'
+					}
+					const sizeBefore = note.size
+					note.text = targetText
+					const sizeAfter = note.size
+					if (sizeAfter > noteManager.maxNoteSize) {
+						return 'note-size'
+					} else if (noteManager.usedBytes > noteManager.maxBytes && sizeAfter >= sizeBefore) {
+						return 'total-size'
+					} else {
+						await note.save()
+						if (note.id === this.note.id) {
+							this.resetChanged()
+						}
+					}
+					break
+				} catch (ex) {
+					if (ex instanceof VersionConflictError) {
+						continue
+					}
+					break
+				}
+			}
+		}
+		return result
 	}
 
 	public activateEdit() {

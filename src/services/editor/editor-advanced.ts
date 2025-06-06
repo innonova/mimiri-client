@@ -705,7 +705,15 @@ export class EditorAdvanced implements TextEditor {
 		return this.monacoEditor.getScrollTop()
 	}
 
+	get initialText(): string {
+		return this._initialText
+	}
+
 	public get text() {
 		return this._text
+	}
+
+	public get changed() {
+		return this._state.changed
 	}
 }

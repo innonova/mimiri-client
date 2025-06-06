@@ -99,18 +99,16 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch, type WatchStopHandle } from 'vue'
-import { limitDialog, mimiriEditor, noteManager, saveEmptyNodeDialog, showSearchBox, titleBar } from '../global'
+import { infoDialog, limitDialog, mimiriEditor, noteManager, showSearchBox, titleBar } from '../global'
 import type { NoteViewModel } from '../services/types/mimer-note'
 import { searchManager } from '../services/search-manager'
 import ToolbarIcon from './ToolbarIcon.vue'
 import SelectionControl from './SelectionControl.vue'
-import { VersionConflictError } from '../services/mimer-client'
 import { settingsManager } from '../services/settings-manager'
 import { useEventListener } from '@vueuse/core'
 import CloseButton from './elements/CloseButton.vue'
 import SettingIcon from '../icons/cog.vue'
 import type { Guid } from '../services/types/guid'
-import { mimiriPlatform } from '../services/mimiri-platform'
 
 let activeViewModelStopWatch: WatchStopHandle = undefined
 let activeViewModel: NoteViewModel = undefined
@@ -284,39 +282,18 @@ const saveEnabled = computed(() => {
 
 const save = async () => {
 	if (activeViewModel && saveEnabled.value && mimiriEditor.mode !== 'display') {
-		let note = mimiriEditor.note
-		const textValue = mimiriEditor.text
-		if (note && note.text !== textValue) {
-			if (note.text.length > 5 && textValue.length === 0) {
-				saveEmptyNodeDialog.value.show(note)
-			} else {
-				while (true) {
-					try {
-						note = noteManager.getNoteById(note.id)
-						const sizeBefore = note.size
-						note.text = textValue
-						const sizeAfter = note.size
-						if (sizeAfter > noteManager.maxNoteSize) {
-							noteManager.select(activeViewModel.id)
-							limitDialog.value.show('save-note-size')
-						} else if (noteManager.usedBytes > noteManager.maxBytes && sizeAfter >= sizeBefore) {
-							noteManager.select(activeViewModel.id)
-							limitDialog.value.show('save-total-size')
-						} else {
-							await note.save()
-							if (note.id === mimiriEditor.note.id) {
-								mimiriEditor.resetChanged()
-							}
-						}
-						break
-					} catch (ex) {
-						if (ex instanceof VersionConflictError) {
-							continue
-						}
-						break
-					}
-				}
-			}
+		const result = await mimiriEditor.save()
+		if (result === 'note-size') {
+			noteManager.select(activeViewModel.id)
+			limitDialog.value.show('save-note-size')
+		} else if (result === 'total-size') {
+			noteManager.select(activeViewModel.id)
+			limitDialog.value.show('save-total-size')
+		} else if (result === 'lost-update') {
+			infoDialog.value.show(
+				'Note was changed',
+				'The note you just saved was changed in another client before you saved it.\n\nYou can find that version in the note history.',
+			)
 		}
 	}
 }

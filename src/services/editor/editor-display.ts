@@ -275,7 +275,15 @@ export class EditorDisplay implements TextEditor {
 		return this._element.scrollTop
 	}
 
-	public get text(): any {
+	get initialText(): string {
 		throw new Error('attempt to save from display mode')
+	}
+
+	public get text(): string {
+		throw new Error('attempt to save from display mode')
+	}
+
+	public get changed() {
+		return false
 	}
 }

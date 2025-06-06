@@ -75,6 +75,7 @@
 		<LimitDialog ref="limitDialog"></LimitDialog>
 		<PasswordDialog ref="passwordDialog"></PasswordDialog>
 		<LoginDialog ref="loginDialog"></LoginDialog>
+		<InfoDialog ref="infoDialog"></InfoDialog>
 		<div
 			v-if="noteManager.state.busy"
 			class="absolute left-0 top-0 w-full h-full flex items-center justify-around text-white"
@@ -133,6 +134,7 @@ import {
 	mobileLog,
 	deletePaymentMethodDialog,
 	deleteHistoryDialog,
+	infoDialog,
 } from './global'
 import { settingsManager } from './services/settings-manager'
 import LoadingIcon from './icons/loading.vue'
@@ -146,6 +148,7 @@ import SystemPage from './components/SystemPage.vue'
 import { ViewMode } from './services/note-manager'
 import PropertiesPage from './components/PropertiesPage.vue'
 import DeleteHistoryDialog from './components/dialogs/DeleteHistoryDialog.vue'
+import InfoDialog from './components/dialogs/InfoDialog.vue'
 
 mobileLog.log(`App Loading ${settingsManager.channel} ${updateManager.currentVersion}`)
 

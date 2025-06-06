@@ -422,7 +422,15 @@ export class EditorSimple implements TextEditor {
 		return this._element.scrollTop
 	}
 
-	public get text(): any {
+	get initialText(): string {
+		return this._initialText
+	}
+
+	public get text(): string {
 		return this._element.innerText
+	}
+
+	public get changed(): boolean {
+		return this._state.changed
 	}
 }

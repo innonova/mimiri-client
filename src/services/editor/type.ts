@@ -52,5 +52,7 @@ export interface TextEditor {
 	get readonly()
 	set readonly(value: boolean)
 	get scrollTop(): number
-	get text()
+	get initialText(): string
+	get text(): string
+	get changed(): boolean
 }
