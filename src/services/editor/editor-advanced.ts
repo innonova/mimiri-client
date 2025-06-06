@@ -156,6 +156,14 @@ export class EditorAdvanced implements TextEditor {
 			}
 		})
 
+		this.monacoEditor.onMouseDown(e => {
+			if (e.target && e.target.element && e.target.element.classList.contains('mtk7')) {
+				// Prevent default text selection when clicking checkboxes
+				e.event.preventDefault()
+				e.event.stopPropagation()
+			}
+		})
+
 		this.monacoEditorModel.onDidChangeContent(event => {
 			if (this._active) {
 				this._text = this.monacoEditorModel.getValue()
@@ -175,7 +183,6 @@ export class EditorAdvanced implements TextEditor {
 				const tokens = editor.tokenize(line, 'mimiri')[0]
 				for (let i = 0; i < tokens.length; i++) {
 					const token = tokens[i]
-					console.log(token)
 					if (token.type === 'checkbox.mimiri' && i + 1 < tokens.length) {
 						const tokenStart = token.offset + 1
 						const tokenEnd = tokens[i + 1].offset + 1
@@ -193,7 +200,7 @@ export class EditorAdvanced implements TextEditor {
 							}
 							const newText = checkboxText === '[ ]' ? '[X]' : '[ ]'
 							this.monacoEditor.executeEdits(undefined, [{ range, text: newText, forceMoveMarkers: true }])
-							// Restore the previous cursor position
+							// Move cusor to the end of the checkbox line
 							this.monacoEditor.setSelection({
 								startLineNumber: e.selection.startLineNumber,
 								startColumn: line.length + 1,
