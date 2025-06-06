@@ -200,13 +200,6 @@ export class EditorAdvanced implements TextEditor {
 							}
 							const newText = checkboxText === '[ ]' ? '[X]' : '[ ]'
 							this.monacoEditor.executeEdits(undefined, [{ range, text: newText, forceMoveMarkers: true }])
-							// Move cusor to the end of the checkbox line
-							this.monacoEditor.setSelection({
-								startLineNumber: e.selection.startLineNumber,
-								startColumn: line.length + 1,
-								endLineNumber: e.selection.startLineNumber,
-								endColumn: line.length + 1,
-							})
 						}
 					}
 					if (isDoubleClick && token.type === 'password.mimiri' && i + 1 < tokens.length) {
@@ -327,7 +320,7 @@ export class EditorAdvanced implements TextEditor {
 					if (span.className !== 'mtk1') {
 						mobileLog.log('Styles Updated')
 						this.styleOverridesDirty = false
-						this.styleElement.innerHTML = `.${span.className} { -webkit-text-security: disc; } .mtk7 { cursor: pointer; }`
+						this.styleElement.innerHTML = `.${span.className} { -webkit-text-security: disc; } .mtk7 { cursor: pointer; user-select: none }` // Is a hack that I just added the checkbox css here
 					}
 					break
 				}
