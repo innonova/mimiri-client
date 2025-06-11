@@ -84,6 +84,7 @@ const onMessage = async (event: MessageEvent) => {
 					await blogManager.initialize()
 				}
 				updateConfig()
+				blogManager.markAsRead()
 				break
 			case 'comment':
 				await blogManager.addComment(data.username, data.comment)

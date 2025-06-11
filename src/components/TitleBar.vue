@@ -126,14 +126,7 @@
 				v-if="notificationManager.unread > 0"
 				class="w-9 h-6 p-px no-drag pointer-events-none"
 			></NotificationActiveIcon>
-			<div
-				v-if="
-					notificationManager.unread > 0 &&
-					updateManager.isUpdateAvailable &&
-					settingsManager.updateMode === UpdateMode.StrongNotify
-				"
-				class="absolute bottom-1 left-px w-2 h-2 rounded-sm bg-bad"
-			></div>
+			<div v-if="notificationManager.strong" class="absolute bottom-1 left-px w-2 h-2 rounded-sm bg-bad"></div>
 		</div>
 		<div
 			class="h-full flex items-center justify-center"
@@ -161,7 +154,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { noteManager, searchInput, showSearchBox, ipcClient, notificationManager, updateManager } from '../global'
+import { noteManager, searchInput, showSearchBox, ipcClient, notificationManager } from '../global'
 import ScreenShareEnabledIcon from '../icons/screen-sharing-enabled.vue'
 import ScreenShareDisabledIcon from '../icons/screen-sharing-disabled.vue'
 import AccountIcon from '../icons/account.vue'

@@ -1,12 +1,12 @@
 import { reactive } from 'vue'
 import { noteManager, notificationList } from '../global'
-import { settingsManager } from './settings-manager'
+import { settingsManager, UpdateMode } from './settings-manager'
 import type { Guid } from './types/guid'
-import { mimiriPlatform } from './mimiri-platform'
 
 export interface NotificationManagerState {
 	unread: number
 	count: number
+	strong: boolean
 	notifications: MimiriNotification[]
 }
 
@@ -18,6 +18,7 @@ export interface MimiriNotification {
 	icon: string
 	read: boolean
 	version?: string
+	strong: boolean
 }
 
 export class NotificationManager {
@@ -25,6 +26,7 @@ export class NotificationManager {
 	public readonly state: NotificationManagerState = reactive({
 		unread: 0,
 		count: 0,
+		strong: false,
 		notifications: [],
 	})
 
@@ -35,6 +37,7 @@ export class NotificationManager {
 	private updateCounts() {
 		this.state.count = this.state.notifications.length
 		this.state.unread = this.state.notifications.filter(item => !item.read).length
+		this.state.strong = this.state.notifications.some(item => !item.read && item.strong)
 	}
 
 	public show() {
@@ -50,6 +53,10 @@ export class NotificationManager {
 		if (notification.type === 'update') {
 			notificationList.value.close()
 			noteManager.openNote('settings-update' as Guid)
+		}
+		if (notification.type === 'blog') {
+			notificationList.value.close()
+			noteManager.openNote('settings-blog' as Guid)
 		}
 	}
 
@@ -69,7 +76,29 @@ export class NotificationManager {
 			timestamp: releaseDate,
 			read: false,
 			version,
+			strong: settingsManager.updateMode === UpdateMode.StrongNotify,
 		})
+		this.updateCounts()
+	}
+
+	public blogAvailable(releaseDate: Date) {
+		if (this.state.notifications.length > 0 && this.state.notifications[0].type === 'blog') {
+			this.state.notifications.shift()
+		}
+		this.state.notifications.unshift({
+			id: this.nextId++,
+			type: 'blog',
+			title: `New blog post`,
+			icon: 'announcement',
+			timestamp: releaseDate,
+			read: false,
+			strong: settingsManager.blogPostNotificationLevel === 'clearly',
+		})
+		this.updateCounts()
+	}
+
+	public blogRead() {
+		this.state.notifications = this.state.notifications.filter(item => item.type !== 'blog')
 		this.updateCounts()
 	}
 
@@ -84,6 +113,10 @@ export class NotificationManager {
 
 	public get count() {
 		return this.state.count
+	}
+
+	public get strong() {
+		return this.state.strong
 	}
 
 	public get showing() {

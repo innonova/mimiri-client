@@ -592,13 +592,16 @@ export class NoteManager {
 					})
 					connection.onreconnected(() => {
 						console.log('SignalR Reconnected')
-						updateManager.check()
+						void updateManager.check()
+						void blogManager.refreshAll()
 						this.loadShareOffers()
 					})
 					connection.onclose(error => {
 						console.log('SignalR Closed', error)
 					})
 					await connection.start()
+					void updateManager.check()
+					void blogManager.refreshAll()
 				} catch (ex) {
 					console.log('Failed to set up for notifications', ex)
 				}

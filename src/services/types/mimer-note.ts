@@ -1,11 +1,11 @@
 import { computed, reactive } from 'vue'
 import type { NoteManager } from '../note-manager'
 import { dateTimeNow, type DateTime } from './date-time'
-import { newGuid, type Guid } from './guid'
+import { type Guid } from './guid'
 import type { Note } from './note'
 import { fromBase64, toBase64 } from '../hex-base64'
 import { persistedState } from '../persisted-state'
-import { updateManager } from '../../global'
+import { blogManager, updateManager } from '../../global'
 import { settingsManager, UpdateMode } from '../settings-manager'
 
 const zip = async (text: string) => {
@@ -631,7 +631,11 @@ export class MimerNote {
 
 	public get hasInfo() {
 		if (this.isControlPanel) {
-			return computed(() => updateManager.isUpdateAvailable && settingsManager.updateMode === UpdateMode.StrongNotify)
+			return computed(
+				() =>
+					(updateManager.isUpdateAvailable && settingsManager.updateMode === UpdateMode.StrongNotify) ||
+					(blogManager.hasNewPost.value && settingsManager.blogPostNotificationLevel === 'clearly'),
+			)
 		}
 		return false
 	}

@@ -1,8 +1,9 @@
 import { reactive, computed } from 'vue'
 import { settingsManager } from './settings-manager'
-import { newGuid } from './types/guid'
+import { emptyGuid, newGuid } from './types/guid'
 import type { Guid } from './types/guid'
 import type { BlogPost, Comment } from './types/responses'
+import { notificationManager } from '../global'
 
 export interface BlogConfig {
 	notificationLevel: 'notify-clearly' | 'notify-discreetly' | 'notify-never'
@@ -24,7 +25,7 @@ export class BlogManager {
 	constructor(noteManager: any) {
 		this.noteManager = noteManager
 		this.state = reactive<BlogState>({
-			currentPostId: newGuid(),
+			currentPostId: emptyGuid(),
 			currentPost: null,
 			posts: [],
 			comments: [],
@@ -40,6 +41,14 @@ export class BlogManager {
 			if (posts && posts.length > 0) {
 				this.state.currentPost = posts[0]
 				this.state.currentPostId = posts[0].id
+				// settingsManager.lastReadBlogPostId = newGuid()
+				if (
+					settingsManager.blogPostNotificationLevel !== 'never' &&
+					this.state.currentPostId !== settingsManager.lastReadBlogPostId &&
+					this.state.currentPostId !== emptyGuid()
+				) {
+					notificationManager.blogAvailable(new Date(this.state.currentPost.created))
+				}
 			}
 		} finally {
 			this.state.isLoading = false
@@ -137,9 +146,15 @@ export class BlogManager {
 	}
 
 	public async refreshAll(): Promise<void> {
+		await this.initialize()
 		await this.loadLatestPost()
 		await this.loadPostHistory()
 		await this.loadComments()
+	}
+
+	public markAsRead(): void {
+		settingsManager.lastReadBlogPostId = this.state.currentPostId
+		notificationManager.blogRead()
 	}
 
 	public get currentPost() {
@@ -160,5 +175,11 @@ export class BlogManager {
 
 	public get isInitialized() {
 		return computed(() => this.state.isInitialized)
+	}
+
+	public get hasNewPost() {
+		return computed(
+			() => this.state.currentPostId !== emptyGuid() && this.state.currentPostId !== settingsManager.lastReadBlogPostId,
+		)
 	}
 }

@@ -1,5 +1,5 @@
 import { computed } from 'vue'
-import { updateManager } from '../../global'
+import { blogManager, updateManager } from '../../global'
 import type { NoteManager } from '../note-manager'
 import { settingsManager, UpdateMode } from '../settings-manager'
 import { dateTimeNow } from './date-time'
@@ -88,9 +88,9 @@ export class VirtualNote extends MimerNote {
 						settingsManager.updateMode === UpdateMode.DiscreteNotify),
 			)
 		}
-		// if (this.id === 'settings-blog') {
-		// 	return computed(() => true)
-		// }
+		if (this.id === 'settings-blog') {
+			return computed(() => blogManager.hasNewPost.value && settingsManager.blogPostNotificationLevel !== 'never')
+		}
 		return false
 	}
 

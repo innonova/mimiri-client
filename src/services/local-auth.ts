@@ -1,6 +1,6 @@
 import { mimiriPlatform } from './mimiri-platform'
 import { settingsManager } from './settings-manager'
-import { ipcClient, noteManager, updateManager } from '../global'
+import { blogManager, ipcClient, noteManager, updateManager } from '../global'
 import { reactive } from 'vue'
 import type { LoginListener } from './note-manager'
 import type { HideShowListener } from './ipc-client'
@@ -47,6 +47,7 @@ class LocalAuth implements LoginListener, HideShowListener {
 		sessionStorage.setItem('locked', 'false')
 		if (noteManager.isLoggedIn) {
 			updateManager.check()
+			blogManager.refreshAll()
 			noteManager.loadShareOffers()
 			await noteManager.selectedNote?.refresh()
 		}

@@ -74,6 +74,13 @@ export const formatDateTime = (date?: Date) => {
 	return ''
 }
 
+export const formatNotificationTimestamp = (date?: Date) => {
+	if (date) {
+		return format(date, 'yyyy.MM.dd HH:mm:ss')
+	}
+	return ''
+}
+
 export const formatDate = (date?: Date) => {
 	if (date) {
 		return format(date, 'yyyy-MM-dd')

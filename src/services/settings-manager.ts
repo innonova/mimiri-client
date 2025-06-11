@@ -4,6 +4,7 @@ import { menuManager } from './menu-manager'
 import { toRaw } from 'vue'
 import { mimiriPlatform } from './mimiri-platform'
 import { compareVersions, delay } from './helpers'
+import { emptyGuid, type Guid } from './types/guid'
 
 export enum UpdateMode {
 	AutomaticOnIdle = 'auto-idle',
@@ -44,6 +45,7 @@ export interface MimerConfiguration {
 	editorFontSize: number
 	lastNoteCreateType: string
 	blogPostNotificationLevel: string
+	lastReadBlogPostId: Guid
 }
 
 class SettingsManager {
@@ -81,6 +83,7 @@ class SettingsManager {
 		editorFontSize: 14,
 		lastNoteCreateType: 'child',
 		blogPostNotificationLevel: 'notify-clearly',
+		lastReadBlogPostId: emptyGuid(),
 	})
 
 	constructor() {
@@ -388,6 +391,15 @@ class SettingsManager {
 
 	public set blogPostNotificationLevel(value: string) {
 		this.state.blogPostNotificationLevel = value
+		void this.save()
+	}
+
+	public get lastReadBlogPostId() {
+		return this.state.lastReadBlogPostId
+	}
+
+	public set lastReadBlogPostId(value: Guid) {
+		this.state.lastReadBlogPostId = value
 		void this.save()
 	}
 }
