@@ -247,7 +247,8 @@ const handleShortcut = event => {
 
 	const treeViewShortCutsActive =
 		(document.activeElement.tagName === 'BODY' || !noteEditor.value?.$el.contains(document.activeElement)) &&
-		event.target.tagName === 'BODY'
+		event.target.tagName === 'BODY' &&
+		!noteManager.selectedNote?.isSystem
 
 	if (event.key === 'd' && ctrlActive) {
 		if (treeViewShortCutsActive) {
