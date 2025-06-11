@@ -155,3 +155,22 @@ export interface ShareOfferRequest extends BasicRequest {
 export interface ShareParticipantsRequest extends BasicRequest {
 	id: Guid
 }
+
+export interface AddCommentRequest extends BasicRequest {
+	postId: Guid
+	displayName: string
+	comment: string
+}
+
+export interface GetCommentsRequest extends BasicRequest {
+	postId: Guid
+}
+
+export interface GetBlogPostsRequest extends BasicRequest {
+	count: number
+	includeContent: boolean
+}
+
+export interface GetBlogPostRequest extends BasicRequest {
+	id: Guid
+}

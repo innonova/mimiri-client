@@ -3,7 +3,7 @@
 		<div class="flex items-center py-px px-1 bg-toolbar border-b border-solid border-toolbar min-h-9 select-none">
 			<ToolbarIcon icon="back" :hoverEffect="true" title="Back" class="desktop:hidden" @click="onBack"></ToolbarIcon>
 		</div>
-		<div class="flex overflow-hidden pl-2 pt-2">
+		<div class="flex overflow-hidden pl-2 pt-2 h-full">
 			<div class="w-full">
 				<General v-if="type === 'settings-general'"></General>
 				<FontsColors v-if="type === 'settings-fonts-colors'"></FontsColors>
@@ -14,6 +14,7 @@
 				<DeleteAccount v-if="type === 'settings-delete'"></DeleteAccount>
 				<SubscriptionFlow v-if="type === 'settings-plan'"></SubscriptionFlow>
 				<Account v-if="type === 'settings-billing-address'"></Account>
+				<DevBlog v-if="type === 'settings-blog'"></DevBlog>
 				<PaymentMethodsFlow v-if="type === 'settings-payment-methods'"></PaymentMethodsFlow>
 				<InvoiceFlow v-if="type === 'settings-invoices'"></InvoiceFlow>
 				<About v-if="type === 'settings-about'"></About>
@@ -36,6 +37,7 @@ import DeleteAccount from './settings/DeleteAccount.vue'
 import Account from './subscription/Account.vue'
 import PromoteAccount from './settings/PromoteAccount.vue'
 import About from './settings/About.vue'
+import DevBlog from './settings/DevBlog.vue'
 import Update from './settings/Update.vue'
 import SubscriptionFlow from './subscription/SubscriptionFlow.vue'
 import InvoiceFlow from './subscription/InvoiceFlow.vue'

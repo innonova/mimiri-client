@@ -23,6 +23,13 @@ export const createControlPanelTree = (owner: NoteManager, parent: MimerNote): M
 				]
 			: []),
 		{
+			id: 'settings-blog' as Guid,
+			title: 'Dev Blog',
+			type: 'settings-blog',
+			icon: 'download',
+			children: [],
+		},
+		{
 			id: 'settings-group' as Guid,
 			title: 'Settings',
 			type: 'settings-general',

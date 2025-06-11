@@ -43,6 +43,7 @@ export interface MimerConfiguration {
 	editorFontFamily: string
 	editorFontSize: number
 	lastNoteCreateType: string
+	blogPostNotificationLevel: string
 }
 
 class SettingsManager {
@@ -79,6 +80,7 @@ class SettingsManager {
 		editorFontFamily: 'Consolas',
 		editorFontSize: 14,
 		lastNoteCreateType: 'child',
+		blogPostNotificationLevel: 'notify-clearly',
 	})
 
 	constructor() {
@@ -377,6 +379,15 @@ class SettingsManager {
 
 	public set lastNoteCreateType(value: string) {
 		this.state.lastNoteCreateType = value
+		void this.save()
+	}
+
+	public get blogPostNotificationLevel() {
+		return this.state.blogPostNotificationLevel
+	}
+
+	public set blogPostNotificationLevel(value: string) {
+		this.state.blogPostNotificationLevel = value
 		void this.save()
 	}
 }
