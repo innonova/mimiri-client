@@ -82,7 +82,7 @@ class SettingsManager {
 		editorFontFamily: 'Consolas',
 		editorFontSize: 14,
 		lastNoteCreateType: 'child',
-		blogPostNotificationLevel: 'notify-clearly',
+		blogPostNotificationLevel: 'clearly',
 		lastReadBlogPostId: emptyGuid(),
 	})
 

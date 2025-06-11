@@ -8,7 +8,7 @@
 						<option :value="UpdateMode.AutomaticOnIdle">Automatic - when idle (default)</option>
 						<option :value="UpdateMode.AutomaticOnStart">Automatic - on startup</option>
 						<option :value="UpdateMode.StrongNotify">Manual - notify me clearly</option>
-						<option :value="UpdateMode.DiscreteNotify">Manual - notify me discretely</option>
+						<option :value="UpdateMode.DiscreteNotify">Manual - notify me discreetly</option>
 						<option :value="UpdateMode.ManualOnly">Manual - do not notify me</option>
 						<option :value="UpdateMode.Off">Off - stay on this version</option>
 					</select>
