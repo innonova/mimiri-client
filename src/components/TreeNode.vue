@@ -80,6 +80,11 @@
 				class="w-[30px] h-[30px] desktop:w-[23px] desktop:h-[23px] p-0.5 mr-1 desktop:mr-0.5"
 				:class="{ 'text-shared': node.shared }"
 			></AccountIcon>
+			<AnnouncementIcon
+				v-if="node.icon === 'announcement'"
+				class="w-[30px] h-[30px] desktop:w-[23px] desktop:h-[23px] p-0.5 mr-1 desktop:mr-0.5"
+				:class="{ 'text-shared': node.shared }"
+			></AnnouncementIcon>
 			<RecycleBinIcon
 				v-if="node.icon === 'recycle-bin' && hasChildren"
 				class="w-[30px] h-[30px] desktop:w-[23px] desktop:h-[23px] p-0.5 mr-1 desktop:mr-0.5"
@@ -144,6 +149,7 @@ import CoinsIcon from '../icons/coins.vue'
 import InfoIcon from '../icons/info.vue'
 import DownloadIcon from '../icons/download.vue'
 import LockIcon from '../icons/lock.vue'
+import AnnouncementIcon from '../icons/announcement.vue'
 
 const visualElement = ref(null)
 const renameInput = ref(null)

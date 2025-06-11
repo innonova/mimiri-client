@@ -88,6 +88,9 @@ export class VirtualNote extends MimerNote {
 						settingsManager.updateMode === UpdateMode.DiscreteNotify),
 			)
 		}
+		// if (this.id === 'settings-blog') {
+		// 	return computed(() => true)
+		// }
 		return false
 	}
 

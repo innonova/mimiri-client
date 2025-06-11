@@ -53,6 +53,7 @@ import NotificationActiveIcon from '../icons/notification-active.vue'
 import HideIcon from '../icons/hide.vue'
 import PlusIcon from '../icons/plus.vue'
 import PlusSmallIcon from '../icons/plus-small.vue'
+import AnnouncementIcon from '../icons/announcement.vue'
 import { mimiriPlatform } from '../services/mimiri-platform'
 
 const props = defineProps<{
@@ -154,6 +155,9 @@ const getComponent = () => {
 	}
 	if (props.icon === 'plus-small') {
 		return PlusSmallIcon
+	}
+	if (props.icon === 'announcement') {
+		return AnnouncementIcon
 	}
 }
 
