@@ -12,6 +12,7 @@ import { MobileLog } from './services/mobile-log'
 import { PasswordGenerator } from './services/password-generator'
 import { ClipboardManager } from './services/clipboard-manager'
 import { FontManager } from './services/font-manager'
+import { BlogManager } from './services/blog-manager'
 
 export const env = import.meta.env
 const host = env.VITE_MIMER_API_HOST
@@ -25,6 +26,7 @@ export const ipcClient = new IpcClient()
 export const browserHistory = new BrowserHistory()
 export const noteManager = new NoteManager(host, paymentHost, serverKey, serverKeyId)
 export const updateManager = new UpdateManager(env.VITE_MIMER_UPDATE_HOST)
+export const blogManager = new BlogManager(noteManager)
 export const notificationManager = new NotificationManager()
 export const passwordGenerator = new PasswordGenerator()
 export const fontManager = new FontManager()

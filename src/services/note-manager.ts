@@ -9,6 +9,7 @@ import type { ICacheManager } from './types/cache-manager'
 import { HubConnectionBuilder } from '@microsoft/signalr'
 import { type NoteAction } from './types/requests'
 import {
+	blogManager,
 	browserHistory,
 	createNewNode,
 	createNewRootNode,
@@ -581,6 +582,9 @@ export class NoteManager {
 						}
 						if (type === 'bundle-update') {
 							void updateManager.check()
+						}
+						if (type === 'blog-post') {
+							void blogManager.refreshAll()
 						}
 					})
 					connection.onreconnecting(error => {
