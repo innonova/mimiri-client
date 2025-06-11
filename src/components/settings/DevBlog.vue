@@ -43,7 +43,7 @@ const updateCurrentPost = () => {
 
 const updateComments = () => {
 	postMessageToFrame({
-		type: 'init',
+		type: 'comments',
 		comments: toRaw(blogManager.comments.value),
 	})
 }
