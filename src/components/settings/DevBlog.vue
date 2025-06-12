@@ -5,7 +5,7 @@
 			<iframe
 				ref="blogFrame"
 				class="w-full h-full"
-				:src="`https://blog.mimiri.io/integrated/?color-scheme=${
+				:src="`https://blog.mimiri.io/integrated/?q=${Date.now()}&color-scheme=${
 					settingsManager.darkMode ? 'dark' : 'light'
 				}&username=${noteManager.username.startsWith('mimiri_a_') ? 'Anonymous' : noteManager.username}`"
 			></iframe>
