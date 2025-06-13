@@ -1,116 +1,65 @@
 import { reactive, computed } from 'vue'
 import { settingsManager } from './settings-manager'
-import { emptyGuid, newGuid } from './types/guid'
+import { emptyGuid } from './types/guid'
 import type { Guid } from './types/guid'
-import type { BlogPost, Comment } from './types/responses'
+import type { BlogPost } from './types/responses'
 import { notificationManager } from '../global'
+import type { NoteManager } from './note-manager'
 
 export interface BlogConfig {
 	notificationLevel: 'notify-clearly' | 'notify-discreetly' | 'notify-never'
 }
 
 export interface BlogState {
-	currentPostId: Guid
-	currentPost: BlogPost | null
-	posts: BlogPost[]
-	comments: Comment[]
-	isLoading: boolean
 	isInitialized: boolean
+	latestPostId: Guid
+	latestPostDate?: Date
 }
 
 export class BlogManager {
-	private noteManager: any
+	private noteManager: NoteManager
 	public state: BlogState
 
-	constructor(noteManager: any) {
+	constructor(noteManager: NoteManager) {
 		this.noteManager = noteManager
 		this.state = reactive<BlogState>({
-			currentPostId: emptyGuid(),
-			currentPost: null,
-			posts: [],
-			comments: [],
-			isLoading: false,
+			latestPostId: emptyGuid(),
 			isInitialized: false,
 		})
 	}
 
-	private async loadLatestPost(): Promise<void> {
-		this.state.isLoading = true
+	private async updateLatestBlogPost(): Promise<void> {
 		try {
-			const { posts } = await this.noteManager.getLatestBlogPosts(1, true)
-			if (posts && posts.length > 0) {
-				this.state.currentPost = posts[0]
-				this.state.currentPostId = posts[0].id
-				// settingsManager.lastReadBlogPostId = newGuid()
-				if (
-					settingsManager.blogPostNotificationLevel !== 'never' &&
-					this.state.currentPostId !== settingsManager.lastReadBlogPostId &&
-					this.state.currentPostId !== emptyGuid()
-				) {
-					notificationManager.blogAvailable(new Date(this.state.currentPost.created))
-				}
+			const blogPost = (await fetch(`https://dev-mimiri-api.mimiri.io/blog/latest/metadata`).then(res =>
+				res.json(),
+			)) as BlogPost
+			this.state.latestPostId = blogPost.id
+			this.state.latestPostDate = blogPost.publishDate ? new Date(blogPost.publishDate) : undefined
+			if (
+				settingsManager.blogPostNotificationLevel !== 'never' &&
+				this.state.latestPostId !== settingsManager.lastReadBlogPostId &&
+				this.state.latestPostId !== emptyGuid()
+			) {
+				notificationManager.blogAvailable(new Date(this.state.latestPostDate))
 			}
-		} finally {
-			this.state.isLoading = false
+		} catch (error) {
+			this.state.latestPostId = emptyGuid()
+			this.state.latestPostDate = undefined
 		}
+		console.log(this.state)
 	}
 
-	private async loadPostHistory(): Promise<void> {
-		this.state.isLoading = true
-		try {
-			const { posts } = await this.noteManager.getLatestBlogPosts(10, false)
-			this.state.posts = posts || []
-		} finally {
-			this.state.isLoading = false
-		}
-	}
-
-	private async loadComments(): Promise<void> {
-		this.state.isLoading = true
-		try {
-			const response = await this.noteManager.getComments(this.state.currentPostId)
-			this.state.comments = response.comments || []
-		} finally {
-			this.state.isLoading = false
-		}
-	}
-
-	public async selectPost(postId: Guid): Promise<void> {
-		this.state.isLoading = true
-		try {
-			const { posts } = await this.noteManager.getBlogPost(postId)
-			if (posts && posts.length > 0) {
-				this.state.currentPost = posts[0]
-				this.state.currentPostId = postId
-				await this.loadComments()
-			}
-		} finally {
-			this.state.isLoading = false
-		}
-	}
-
-	public async addComment(username: string, comment: string): Promise<void> {
-		this.state.isLoading = true
-		try {
-			await this.noteManager.addComment(this.state.currentPostId, username, comment)
-			await this.loadComments()
-		} finally {
-			this.state.isLoading = false
-		}
+	public async addComment(postId: Guid, username: string, comment: string): Promise<void> {
+		if (settingsManager.disableDevBlog) return
+		await this.noteManager.addComment(postId, username, comment)
 	}
 
 	public async initialize(): Promise<void> {
+		if (settingsManager.disableDevBlog) return
 		if (this.state.isInitialized) return
 
-		this.state.isLoading = true
-		try {
-			await this.loadLatestPost()
-			await this.loadComments()
-			await this.loadPostHistory()
-			this.state.isInitialized = true
-		} finally {
-			this.state.isLoading = false
-		}
+		await this.updateLatestBlogPost()
+		this.state.isInitialized = true
 	}
 
 	public getConfig(): BlogConfig {
@@ -146,40 +95,19 @@ export class BlogManager {
 	}
 
 	public async refreshAll(): Promise<void> {
+		if (settingsManager.disableDevBlog) return
 		await this.initialize()
-		await this.loadLatestPost()
-		await this.loadPostHistory()
-		await this.loadComments()
+		await this.updateLatestBlogPost()
 	}
 
 	public markAsRead(): void {
-		settingsManager.lastReadBlogPostId = this.state.currentPostId
+		settingsManager.lastReadBlogPostId = this.state.latestPostId
 		notificationManager.blogRead()
-	}
-
-	public get currentPost() {
-		return computed(() => this.state.currentPost)
-	}
-
-	public get posts() {
-		return computed(() => this.state.posts)
-	}
-
-	public get comments() {
-		return computed(() => this.state.comments)
-	}
-
-	public get isLoading() {
-		return computed(() => this.state.isLoading)
-	}
-
-	public get isInitialized() {
-		return computed(() => this.state.isInitialized)
 	}
 
 	public get hasNewPost() {
 		return computed(
-			() => this.state.currentPostId !== emptyGuid() && this.state.currentPostId !== settingsManager.lastReadBlogPostId,
+			() => this.state.latestPostId !== emptyGuid() && this.state.latestPostId !== settingsManager.lastReadBlogPostId,
 		)
 	}
 }

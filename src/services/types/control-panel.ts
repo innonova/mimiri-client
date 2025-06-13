@@ -1,6 +1,7 @@
 import { noteManager } from '../../global'
 import { mimiriPlatform } from '../mimiri-platform'
 import type { NoteManager } from '../note-manager'
+import { settingsManager } from '../settings-manager'
 import type { Guid } from './guid'
 import type { MimerNote } from './mimer-note'
 import { VirtualNote } from './virtual-note'
@@ -9,6 +10,7 @@ export const createControlPanelTree = (owner: NoteManager, parent: MimerNote): M
 	const showUpdate = !mimiriPlatform.isWeb || location.host === 'localhost:5173'
 	const showPin = mimiriPlatform.isElectron || location.host === 'localhost:5173'
 	const showSubscription = mimiriPlatform.isDesktop
+	const showDevBlog = !settingsManager.disableDevBlog
 
 	const items = [
 		...(showUpdate
@@ -22,13 +24,17 @@ export const createControlPanelTree = (owner: NoteManager, parent: MimerNote): M
 					},
 				]
 			: []),
-		{
-			id: 'settings-blog' as Guid,
-			title: 'Dev Blog',
-			type: 'settings-blog',
-			icon: 'announcement',
-			children: [],
-		},
+		...(showDevBlog
+			? [
+					{
+						id: 'settings-blog' as Guid,
+						title: 'Dev Blog',
+						type: 'settings-blog',
+						icon: 'announcement',
+						children: [],
+					},
+				]
+			: []),
 		{
 			id: 'settings-group' as Guid,
 			title: 'Settings',

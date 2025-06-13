@@ -46,6 +46,7 @@ export interface MimerConfiguration {
 	lastNoteCreateType: string
 	blogPostNotificationLevel: string
 	lastReadBlogPostId: Guid
+	disableDevBlog: boolean
 }
 
 class SettingsManager {
@@ -84,6 +85,7 @@ class SettingsManager {
 		lastNoteCreateType: 'child',
 		blogPostNotificationLevel: 'clearly',
 		lastReadBlogPostId: emptyGuid(),
+		disableDevBlog: false,
 	})
 
 	constructor() {
@@ -400,6 +402,15 @@ class SettingsManager {
 
 	public set lastReadBlogPostId(value: Guid) {
 		this.state.lastReadBlogPostId = value
+		void this.save()
+	}
+
+	public get disableDevBlog() {
+		return !!this.state.disableDevBlog
+	}
+
+	public set disableDevBlog(value: boolean) {
+		this.state.disableDevBlog = value
 		void this.save()
 	}
 }

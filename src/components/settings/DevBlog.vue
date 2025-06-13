@@ -1,5 +1,5 @@
 <template>
-	<div class="flex flex-col h-full">
+	<div v-if="!settingsManager.disableDevBlog" class="flex flex-col h-full">
 		<TabBar :items="['Dev Blog']"></TabBar>
 		<div class="w-full h-full">
 			<iframe
@@ -9,12 +9,20 @@
 					settingsManager.darkMode ? 'dark' : 'light'
 				}&username=${noteManager.username.startsWith('mimiri_a_') ? 'Anonymous' : noteManager.username}`"
 			></iframe>
+
+			<!-- <iframe
+				ref="blogFrame"
+				class="w-full h-full"
+				:src="`http://localhost:5175/integrated/?q=${Date.now()}&color-scheme=${
+					settingsManager.darkMode ? 'dark' : 'light'
+				}&username=${noteManager.username.startsWith('mimiri_a_') ? 'Anonymous' : noteManager.username}`"
+			></iframe> -->
 		</div>
 	</div>
 </template>
 
 <script setup lang="ts">
-import { ref, watch, toRaw } from 'vue'
+import { ref, watch } from 'vue'
 import { blogManager, env, noteManager } from '../../global'
 import TabBar from '../elements/TabBar.vue'
 import { useEventListener } from '@vueuse/core'
@@ -34,39 +42,6 @@ const updateConfig = () => {
 	})
 }
 
-const updateCurrentPost = () => {
-	postMessageToFrame({
-		type: 'post',
-		post: toRaw(blogManager.currentPost.value),
-	})
-}
-
-const updateComments = () => {
-	postMessageToFrame({
-		type: 'comments',
-		comments: toRaw(blogManager.comments.value),
-	})
-}
-
-const updateHistory = () => {
-	postMessageToFrame({
-		type: 'history',
-		posts: toRaw(blogManager.posts.value),
-	})
-}
-
-watch(blogManager.currentPost, () => {
-	updateCurrentPost()
-})
-
-watch(blogManager.comments, () => {
-	updateComments()
-})
-
-watch(blogManager.posts, () => {
-	updateHistory()
-})
-
 watch(settingsManager.state, () => {
 	updateConfig()
 })
@@ -76,21 +51,12 @@ const onMessage = async (event: MessageEvent) => {
 		const { data } = event
 		switch (data.type) {
 			case 'ready':
-				if (blogManager.isInitialized.value) {
-					updateCurrentPost()
-					updateComments()
-					updateHistory()
-				} else {
-					await blogManager.initialize()
-				}
 				updateConfig()
 				blogManager.markAsRead()
 				break
 			case 'comment':
-				await blogManager.addComment(data.username, data.comment)
-				break
-			case 'select-post':
-				await blogManager.selectPost(data.postId)
+				await blogManager.addComment(data.postId, data.username, data.comment)
+				postMessageToFrame({ type: 'comment-posted' })
 				break
 			case 'set-config':
 				blogManager.applyConfig(data.config as BlogConfig)

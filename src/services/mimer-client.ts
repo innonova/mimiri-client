@@ -7,10 +7,8 @@ import { newGuid, type Guid } from './types/guid'
 import type {
 	AllKeysResponse,
 	BasicResponse,
-	BlogPostsResponse,
 	CheckUsernameResponse,
 	ClientConfig,
-	CommentsResponse,
 	KeyResponse,
 	LoginResponse,
 	NotificationUrlResponse,
@@ -36,9 +34,6 @@ import {
 	type DeleteKeyRequest,
 	type DeleteNoteRequest,
 	type DeleteShareRequest,
-	type GetBlogPostRequest,
-	type GetBlogPostsRequest,
-	type GetCommentsRequest,
 	type LoginRequest,
 	type MultiNoteRequest,
 	type NoteAction,
@@ -1238,52 +1233,6 @@ export class MimerClient {
 		}
 		await this.rootSignature.sign('user', request)
 		return await this.post<BasicResponse>('/feedback/add-comment', request)
-	}
-
-	public async getComments(postId: Guid) {
-		if (!this.rootCrypt) {
-			throw new Error('Not Logged in')
-		}
-		const request: GetCommentsRequest = {
-			username: this.username,
-			postId,
-			timestamp: dateTimeNow(),
-			requestId: newGuid(),
-			signatures: [],
-		}
-		await this.rootSignature.sign('user', request)
-		return await this.post<CommentsResponse>('/feedback/get-comments', request)
-	}
-
-	public async getLatestBlogPosts(count: number, includeContent: boolean) {
-		if (!this.rootCrypt) {
-			throw new Error('Not Logged in')
-		}
-		const request: GetBlogPostsRequest = {
-			username: this.username,
-			count,
-			includeContent,
-			timestamp: dateTimeNow(),
-			requestId: newGuid(),
-			signatures: [],
-		}
-		await this.rootSignature.sign('user', request)
-		return await this.post<BlogPostsResponse>('/feedback/blog-posts', request)
-	}
-
-	public async getBlogPost(id: Guid) {
-		if (!this.rootCrypt) {
-			throw new Error('Not Logged in')
-		}
-		const request: GetBlogPostRequest = {
-			username: this.username,
-			id,
-			timestamp: dateTimeNow(),
-			requestId: newGuid(),
-			signatures: [],
-		}
-		await this.rootSignature.sign('user', request)
-		return await this.post<BlogPostsResponse>('/feedback/blog-post', request)
 	}
 
 	public async createCreateAction(note: Note) {

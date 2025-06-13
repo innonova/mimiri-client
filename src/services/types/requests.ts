@@ -161,16 +161,3 @@ export interface AddCommentRequest extends BasicRequest {
 	displayName: string
 	comment: string
 }
-
-export interface GetCommentsRequest extends BasicRequest {
-	postId: Guid
-}
-
-export interface GetBlogPostsRequest extends BasicRequest {
-	count: number
-	includeContent: boolean
-}
-
-export interface GetBlogPostRequest extends BasicRequest {
-	id: Guid
-}

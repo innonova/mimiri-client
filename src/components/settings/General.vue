@@ -47,6 +47,12 @@
 					Quit when closing application window
 				</label>
 			</div>
+			<div class="p-1 pt-2 m-auto text-left">
+				<label>
+					<input type="checkbox" v-model="disableDevBlog" class="mr-1 relative top-0.5" />
+					Disable Dev Blog
+				</label>
+			</div>
 			<div v-if="mimiriPlatform.isLinuxApp" class="p-1 pt-2 m-auto text-left flex gap-2 items-center">
 				<div>Tray icon color:</div>
 				<select v-model="trayIcon">
@@ -70,7 +76,7 @@ import { computed, onMounted, ref } from 'vue'
 import { settingsManager } from '../../services/settings-manager'
 import { mimiriPlatform } from '../../services/mimiri-platform'
 import TabBar from '../elements/TabBar.vue'
-import { env, fontManager } from '../../global'
+import { env } from '../../global'
 
 const emit = defineEmits(['close'])
 
@@ -80,6 +86,7 @@ const showInTaskBar = ref(false)
 const keepTrayIconVisible = ref(false)
 const closeOnX = ref(false)
 const trayIcon = ref('system')
+const disableDevBlog = ref(false)
 
 const alwaysEdit = ref(true)
 const simpleEditor = ref(false)
@@ -93,7 +100,8 @@ const canSave = computed(
 		closeOnX.value !== settingsManager.closeOnX ||
 		trayIcon.value !== settingsManager.trayIcon ||
 		alwaysEdit.value !== settingsManager.alwaysEdit ||
-		simpleEditor.value !== settingsManager.simpleEditor,
+		simpleEditor.value !== settingsManager.simpleEditor ||
+		disableDevBlog.value !== settingsManager.disableDevBlog,
 )
 
 onMounted(() => {
@@ -105,11 +113,8 @@ onMounted(() => {
 	trayIcon.value = settingsManager.trayIcon
 	alwaysEdit.value = settingsManager.alwaysEdit
 	simpleEditor.value = settingsManager.simpleEditor
+	disableDevBlog.value = settingsManager.disableDevBlog
 })
-
-const close = () => {
-	emit('close')
-}
 
 const save = async () => {
 	settingsManager.darkMode = darkMode.value
@@ -120,5 +125,10 @@ const save = async () => {
 	settingsManager.trayIcon = trayIcon.value
 	settingsManager.alwaysEdit = alwaysEdit.value
 	settingsManager.simpleEditor = simpleEditor.value
+	const reload = settingsManager.disableDevBlog !== disableDevBlog.value
+	settingsManager.disableDevBlog = disableDevBlog.value
+	if (reload) {
+		window.location.reload()
+	}
 }
 </script>

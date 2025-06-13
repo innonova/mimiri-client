@@ -116,27 +116,11 @@ export interface ShareResponse {
 	code: string
 }
 
-export interface Comment {
-	id: Guid
-	postId: Guid
-	username: string
-	comment: string
-	created: string
-	modified: string
-}
-
-export interface CommentsResponse {
-	comments: Comment[]
-}
-
 export interface BlogPost {
 	id: Guid
 	title: string
 	created: string
 	url: string
 	published: boolean
-}
-
-export interface BlogPostsResponse {
-	posts: BlogPost[]
+	publishDate: string
 }

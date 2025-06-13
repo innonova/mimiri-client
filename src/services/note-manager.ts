@@ -1253,18 +1253,6 @@ export class NoteManager {
 		return this.client.addComment(postId, displayName, comment)
 	}
 
-	public async getComments(postId: Guid) {
-		return this.client.getComments(postId)
-	}
-
-	public async getLatestBlogPosts(count: number, includeContent: boolean) {
-		return this.client.getLatestBlogPosts(count, includeContent)
-	}
-
-	public async getBlogPost(id: Guid) {
-		return this.client.getBlogPost(id)
-	}
-
 	public get paymentClient() {
 		return this._paymentClient
 	}
