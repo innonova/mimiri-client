@@ -55,8 +55,12 @@ const onMessage = async (event: MessageEvent) => {
 				blogManager.markAsRead()
 				break
 			case 'comment':
-				await blogManager.addComment(data.postId, data.username, data.comment)
-				postMessageToFrame({ type: 'comment-posted' })
+				try {
+					await blogManager.addComment(data.postId, data.username, data.comment)
+					postMessageToFrame({ type: 'comment-posted' })
+				} catch (error) {
+					postMessageToFrame({ type: 'comment-error', error: error.message })
+				}
 				break
 			case 'set-config':
 				blogManager.applyConfig(data.config as BlogConfig)
