@@ -137,31 +137,32 @@ public class MimiriUpdatePlugin extends Plugin {
   public void use(PluginCall call) {
     init();
     String version = call.getString("version");
-    boolean noActivate = call.getBoolean("noActivate") ?? false;
+    boolean noActivate = Boolean.TRUE.equals(call.getBoolean("noActivate"));
+    String serverBasePath = "";
+    if (version != null && !version.equals("base")) {
+      serverBasePath = new File(_bundlesPath, version).toString();
+    }
     if (version != null && !version.equals(_config.getString("activeVersion"))) {
       _config.put("previousActiveVersion", _config.getString("activeVersion"));
       _config.put("activeVersion", version);
       FileUtil.writeJson(_configPath, _config);
-			String serverBasePath = "";
-			if (!version.equals("base")) {
-				serverBasePath = new File(_bundlesPath, version).toString();
-			}
 			SharedPreferences.Editor webViewSettingsEditor = getContext().getSharedPreferences("CapWebViewSettings", Activity.MODE_PRIVATE).edit();
 			webViewSettingsEditor.putString("serverBasePath", serverBasePath);
 			webViewSettingsEditor.commit();
-			if (!noActivate) {
-				getBridge().setServerBasePath(serverBasePath);
-				getBridge().reload();
-			}
+    }
+    if (version != null && !noActivate && !getBridge().getServerBasePath().equals(serverBasePath)) {
+      getBridge().setServerBasePath(serverBasePath);
+      getBridge().reload();
     }
     call.resolve();
   }
 
+  @SuppressLint("ApplySharedPref")
 	@PluginMethod()
 	public void activate(PluginCall call) {
 		init();
 		String version = _config.getString("activeVersion");
-		if (version != null) {
+    if (version != null) {
       String serverBasePath = "";
       if (!version.equals("base")) {
         serverBasePath = new File(_bundlesPath, version).toString();
@@ -170,9 +171,9 @@ public class MimiriUpdatePlugin extends Plugin {
       webViewSettingsEditor.putString("serverBasePath", serverBasePath);
       webViewSettingsEditor.commit();
       getBridge().setServerBasePath(serverBasePath);
-			getBridge().reload();
+      getBridge().reload();
 		}
-		call.resolve();
+    call.resolve();
 	}
 
   @PluginMethod()

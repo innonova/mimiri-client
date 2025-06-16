@@ -400,7 +400,9 @@ useEventListener(window, 'resize', async () => {
 		}
 
 		updateTheme()
-		await updateManager.checkUpdateInitial()
+		if (await updateManager.checkUpdateInitial()) {
+			return
+		}
 		try {
 			if (!noteManager.isLoggedIn && settingsManager.autoLogin && settingsManager.autoLoginData) {
 				await noteManager.setLoginData(await deObfuscate(settingsManager.autoLoginData))

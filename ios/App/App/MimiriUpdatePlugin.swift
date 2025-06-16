@@ -136,11 +136,11 @@ public class MimiriUpdatePlugin: CAPPlugin, CAPBridgedPlugin {
         try json.write(to: _configPath)
         if (version != "base") {
           KeyValueStore.standard["serverBasePath"] = version
-					if (!noActivate) {
-						(self.bridge!.viewController! as? CAPBridgeViewController)!.setServerBasePath(path: _bundlesPath.appendingPathComponent(version!).path)
-					}
         }
       }
+			if (version != nil && !noActivate) {
+				(self.bridge!.viewController! as? CAPBridgeViewController)!.setServerBasePath(path: _bundlesPath.appendingPathComponent(version!).path)
+			}
     } catch {
       print(error.localizedDescription)
     }

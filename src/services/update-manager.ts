@@ -1,5 +1,5 @@
 import { reactive } from 'vue'
-import { ipcClient, noteManager, notificationManager, updateKeys, updateManager } from '../global'
+import { ipcClient, notificationManager, updateKeys, updateManager } from '../global'
 import { version, releaseDate } from '../version'
 import { CryptSignature } from './crypt-signature'
 import type { InstalledBundleInfo } from './types/ipc.interfaces'
@@ -150,7 +150,7 @@ export class UpdateManager {
 		if (this.currentVersion !== '0.0.0') {
 			try {
 				const lastRunHostVersion = settingsManager.lastRunHostVersion
-				await this.check()
+				await this.check(false)
 				if (
 					compareVersions(this.state.activeVersion.hostVersion, lastRunHostVersion) &&
 					this.state.latestVersion &&
@@ -158,6 +158,7 @@ export class UpdateManager {
 				) {
 					await this.download(this.state.latestVersion)
 					await this.use(this.state.latestVersion, true)
+					return true
 				}
 				if (settingsManager.lastRunHostVersion !== this.state.activeVersion.hostVersion) {
 					settingsManager.lastRunHostVersion = this.state.activeVersion.hostVersion
@@ -188,7 +189,7 @@ export class UpdateManager {
 		}
 	}
 
-	public async check() {
+	public async check(allowUpdate: boolean = true) {
 		if (ipcClient.isAvailable) {
 			try {
 				this.installedVersions = await ipcClient.bundle.getInstalledVersions()
@@ -212,7 +213,9 @@ export class UpdateManager {
 									settingsManager.updateMode === UpdateMode.AutomaticOnIdle ||
 									settingsManager.updateMode === UpdateMode.AutomaticOnStart
 								) {
-									this.performAutomaticUpdate()
+									if (allowUpdate) {
+										this.performAutomaticUpdate()
+									}
 								} else if (
 									settingsManager.updateMode === UpdateMode.StrongNotify ||
 									settingsManager.updateMode === UpdateMode.DiscreteNotify
@@ -252,7 +255,9 @@ export class UpdateManager {
 										settingsManager.updateMode === UpdateMode.AutomaticOnIdle ||
 										settingsManager.updateMode === UpdateMode.AutomaticOnStart
 									) {
-										this.performAutomaticUpdate()
+										if (allowUpdate) {
+											this.performAutomaticUpdate()
+										}
 									} else if (
 										settingsManager.updateMode === UpdateMode.StrongNotify ||
 										settingsManager.updateMode === UpdateMode.DiscreteNotify
@@ -271,7 +276,9 @@ export class UpdateManager {
 									settingsManager.updateMode === UpdateMode.AutomaticOnIdle ||
 									settingsManager.updateMode === UpdateMode.AutomaticOnStart
 								) {
-									this.performAutomaticUpdate()
+									if (allowUpdate) {
+										this.performAutomaticUpdate()
+									}
 								} else if (
 									settingsManager.updateMode === UpdateMode.StrongNotify ||
 									settingsManager.updateMode === UpdateMode.DiscreteNotify
@@ -289,7 +296,9 @@ export class UpdateManager {
 									settingsManager.updateMode === UpdateMode.AutomaticOnIdle ||
 									settingsManager.updateMode === UpdateMode.AutomaticOnStart
 								) {
-									this.performAutomaticUpdate()
+									if (allowUpdate) {
+										this.performAutomaticUpdate()
+									}
 								} else if (
 									settingsManager.updateMode === UpdateMode.StrongNotify ||
 									settingsManager.updateMode === UpdateMode.DiscreteNotify
