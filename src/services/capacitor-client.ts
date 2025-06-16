@@ -64,7 +64,7 @@ interface SettingsPlugin {
 interface MimiriUpdatePlugin {
 	getInstalledVersions(): Promise<{ bundles: InstalledBundleInfo[] }>
 	save(data: { version: string; bundle: Bundle }): Promise<void>
-	use(data: { version: string }): Promise<void>
+	use(data: { version: string; noActivate: boolean }): Promise<void>
 	activate(): Promise<void>
 	delete(data: { version: string }): Promise<void>
 	good(data: { version: string }): Promise<void>
@@ -150,8 +150,8 @@ class MimiriBundle implements IpcBundleApi {
 	save(version: string, bundle: Bundle): Promise<void> {
 		return this.bundle.save({ version, bundle })
 	}
-	use(version: string): Promise<void> {
-		return this.bundle.use({ version })
+	use(version: string, noActivate: boolean): Promise<void> {
+		return this.bundle.use({ version, noActivate })
 	}
 	activate(): Promise<void> {
 		return this.bundle.activate()

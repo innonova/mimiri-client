@@ -137,10 +137,31 @@ public class MimiriUpdatePlugin extends Plugin {
   public void use(PluginCall call) {
     init();
     String version = call.getString("version");
+    boolean noActivate = call.getBoolean("noActivate") ?? false;
     if (version != null && !version.equals(_config.getString("activeVersion"))) {
       _config.put("previousActiveVersion", _config.getString("activeVersion"));
       _config.put("activeVersion", version);
       FileUtil.writeJson(_configPath, _config);
+			String serverBasePath = "";
+			if (!version.equals("base")) {
+				serverBasePath = new File(_bundlesPath, version).toString();
+			}
+			SharedPreferences.Editor webViewSettingsEditor = getContext().getSharedPreferences("CapWebViewSettings", Activity.MODE_PRIVATE).edit();
+			webViewSettingsEditor.putString("serverBasePath", serverBasePath);
+			webViewSettingsEditor.commit();
+			if (!noActivate) {
+				getBridge().setServerBasePath(serverBasePath);
+				getBridge().reload();
+			}
+    }
+    call.resolve();
+  }
+
+	@PluginMethod()
+	public void activate(PluginCall call) {
+		init();
+		String version = _config.getString("activeVersion");
+		if (version != null) {
       String serverBasePath = "";
       if (!version.equals("base")) {
         serverBasePath = new File(_bundlesPath, version).toString();
@@ -149,10 +170,10 @@ public class MimiriUpdatePlugin extends Plugin {
       webViewSettingsEditor.putString("serverBasePath", serverBasePath);
       webViewSettingsEditor.commit();
       getBridge().setServerBasePath(serverBasePath);
-      getBridge().reload();
-    }
-    call.resolve();
-  }
+			getBridge().reload();
+		}
+		call.resolve();
+	}
 
   @PluginMethod()
   public void delete(PluginCall call) {

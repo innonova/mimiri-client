@@ -127,6 +127,7 @@ public class MimiriUpdatePlugin: CAPPlugin, CAPBridgedPlugin {
     ensureConfig();
     do {
       let version = call.getString("version")
+      let noActivate = call.getBool("noActivate") ?? false
       let activeVersion = _config["activeVersion"] as? String
       if (version != nil && activeVersion != nil && version != activeVersion) {
         _config["previousActiveVersion"] = activeVersion
@@ -135,9 +136,25 @@ public class MimiriUpdatePlugin: CAPPlugin, CAPBridgedPlugin {
         try json.write(to: _configPath)
         if (version != "base") {
           KeyValueStore.standard["serverBasePath"] = version
-          (self.bridge!.viewController! as? CAPBridgeViewController)!.setServerBasePath(path: _bundlesPath.appendingPathComponent(version!).path)
+					if (!noActivate) {
+						(self.bridge!.viewController! as? CAPBridgeViewController)!.setServerBasePath(path: _bundlesPath.appendingPathComponent(version!).path)
+					}
         }
       }
+    } catch {
+      print(error.localizedDescription)
+    }
+    call.resolve([:])
+  }
+
+  @objc func activate(_ call: CAPPluginCall) {
+    ensureConfig();
+    do {
+      let version = _config["activeVersion"] as? String
+			if (version != nil && version != "base") {
+				KeyValueStore.standard["serverBasePath"] = version
+				(self.bridge!.viewController! as? CAPBridgeViewController)!.setServerBasePath(path: _bundlesPath.appendingPathComponent(version!).path)
+			}
     } catch {
       print(error.localizedDescription)
     }
