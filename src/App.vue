@@ -291,7 +291,7 @@ const handleShortcut = event => {
 			event.preventDefault()
 			event.stopPropagation()
 			if (noteTreeView.value) {
-				if (event.shiftKey || !!noteManager.selectedNote?.isInRecycleBin) {
+				if (event.shiftKey || !!noteManager.selectedNote?.isInRecycleBin || noteManager.selectedNote.isShared) {
 					noteTreeView.value.deleteActiveNote()
 				} else {
 					noteTreeView.value.recycleActiveNote()

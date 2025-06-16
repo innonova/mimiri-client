@@ -46,7 +46,6 @@ export class BlogManager {
 			this.state.latestPostId = emptyGuid()
 			this.state.latestPostDate = undefined
 		}
-		console.log(this.state)
 	}
 
 	public async addComment(postId: Guid, username: string, comment: string): Promise<void> {
