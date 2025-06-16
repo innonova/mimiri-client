@@ -149,14 +149,10 @@ public class MimiriUpdatePlugin: CAPPlugin, CAPBridgedPlugin {
 
   @objc func activate(_ call: CAPPluginCall) {
     ensureConfig();
-    do {
-      let version = _config["activeVersion"] as? String
-			if (version != nil && version != "base") {
-				KeyValueStore.standard["serverBasePath"] = version
-				(self.bridge!.viewController! as? CAPBridgeViewController)!.setServerBasePath(path: _bundlesPath.appendingPathComponent(version!).path)
-			}
-    } catch {
-      print(error.localizedDescription)
+    let version = _config["activeVersion"] as? String
+    if (version != nil && version != "base") {
+      KeyValueStore.standard["serverBasePath"] = version
+      (self.bridge!.viewController! as? CAPBridgeViewController)!.setServerBasePath(path: _bundlesPath.appendingPathComponent(version!).path)
     }
     call.resolve([:])
   }
