@@ -25,7 +25,7 @@ export class EditorAdvanced implements TextEditor {
 		canMarkAsPassword: false,
 		canUnMarkAsPassword: false,
 	}
-	private skipScrollOnce = false
+	private skipScrollUntil = 0
 	private historyShowing = false
 	private lastScrollTop = 0
 	private lastSelection: Selection | null = null
@@ -211,6 +211,9 @@ export class EditorAdvanced implements TextEditor {
 		})
 
 		const scrollDebounce = new Debounce(async () => {
+			if (this.skipScrollUntil > Date.now()) {
+				return
+			}
 			if (this.monacoEditor.getScrollWidth() > 100 && !this.historyShowing) {
 				this.lastScrollTop = this.monacoEditor.getScrollTop()
 				if (this._active) {
@@ -220,8 +223,7 @@ export class EditorAdvanced implements TextEditor {
 		}, 250)
 
 		this.monacoEditor.onDidScrollChange(() => {
-			if (this.skipScrollOnce) {
-				this.skipScrollOnce = false
+			if (this.skipScrollUntil > Date.now()) {
 				return
 			}
 			scrollDebounce.activate()
@@ -390,11 +392,11 @@ export class EditorAdvanced implements TextEditor {
 		this._text = text
 		this._state.changed = false
 		this.monacoEditorModel.setValue(text)
-		this.skipScrollOnce = true
+		this.skipScrollUntil = Date.now() + 500
 		this.lastScrollTop = scrollTop
 		this.monacoEditor.setScrollTop(scrollTop, editor.ScrollType.Immediate)
 		setTimeout(() => {
-			this.skipScrollOnce = true
+			this.skipScrollUntil = Date.now() + 500
 			this.monacoEditor.setScrollTop(scrollTop, editor.ScrollType.Immediate)
 		})
 		if (this._active) {

@@ -292,7 +292,15 @@ const save = async () => {
 		} else if (result === 'lost-update') {
 			infoDialog.value.show(
 				'Note was changed',
-				'The note you just saved was changed in another client before you saved it.\n\nYou can find that version in the note history.',
+				`The note you just saved appears to have been changed outside the editor while you were editing it.
+
+This may happen if you edited the note in another tab or device.
+
+This may also happen if your connection is unstable.
+
+Or if this is a shared note: another user may have edited it.
+
+You can view all changes in the history.`,
 			)
 		}
 	}
