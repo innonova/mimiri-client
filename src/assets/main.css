@@ -54,7 +54,8 @@
 	--color-button-secondary-text: #fff;
 	--color-button-hover: rgba(0, 0, 0, 0.2);
 	--color-dialog: #f4f4f4;
-	--color-dialog-border: #000;
+	--color-dialog-border: #999;
+	--color-dialog-backdrop: rgba(0, 0, 0, 0.4);
 	--color-input: #fff;
 	--color-input-text: #000;
 	--color-input-selection: #0078d7;
@@ -106,7 +107,8 @@
 		--color-button-secondary-text: #fff;
 		--color-button-hover: rgba(255, 255, 255, 0.2);
 		--color-dialog: #3f3f3f;
-		--color-dialog-border: #8e8e8e;
+		--color-dialog-border: #666;
+		--color-dialog-backdrop: rgba(0, 0, 0, 0.4);
 		--color-input: #1e1e1e;
 		--color-input-text: #d4d4d4;
 		--color-input-selection: #a8c7fa;
@@ -237,12 +239,12 @@ div {
 }
 
 dialog {
-	@apply m-auto mobile:mt-[33%];
+	@apply m-auto mobile:mt-0 mobile:w-full mobile:max-w-full backdrop:bg-dialog-backdrop mobile:backdrop:bg-back;
 }
 
-dialog::backdrop {
-	background-color: rgba(0, 0, 0, 0.4);
-}
+/* dialog::backdrop {
+	@apply bg-dialog-backdrop;
+} */
 
 .display-editor-container {
 	@apply h-full w-full flex flex-col;

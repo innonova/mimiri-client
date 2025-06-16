@@ -796,7 +796,7 @@ export class NoteManager {
 			}
 			await this.refreshNote(parent.id)
 			await parentNote.expand()
-			this.getNoteById(note.id).select()
+			this.getNoteById(note.id)?.select()
 		} finally {
 			this.endAction()
 		}

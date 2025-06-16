@@ -1,5 +1,5 @@
 <template>
-	<header class="flex items-center bg-title-bar select-none h-10">
+	<header class="flex items-center bg-title-bar select-none h-10 mobile:mb-10">
 		<div
 			ref="titleBar"
 			class="pl-2 text-size-title w-full h-10 flex items-center"
@@ -16,6 +16,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import CloseButton from '../elements/CloseButton.vue'
+import { noteManager } from '../../global'
 
 const titleBar = ref(null)
 
@@ -46,6 +47,9 @@ const findDialog = (elm: HTMLElement) => {
 const emit = defineEmits(['close'])
 
 const down = (e: PointerEvent) => {
+	if (noteManager.isMobile) {
+		return
+	}
 	offsetY = e.offsetY
 	offsetX = e.offsetX
 	offsetHeight = titleBar.value.offsetHeight
@@ -56,11 +60,17 @@ const down = (e: PointerEvent) => {
 }
 
 const up = (e: PointerEvent) => {
+	if (noteManager.isMobile) {
+		return
+	}
 	captured = false
 	titleBar.value.releasePointerCapture(e.pointerId)
 }
 
 const move = (e: PointerEvent) => {
+	if (noteManager.isMobile) {
+		return
+	}
 	if (captured) {
 		let clientX = e.clientX
 		let clientY = e.clientY

@@ -1,18 +1,18 @@
 <template>
-	<dialog class="w-72 bg-dialog text-text border border-solid border-dialog-border" ref="dialog">
+	<dialog class="w-72 bg-dialog text-text desktop:border border-solid border-dialog-border" ref="dialog">
 		<div
 			v-if="!noteManager.selectedNote?.isShared || shareParticipants.length == 0"
 			class="grid grid-rows-[auto_1fr_auto] gap-6"
 		>
 			<DialogTitle @close="close">Delete Note</DialogTitle>
-			<main class="px-2">
+			<main class="px-2 mobile:text-center">
 				<div>Are you sure you want to delete:</div>
 				<div class="mt-3 ml-3 mb-1 italic">
 					{{ noteManager.selectedViewModel?.title }}
 				</div>
 				<div v-if="noteManager.selectedNote?.isShared" class="mt-5">No other users have access to this note</div>
 			</main>
-			<footer class="flex justify-end gap-2 pr-2 pb-2">
+			<footer class="flex justify-end mobile:justify-center gap-2 pr-2 pb-2 mobile:mt-5">
 				<button class="primary" @click="submitDialog">Delete</button>
 				<button class="secondary" @click="close">Cancel</button>
 			</footer>
@@ -22,7 +22,7 @@
 			class="grid grid-rows-[auto_1fr_auto] gap-6"
 		>
 			<DialogTitle @close="close">Leave Share</DialogTitle>
-			<main class="px-2">
+			<main class="px-2 mobile:text-center">
 				<div>Are you sure you want to leave this share:</div>
 				<div class="mt-3 ml-3 mb-1 italic">
 					{{ noteManager.selectedViewModel?.title }}
@@ -40,7 +40,7 @@
 					{{ shareParticipants.length }} other users
 				</div>
 			</main>
-			<footer class="flex justify-end gap-2 pr-2 pb-2">
+			<footer class="flex justify-end mobile:justify-center gap-2 pr-2 pb-2 mobile:mt-5">
 				<button class="primary" @click="submitDialog">Leave</button>
 				<button class="secondary" @click="close">Cancel</button>
 			</footer>
@@ -50,7 +50,7 @@
 			class="grid grid-rows-[auto_1fr_auto] gap-6"
 		>
 			<DialogTitle @close="close">Delete Note</DialogTitle>
-			<main class="px-2">
+			<main class="px-2 mobile:text-center">
 				<div>Are you sure you want to delete:</div>
 				<div class="mt-3 ml-3 mb-1 italic">
 					{{ noteManager.selectedViewModel?.title }}
@@ -68,7 +68,7 @@
 					{{ shareParticipants.length }} other users
 				</div>
 			</main>
-			<footer class="flex justify-end gap-2 pr-2 pb-2">
+			<footer class="flex justify-end mobile:justify-center gap-2 pr-2 pb-2 mobile:mt-5">
 				<button class="primary" @click="submitDialog">Delete</button>
 				<button class="secondary" @click="close">Cancel</button>
 			</footer>

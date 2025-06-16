@@ -1,9 +1,12 @@
 <template>
-	<dialog class="modal bg-dialog text-text border border-solid border-dialog-border backdrop-grayscale" ref="dialog">
+	<dialog
+		class="modal bg-dialog text-text desktop:border border-solid border-dialog-border backdrop-grayscale"
+		ref="dialog"
+	>
 		<div class="grid grid-rows-[auto_1fr_auto] gap-3 content-between" data-testid="login-view">
 			<DialogTitle @close="cancel" :disabled="loading || showCreate || !showCancel">Login</DialogTitle>
-			<form v-on:submit.prevent="login" class="mx-2">
-				<div class="grid grid-cols-[4rem_10rem] items-center gap-2 mx-2 mb-2">
+			<form v-on:submit.prevent="login" class="mx-2 mobile:mx-8">
+				<div class="grid grid-cols-[4rem_10rem] mobile:grid-cols-[4rem_auto] items-center gap-2 mx-2 mb-2">
 					<div>Username:</div>
 					<input
 						v-model="username"
@@ -36,9 +39,9 @@
 					</div>
 				</div>
 				<div
-					class="flex items-center gap-2 mt-3"
+					class="flex items-center gap-2 mt-3 mobile:mt-8"
 					:class="{
-						'justify-end': !showCreate,
+						'justify-end mobile:justify-center': !showCreate,
 						'justify-between': showCreate,
 					}"
 				>
