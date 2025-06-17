@@ -258,6 +258,10 @@ dialog {
 	@apply bg-input p-1.5 font-editor text-size-editor outline-0 overflow-y-auto h-full w-full overflow-x-auto;
 }
 
+.display-editor {
+	caret-color: var(--color-input);
+}
+
 .simple-editor::selection {
 	@apply bg-input-selection text-input-selected-text;
 }

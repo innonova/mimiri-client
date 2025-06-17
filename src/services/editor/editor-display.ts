@@ -34,7 +34,9 @@ export class EditorDisplay implements TextEditor {
 		this._element = document.createElement('div')
 		this._domElement.appendChild(this._element)
 		this._element.classList.add('simple-editor')
-		this._element.contentEditable = 'false'
+		this._element.classList.add('display-editor')
+		this._element.contentEditable = 'true'
+		this._element.onbeforeinput = () => false
 
 		this._history = document.createElement('div')
 		this._history.style.display = 'none'
@@ -215,12 +217,12 @@ export class EditorDisplay implements TextEditor {
 	public hideHistory() {
 		if (this.historyShowing) {
 			const scrollTop = this.lastScrollTop
-			this._element.contentEditable = 'plaintext-only'
+			// this._element.contentEditable = 'plaintext-only'
 			this._element.style.display = 'block'
 			this._history.style.display = 'none'
-			this._element.focus()
-			this._element.blur()
-			this._element.contentEditable = 'false'
+			// this._element.focus()
+			// this._element.blur()
+			// this._element.contentEditable = 'false'
 			this.historyShowing = false
 			this.focus()
 			setTimeout(() => {
@@ -232,11 +234,11 @@ export class EditorDisplay implements TextEditor {
 	public showHistory() {
 		if (!this.historyShowing) {
 			this._element.style.display = 'none'
-			this._history.contentEditable = 'plaintext-only'
+			// this._history.contentEditable = 'plaintext-only'
 			this._history.style.display = 'block'
-			this._history.focus()
-			this._history.blur()
-			this._history.contentEditable = 'false'
+			// this._history.focus()
+			// this._history.blur()
+			// this._history.contentEditable = 'false'
 			this.historyShowing = true
 		}
 	}
@@ -272,25 +274,25 @@ export class EditorDisplay implements TextEditor {
 		if (this._wordWrap !== settingsManager.wordwrap) {
 			const elm = this.historyShowing ? this._history : this._element
 			if (settingsManager.wordwrap) {
-				elm.contentEditable = 'plaintext-only'
-				elm.focus()
+				// elm.contentEditable = 'plaintext-only'
+				// elm.focus()
 				this._element.style.whiteSpace = 'pre-wrap'
 				this._history.style.whiteSpace = 'pre-wrap'
 				this._element.style.overflowX = 'hidden'
 				this._history.style.overflowX = 'hidden'
 				this._wordWrap = true
-				elm.blur()
-				elm.contentEditable = 'false'
+				// elm.blur()
+				// elm.contentEditable = 'false'
 			} else {
-				elm.contentEditable = 'plaintext-only'
-				elm.focus()
+				// elm.contentEditable = 'plaintext-only'
+				// elm.focus()
 				this._history.style.whiteSpace = 'pre'
 				this._element.style.whiteSpace = 'pre'
 				this._element.style.overflowX = 'auto'
 				this._history.style.overflowX = 'auto'
 				this._wordWrap = false
-				elm.blur()
-				elm.contentEditable = 'false'
+				// elm.blur()
+				// elm.contentEditable = 'false'
 			}
 		}
 	}
