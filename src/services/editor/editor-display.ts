@@ -12,6 +12,9 @@ export class EditorDisplay implements TextEditor {
 	private skipScrollOnce = false
 	private _active = true
 	private _wordWrap = true
+	private _crlf = false
+	private _initialText: string = ''
+	private _redoText: string = ''
 	private _test: any
 	private _state: Omit<EditorState, 'mode'> = {
 		canUndo: false,
@@ -69,15 +72,24 @@ export class EditorDisplay implements TextEditor {
 			scrollDebounce.activate()
 		})
 
-		if (!mimiriPlatform.isDesktop) {
-			this._element.addEventListener('click', event => {
+		this._element.addEventListener('click', event => {
+			if (!mimiriPlatform.isDesktop) {
 				const elm = this.getPasswordElement(event)
 				if (elm) {
 					const rect = elm.getBoundingClientRect()
 					this.listener.onPasswordClicked(rect.top, rect.right, elm.textContent)
 				}
-			})
-		}
+			}
+			const checkbox = this.getCheckboxElement(event)
+			if (checkbox) {
+				if (checkbox.textContent === ' ') {
+					checkbox.textContent = 'x'
+				} else {
+					checkbox.textContent = ' '
+				}
+				this.updateState()
+			}
+		})
 
 		if (mimiriPlatform.isDesktop) {
 			this._element.addEventListener('dblclick', event => {
@@ -90,12 +102,36 @@ export class EditorDisplay implements TextEditor {
 		}
 	}
 
+	private updateState() {
+		let newText = this._element.textContent.trim()
+		if (this._crlf) {
+			newText = newText.replace(/\n/g, '\r\n')
+		} else {
+			newText = newText.replace(/\r\n/g, '\n')
+		}
+		this._state.changed = newText !== this._initialText.trimEnd()
+		this._state.canUndo = this._state.changed
+		this._state.canRedo = this._redoText !== undefined
+		this.listener.onStateUpdated(this._state)
+	}
+
 	private getPasswordElement(event: MouseEvent) {
 		const elm = event.target as HTMLElement
 		if (elm.className === 'password-secret') {
 			return elm.children[0] as HTMLElement
 		}
 		if (elm.className === 'password-secret-content') {
+			return elm
+		}
+		return undefined
+	}
+
+	private getCheckboxElement(event: MouseEvent) {
+		const elm = event.target as HTMLElement
+		if (elm.className === 'clickable-checkbox') {
+			return elm.children[0] as HTMLElement
+		}
+		if (elm.className === 'clickable-checkbox-content') {
 			return elm
 		}
 		return undefined
@@ -121,14 +157,21 @@ export class EditorDisplay implements TextEditor {
 	}
 
 	private formatText(text: string) {
-		return text.replace(
-			/p`([^`]+)`/g,
-			'<span class="password-secret">p`<span class="password-secret-content">$1</span></span>`',
-		)
+		return text
+			.replace(/p`([^`]+)`/g, '<span class="password-secret">p`<span class="password-secret-content">$1</span></span>`')
+			.replace(
+				/\[( |X|x)\]/g,
+				'<span class="clickable-checkbox">[<span class="clickable-checkbox-content">$1</span>]</span>',
+			)
 	}
 
 	public show(text: string, scrollTop: number) {
 		this._state.changed = false
+		this._state.canUndo = false
+		this._state.canRedo = false
+		this._redoText = undefined
+		this._initialText = text
+		this._crlf = this._initialText.includes('\r\n')
 		this._element.innerHTML = this.formatText(text)
 		this.lastScrollTop = scrollTop
 		this._element.scrollTop = scrollTop
@@ -146,6 +189,8 @@ export class EditorDisplay implements TextEditor {
 	}
 
 	public resetChanged() {
+		this._initialText = this._element.textContent
+		this.updateState()
 		this._state.changed = false
 		if (this._active) {
 			this.listener.onStateUpdated(this._state)
@@ -198,13 +243,19 @@ export class EditorDisplay implements TextEditor {
 
 	public undo() {
 		try {
-			document.execCommand('undo')
+			this._redoText = this._element.textContent
+			this._element.innerHTML = this.formatText(this._initialText)
+			this.updateState()
 		} catch {}
 	}
 
 	public redo() {
 		try {
-			document.execCommand('redo')
+			if (this._redoText) {
+				this._element.innerHTML = this.formatText(this._redoText)
+				this._redoText = undefined
+				this.updateState()
+			}
 		} catch {}
 	}
 
@@ -276,11 +327,15 @@ export class EditorDisplay implements TextEditor {
 	}
 
 	get initialText(): string {
-		throw new Error('attempt to save from display mode')
+		return this._initialText
 	}
 
 	public get text(): string {
-		throw new Error('attempt to save from display mode')
+		if (this._state.changed) {
+			return this._element.textContent
+		} else {
+			return this._initialText
+		}
 	}
 
 	public get changed() {

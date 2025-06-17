@@ -281,7 +281,7 @@ const saveEnabled = computed(() => {
 })
 
 const save = async () => {
-	if (activeViewModel && saveEnabled.value && mimiriEditor.mode !== 'display') {
+	if (activeViewModel && saveEnabled.value) {
 		const result = await mimiriEditor.save()
 		if (result === 'note-size') {
 			noteManager.select(activeViewModel.id)

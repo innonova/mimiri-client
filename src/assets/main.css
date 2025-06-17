@@ -28,6 +28,7 @@
 	--color-info: #d2d2d8;
 	--color-backdrop: rgba(0, 0, 0, 0.2);
 	--color-text: #000;
+	--color-text-secondary: #aaaaab;
 	--color-logo: #000;
 	--color-title-bar: #f4f4f4;
 	--color-title-text: #000;
@@ -81,6 +82,7 @@
 		--color-info: #505059;
 		--color-backdrop: rgba(255, 255, 255, 0.1);
 		--color-text: #d4d4d4;
+		--color-text-secondary: #666667;
 		--color-logo: #fff;
 		--color-title-bar: #323233;
 		--color-title-text: #ccc;
@@ -272,4 +274,20 @@ span.mtk9 {
 span.mtk22,
 span.mtk21 {
 	-webkit-text-security: disc;
+}
+
+.clickable-checkbox {
+	@apply cursor-pointer text-text-secondary;
+}
+
+.clickable-checkbox-content {
+	@apply text-text;
+}
+
+.password-secret {
+	@apply text-text-secondary;
+}
+
+.password-secret-content {
+	@apply text-text;
 }
