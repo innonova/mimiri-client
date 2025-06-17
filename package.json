@@ -6,8 +6,8 @@
 	"minElectronVersionLinux": "2.3.0",
 	"minIosVersion": "2.3.0",
 	"minAndroidVersion": "2.3.0",
-	"iosVersion": "2.3.25",
-	"androidVersion": "2.3.25",
+	"iosVersion": "2.4.31",
+	"androidVersion": "2.4.31",
 	"private": true,
 	"type": "module",
 	"scripts": {
