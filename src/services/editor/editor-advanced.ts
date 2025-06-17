@@ -33,6 +33,9 @@ export class EditorAdvanced implements TextEditor {
 	private _initialText: string = ''
 	private _domElement: HTMLElement | undefined
 	private _active = true
+	private _mouseDownPosition: { lineNumber: number; column: number } | undefined
+	private _selectionHistory: Selection[] = []
+	private _preClickSelection: Selection | undefined
 
 	constructor(private listener: TextEditorListener) {
 		this.styleElement = document.getElementById('mimiri-style-overrides') as HTMLStyleElement
@@ -48,7 +51,10 @@ export class EditorAdvanced implements TextEditor {
 
 		languages.setMonarchTokensProvider('mimiri', {
 			tokenizer: {
-				root: [[/(p`)([^``]+)(`)/, ['directive', 'password', 'directive']]],
+				root: [
+					[/(p`)([^``]+)(`)/, ['directive', 'password', 'directive']],
+					[/(\[)( |X|x)(\])/, ['checkbox', 'checkmark', 'checkbox']],
+				],
 			},
 		})
 
@@ -58,6 +64,8 @@ export class EditorAdvanced implements TextEditor {
 			rules: [
 				{ token: 'directive', foreground: '666666' },
 				{ token: 'password', foreground: 'd4d4d5' },
+				{ token: 'checkbox', foreground: '666667' },
+				{ token: 'checkmark', foreground: 'd4d4d6' },
 			],
 			colors: {},
 		})
@@ -68,6 +76,8 @@ export class EditorAdvanced implements TextEditor {
 			rules: [
 				{ token: 'directive', foreground: 'AAAAAA' },
 				{ token: 'password', foreground: '000001' },
+				{ token: 'checkbox', foreground: 'AAAAAB' },
+				{ token: 'checkmark', foreground: '000002' },
 			],
 			colors: {},
 		})
@@ -159,7 +169,77 @@ export class EditorAdvanced implements TextEditor {
 			}
 		})
 
+		this.monacoEditor.onMouseDown(e => {
+			if (this._selectionHistory.length > 1) {
+				this._preClickSelection = this._selectionHistory[this._selectionHistory.length - 2]
+			} else {
+				this._preClickSelection = undefined
+			}
+			this._mouseDownPosition = { lineNumber: e.target.position.lineNumber, column: e.target.position.column }
+		})
+
+		this.monacoEditor.onMouseUp(e => {
+			if (e.target && e.target.position) {
+				if (
+					!this._mouseDownPosition ||
+					(this._mouseDownPosition.lineNumber !== e.target.position.lineNumber &&
+						this._mouseDownPosition.column !== e.target.position.column)
+				) {
+					return
+				}
+				const selection = this.monacoEditor.getSelection()
+				if (selection.startColumn !== selection.endColumn) {
+					return
+				}
+				const lineNumber = e.target.position.lineNumber
+				const line = this.monacoEditor.getModel().getLineContent(lineNumber)
+				const index = e.target.position.column - 1
+				let start = -1
+				let end = -1
+				for (let s = index; s >= 0; s--) {
+					if (line[s] === '[') {
+						start = s
+						break
+					}
+				}
+				for (let s = index - 1; s < line.length; s++) {
+					if (line[s] === ']') {
+						end = s
+						break
+					}
+				}
+				const checkValue = line[start + 1]
+				if (end - start === 2 && (checkValue === 'x' || checkValue === 'X' || checkValue === ' ')) {
+					const action = {
+						range: {
+							startLineNumber: lineNumber,
+							startColumn: start + 2,
+							endLineNumber: lineNumber,
+							endColumn: end + 1,
+						},
+						text: checkValue === ' ' ? 'x' : ' ',
+						forceMoveMarkers: true,
+					}
+					this.monacoEditor.executeEdits(undefined, [action])
+					if (this._preClickSelection) {
+						this.monacoEditor.setSelection(this._preClickSelection)
+					} else {
+						this.monacoEditor.setSelection({
+							startLineNumber: lineNumber,
+							startColumn: start + 1,
+							endLineNumber: lineNumber,
+							endColumn: start + 1,
+						})
+					}
+				}
+			}
+		})
+
 		this.monacoEditor.onDidChangeCursorSelection(e => {
+			this._selectionHistory.push(e.selection)
+			if (this._selectionHistory.length > 10) {
+				this._selectionHistory.shift()
+			}
 			if (
 				e.reason === editor.CursorChangeReason.Explicit &&
 				e.selection &&
@@ -320,14 +400,14 @@ export class EditorAdvanced implements TextEditor {
 				theme: 'mimiri-light',
 			})
 		}
-		mobileLog.log('Updating Style')
-		const passwordSyntax = 'p`password`'
-		this.backgroundModel.setValue(passwordSyntax)
-		if (!this.styleUpdateRunning) {
-			this.styleOverridesDirty = true
-			this.styleUpdateStartTime = Date.now()
-			this.executeUpdateStyleOverrides()
-		}
+		// mobileLog.log('Updating Style')
+		// const passwordSyntax = 'p`password`'
+		// this.backgroundModel.setValue(passwordSyntax)
+		// if (!this.styleUpdateRunning) {
+		// 	this.styleOverridesDirty = true
+		// 	this.styleUpdateStartTime = Date.now()
+		// 	this.executeUpdateStyleOverrides()
+		// }
 	}
 
 	private updateAbilities() {

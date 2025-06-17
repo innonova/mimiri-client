@@ -263,3 +263,13 @@ dialog {
 .password-secret-content {
 	-webkit-text-security: disc;
 }
+
+span.mtk7,
+span.mtk8,
+span.mtk9 {
+	@apply cursor-pointer;
+}
+span.mtk22,
+span.mtk21 {
+	-webkit-text-security: disc;
+}
