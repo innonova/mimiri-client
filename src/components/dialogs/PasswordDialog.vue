@@ -1,5 +1,5 @@
 <template>
-	<dialog class="bg-dialog border border-solid border-dialog-border text-text" ref="dialog">
+	<dialog class="bg-dialog desktop:border border-solid border-dialog-border text-text" ref="dialog">
 		<form v-on:submit.prevent="submitDialog">
 			<div class="grid grid-rows-[auto_1fr_auto] gap-6">
 				<DialogTitle @close="close">Verify that it is you</DialogTitle>
@@ -25,7 +25,7 @@
 					</div>
 					<div v-if="error" class="mt-4 text-right mr-1 text-error">Incorrect Password</div>
 				</main>
-				<footer class="flex justify-end gap-2 pr-2 pb-2">
+				<footer class="flex justify-end mobile:justify-center gap-2 pr-2 pb-2">
 					<LoadingIcon v-if="busy" class="animate-spin w-8 h-8 mr-8 inline-block"></LoadingIcon>
 					<button class="primary" v-if="!busy" type="submit">OK</button>
 					<button class="secondary" @click="close" :disabled="busy" type="button">Cancel</button>

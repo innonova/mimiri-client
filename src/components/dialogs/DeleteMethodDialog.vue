@@ -1,6 +1,6 @@
 <template>
 	<dialog
-		class="w-72 bg-dialog text-text border border-solid border-dialog-border"
+		class="w-72 bg-dialog text-text desktop:border border-solid border-dialog-border"
 		ref="dialog"
 		data-testid="dialog-delete-payment-method"
 	>
@@ -12,7 +12,7 @@
 					{{ text }}
 				</div>
 			</main>
-			<footer class="flex justify-end gap-2 pr-2 pb-2">
+			<footer class="flex justify-end mobile:justify-center gap-2 pr-2 pb-2">
 				<button class="primary" @click="submitDialog" data-testid="dialog-yes">Yes</button>
 				<button class="secondary" data-testid="dialog-no" @click="close">No</button>
 			</footer>

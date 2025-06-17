@@ -1,5 +1,5 @@
 <template>
-	<dialog class="w-72 bg-dialog text-text border border-solid border-dialog-border" ref="dialog">
+	<dialog class="w-72 bg-dialog text-text desktop:border border-solid border-dialog-border" ref="dialog">
 		<div class="grid grid-rows-[auto_1fr_auto] gap-6">
 			<DialogTitle @close="close">Save Empty Note</DialogTitle>
 			<main class="px-2">

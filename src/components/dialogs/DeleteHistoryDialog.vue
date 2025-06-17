@@ -1,5 +1,5 @@
 <template>
-	<dialog class="bg-dialog text-text border border-solid border-dialog-border" ref="dialog">
+	<dialog class="bg-dialog text-text desktop:border border-solid border-dialog-border" ref="dialog">
 		<div class="grid grid-rows-[auto_1fr_auto] gap-6">
 			<DialogTitle @close="close">Delete History</DialogTitle>
 			<main class="px-2 leading-5">
@@ -23,7 +23,7 @@
 					{{ shareParticipants.length }} other users
 				</div>
 			</main>
-			<footer class="flex justify-end gap-2 pr-2 pb-2">
+			<footer class="flex justify-end mobile:justify-center gap-2 pr-2 pb-2">
 				<button class="primary" @click="submitDialog">Delete</button>
 				<button class="secondary" @click="close">Cancel</button>
 			</footer>
