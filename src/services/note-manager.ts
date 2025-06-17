@@ -606,6 +606,9 @@ export class NoteManager {
 					console.log('Failed to set up for notifications', ex)
 				}
 			}
+		} else {
+			void updateManager.check()
+			void blogManager.refreshAll()
 		}
 	}
 

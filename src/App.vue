@@ -442,6 +442,7 @@ useEventListener(window, 'resize', async () => {
 			loginDialog.value.show(true)
 		}
 	} catch (ex) {
+		console.error('Error during app initialization:', ex?.message)
 		setTimeout(() => location.reload(), 1000)
 	}
 })()
