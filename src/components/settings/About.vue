@@ -24,7 +24,7 @@
 				</div>
 
 				<div class="pt-6 pl-4">Copyright &copy;2024-{{ new Date().getFullYear() }} innonova GmbH</div>
-				<div class="flex flex-col items-start">
+				<div @click="resetBoxClicks" class="flex flex-col items-start">
 					<div class="flex info flex-col mx-4 mt-4 bg-info">
 						<b>Attributions:</b>
 						<template v-for="att of iconAttributions">
@@ -163,6 +163,11 @@ const boxClicked = () => {
 		firstClick = Date.now() - 60000
 		showLog.value = true
 	}
+}
+
+const resetBoxClicks = () => {
+	clickCount = 0
+	firstClick = Date.now() - 60000
 }
 
 const reload = () => {

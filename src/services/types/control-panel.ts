@@ -42,7 +42,7 @@ export const createControlPanelTree = (owner: NoteManager, parent: MimerNote): M
 						id: 'settings-debug' as Guid,
 						title: 'Debug',
 						type: 'settings-debug',
-						icon: 'cog',
+						icon: 'bulb',
 						children: [],
 					},
 				]
