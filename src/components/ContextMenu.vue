@@ -10,9 +10,9 @@
 			class="block absolute left-menu top-menu text-size-menu cursor-default rounded-sm shadow-sm py-2 px-0.5 bg-menu text-menu-text"
 		>
 			<template v-for="item of config.items" :key="item.id">
-				<div
+				<button
 					v-if="item.visible !== false"
-					class="flex justify-between py-1 pr-5 rounded-sm"
+					class="flex justify-between py-1 pr-5 rounded-sm w-full"
 					:class="{
 						'hover:bg-menu-hover': item.enabled !== false,
 						'text-menu-disabled': item.enabled === false,
@@ -29,7 +29,7 @@
 						<div class="w-full whitespace-nowrap text-left">{{ item.title }}</div>
 						<div class="w-full whitespace-nowrap text-right pl-20">{{ item.shortcut }}</div>
 					</div>
-				</div>
+				</button>
 				<div
 					v-if="item.separatorAfter && item.visible !== false && isVisibleAfter(item)"
 					class="inline-block h-0 w-full border border-solid border-menu-separator"

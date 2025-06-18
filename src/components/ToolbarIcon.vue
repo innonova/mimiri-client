@@ -1,5 +1,5 @@
 <template>
-	<div class="inline-block group" @click="onClick" @mouseenter="onMouseenter" :title="props.title">
+	<button class="inline-block group" @click="onClick" @mouseenter="onMouseenter" :title="props.title">
 		<component
 			:is="getComponent()"
 			:class="{
@@ -21,7 +21,7 @@
 			<!-- Connects the history icon with the info bar -->
 			<div class="relative -top-0.5 bg-toolbar-toggled h-1 ml-0.5 mr-1"></div>
 		</div>
-	</div>
+	</button>
 </template>
 
 <script setup lang="ts">
@@ -55,6 +55,7 @@ import PlusIcon from '../icons/plus.vue'
 import PlusSmallIcon from '../icons/plus-small.vue'
 import AnnouncementIcon from '../icons/announcement.vue'
 import { mimiriPlatform } from '../services/mimiri-platform'
+import { debug } from '../global'
 
 const props = defineProps<{
 	icon: string

@@ -115,9 +115,9 @@
 			>
 				{{ node.title }}
 			</div>
-			<div class="desktop:hidden pl-10 py-[7px] flex justify-end" @click="selectNode(true)">
+			<button class="desktop:hidden pl-10 py-[7px] flex justify-end" @click="selectNode(true)">
 				<OpenIcon class="w-[23px] h-[23px] p-0.5 mr-1"></OpenIcon>
-			</div>
+			</button>
 		</div>
 		<template v-for="childNode of node.children" :key="childNode.id">
 			<TreeNode

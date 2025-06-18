@@ -12,13 +12,13 @@
 			<template v-for="item of notificationManager.state.notifications" :key="item.id">
 				<Notification :notification="item"></Notification>
 			</template>
-			<div
+			<button
 				class="w-full text-center mt-2 py-2 bg-button-secondary hover:opacity-80 rounded-sm"
 				@click="markAllRead"
 				@mouseup="stopPropagation"
 			>
 				Mark All Read
-			</div>
+			</button>
 		</div>
 	</div>
 </template>

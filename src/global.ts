@@ -13,6 +13,7 @@ import { PasswordGenerator } from './services/password-generator'
 import { ClipboardManager } from './services/clipboard-manager'
 import { FontManager } from './services/font-manager'
 import { BlogManager } from './services/blog-manager'
+import { DebugService } from './services/debug'
 
 export const env = import.meta.env
 const host = env.VITE_MIMER_API_HOST
@@ -21,6 +22,8 @@ const serverKey = env.VITE_API_PUBLIC_KEY
 const serverKeyId = env.VITE_API_PUBLIC_KEY_ID
 export const pdfEnvironment = env.VITE_PDF_ENV
 export const accountHost = env.VITE_ACCOUNT_HOST
+
+export const debug = new DebugService()
 
 export const ipcClient = new IpcClient()
 export const browserHistory = new BrowserHistory()
