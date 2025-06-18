@@ -15,6 +15,7 @@
 				<SubscriptionFlow v-if="type === 'settings-plan'"></SubscriptionFlow>
 				<Account v-if="type === 'settings-billing-address'"></Account>
 				<DevBlog v-if="type === 'settings-blog'"></DevBlog>
+				<Debug v-if="type === 'settings-debug'"></Debug>
 				<PaymentMethodsFlow v-if="type === 'settings-payment-methods'"></PaymentMethodsFlow>
 				<InvoiceFlow v-if="type === 'settings-invoices'"></InvoiceFlow>
 				<About v-if="type === 'settings-about'"></About>
@@ -38,6 +39,7 @@ import Account from './subscription/Account.vue'
 import PromoteAccount from './settings/PromoteAccount.vue'
 import About from './settings/About.vue'
 import DevBlog from './settings/DevBlog.vue'
+import Debug from './settings/Debug.vue'
 import Update from './settings/Update.vue'
 import SubscriptionFlow from './subscription/SubscriptionFlow.vue'
 import InvoiceFlow from './subscription/InvoiceFlow.vue'

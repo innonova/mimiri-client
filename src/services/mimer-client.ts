@@ -51,8 +51,9 @@ import { dateTimeNow } from './types/date-time'
 import { fromBase64, toBase64, toHex } from './hex-base64'
 import type { NoteShareInfo } from './types/note-share-info'
 import type { ICacheManager } from './types/cache-manager'
-import { env, ipcClient, updateManager } from '../global'
+import { debug, env, ipcClient, updateManager } from '../global'
 import { mimiriPlatform } from './mimiri-platform'
+import { settingsManager } from './settings-manager'
 
 export const DEFAULT_SALT_SIZE = 32
 export const DEFAULT_PASSWORD_ALGORITHM = 'PBKDF2;SHA512;256'
@@ -163,6 +164,19 @@ export class MimerClient {
 		if (this.simulateOffline) {
 			throw new Error('Simulate offline')
 		}
+		const start = performance.now()
+		if (settingsManager.debugEnabled) {
+			if (debug.settings.preCallLatencyEnabled) {
+				if (debug.settings.preCallLatencyRandom) {
+					await new Promise(resolve => setTimeout(resolve, Math.random() * debug.settings.preCallLatency))
+				} else {
+					await new Promise(resolve => setTimeout(resolve, debug.settings.preCallLatency))
+				}
+			}
+			if (debug.settings.callErrorFrequencyEnabled && Math.random() < debug.callErrorFrequency / 100) {
+				throw new Error('Simulated error')
+			}
+		}
 		// console.log('GET', `${this.host}${path}`, window.location.origin)
 		const response = await fetch(`${this.host}${path}`, {
 			method: 'GET',
@@ -170,6 +184,21 @@ export class MimerClient {
 				'X-Mimiri-Version': `${updateManager.platformString}`,
 			},
 		})
+		if (settingsManager.debugEnabled) {
+			if (debug.settings.postCallLatencyEnabled) {
+				if (debug.settings.postCallLatencyRandom) {
+					await new Promise(resolve => setTimeout(resolve, Math.random() * debug.settings.postCallLatency))
+				} else {
+					await new Promise(resolve => setTimeout(resolve, debug.settings.postCallLatency))
+				}
+			}
+		}
+		if (settingsManager.debugEnabled && debug.settings.latencyThreshold > 0) {
+			const latency = performance.now() - start
+			if (latency > debug.settings.latencyThreshold) {
+				debug.logLatency(`GET ${path} took ${latency}ms`, latency)
+			}
+		}
 		if (response.status !== 200) {
 			throw new HttpRequestError(`Get of ${path} failed with status code ${response.status}`, response.status)
 		}
@@ -179,6 +208,19 @@ export class MimerClient {
 	private async post<T>(path: string, data: any, encrypt: boolean = false): Promise<T> {
 		if (this.simulateOffline) {
 			throw new Error('Simulate offline')
+		}
+		const start = performance.now()
+		if (settingsManager.debugEnabled) {
+			if (debug.settings.preCallLatencyEnabled) {
+				if (debug.settings.preCallLatencyRandom) {
+					await new Promise(resolve => setTimeout(resolve, Math.random() * debug.settings.preCallLatency))
+				} else {
+					await new Promise(resolve => setTimeout(resolve, debug.settings.preCallLatency))
+				}
+			}
+			if (debug.settings.callErrorFrequencyEnabled && Math.random() < debug.callErrorFrequency / 100) {
+				throw new Error('Simulated error')
+			}
 		}
 		let body = data
 		if (encrypt && this.serverSignature) {
@@ -195,6 +237,21 @@ export class MimerClient {
 			},
 			body: JSON.stringify(body),
 		})
+		if (settingsManager.debugEnabled) {
+			if (debug.settings.postCallLatencyEnabled) {
+				if (debug.settings.postCallLatencyRandom) {
+					await new Promise(resolve => setTimeout(resolve, Math.random() * debug.settings.postCallLatency))
+				} else {
+					await new Promise(resolve => setTimeout(resolve, debug.settings.postCallLatency))
+				}
+			}
+		}
+		if (settingsManager.debugEnabled && debug.settings.latencyThreshold > 0) {
+			const latency = performance.now() - start
+			if (latency > debug.settings.latencyThreshold) {
+				debug.logLatency(`GET ${path} took ${latency}ms`, latency)
+			}
+		}
 		if (response.status !== 200) {
 			throw new HttpRequestError(`Post to ${path} failed with status code ${response.status}`, response.status)
 		}
@@ -308,7 +365,7 @@ export class MimerClient {
 				}
 				return true
 			} catch (ex) {
-				console.log(ex)
+				debug.logError('Failed to restore login data', ex)
 			}
 		}
 		return false
@@ -371,6 +428,7 @@ export class MimerClient {
 				try {
 					preLoginResponse = await this.get<PreLoginResponse>(`/user/pre-login/${data.username}?q=${Date.now()}`)
 				} catch (exi) {
+					debug.logError('Failed to get pre-login response', exi)
 					throw exi
 				}
 
@@ -429,7 +487,7 @@ export class MimerClient {
 				throw ex
 			}
 			if (!this.suppressErrorLog) {
-				console.log(ex)
+				debug.logError('Failed to login', ex)
 			}
 			return false
 		}
@@ -475,7 +533,8 @@ export class MimerClient {
 			await this.loadAllKeys()
 			this.online = true
 			return true
-		} catch {
+		} catch (ex) {
+			debug.logError('Failed to go online', ex)
 			if (password && !this.rootCrypt) {
 				return await this.login({
 					username: this.username,
@@ -601,6 +660,7 @@ export class MimerClient {
 			this.logout()
 			await this.login({ username, password })
 		} catch (ex) {
+			debug.logError('Failed to create user', ex)
 			this.logout()
 			throw ex
 		}
@@ -905,7 +965,7 @@ export class MimerClient {
 			try {
 				offerData = JSON.parse(await this.rootSignature.decrypt(offer.data))
 			} catch (ex) {
-				console.log(ex)
+				debug.logError('Failed to parse share offer data', ex)
 				offerData.sender = 'error'
 				offerData.name = 'error'
 				offerData.error = ex
@@ -939,7 +999,7 @@ export class MimerClient {
 				try {
 					offerData = JSON.parse(await this.rootSignature.decrypt(offer.data))
 				} catch (ex) {
-					console.log(ex)
+					debug.logError('Failed to parse share offer data', ex)
 					offerData.sender = 'error'
 					offerData.name = 'error'
 					offerData.error = ex
@@ -954,7 +1014,7 @@ export class MimerClient {
 				return result[0]
 			}
 		} catch (ex) {
-			console.log(ex)
+			debug.logError('Failed to get share offer', ex)
 		}
 		return undefined
 	}
@@ -1081,7 +1141,7 @@ export class MimerClient {
 			return response
 		} catch (ex) {
 			if (!this.suppressErrorLog) {
-				console.log(ex)
+				debug.logError('Failed to update note', ex)
 			}
 			throw ex
 		}
@@ -1190,7 +1250,7 @@ export class MimerClient {
 				return undefined
 			}
 			if (!this.suppressErrorLog) {
-				console.log(ex)
+				debug.logError('Failed to read note', ex)
 			}
 			throw ex
 		}

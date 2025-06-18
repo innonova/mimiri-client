@@ -131,7 +131,7 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { noteManager, dragId, showSearchBox, createNewNode, createNewRootNode, features } from '../global'
+import { noteManager, dragId, showSearchBox, createNewNode, createNewRootNode, features, debug } from '../global'
 import type { NoteViewModel } from '../services/types/mimer-note'
 import { searchManager } from '../services/search-manager'
 import NewTreeNode from './NewTreeNode.vue'
@@ -227,7 +227,7 @@ const onDrop = async event => {
 			await note.move(dropNote.parent, dropNote.index + 1)
 		}
 	} catch (ex) {
-		console.log(ex)
+		debug.logError('Error dropping note', ex)
 	}
 }
 
@@ -253,7 +253,7 @@ const onDragOver = event => {
 			}
 		}
 	} catch (ex) {
-		console.log(ex)
+		debug.logError('Error during drag over', ex)
 	}
 }
 
@@ -268,7 +268,7 @@ const onDragEnter = event => {
 			}
 		}
 	} catch (ex) {
-		console.log(ex)
+		debug.logError('Error during drag enter', ex)
 	}
 }
 
@@ -282,7 +282,7 @@ const onDragLeave = event => {
 			}
 		}
 	} catch (ex) {
-		console.log(ex)
+		debug.logError('Error during drag leave', ex)
 	}
 }
 

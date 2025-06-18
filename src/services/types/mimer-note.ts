@@ -5,7 +5,7 @@ import { type Guid } from './guid'
 import type { Note } from './note'
 import { fromBase64, toBase64 } from '../hex-base64'
 import { persistedState } from '../persisted-state'
-import { blogManager, updateManager } from '../../global'
+import { blogManager, debug, updateManager } from '../../global'
 import { settingsManager, UpdateMode } from '../settings-manager'
 
 const zip = async (text: string) => {
@@ -292,7 +292,7 @@ export class MimerNote {
 					}
 				}
 			} catch (ex) {
-				console.log(ex)
+				debug.logError(`Failed to ensure children for note ${this.id}`, ex)
 			}
 
 			if (!this.shouldRerunChildren) {

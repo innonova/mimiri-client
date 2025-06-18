@@ -7,7 +7,7 @@ import { reactive } from 'vue'
 import { EditorSimple } from './editor-simple'
 import { EditorDisplay } from './editor-display'
 import { settingsManager } from '../settings-manager'
-import { clipboardManager, noteManager, saveEmptyNodeDialog } from '../../global'
+import { clipboardManager, debug, noteManager, saveEmptyNodeDialog } from '../../global'
 import { VersionConflictError } from '../mimer-client'
 
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms))
@@ -239,6 +239,7 @@ export class MimiriEditor {
 					}
 					break
 				} catch (ex) {
+					debug.logError(`Failed to save note ${noteId}`, ex)
 					if (ex instanceof VersionConflictError) {
 						continue
 					}

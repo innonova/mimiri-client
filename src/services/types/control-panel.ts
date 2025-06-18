@@ -11,6 +11,7 @@ export const createControlPanelTree = (owner: NoteManager, parent: MimerNote): M
 	const showPin = mimiriPlatform.isElectron || location.host === 'localhost:5173'
 	const showSubscription = mimiriPlatform.isDesktop
 	const showDevBlog = !settingsManager.disableDevBlog
+	const showDebug = settingsManager.debugEnabled
 
 	const items = [
 		...(showUpdate
@@ -31,6 +32,17 @@ export const createControlPanelTree = (owner: NoteManager, parent: MimerNote): M
 						title: 'Dev Blog',
 						type: 'settings-blog',
 						icon: 'announcement',
+						children: [],
+					},
+				]
+			: []),
+		...(showDebug
+			? [
+					{
+						id: 'settings-debug' as Guid,
+						title: 'Debug',
+						type: 'settings-debug',
+						icon: 'cog',
 						children: [],
 					},
 				]

@@ -18,15 +18,7 @@
 </template>
 
 <script setup lang="ts">
-import {
-	clipboardNote,
-	createNewRootNode,
-	deleteNodeDialog,
-	isCut,
-	mobileLog,
-	noteManager,
-	showSearchBox,
-} from '../global'
+import { clipboardNote, createNewRootNode, deleteNodeDialog, isCut, noteManager, showSearchBox } from '../global'
 import type { MimerNote } from '../services/types/mimer-note'
 import TreeNode from './TreeNode.vue'
 import NewTreeNode from './NewTreeNode.vue'

@@ -47,6 +47,7 @@ export interface MimerConfiguration {
 	blogPostNotificationLevel: string
 	lastReadBlogPostId: Guid
 	disableDevBlog: boolean
+	debugEnabled?: boolean
 }
 
 class SettingsManager {
@@ -86,6 +87,7 @@ class SettingsManager {
 		blogPostNotificationLevel: 'clearly',
 		lastReadBlogPostId: emptyGuid(),
 		disableDevBlog: false,
+		debugEnabled: undefined,
 	})
 
 	constructor() {
@@ -411,6 +413,15 @@ class SettingsManager {
 
 	public set disableDevBlog(value: boolean) {
 		this.state.disableDevBlog = value
+		void this.save()
+	}
+
+	public get debugEnabled() {
+		return !!this.state.debugEnabled
+	}
+
+	public set debugEnabled(value: boolean) {
+		this.state.debugEnabled = value
 		void this.save()
 	}
 }

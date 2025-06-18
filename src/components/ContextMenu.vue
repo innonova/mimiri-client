@@ -43,6 +43,7 @@
 import { ref, toRaw } from 'vue'
 import type { ContextMenu, ContextMenuItem, ContextMenuPosition } from '../services/types/context-menu'
 import ToolbarIcon from './ToolbarIcon.vue'
+import { debug } from '../global'
 
 const visible = ref(false)
 const top = ref('0px')
@@ -61,7 +62,7 @@ const close = e => {
 	try {
 		activationCallback?.()
 	} catch (ex) {
-		console.log(ex)
+		debug.logError('Error closing context menu', ex)
 	}
 	activationCallback = undefined
 }
@@ -112,7 +113,7 @@ const activateItem = (item: ContextMenuItem) => {
 	try {
 		activationCallback?.(toRaw(item))
 	} catch (ex) {
-		console.log(ex)
+		debug.logError('Error activating context menu item', ex)
 	}
 	activationCallback = undefined
 }

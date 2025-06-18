@@ -1,7 +1,6 @@
 import { editor, KeyCode, languages, Selection } from 'monaco-editor'
 import { SelectionExpansion, type EditorState, type TextEditor, type TextEditorListener } from './type'
 import { settingsManager } from '../settings-manager'
-import { mobileLog } from '../../global'
 import { mimiriPlatform } from '../mimiri-platform'
 import { Debounce } from '../helpers'
 import { reactive } from 'vue'
@@ -371,7 +370,6 @@ export class EditorAdvanced implements TextEditor {
 			for (const span of this.backgroundEditor.getDomNode().getElementsByTagName('span')) {
 				if (!span.innerHTML.includes('<') && span.innerHTML.includes('password')) {
 					if (span.className !== 'mtk1') {
-						mobileLog.log('Styles Updated')
 						this.styleOverridesDirty = false
 						this.styleElement.innerHTML = `.${span.className} { -webkit-text-security: disc; }`
 					}
@@ -384,7 +382,6 @@ export class EditorAdvanced implements TextEditor {
 			setTimeout(() => this.executeUpdateStyleOverrides(), 100)
 		} else {
 			if (this.styleOverridesDirty) {
-				mobileLog.log('failed to update styles')
 			}
 			this.styleUpdateRunning = false
 		}
@@ -400,7 +397,6 @@ export class EditorAdvanced implements TextEditor {
 				theme: 'mimiri-light',
 			})
 		}
-		// mobileLog.log('Updating Style')
 		// const passwordSyntax = 'p`password`'
 		// this.backgroundModel.setValue(passwordSyntax)
 		// if (!this.styleUpdateRunning) {

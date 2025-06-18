@@ -8,12 +8,11 @@ import { BrowserHistory } from './services/browser-history'
 import { UpdateManager } from './services/update-manager'
 import { NotificationManager } from './services/notification-manager'
 import { MimiriEditor } from './services/editor/mimiri-editor'
-import { MobileLog } from './services/mobile-log'
 import { PasswordGenerator } from './services/password-generator'
 import { ClipboardManager } from './services/clipboard-manager'
 import { FontManager } from './services/font-manager'
 import { BlogManager } from './services/blog-manager'
-import { DebugService } from './services/debug'
+import { DebugManager } from './services/debug-manager'
 
 export const env = import.meta.env
 const host = env.VITE_MIMER_API_HOST
@@ -23,7 +22,7 @@ const serverKeyId = env.VITE_API_PUBLIC_KEY_ID
 export const pdfEnvironment = env.VITE_PDF_ENV
 export const accountHost = env.VITE_ACCOUNT_HOST
 
-export const debug = new DebugService()
+export const debug = new DebugManager()
 
 export const ipcClient = new IpcClient()
 export const browserHistory = new BrowserHistory()
@@ -57,7 +56,6 @@ export const conversionData = ref({ username: '', password: '' })
 export const createNewNode = ref(false)
 export const createNewRootNode = ref(false)
 export const searchInput = ref(null)
-export const mobileLog = new MobileLog()
 
 export const clipboardNote = ref<MimerNote>(undefined)
 export const isCut = ref(false)

@@ -131,10 +131,10 @@ import {
 	loginDialog,
 	limitDialog,
 	updateManager,
-	mobileLog,
 	deletePaymentMethodDialog,
 	deleteHistoryDialog,
 	infoDialog,
+	debug,
 } from './global'
 import { settingsManager } from './services/settings-manager'
 import LoadingIcon from './icons/loading.vue'
@@ -149,8 +149,6 @@ import { ViewMode } from './services/note-manager'
 import PropertiesPage from './components/PropertiesPage.vue'
 import DeleteHistoryDialog from './components/dialogs/DeleteHistoryDialog.vue'
 import InfoDialog from './components/dialogs/InfoDialog.vue'
-
-mobileLog.log(`App Loading ${settingsManager.channel} ${updateManager.currentVersion}`)
 
 const colorScheme = ref('only light')
 const loading = ref(true)
@@ -395,6 +393,8 @@ useEventListener(window, 'resize', async () => {
 		progressActivity()
 
 		await settingsManager.load()
+		debug.init()
+		debug.log(`App Loading ${settingsManager.channel} ${updateManager.currentVersion}`)
 		if (settingsManager.mainWindowSize.width > 100 && settingsManager.mainWindowSize.height > 100) {
 			await ipcClient.window.setMainWindowSize(settingsManager.mainWindowSize)
 		}
@@ -411,14 +411,14 @@ useEventListener(window, 'resize', async () => {
 				}
 			}
 		} catch (ex) {
-			console.log(ex)
+			debug.logError('Error setting login data', ex)
 		}
 
 		if (!noteManager.isLoggedIn) {
 			try {
 				await noteManager.recoverLogin()
 			} catch (ex) {
-				console.log(ex)
+				debug.logError('Error recovering login', ex)
 			}
 		}
 
@@ -442,7 +442,7 @@ useEventListener(window, 'resize', async () => {
 			loginDialog.value.show(true)
 		}
 	} catch (ex) {
-		console.error('Error during app initialization:', ex?.message)
+		debug.logError('Error during app initialization', ex)
 		setTimeout(() => location.reload(), 1000)
 	}
 })()

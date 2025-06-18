@@ -1,5 +1,5 @@
 import { reactive } from 'vue'
-import { ipcClient, notificationManager, updateKeys, updateManager } from '../global'
+import { debug, ipcClient, notificationManager, updateKeys, updateManager } from '../global'
 import { version, releaseDate } from '../version'
 import { CryptSignature } from './crypt-signature'
 import type { InstalledBundleInfo } from './types/ipc.interfaces'
@@ -163,7 +163,9 @@ export class UpdateManager {
 				if (settingsManager.lastRunHostVersion !== this.state.activeVersion.hostVersion) {
 					settingsManager.lastRunHostVersion = this.state.activeVersion.hostVersion
 				}
-			} catch (ex) {}
+			} catch (ex) {
+				debug.logError('UpdateManager.checkUpdateInitial', ex)
+			}
 		}
 		return false
 	}
@@ -311,7 +313,7 @@ export class UpdateManager {
 				}
 				await this.updateChangeLog()
 			} catch (ex) {
-				console.log('error', ex)
+				debug.logError('UpdateManager.check', ex)
 			}
 		}
 	}
@@ -442,7 +444,7 @@ export class UpdateManager {
 			}
 		} catch (ex) {
 			status?.({ total: 0, downloaded: 0, stage: 'error', error: ex.message })
-			console.log(ex)
+			debug.logError('UpdateManager.download', ex)
 		}
 	}
 

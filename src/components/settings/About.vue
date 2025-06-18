@@ -64,10 +64,12 @@
 						</button>
 					</div>
 				</div>
-				<div class="h-[600px] overflow-y-scroll p-2">
-					<template v-for="message of mobileLog.messages">
-						<div>{{ message }}</div>
-					</template>
+				<div class="flex justify-around mt-2">
+					<div class="text-center">
+						<button class="primary" @click="toggleDebug">
+							{{ settingsManager.debugEnabled ? 'Disable Debug' : 'Enable Debug' }}
+						</button>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -76,7 +78,7 @@
 
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue'
-import { noteManager, updateManager, mobileLog } from '../../global'
+import { noteManager, updateManager } from '../../global'
 import { settingsManager } from '../../services/settings-manager'
 import { iconAttributions } from '../../icons/attributions'
 import { mimiriPlatform } from '../../services/mimiri-platform'
@@ -152,17 +154,14 @@ onMounted(() => {
 let clickCount = 0
 let firstClick = Date.now() - 60000
 const boxClicked = () => {
-	if (mobileLog.enabled) {
-		if (Date.now() - firstClick > 60000) {
-			clickCount = 0
-			firstClick = Date.now()
-		}
-		if (++clickCount >= 10) {
-			clickCount = 0
-			firstClick = Date.now() - 60000
-			mobileLog.log('log opened')
-			showLog.value = true
-		}
+	if (Date.now() - firstClick > 60000) {
+		clickCount = 0
+		firstClick = Date.now()
+	}
+	if (++clickCount >= 10) {
+		clickCount = 0
+		firstClick = Date.now() - 60000
+		showLog.value = true
 	}
 }
 
@@ -182,6 +181,11 @@ const changeChannel = () => {
 	} else {
 		settingsManager.channel = 'stable'
 	}
+}
+
+const toggleDebug = () => {
+	settingsManager.debugEnabled = !settingsManager.debugEnabled
+	location.reload()
 }
 
 watch(selectedFont, async () => {

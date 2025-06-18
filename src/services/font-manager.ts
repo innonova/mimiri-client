@@ -1,4 +1,5 @@
 import fonts from '../assets/fonts.json'
+import { debug } from '../global'
 import { mimiriPlatform } from './mimiri-platform'
 
 export interface MimiriFont {
@@ -49,7 +50,7 @@ export class FontManager {
 			const license = await fetch(url).then(res => res.text())
 			return license
 		} catch (ex) {
-			console.log(ex)
+			debug.logError(`Failed to fetch license for font ${name}`, ex)
 		}
 		return ''
 	}

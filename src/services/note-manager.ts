@@ -13,10 +13,10 @@ import {
 	browserHistory,
 	createNewNode,
 	createNewRootNode,
+	debug,
 	env,
 	ipcClient,
 	limitDialog,
-	mobileLog,
 	updateManager,
 } from '../global'
 import { Capacitor } from '@capacitor/core'
@@ -331,7 +331,7 @@ export class NoteManager {
 				await this.refreshNote(this._root.note.id)
 			}
 		} catch (ex) {
-			console.log(ex)
+			debug.log('Failed to load getting started notes', ex)
 		}
 	}
 
@@ -377,7 +377,7 @@ export class NoteManager {
 			await this.ensureControlPanel()
 			await this.ensureRecycleBin()
 		} catch (ex) {
-			console.log(ex)
+			debug.logError('Failed to ensure notes structure', ex)
 		}
 	}
 
@@ -475,7 +475,6 @@ export class NoteManager {
 	}
 
 	public async goOnline(password?: string) {
-		mobileLog.log('Going online')
 		this.beginAction()
 		try {
 			await this.client.goOnline(password)
@@ -493,9 +492,8 @@ export class NoteManager {
 				}
 			}
 			this._listener?.online()
-			mobileLog.log('Online')
 		} catch (ex) {
-			mobileLog.log('Failed to go online ' + ex.message)
+			debug.logError('Failed to go online', ex)
 		} finally {
 			this.endAction()
 		}
@@ -510,7 +508,6 @@ export class NoteManager {
 	}
 
 	public logout() {
-		mobileLog.log('Logging out')
 		settingsManager.autoLogin = false
 		settingsManager.autoLoginData = undefined
 		this._listener?.logout()
@@ -603,7 +600,7 @@ export class NoteManager {
 					void updateManager.check()
 					void blogManager.refreshAll()
 				} catch (ex) {
-					console.log('Failed to set up for notifications', ex)
+					debug.logError('Failed to connect for notifications', ex)
 				}
 			}
 		} else {
@@ -633,7 +630,7 @@ export class NoteManager {
 		try {
 			this.state.shareOffers = await this.client.getShareOffers()
 		} catch (ex) {
-			console.log(ex)
+			debug.logError('Failed to load share offers', ex)
 		}
 	}
 
@@ -792,6 +789,7 @@ export class NoteManager {
 					}
 					const reload = await this.client.readNote(parent.id)
 					if (!reload) {
+						debug.logError('Failed to reload parent note after create', exi)
 						throw exi
 					}
 					parent = reload
@@ -823,6 +821,7 @@ export class NoteManager {
 				if (err instanceof VersionConflictError) {
 					await this.refreshNote(note.id)
 				}
+				debug.logError('Failed to save note', err)
 				throw err
 			}
 			await this.refreshNote(note.id)

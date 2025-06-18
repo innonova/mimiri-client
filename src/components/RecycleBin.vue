@@ -71,7 +71,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { noteManager, dragId, showSearchBox, createNewNode, createNewRootNode } from '../global'
+import { noteManager, dragId, showSearchBox, createNewNode, createNewRootNode, debug } from '../global'
 import type { NoteViewModel } from '../services/types/mimer-note'
 import { searchManager } from '../services/search-manager'
 import TreeNode from './TreeNode.vue'
@@ -81,6 +81,7 @@ import PlusIcon from '../icons/plus.vue'
 import MinusIcon from '../icons/minus.vue'
 import OpenIcon from '../icons/open.vue'
 import { MenuItems, menuManager } from '../services/menu-manager'
+import { de } from 'date-fns/locale'
 
 const visualElement = ref(null)
 const renameInput = ref(null)
@@ -126,7 +127,7 @@ const onDrop = async event => {
 			await note.move(dropNote.parent, dropNote.index + 1)
 		}
 	} catch (ex) {
-		console.log(ex)
+		debug.logError('Error dropping note', ex)
 	}
 }
 
@@ -149,7 +150,7 @@ const onDragOver = event => {
 			}
 		}
 	} catch (ex) {
-		console.log(ex)
+		debug.logError('Error during drag over', ex)
 	}
 }
 
@@ -164,7 +165,7 @@ const onDragEnter = event => {
 			}
 		}
 	} catch (ex) {
-		console.log(ex)
+		debug.logError('Error during drag enter', ex)
 	}
 }
 
@@ -178,7 +179,7 @@ const onDragLeave = event => {
 			}
 		}
 	} catch (ex) {
-		console.log(ex)
+		debug.logError('Error during drag leave', ex)
 	}
 }
 

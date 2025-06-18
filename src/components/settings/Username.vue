@@ -19,7 +19,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import UsernameInput from '../elements/UsernameInput.vue'
-import { noteManager, passwordDialog } from '../../global'
+import { debug, noteManager, passwordDialog } from '../../global'
 import TabBar from '../elements/TabBar.vue'
 
 const emit = defineEmits(['close'])
@@ -44,7 +44,7 @@ const save = () => {
 				usernameInput.value.refresh()
 				return true
 			} catch (ex) {
-				console.log(ex)
+				debug.logError('Error changing username', ex)
 			}
 			return false
 		})
