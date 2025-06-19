@@ -824,7 +824,11 @@ export class NoteManager {
 				debug.logError('Failed to save note', err)
 				throw err
 			}
-			await this.refreshNote(note.id)
+			try {
+				await this.refreshNote(note.id)
+			} catch (err) {
+				debug.logError('Failed to refresh note after save', err)
+			}
 		} finally {
 			this.endAction()
 		}
