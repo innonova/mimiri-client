@@ -272,38 +272,44 @@ export class NoteManager {
 	}
 
 	public async loginAnonymousAccount() {
-		if (settingsManager.anonymousUsername && settingsManager.anonymousPassword) {
-			const password = await deObfuscate(settingsManager.anonymousPassword)
-			await this.login({
-				username: settingsManager.anonymousUsername,
-				password: password,
-			})
-			if (this.isLoggedIn) {
+		try {
+			if (settingsManager.anonymousUsername && settingsManager.anonymousPassword) {
+				const password = await deObfuscate(settingsManager.anonymousPassword)
+				await this.login({
+					username: settingsManager.anonymousUsername,
+					password: password,
+				})
+				if (this.isLoggedIn) {
+					if (mimiriPlatform.isElectron || (mimiriPlatform.isWeb && env.DEV)) {
+						settingsManager.autoLoginData = await obfuscate(await this.getLoginData())
+						settingsManager.autoLogin = true
+					}
+					await settingsManager.waitForSaveComplete()
+					await this.loadState()
+				}
+			} else if (!mimiriPlatform.isWeb || env.DEV) {
+				const username = `mimiri_a_${Date.now()}_${`${Math.random()}`.substring(2, 6)}`
+				const password = toHex(crypto.getRandomValues(new Uint8Array(128)))
+				// high password complexity obviates the need for high iteration count so we can save time here
+				await this.createAccount(username, password, 100)
+				settingsManager.anonymousUsername = username
+				settingsManager.anonymousPassword = await obfuscate(password)
 				if (mimiriPlatform.isElectron || (mimiriPlatform.isWeb && env.DEV)) {
 					settingsManager.autoLoginData = await obfuscate(await this.getLoginData())
 					settingsManager.autoLogin = true
 				}
 				await settingsManager.waitForSaveComplete()
-				await this.loadState()
+				if (this.isLoggedIn) {
+					await this.root.ensureChildren()
+				}
+				const gettingStartedNote = this.root.children.find(note => note.note.getItem('metadata').isGettingStarted)
+				gettingStartedNote.expand()
+				gettingStartedNote.select()
 			}
-		} else if (!mimiriPlatform.isWeb || env.DEV) {
-			const username = `mimiri_a_${Date.now()}_${`${Math.random()}`.substring(2, 6)}`
-			const password = toHex(crypto.getRandomValues(new Uint8Array(128)))
-			// high password complexity obviates the need for high iteration count so we can save time here
-			await this.createAccount(username, password, 100)
-			settingsManager.anonymousUsername = username
-			settingsManager.anonymousPassword = await obfuscate(password)
-			if (mimiriPlatform.isElectron || (mimiriPlatform.isWeb && env.DEV)) {
-				settingsManager.autoLoginData = await obfuscate(await this.getLoginData())
-				settingsManager.autoLogin = true
-			}
-			await settingsManager.waitForSaveComplete()
-			if (this.isLoggedIn) {
-				await this.root.ensureChildren()
-			}
-			const gettingStartedNote = this.root.children.find(note => note.note.getItem('metadata').isGettingStarted)
-			gettingStartedNote.expand()
-			gettingStartedNote.select()
+			return true
+		} catch (ex) {
+			debug.logError('Error logging in anonymous account', ex)
+			return false
 		}
 	}
 
