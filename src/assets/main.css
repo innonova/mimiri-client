@@ -259,7 +259,15 @@ dialog {
 }
 
 .display-editor {
-	caret-color: var(--color-input);
+	h1 {
+		@apply text-size-header font-display font-bold mb-3 mt-10;
+	}
+	h2 {
+		@apply text-size-header font-display mb-2 mt-7;
+	}
+	h3 {
+		@apply text-size-header font-display italic mb-1 mt-5;
+	}
 }
 
 .simple-editor::selection {
@@ -267,16 +275,6 @@ dialog {
 }
 
 .password-secret-content {
-	-webkit-text-security: disc;
-}
-
-span.mtk7,
-span.mtk8,
-span.mtk9 {
-	@apply cursor-pointer;
-}
-span.mtk22,
-span.mtk21 {
 	-webkit-text-security: disc;
 }
 
@@ -294,4 +292,26 @@ span.mtk21 {
 
 .password-secret-content {
 	@apply text-text;
+}
+
+html[data-theme='dark'] {
+	span.mtk8,
+	span.mtk9 {
+		@apply cursor-pointer;
+	}
+
+	span.mtk23 {
+		-webkit-text-security: disc;
+	}
+}
+
+html[data-theme='light'] {
+	span.mtk9,
+	span.mtk10 {
+		@apply cursor-pointer;
+	}
+
+	span.mtk24 {
+		-webkit-text-security: disc;
+	}
 }

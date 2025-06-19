@@ -53,6 +53,9 @@ export class EditorAdvanced implements TextEditor {
 				root: [
 					[/(p`)([^``]+)(`)/, ['directive', 'password', 'directive']],
 					[/(\[)( |X|x)(\])/, ['checkbox', 'checkmark', 'checkbox']],
+					[/^(#{1,3}\s)(.*)/, ['head1', 'head1text']],
+					[/^(_)(.*)(_)/, ['italic', 'italictext', 'italic']],
+					[/^(\*\*)(.*)(\*\*)/, ['bold', 'boldtext', 'bold']],
 				],
 			},
 		})
@@ -65,6 +68,12 @@ export class EditorAdvanced implements TextEditor {
 				{ token: 'password', foreground: 'd4d4d5' },
 				{ token: 'checkbox', foreground: '666667' },
 				{ token: 'checkmark', foreground: 'd4d4d6' },
+				{ token: 'head1', foreground: '4381c1', fontStyle: 'bold' },
+				{ token: 'head1text', foreground: '4381c1', fontStyle: 'bold' },
+				{ token: 'italic', foreground: 'd4d4d7', fontStyle: 'italic' },
+				{ token: 'italictext', foreground: 'd4d4d7', fontStyle: 'italic' },
+				{ token: 'bold', foreground: 'd4d4d7', fontStyle: 'bold' },
+				{ token: 'boldtext', foreground: 'd4d4d7', fontStyle: 'bold' },
 			],
 			colors: {},
 		})
@@ -73,10 +82,16 @@ export class EditorAdvanced implements TextEditor {
 			base: 'vs',
 			inherit: true,
 			rules: [
-				{ token: 'directive', foreground: 'AAAAAA' },
+				{ token: 'directive', foreground: 'aaaaaa' },
 				{ token: 'password', foreground: '000001' },
-				{ token: 'checkbox', foreground: 'AAAAAB' },
+				{ token: 'checkbox', foreground: 'aaaaab' },
 				{ token: 'checkmark', foreground: '000002' },
+				{ token: 'head1', foreground: '4381c1', fontStyle: 'bold' },
+				{ token: 'head1text', foreground: '4381c1', fontStyle: 'bold' },
+				{ token: 'italic', foreground: '000003', fontStyle: 'italic' },
+				{ token: 'italictext', foreground: '000003', fontStyle: 'italic' },
+				{ token: 'bold', foreground: '000003', fontStyle: 'bold' },
+				{ token: 'boldtext', foreground: '000003', fontStyle: 'bold' },
 			],
 			colors: {},
 		})

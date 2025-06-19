@@ -34,12 +34,14 @@ export class EditorDisplay implements TextEditor {
 		this._element = document.createElement('div')
 		this._domElement.appendChild(this._element)
 		this._element.classList.add('simple-editor')
+		this._element.classList.add('display-editor')
 		this._element.contentEditable = 'false'
 
 		this._history = document.createElement('div')
 		this._history.style.display = 'none'
 		this._domElement.appendChild(this._history)
 		this._history.classList.add('simple-editor')
+		this._history.classList.add('display-editor')
 
 		if (settingsManager.wordwrap) {
 			this._wordWrap = true
@@ -163,6 +165,11 @@ export class EditorDisplay implements TextEditor {
 				/\[( |X|x)\]/g,
 				'<span class="clickable-checkbox">[<span class="clickable-checkbox-content">$1</span>]</span>',
 			)
+			.replace(/_(.*)_/g, '<span class="italic">$1</span>')
+			.replace(/\*\*(.*)\*\*/g, '<span class="font-bold">$1</span>')
+			.replace(/^#\s(.*)/gm, '<h1>$1</h1>')
+			.replace(/^##\s(.*)/gm, '<h2>$1</h2>')
+			.replace(/^###\s(.*)/gm, '<h3>$1</h3>')
 	}
 
 	public show(text: string, scrollTop: number) {
