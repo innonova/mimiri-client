@@ -119,6 +119,7 @@ const windowFocus = ref(true)
 const historyVisible = ref(false)
 const displayMode = ref(true)
 const selectedHistoryItem = computed(() => mimiriEditor.history.state.selectedHistoryItem)
+let saveInProgress = false
 
 const biCif = value => {
 	if (value < 10) {
@@ -281,18 +282,20 @@ const saveEnabled = computed(() => {
 })
 
 const save = async () => {
-	if (activeViewModel && saveEnabled.value) {
-		const result = await mimiriEditor.save()
-		if (result === 'note-size') {
-			noteManager.select(activeViewModel.id)
-			limitDialog.value.show('save-note-size')
-		} else if (result === 'total-size') {
-			noteManager.select(activeViewModel.id)
-			limitDialog.value.show('save-total-size')
-		} else if (result === 'lost-update') {
-			infoDialog.value.show(
-				'Note was changed',
-				`The note you just saved appears to have been changed outside the editor while you were editing it.
+	if (activeViewModel && saveEnabled.value && !saveInProgress) {
+		saveInProgress = true
+		try {
+			const result = await mimiriEditor.save()
+			if (result === 'note-size') {
+				noteManager.select(activeViewModel.id)
+				limitDialog.value.show('save-note-size')
+			} else if (result === 'total-size') {
+				noteManager.select(activeViewModel.id)
+				limitDialog.value.show('save-total-size')
+			} else if (result === 'lost-update') {
+				infoDialog.value.show(
+					'Note was changed',
+					`The note you just saved appears to have been changed outside the editor while you were editing it.
 
 This may happen if you edited the note in another tab or device.
 
@@ -301,7 +304,10 @@ This may also happen if your connection is unstable.
 Or if this is a shared note: another user may have edited it.
 
 You can view all changes in the history.`,
-			)
+				)
+			}
+		} finally {
+			saveInProgress = false
 		}
 	}
 }
