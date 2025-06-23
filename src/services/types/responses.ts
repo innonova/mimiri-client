@@ -124,3 +124,8 @@ export interface BlogPost {
 	published: boolean
 	publishDate: string
 }
+
+export interface SyncResponse {
+	keys: any[]
+	notes: any[]
+}

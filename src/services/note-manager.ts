@@ -29,6 +29,9 @@ import { createControlPanelTree } from './types/control-panel'
 import { settingsManager } from './settings-manager'
 import { deObfuscate, obfuscate } from './helpers'
 import { toHex } from './hex-base64'
+import { MimiriStore } from './storage/mimiri-store'
+import { MimiriBrowserDb } from './storage/mimiri-browser-db'
+import { MimiriClient } from './storage/mimiri-client'
 
 export enum ActionType {
 	Save,
@@ -55,7 +58,6 @@ interface NoteManagerState {
 	spinner: boolean
 	noteOpen: boolean
 	selectedNoteId?: Guid
-	shareOffers: NoteShareInfo[]
 	stateLoaded: boolean
 	initInProgress: boolean
 	viewMode: ViewMode
@@ -86,7 +88,7 @@ export class NoteManager {
 	public state: NoteManagerState
 	private busyStart: number
 
-	private client: MimerClient
+	private client: MimiriStore
 	private _paymentClient: PaymentClient
 	private _root: MimerNote
 	private notes: { [id: Guid]: MimerNote } = {}
@@ -111,13 +113,12 @@ export class NoteManager {
 			authenticated: false,
 			online: false,
 			noteOpen: !this._isMobile,
-			shareOffers: [],
 			stateLoaded: false,
 			initInProgress: true,
 			viewMode: ViewMode.Content,
 		})
-		this.client = new MimerClient(host, serverKey, serverKeyId)
-		this._paymentClient = new PaymentClient(this.client, paymentHost)
+		this.client = new MimiriStore(new MimiriBrowserDb(), new MimiriClient(host, serverKeyId, serverKey))
+		this._paymentClient = new PaymentClient(this.client as any, paymentHost)
 		browserHistory.init(noteId => {
 			if (noteId) {
 				this.getNoteById(noteId)?.select()
@@ -138,9 +139,7 @@ export class NoteManager {
 				this.state.spinner = true
 			}
 		}
-		if (!this.client.testId) {
-			setTimeout(() => this.checkBusyLength(), 100)
-		}
+		setTimeout(() => this.checkBusyLength(), 100)
 	}
 
 	private emitStatusUpdated() {
@@ -233,7 +232,7 @@ export class NoteManager {
 
 		const note = await this.client.readNote(this.client.userData.rootNote)
 		if (note) {
-			this.root = new MimerNote(this, undefined, note)
+			this.root = new MimerNote(this as any, undefined, note)
 			this.emitStatusUpdated()
 		} else {
 			this.root = undefined
@@ -261,7 +260,6 @@ export class NoteManager {
 				await this.loadRootNote()
 				await this.loadState()
 				await this.connectForNotifications()
-				this.loadShareOffers()
 				updateManager.good()
 			} else {
 				this.logout()
@@ -272,44 +270,40 @@ export class NoteManager {
 	}
 
 	public async loginAnonymousAccount() {
-		try {
-			if (settingsManager.anonymousUsername && settingsManager.anonymousPassword) {
-				const password = await deObfuscate(settingsManager.anonymousPassword)
-				await this.login({
-					username: settingsManager.anonymousUsername,
-					password: password,
-				})
-				if (this.isLoggedIn) {
-					if (mimiriPlatform.isElectron || (mimiriPlatform.isWeb && env.DEV)) {
-						settingsManager.autoLoginData = await obfuscate(await this.getLoginData())
-						settingsManager.autoLogin = true
-					}
-					await settingsManager.waitForSaveComplete()
-					await this.loadState()
-				}
-			} else if (!mimiriPlatform.isWeb || env.DEV) {
-				const username = `mimiri_a_${Date.now()}_${`${Math.random()}`.substring(2, 6)}`
-				const password = toHex(crypto.getRandomValues(new Uint8Array(128)))
-				// high password complexity obviates the need for high iteration count so we can save time here
-				await this.createAccount(username, password, 100)
-				settingsManager.anonymousUsername = username
-				settingsManager.anonymousPassword = await obfuscate(password)
+		console.log('Logging in anonymous account')
+
+		if (settingsManager.anonymousUsername && settingsManager.anonymousPassword) {
+			const password = await deObfuscate(settingsManager.anonymousPassword)
+			await this.login({
+				username: settingsManager.anonymousUsername,
+				password: password,
+			})
+			if (this.isLoggedIn) {
 				if (mimiriPlatform.isElectron || (mimiriPlatform.isWeb && env.DEV)) {
 					settingsManager.autoLoginData = await obfuscate(await this.getLoginData())
 					settingsManager.autoLogin = true
 				}
 				await settingsManager.waitForSaveComplete()
-				if (this.isLoggedIn) {
-					await this.root.ensureChildren()
-				}
-				const gettingStartedNote = this.root.children.find(note => note.note.getItem('metadata').isGettingStarted)
-				gettingStartedNote.expand()
-				gettingStartedNote.select()
+				await this.loadState()
 			}
-			return true
-		} catch (ex) {
-			debug.logError('Error logging in anonymous account', ex)
-			return false
+		} else if (!mimiriPlatform.isWeb || env.DEV) {
+			const username = `mimiri_a_${Date.now()}_${`${Math.random()}`.substring(2, 6)}`
+			const password = toHex(crypto.getRandomValues(new Uint8Array(128)))
+			// high password complexity obviates the need for high iteration count so we can save time here
+			await this.createAccount(username, password, 100)
+			settingsManager.anonymousUsername = username
+			settingsManager.anonymousPassword = await obfuscate(password)
+			if (mimiriPlatform.isElectron || (mimiriPlatform.isWeb && env.DEV)) {
+				settingsManager.autoLoginData = await obfuscate(await this.getLoginData())
+				settingsManager.autoLogin = true
+			}
+			await settingsManager.waitForSaveComplete()
+			if (this.isLoggedIn) {
+				await this.root.ensureChildren()
+			}
+			const gettingStartedNote = this.root.children.find(note => note.note.getItem('metadata').isGettingStarted)
+			gettingStartedNote.expand()
+			gettingStartedNote.select()
 		}
 	}
 
@@ -333,7 +327,7 @@ export class NoteManager {
 			const json = await fetch(`${env.VITE_MIMER_UPDATE_HOST}/getting-started.json`).then(res => res.json())
 			await this.addGettingStartedNotesRecursive(note ?? this._root.note, json.notes)
 			if (!note) {
-				await this.client.updateNote(this._root.note)
+				await this.client.writeNote(this._root.note)
 				await this.refreshNote(this._root.note.id)
 			}
 		} catch (ex) {
@@ -353,7 +347,7 @@ export class NoteManager {
 				}
 				let rootNote
 				try {
-					rootNote = await this.client.readNote(this.client.userData.rootNote, false)
+					rootNote = await this.client.readNote(this.client.userData.rootNote)
 				} catch {}
 				if (!rootNote) {
 					const recycleBin = new Note()
@@ -361,13 +355,11 @@ export class NoteManager {
 					recycleBin.changeItem('metadata').notes = []
 					recycleBin.changeItem('metadata').isRecycleBin = true
 					await this.client.createNote(recycleBin)
-
 					const controlPanel = new Note()
 					controlPanel.keyName = this.client.getKeyById(this.client.userData.rootKey).name
 					controlPanel.changeItem('metadata').notes = []
 					controlPanel.changeItem('metadata').isControlPanel = true
 					await this.client.createNote(controlPanel)
-
 					const rootNote = new Note()
 					rootNote.id = this.client.userData.rootNote
 					rootNote.keyName = this.client.getKeyById(this.client.userData.rootKey).name
@@ -388,7 +380,7 @@ export class NoteManager {
 	}
 
 	private async ensureRecycleBin() {
-		const root = await this.client.readNote(this.client.userData.rootNote, false)
+		const root = await this.client.readNote(this.client.userData.rootNote)
 		if (!root.getItem('metadata').recycleBin) {
 			const recycleBin = new Note()
 			recycleBin.keyName = root.keyName
@@ -399,12 +391,12 @@ export class NoteManager {
 			root.changeItem('metadata').recycleBin = recycleBin.id
 			const rootChildren = root.changeItem('metadata').notes
 			root.changeItem('metadata').notes = [recycleBin.id, ...rootChildren]
-			await this.client.updateNote(root)
+			await this.client.writeNote(root)
 		}
 	}
 
 	private async ensureControlPanel() {
-		const root = await this.client.readNote(this.client.userData.rootNote, false)
+		const root = await this.client.readNote(this.client.userData.rootNote)
 		if (!root.getItem('metadata').controlPanel) {
 			const controlPanel = new Note()
 			controlPanel.keyName = root.keyName
@@ -415,14 +407,14 @@ export class NoteManager {
 			root.changeItem('metadata').controlPanel = controlPanel.id
 			const rootChildren = root.changeItem('metadata').notes
 			root.changeItem('metadata').notes = [controlPanel.id, ...rootChildren]
-			await this.client.updateNote(root)
+			await this.client.writeNote(root)
 		}
 	}
 
 	private async loadRootNote() {
-		const note = await this.client.readNote(this.client.userData.rootNote, true)
+		const note = await this.client.readNote(this.client.userData.rootNote)
 		if (note) {
-			this.root = new MimerNote(this, undefined, note)
+			this.root = new MimerNote(this as any, undefined, note)
 			if (note.getItem('metadata').controlPanel) {
 				this.ensureControlPanel()
 			}
@@ -447,7 +439,7 @@ export class NoteManager {
 		browserHistory.openTree(ipcClient.isAvailable && Capacitor.getPlatform() === 'web')
 		this.busyStart = Date.now()
 		try {
-			await this.client.login({ ...data, preferOffline: this.cacheEnabled })
+			await this.client.login({ ...data })
 			while (true) {
 				if (this.client.isLoggedIn) {
 					await this.ensureCreateComplete()
@@ -458,7 +450,6 @@ export class NoteManager {
 						}, 1000)
 					} else {
 						await this.connectForNotifications()
-						this.loadShareOffers()
 						updateManager.good()
 					}
 					this._listener?.login()
@@ -487,7 +478,6 @@ export class NoteManager {
 			await this.connectForNotifications()
 			await this.root.refresh()
 			await this.selectedNote?.refresh()
-			await this.loadShareOffers()
 			this.emitStatusUpdated()
 			updateManager.good()
 			if (this._ensureWhenOnline.length > 0) {
@@ -504,6 +494,7 @@ export class NoteManager {
 			this.endAction()
 		}
 	}
+
 	public async updateUserStats() {
 		this.beginAction()
 		try {
@@ -562,52 +553,52 @@ export class NoteManager {
 
 	public async connectForNotifications() {
 		if (mimiriPlatform.isElectron || mimiriPlatform.isWeb) {
-			if (!this.client.testId) {
-				try {
-					const response = await this.client.createNotificationUrl()
-					const connection = new HubConnectionBuilder()
-						.withUrl(response.url, { accessTokenFactory: () => response.token })
-						// .configureLogging(LogLevel.Warning)
-						.withAutomaticReconnect()
-						.build()
-					connection.on('notification', async (sender, type, payload) => {
-						if (type === 'note-update') {
-							const json = JSON.parse(payload)
-							const note = this.notes[json.id]
-							if (note) {
-								for (const version of json.versions) {
-									if (version.version > note.note.getVersion(version.type)) {
-										await note.refresh()
-										break
-									}
+			try {
+				const response = await this.client.createNotificationUrl()
+				if (!response?.url) {
+					return
+				}
+				const connection = new HubConnectionBuilder()
+					.withUrl(response.url, { accessTokenFactory: () => response.token })
+					// .configureLogging(LogLevel.Warning)
+					.withAutomaticReconnect()
+					.build()
+				connection.on('notification', async (sender, type, payload) => {
+					if (type === 'note-update') {
+						const json = JSON.parse(payload)
+						const note = this.notes[json.id]
+						if (note) {
+							for (const version of json.versions) {
+								if (version.version > note.note.getVersion(version.type)) {
+									await note.refresh()
+									break
 								}
 							}
 						}
-						if (type === 'bundle-update') {
-							void updateManager.check()
-						}
-						if (type === 'blog-post') {
-							void blogManager.refreshAll()
-						}
-					})
-					connection.onreconnecting(error => {
-						console.log('SignalR Reconnecting', error)
-					})
-					connection.onreconnected(() => {
-						console.log('SignalR Reconnected')
+					}
+					if (type === 'bundle-update') {
 						void updateManager.check()
+					}
+					if (type === 'blog-post') {
 						void blogManager.refreshAll()
-						this.loadShareOffers()
-					})
-					connection.onclose(error => {
-						console.log('SignalR Closed', error)
-					})
-					await connection.start()
+					}
+				})
+				connection.onreconnecting(error => {
+					console.log('SignalR Reconnecting', error)
+				})
+				connection.onreconnected(() => {
+					console.log('SignalR Reconnected')
 					void updateManager.check()
 					void blogManager.refreshAll()
-				} catch (ex) {
-					debug.logError('Failed to connect for notifications', ex)
-				}
+				})
+				connection.onclose(error => {
+					console.log('SignalR Closed', error)
+				})
+				await connection.start()
+				void updateManager.check()
+				void blogManager.refreshAll()
+			} catch (ex) {
+				debug.logError('Failed to connect for notifications', ex)
 			}
 		} else {
 			void updateManager.check()
@@ -624,20 +615,8 @@ export class NoteManager {
 		await this.client.changeUserNameAndPassword(username, oldPassword, newPassword, iterations)
 	}
 
-	public async getShareOffers() {
-		return await this.client.getShareOffers()
-	}
-
 	public async getShareOffer(code: string) {
 		return await this.client.getShareOffer(code)
-	}
-
-	public async loadShareOffers() {
-		try {
-			this.state.shareOffers = await this.client.getShareOffers()
-		} catch (ex) {
-			debug.logError('Failed to load share offers', ex)
-		}
 	}
 
 	public async getShareParticipants(id: Guid) {
@@ -721,7 +700,7 @@ export class NoteManager {
 		if (!this.client.isOnline) {
 			throw new MimerError('Offline', 'Cannot refresh while offline')
 		}
-		const note = await this.client.readNote(base.id, false, undefined, base)
+		const note = await this.client.readNote(base.id, base)
 		if (note) {
 			await this.sendUpdate(note)
 		}
@@ -787,7 +766,7 @@ export class NoteManager {
 			for (let i = 0; ; i++) {
 				try {
 					parent.changeItem('metadata').notes.push(note.id)
-					await this.client.updateNote(parent)
+					await this.client.writeNote(parent)
 					break
 				} catch (exi) {
 					if (i >= 3) {
@@ -822,7 +801,7 @@ export class NoteManager {
 				note.note.changeItem('created').delete = dateTimeNow()
 			}
 			try {
-				await this.client.updateNote(note.note)
+				await this.client.writeNote(note.note)
 			} catch (err) {
 				if (err instanceof VersionConflictError) {
 					await this.refreshNote(note.id)
@@ -841,14 +820,14 @@ export class NoteManager {
 	}
 
 	private async ensureLiveNode(existing: Note) {
-		const note = await this.client.readNote(existing.id, false, undefined, existing)
+		const note = await this.client.readNote(existing.id, existing)
 		if (note) {
 			this.sendUpdate(note)
 		}
 	}
 
 	public async getNote(id: Guid) {
-		const note = await this.client.readNote(id, true)
+		const note = await this.client.readNote(id)
 		if (note != null) {
 			this.sendUpdate(note)
 			if (note.isCache) {
@@ -900,7 +879,6 @@ export class NoteManager {
 			const pow = await ProofOfWork.compute(recipient, this._proofBits)
 			await this.ensureShareAllowable(mimerNote)
 			await this.client.getPublicKey(recipient, pow)
-
 			let sharedKey
 			if (mimerNote.isShared) {
 				sharedKey = this.client.getKeyByName(mimerNote.keyName)
@@ -909,7 +887,6 @@ export class NoteManager {
 				await this.client.createKey(sharedKeyId, { shared: true })
 				sharedKey = this.client.getKeyById(sharedKeyId)
 			}
-
 			const affectedNotes = await this.readFlatTree(mimerNote.id)
 			for (const affectedNote of affectedNotes) {
 				if (affectedNote.keyName !== sharedKey.name) {
@@ -941,21 +918,17 @@ export class NoteManager {
 					await this.client.createKeyFromNoteShare(newGuid(), offer, { shared: true })
 				}
 				const shareParent = parent?.note ?? (await this.client.readNote(this.root.id))
-
 				if (!shareParent.getItem('metadata').notes.includes(offer.noteId)) {
 					shareParent.changeItem('metadata').notes.push(offer.noteId)
 				}
 				actions.push(await this.client.createUpdateAction(shareParent))
-
 				await this.client.multiAction(actions)
-
 				await this.refreshNote(shareParent.id)
 				await this.refreshNote(offer.noteId)
 				await this.client.deleteShareOffer(offer.id)
 				await parent?.expand()
 				this.getNoteById(offer.noteId)?.select()
 			}
-			await this.loadShareOffers()
 		} finally {
 			this.endAction()
 		}
@@ -968,7 +941,6 @@ export class NoteManager {
 		this.beginAction()
 		try {
 			await this.client.deleteShareOffer(share.id)
-			await this.loadShareOffers()
 		} finally {
 			this.endAction()
 		}
@@ -1136,38 +1108,16 @@ export class NoteManager {
 		console.log(message)
 	}
 
-	public async beginTest(name: string) {
-		const workOffline = this.client.workOffline
-		this.client.workOffline = false
-		await this.client.beginTest(name)
-		this.client.workOffline = workOffline
-	}
-
-	public async endTest(keep: boolean) {
-		this.client.workOffline = false
-		await this.client.endTest(keep)
-	}
-
 	public isShared(note: Note) {
 		return !!this.client.getKeyByName(note.keyName).metadata.shared
 	}
 
-	public cloneTest() {
-		const result = new NoteManager('', '', '', '')
-		result.client = this.client.cloneTest()
-		return result
-	}
-
-	public setCacheManager(cacheManager: ICacheManager) {
-		this.client.setCacheManager(cacheManager)
-	}
-
 	public newNote() {
-		if (this.noteCount >= this.maxNoteCount) {
+		if (this.noteCount >= this.maxNoteCount && this.maxNoteCount > 0) {
 			limitDialog.value.show('create-note-count')
 			return
 		}
-		if (this.usedBytes >= this.maxBytes) {
+		if (this.usedBytes >= this.maxBytes && this.maxBytes > 0) {
 			limitDialog.value.show('create-note-size')
 			return
 		}
@@ -1205,11 +1155,11 @@ export class NoteManager {
 	}
 
 	public newRootNote() {
-		if (this.noteCount >= this.maxNoteCount) {
+		if (this.noteCount >= this.maxNoteCount && this.maxNoteCount > 0) {
 			limitDialog.value.show('create-note-count')
 			return
 		}
-		if (this.usedBytes >= this.maxBytes) {
+		if (this.usedBytes >= this.maxBytes && this.maxBytes > 0) {
 			limitDialog.value.show('create-note-size')
 			return
 		}
@@ -1221,14 +1171,6 @@ export class NoteManager {
 			this.state.noteOpen = false
 			persistedState.noteOpen = false
 		}
-	}
-
-	public async accountUrl() {
-		return this.client.getAccountUrl()
-	}
-
-	public featureEnabled(name: string) {
-		return this.client.clientConfig?.features?.includes(name)
 	}
 
 	private async isNotePristine(note: MimerNote) {
@@ -1261,10 +1203,6 @@ export class NoteManager {
 		return true
 	}
 
-	public async addComment(postId: Guid, displayName: string, comment: string) {
-		return this.client.addComment(postId, displayName, comment)
-	}
-
 	public get paymentClient() {
 		return this._paymentClient
 	}
@@ -1277,24 +1215,12 @@ export class NoteManager {
 		return this.client.username
 	}
 
-	public get cacheEnabled() {
-		return this.client.cacheEnabled
-	}
-
 	public get isOnline() {
 		return this.client.isOnline
 	}
 
 	public get workOffline() {
-		return this.client.workOffline
-	}
-
-	public set workOffline(value: boolean) {
-		this.client.workOffline = value
-	}
-
-	public get testId() {
-		return this.client.testId
+		return false
 	}
 
 	public get isLoggedIn() {

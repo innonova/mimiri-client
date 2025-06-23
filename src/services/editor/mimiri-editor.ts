@@ -227,9 +227,13 @@ export class MimiriEditor {
 					const sizeBefore = note.size
 					note.text = targetText
 					const sizeAfter = note.size
-					if (sizeAfter > noteManager.maxNoteSize) {
+					if (sizeAfter > noteManager.maxNoteSize && noteManager.maxNoteSize > 0) {
 						return 'note-size'
-					} else if (noteManager.usedBytes > noteManager.maxBytes && sizeAfter >= sizeBefore) {
+					} else if (
+						noteManager.usedBytes > noteManager.maxBytes &&
+						sizeAfter >= sizeBefore &&
+						noteManager.maxBytes > 0
+					) {
 						return 'total-size'
 					} else {
 						await note.save()

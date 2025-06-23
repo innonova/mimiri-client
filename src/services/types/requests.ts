@@ -161,3 +161,8 @@ export interface AddCommentRequest extends BasicRequest {
 	displayName: string
 	comment: string
 }
+
+export interface SyncRequest extends BasicRequest {
+	since: string
+	afterId?: Guid
+}

@@ -222,7 +222,7 @@ useEventListener(window, 'resize', onResize)
 useEventListener(document, 'contextmenu', e => e.preventDefault(), false)
 
 if (ipcClient.isAvailable) {
-	noteManager.setCacheManager(ipcClient.cache)
+	// noteManager.setCacheManager(ipcClient.cache)
 	menuManager.updateTrayMenu()
 	menuManager.updateAppMenu()
 }
@@ -413,7 +413,6 @@ useEventListener(window, 'resize', async () => {
 		} catch (ex) {
 			debug.logError('Error setting login data', ex)
 		}
-
 		if (!noteManager.isLoggedIn) {
 			try {
 				await noteManager.recoverLogin()
@@ -425,7 +424,7 @@ useEventListener(window, 'resize', async () => {
 		let showLogin = !noteManager.isLoggedIn
 
 		if (!noteManager.isLoggedIn) {
-			if (settingsManager.isNewInstall) {
+			if (settingsManager.isNewInstall || true) {
 				await noteManager.loginAnonymousAccount()
 				if (noteManager.isLoggedIn) {
 					settingsManager.isNewInstall = false
@@ -443,7 +442,7 @@ useEventListener(window, 'resize', async () => {
 		}
 	} catch (ex) {
 		debug.logError('Error during app initialization', ex)
-		setTimeout(() => location.reload(), 1000)
+		// setTimeout(() => location.reload(), 1000)
 	}
 })()
 

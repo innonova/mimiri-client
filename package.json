@@ -49,6 +49,7 @@
 		"@vueuse/core": "10.7.2",
 		"assert": "1.5.0",
 		"date-fns": "^4.1.0",
+		"idb": "^8.0.3",
 		"js-base64": "^3.7.7",
 		"monaco-editor": "^0.51.0",
 		"uuid": "^10.0.0",
