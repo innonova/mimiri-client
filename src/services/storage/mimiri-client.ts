@@ -2,13 +2,12 @@ import { debug, updateManager } from '../../global'
 import { CryptSignature } from '../crypt-signature'
 import { passwordHasher } from '../password-hasher'
 import { settingsManager } from '../settings-manager'
-import { SymmetricCrypt } from '../symmetric-crypt'
 import { dateTimeNow } from '../types/date-time'
 import { newGuid, type Guid } from '../types/guid'
-import type { LoginRequest, SyncRequest } from '../types/requests'
-import type { ClientConfig, LoginResponse, PreLoginResponse, SyncResponse } from '../types/responses'
-import type { ChangeItem, MimiriApi, UserStats } from './mimiri-store'
-import type { InitializationData } from './type'
+import type { BasicRequest, LoginRequest, SyncRequest } from '../types/requests'
+import type { ClientConfig, LoginResponse, PreLoginResponse, SyncResponse, UserDataResponse } from '../types/responses'
+import type { MimiriApi, UserStats } from './mimiri-store'
+import type { InitializationData, SyncInfo } from './type'
 
 export class HttpRequestError extends Error {
 	constructor(
@@ -78,19 +77,6 @@ export class MimiriClient implements MimiriApi {
 			this._userStats.maxNoteBytes = loginResponse.maxNoteBytes
 			this._userStats.maxNoteCount = loginResponse.maxNoteCount
 
-			const userCrypt = await SymmetricCrypt.fromPassword(
-				loginResponse.algorithm,
-				password,
-				loginResponse.salt,
-				loginResponse.iterations,
-			)
-
-			this.rootSignature = await CryptSignature.fromPem(
-				loginResponse.asymmetricAlgorithm,
-				loginResponse.publicKey,
-				await userCrypt.decrypt(loginResponse.privateKey),
-			)
-
 			const result: InitializationData = {
 				password: {
 					algorithm: preLoginResponse.algorithm,
@@ -111,6 +97,8 @@ export class MimiriClient implements MimiriApi {
 					publicKey: loginResponse.publicKey,
 					privateKey: loginResponse.privateKey,
 				},
+				userId: loginResponse.userId,
+				userData: loginResponse.data,
 			}
 			return result
 		} catch (ex) {
@@ -119,36 +107,58 @@ export class MimiriClient implements MimiriApi {
 		}
 	}
 
-	public async verifyCredentials(): Promise<boolean> {
-		// Implement credential verification logic here
-		throw new Error('Method not implemented.')
+	public setRootSignature(username: string, signature: CryptSignature): void {
+		this.username = username
+		this.rootSignature = signature
 	}
 
-	public async getChangesSince(lastSync: Date, afterId?: Guid): Promise<any> {
-		const request: SyncRequest = {
+	public async verifyCredentials(): Promise<boolean> {
+		const getDataRequest: BasicRequest = {
 			username: this.username,
-			since: lastSync.toISOString(),
 			timestamp: dateTimeNow(),
 			requestId: newGuid(),
 			signatures: [],
-			afterId,
 		}
+		await this.rootSignature!.sign('user', getDataRequest)
+		try {
+			const response = await this.post<UserDataResponse>(`/user/get-data`, getDataRequest)
+			this._clientConfig = JSON.parse(response.config ?? '{}') as ClientConfig
+			this._userStats.size = response.size
+			this._userStats.noteCount = response.noteCount
+			this._userStats.maxTotalBytes = response.maxTotalBytes
+			this._userStats.maxNoteBytes = response.maxNoteBytes
+			this._userStats.maxNoteCount = response.maxNoteCount
+			return true
+		} catch (ex) {
+			debug.logError('Failed to go online', ex)
+		}
+		return false
+	}
+
+	public async getChangesSince(noteSince: number, keySince: number): Promise<SyncInfo> {
+		const request: SyncRequest = {
+			username: this.username,
+			noteSince,
+			keySince,
+			timestamp: dateTimeNow(),
+			requestId: newGuid(),
+			signatures: [],
+		}
+		console.log('Sending sync request', request)
+
 		await this.rootSignature.sign('user', request)
-		console.log(request)
 
 		const response = await this.post<SyncResponse>('/sync/changes-since', request)
-
-		console.log('Sync response:', response)
 
 		return { keys: response.keys, notes: response.notes }
 	}
 
-	public async syncChanges(changes: ChangeItem[]): Promise<void> {
+	public async syncChanges(changes: SyncInfo): Promise<void> {
 		// Implement logic to sync changes
 		throw new Error('Method not implemented.')
 	}
 
-	public async registerForChanges(callback: (changes: ChangeItem[]) => void): Promise<void> {
+	public async registerForChanges(callback: (changes: SyncInfo) => void): Promise<void> {
 		// Implement logic to register for push notifications
 		throw new Error('Method not implemented.')
 	}

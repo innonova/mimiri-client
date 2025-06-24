@@ -33,6 +33,14 @@ export class MimiriBrowserDb implements MimiriDb {
 		}
 	}
 
+	public async setLastSync(lastNoteSync: number, lastKeySync: number): Promise<void> {
+		return this.db.put('user-store', { lastNoteSync, lastKeySync }, 'last-sync')
+	}
+
+	public async getLastSync(): Promise<{ lastNoteSync: number; lastKeySync: number } | undefined> {
+		return this.db.get('user-store', 'last-sync')
+	}
+
 	public async setInitializationData(data: InitializationData): Promise<void> {
 		await this.db.put('user-store', data, 'initialization-data')
 	}

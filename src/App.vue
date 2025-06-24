@@ -424,12 +424,12 @@ useEventListener(window, 'resize', async () => {
 		let showLogin = !noteManager.isLoggedIn
 
 		if (!noteManager.isLoggedIn) {
-			if (settingsManager.isNewInstall || true) {
-				await noteManager.loginAnonymousAccount()
-				if (noteManager.isLoggedIn) {
-					settingsManager.isNewInstall = false
-					showLogin = false
-				}
+			if (settingsManager.isNewInstall) {
+				// await noteManager.loginAnonymousAccount()
+				// if (noteManager.isLoggedIn) {
+				// 	settingsManager.isNewInstall = false
+				// 	showLogin = false
+				// }
 			} else {
 				showLogin = true
 			}

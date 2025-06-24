@@ -8,6 +8,8 @@ export interface NoteItem {
 	updated?: boolean
 	changed?: boolean
 	size?: number
+	modified?: string
+	created?: string
 }
 
 export class Note {
@@ -15,6 +17,9 @@ export class Note {
 	public keyName: Guid
 	public items: NoteItem[] = []
 	public isCache: boolean
+	public sync: number
+	public modified: string
+	public created: string
 
 	public getItem(type: string) {
 		let result: NoteItem = this.items.find(item => item.type === type)

@@ -9,25 +9,20 @@ import { Note } from '../types/note'
 import type { NoteShareInfo } from '../types/note-share-info'
 import type { NoteAction } from '../types/requests'
 import type { ClientConfig, ShareResponse } from '../types/responses'
-import type { InitializationData, KeyData, NoteData } from './type'
+import type { InitializationData, KeyData, NoteData, SyncInfo } from './type'
 
 export const DEFAULT_ITERATIONS = 1000000
 export const DEFAULT_ITERATIONS_LOCAL = 100
 export const DEFAULT_SALT_SIZE = 32
 export const DEFAULT_PASSWORD_ALGORITHM = 'PBKDF2;SHA512;256'
 
-export interface ChangeItem {
-	id: string
-	type: string
-	data: any
-}
-
 export interface MimiriApi {
 	authenticate(username: string, password: string): Promise<InitializationData | undefined>
+	setRootSignature(username: string, signature: CryptSignature): void
 	verifyCredentials(): Promise<boolean>
-	getChangesSince(lastSync: Date, afterId?: Guid): Promise<any>
-	syncChanges(changes: ChangeItem[]): Promise<void>
-	registerForChanges(callback: (changes: ChangeItem[]) => void): Promise<void>
+	getChangesSince(noteSince: number, keySince: number): Promise<SyncInfo>
+	syncChanges(changes: SyncInfo): Promise<void>
+	registerForChanges(callback: (changes: SyncInfo) => void): Promise<void>
 }
 
 export interface MimiriDb {
@@ -36,6 +31,9 @@ export interface MimiriDb {
 
 	setInitializationData(data: InitializationData): Promise<void>
 	getInitializationData(): Promise<InitializationData | undefined>
+
+	setLastSync(lastNoteSync: number, lastKeySync: number): Promise<void>
+	getLastSync(): Promise<{ lastNoteSync: number; lastKeySync: number } | undefined>
 
 	setObfuscationKey(obfuscationKey: string): Promise<void>
 	getObfuscationKey(): Promise<string | undefined>
@@ -208,6 +206,7 @@ export class MimiriStore {
 					loginData.rootSignature.publicKey,
 					loginData.rootSignature.privateKey,
 				)
+				await this.db.open(this._username)
 				if (!(await this.goOnline())) {
 					const data = JSON.parse(await this._rootCrypt.decrypt(loginData.data))
 					this._clientConfig = data.clientConfig
@@ -222,7 +221,14 @@ export class MimiriStore {
 		}
 		return false
 	}
-	async createUser(username: string, password: string, userData: any, pow: string, iterations: number): Promise<void> {
+
+	public async createUser(
+		username: string,
+		password: string,
+		userData: any,
+		pow: string,
+		iterations: number,
+	): Promise<void> {
 		console.log('Creating user:', username)
 		await this.db.open(username)
 		const initializationData: InitializationData = {
@@ -245,6 +251,8 @@ export class MimiriStore {
 				publicKey: '',
 				privateKey: '',
 			},
+			userId: emptyGuid(),
+			userData,
 		}
 
 		this._userCryptAlgorithm = initializationData.userCrypt.algorithm
@@ -270,13 +278,12 @@ export class MimiriStore {
 		await this.loadAllKeys()
 	}
 
-	async login(data: LoginData): Promise<void> {
-		console.log('Logging in user:', data.username)
-		await this.db.open(data.username)
-		let initializationData = await this.db.getInitializationData()
+	public async login(data: LoginData): Promise<boolean> {
+		let initializationData = await this.api.authenticate(data.username, data.password)
 		if (!initializationData) {
-			throw new Error('No initialization data found. Please create an account first.')
+			return false
 		}
+		await this.db.open(data.username)
 		this._userCryptAlgorithm = initializationData.userCrypt.algorithm
 		const userCrypt = await SymmetricCrypt.fromPassword(
 			initializationData.userCrypt.algorithm,
@@ -293,28 +300,86 @@ export class MimiriStore {
 			initializationData.rootSignature.publicKey,
 			await userCrypt.decrypt(initializationData.rootSignature.privateKey),
 		)
-		this._userData = await this.db.getUserData()
+		this._userData = JSON.parse(await this._rootCrypt.decrypt(initializationData.userData))
 		this._username = data.username
+		this._userId = initializationData.userId
+		this.api.setRootSignature(this._username, this._rootSignature)
+		await this.db.setInitializationData(initializationData)
+		await this.sync()
 		await this.loadAllKeys()
+		await this.persistLogin()
+	}
 
-		console.log('User logged in:', this._username)
-		console.log('authenticating')
-		await this.api.authenticate('pgtest', '1234')
-		console.log('authenticated')
-		let changes = await this.api.getChangesSince(new Date(0))
-		for (let i = 0; i < 10; i++) {
-			if (changes.notes.length === 0) {
+	private async sync(): Promise<void> {
+		const lastSync = await this.db.getLastSync()
+
+		let nextNoteSync = lastSync?.lastNoteSync ?? 0
+		let nextKeySync = lastSync?.lastKeySync ?? 0
+		let changes = await this.api.getChangesSince(nextNoteSync, nextKeySync)
+
+		for (let i = 0; i < 100; i++) {
+			let syncChanged = false
+			for (const key of changes.keys) {
+				if (+key.sync > nextKeySync) {
+					nextKeySync = +key.sync
+					syncChanged = true
+				}
+				const data = JSON.parse(key.data) as KeyData
+				const currentKey = await this.db.getKey(key.id)
+				if (!currentKey || currentKey.sync !== key.sync) {
+					if (currentKey) {
+						console.log('key changed:', key.id, 'sync:', key.sync, 'current sync:', currentKey.sync)
+					}
+					this.db.setKey({
+						id: key.id,
+						name: key.name,
+						algorithm: data.algorithm,
+						asymmetricAlgorithm: data.asymmetricAlgorithm,
+						keyData: data.keyData,
+						publicKey: data.publicKey,
+						privateKey: data.privateKey,
+						metadata: data.metadata,
+						modified: key.modified,
+						created: key.created,
+						sync: key.sync,
+					})
+				}
+			}
+			for (const note of changes.notes) {
+				if (+note.sync > nextNoteSync) {
+					nextNoteSync = +note.sync
+					syncChanged = true
+				}
+				const currentNote = await this.db.getNote(note.id)
+				if (!currentNote || currentNote.sync !== note.sync) {
+					if (currentNote) {
+						console.log('note changed:', note.id, 'sync:', note.sync, 'current sync:', currentNote.sync)
+					}
+					this.db.setNote({
+						id: note.id,
+						keyName: note.keyName,
+						modified: note.modified,
+						created: note.created,
+						sync: note.sync,
+						items: note.items.map(item => ({
+							version: item.version,
+							type: item.itemType,
+							data: item.data,
+							modified: item.modified,
+							created: item.created,
+						})),
+					})
+				}
+			}
+			if (!syncChanged) {
 				break
 			}
-			const lastNote = changes.notes[changes.notes.length - 1]
-			console.log('Processing changes for note:', lastNote.id)
-
-			changes = await this.api.getChangesSince(new Date(lastNote.modified), lastNote.id)
+			await this.db.setLastSync(nextNoteSync, nextKeySync)
+			changes = await this.api.getChangesSince(nextNoteSync, nextKeySync)
 		}
 	}
 
 	private async loadAllKeys(): Promise<void> {
-		console.log('Loading all keys for user:')
 		const keysData = await this.db.getAllKeys()
 		this._keys = []
 		for (const keyData of keysData) {
@@ -335,7 +400,6 @@ export class MimiriStore {
 	}
 
 	private async loadKeyById(id: Guid): Promise<KeySet | undefined> {
-		console.log('Loading key by id:', id)
 		const keyData = await this.db.getKey(id)
 		if (!keyData) {
 			return undefined
@@ -370,8 +434,12 @@ export class MimiriStore {
 	}
 
 	async goOnline(password?: string): Promise<boolean> {
+		this.api.setRootSignature(this._username, this._rootSignature)
+		this.api.verifyCredentials()
+		this._online = true
+
 		console.log('Going online:')
-		return Promise.resolve(true)
+		return Promise.resolve(false)
 	}
 
 	async verifyPassword(password: string): Promise<boolean> {
@@ -396,13 +464,18 @@ export class MimiriStore {
 		const noteData: NoteData = {
 			id: note.id,
 			keyName: note.keyName,
+			sync: note.sync,
 			items: await Promise.all(
 				note.items.map(async item => ({
 					version: item.version + (item.changed ? 1 : 0),
 					type: item.type,
 					data: await keySet.symmetric.encrypt(JSON.stringify(item.data)),
+					modified: item.modified,
+					created: item.created,
 				})),
 			),
+			modified: note.modified,
+			created: note.created,
 		}
 		await this.db.setNote(noteData)
 	}
@@ -420,6 +493,9 @@ export class MimiriStore {
 		note.id = noteData.id
 		note.keyName = noteData.keyName
 		note.isCache = false
+		note.modified = noteData.modified
+		note.created = noteData.created
+		note.sync = noteData.sync
 		note.items = await Promise.all(
 			noteData.items.map(async item => ({
 				version: item.version,
@@ -427,6 +503,8 @@ export class MimiriStore {
 				data: JSON.parse(await keySet.symmetric.decrypt(item.data)),
 				changed: false,
 				size: item.data.length,
+				modified: item.modified,
+				created: item.created,
 			})),
 		)
 		return note
@@ -447,6 +525,9 @@ export class MimiriStore {
 			publicKey: await signer.publicKeyPem(),
 			privateKey: await this._rootCrypt.encrypt(await signer.privateKeyPem()),
 			metadata: await this._rootCrypt.encrypt(JSON.stringify(metadata)),
+			sync: 0,
+			modified: new Date().toISOString(),
+			created: new Date().toISOString(),
 		}
 		this.db.setKey(keyData)
 		await this.loadKeyById(id)

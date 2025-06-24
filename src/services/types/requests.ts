@@ -163,6 +163,6 @@ export interface AddCommentRequest extends BasicRequest {
 }
 
 export interface SyncRequest extends BasicRequest {
-	since: string
-	afterId?: Guid
+	noteSince: number
+	keySince: number
 }
