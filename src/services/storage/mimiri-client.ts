@@ -4,8 +4,27 @@ import { passwordHasher } from '../password-hasher'
 import { settingsManager } from '../settings-manager'
 import { dateTimeNow } from '../types/date-time'
 import { newGuid, type Guid } from '../types/guid'
-import type { BasicRequest, LoginRequest, SyncRequest } from '../types/requests'
-import type { ClientConfig, LoginResponse, PreLoginResponse, SyncResponse, UserDataResponse } from '../types/responses'
+import type {
+	BasicRequest,
+	KeySyncAction,
+	LoginRequest,
+	MultiNoteRequest,
+	NoteAction,
+	NoteSyncAction,
+	SyncPushRequest,
+	SyncRequest,
+} from '../types/requests'
+import type {
+	ClientConfig,
+	LoginResponse,
+	PreLoginResponse,
+	SyncPushResponse,
+	SyncResponse,
+	SyncResult,
+	UpdateNoteResponse,
+	UserDataResponse,
+	VersionConflict,
+} from '../types/responses'
 import type { MimiriApi, UserStats } from './mimiri-store'
 import type { InitializationData, SyncInfo } from './type'
 
@@ -16,6 +35,13 @@ export class HttpRequestError extends Error {
 	) {
 		super(msg)
 		Object.setPrototypeOf(this, HttpRequestError.prototype)
+	}
+}
+
+export class VersionConflictError extends Error {
+	constructor(public conflicts: VersionConflict[]) {
+		super('Version Conflict')
+		Object.setPrototypeOf(this, VersionConflictError.prototype)
 	}
 }
 
@@ -112,7 +138,7 @@ export class MimiriClient implements MimiriApi {
 		this.rootSignature = signature
 	}
 
-	public async verifyCredentials(): Promise<boolean> {
+	public async verifyCredentials(): Promise<string | undefined> {
 		const getDataRequest: BasicRequest = {
 			username: this.username,
 			timestamp: dateTimeNow(),
@@ -128,11 +154,11 @@ export class MimiriClient implements MimiriApi {
 			this._userStats.maxTotalBytes = response.maxTotalBytes
 			this._userStats.maxNoteBytes = response.maxNoteBytes
 			this._userStats.maxNoteCount = response.maxNoteCount
-			return true
+			return response.data
 		} catch (ex) {
 			debug.logError('Failed to go online', ex)
 		}
-		return false
+		return undefined
 	}
 
 	public async getChangesSince(noteSince: number, keySince: number): Promise<SyncInfo> {
@@ -144,8 +170,6 @@ export class MimiriClient implements MimiriApi {
 			requestId: newGuid(),
 			signatures: [],
 		}
-		console.log('Sending sync request', request)
-
 		await this.rootSignature.sign('user', request)
 
 		const response = await this.post<SyncResponse>('/sync/changes-since', request)
@@ -153,9 +177,50 @@ export class MimiriClient implements MimiriApi {
 		return { keys: response.keys, notes: response.notes }
 	}
 
-	public async syncChanges(changes: SyncInfo): Promise<void> {
-		// Implement logic to sync changes
+	public async multiAction(actions: NoteAction[], keyResolver?: (keyName: Guid) => CryptSignature): Promise<Guid[]> {
 		throw new Error('Method not implemented.')
+		// const request: MultiNoteRequest = {
+		// 	username: this.username,
+		// 	actions,
+		// 	timestamp: dateTimeNow(),
+		// 	requestId: newGuid(),
+		// 	signatures: [],
+		// }
+		// await this.rootSignature.sign('user', request)
+		// const affectedIds: Guid[] = []
+		// const keys: { [key: Guid]: boolean } = {}
+		// for (const action of actions) {
+		// 	affectedIds.push(action.id)
+		// 	keys[action.keyName] = true
+		// 	if (action.oldKeyName) {
+		// 		keys[action.oldKeyName] = true
+		// 	}
+		// }
+		// for (const keyName of Object.keys(keys)) {
+		// 	await keyResolver(keyName as Guid).sign(keyName, request)
+		// }
+		// const response = await this.post<UpdateNoteResponse>('/note/multi', request)
+		// if (response.success) {
+		// 	this._userStats.size = response.size
+		// 	this._userStats.noteCount = response.noteCount
+		// } else {
+		// 	throw new VersionConflictError(response.conflicts)
+		// }
+		// return affectedIds
+	}
+
+	public async syncPushChanges(noteActions: NoteSyncAction[], keyActions: KeySyncAction[]): Promise<SyncResult[]> {
+		const request: SyncPushRequest = {
+			username: this.username,
+			notes: noteActions,
+			keys: keyActions,
+			timestamp: dateTimeNow(),
+			requestId: newGuid(),
+			signatures: [],
+		}
+		await this.rootSignature.sign('user', request)
+		const response = await this.post<SyncPushResponse>('/sync/push-changes', request)
+		return response.results
 	}
 
 	public async registerForChanges(callback: (changes: SyncInfo) => void): Promise<void> {

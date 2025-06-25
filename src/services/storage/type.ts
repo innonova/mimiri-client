@@ -24,8 +24,16 @@ export interface InitializationData {
 	userData: string
 }
 
+export interface LocalData {
+	localCrypt: {
+		algorithm: string
+		key: string
+	}
+}
+
 export interface KeyData {
 	id: Guid
+	userId: Guid
 	name: Guid
 	algorithm: string
 	keyData: string

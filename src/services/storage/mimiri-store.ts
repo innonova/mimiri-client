@@ -1,3 +1,4 @@
+import { version } from 'vue'
 import { debug, env, ipcClient } from '../../global'
 import { CryptSignature } from '../crypt-signature'
 import { fromBase64, toBase64, toHex } from '../hex-base64'
@@ -7,9 +8,9 @@ import { emptyGuid, newGuid, type Guid } from '../types/guid'
 import type { KeySet } from '../types/key-set'
 import { Note } from '../types/note'
 import type { NoteShareInfo } from '../types/note-share-info'
-import type { NoteAction } from '../types/requests'
-import type { ClientConfig, ShareResponse } from '../types/responses'
-import type { InitializationData, KeyData, NoteData, SyncInfo } from './type'
+import { NoteActionType, type KeySyncAction, type NoteAction, type NoteSyncAction } from '../types/requests'
+import type { ClientConfig, ShareResponse, SyncResult } from '../types/responses'
+import type { InitializationData, KeyData, LocalData, NoteData, SyncInfo } from './type'
 
 export const DEFAULT_ITERATIONS = 1000000
 export const DEFAULT_ITERATIONS_LOCAL = 100
@@ -19,18 +20,34 @@ export const DEFAULT_PASSWORD_ALGORITHM = 'PBKDF2;SHA512;256'
 export interface MimiriApi {
 	authenticate(username: string, password: string): Promise<InitializationData | undefined>
 	setRootSignature(username: string, signature: CryptSignature): void
-	verifyCredentials(): Promise<boolean>
+	verifyCredentials(): Promise<string | undefined>
 	getChangesSince(noteSince: number, keySince: number): Promise<SyncInfo>
-	syncChanges(changes: SyncInfo): Promise<void>
+	syncPushChanges(noteActions: NoteSyncAction[], keyActions: KeySyncAction[]): Promise<SyncResult[]>
 	registerForChanges(callback: (changes: SyncInfo) => void): Promise<void>
+	multiAction(actions: NoteAction[], keyResolver?: (keyName: Guid) => CryptSignature): Promise<Guid[]>
+}
+
+export interface MimiriTransaction {
+	commit(): Promise<void>
+	rollback(): Promise<void>
+	setLocalNote(note: NoteData): Promise<void>
+	getLocalNote(id: Guid): Promise<NoteData | undefined>
+	deleteLocalNote(id: Guid): Promise<void>
+	getNote(id: Guid): Promise<NoteData | undefined>
+	deleteRemoteNote(id: Guid): Promise<void>
 }
 
 export interface MimiriDb {
 	open(username: string): Promise<void>
 	close(): Promise<void>
 
+	beginTransaction(): MimiriTransaction
+
 	setInitializationData(data: InitializationData): Promise<void>
 	getInitializationData(): Promise<InitializationData | undefined>
+
+	setLocalData(data: LocalData): Promise<void>
+	getLocalData(): Promise<LocalData | undefined>
 
 	setLastSync(lastNoteSync: number, lastKeySync: number): Promise<void>
 	getLastSync(): Promise<{ lastNoteSync: number; lastKeySync: number } | undefined>
@@ -47,9 +64,25 @@ export interface MimiriDb {
 	setNote(note: NoteData): Promise<void>
 	getNote(id: Guid): Promise<NoteData | undefined>
 
+	setLocalNote(note: NoteData): Promise<void>
+	getLocalNote(id: Guid): Promise<NoteData | undefined>
+	deleteLocalNote(id: Guid): Promise<void>
+	getAllLocalNotes(): Promise<NoteData[]>
+	deleteRemoteNote(id: Guid): Promise<void>
+	clearDeleteRemoteNote(id: Guid): Promise<void>
+	getAllDeletedNotes(): Promise<Guid[]>
+
 	setKey(key: KeyData): Promise<void>
 	getKey(id: Guid): Promise<KeyData | undefined>
 	getAllKeys(): Promise<KeyData[]>
+
+	setLocalKey(key: KeyData): Promise<void>
+	getLocalKey(id: Guid): Promise<KeyData | undefined>
+	deleteLocalKey(id: Guid): Promise<void>
+	getAllLocalKeys(): Promise<KeyData[]>
+	deleteRemoteKey(id: Guid): Promise<void>
+	clearDeleteRemoteKey(id: Guid): Promise<void>
+	getAllDeletedKeys(): Promise<Guid[]>
 }
 
 export interface LoginData {
@@ -73,6 +106,7 @@ export class MimiriStore {
 	private _userCryptAlgorithm: string = SymmetricCrypt.DEFAULT_SYMMETRIC_ALGORITHM
 	private _rootCrypt: SymmetricCrypt
 	private _rootSignature: CryptSignature
+	private _localCrypt: SymmetricCrypt
 	private _keys: KeySet[] = []
 	private _online: boolean = true
 	private _clientConfig: ClientConfig = { features: [] }
@@ -87,6 +121,7 @@ export class MimiriStore {
 	constructor(
 		private db: MimiriDb,
 		private api: MimiriApi,
+		private noteUpdatedCallback: (note: Note) => void,
 	) {}
 
 	async init() {
@@ -207,13 +242,17 @@ export class MimiriStore {
 					loginData.rootSignature.privateKey,
 				)
 				await this.db.open(this._username)
+				await this.ensureLocalCrypt()
 				if (!(await this.goOnline())) {
 					const data = JSON.parse(await this._rootCrypt.decrypt(loginData.data))
 					this._clientConfig = data.clientConfig
 					this._userStats = data.userStats
 					this._userData = data.userData
-					await this.loadAllKeys()
 				}
+				await this.sync()
+				await this.loadAllKeys()
+				await this.syncPush()
+				await this.sync()
 				return true
 			} catch (ex) {
 				debug.logError('Failed to restore login data', ex)
@@ -303,19 +342,54 @@ export class MimiriStore {
 		this._userData = JSON.parse(await this._rootCrypt.decrypt(initializationData.userData))
 		this._username = data.username
 		this._userId = initializationData.userId
+
 		this.api.setRootSignature(this._username, this._rootSignature)
 		await this.db.setInitializationData(initializationData)
 		await this.sync()
 		await this.loadAllKeys()
+		await this.syncPush()
+		await this.sync()
 		await this.persistLogin()
 	}
 
-	private async sync(): Promise<void> {
+	private async ensureLocalCrypt(): Promise<void> {
+		let localData = await this.db.getLocalData()
+		if (!localData) {
+			this._localCrypt = await SymmetricCrypt.create(SymmetricCrypt.DEFAULT_SYMMETRIC_ALGORITHM)
+			localData = {
+				localCrypt: {
+					algorithm: SymmetricCrypt.DEFAULT_SYMMETRIC_ALGORITHM,
+					key: await this._rootCrypt.encryptBytes(await this._localCrypt.getKey()),
+				},
+			}
+			await this.db.setLocalData(localData)
+		} else {
+			this._localCrypt = await SymmetricCrypt.fromKey(
+				localData.localCrypt.algorithm,
+				await this._rootCrypt.decryptBytes(localData.localCrypt.key),
+			)
+		}
+	}
+
+	async goOnline(password?: string): Promise<boolean> {
+		this.api.setRootSignature(this._username, this._rootSignature)
+		const data = await this.api.verifyCredentials()
+		if (data) {
+			this._userData = JSON.parse(await this._rootCrypt.decrypt(data))
+			this._online = true
+			return true
+		}
+		return false
+	}
+
+	private async sync(pushUpdates: boolean = false): Promise<void> {
 		const lastSync = await this.db.getLastSync()
 
 		let nextNoteSync = lastSync?.lastNoteSync ?? 0
 		let nextKeySync = lastSync?.lastKeySync ?? 0
 		let changes = await this.api.getChangesSince(nextNoteSync, nextKeySync)
+
+		const updatedNoteIds: Guid[] = []
 
 		for (let i = 0; i < 100; i++) {
 			let syncChanged = false
@@ -325,51 +399,41 @@ export class MimiriStore {
 					syncChanged = true
 				}
 				const data = JSON.parse(key.data) as KeyData
-				const currentKey = await this.db.getKey(key.id)
-				if (!currentKey || currentKey.sync !== key.sync) {
-					if (currentKey) {
-						console.log('key changed:', key.id, 'sync:', key.sync, 'current sync:', currentKey.sync)
-					}
-					this.db.setKey({
-						id: key.id,
-						name: key.name,
-						algorithm: data.algorithm,
-						asymmetricAlgorithm: data.asymmetricAlgorithm,
-						keyData: data.keyData,
-						publicKey: data.publicKey,
-						privateKey: data.privateKey,
-						metadata: data.metadata,
-						modified: key.modified,
-						created: key.created,
-						sync: key.sync,
-					})
-				}
+				this.db.setKey({
+					id: key.id,
+					userId: data.userId,
+					name: key.name,
+					algorithm: data.algorithm,
+					asymmetricAlgorithm: data.asymmetricAlgorithm,
+					keyData: data.keyData,
+					publicKey: data.publicKey,
+					privateKey: data.privateKey,
+					metadata: data.metadata,
+					modified: key.modified,
+					created: key.created,
+					sync: key.sync,
+				})
 			}
 			for (const note of changes.notes) {
 				if (+note.sync > nextNoteSync) {
 					nextNoteSync = +note.sync
 					syncChanged = true
 				}
-				const currentNote = await this.db.getNote(note.id)
-				if (!currentNote || currentNote.sync !== note.sync) {
-					if (currentNote) {
-						console.log('note changed:', note.id, 'sync:', note.sync, 'current sync:', currentNote.sync)
-					}
-					this.db.setNote({
-						id: note.id,
-						keyName: note.keyName,
-						modified: note.modified,
-						created: note.created,
-						sync: note.sync,
-						items: note.items.map(item => ({
-							version: item.version,
-							type: item.itemType,
-							data: item.data,
-							modified: item.modified,
-							created: item.created,
-						})),
-					})
-				}
+				this.db.setNote({
+					id: note.id,
+					keyName: note.keyName,
+					modified: note.modified,
+					created: note.created,
+					sync: note.sync,
+					items: note.items.map(item => ({
+						version: item.version,
+						type: item.itemType,
+						data: item.data,
+						modified: item.modified,
+						created: item.created,
+					})),
+				})
+				updatedNoteIds.push(note.id)
 			}
 			if (!syncChanged) {
 				break
@@ -377,30 +441,174 @@ export class MimiriStore {
 			await this.db.setLastSync(nextNoteSync, nextKeySync)
 			changes = await this.api.getChangesSince(nextNoteSync, nextKeySync)
 		}
+		if (pushUpdates) {
+			for (const noteId of updatedNoteIds) {
+				this.noteUpdatedCallback(await this.readNote(noteId))
+			}
+		}
+	}
+
+	private async syncPush(): Promise<void> {
+		console.log('Pushing changes to server...')
+
+		const noteActions: NoteSyncAction[] = []
+		const keyActions: KeySyncAction[] = []
+
+		console.log('Loading local notes...')
+		const localNotes = await this.db.getAllLocalNotes()
+		for (const localNote of localNotes) {
+			const keySet = this.getKeyByName(localNote.keyName)
+			const remoteNote = await this.db.getNote(localNote.id)
+			if (remoteNote) {
+				const action: NoteSyncAction = {
+					type: 'update',
+					id: localNote.id,
+					keyName: localNote.keyName,
+					items: [],
+				}
+				for (const localItem of localNote.items) {
+					const remoteItem = remoteNote?.items.find(item => item.type === localItem.type)
+					const remoteItemVersion = remoteItem?.version ?? 0
+					const localItemData = await this.tryDecryptNoteItemText(localItem, this._localCrypt)
+					console.log(localItemData)
+
+					const remoteItemData = remoteItem
+						? await this.tryDecryptNoteItemText(remoteItem, keySet.symmetric)
+						: undefined
+					if (localItem.version !== remoteItemVersion) {
+						if (localItemData === remoteItemData) {
+							continue
+						}
+						// TODO: Handle conflict resolution
+						console.log('conflict', localItem, remoteItem)
+					}
+					if (localItem.version === 0 || localItemData !== remoteItemData) {
+						action.items.push({
+							version: localItem.version,
+							type: localItem.type,
+							data: await keySet.symmetric.encrypt(localItemData),
+						})
+					}
+				}
+				if (action.items.length > 0) {
+					noteActions.push(action)
+				} else {
+					this.db.deleteLocalNote(localNote.id)
+				}
+			} else {
+				const action: NoteSyncAction = {
+					type: 'create',
+					id: localNote.id,
+					keyName: localNote.keyName,
+					items: [],
+				}
+				for (const item of localNote.items) {
+					action.items.push({
+						version: 0,
+						type: item.type,
+						data: await this.tryReencryptNoteItemData(item, this._localCrypt, keySet.symmetric),
+					})
+				}
+				if (action.items.length > 0) {
+					noteActions.push(action)
+				}
+			}
+		}
+
+		console.log('Loading local keys...')
+		const localKeys = await this.db.getAllLocalKeys()
+		for (const localKey of localKeys) {
+			const action: KeySyncAction = {
+				type: 'create',
+				id: localKey.id,
+				name: localKey.name,
+				data: JSON.stringify({
+					id: localKey.id,
+					userId: this._userId,
+					name: localKey.name,
+					algorithm: localKey.algorithm,
+					asymmetricAlgorithm: localKey.asymmetricAlgorithm,
+					keyData: await this._rootCrypt.encrypt(await this._localCrypt.decrypt(localKey.keyData)),
+					publicKey: await localKey.publicKey,
+					privateKey: await this._rootCrypt.encrypt(await this._localCrypt.decrypt(localKey.privateKey)),
+					metadata: await this._rootCrypt.encrypt(await this._localCrypt.decrypt(localKey.metadata)),
+				}),
+			}
+			keyActions.push(action)
+		}
+
+		console.log('Loading deleted notes and keys...')
+		const deletedNotes = await this.db.getAllDeletedNotes()
+		for (const noteId of deletedNotes) {
+			noteActions.push({
+				type: 'delete',
+				keyName: emptyGuid(),
+				id: noteId,
+				items: [],
+			})
+		}
+
+		console.log('Loading deleted keys...')
+		const deletedKeys = await this.db.getAllDeletedKeys()
+		for (const keyId of deletedKeys) {
+			keyActions.push({
+				type: 'delete',
+				id: keyId,
+				name: emptyGuid(),
+				data: '',
+			})
+		}
+		console.log(noteActions)
+
+		const results = await this.api.syncPushChanges(noteActions, keyActions)
+		console.log(results)
+		for (const result of results ?? []) {
+			if (result.itemType === 'note') {
+				if (result.action === 'create') {
+					this.db.deleteLocalNote(result.id)
+				} else if (result.action === 'update') {
+					this.db.deleteLocalNote(result.id)
+				} else if (result.action === 'delete') {
+					this.db.clearDeleteRemoteNote(result.id)
+				}
+			} else if (result.itemType === 'key') {
+				if (result.action === 'create') {
+					this.db.deleteLocalKey(result.id)
+				} else if (result.action === 'delete') {
+					this.db.clearDeleteRemoteKey(result.id)
+				}
+			}
+		}
 	}
 
 	private async loadAllKeys(): Promise<void> {
-		const keysData = await this.db.getAllKeys()
+		const localKeys = await this.db.getAllLocalKeys()
+		const removeKeys = await this.db.getAllKeys()
 		this._keys = []
-		for (const keyData of keysData) {
-			const sym = await SymmetricCrypt.fromKey(keyData.algorithm, await this._rootCrypt.decryptBytes(keyData.keyData))
-			const signer = await CryptSignature.fromPem(
-				keyData.asymmetricAlgorithm,
-				keyData.publicKey,
-				await this._rootCrypt.decrypt(keyData.privateKey),
-			)
-			this._keys.push({
-				id: keyData.id,
-				name: keyData.name,
-				symmetric: sym,
-				signature: signer,
-				metadata: JSON.parse(await this._rootCrypt.decrypt(keyData.metadata)),
-			})
+		for (const keyData of [...localKeys, ...removeKeys]) {
+			if (!this._keys.some(key => key.id === keyData.id)) {
+				const sym = await SymmetricCrypt.fromKey(keyData.algorithm, await this._rootCrypt.decryptBytes(keyData.keyData))
+				const signer = await CryptSignature.fromPem(
+					keyData.asymmetricAlgorithm,
+					keyData.publicKey,
+					await this._rootCrypt.decrypt(keyData.privateKey),
+				)
+				this._keys.push({
+					id: keyData.id,
+					name: keyData.name,
+					symmetric: sym,
+					signature: signer,
+					metadata: JSON.parse(await this._rootCrypt.decrypt(keyData.metadata)),
+				})
+			}
 		}
 	}
 
 	private async loadKeyById(id: Guid): Promise<KeySet | undefined> {
-		const keyData = await this.db.getKey(id)
+		let keyData = await this.db.getLocalKey(id)
+		if (!keyData) {
+			keyData = await this.db.getKey(id)
+		}
 		if (!keyData) {
 			return undefined
 		}
@@ -433,15 +641,6 @@ export class MimiriStore {
 		return Promise.resolve()
 	}
 
-	async goOnline(password?: string): Promise<boolean> {
-		this.api.setRootSignature(this._username, this._rootSignature)
-		this.api.verifyCredentials()
-		this._online = true
-
-		console.log('Going online:')
-		return Promise.resolve(false)
-	}
-
 	async verifyPassword(password: string): Promise<boolean> {
 		console.log('Verifying password:')
 		return Promise.resolve(false)
@@ -467,9 +666,9 @@ export class MimiriStore {
 			sync: note.sync,
 			items: await Promise.all(
 				note.items.map(async item => ({
-					version: item.version + (item.changed ? 1 : 0),
+					version: item.version,
 					type: item.type,
-					data: await keySet.symmetric.encrypt(JSON.stringify(item.data)),
+					data: await this._localCrypt.encrypt(JSON.stringify(item.data)),
 					modified: item.modified,
 					created: item.created,
 				})),
@@ -477,16 +676,78 @@ export class MimiriStore {
 			modified: note.modified,
 			created: note.created,
 		}
-		await this.db.setNote(noteData)
+		await this.db.setLocalNote(noteData)
+		this.noteUpdatedCallback(await this.readNote(note.id))
+	}
+
+	private async deleteNote(id: Guid): Promise<void> {
+		// TODO: Implement delete note logic
+	}
+
+	private async tryDecryptNoteItemObject(item: { data: string; type: string }, crypt: SymmetricCrypt): Promise<any> {
+		try {
+			return JSON.parse(await crypt.decrypt(item.data))
+		} catch (ex) {
+			console.error('Decryption failed:', ex)
+			if (item.type === 'metadata') {
+				return {
+					title: '[MISSING]',
+					notes: [],
+				}
+			}
+			return {}
+		}
+	}
+
+	private async tryDecryptNoteItemText(item: { data: string; type: string }, crypt: SymmetricCrypt): Promise<any> {
+		try {
+			return await crypt.decrypt(item.data)
+		} catch (ex) {
+			console.error('Decryption failed:', ex)
+			if (item.type === 'metadata') {
+				return JSON.stringify({
+					title: '[MISSING]',
+					notes: [],
+				})
+			}
+			return JSON.stringify({})
+		}
+	}
+
+	private async tryReencryptNoteItemData(
+		item: { data: string; type: string },
+		oldKey: SymmetricCrypt,
+		newKey: SymmetricCrypt,
+	): Promise<any> {
+		try {
+			return await newKey.encrypt(await oldKey.decrypt(item.data))
+		} catch (ex) {
+			console.error('Re-encryption failed:', ex)
+			if (item.type === 'metadata') {
+				return await newKey.encrypt(
+					JSON.stringify({
+						title: '[MISSING]',
+						notes: [],
+					}),
+				)
+			}
+			return await newKey.encrypt(JSON.stringify({}))
+		}
 	}
 
 	async readNote(id: Guid, base?: Note): Promise<Note> {
 		if (!this.isLoggedIn) {
 			throw new Error('Not Logged in')
 		}
-		const noteData = await this.db.getNote(id)
+		let local = true
+		let noteData = await this.db.getLocalNote(id)
 		if (!noteData) {
-			throw new Error(`Note with id ${id} not found`)
+			local = false
+			noteData = await this.db.getNote(id)
+		}
+
+		if (!noteData) {
+			return undefined
 		}
 		const keySet = await this.getKeyByName(noteData.keyName)
 		const note = new Note()
@@ -496,17 +757,20 @@ export class MimiriStore {
 		note.modified = noteData.modified
 		note.created = noteData.created
 		note.sync = noteData.sync
+		const crypt = local ? this._localCrypt : keySet?.symmetric
+
 		note.items = await Promise.all(
 			noteData.items.map(async item => ({
 				version: item.version,
 				type: item.type,
-				data: JSON.parse(await keySet.symmetric.decrypt(item.data)),
+				data: await this.tryDecryptNoteItemObject(item, crypt),
 				changed: false,
 				size: item.data.length,
 				modified: item.modified,
 				created: item.created,
 			})),
 		)
+		// console.log('readNote', note.id, note, local)
 		return note
 	}
 
@@ -518,6 +782,7 @@ export class MimiriStore {
 
 		const keyData: KeyData = {
 			id,
+			userId: this._userId,
 			name: newGuid(),
 			algorithm: sym.algorithm,
 			asymmetricAlgorithm: signer.algorithm,
@@ -529,7 +794,7 @@ export class MimiriStore {
 			modified: new Date().toISOString(),
 			created: new Date().toISOString(),
 		}
-		this.db.setKey(keyData)
+		await this.db.setLocalKey(keyData)
 		await this.loadKeyById(id)
 	}
 
@@ -558,36 +823,174 @@ export class MimiriStore {
 		return Promise.resolve(undefined)
 	}
 
-	createDeleteAction(note: Note): NoteAction {
-		console.log('Creating delete action for note:', note.id)
-		return undefined
+	public async createDeleteAction(note: Note): Promise<NoteAction> {
+		const action: NoteAction = {
+			type: NoteActionType.Delete,
+			id: note.id,
+			keyName: note.keyName,
+			items: [],
+		}
+		return action
 	}
 
-	createUpdateAction(note: Note): NoteAction {
-		console.log('Creating update action for note:', note.id)
-		return undefined
+	public async createUpdateAction(note: Note): Promise<NoteAction> {
+		const action: NoteAction = {
+			type: NoteActionType.Update,
+			id: note.id,
+			keyName: note.keyName,
+			items: [],
+		}
+		const keySet = await this.getKeyByName(note.keyName)
+		let deltaSize = 0
+		for (const item of note.items) {
+			if (item.changed) {
+				const data = await keySet.symmetric.encrypt(JSON.stringify(item.data))
+				deltaSize += data.length - item.size
+				action.items.push({
+					version: item.version,
+					type: item.type,
+					data: await keySet.symmetric.encrypt(JSON.stringify(item.data)),
+				})
+			}
+		}
+		return action
 	}
 
-	createCreateAction(note: Note): NoteAction {
-		console.log('Creating create action for note:', note.id)
-		return undefined
+	public async createCreateAction(note: Note): Promise<NoteAction> {
+		const action: NoteAction = {
+			type: NoteActionType.Create,
+			id: note.id,
+			keyName: note.keyName,
+			items: [],
+		}
+		const keySet = await this.getKeyByName(note.keyName)
+		let totalSize = 0
+		for (const item of note.items) {
+			const data = await keySet.symmetric.encrypt(JSON.stringify(item.data))
+			totalSize += data.length
+			action.items.push({
+				version: 0,
+				type: item.type,
+				data,
+			})
+		}
+		return action
 	}
 
-	createChangeKeyAction(noteId: Guid, newKeyName: Guid): NoteAction {
-		console.log(
-			'Creating change key action for note:',
-			noteId,
-			'to new key:',
-			newKeyName,
-			'for user:',
-			this._userData?.username,
-		)
-		return undefined
+	public async createChangeKeyAction(noteId: Guid, newKeyName: Guid): Promise<NoteAction> {
+		const note = await this.readNote(noteId)
+		const action: NoteAction = {
+			type: NoteActionType.Update,
+			id: note.id,
+			keyName: newKeyName,
+			oldKeyName: note.keyName,
+			items: [],
+		}
+		const keySet = await this.getKeyByName(newKeyName)
+		for (const item of note.items) {
+			action.items.push({
+				version: item.version,
+				type: item.type,
+				data: await keySet.symmetric.encrypt(JSON.stringify(item.data)),
+			})
+		}
+		return action
 	}
 
-	async multiAction(actions: NoteAction[]): Promise<Guid[]> {
-		console.log('Performing multi-action for user:', 'with actions:', actions)
-		return Promise.resolve([])
+	public async multiAction(actions: NoteAction[]): Promise<Guid[]> {
+		for (const action of actions) {
+			console.log(`Processing action: ${action.id}`)
+			for (const item of action.items) {
+				console.log(
+					`  Item: ${item.type}, Version: ${item.version}, Data Size: ${item.data.length}`,
+					await this.tryDecryptNoteItemObject(item, this.getKeyByName(action.keyName).symmetric),
+				)
+			}
+		}
+		const transaction = await this.db.beginTransaction()
+		try {
+			const updatedNoteIds: Guid[] = []
+			for (const action of actions) {
+				if (action.type === NoteActionType.Create) {
+					await transaction.setLocalNote({
+						id: action.id,
+						keyName: action.keyName,
+						sync: 0,
+						items: await Promise.all(
+							action.items.map(async item => ({
+								version: item.version,
+								type: item.type,
+								data: await this.tryReencryptNoteItemData(
+									item,
+									this.getKeyByName(action.keyName).symmetric,
+									this._localCrypt,
+								),
+								modified: new Date().toISOString(),
+								created: new Date().toISOString(),
+							})),
+						),
+						modified: new Date().toISOString(),
+						created: new Date().toISOString(),
+					})
+				} else if (action.type === NoteActionType.Update) {
+					let note = await transaction.getLocalNote(action.id)
+					if (!note) {
+						note = await transaction.getNote(action.id)
+					}
+					if (!note) {
+						throw new Error(`Note with id ${action.id} not found`)
+					}
+					note.keyName = action.keyName
+					for (const type of new Set([...action.items.map(item => item.type), ...note.items.map(item => item.type)])) {
+						const existingItem = note.items.find(i => i.type === type)
+						const newItem = action.items.find(i => i.type === type)
+						if (newItem && existingItem) {
+							existingItem.data = await this.tryReencryptNoteItemData(
+								newItem,
+								this.getKeyByName(action.keyName).symmetric,
+								this._localCrypt,
+							)
+							existingItem.version = newItem.version
+						} else if (!newItem && existingItem) {
+							existingItem.data = await this.tryReencryptNoteItemData(
+								existingItem,
+								this.getKeyByName(action.keyName).symmetric,
+								this._localCrypt,
+							)
+						} else if (newItem && !existingItem) {
+							note.items.push({
+								version: newItem.version,
+								type: newItem.type,
+								data: await this.tryReencryptNoteItemData(
+									newItem,
+									this.getKeyByName(action.keyName).symmetric,
+									this._localCrypt,
+								),
+								modified: new Date().toISOString(),
+								created: new Date().toISOString(),
+							})
+						}
+					}
+					await transaction.setLocalNote(note)
+					updatedNoteIds.push(note.id)
+				} else if (action.type === NoteActionType.Delete) {
+					if (await transaction.getLocalNote(action.id)) {
+						await transaction.deleteLocalNote(action.id)
+					}
+					if (await transaction.getNote(action.id)) {
+						await transaction.deleteRemoteNote(action.id)
+					}
+				}
+			}
+			await transaction.commit()
+			for (const noteId of updatedNoteIds) {
+				this.noteUpdatedCallback(await this.readNote(noteId))
+			}
+		} catch (error) {
+			await transaction.rollback()
+			throw error
+		}
+		return []
 	}
 
 	async updateUserData(): Promise<void> {

@@ -143,20 +143,18 @@ export class MimerNote {
 	}
 
 	public async update(note: Note) {
-		// console.log('update.check', note.id, this.childIds.length, note.getItem('metadata').notes.length)
-		if (isNoteNewerThan(note, this.note)) {
-			// console.log('update.do', note)
-			this.note = note
-			this.beforeChangeText = this.text
-			if (this.historyElementsLoaded > 0) {
-				this.historyElementsLoaded = 0
-				this.historyItems = []
-			}
-			if (this.childrenPopulated) {
-				await this.ensureChildren(true)
-			}
-			this.updateViewModel()
+		// if (isNoteNewerThan(note, this.note)) {
+		this.note = note
+		this.beforeChangeText = this.text
+		if (this.historyElementsLoaded > 0) {
+			this.historyElementsLoaded = 0
+			this.historyItems = []
 		}
+		if (this.childrenPopulated) {
+			await this.ensureChildren(true)
+		}
+		this.updateViewModel()
+		// }
 	}
 
 	protected updateViewModel() {

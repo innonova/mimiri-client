@@ -5,8 +5,8 @@ export interface NoteItem {
 	version: number
 	type: string
 	data: any
-	updated?: boolean
-	changed?: boolean
+	updated?: boolean // TODO remove this, when it is not used anymore
+	changed?: boolean // TODO remove this, when it is not used anymore
 	size?: number
 	modified?: string
 	created?: string
@@ -16,7 +16,7 @@ export class Note {
 	public id: Guid = newGuid()
 	public keyName: Guid
 	public items: NoteItem[] = []
-	public isCache: boolean
+	public isCache: boolean // TODO remove this, when it is not used anymore
 	public sync: number
 	public modified: string
 	public created: string

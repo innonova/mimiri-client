@@ -117,7 +117,9 @@ export class NoteManager {
 			initInProgress: true,
 			viewMode: ViewMode.Content,
 		})
-		this.client = new MimiriStore(new MimiriBrowserDb(), new MimiriClient(host, serverKeyId, serverKey))
+		this.client = new MimiriStore(new MimiriBrowserDb(), new MimiriClient(host, serverKeyId, serverKey), async note => {
+			await this.notes[note.id]?.update(note)
+		})
 		this._paymentClient = new PaymentClient(this.client as any, paymentHost)
 		browserHistory.init(noteId => {
 			if (noteId) {
@@ -392,6 +394,31 @@ export class NoteManager {
 			const rootChildren = root.changeItem('metadata').notes
 			root.changeItem('metadata').notes = [recycleBin.id, ...rootChildren]
 			await this.client.writeNote(root)
+		} else {
+			// const recycleBin = await this.client.readNote(root.getItem('metadata').recycleBin)
+			// if (!recycleBin) {
+			// 	console.log('Recycle bin note not found, creating a new one')
+			// 	const recycleBin = new Note()
+			// 	recycleBin.id = root.getItem('metadata').recycleBin
+			// 	recycleBin.keyName = root.keyName
+			// 	recycleBin.changeItem('metadata').title = 'Recycle Bin'
+			// 	recycleBin.changeItem('metadata').notes = []
+			// 	recycleBin.changeItem('metadata').isRecycleBin = true
+			// 	await this.client.createNote(recycleBin)
+			// }
+			// if (!root.getItem('metadata').notes.includes(recycleBin.id)) {
+			// 	const rootChildren = root.changeItem('metadata').notes
+			// 	root.changeItem('metadata').notes = [recycleBin.id, ...rootChildren]
+			// 	await this.client.writeNote(root)
+			// }
+			// if (root.getItem('metadata').notes[0] === recycleBin.id) {
+			// 	const rootChildren = root.changeItem('metadata').notes
+			// 	const temp = rootChildren[0]
+			// 	rootChildren[0] = rootChildren[1]
+			// 	rootChildren[1] = temp
+			// 	root.changeItem('metadata').notes = rootChildren
+			// 	await this.client.writeNote(root)
+			// }
 		}
 	}
 
@@ -683,7 +710,7 @@ export class NoteManager {
 	}
 
 	private async sendUpdate(note: Note) {
-		await this.notes[note.id]?.update(note)
+		// await this.notes[note.id]?.update(note)
 	}
 
 	public async refreshNote(id: Guid) {

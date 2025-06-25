@@ -129,3 +129,16 @@ export interface SyncResponse {
 	keys: any[]
 	notes: any[]
 }
+
+export interface SyncResult {
+	itemType: string
+	action: string
+	id: Guid
+	type: string
+	expected: number
+	actual: number
+}
+
+export interface SyncPushResponse {
+	results: SyncResult[]
+}

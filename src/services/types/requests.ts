@@ -166,3 +166,28 @@ export interface SyncRequest extends BasicRequest {
 	noteSince: number
 	keySince: number
 }
+
+export interface NoteSyncItem {
+	type: string
+	data: string
+	version: number
+}
+
+export interface NoteSyncAction {
+	id: Guid
+	keyName: Guid
+	type: 'create' | 'update' | 'delete'
+	items: NoteSyncItem[]
+}
+
+export interface KeySyncAction {
+	id: Guid
+	name: Guid
+	type: 'create' | 'delete'
+	data: string
+}
+
+export interface SyncPushRequest extends BasicRequest {
+	notes: NoteSyncAction[]
+	keys: KeySyncAction[]
+}

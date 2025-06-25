@@ -1,28 +1,39 @@
-import { openDB, type IDBPDatabase } from 'idb'
+import { openDB, type IDBPDatabase, type IDBPTransaction } from 'idb'
 import type { Note } from '../types/note'
 import type { Guid } from '../types/guid'
-import type { MimiriDb } from './mimiri-store'
-import type { InitializationData, KeyData, NoteData } from './type'
+import type { MimiriDb, MimiriTransaction } from './mimiri-store'
+import type { InitializationData, KeyData, LocalData, NoteData } from './type'
 
 export class MimiriBrowserDb implements MimiriDb {
 	private db: IDBPDatabase<any>
 	constructor() {}
 
 	public async open(username: string) {
-		this.db = await openDB(`mimiri-${username}`, 2, {
+		this.db = await openDB(`mimiri-${username}`, 4, {
 			upgrade(db) {
 				if (!db.objectStoreNames.contains('note-store')) {
 					db.createObjectStore('note-store')
 				}
+				if (!db.objectStoreNames.contains('note-local-store')) {
+					db.createObjectStore('note-local-store')
+				}
+				if (!db.objectStoreNames.contains('note-deleted-store')) {
+					db.createObjectStore('note-deleted-store')
+				}
 				if (!db.objectStoreNames.contains('key-store')) {
 					db.createObjectStore('key-store')
+				}
+				if (!db.objectStoreNames.contains('key-local-store')) {
+					db.createObjectStore('key-local-store')
+				}
+				if (!db.objectStoreNames.contains('key-deleted-store')) {
+					db.createObjectStore('key-deleted-store')
 				}
 				if (!db.objectStoreNames.contains('user-store')) {
 					db.createObjectStore('user-store')
 				}
 			},
 		})
-		// await this.test()
 	}
 
 	public async close() {
@@ -31,6 +42,18 @@ export class MimiriBrowserDb implements MimiriDb {
 			this.db = undefined as any
 			await db.close()
 		}
+	}
+
+	public beginTransaction(): MimiriTransaction {
+		return new MimiriBrowserTransaction(this.db, [
+			'note-store',
+			'note-local-store',
+			'note-deleted-store',
+			'key-store',
+			'key-local-store',
+			'key-deleted-store',
+			'user-store',
+		])
 	}
 
 	public async setLastSync(lastNoteSync: number, lastKeySync: number): Promise<void> {
@@ -49,12 +72,20 @@ export class MimiriBrowserDb implements MimiriDb {
 		return this.db.get('user-store', 'initialization-data')
 	}
 
+	public async setLocalData(data: LocalData): Promise<void> {
+		await this.db.put('user-store', data, 'local-data')
+	}
+
+	public async getLocalData(): Promise<LocalData | undefined> {
+		return this.db.get('user-store', 'local-data')
+	}
+
 	public async setObfuscationKey(obfuscationKey: string): Promise<void> {
 		await this.db.put('user-store', obfuscationKey, 'obfuscation-key')
 	}
 
 	public async getObfuscationKey(): Promise<string | undefined> {
-		return await this.db.get('user-store', 'obfuscation-key')
+		return this.db.get('user-store', 'obfuscation-key')
 	}
 
 	public async setNoAccountData(data: any): Promise<void> {
@@ -89,6 +120,34 @@ export class MimiriBrowserDb implements MimiriDb {
 		return this.db.get('note-store', `note-${id}`)
 	}
 
+	public async setLocalNote(note: NoteData): Promise<void> {
+		await this.db.put('note-local-store', note, `note-${note.id}`)
+	}
+
+	public async getLocalNote(id: Guid): Promise<NoteData | undefined> {
+		return this.db.get('note-local-store', `note-${id}`)
+	}
+
+	public async deleteLocalNote(id: Guid): Promise<void> {
+		await this.db.delete('note-local-store', `note-${id}`)
+	}
+
+	public async getAllLocalNotes(): Promise<NoteData[]> {
+		return this.db.getAll('note-local-store')
+	}
+
+	public async deleteRemoteNote(id: Guid): Promise<void> {
+		await this.db.put('note-deleted-store', id, `note-${id}`)
+	}
+
+	public async clearDeleteRemoteNote(id: Guid): Promise<void> {
+		await this.db.delete('note-deleted-store', `note-${id}`)
+	}
+
+	public async getAllDeletedNotes(): Promise<Guid[]> {
+		return this.db.getAll('note-deleted-store')
+	}
+
 	public async setKey(key: KeyData): Promise<void> {
 		await this.db.put('key-store', key, `key-${key.id}`)
 	}
@@ -101,23 +160,79 @@ export class MimiriBrowserDb implements MimiriDb {
 		return this.db.getAll('key-store')
 	}
 
-	// private async test() {
-	// 	this.setKey({
-	// 		id: 'test-key-1',
-	// 		public: true,
-	// 	} as any)
-	// 	this.setKey({
-	// 		id: 'test-key-2',
-	// 		public: true,
-	// 	} as any)
-	// 	this.setKey({
-	// 		id: 'test-key-3',
-	// 		public: true,
-	// 	} as any)
-	// 	this.setKey({
-	// 		id: 'test-key-4',
-	// 		public: true,
-	// 	} as any)
-	// 	console.log('Keys in DB:', await this.getAllKeys())
-	// }
+	public async setLocalKey(key: KeyData): Promise<void> {
+		await this.db.put('key-local-store', key, `key-${key.id}`)
+	}
+
+	public async getLocalKey(id: Guid): Promise<KeyData | undefined> {
+		return this.db.get('key-local-store', `key-${id}`)
+	}
+
+	public async deleteLocalKey(id: Guid): Promise<void> {
+		await this.db.delete('key-local-store', `key-${id}`)
+	}
+
+	public async getAllLocalKeys(): Promise<KeyData[]> {
+		return this.db.getAll('key-local-store')
+	}
+
+	public async deleteRemoteKey(id: Guid): Promise<void> {
+		await this.db.put('key-deleted-store', id, `key-${id}`)
+	}
+
+	public async clearDeleteRemoteKey(id: Guid): Promise<void> {
+		await this.db.delete('key-deleted-store', `key-${id}`)
+	}
+
+	public async getAllDeletedKeys(): Promise<Guid[]> {
+		return this.db.getAll('key-deleted-store')
+	}
+}
+
+export class MimiriBrowserTransaction implements MimiriTransaction {
+	private actions: ((tx: IDBPTransaction<any, any, any>) => void)[] = []
+
+	constructor(
+		private db: IDBPDatabase<any>,
+		private storeNames: string | string[],
+	) {}
+
+	public async getNote(id: Guid): Promise<NoteData | undefined> {
+		return this.db.get('note-store', `note-${id}`)
+	}
+
+	public async getLocalNote(id: Guid): Promise<NoteData | undefined> {
+		return this.db.get('note-local-store', `note-${id}`)
+	}
+
+	public async setLocalNote(note: NoteData): Promise<void> {
+		this.actions.push(tx => {
+			tx.objectStore('note-local-store').put(note, `note-${note.id}`)
+		})
+		return Promise.resolve()
+	}
+
+	public async deleteLocalNote(id: Guid): Promise<void> {
+		this.actions.push(tx => {
+			tx.objectStore('note-local-store').delete(`note-${id}`)
+		})
+		return Promise.resolve()
+	}
+
+	public async deleteRemoteNote(id: Guid): Promise<void> {
+		this.actions.push(tx => {
+			tx.objectStore('note-deleted-store').put(id, `note-${id}`)
+		})
+		return Promise.resolve()
+	}
+
+	public async rollback() {
+		return Promise.resolve()
+	}
+
+	public async commit() {
+		const tx = this.db.transaction(this.storeNames, 'readwrite')
+		this.actions.forEach(action => action(tx))
+		return tx.done
+	}
 }
