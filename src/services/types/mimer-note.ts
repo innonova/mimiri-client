@@ -437,8 +437,22 @@ export class MimerNote {
 		}
 	}
 
+	public isAncestorOf(note: MimerNote): boolean {
+		let current: MimerNote | null = note
+		while (current) {
+			if (current.id === this.id) {
+				return true
+			}
+			current = current.parent
+		}
+		return false
+	}
+
 	public async move(target: MimerNote, index: number = -1) {
 		if (this.parent != null) {
+			if (this.isAncestorOf(target)) {
+				throw new Error('Cannot move a note into one of its children')
+			}
 			await this.owner.move(this.parent.id, target.id, this, index, this.isShareRoot, true)
 		} else {
 			throw new Error('Cannot move root')
