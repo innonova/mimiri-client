@@ -8,7 +8,6 @@ import type {
 	BasicRequest,
 	KeySyncAction,
 	LoginRequest,
-	MultiNoteRequest,
 	NoteAction,
 	NoteSyncAction,
 	SyncPushRequest,
@@ -21,12 +20,10 @@ import type {
 	SyncPushResponse,
 	SyncResponse,
 	SyncResult,
-	UpdateNoteResponse,
 	UserDataResponse,
 	VersionConflict,
 } from '../types/responses'
-import type { MimiriApi, UserStats } from './mimiri-store'
-import type { InitializationData, SyncInfo } from './type'
+import type { InitializationData, SharedState, SyncInfo } from './type'
 
 export class HttpRequestError extends Error {
 	constructor(
@@ -45,23 +42,16 @@ export class VersionConflictError extends Error {
 	}
 }
 
-export class MimiriClient implements MimiriApi {
+export class MimiriClient {
 	private username: string
 	private _serverSignature: CryptSignature
 	private rootSignature: CryptSignature
-	private _userStats: UserStats = {
-		size: 0,
-		noteCount: 0,
-		maxTotalBytes: 0,
-		maxNoteBytes: 0,
-		maxNoteCount: 0,
-	}
-	private _clientConfig: ClientConfig
 
 	constructor(
 		private host: string,
 		private serverKeyId: string,
 		serverKey: string,
+		private sharedState: SharedState,
 	) {
 		if (serverKey) {
 			CryptSignature.fromPem('RSA;3072', serverKey).then(sig => (this._serverSignature = sig))
@@ -96,12 +86,12 @@ export class MimiriClient implements MimiriApi {
 			loginResponse = await this.post<LoginResponse>('/user/login', loginRequest)
 
 			this.username = username
-			this._clientConfig = JSON.parse(loginResponse.config ?? '{}') as ClientConfig
-			this._userStats.size = loginResponse.size
-			this._userStats.noteCount = loginResponse.noteCount
-			this._userStats.maxTotalBytes = loginResponse.maxTotalBytes
-			this._userStats.maxNoteBytes = loginResponse.maxNoteBytes
-			this._userStats.maxNoteCount = loginResponse.maxNoteCount
+			this.sharedState.clientConfig = JSON.parse(loginResponse.config ?? '{}') as ClientConfig
+			this.sharedState.userStats.size = +loginResponse.size
+			this.sharedState.userStats.noteCount = +loginResponse.noteCount
+			this.sharedState.userStats.maxTotalBytes = +loginResponse.maxTotalBytes
+			this.sharedState.userStats.maxNoteBytes = +loginResponse.maxNoteBytes
+			this.sharedState.userStats.maxNoteCount = +loginResponse.maxNoteCount
 
 			const result: InitializationData = {
 				password: {
@@ -148,12 +138,12 @@ export class MimiriClient implements MimiriApi {
 		await this.rootSignature!.sign('user', getDataRequest)
 		try {
 			const response = await this.post<UserDataResponse>(`/user/get-data`, getDataRequest)
-			this._clientConfig = JSON.parse(response.config ?? '{}') as ClientConfig
-			this._userStats.size = response.size
-			this._userStats.noteCount = response.noteCount
-			this._userStats.maxTotalBytes = response.maxTotalBytes
-			this._userStats.maxNoteBytes = response.maxNoteBytes
-			this._userStats.maxNoteCount = response.maxNoteCount
+			this.sharedState.clientConfig = JSON.parse(response.config ?? '{}') as ClientConfig
+			this.sharedState.userStats.size = +response.size
+			this.sharedState.userStats.noteCount = +response.noteCount
+			this.sharedState.userStats.maxTotalBytes = +response.maxTotalBytes
+			this.sharedState.userStats.maxNoteBytes = +response.maxNoteBytes
+			this.sharedState.userStats.maxNoteCount = +response.maxNoteCount
 			return response.data
 		} catch (ex) {
 			debug.logError('Failed to go online', ex)
@@ -201,8 +191,10 @@ export class MimiriClient implements MimiriApi {
 		// }
 		// const response = await this.post<UpdateNoteResponse>('/note/multi', request)
 		// if (response.success) {
-		// 	this._userStats.size = response.size
-		// 	this._userStats.noteCount = response.noteCount
+		// 	if (this.sharedState) {
+		// 		this.sharedState.userStats.size = response.size
+		// 		this.sharedState.userStats.noteCount = response.noteCount
+		// 	}
 		// } else {
 		// 	throw new VersionConflictError(response.conflicts)
 		// }

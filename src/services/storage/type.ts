@@ -1,4 +1,29 @@
+import type { SymmetricCrypt } from '../symmetric-crypt'
 import type { Guid } from '../types/guid'
+import type { ClientConfig } from '../types/responses'
+
+export interface LoginData {
+	username: string
+	password: string
+	preferOffline?: boolean
+}
+
+export interface UserStats {
+	size: number
+	noteCount: number
+	maxTotalBytes: number
+	maxNoteBytes: number
+	maxNoteCount: number
+}
+
+export interface SharedState {
+	userId: Guid | null
+	rootCrypt: SymmetricCrypt | null
+	isLoggedIn: boolean
+	isOnline: boolean
+	clientConfig: ClientConfig
+	userStats: UserStats
+}
 
 export interface InitializationData {
 	password: {

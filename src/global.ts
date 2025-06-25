@@ -13,8 +13,6 @@ import { ClipboardManager } from './services/clipboard-manager'
 import { FontManager } from './services/font-manager'
 import { BlogManager } from './services/blog-manager'
 import { DebugManager } from './services/debug-manager'
-import { MimiriBrowserDb } from './services/storage/mimiri-browser-db'
-import { MimiriStore } from './services/storage/mimiri-store'
 
 export const env = import.meta.env
 const host = env.VITE_MIMER_API_HOST

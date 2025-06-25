@@ -1,10 +1,8 @@
 import { openDB, type IDBPDatabase, type IDBPTransaction } from 'idb'
-import type { Note } from '../types/note'
 import type { Guid } from '../types/guid'
-import type { MimiriDb, MimiriTransaction } from './mimiri-store'
 import type { InitializationData, KeyData, LocalData, NoteData } from './type'
 
-export class MimiriBrowserDb implements MimiriDb {
+export class MimiriDb {
 	private db: IDBPDatabase<any>
 	constructor() {}
 
@@ -45,7 +43,7 @@ export class MimiriBrowserDb implements MimiriDb {
 	}
 
 	public beginTransaction(): MimiriTransaction {
-		return new MimiriBrowserTransaction(this.db, [
+		return new MimiriTransaction(this.db, [
 			'note-store',
 			'note-local-store',
 			'note-deleted-store',
@@ -189,7 +187,7 @@ export class MimiriBrowserDb implements MimiriDb {
 	}
 }
 
-export class MimiriBrowserTransaction implements MimiriTransaction {
+export class MimiriTransaction {
 	private actions: ((tx: IDBPTransaction<any, any, any>) => void)[] = []
 
 	constructor(
