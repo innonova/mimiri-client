@@ -54,8 +54,8 @@ export class EditorAdvanced implements TextEditor {
 					[/(p`)([^``]+)(`)/, ['directive', 'password', 'directive']],
 					[/(\[)( |X|x)(\])/, ['checkbox', 'checkmark', 'checkbox']],
 					[/^(#{1,3}\s)(.*)/, ['head1', 'head1text']],
-					[/^(_)(.*)(_)/, ['italic', 'italictext', 'italic']],
-					[/^(\*\*)(.*)(\*\*)/, ['bold', 'boldtext', 'bold']],
+					// [/^(_)(.*)(_)/, ['italic', 'italictext', 'italic']],
+					// [/^(\*\*)(.*)(\*\*)/, ['bold', 'boldtext', 'bold']],
 				],
 			},
 		})
