@@ -898,15 +898,6 @@ export class MimiriStore {
 	}
 
 	public async multiAction(actions: NoteAction[]): Promise<Guid[]> {
-		for (const action of actions) {
-			console.log(`Processing action: ${action.id}`)
-			for (const item of action.items) {
-				console.log(
-					`  Item: ${item.type}, Version: ${item.version}, Data Size: ${item.data.length}`,
-					await this.tryDecryptNoteItemObject(item, this.getKeyByName(action.keyName).symmetric),
-				)
-			}
-		}
 		const transaction = await this.db.beginTransaction()
 		try {
 			const updatedNoteIds: Guid[] = []
@@ -934,8 +925,10 @@ export class MimiriStore {
 					})
 				} else if (action.type === NoteActionType.Update) {
 					let note = await transaction.getLocalNote(action.id)
+					let local = true
 					if (!note) {
 						note = await transaction.getNote(action.id)
+						local = false
 					}
 					if (!note) {
 						throw new Error(`Note with id ${action.id} not found`)
@@ -951,7 +944,7 @@ export class MimiriStore {
 								this._localCrypt,
 							)
 							existingItem.version = newItem.version
-						} else if (!newItem && existingItem) {
+						} else if (!newItem && existingItem && !local) {
 							existingItem.data = await this.tryReencryptNoteItemData(
 								existingItem,
 								this.getKeyByName(action.keyName).symmetric,
