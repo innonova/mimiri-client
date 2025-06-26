@@ -821,6 +821,7 @@ export class NoteManager {
 		this.beginAction()
 		try {
 			const multiAction = this.client.beginMultiAction()
+			multiAction.onlineOnly()
 			const pow = await ProofOfWork.compute(recipient, this._proofBits)
 			await this.ensureShareAllowable(mimerNote)
 			await this.client.getPublicKey(recipient, pow)
@@ -830,6 +831,7 @@ export class NoteManager {
 			} else {
 				const sharedKeyId = newGuid()
 				await this.client.createKey(sharedKeyId, { shared: true })
+				await this.client.waitForSync()
 				sharedKey = this.client.getKeyById(sharedKeyId)
 			}
 			const affectedNotes = await this.readFlatTree(mimerNote.id)
@@ -838,7 +840,7 @@ export class NoteManager {
 					await multiAction.changeNoteKey(affectedNote.id, sharedKey.name)
 				}
 			}
-			const affectedIds = await multiAction.commit()
+			await multiAction.commit()
 			const response = await this.client.shareNote(recipient, sharedKey.name, mimerNote.id, mimerNote.title, pow)
 			return response
 		} finally {
@@ -856,8 +858,10 @@ export class NoteManager {
 			const offer = offers.find(o => o.id === share.id)
 			if (offer) {
 				const multiAction = this.client.beginMultiAction()
+				multiAction.onlineOnly()
 				if (!this.client.getKeyByName(offer.keyName)) {
 					await this.client.createKeyFromNoteShare(newGuid(), offer, { shared: true })
+					await this.client.waitForSync()
 				}
 				const shareParent = parent?.note ?? (await this.client.readNote(this.root.id))
 				if (!shareParent.getItem('metadata').notes.includes(offer.noteId)) {

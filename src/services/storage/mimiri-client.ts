@@ -1,16 +1,21 @@
 import { debug, updateManager } from '../../global'
 import { CryptSignature } from '../crypt-signature'
+import { toBase64 } from '../hex-base64'
 import { passwordHasher } from '../password-hasher'
 import { settingsManager } from '../settings-manager'
 import { dateTimeNow } from '../types/date-time'
 import { newGuid, type Guid } from '../types/guid'
+import type { NoteShareInfo } from '../types/note-share-info'
 import type {
 	AddCommentRequest,
 	BasicRequest,
 	KeySyncAction,
 	LoginRequest,
+	MultiNoteRequest,
 	NoteAction,
 	NoteSyncAction,
+	PublicKeyRequest,
+	ShareNoteRequest,
 	SyncPushRequest,
 	SyncRequest,
 } from '../types/requests'
@@ -20,12 +25,16 @@ import type {
 	LoginResponse,
 	NotificationUrlResponse,
 	PreLoginResponse,
+	PublicKeyResponse,
+	ShareResponse,
 	SyncPushResponse,
 	SyncResponse,
 	SyncResult,
+	UpdateNoteResponse,
 	UserDataResponse,
 	VersionConflict,
 } from '../types/responses'
+import type { CryptographyManager } from './cryptography-manager'
 import type { InitializationData, SharedState, SyncInfo } from './type'
 
 export class HttpRequestError extends Error {
@@ -55,6 +64,7 @@ export class MimiriClient {
 		private serverKeyId: string,
 		serverKey: string,
 		private sharedState: SharedState,
+		private cryptoManager: CryptographyManager,
 	) {
 		if (serverKey) {
 			CryptSignature.fromPem('RSA;3072', serverKey).then(sig => (this._serverSignature = sig))
@@ -170,38 +180,79 @@ export class MimiriClient {
 		return { keys: response.keys, notes: response.notes }
 	}
 
-	public async multiAction(actions: NoteAction[], keyResolver?: (keyName: Guid) => CryptSignature): Promise<Guid[]> {
-		throw new Error('Method not implemented.')
-		// const request: MultiNoteRequest = {
-		// 	username: this.username,
-		// 	actions,
-		// 	timestamp: dateTimeNow(),
-		// 	requestId: newGuid(),
-		// 	signatures: [],
-		// }
-		// await this.rootSignature.sign('user', request)
-		// const affectedIds: Guid[] = []
-		// const keys: { [key: Guid]: boolean } = {}
-		// for (const action of actions) {
-		// 	affectedIds.push(action.id)
-		// 	keys[action.keyName] = true
-		// 	if (action.oldKeyName) {
-		// 		keys[action.oldKeyName] = true
-		// 	}
-		// }
-		// for (const keyName of Object.keys(keys)) {
-		// 	await keyResolver(keyName as Guid).sign(keyName, request)
-		// }
-		// const response = await this.post<UpdateNoteResponse>('/note/multi', request)
-		// if (response.success) {
-		// 	if (this.sharedState) {
-		// 		this.sharedState.userStats.size = response.size
-		// 		this.sharedState.userStats.noteCount = response.noteCount
-		// 	}
-		// } else {
-		// 	throw new VersionConflictError(response.conflicts)
-		// }
-		// return affectedIds
+	public async multiAction(actions: NoteAction[]): Promise<Guid[]> {
+		console.log('MimiriClient: multiAction', actions.length, 'actions')
+		const request: MultiNoteRequest = {
+			username: this.username,
+			actions,
+			timestamp: dateTimeNow(),
+			requestId: newGuid(),
+			signatures: [],
+		}
+		await this.rootSignature.sign('user', request)
+		const affectedIds: Guid[] = []
+		const keys: { [key: Guid]: boolean } = {}
+		for (const action of actions) {
+			affectedIds.push(action.id)
+			keys[action.keyName] = true
+			if (action.oldKeyName) {
+				keys[action.oldKeyName] = true
+			}
+		}
+		for (const keyName of Object.keys(keys)) {
+			const keySet = this.cryptoManager.getKeyByName(keyName as Guid)
+			await keySet.signature.sign(keyName, request)
+		}
+		const response = await this.post<UpdateNoteResponse>('/note/multi', request)
+		if (!response.success) {
+			throw new VersionConflictError(response.conflicts)
+		}
+		return affectedIds
+	}
+
+	public async getPublicKey(keyOwnerName: string, pow: string) {
+		const request: PublicKeyRequest = {
+			username: this.username,
+			pow,
+			keyOwnerName,
+			timestamp: dateTimeNow(),
+			requestId: newGuid(),
+			signatures: [],
+		}
+		await this.rootSignature.sign('user', request)
+		const response = await this.post<PublicKeyResponse>('/user/public-key', request)
+
+		return await CryptSignature.fromPem(response.asymmetricAlgorithm, response.publicKey)
+	}
+
+	public async shareNote(recipient: string, keyName: Guid, noteId: Guid, name: string, pow: string) {
+		const keySet = this.cryptoManager.getKeyByName(keyName)
+		const pub = await this.getPublicKey(recipient, pow)
+		const info: NoteShareInfo = {
+			id: newGuid(),
+			sender: this.username,
+			created: dateTimeNow(),
+			name,
+			noteId,
+			keyName,
+			algorithm: keySet.symmetric.algorithm,
+			keyData: toBase64(await keySet.symmetric.getKey()),
+			asymmetricAlgorithm: keySet.signature.algorithm,
+			publicKey: await keySet.signature.publicKeyPem(),
+			privateKey: await keySet.signature.privateKeyPem(),
+		}
+		const request: ShareNoteRequest = {
+			username: this.username,
+			recipient,
+			keyName,
+			data: await pub.encrypt(JSON.stringify(info)),
+			timestamp: dateTimeNow(),
+			requestId: newGuid(),
+			signatures: [],
+		}
+		await this.rootSignature.sign('user', request)
+		await keySet.signature.sign('key', request)
+		return await this.post<ShareResponse>('/note/share', request)
 	}
 
 	public async syncPushChanges(noteActions: NoteSyncAction[], keyActions: KeySyncAction[]): Promise<SyncResult[]> {

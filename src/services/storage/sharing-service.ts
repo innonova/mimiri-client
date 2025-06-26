@@ -1,17 +1,17 @@
 import { type Guid } from '../types/guid'
 import type { NoteShareInfo } from '../types/note-share-info'
 import type { ShareResponse } from '../types/responses'
+import type { MimiriClient } from './mimiri-client'
 
 export class SharingService {
-	constructor(private getPublicKeyCallback: (keyOwnerName: string, pow: string) => Promise<any>) {}
+	constructor(private api: MimiriClient) {}
 
 	public async createKeyFromNoteShare(id: Guid, share: NoteShareInfo, metadata: any): Promise<void> {
 		console.log('Creating key from note share:', id)
 	}
 
 	public async getPublicKey(keyOwnerName: string, pow: string) {
-		console.log('Getting public key for:', keyOwnerName, 'with pow:', pow)
-		return this.getPublicKeyCallback(keyOwnerName, pow)
+		return this.api.getPublicKey(keyOwnerName, pow)
 	}
 
 	public async shareNote(
@@ -21,8 +21,7 @@ export class SharingService {
 		name: string,
 		pow: string,
 	): Promise<ShareResponse> {
-		console.log('Sharing note:', noteId, 'with recipient:', recipient, 'using key:', keyName)
-		return Promise.resolve(undefined)
+		return this.api.shareNote(recipient, keyName, noteId, name, pow)
 	}
 
 	public async getShareOffers(): Promise<NoteShareInfo[]> {

@@ -105,57 +105,61 @@ export class CryptographyManager {
 		this._keys = []
 		for (const keyData of [...localKeys, ...removeKeys]) {
 			if (!this._keys.some(key => key.id === keyData.id)) {
-				const sym = await SymmetricCrypt.fromKey(
-					keyData.algorithm,
-					await this.sharedState.rootCrypt.decryptBytes(keyData.keyData),
-				)
-				const signer = await CryptSignature.fromPem(
-					keyData.asymmetricAlgorithm,
-					keyData.publicKey,
-					await this.sharedState.rootCrypt.decrypt(keyData.privateKey),
-				)
-				this._keys.push({
-					id: keyData.id,
-					name: keyData.name,
-					symmetric: sym,
-					signature: signer,
-					metadata: JSON.parse(await this.sharedState.rootCrypt.decrypt(keyData.metadata)),
-				})
+				try {
+					const sym = await SymmetricCrypt.fromKey(
+						keyData.algorithm,
+						await this.sharedState.rootCrypt.decryptBytes(keyData.keyData),
+					)
+					const signer = await CryptSignature.fromPem(
+						keyData.asymmetricAlgorithm,
+						keyData.publicKey,
+						await this.sharedState.rootCrypt.decrypt(keyData.privateKey),
+					)
+					this._keys.push({
+						id: keyData.id,
+						name: keyData.name,
+						symmetric: sym,
+						signature: signer,
+						metadata: JSON.parse(await this.sharedState.rootCrypt.decrypt(keyData.metadata)),
+					})
+				} catch (ex) {
+					console.error('Error loading key:', keyData, await this.sharedState.rootCrypt.decryptBytes(keyData.keyData))
+				}
 			}
 		}
 	}
 
 	public async loadKeyById(id: Guid): Promise<KeySet | undefined> {
+		let local = true
 		let keyData = await this.db.getLocalKey(id)
 		if (!keyData) {
+			local = false
 			keyData = await this.db.getKey(id)
 		}
 		if (!keyData) {
 			return undefined
 		}
-		const sym = await SymmetricCrypt.fromKey(
-			keyData.algorithm,
-			await this.sharedState.rootCrypt.decryptBytes(keyData.keyData),
-		)
+
+		const crypt = local ? this._localCrypt : this.sharedState.rootCrypt
+
+		const sym = await SymmetricCrypt.fromKey(keyData.algorithm, await crypt.decryptBytes(keyData.keyData))
 		const signer = await CryptSignature.fromPem(
 			keyData.asymmetricAlgorithm,
 			keyData.publicKey,
-			await this.sharedState.rootCrypt.decrypt(keyData.privateKey),
+			await crypt.decrypt(keyData.privateKey),
 		)
 		const keySet = {
 			id: keyData.id,
 			name: keyData.name,
 			symmetric: sym,
 			signature: signer,
-			metadata: JSON.parse(await this.sharedState.rootCrypt.decrypt(keyData.metadata)),
+			metadata: JSON.parse(await crypt.decrypt(keyData.metadata)),
 		}
 		this._keys.push(keySet)
 		return keySet
 	}
 
 	public async createKey(id: Guid, metadata: any): Promise<void> {
-		console.log('Creating key:', id)
-
 		const sym = await SymmetricCrypt.create(SymmetricCrypt.DEFAULT_SYMMETRIC_ALGORITHM)
 		const signer = await CryptSignature.create(CryptSignature.DEFAULT_ASYMMETRIC_ALGORITHM)
 
@@ -165,10 +169,10 @@ export class CryptographyManager {
 			name: newGuid(),
 			algorithm: sym.algorithm,
 			asymmetricAlgorithm: signer.algorithm,
-			keyData: await this.sharedState.rootCrypt.encryptBytes(await sym.getKey()),
+			keyData: await this._localCrypt.encryptBytes(await sym.getKey()),
 			publicKey: await signer.publicKeyPem(),
-			privateKey: await this.sharedState.rootCrypt.encrypt(await signer.privateKeyPem()),
-			metadata: await this.sharedState.rootCrypt.encrypt(JSON.stringify(metadata)),
+			privateKey: await this._localCrypt.encrypt(await signer.privateKeyPem()),
+			metadata: await this._localCrypt.encrypt(JSON.stringify(metadata)),
 			sync: 0,
 			modified: new Date().toISOString(),
 			created: new Date().toISOString(),

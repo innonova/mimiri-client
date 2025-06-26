@@ -44,9 +44,9 @@ export class MimiriStore {
 			},
 		}
 		this.db = new MimiriDb()
-		this.api = new MimiriClient(host, serverKeyId, serverKey, this.sharedState)
-		this.authManager = new AuthenticationManager(this.db, this.api, this.sharedState)
 		this.cryptoManager = new CryptographyManager(this.db, this.sharedState)
+		this.api = new MimiriClient(host, serverKeyId, serverKey, this.sharedState, this.cryptoManager)
+		this.authManager = new AuthenticationManager(this.db, this.api, this.sharedState)
 		this.syncService = new SynchronizationService(
 			this.db,
 			this.api,
@@ -61,11 +61,15 @@ export class MimiriStore {
 			const note = await this.noteService.readNote(noteId)
 			noteUpdatedCallback(note)
 		})
-		this.sharingService = new SharingService((keyOwnerName: string, pow: string) => Promise.resolve(undefined))
+		this.sharingService = new SharingService(this.api)
 	}
 
 	public queueSync(): void {
 		this.syncService.queueSync()
+	}
+
+	public async waitForSync(): Promise<void> {
+		return this.syncService.waitForSync()
 	}
 
 	public async checkUsername(username: string, pow: string) {
@@ -128,7 +132,8 @@ export class MimiriStore {
 	}
 
 	public async createKey(id: Guid, metadata: any): Promise<void> {
-		return this.cryptoManager.createKey(id, metadata)
+		await this.cryptoManager.createKey(id, metadata)
+		this.syncService.queueSync()
 	}
 
 	public getKeyByName(name: Guid): KeySet {
@@ -154,7 +159,7 @@ export class MimiriStore {
 	}
 
 	public beginMultiAction(): MultiAction {
-		return new MultiAction(this.noteService, this.syncService)
+		return new MultiAction(this.noteService, this.syncService, this.api)
 	}
 
 	public async createNotificationUrl(): Promise<{ url: string; token: string }> {

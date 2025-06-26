@@ -133,7 +133,8 @@ const submitDialog = async () => {
 			close()
 			name.value = ''
 		}
-	} catch {
+	} catch (ex) {
+		console.error('Error sharing note:', ex)
 		shareFailed.value = true
 	} finally {
 		loading.value = false

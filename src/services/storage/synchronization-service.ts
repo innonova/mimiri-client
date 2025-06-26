@@ -4,10 +4,14 @@ import type { KeyData, SharedState } from './type'
 import type { CryptographyManager } from './cryptography-manager'
 import type { MimiriDb } from './mimiri-db'
 import type { MimiriClient } from './mimiri-client'
+import { delay } from '../helpers'
 
 export class SynchronizationService {
 	private _syncInProgress = false
 	private _syncRequestedWhileInProgress = false
+	private _baseDelayMs = 1000 // 1 second base delay
+	private _maxDelayMs = 300000 // 5 minutes max delay
+	private _waitingForSync: (() => void)[] = []
 
 	constructor(
 		private db: MimiriDb,
@@ -25,17 +29,34 @@ export class SynchronizationService {
 		if (!this._syncInProgress) {
 			this._syncInProgress = true
 			try {
+				let syncFailed = false
+				let retryCount = 0
 				do {
-					this._syncRequestedWhileInProgress = false
-					await this.syncPull(true)
-					if (await this.syncPush()) {
-						await this.syncPull(true)
+					if (syncFailed) {
+						const delayMs = Math.min(this._baseDelayMs * Math.pow(2, retryCount), this._maxDelayMs)
+						console.log(`Synchronization failed. Retrying in ${delayMs}ms (attempt ${retryCount + 1})`)
+						await delay(delayMs)
+						retryCount++
 					}
-				} while (this._syncRequestedWhileInProgress)
-			} catch (error) {
-				console.error('Synchronization failed:', error)
+					syncFailed = false
+					this._syncRequestedWhileInProgress = false
+					try {
+						await this.syncPull(true)
+						if (await this.syncPush()) {
+							await this.syncPull(true)
+						}
+						retryCount = 0
+					} catch (error) {
+						syncFailed = true
+						console.error('Synchronization error:', error)
+					}
+				} while (this._syncRequestedWhileInProgress || syncFailed)
 			} finally {
 				this._syncInProgress = false
+				for (const resolve of this._waitingForSync) {
+					resolve()
+				}
+				this._waitingForSync = []
 			}
 		} else {
 			this._syncRequestedWhileInProgress = true
@@ -44,6 +65,16 @@ export class SynchronizationService {
 
 	public queueSync(): void {
 		void this.sync()
+	}
+
+	waitForSync(): Promise<void> {
+		if (!this._syncInProgress) {
+			return Promise.resolve()
+		} else {
+			return new Promise<void>(resolve => {
+				this._waitingForSync.push(resolve)
+			})
+		}
 	}
 
 	private async syncPull(pushUpdates: boolean = false): Promise<void> {
@@ -189,8 +220,8 @@ export class SynchronizationService {
 					name: localKey.name,
 					algorithm: localKey.algorithm,
 					asymmetricAlgorithm: localKey.asymmetricAlgorithm,
-					keyData: await this.sharedState.rootCrypt.encrypt(
-						await this.cryptoManager.localCrypt.decrypt(localKey.keyData),
+					keyData: await this.sharedState.rootCrypt.encryptBytes(
+						await this.cryptoManager.localCrypt.decryptBytes(localKey.keyData),
 					),
 					publicKey: await localKey.publicKey,
 					privateKey: await this.sharedState.rootCrypt.encrypt(
