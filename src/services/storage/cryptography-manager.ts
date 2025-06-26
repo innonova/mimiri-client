@@ -3,7 +3,7 @@ import { SymmetricCrypt } from '../symmetric-crypt'
 import { newGuid, type Guid } from '../types/guid'
 import type { KeySet } from '../types/key-set'
 import type { KeyData, SharedState } from './type'
-import type { MimiriDb } from './mimiri-browser-db'
+import type { MimiriDb } from './mimiri-db'
 
 export class CryptographyManager {
 	private _localCrypt: SymmetricCrypt

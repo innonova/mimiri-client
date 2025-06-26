@@ -5,7 +5,7 @@ import { mimiriPlatform } from '../mimiri-platform'
 import { SymmetricCrypt } from '../symmetric-crypt'
 import { emptyGuid } from '../types/guid'
 import type { InitializationData, LoginData, SharedState } from './type'
-import type { MimiriDb } from './mimiri-browser-db'
+import type { MimiriDb } from './mimiri-db'
 import type { MimiriClient } from './mimiri-client'
 
 const DEFAULT_ITERATIONS = 1000000

@@ -2,7 +2,7 @@ import { emptyGuid, type Guid } from '../types/guid'
 import type { KeySyncAction, NoteSyncAction } from '../types/requests'
 import type { KeyData, SharedState } from './type'
 import type { CryptographyManager } from './cryptography-manager'
-import type { MimiriDb } from './mimiri-browser-db'
+import type { MimiriDb } from './mimiri-db'
 import type { MimiriClient } from './mimiri-client'
 
 export class SynchronizationService {

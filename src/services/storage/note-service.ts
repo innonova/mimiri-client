@@ -3,7 +3,7 @@ import { Note } from '../types/note'
 import { NoteActionType, type NoteAction } from '../types/requests'
 import type { NoteData, SharedState } from './type'
 import type { CryptographyManager } from './cryptography-manager'
-import type { MimiriDb } from './mimiri-browser-db'
+import type { MimiriDb } from './mimiri-db'
 
 export class NoteService {
 	constructor(
