@@ -30,11 +30,7 @@ export class AuthenticationManager {
 		username: string,
 		pow: string,
 	): Promise<{ bitsExpected: number; proofAccepted: boolean; available: boolean }> {
-		return Promise.resolve({
-			bitsExpected: 15,
-			proofAccepted: true,
-			available: true,
-		})
+		return this.api.checkUsername(username, pow)
 	}
 
 	public async setLoginData(data: string) {
@@ -267,17 +263,17 @@ export class AuthenticationManager {
 		newPassword?: string,
 		iterations?: number,
 	): Promise<void> {
+		// TODO: Implement change username and password
 		return Promise.resolve()
 	}
 
 	public async deleteAccount(password: string, deleteLocal: boolean): Promise<void> {
-		console.log('Deleting account:')
+		// TODO: Implement delete account logic
 		return Promise.resolve()
 	}
 
 	public async verifyPassword(password: string): Promise<boolean> {
-		console.log('Verifying password:')
-		return Promise.resolve(false)
+		return this.api.verifyPassword(password)
 	}
 
 	public logout(): void {

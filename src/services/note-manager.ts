@@ -786,26 +786,24 @@ export class NoteManager {
 		}
 		this.beginAction()
 		try {
-			const offers = await this.client.getShareOffers()
-			const offer = offers.find(o => o.id === share.id)
-			if (offer) {
+			if (share) {
 				const multiAction = this.client.beginMultiAction()
 				multiAction.onlineOnly()
-				if (!this.client.getKeyByName(offer.keyName)) {
-					await this.client.createKeyFromNoteShare(newGuid(), offer, { shared: true })
+				if (!this.client.getKeyByName(share.keyName)) {
+					await this.client.createKeyFromNoteShare(newGuid(), share, { shared: true })
 					if (!(await this.client.waitForSync(15000))) {
 						return
 					}
 				}
 				const shareParent = parent?.note ?? (await this.client.readNote(this.root.id))
-				if (!shareParent.getItem('metadata').notes.includes(offer.noteId)) {
-					shareParent.changeItem('metadata').notes.push(offer.noteId)
+				if (!shareParent.getItem('metadata').notes.includes(share.noteId)) {
+					shareParent.changeItem('metadata').notes.push(share.noteId)
 				}
 				await multiAction.updateNote(shareParent)
 				await multiAction.commit()
-				await this.client.deleteShareOffer(offer.id)
+				await this.client.deleteShareOffer(share.id)
 				await parent?.expand()
-				this.getNoteById(offer.noteId)?.select()
+				this.getNoteById(share.noteId)?.select()
 			}
 		} finally {
 			this.endAction()

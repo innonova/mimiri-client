@@ -8,6 +8,8 @@ import type { NoteShareInfo } from '../types/note-share-info'
 import type {
 	AddCommentRequest,
 	BasicRequest,
+	CheckUsernameRequest,
+	DeleteShareRequest,
 	KeySyncAction,
 	LoginRequest,
 	MultiNoteRequest,
@@ -15,16 +17,21 @@ import type {
 	NoteSyncAction,
 	PublicKeyRequest,
 	ShareNoteRequest,
+	ShareOfferRequest,
+	ShareParticipantsRequest,
 	SyncPushRequest,
 	SyncRequest,
 } from '../types/requests'
 import type {
 	BasicResponse,
+	CheckUsernameResponse,
 	ClientConfig,
 	LoginResponse,
 	NotificationUrlResponse,
 	PreLoginResponse,
 	PublicKeyResponse,
+	ShareOffersResponse,
+	ShareParticipantsResponse,
 	ShareResponse,
 	SyncPushResponse,
 	SyncResponse,
@@ -59,6 +66,16 @@ export class MimiriClient extends HttpClientBase {
 		private notificationsCallback: (type: string) => void,
 	) {
 		super(host, serverKeyId, serverKey)
+	}
+
+	public async checkUsername(username: string, pow: string) {
+		const request: CheckUsernameRequest = {
+			username,
+			pow,
+			timestamp: dateTimeNow(),
+			requestId: newGuid(),
+		}
+		return await this.post<CheckUsernameResponse>('/user/available', request)
 	}
 
 	public async authenticate(username: string, password: string): Promise<InitializationData | undefined> {
@@ -125,6 +142,26 @@ export class MimiriClient extends HttpClientBase {
 			debug.logError('Failed to login', ex)
 			return undefined
 		}
+	}
+
+	public async verifyPassword(password: string): Promise<boolean> {
+		try {
+			const preLoginResponse = await this.get<PreLoginResponse>(`/user/pre-login/${this.username}?q=${Date.now()}`)
+			const passwordHash = await passwordHasher.hashPassword(
+				password,
+				preLoginResponse.salt,
+				preLoginResponse.algorithm,
+				preLoginResponse.iterations,
+			)
+			const loginRequest: LoginRequest = {
+				username: this.username,
+				response: await passwordHasher.computeResponse(passwordHash, preLoginResponse.challenge),
+				hashLength: passwordHash.length / 2,
+			}
+			const loginResponse = await this.post<LoginResponse>('/user/login', loginRequest)
+			return !!loginResponse.userId
+		} catch {}
+		return false
 	}
 
 	public setRootSignature(username: string, signature: CryptSignature): void {
@@ -289,6 +326,68 @@ export class MimiriClient extends HttpClientBase {
 		}
 		await this.rootSignature.sign('user', request)
 		return await this.post<BasicResponse>('/feedback/add-comment', request)
+	}
+
+	public async getShareOffer(code: string) {
+		try {
+			const request: ShareOfferRequest = {
+				username: this.username,
+				timestamp: dateTimeNow(),
+				requestId: newGuid(),
+				code,
+				signatures: [],
+			}
+			await this.rootSignature.sign('user', request)
+			const response = await this.post<ShareOffersResponse>('/note/share-offer', request)
+			const result: NoteShareInfo[] = []
+			for (const offer of response.offers) {
+				let offerData: any = {}
+				try {
+					offerData = JSON.parse(await this.rootSignature.decrypt(offer.data))
+				} catch (ex) {
+					debug.logError('Failed to parse share offer data', ex)
+					offerData.sender = 'error'
+					offerData.name = 'error'
+					offerData.error = ex
+				}
+				offerData.id = offer.id
+				result.push(offerData)
+				if (offerData.Sender !== offer.sender) {
+					offerData.Sender = `Warning sender mismatch Claims to be: '${offerData.sender}' Server says: '${offer.sender}'`
+				}
+			}
+			if (result.length > 0) {
+				return result[0]
+			}
+		} catch (ex) {
+			debug.logError('Failed to get share offer', ex)
+		}
+		return undefined
+	}
+
+	public async deleteShareOffer(id: Guid) {
+		const request: DeleteShareRequest = {
+			username: this.username,
+			id,
+			timestamp: dateTimeNow(),
+			requestId: newGuid(),
+			signatures: [],
+		}
+		await this.rootSignature.sign('user', request)
+		await this.post<BasicResponse>('/note/share/delete', request)
+	}
+
+	public async getShareParticipants(id: Guid) {
+		const request: ShareParticipantsRequest = {
+			username: this.username,
+			timestamp: dateTimeNow(),
+			requestId: newGuid(),
+			id,
+			signatures: [],
+		}
+		await this.rootSignature.sign('user', request)
+		const response = await this.post<ShareParticipantsResponse>('/note/share-participants', request)
+		return response.participants
 	}
 
 	private async openWebSocket() {

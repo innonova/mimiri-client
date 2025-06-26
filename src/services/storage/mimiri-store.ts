@@ -204,7 +204,7 @@ export class MimiriStore {
 	}
 
 	public async createKeyFromNoteShare(id: Guid, share: NoteShareInfo, metadata: any): Promise<void> {
-		return this.sharingService.createKeyFromNoteShare(id, share, metadata)
+		return this.cryptoManager.createKeyFromNoteShare(id, share, metadata)
 	}
 
 	public async getPublicKey(keyOwnerName: string, pow: string) {
@@ -219,10 +219,6 @@ export class MimiriStore {
 		pow: string,
 	): Promise<ShareResponse> {
 		return this.sharingService.shareNote(recipient, keyName, noteId, name, pow)
-	}
-
-	public async getShareOffers(): Promise<NoteShareInfo[]> {
-		return this.sharingService.getShareOffers()
 	}
 
 	public async getShareOffer(code: string): Promise<NoteShareInfo> {

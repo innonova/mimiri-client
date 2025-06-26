@@ -4,6 +4,8 @@ import { newGuid, type Guid } from '../types/guid'
 import type { KeySet } from '../types/key-set'
 import type { KeyData, SharedState } from './type'
 import type { MimiriDb } from './mimiri-db'
+import { fromBase64 } from '../hex-base64'
+import type { NoteShareInfo } from '../types/note-share-info'
 
 export class CryptographyManager {
 	private _rootCrypt: SymmetricCrypt
@@ -174,6 +176,30 @@ export class CryptographyManager {
 			publicKey: await signer.publicKeyPem(),
 			privateKey: await this._localCrypt.encrypt(await signer.privateKeyPem()),
 			metadata: await this._localCrypt.encrypt(JSON.stringify(metadata)),
+			sync: 0,
+			modified: new Date().toISOString(),
+			created: new Date().toISOString(),
+		}
+		await this.db.setLocalKey(keyData)
+		await this.loadKeyById(id)
+	}
+
+	public async createKeyFromNoteShare(id: Guid, share: NoteShareInfo, metadata: any): Promise<void> {
+		const signer = await CryptSignature.fromPem(
+			CryptSignature.DEFAULT_ASYMMETRIC_ALGORITHM,
+			share.publicKey,
+			share.privateKey,
+		)
+		const keyData: KeyData = {
+			id,
+			userId: this.sharedState.userId,
+			name: share.keyName,
+			algorithm: share.algorithm,
+			asymmetricAlgorithm: signer.algorithm,
+			keyData: await this.rootCrypt.encryptBytes(await fromBase64(share.keyData)),
+			publicKey: await signer.publicKeyPem(),
+			privateKey: await this.rootCrypt.encrypt(await signer.privateKeyPem()),
+			metadata: await this.rootCrypt.encrypt(JSON.stringify(metadata)),
 			sync: 0,
 			modified: new Date().toISOString(),
 			created: new Date().toISOString(),
