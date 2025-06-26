@@ -6,6 +6,7 @@ import type { KeyData, SharedState } from './type'
 import type { MimiriDb } from './mimiri-db'
 
 export class CryptographyManager {
+	private _rootCrypt: SymmetricCrypt
 	private _localCrypt: SymmetricCrypt
 	private _keys: KeySet[] = []
 
@@ -21,14 +22,14 @@ export class CryptographyManager {
 			localData = {
 				localCrypt: {
 					algorithm: SymmetricCrypt.DEFAULT_SYMMETRIC_ALGORITHM,
-					key: await this.sharedState.rootCrypt.encryptBytes(await this._localCrypt.getKey()),
+					key: await this._rootCrypt.encryptBytes(await this._localCrypt.getKey()),
 				},
 			}
 			await this.db.setLocalData(localData)
 		} else {
 			this._localCrypt = await SymmetricCrypt.fromKey(
 				localData.localCrypt.algorithm,
-				await this.sharedState.rootCrypt.decryptBytes(localData.localCrypt.key),
+				await this._rootCrypt.decryptBytes(localData.localCrypt.key),
 			)
 		}
 	}
@@ -108,22 +109,22 @@ export class CryptographyManager {
 				try {
 					const sym = await SymmetricCrypt.fromKey(
 						keyData.algorithm,
-						await this.sharedState.rootCrypt.decryptBytes(keyData.keyData),
+						await this._rootCrypt.decryptBytes(keyData.keyData),
 					)
 					const signer = await CryptSignature.fromPem(
 						keyData.asymmetricAlgorithm,
 						keyData.publicKey,
-						await this.sharedState.rootCrypt.decrypt(keyData.privateKey),
+						await this._rootCrypt.decrypt(keyData.privateKey),
 					)
 					this._keys.push({
 						id: keyData.id,
 						name: keyData.name,
 						symmetric: sym,
 						signature: signer,
-						metadata: JSON.parse(await this.sharedState.rootCrypt.decrypt(keyData.metadata)),
+						metadata: JSON.parse(await this._rootCrypt.decrypt(keyData.metadata)),
 					})
 				} catch (ex) {
-					console.error('Error loading key:', keyData, await this.sharedState.rootCrypt.decryptBytes(keyData.keyData))
+					console.error('Error loading key:', keyData, await this._rootCrypt.decryptBytes(keyData.keyData))
 				}
 			}
 		}
@@ -140,7 +141,7 @@ export class CryptographyManager {
 			return undefined
 		}
 
-		const crypt = local ? this._localCrypt : this.sharedState.rootCrypt
+		const crypt = local ? this._localCrypt : this._rootCrypt
 
 		const sym = await SymmetricCrypt.fromKey(keyData.algorithm, await crypt.decryptBytes(keyData.keyData))
 		const signer = await CryptSignature.fromPem(
@@ -195,5 +196,13 @@ export class CryptographyManager {
 
 	public get localCrypt(): SymmetricCrypt {
 		return this._localCrypt
+	}
+
+	public get rootCrypt(): SymmetricCrypt {
+		return this._rootCrypt
+	}
+
+	public set rootCrypt(crypt: SymmetricCrypt) {
+		this._rootCrypt = crypt
 	}
 }

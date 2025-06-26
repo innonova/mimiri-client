@@ -113,9 +113,18 @@ export class NoteManager {
 			viewMode: ViewMode.Content,
 			shareOffers: [],
 		})
-		this.client = new MimiriStore(host, serverKeyId, serverKey, async note => {
-			await this.notes[note.id]?.update(note)
-		})
+		this.client = new MimiriStore(
+			host,
+			serverKeyId,
+			serverKey,
+			async note => {
+				await this.notes[note.id]?.update(note)
+			},
+			status => {
+				this.state.online = status.isOnline
+				this.state.authenticated = status.isLoggedIn
+			},
+		)
 		this._paymentClient = new PaymentClient(this.client as any, paymentHost)
 		browserHistory.init(noteId => {
 			if (noteId) {

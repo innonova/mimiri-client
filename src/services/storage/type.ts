@@ -18,7 +18,6 @@ export interface UserStats {
 
 export interface SharedState {
 	userId: Guid | null
-	rootCrypt: SymmetricCrypt | null
 	isLoggedIn: boolean
 	isOnline: boolean
 	clientConfig: ClientConfig

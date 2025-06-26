@@ -161,7 +161,7 @@ export class MimiriClient {
 			this.sharedState.userStats.maxTotalBytes = +response.maxTotalBytes
 			this.sharedState.userStats.maxNoteBytes = +response.maxNoteBytes
 			this.sharedState.userStats.maxNoteCount = +response.maxNoteCount
-			await this.openWebSocket()
+			this.openWebSocket()
 			return response.data
 		} catch (ex) {
 			debug.logError('Failed to go online', ex)
@@ -327,16 +327,20 @@ export class MimiriClient {
 				}
 			})
 			connection.onreconnecting(error => {
+				this.sharedState.isOnline = false
 				this.notificationsCallback('reconnecting')
 			})
 			connection.onreconnected(() => {
+				this.sharedState.isOnline = true
 				this.notificationsCallback('reconnected')
 			})
 			connection.onclose(error => {
+				this.sharedState.isOnline = false
 				this.notificationsCallback('closed')
 			})
 			this._signalRConnection = connection
 			await connection.start()
+			this.sharedState.isOnline = true
 			this.notificationsCallback('connected')
 		} catch (ex) {
 			debug.logError('Failed to connect for notifications', ex)

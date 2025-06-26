@@ -7,6 +7,7 @@ import { emptyGuid } from '../types/guid'
 import type { InitializationData, LoginData, SharedState } from './type'
 import type { MimiriDb } from './mimiri-db'
 import type { MimiriClient } from './mimiri-client'
+import type { CryptographyManager } from './cryptography-manager'
 
 const DEFAULT_ITERATIONS = 1000000
 const DEFAULT_SALT_SIZE = 32
@@ -21,6 +22,7 @@ export class AuthenticationManager {
 	constructor(
 		private db: MimiriDb,
 		private api: MimiriClient,
+		private cryptoManager: CryptographyManager,
 		private sharedState: SharedState,
 	) {}
 
@@ -68,15 +70,15 @@ export class AuthenticationManager {
 				userId: this.sharedState?.userId ?? emptyGuid(),
 				userCryptAlgorithm: this._userCryptAlgorithm,
 				rootCrypt: {
-					algorithm: this.sharedState?.rootCrypt?.algorithm ?? '',
-					key: (await this.sharedState?.rootCrypt?.getKeyString()) ?? '',
+					algorithm: this.cryptoManager.rootCrypt.algorithm ?? '',
+					key: (await this.cryptoManager.rootCrypt.getKeyString()) ?? '',
 				},
 				rootSignature: {
 					algorithm: this._rootSignature.algorithm,
 					publicKey: await this._rootSignature.publicKeyPem(),
 					privateKey: await this._rootSignature.privateKeyPem(),
 				},
-				data: await this.sharedState!.rootCrypt!.encrypt(
+				data: await this.cryptoManager.rootCrypt.encrypt(
 					JSON.stringify({
 						clientConfig: this.sharedState.clientConfig,
 						userStats: this.sharedState.userStats,
@@ -131,16 +133,12 @@ export class AuthenticationManager {
 				this._username = loginData.username
 				this._userCryptAlgorithm = loginData.userCryptAlgorithm
 
-				// Update shared state directly
-				if (this.sharedState) {
-					this.sharedState.userId = loginData.userId
-					this.sharedState.rootCrypt = await SymmetricCrypt.fromKeyString(
-						loginData.rootCrypt.algorithm,
-						loginData.rootCrypt.key,
-					)
-					this.sharedState.isLoggedIn = true
-					this.sharedState.isOnline = true
-				}
+				this.sharedState.userId = loginData.userId
+				this.cryptoManager.rootCrypt = await SymmetricCrypt.fromKeyString(
+					loginData.rootCrypt.algorithm,
+					loginData.rootCrypt.key,
+				)
+				this.sharedState.isLoggedIn = true
 
 				this._rootSignature = await CryptSignature.fromPem(
 					loginData.rootSignature.algorithm ?? CryptSignature.DEFAULT_ASYMMETRIC_ALGORITHM,
@@ -149,7 +147,7 @@ export class AuthenticationManager {
 				)
 				await this.db.open(this._username)
 				if (!(await this.goOnline())) {
-					const data = JSON.parse(await this.sharedState!.rootCrypt!.decrypt(loginData.data))
+					const data = JSON.parse(await this.cryptoManager.rootCrypt.decrypt(loginData.data))
 					this.sharedState.clientConfig = data.clientConfig
 					this.sharedState.userStats = data.userStats
 					this._userData = data.userData
@@ -203,11 +201,8 @@ export class AuthenticationManager {
 			initializationData.userCrypt.iterations,
 		)
 
-		// Create root crypt and update shared state
-		if (this.sharedState) {
-			this.sharedState.rootCrypt = await SymmetricCrypt.create(initializationData.rootCrypt.algorithm)
-			initializationData.rootCrypt.key = await userCrypt.encryptBytes(await this.sharedState.rootCrypt.getKey())
-		}
+		this.cryptoManager.rootCrypt = await SymmetricCrypt.create(initializationData.rootCrypt.algorithm)
+		initializationData.rootCrypt.key = await userCrypt.encryptBytes(await this.cryptoManager.rootCrypt.getKey())
 
 		this._rootSignature = await CryptSignature.create(CryptSignature.DEFAULT_ASYMMETRIC_ALGORITHM)
 		initializationData.rootSignature.publicKey = await this._rootSignature.publicKeyPem()
@@ -234,23 +229,19 @@ export class AuthenticationManager {
 			initializationData.userCrypt.iterations,
 		)
 
-		// Update shared state directly
-		if (this.sharedState) {
-			this.sharedState.rootCrypt = await SymmetricCrypt.fromKey(
-				initializationData.rootCrypt.algorithm,
-				await userCrypt.decryptBytes(initializationData.rootCrypt.key),
-			)
-			this.sharedState.userId = initializationData.userId
-			this.sharedState.isLoggedIn = true
-			this.sharedState.isOnline = true
-		}
+		this.cryptoManager.rootCrypt = await SymmetricCrypt.fromKey(
+			initializationData.rootCrypt.algorithm,
+			await userCrypt.decryptBytes(initializationData.rootCrypt.key),
+		)
+		this.sharedState.userId = initializationData.userId
+		this.sharedState.isLoggedIn = true
 
 		this._rootSignature = await CryptSignature.fromPem(
 			initializationData.rootSignature.algorithm,
 			initializationData.rootSignature.publicKey,
 			await userCrypt.decrypt(initializationData.rootSignature.privateKey),
 		)
-		this._userData = JSON.parse(await this.sharedState!.rootCrypt!.decrypt(initializationData.userData))
+		this._userData = JSON.parse(await this.cryptoManager.rootCrypt.decrypt(initializationData.userData))
 		this._username = data.username
 
 		this.api.setRootSignature(this._username, this._rootSignature)
@@ -264,10 +255,7 @@ export class AuthenticationManager {
 		this.api.setRootSignature(this._username, this._rootSignature)
 		const data = await this.api.verifyCredentials()
 		if (data) {
-			this._userData = JSON.parse(await this.sharedState!.rootCrypt!.decrypt(data))
-			if (this.sharedState) {
-				this.sharedState.isOnline = true
-			}
+			this._userData = JSON.parse(await this.cryptoManager.rootCrypt.decrypt(data))
 			return true
 		}
 		return false
@@ -297,13 +285,9 @@ export class AuthenticationManager {
 		this._rootSignature = undefined
 		this._username = undefined
 
-		// Clear authentication state using the helper function
-		if (this.sharedState) {
-			this.sharedState.userId = null
-			this.sharedState.rootCrypt = null
-			this.sharedState.isLoggedIn = false
-			this.sharedState.isOnline = false
-		}
+		this.cryptoManager.rootCrypt = null
+		this.sharedState.userId = null
+		this.sharedState.isLoggedIn = false
 
 		this.db
 			.close()

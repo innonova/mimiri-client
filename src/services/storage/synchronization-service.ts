@@ -225,14 +225,14 @@ export class SynchronizationService {
 					name: localKey.name,
 					algorithm: localKey.algorithm,
 					asymmetricAlgorithm: localKey.asymmetricAlgorithm,
-					keyData: await this.sharedState.rootCrypt.encryptBytes(
+					keyData: await this.cryptoManager.rootCrypt.encryptBytes(
 						await this.cryptoManager.localCrypt.decryptBytes(localKey.keyData),
 					),
 					publicKey: await localKey.publicKey,
-					privateKey: await this.sharedState.rootCrypt.encrypt(
+					privateKey: await this.cryptoManager.rootCrypt.encrypt(
 						await this.cryptoManager.localCrypt.decrypt(localKey.privateKey),
 					),
-					metadata: await this.sharedState.rootCrypt.encrypt(
+					metadata: await this.cryptoManager.rootCrypt.encrypt(
 						await this.cryptoManager.localCrypt.decrypt(localKey.metadata),
 					),
 				}),

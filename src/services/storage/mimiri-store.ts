@@ -13,6 +13,7 @@ import { MimiriDb } from './mimiri-db'
 import { MimiriClient } from './mimiri-client'
 import { MultiAction } from './multi-action'
 import { blogManager, updateManager } from '../../global'
+import { reactive, watch } from 'vue'
 
 export const DEFAULT_ITERATIONS = 1000000
 export const DEFAULT_ITERATIONS_LOCAL = 100
@@ -29,10 +30,15 @@ export class MimiriStore {
 	private db: MimiriDb
 	private api: MimiriClient
 
-	constructor(host: string, serverKeyId: string, serverKey: string, noteUpdatedCallback: (note: Note) => void) {
-		this.sharedState = {
+	constructor(
+		host: string,
+		serverKeyId: string,
+		serverKey: string,
+		noteUpdatedCallback: (note: Note) => void,
+		statusCallback: (status: SharedState) => void,
+	) {
+		this.sharedState = reactive<SharedState>({
 			userId: null,
-			rootCrypt: null,
 			isLoggedIn: false,
 			isOnline: false,
 			clientConfig: { features: [] },
@@ -43,7 +49,16 @@ export class MimiriStore {
 				maxNoteBytes: 0,
 				maxNoteCount: 0,
 			},
-		}
+		})
+		watch(
+			this.sharedState,
+			newState => {
+				if (statusCallback) {
+					statusCallback(newState)
+				}
+			},
+			{ deep: true },
+		)
 		this.db = new MimiriDb()
 		this.cryptoManager = new CryptographyManager(this.db, this.sharedState)
 		this.api = new MimiriClient(host, serverKeyId, serverKey, this.sharedState, this.cryptoManager, type => {
@@ -68,7 +83,7 @@ export class MimiriStore {
 					break
 			}
 		})
-		this.authManager = new AuthenticationManager(this.db, this.api, this.sharedState)
+		this.authManager = new AuthenticationManager(this.db, this.api, this.cryptoManager, this.sharedState)
 		this.syncService = new SynchronizationService(
 			this.db,
 			this.api,
