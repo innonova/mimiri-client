@@ -5,9 +5,7 @@ import { newGuid, type Guid } from './types/guid'
 import { controlPanel, MimerNote } from './types/mimer-note'
 import { Note } from './types/note'
 import type { NoteShareInfo } from './types/note-share-info'
-import { HubConnectionBuilder } from '@microsoft/signalr'
 import {
-	blogManager,
 	browserHistory,
 	createNewNode,
 	createNewRootNode,
@@ -265,7 +263,6 @@ export class NoteManager {
 				await this.ensureCreateComplete()
 				await this.loadRootNote()
 				await this.loadState()
-				await this.connectForNotifications()
 				updateManager.good()
 			} else {
 				this.logout()
@@ -479,7 +476,6 @@ export class NoteManager {
 							void this.goOnline(data.password)
 						}, 1000)
 					} else {
-						await this.connectForNotifications()
 						updateManager.good()
 					}
 					this._listener?.login()
@@ -505,7 +501,6 @@ export class NoteManager {
 		this.beginAction()
 		try {
 			await this.client.goOnline(password)
-			await this.connectForNotifications()
 			this.emitStatusUpdated()
 			updateManager.good()
 			this._listener?.online()
@@ -569,55 +564,6 @@ export class NoteManager {
 	public async deleteAccount(password: string, deleteLocal: boolean) {
 		await this.client.deleteAccount(password, deleteLocal)
 		this.state.online = false
-	}
-
-	public async connectForNotifications() {
-		console.log('Connecting for notifications')
-
-		if (mimiriPlatform.isElectron || mimiriPlatform.isWeb) {
-			try {
-				const response = await this.client.createNotificationUrl()
-				if (!response?.url) {
-					return
-				}
-				const connection = new HubConnectionBuilder()
-					.withUrl(response.url, { accessTokenFactory: () => response.token })
-					// .configureLogging(LogLevel.Warning)
-					.withAutomaticReconnect()
-					.build()
-				connection.on('notification', async (sender, type, payload) => {
-					console.log(`SignalR Notification: ${type}`, payload)
-					if (type === 'note-update' || type === 'sync') {
-						this.client.queueSync()
-					}
-					if (type === 'bundle-update') {
-						void updateManager.check()
-					}
-					if (type === 'blog-post') {
-						void blogManager.refreshAll()
-					}
-				})
-				connection.onreconnecting(error => {
-					console.log('SignalR Reconnecting', error)
-				})
-				connection.onreconnected(() => {
-					console.log('SignalR Reconnected')
-					void updateManager.check()
-					void blogManager.refreshAll()
-				})
-				connection.onclose(error => {
-					console.log('SignalR Closed', error)
-				})
-				await connection.start()
-				void updateManager.check()
-				void blogManager.refreshAll()
-			} catch (ex) {
-				debug.logError('Failed to connect for notifications', ex)
-			}
-		} else {
-			void updateManager.check()
-			void blogManager.refreshAll()
-		}
 	}
 
 	public async changeUserNameAndPassword(

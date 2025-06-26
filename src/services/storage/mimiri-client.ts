@@ -36,6 +36,7 @@ import type {
 } from '../types/responses'
 import type { CryptographyManager } from './cryptography-manager'
 import type { InitializationData, SharedState, SyncInfo } from './type'
+import { HubConnectionBuilder } from '@microsoft/signalr'
 
 export class HttpRequestError extends Error {
 	constructor(
@@ -58,6 +59,7 @@ export class MimiriClient {
 	private username: string
 	private _serverSignature: CryptSignature
 	private rootSignature: CryptSignature
+	private _signalRConnection: any = null
 
 	constructor(
 		private host: string,
@@ -65,6 +67,7 @@ export class MimiriClient {
 		serverKey: string,
 		private sharedState: SharedState,
 		private cryptoManager: CryptographyManager,
+		private notificationsCallback: (type: string) => void,
 	) {
 		if (serverKey) {
 			CryptSignature.fromPem('RSA;3072', serverKey).then(sig => (this._serverSignature = sig))
@@ -129,6 +132,7 @@ export class MimiriClient {
 				userId: loginResponse.userId,
 				userData: loginResponse.data,
 			}
+			await this.openWebSocket()
 			return result
 		} catch (ex) {
 			debug.logError('Failed to login', ex)
@@ -157,6 +161,7 @@ export class MimiriClient {
 			this.sharedState.userStats.maxTotalBytes = +response.maxTotalBytes
 			this.sharedState.userStats.maxNoteBytes = +response.maxNoteBytes
 			this.sharedState.userStats.maxNoteCount = +response.maxNoteCount
+			await this.openWebSocket()
 			return response.data
 		} catch (ex) {
 			debug.logError('Failed to go online', ex)
@@ -297,6 +302,67 @@ export class MimiriClient {
 		}
 		await this.rootSignature.sign('user', request)
 		return await this.post<BasicResponse>('/feedback/add-comment', request)
+	}
+
+	private async openWebSocket() {
+		try {
+			const response = await this.createNotificationUrl()
+			if (!response?.url) {
+				return
+			}
+			const connection = new HubConnectionBuilder()
+				.withUrl(response.url, { accessTokenFactory: () => response.token })
+				// .configureLogging(LogLevel.Warning)
+				.withAutomaticReconnect()
+				.build()
+			connection.on('notification', async (sender, type, payload) => {
+				if (type === 'note-update' || type === 'sync') {
+					this.notificationsCallback('sync')
+				}
+				if (type === 'bundle-update') {
+					this.notificationsCallback('bundle-update')
+				}
+				if (type === 'blog-post') {
+					this.notificationsCallback('blog-post')
+				}
+			})
+			connection.onreconnecting(error => {
+				this.notificationsCallback('reconnecting')
+			})
+			connection.onreconnected(() => {
+				this.notificationsCallback('reconnected')
+			})
+			connection.onclose(error => {
+				this.notificationsCallback('closed')
+			})
+			this._signalRConnection = connection
+			await connection.start()
+			this.notificationsCallback('connected')
+		} catch (ex) {
+			debug.logError('Failed to connect for notifications', ex)
+			setTimeout(() => {
+				void this.openWebSocket()
+			}, 5000)
+		}
+	}
+
+	private async closeWebSocket() {
+		if (this._signalRConnection) {
+			try {
+				await this._signalRConnection.stop()
+			} catch (ex) {
+				console.log('Error stopping SignalR connection', ex)
+			} finally {
+				this._signalRConnection = null
+			}
+		}
+	}
+
+	public async logout(): Promise<void> {
+		await this.closeWebSocket()
+		this.username = undefined
+		this._serverSignature = undefined
+		this.rootSignature = undefined
 	}
 
 	public get simulateOffline(): boolean {

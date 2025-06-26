@@ -12,6 +12,7 @@ export class SynchronizationService {
 	private _baseDelayMs = 1000 // 1 second base delay
 	private _maxDelayMs = 300000 // 5 minutes max delay
 	private _waitingForSync: (() => void)[] = []
+	private _initialized: boolean = false
 
 	constructor(
 		private db: MimiriDb,
@@ -23,9 +24,13 @@ export class SynchronizationService {
 
 	public async initialSync(): Promise<void> {
 		await this.syncPull()
+		this._initialized = true
 	}
 
 	public async sync() {
+		if (!this._initialized) {
+			return
+		}
 		if (!this._syncInProgress) {
 			this._syncInProgress = true
 			try {

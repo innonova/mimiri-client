@@ -8,6 +8,8 @@
 		"mibi",
 		"mimiri",
 		"nupkg",
+		"onreconnected",
+		"onreconnecting",
 		"Reshare",
 		"signalr",
 		"Twint",

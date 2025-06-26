@@ -12,6 +12,7 @@ import { SharingService } from './sharing-service'
 import { MimiriDb } from './mimiri-db'
 import { MimiriClient } from './mimiri-client'
 import { MultiAction } from './multi-action'
+import { blogManager, updateManager } from '../../global'
 
 export const DEFAULT_ITERATIONS = 1000000
 export const DEFAULT_ITERATIONS_LOCAL = 100
@@ -45,7 +46,28 @@ export class MimiriStore {
 		}
 		this.db = new MimiriDb()
 		this.cryptoManager = new CryptographyManager(this.db, this.sharedState)
-		this.api = new MimiriClient(host, serverKeyId, serverKey, this.sharedState, this.cryptoManager)
+		this.api = new MimiriClient(host, serverKeyId, serverKey, this.sharedState, this.cryptoManager, type => {
+			switch (type) {
+				case 'connected':
+					void updateManager.check()
+					void blogManager.refreshAll()
+					break
+				case 'sync':
+					this.syncService.queueSync()
+					break
+				case 'bundle-update':
+					void updateManager.check()
+					break
+				case 'blog-post':
+					void blogManager.refreshAll()
+					break
+				case 'reconnected':
+					void updateManager.check()
+					void blogManager.refreshAll()
+					this.syncService.queueSync()
+					break
+			}
+		})
 		this.authManager = new AuthenticationManager(this.db, this.api, this.sharedState)
 		this.syncService = new SynchronizationService(
 			this.db,
@@ -213,6 +235,7 @@ export class MimiriStore {
 
 	public logout(): void {
 		this.authManager.logout()
+		this.api.logout()
 		this.cryptoManager.clearKeys()
 		this.sharedState.clientConfig = { features: [] }
 		this.sharedState.userStats = {
