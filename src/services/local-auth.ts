@@ -48,8 +48,7 @@ class LocalAuth implements LoginListener, HideShowListener {
 		if (noteManager.isLoggedIn) {
 			updateManager.check()
 			blogManager.refreshAll()
-			noteManager.loadShareOffers()
-			// TODO sync
+			noteManager.queueSync()
 		}
 	}
 

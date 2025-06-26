@@ -197,6 +197,12 @@ export class NoteManager {
 		}
 	}
 
+	public queueSync() {
+		if (this.client.isLoggedIn) {
+			this.client.queueSync()
+		}
+	}
+
 	public async checkUsername(username: string) {
 		if (env.DEV && username.startsWith('auto_test_')) {
 			return true
@@ -566,6 +572,8 @@ export class NoteManager {
 	}
 
 	public async connectForNotifications() {
+		console.log('Connecting for notifications')
+
 		if (mimiriPlatform.isElectron || mimiriPlatform.isWeb) {
 			try {
 				const response = await this.client.createNotificationUrl()
@@ -578,18 +586,9 @@ export class NoteManager {
 					.withAutomaticReconnect()
 					.build()
 				connection.on('notification', async (sender, type, payload) => {
-					if (type === 'note-update') {
-						const json = JSON.parse(payload)
-						const note = this.notes[json.id]
-						// TODO react to note updates
-						// if (note) {
-						// 	for (const version of json.versions) {
-						// 		if (version.version > note.note.getVersion(version.type)) {
-						// 			await note.refresh()
-						// 			break
-						// 		}
-						// 	}
-						// }
+					console.log(`SignalR Notification: ${type}`, payload)
+					if (type === 'note-update' || type === 'sync') {
+						this.client.queueSync()
 					}
 					if (type === 'bundle-update') {
 						void updateManager.check()
@@ -638,16 +637,8 @@ export class NoteManager {
 		return await this.client.getShareParticipants(id)
 	}
 
-	public async loadShareOffers() {
-		if (this.client.isLoggedIn) {
-			this.state.shareOffers = await this.client.getShareOffers()
-		}
-	}
-
 	public async addComment(postId: Guid, username: string, comment: string): Promise<void> {
-		// This method is used by blog-manager but the functionality doesn't exist yet
-		// For now, we'll implement a no-op to prevent compilation errors
-		console.log('addComment called but not implemented:', postId, username, comment)
+		await this.client.addComment(postId, username, comment)
 	}
 
 	public register(id: Guid, note: MimerNote) {

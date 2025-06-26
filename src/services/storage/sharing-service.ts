@@ -5,11 +5,6 @@ import type { ShareResponse } from '../types/responses'
 export class SharingService {
 	constructor(private getPublicKeyCallback: (keyOwnerName: string, pow: string) => Promise<any>) {}
 
-	public async createNotificationUrl(): Promise<{ url: string; token: string }> {
-		console.log('Creating notification URL for:')
-		return Promise.resolve({ url: '', token: '' })
-	}
-
 	public async createKeyFromNoteShare(id: Guid, share: NoteShareInfo, metadata: any): Promise<void> {
 		console.log('Creating key from note share:', id)
 	}

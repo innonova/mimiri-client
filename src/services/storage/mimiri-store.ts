@@ -64,6 +64,10 @@ export class MimiriStore {
 		this.sharingService = new SharingService((keyOwnerName: string, pow: string) => Promise.resolve(undefined))
 	}
 
+	public queueSync(): void {
+		this.syncService.queueSync()
+	}
+
 	public async checkUsername(username: string, pow: string) {
 		return this.authManager.checkUsername(username, pow)
 	}
@@ -136,11 +140,13 @@ export class MimiriStore {
 	}
 
 	public async createNote(note: Note): Promise<void> {
-		return this.noteService.createNote(note)
+		await this.noteService.createNote(note)
+		this.syncService.queueSync()
 	}
 
 	public async writeNote(note: Note): Promise<void> {
-		return this.noteService.writeNote(note)
+		await this.noteService.writeNote(note)
+		this.syncService.queueSync()
 	}
 
 	public async readNote(id: Guid, base?: Note): Promise<Note> {
@@ -148,11 +154,11 @@ export class MimiriStore {
 	}
 
 	public beginMultiAction(): MultiAction {
-		return new MultiAction(this.noteService)
+		return new MultiAction(this.noteService, this.syncService)
 	}
 
 	public async createNotificationUrl(): Promise<{ url: string; token: string }> {
-		return this.sharingService.createNotificationUrl()
+		return this.api.createNotificationUrl()
 	}
 
 	public async createKeyFromNoteShare(id: Guid, share: NoteShareInfo, metadata: any): Promise<void> {
@@ -194,6 +200,10 @@ export class MimiriStore {
 			throw new Error('Not Logged in')
 		}
 		return this.db.setUserData(this.userData)
+	}
+
+	public async addComment(postId: Guid, displayName: string, comment: string) {
+		return this.api.addComment(postId, displayName, comment)
 	}
 
 	public logout(): void {

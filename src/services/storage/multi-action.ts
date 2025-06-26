@@ -2,11 +2,15 @@ import type { Guid } from '../types/guid'
 import { Note } from '../types/note'
 import type { NoteAction } from '../types/requests'
 import type { NoteService } from './note-service'
+import type { SynchronizationService } from './synchronization-service'
 
 export class MultiAction {
 	private actions: NoteAction[] = []
 
-	constructor(private noteService: NoteService) {}
+	constructor(
+		private noteService: NoteService,
+		private syncService: SynchronizationService,
+	) {}
 	async createNote(note: Note): Promise<void> {
 		this.actions.push(await this.noteService.createCreateAction(note))
 	}
@@ -27,6 +31,8 @@ export class MultiAction {
 		if (this.actions.length === 0) {
 			throw new Error('No actions to commit')
 		}
-		return await this.noteService.multiAction(this.actions)
+		const result = await this.noteService.multiAction(this.actions)
+		this.syncService.queueSync()
+		return result
 	}
 }

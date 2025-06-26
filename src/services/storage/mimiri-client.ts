@@ -5,6 +5,7 @@ import { settingsManager } from '../settings-manager'
 import { dateTimeNow } from '../types/date-time'
 import { newGuid, type Guid } from '../types/guid'
 import type {
+	AddCommentRequest,
 	BasicRequest,
 	KeySyncAction,
 	LoginRequest,
@@ -14,8 +15,10 @@ import type {
 	SyncRequest,
 } from '../types/requests'
 import type {
+	BasicResponse,
 	ClientConfig,
 	LoginResponse,
+	NotificationUrlResponse,
 	PreLoginResponse,
 	SyncPushResponse,
 	SyncResponse,
@@ -218,6 +221,31 @@ export class MimiriClient {
 	public async registerForChanges(callback: (changes: SyncInfo) => void): Promise<void> {
 		// Implement logic to register for push notifications
 		throw new Error('Method not implemented.')
+	}
+
+	public async createNotificationUrl() {
+		const request: BasicRequest = {
+			username: this.username,
+			timestamp: dateTimeNow(),
+			requestId: newGuid(),
+			signatures: [],
+		}
+		await this.rootSignature.sign('user', request)
+		return await this.post<NotificationUrlResponse>('/notification/create-url', request)
+	}
+
+	public async addComment(postId: Guid, displayName: string, comment: string) {
+		const request: AddCommentRequest = {
+			username: this.username,
+			postId,
+			displayName,
+			comment,
+			timestamp: dateTimeNow(),
+			requestId: newGuid(),
+			signatures: [],
+		}
+		await this.rootSignature.sign('user', request)
+		return await this.post<BasicResponse>('/feedback/add-comment', request)
 	}
 
 	public get simulateOffline(): boolean {

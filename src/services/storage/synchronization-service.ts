@@ -6,6 +6,9 @@ import type { MimiriDb } from './mimiri-db'
 import type { MimiriClient } from './mimiri-client'
 
 export class SynchronizationService {
+	private _syncInProgress = false
+	private _syncRequestedWhileInProgress = false
+
 	constructor(
 		private db: MimiriDb,
 		private api: MimiriClient,
@@ -19,10 +22,28 @@ export class SynchronizationService {
 	}
 
 	public async sync() {
-		await this.syncPull(true)
-		if (await this.syncPush()) {
-			await this.syncPull(true)
+		if (!this._syncInProgress) {
+			this._syncInProgress = true
+			try {
+				do {
+					this._syncRequestedWhileInProgress = false
+					await this.syncPull(true)
+					if (await this.syncPush()) {
+						await this.syncPull(true)
+					}
+				} while (this._syncRequestedWhileInProgress)
+			} catch (error) {
+				console.error('Synchronization failed:', error)
+			} finally {
+				this._syncInProgress = false
+			}
+		} else {
+			this._syncRequestedWhileInProgress = true
 		}
+	}
+
+	public queueSync(): void {
+		void this.sync()
 	}
 
 	private async syncPull(pushUpdates: boolean = false): Promise<void> {
@@ -92,12 +113,9 @@ export class SynchronizationService {
 	}
 
 	private async syncPush(): Promise<boolean> {
-		console.log('Pushing changes to server...')
-
 		const noteActions: NoteSyncAction[] = []
 		const keyActions: KeySyncAction[] = []
 
-		console.log('Loading local notes...')
 		const localNotes = await this.db.getAllLocalNotes()
 		for (const localNote of localNotes) {
 			const keySet = this.cryptoManager.getKeyByName(localNote.keyName)
@@ -116,8 +134,6 @@ export class SynchronizationService {
 						localItem,
 						this.cryptoManager.localCrypt,
 					)
-					console.log(localItemData)
-
 					const remoteItemData = remoteItem
 						? await this.cryptoManager.tryDecryptNoteItemText(remoteItem, keySet.symmetric)
 						: undefined
@@ -161,7 +177,6 @@ export class SynchronizationService {
 			}
 		}
 
-		console.log('Loading local keys...')
 		const localKeys = await this.db.getAllLocalKeys()
 		for (const localKey of localKeys) {
 			const action: KeySyncAction = {
@@ -189,7 +204,6 @@ export class SynchronizationService {
 			keyActions.push(action)
 		}
 
-		console.log('Loading deleted notes and keys...')
 		const deletedNotes = await this.db.getAllDeletedNotes()
 		for (const noteId of deletedNotes) {
 			noteActions.push({
@@ -200,7 +214,6 @@ export class SynchronizationService {
 			})
 		}
 
-		console.log('Loading deleted keys...')
 		const deletedKeys = await this.db.getAllDeletedKeys()
 		for (const keyId of deletedKeys) {
 			keyActions.push({
@@ -210,7 +223,10 @@ export class SynchronizationService {
 				data: '',
 			})
 		}
-		console.log(noteActions)
+
+		if (noteActions.length === 0 && keyActions.length === 0) {
+			return false
+		}
 
 		const results = await this.api.syncPushChanges(noteActions, keyActions)
 		for (const result of results ?? []) {
