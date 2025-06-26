@@ -134,8 +134,19 @@ const showMobileMenu = () => {
 	const isSystem = !!noteManager.selectedNote?.isSystem
 	const isRecycleBin = !!noteManager.selectedNote?.isRecycleBin
 	const isInRecycleBin = !!noteManager.selectedNote?.isInRecycleBin
-	const isShared = !!noteManager.selectedNote?.isShared
-	const isShareRoot = !!noteManager.selectedNote?.isShareRoot
+
+	let showShare = true
+	let showAcceptShare = true
+	if (!!noteManager.selectedNote?.isShared) {
+		const note = noteManager.selectedNote
+		showShare = note.isShareRoot
+		showAcceptShare = false
+	}
+	if (!noteManager.isOnline) {
+		showShare = false
+		showAcceptShare = false
+	}
+
 	const whenSelectedNote = [
 		MenuItems.About,
 		MenuItems.DarkMode,
@@ -155,8 +166,8 @@ const showMobileMenu = () => {
 
 		...(!isSystem && isInRecycleBin ? [MenuItems.Separator, MenuItems.Cut, MenuItems.Copy] : []),
 		MenuItems.Separator,
-		...(!isSystem && !isInRecycleBin && (!isShared || isShareRoot) ? [MenuItems.Share] : []),
-		...(!isSystem && !isInRecycleBin && !isShared ? [MenuItems.ReceiveShare] : []),
+		...(!isSystem && !isInRecycleBin && showShare ? [MenuItems.Share] : []),
+		...(!isSystem && !isInRecycleBin && showAcceptShare ? [MenuItems.ReceiveShare] : []),
 		MenuItems.Refresh,
 		...(!isSystem && !isInRecycleBin ? [MenuItems.Separator, MenuItems.Rename, MenuItems.Recycle] : []),
 		...(!isSystem && isInRecycleBin ? [MenuItems.Separator, MenuItems.Delete] : []),

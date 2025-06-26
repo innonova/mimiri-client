@@ -786,7 +786,9 @@ export class NoteManager {
 			} else {
 				const sharedKeyId = newGuid()
 				await this.client.createKey(sharedKeyId, { shared: true })
-				await this.client.waitForSync()
+				if (!(await this.client.waitForSync(15000))) {
+					return
+				}
 				sharedKey = this.client.getKeyById(sharedKeyId)
 			}
 			const affectedNotes = await this.readFlatTree(mimerNote.id)
@@ -816,7 +818,9 @@ export class NoteManager {
 				multiAction.onlineOnly()
 				if (!this.client.getKeyByName(offer.keyName)) {
 					await this.client.createKeyFromNoteShare(newGuid(), offer, { shared: true })
-					await this.client.waitForSync()
+					if (!(await this.client.waitForSync(15000))) {
+						return
+					}
 				}
 				const shareParent = parent?.note ?? (await this.client.readNote(this.root.id))
 				if (!shareParent.getItem('metadata').notes.includes(offer.noteId)) {

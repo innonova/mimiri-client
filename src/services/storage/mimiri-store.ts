@@ -105,8 +105,8 @@ export class MimiriStore {
 		this.syncService.queueSync()
 	}
 
-	public async waitForSync(): Promise<void> {
-		return this.syncService.waitForSync()
+	public async waitForSync(timeoutMs?: number): Promise<boolean> {
+		return this.syncService.waitForSync(timeoutMs)
 	}
 
 	public async checkUsername(username: string, pow: string) {

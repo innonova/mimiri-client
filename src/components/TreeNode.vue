@@ -355,6 +355,10 @@ const showContextMenu = async e => {
 			showShare = note.isShareRoot
 			showAcceptShare = false
 		}
+		if (!noteManager.isOnline) {
+			showShare = false
+			showAcceptShare = false
+		}
 
 		const note = noteManager.getNoteById(props.node.id)
 		const isInRecycleBin = note.isInRecycleBin

@@ -28,7 +28,7 @@ export class SynchronizationService {
 	}
 
 	public async sync() {
-		if (!this._initialized) {
+		if (!this._initialized || !this.sharedState.isOnline) {
 			return
 		}
 		if (!this._syncInProgress) {
@@ -72,12 +72,39 @@ export class SynchronizationService {
 		void this.sync()
 	}
 
-	waitForSync(): Promise<void> {
+	waitForSync(timeoutMs?: number): Promise<boolean> {
+		if (!this.sharedState.isOnline) {
+			return Promise.resolve(false)
+		}
 		if (!this._syncInProgress) {
-			return Promise.resolve()
+			return Promise.resolve(true)
 		} else {
-			return new Promise<void>(resolve => {
-				this._waitingForSync.push(resolve)
+			return new Promise<boolean>(resolve => {
+				let timeoutId: number | undefined
+
+				const wrappedResolve = () => {
+					cleanup()
+					resolve(true)
+				}
+
+				const cleanup = () => {
+					if (timeoutId) {
+						clearTimeout(timeoutId)
+					}
+					const index = this._waitingForSync.indexOf(wrappedResolve)
+					if (index > -1) {
+						this._waitingForSync.splice(index, 1)
+					}
+				}
+
+				if (timeoutMs > 0) {
+					timeoutId = setTimeout(() => {
+						cleanup()
+						resolve(false)
+					}, timeoutMs)
+				}
+
+				this._waitingForSync.push(wrappedResolve)
 			})
 		}
 	}

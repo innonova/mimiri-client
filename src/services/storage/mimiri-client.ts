@@ -161,7 +161,7 @@ export class MimiriClient {
 			this.sharedState.userStats.maxTotalBytes = +response.maxTotalBytes
 			this.sharedState.userStats.maxNoteBytes = +response.maxNoteBytes
 			this.sharedState.userStats.maxNoteCount = +response.maxNoteCount
-			this.openWebSocket()
+			await this.openWebSocket()
 			return response.data
 		} catch (ex) {
 			debug.logError('Failed to go online', ex)
