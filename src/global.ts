@@ -61,7 +61,6 @@ export const clipboardNote = ref<MimerNote>(undefined)
 export const isCut = ref(false)
 export const dragId = ref<Guid>(undefined)
 
-export const showShareOffers = ref(false)
 export const showSearchBox = ref(false)
 
 export const mimiriEditor = new MimiriEditor()

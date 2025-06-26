@@ -197,7 +197,7 @@ export class MimiriEditor {
 				}
 			}
 		}
-		this._activeEditor.readonly = note.isCache || note.isSystem
+		this._activeEditor.readonly = note.isSystem
 	}
 
 	public async save(): Promise<string> {
@@ -257,19 +257,19 @@ export class MimiriEditor {
 	public activateEdit() {
 		this.activateEditor()
 		this._activeEditor.show(this.note.text, this.note.scrollTop)
-		this._activeEditor.readonly = this.note.isCache || this.note.isSystem
+		this._activeEditor.readonly = this.note.isSystem
 	}
 
 	public reloadNode() {
 		if (this.note) {
 			this._activeEditor.updateText(this.note.text)
-			this._activeEditor.readonly = this.note.isCache || this.note.isSystem
+			this._activeEditor.readonly = this.note.isSystem
 		}
 	}
 
 	public resetChanged() {
 		this._activeEditor.resetChanged()
-		this._activeEditor.readonly = this.note.isCache || this.note.isSystem
+		this._activeEditor.readonly = this.note.isSystem
 	}
 
 	public setHistoryText(text: string) {
@@ -278,7 +278,7 @@ export class MimiriEditor {
 
 	public hideHistory() {
 		this._activeEditor.hideHistory()
-		this._activeEditor.readonly = (this.note?.isCache || this.note?.isSystem) ?? true
+		this._activeEditor.readonly = this.note?.isSystem ?? true
 	}
 
 	public showHistory() {

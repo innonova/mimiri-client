@@ -16,7 +16,6 @@ import {
 	passwordGeneratorDialog,
 	searchInput,
 	shareDialog,
-	showShareOffers,
 	updateManager,
 } from '../global'
 import type { ContextMenuItem, ContextMenuPosition } from './types/context-menu'
@@ -155,8 +154,6 @@ class MenuManager {
 			noteEditor.value.find()
 		} else if (itemId === 'history') {
 			noteEditor.value.showHistory()
-		} else if (itemId === 'share-offers') {
-			showShareOffers.value = !showShareOffers.value
 		} else if (itemId === 'dark-mode') {
 			settingsManager.darkMode = !settingsManager.darkMode
 		} else if (itemId === 'word-wrap') {
@@ -189,10 +186,12 @@ class MenuManager {
 			acceptShareDialog.value.show(noteManager.selectedNote)
 		} else if (itemId === 'refresh') {
 			if (noteManager.selectedNote) {
-				await noteManager.selectedNote.refresh()
+				// TODO handle
+				// await noteManager.selectedNote.refresh()
 			}
 		} else if (itemId === 'refresh-root') {
-			await noteManager.root.refresh()
+			// TODO handle
+			// await noteManager.root.refresh()
 		} else if (itemId === 'rename') {
 			if (noteManager.selectedNote) {
 				noteManager.selectedNote.viewModel.renaming = true

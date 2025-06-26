@@ -30,7 +30,6 @@
 				<MainToolbar ref="mainToolbar"></MainToolbar>
 				<SearchBox v-show="showSearchBox"></SearchBox>
 				<NoteTreeView ref="noteTreeView"></NoteTreeView>
-				<ShareOfferView v-show="showShareOffers"></ShareOfferView>
 			</div>
 			<div class="w-2.5 min-w-2.5 bg-toolbar cursor-ew-resize hidden desktop:block" @mousedown="startDragging"></div>
 			<div class="h-full flex flex-col w-full divider-right" :class="{ 'hidden desktop:flex': !showEditor }">
@@ -98,7 +97,6 @@ import DeleteNodeDialog from './components/dialogs/DeleteNodeDialog.vue'
 import DeleteMethodDialog from './components/dialogs/DeleteMethodDialog.vue'
 import ShareDialog from './components/dialogs/ShareDialog.vue'
 import AcceptShareDialog from './components/dialogs/AcceptShareDialog.vue'
-import ShareOfferView from './components/ShareOfferView.vue'
 import SaveEmptyNodeDialog from './components/dialogs/SaveEmptyNodeDialog.vue'
 import LimitDialog from './components/dialogs/LimitDialog.vue'
 import PasswordDialog from './components/dialogs/PasswordDialog.vue'
@@ -112,7 +110,6 @@ import {
 	contextMenu,
 	shareDialog,
 	acceptShareDialog,
-	showShareOffers,
 	showSearchBox,
 	deleteNodeDialog,
 	emptyRecycleBinDialog,

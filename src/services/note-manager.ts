@@ -1,11 +1,10 @@
-import { reactive, ref } from 'vue'
-import { MimerClient, VersionConflictError, type LoginData } from './mimer-client'
+import { reactive } from 'vue'
+import { VersionConflictError, type LoginData } from './mimer-client'
 import { dateTimeNow } from './types/date-time'
 import { newGuid, type Guid } from './types/guid'
 import { controlPanel, MimerNote } from './types/mimer-note'
 import { Note } from './types/note'
 import type { NoteShareInfo } from './types/note-share-info'
-import type { ICacheManager } from './types/cache-manager'
 import { HubConnectionBuilder } from '@microsoft/signalr'
 import { type NoteAction } from './types/requests'
 import {
@@ -30,7 +29,6 @@ import { settingsManager } from './settings-manager'
 import { deObfuscate, obfuscate } from './helpers'
 import { toHex } from './hex-base64'
 import { MimiriStore } from './storage/mimiri-store'
-import { MimiriDb } from './storage/mimiri-browser-db'
 
 export enum ActionType {
 	Save,
@@ -95,7 +93,6 @@ export class NoteManager {
 	private outstandingActions: number = 0
 	private whenOnlineCallbacks: (() => void)[] = []
 	private _isMobile = false
-	private _ensureWhenOnline: Note[] = []
 	private _proofBits = 15
 	private _listener: LoginListener
 	private _actionListeners: ActionListener[] = []
@@ -331,7 +328,6 @@ export class NoteManager {
 			await this.addGettingStartedNotesRecursive(note ?? this._root.note, json.notes)
 			if (!note) {
 				await this.client.writeNote(this._root.note)
-				await this.refreshNote(this._root.note.id)
 			}
 		} catch (ex) {
 			debug.log('Failed to load getting started notes', ex)
@@ -504,17 +500,8 @@ export class NoteManager {
 		try {
 			await this.client.goOnline(password)
 			await this.connectForNotifications()
-			await this.root.refresh()
-			await this.selectedNote?.refresh()
 			this.emitStatusUpdated()
 			updateManager.good()
-			if (this._ensureWhenOnline.length > 0) {
-				const items = this._ensureWhenOnline
-				this._ensureWhenOnline = []
-				for (const note of items) {
-					void this.ensureLiveNode(note)
-				}
-			}
 			this._listener?.online()
 		} catch (ex) {
 			debug.logError('Failed to go online', ex)
@@ -538,7 +525,6 @@ export class NoteManager {
 		this._listener?.logout()
 		this.root = undefined
 		this.notes = {}
-		this._ensureWhenOnline = []
 		this.client.logout()
 		this.emitStatusUpdated()
 	}
@@ -595,14 +581,15 @@ export class NoteManager {
 					if (type === 'note-update') {
 						const json = JSON.parse(payload)
 						const note = this.notes[json.id]
-						if (note) {
-							for (const version of json.versions) {
-								if (version.version > note.note.getVersion(version.type)) {
-									await note.refresh()
-									break
-								}
-							}
-						}
+						// TODO react to note updates
+						// if (note) {
+						// 	for (const version of json.versions) {
+						// 		if (version.version > note.note.getVersion(version.type)) {
+						// 			await note.refresh()
+						// 			break
+						// 		}
+						// 	}
+						// }
 					}
 					if (type === 'bundle-update') {
 						void updateManager.check()
@@ -722,59 +709,6 @@ export class NoteManager {
 		return undefined
 	}
 
-	private async sendUpdate(note: Note) {
-		// await this.notes[note.id]?.update(note)
-	}
-
-	public async refreshNote(id: Guid) {
-		if (!this.client.isOnline) {
-			throw new MimerError('Offline', 'Cannot refresh while offline')
-		}
-		const note = await this.client.readNote(id)
-		if (note) {
-			await this.sendUpdate(note)
-		}
-	}
-
-	public async refreshNoteWithBase(base: Note) {
-		if (!this.client.isOnline) {
-			throw new MimerError('Offline', 'Cannot refresh while offline')
-		}
-		const note = await this.client.readNote(base.id, base)
-		if (note) {
-			await this.sendUpdate(note)
-		}
-	}
-
-	public async refreshTreeShallow(id: Guid) {
-		if (!this.client.isOnline) {
-			throw new MimerError('Offline', 'Cannot refresh while offline')
-		}
-		const note = await this.client.readNote(id)
-		if (note) {
-			this.sendUpdate(note)
-			for (const childId of note.getItem('metadata').notes) {
-				const childNote = await this.client.readNote(childId)
-				if (childNote) {
-					this.sendUpdate(childNote)
-				}
-			}
-		}
-	}
-
-	public async refreshTree(id: Guid) {
-		if (!this.client.isOnline) {
-			throw new MimerError('Offline', 'Cannot refresh while offline')
-		}
-		const note = await this.client.readNote(id)
-		if (note) {
-			this.sendUpdate(note)
-			for (const childId of note.getItem('metadata').notes) {
-				await this.refreshTree(childId)
-			}
-		}
-	}
-
 	private async readFlatTree(noteId: Guid, whereKey?: Guid) {
 		const result: Note[] = []
 		const note = await this.client.readNote(noteId)
@@ -820,7 +754,6 @@ export class NoteManager {
 					parent = reload
 				}
 			}
-			await this.refreshNote(parent.id)
 			await parentNote.expand()
 			this.getNoteById(note.id)?.select()
 		} finally {
@@ -844,13 +777,12 @@ export class NoteManager {
 				await this.client.writeNote(note.note)
 			} catch (err) {
 				if (err instanceof VersionConflictError) {
-					await this.refreshNote(note.id)
+					// TODO: Handle version conflict
 				}
 				debug.logError('Failed to save note', err)
 				throw err
 			}
 			try {
-				await this.refreshNote(note.id)
 			} catch (err) {
 				debug.logError('Failed to refresh note after save', err)
 			}
@@ -859,26 +791,8 @@ export class NoteManager {
 		}
 	}
 
-	private async ensureLiveNode(existing: Note) {
-		const note = await this.client.readNote(existing.id, existing)
-		if (note) {
-			this.sendUpdate(note)
-		}
-	}
-
 	public async getNote(id: Guid) {
-		const note = await this.client.readNote(id)
-		if (note != null) {
-			this.sendUpdate(note)
-			if (note.isCache) {
-				if (this.client.isOnline) {
-					void this.ensureLiveNode(note)
-				} else {
-					this._ensureWhenOnline.push(note)
-				}
-			}
-		}
-		return note
+		return await this.client.readNote(id)
 	}
 
 	private async ensureShareAllowable(note: MimerNote) {
@@ -935,9 +849,6 @@ export class NoteManager {
 			}
 			const affectedIds = await this.client.multiAction(actions)
 			const response = await this.client.shareNote(recipient, sharedKey.name, mimerNote.id, mimerNote.title, pow)
-			for (const id of affectedIds) {
-				await this.refreshNote(id)
-			}
 			return response
 		} finally {
 			this.endAction()
@@ -963,8 +874,6 @@ export class NoteManager {
 				}
 				actions.push(await this.client.createUpdateAction(shareParent))
 				await this.client.multiAction(actions)
-				await this.refreshNote(shareParent.id)
-				await this.refreshNote(offer.noteId)
 				await this.client.deleteShareOffer(offer.id)
 				await parent?.expand()
 				this.getNoteById(offer.noteId)?.select()
@@ -1015,7 +924,6 @@ export class NoteManager {
 				await this.recursiveDelete(actions, mimerNote.id)
 			}
 			await this.client.multiAction(actions)
-			await this.refreshNote(parent.id)
 			;(await this.getNoteById(parent.id))?.select()
 		} finally {
 			this.endAction()
@@ -1062,14 +970,10 @@ export class NoteManager {
 				}
 				actions.push(await this.client.createUpdateAction(target))
 			}
-			const affectedIds = await this.client.multiAction(actions)
+			await this.client.multiAction(actions)
 
 			const targetMimerNote = await this.getNoteById(targetId)
 			await targetMimerNote.expand()
-			for (const id of affectedIds) {
-				await this.refreshNote(id)
-			}
-
 			;(await this.getNoteById(newId))?.select()
 		} finally {
 			this.endAction()
@@ -1132,10 +1036,7 @@ export class NoteManager {
 					actions.push(await this.client.createUpdateAction(source))
 				}
 			}
-			const affectedIds = await this.client.multiAction(actions)
-			for (const id of affectedIds) {
-				await this.refreshNote(id)
-			}
+			await this.client.multiAction(actions)
 			if (select) {
 				;(await this.getNoteById(mimerNote.id))?.select()
 			}

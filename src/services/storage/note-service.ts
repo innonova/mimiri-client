@@ -21,6 +21,7 @@ export class NoteService {
 		if (!this.sharedState.isLoggedIn) {
 			throw new Error('Not Logged in')
 		}
+		// TODO use changed
 		const keySet = await this.cryptoManager.getKeyByName(note.keyName)
 		const noteData: NoteData = {
 			id: note.id,
@@ -60,7 +61,6 @@ export class NoteService {
 		const note = new Note()
 		note.id = noteData.id
 		note.keyName = noteData.keyName
-		note.isCache = false
 		note.modified = noteData.modified
 		note.created = noteData.created
 		note.sync = noteData.sync

@@ -49,7 +49,7 @@ class LocalAuth implements LoginListener, HideShowListener {
 			updateManager.check()
 			blogManager.refreshAll()
 			noteManager.loadShareOffers()
-			await noteManager.selectedNote?.refresh()
+			// TODO sync
 		}
 	}
 

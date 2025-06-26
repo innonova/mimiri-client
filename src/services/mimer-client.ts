@@ -1181,79 +1181,84 @@ export class MimerClient {
 		await this.post<BasicResponse>('/note/update', request)
 	}
 
-	public async readNote(id: Guid, preferCached: boolean = false, include: string = '*', base?: Note) {
-		const start = performance.now()
-		if (!this.rootCrypt) {
-			throw new Error('Not Logged in')
-		}
-		try {
-			let response: ReadNoteResponse = undefined
-			let isCache: boolean = true
-			let keySet: KeySet
-			if (preferCached && this.cacheManager) {
-				response = await this.cacheManager.getNote(id)
-			}
+	public async readNote(
+		id: Guid,
+		preferCached: boolean = false,
+		include: string = '*',
+		base?: Note,
+	): Promise<Note | undefined> {
+		throw new Error('readNote is not implemented yet')
+		// const start = performance.now()
+		// if (!this.rootCrypt) {
+		// 	throw new Error('Not Logged in')
+		// }
+		// try {
+		// 	let response: ReadNoteResponse = undefined
+		// 	let isCache: boolean = true
+		// 	let keySet: KeySet
+		// 	if (preferCached && this.cacheManager) {
+		// 		response = await this.cacheManager.getNote(id)
+		// 	}
 
-			if (!response) {
-				const request: ReadNoteRequest = {
-					username: this.username,
-					id,
-					include,
-					timestamp: dateTimeNow(),
-					requestId: newGuid(),
-					signatures: [],
-					versions: base?.items.map(item => ({ type: item.type, version: item.version })),
-				}
-				await this.rootSignature.sign('user', request)
-				response = await this.post<ReadNoteResponse>('/note/read', request)
-				keySet = this.getKey(response.keyName)
-				if (response.items.find(item => item.updated)) {
-					for (const item of response.items) {
-						if (!item.updated) {
-							const data = base.items.find(baseItem => baseItem.type === item.type).data
-							item.data = await keySet.symmetric.encrypt(JSON.stringify(data))
-						}
-						item.updated = undefined
-					}
-					if (this.cacheManager != null) {
-						await this.cacheManager.setNote(id, response)
-					}
-				} else if (base && !base.isCache) {
-					return undefined
-				}
-				isCache = false
-			} else {
-				keySet = this.getKey(response.keyName)
-			}
-			const note = new Note()
-			note.id = response.id
-			note.keyName = response.keyName
-			note.isCache = isCache
-			for (const item of response.items) {
-				if (item.data) {
-					note.items.push({
-						version: item.version,
-						type: item.type,
-						data: JSON.parse(await keySet.symmetric.decrypt(item.data)),
-						changed: false,
-						size: item.data.length,
-					})
-				} else {
-					const baseItem = base.items.find(baseItem => baseItem.type === item.type)
-					baseItem.changed = false
-					note.items.push(baseItem)
-				}
-			}
-			return note
-		} catch (ex) {
-			if (ex.statusCode == 404) {
-				return undefined
-			}
-			if (!this.suppressErrorLog) {
-				debug.logError('Failed to read note', ex)
-			}
-			throw ex
-		}
+		// 	if (!response) {
+		// 		const request: ReadNoteRequest = {
+		// 			username: this.username,
+		// 			id,
+		// 			include,
+		// 			timestamp: dateTimeNow(),
+		// 			requestId: newGuid(),
+		// 			signatures: [],
+		// 			versions: base?.items.map(item => ({ type: item.type, version: item.version })),
+		// 		}
+		// 		await this.rootSignature.sign('user', request)
+		// 		response = await this.post<ReadNoteResponse>('/note/read', request)
+		// 		keySet = this.getKey(response.keyName)
+		// 		if (response.items.find(item => item.updated)) {
+		// 			for (const item of response.items) {
+		// 				if (!item.updated) {
+		// 					const data = base.items.find(baseItem => baseItem.type === item.type).data
+		// 					item.data = await keySet.symmetric.encrypt(JSON.stringify(data))
+		// 				}
+		// 				item.updated = undefined
+		// 			}
+		// 			if (this.cacheManager != null) {
+		// 				await this.cacheManager.setNote(id, response)
+		// 			}
+		// 		} else if (base) {
+		// 			return undefined
+		// 		}
+		// 		isCache = false
+		// 	} else {
+		// 		keySet = this.getKey(response.keyName)
+		// 	}
+		// 	const note = new Note()
+		// 	note.id = response.id
+		// 	note.keyName = response.keyName
+		// 	for (const item of response.items) {
+		// 		if (item.data) {
+		// 			note.items.push({
+		// 				version: item.version,
+		// 				type: item.type,
+		// 				data: JSON.parse(await keySet.symmetric.decrypt(item.data)),
+		// 				changed: false,
+		// 				size: item.data.length,
+		// 			})
+		// 		} else {
+		// 			const baseItem = base.items.find(baseItem => baseItem.type === item.type)
+		// 			baseItem.changed = false
+		// 			note.items.push(baseItem)
+		// 		}
+		// 	}
+		// 	return note
+		// } catch (ex) {
+		// 	if (ex.statusCode == 404) {
+		// 		return undefined
+		// 	}
+		// 	if (!this.suppressErrorLog) {
+		// 		debug.logError('Failed to read note', ex)
+		// 	}
+		// 	throw ex
+		// }
 	}
 
 	public async deleteNote(note: Note) {

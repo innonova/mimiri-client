@@ -17,21 +17,6 @@ const unzip = async (text: string) => {
 	return await new Response(new Blob([fromBase64(text)]).stream().pipeThrough(new DecompressionStream('gzip'))).text()
 }
 
-const isNoteNewerThan = (note: Note, than: Note) => {
-	if (note.keyName != than.keyName) {
-		return true
-	}
-	if (note.isCache != than.isCache) {
-		return true
-	}
-	for (const type of note.types) {
-		if (note.getVersion(type) > than.getVersion(type)) {
-			return true
-		}
-	}
-	return false
-}
-
 export const controlPanel = {
 	createChildren: (owner: NoteManager, parent: MimerNote) => {
 		return [] as MimerNote[]
@@ -62,7 +47,6 @@ export interface NoteViewModel {
 	shared: boolean
 	populated: boolean
 	renaming: boolean
-	cache: boolean
 	hasMoreHistory: boolean
 	isRecycleBin: boolean
 	isControlPanel: boolean
@@ -103,7 +87,6 @@ export class MimerNote {
 				shared: this.isShared,
 				populated: true,
 				renaming: false,
-				cache: this.isCache,
 				hasMoreHistory: true,
 				isRecycleBin: this.isRecycleBin,
 				isControlPanel: this.isControlPanel,
@@ -124,7 +107,6 @@ export class MimerNote {
 				shared: false,
 				populated: true,
 				renaming: false,
-				cache: this.isCache,
 				hasMoreHistory: true,
 				isRecycleBin: this.isRecycleBin,
 				isControlPanel: this.isControlPanel,
@@ -143,7 +125,6 @@ export class MimerNote {
 	}
 
 	public async update(note: Note) {
-		// if (isNoteNewerThan(note, this.note)) {
 		this.note = note
 		this.beforeChangeText = this.text
 		if (this.historyElementsLoaded > 0) {
@@ -154,7 +135,6 @@ export class MimerNote {
 			await this.ensureChildren(true)
 		}
 		this.updateViewModel()
-		// }
 	}
 
 	protected updateViewModel() {
@@ -176,9 +156,6 @@ export class MimerNote {
 		if (this.viewModel.shared !== this.isShared) {
 			this.viewModel.shared = this.isShared
 		}
-		if (this.viewModel.cache !== this.isCache) {
-			this.viewModel.cache = this.isCache
-		}
 		for (const childId of this.childIds) {
 			if (!this.viewModel.children.find(c => c.id === childId)) {
 				this.viewModel.children.push({
@@ -193,7 +170,6 @@ export class MimerNote {
 					shared: false,
 					populated: false,
 					renaming: false,
-					cache: false,
 					hasMoreHistory: true,
 					isRecycleBin: this.isRecycleBin,
 					isControlPanel: this.isControlPanel,
@@ -344,10 +320,6 @@ export class MimerNote {
 		}
 	}
 
-	public async refresh() {
-		await this.owner.refreshNoteWithBase(this.note)
-	}
-
 	public async expand() {
 		if (this.childIds.length > 0) {
 			this.viewModel.expanded = true
@@ -369,9 +341,6 @@ export class MimerNote {
 		while (current) {
 			current.expand()
 			current = current.parent
-		}
-		if (this.owner.isOnline) {
-			void this.refresh()
 		}
 		persistedState.storeSelectedNote(this)
 	}
@@ -530,14 +499,6 @@ export class MimerNote {
 		}
 	}
 
-	public async refreshAll() {
-		await this.refresh()
-		await this.ensureChildren()
-		for (const note of this.children) {
-			await note.refreshAll()
-		}
-	}
-
 	public getVersion(type: string) {
 		return this.note.getVersion(type)
 	}
@@ -611,10 +572,6 @@ export class MimerNote {
 			return true
 		}
 		return this.note.getItem('metadata').notes.length > 0
-	}
-
-	public get isCache() {
-		return this.note.isCache
 	}
 
 	public get id() {

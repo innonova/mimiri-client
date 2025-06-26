@@ -68,7 +68,6 @@ export class MimiriStore {
 		console.log('MimiriStore init')
 	}
 
-	// Delegate to AuthenticationManager
 	public async checkUsername(username: string, pow: string) {
 		return this.authManager.checkUsername(username, pow)
 	}
@@ -130,19 +129,6 @@ export class MimiriStore {
 		return this.authManager.verifyPassword(password)
 	}
 
-	// Delegate to CryptographyManager
-	private async ensureLocalCrypt(): Promise<void> {
-		return this.cryptoManager.ensureLocalCrypt()
-	}
-
-	private async loadAllKeys(): Promise<void> {
-		return this.cryptoManager.loadAllKeys()
-	}
-
-	private async loadKeyById(id: Guid): Promise<KeySet | undefined> {
-		return this.cryptoManager.loadKeyById(id)
-	}
-
 	public async createKey(id: Guid, metadata: any): Promise<void> {
 		return this.cryptoManager.createKey(id, metadata)
 	}
@@ -163,16 +149,6 @@ export class MimiriStore {
 		return this.cryptoManager.keyWithNameExists(name)
 	}
 
-	// Delegate to SynchronizationService
-	private async sync(pushUpdates: boolean = false): Promise<void> {
-		return this.syncService.sync(pushUpdates)
-	}
-
-	private async syncPush(): Promise<void> {
-		return this.syncService.syncPush()
-	}
-
-	// Delegate to NoteService
 	public async createNote(note: Note): Promise<void> {
 		return this.noteService.createNote(note)
 	}
@@ -205,7 +181,6 @@ export class MimiriStore {
 		return this.noteService.multiAction(actions)
 	}
 
-	// Delegate to SharingService
 	public async createNotificationUrl(): Promise<{ url: string; token: string }> {
 		return this.sharingService.createNotificationUrl()
 	}
@@ -244,7 +219,6 @@ export class MimiriStore {
 		return this.sharingService.deleteShareOffer(id)
 	}
 
-	// Direct database operations (eliminating unnecessary StorageService wrapper)
 	public async updateUserData(): Promise<void> {
 		if (!this.isLoggedIn) {
 			throw new Error('Not Logged in')
@@ -255,7 +229,6 @@ export class MimiriStore {
 	public logout(): void {
 		this.authManager.logout()
 		this.cryptoManager.clearKeys()
-		// Reset configuration data
 		this.sharedState.clientConfig = { features: [] }
 		this.sharedState.userStats = {
 			size: 0,
