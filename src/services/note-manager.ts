@@ -6,7 +6,6 @@ import { controlPanel, MimerNote } from './types/mimer-note'
 import { Note } from './types/note'
 import type { NoteShareInfo } from './types/note-share-info'
 import { HubConnectionBuilder } from '@microsoft/signalr'
-import { type NoteAction } from './types/requests'
 import {
 	blogManager,
 	browserHistory,

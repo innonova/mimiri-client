@@ -78,13 +78,14 @@ export class MimiriStore {
 	}
 
 	public async restoreLogin() {
-		return this.authManager.restoreLogin(
-			() => this.cryptoManager.ensureLocalCrypt(),
-			() => this.authManager.goOnline(),
-			() => this.syncService.sync(),
-			() => this.cryptoManager.loadAllKeys(),
-			() => this.syncService.syncPush(),
-		)
+		if (await this.authManager.restoreLogin()) {
+			await this.cryptoManager.ensureLocalCrypt()
+			await this.syncService.initialSync()
+			await this.cryptoManager.loadAllKeys()
+			await this.syncService.sync()
+			return true
+		}
+		return false
 	}
 
 	public async createUser(username: string, password: string, userData: any, pow: string, iterations: number) {
@@ -93,12 +94,13 @@ export class MimiriStore {
 	}
 
 	public async login(data: LoginData): Promise<boolean> {
-		return this.authManager.login(
-			data,
-			() => this.syncService.sync(),
-			() => this.cryptoManager.loadAllKeys(),
-			() => this.syncService.syncPush(),
-		)
+		if (await this.authManager.login(data)) {
+			await this.syncService.initialSync()
+			await this.cryptoManager.loadAllKeys()
+			await this.syncService.sync()
+			return true
+		}
+		return false
 	}
 
 	public async goOnline(password?: string): Promise<boolean> {

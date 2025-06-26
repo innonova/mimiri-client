@@ -14,7 +14,18 @@ export class SynchronizationService {
 		private noteUpdatedCallback: (noteId: Guid) => Promise<void>,
 	) {}
 
-	public async sync(pushUpdates: boolean = false): Promise<void> {
+	public async initialSync(): Promise<void> {
+		await this.syncPull()
+	}
+
+	public async sync() {
+		await this.syncPull(true)
+		if (await this.syncPush()) {
+			await this.syncPull(true)
+		}
+	}
+
+	private async syncPull(pushUpdates: boolean = false): Promise<void> {
 		const lastSync = await this.db.getLastSync()
 
 		let nextNoteSync = lastSync?.lastNoteSync ?? 0
@@ -80,7 +91,7 @@ export class SynchronizationService {
 		}
 	}
 
-	public async syncPush(): Promise<void> {
+	private async syncPush(): Promise<boolean> {
 		console.log('Pushing changes to server...')
 
 		const noteActions: NoteSyncAction[] = []
@@ -202,7 +213,6 @@ export class SynchronizationService {
 		console.log(noteActions)
 
 		const results = await this.api.syncPushChanges(noteActions, keyActions)
-		console.log(results)
 		for (const result of results ?? []) {
 			if (result.itemType === 'note') {
 				if (result.action === 'create') {
@@ -220,5 +230,6 @@ export class SynchronizationService {
 				}
 			}
 		}
+		return results?.length > 0
 	}
 }

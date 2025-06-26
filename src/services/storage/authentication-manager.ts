@@ -102,13 +102,7 @@ export class AuthenticationManager {
 		}
 	}
 
-	public async restoreLogin(
-		ensureLocalCrypt: () => Promise<void>,
-		goOnline: () => Promise<boolean>,
-		sync: () => Promise<void>,
-		loadAllKeys: () => Promise<void>,
-		syncPush: () => Promise<void>,
-	): Promise<boolean> {
+	public async restoreLogin(): Promise<boolean> {
 		if (
 			env.DEV ||
 			mimiriPlatform.isElectron ||
@@ -154,17 +148,12 @@ export class AuthenticationManager {
 					loginData.rootSignature.privateKey,
 				)
 				await this.db.open(this._username)
-				await ensureLocalCrypt()
-				if (!(await goOnline())) {
+				if (!(await this.goOnline())) {
 					const data = JSON.parse(await this.sharedState!.rootCrypt!.decrypt(loginData.data))
 					this.sharedState.clientConfig = data.clientConfig
 					this.sharedState.userStats = data.userStats
 					this._userData = data.userData
 				}
-				await sync()
-				await loadAllKeys()
-				await syncPush()
-				await sync()
 				return true
 			} catch (ex) {
 				debug.logError('Failed to restore login data', ex)
@@ -231,12 +220,7 @@ export class AuthenticationManager {
 		await this.db.setUserData(this._userData)
 	}
 
-	public async login(
-		data: LoginData,
-		sync: () => Promise<void>,
-		loadAllKeys: () => Promise<void>,
-		syncPush: () => Promise<void>,
-	): Promise<boolean> {
+	public async login(data: LoginData): Promise<boolean> {
 		let initializationData = await this.api.authenticate(data.username, data.password)
 		if (!initializationData) {
 			return false
@@ -272,10 +256,6 @@ export class AuthenticationManager {
 		this.api.setRootSignature(this._username, this._rootSignature)
 		await this.db.setInitializationData(initializationData)
 
-		await sync()
-		await loadAllKeys()
-		await syncPush()
-		await sync()
 		await this.persistLogin()
 		return true
 	}
