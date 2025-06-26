@@ -4,7 +4,7 @@ import { Note } from '../types/note'
 import type { NoteShareInfo } from '../types/note-share-info'
 import { type NoteAction } from '../types/requests'
 import type { ClientConfig, ShareResponse } from '../types/responses'
-import type { LoginData, SharedState, UserStats } from './type'
+import type { LoginData, SharedState } from './type'
 import { AuthenticationManager } from './authentication-manager'
 import { CryptographyManager } from './cryptography-manager'
 import { SynchronizationService } from './synchronization-service'
@@ -64,10 +64,6 @@ export class MimiriStore {
 		this.sharingService = new SharingService((keyOwnerName: string, pow: string) => Promise.resolve(undefined))
 	}
 
-	async init() {
-		console.log('MimiriStore init')
-	}
-
 	public async checkUsername(username: string, pow: string) {
 		return this.authManager.checkUsername(username, pow)
 	}
@@ -78,10 +74,6 @@ export class MimiriStore {
 
 	public async getLoginData() {
 		return this.authManager.getLoginData()
-	}
-
-	public async persistLogin() {
-		return this.authManager.persistLogin()
 	}
 
 	public async restoreLogin() {
@@ -139,14 +131,6 @@ export class MimiriStore {
 
 	public getKeyById(id: Guid): KeySet {
 		return this.cryptoManager.getKeyById(id)
-	}
-
-	public keyWithIdExists(id: Guid): boolean {
-		return this.cryptoManager.keyWithIdExists(id)
-	}
-
-	public keyWithNameExists(name: Guid): boolean {
-		return this.cryptoManager.keyWithNameExists(name)
 	}
 
 	public async createNote(note: Note): Promise<void> {
@@ -281,13 +265,5 @@ export class MimiriStore {
 
 	public get clientConfig(): ClientConfig {
 		return this.sharedState.clientConfig
-	}
-
-	public set clientConfig(value: ClientConfig) {
-		this.sharedState.clientConfig = value
-	}
-
-	public set userStats(value: UserStats) {
-		this.sharedState.userStats = value
 	}
 }

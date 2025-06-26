@@ -185,14 +185,6 @@ export class CryptographyManager {
 		return this._keys.find(key => key.id === id) || undefined
 	}
 
-	public keyWithIdExists(id: Guid): boolean {
-		return this._keys.some(key => key.id === id)
-	}
-
-	public keyWithNameExists(name: Guid): boolean {
-		return this._keys.some(key => key.name === name)
-	}
-
 	public clearKeys(): void {
 		this._keys = []
 	}

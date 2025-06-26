@@ -337,7 +337,7 @@ export class NoteManager {
 	private async ensureCreateComplete() {
 		try {
 			if (!this.client.userData.createComplete) {
-				if (!this.client.keyWithIdExists(this.client.userData.rootKey)) {
+				if (!this.client.getKeyById(this.client.userData.rootKey)) {
 					const keyMetadata = {
 						shared: false,
 						root: true,
@@ -865,7 +865,7 @@ export class NoteManager {
 			const offer = offers.find(o => o.id === share.id)
 			if (offer) {
 				const actions: NoteAction[] = []
-				if (!this.client.keyWithNameExists(offer.keyName)) {
+				if (!this.client.getKeyByName(offer.keyName)) {
 					await this.client.createKeyFromNoteShare(newGuid(), offer, { shared: true })
 				}
 				const shareParent = parent?.note ?? (await this.client.readNote(this.root.id))
