@@ -29,6 +29,7 @@ import { settingsManager } from './settings-manager'
 import { deObfuscate, obfuscate } from './helpers'
 import { toHex } from './hex-base64'
 import { MimiriStore } from './storage/mimiri-store'
+import type { MultiAction } from './storage/multi-action'
 
 export enum ActionType {
 	Save,
@@ -829,7 +830,7 @@ export class NoteManager {
 		}
 		this.beginAction()
 		try {
-			const actions: NoteAction[] = []
+			const multiAction = this.client.beginMultiAction()
 			const pow = await ProofOfWork.compute(recipient, this._proofBits)
 			await this.ensureShareAllowable(mimerNote)
 			await this.client.getPublicKey(recipient, pow)
@@ -844,10 +845,10 @@ export class NoteManager {
 			const affectedNotes = await this.readFlatTree(mimerNote.id)
 			for (const affectedNote of affectedNotes) {
 				if (affectedNote.keyName !== sharedKey.name) {
-					actions.push(await this.client.createChangeKeyAction(affectedNote.id, sharedKey.name))
+					await multiAction.changeNoteKey(affectedNote.id, sharedKey.name)
 				}
 			}
-			const affectedIds = await this.client.multiAction(actions)
+			const affectedIds = await multiAction.commit()
 			const response = await this.client.shareNote(recipient, sharedKey.name, mimerNote.id, mimerNote.title, pow)
 			return response
 		} finally {
@@ -864,7 +865,7 @@ export class NoteManager {
 			const offers = await this.client.getShareOffers()
 			const offer = offers.find(o => o.id === share.id)
 			if (offer) {
-				const actions: NoteAction[] = []
+				const multiAction = this.client.beginMultiAction()
 				if (!this.client.getKeyByName(offer.keyName)) {
 					await this.client.createKeyFromNoteShare(newGuid(), offer, { shared: true })
 				}
@@ -872,8 +873,8 @@ export class NoteManager {
 				if (!shareParent.getItem('metadata').notes.includes(offer.noteId)) {
 					shareParent.changeItem('metadata').notes.push(offer.noteId)
 				}
-				actions.push(await this.client.createUpdateAction(shareParent))
-				await this.client.multiAction(actions)
+				await multiAction.updateNote(shareParent)
+				await multiAction.commit()
 				await this.client.deleteShareOffer(offer.id)
 				await parent?.expand()
 				this.getNoteById(offer.noteId)?.select()
@@ -895,13 +896,13 @@ export class NoteManager {
 		}
 	}
 
-	private async recursiveDelete(actions: NoteAction[], id: Guid) {
+	private async recursiveDelete(multiAction: MultiAction, id: Guid) {
 		const note = await this.client.readNote(id)
 		if (note) {
 			for (const childId of note.getItem('metadata').notes) {
-				await this.recursiveDelete(actions, childId)
+				await this.recursiveDelete(multiAction, childId)
 			}
-			actions.push(await this.client.createDeleteAction(note))
+			await multiAction.deleteNote(note)
 		}
 	}
 
@@ -911,26 +912,26 @@ export class NoteManager {
 		}
 		this.beginAction()
 		try {
-			const actions: NoteAction[] = []
+			const multiAction = this.client.beginMultiAction()
 			const parent = await this.client.readNote(mimerNote.parent.id)
 			if (parent) {
 				const index = parent.getItem('metadata').notes.indexOf(mimerNote.id)
 				if (index >= 0) {
 					parent.changeItem('metadata').notes.splice(index, 1)
-					actions.push(await this.client.createUpdateAction(parent))
+					await multiAction.updateNote(parent)
 				}
 			}
 			if (physicallyDelete) {
-				await this.recursiveDelete(actions, mimerNote.id)
+				await this.recursiveDelete(multiAction, mimerNote.id)
 			}
-			await this.client.multiAction(actions)
+			await multiAction.commit()
 			;(await this.getNoteById(parent.id))?.select()
 		} finally {
 			this.endAction()
 		}
 	}
 
-	private async copyTree(actions: NoteAction[], id: Guid, keyName: Guid) {
+	private async copyTree(multiAction: MultiAction, id: Guid, keyName: Guid) {
 		if (!this.client.isOnline) {
 			throw new MimerError('Offline', 'Cannot copy while offline')
 		}
@@ -938,7 +939,7 @@ export class NoteManager {
 		if (note) {
 			const copied: Guid[] = []
 			for (const childId of note.getItem('metadata').notes) {
-				const newChildId = await this.copyTree(actions, childId, keyName)
+				const newChildId = await this.copyTree(multiAction, childId, keyName)
 				if (newChildId) {
 					copied.push(newChildId)
 				}
@@ -947,7 +948,7 @@ export class NoteManager {
 			note.keyName = keyName
 			note.changeItem('metadata').notes = copied
 
-			actions.push(await this.client.createCreateAction(note))
+			await multiAction.createNote(note)
 			return note.id
 		}
 		return undefined
@@ -960,17 +961,17 @@ export class NoteManager {
 		this.beginAction()
 		try {
 			const target = await this.client.readNote(targetId)
-			const actions: NoteAction[] = []
-			const newId = await this.copyTree(actions, mimerNote.id, target.keyName)
+			const multiAction = this.client.beginMultiAction()
+			const newId = await this.copyTree(multiAction, mimerNote.id, target.keyName)
 			if (newId && !target.getItem('metadata').notes.includes(newId)) {
 				if (index >= 0 && index < target.getItem('metadata').notes.length) {
 					target.changeItem('metadata').notes.splice(index, 0, newId)
 				} else {
 					target.changeItem('metadata').notes.push(newId)
 				}
-				actions.push(await this.client.createUpdateAction(target))
+				await multiAction.updateNote(target)
 			}
-			await this.client.multiAction(actions)
+			await multiAction.commit()
 
 			const targetMimerNote = await this.getNoteById(targetId)
 			await targetMimerNote.expand()
@@ -996,7 +997,7 @@ export class NoteManager {
 			const source = await this.client.readNote(sourceId)
 			const target = await this.client.readNote(targetId)
 			const note = await this.client.readNote(mimerNote.id)
-			const actions: NoteAction[] = []
+			const multiAction = this.client.beginMultiAction()
 			if (target.id === this._root.id && index === 0) {
 				// Do not allow moving above recycle bin
 				index = 1
@@ -1013,13 +1014,13 @@ export class NoteManager {
 					} else {
 						target.changeItem('metadata').notes.push(note.id)
 					}
-					actions.push(await this.client.createUpdateAction(target))
+					await multiAction.updateNote(target)
 				}
 			} else {
 				if (!keepKey && note.keyName !== target.keyName) {
 					const affectedNotes = await this.readFlatTree(note.id, note.keyName)
 					for (const affectedNote of affectedNotes) {
-						actions.push(await this.client.createChangeKeyAction(affectedNote.id, target.keyName))
+						await multiAction.changeNoteKey(affectedNote.id, target.keyName)
 					}
 				}
 				if (!target.getItem('metadata').notes.includes(note.id)) {
@@ -1028,15 +1029,15 @@ export class NoteManager {
 					} else {
 						target.changeItem('metadata').notes.push(note.id)
 					}
-					actions.push(await this.client.createUpdateAction(target))
+					await multiAction.updateNote(target)
 				}
 				const sourceIndex = source.getItem('metadata').notes.indexOf(note.id)
 				if (sourceIndex >= 0) {
 					source.changeItem('metadata').notes.splice(sourceIndex, 1)
-					actions.push(await this.client.createUpdateAction(source))
+					await multiAction.updateNote(source)
 				}
 			}
-			await this.client.multiAction(actions)
+			await multiAction.commit()
 			if (select) {
 				;(await this.getNoteById(mimerNote.id))?.select()
 			}

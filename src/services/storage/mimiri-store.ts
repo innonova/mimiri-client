@@ -12,6 +12,7 @@ import { NoteService } from './note-service'
 import { SharingService } from './sharing-service'
 import { MimiriDb } from './mimiri-browser-db'
 import { MimiriClient } from './mimiri-client'
+import { MultiAction } from './multi-action'
 
 export const DEFAULT_ITERATIONS = 1000000
 export const DEFAULT_ITERATIONS_LOCAL = 100
@@ -145,24 +146,8 @@ export class MimiriStore {
 		return this.noteService.readNote(id, base)
 	}
 
-	public async createDeleteAction(note: Note): Promise<NoteAction> {
-		return this.noteService.createDeleteAction(note)
-	}
-
-	public async createUpdateAction(note: Note): Promise<NoteAction> {
-		return this.noteService.createUpdateAction(note)
-	}
-
-	public async createCreateAction(note: Note): Promise<NoteAction> {
-		return this.noteService.createCreateAction(note)
-	}
-
-	public async createChangeKeyAction(noteId: Guid, newKeyName: Guid): Promise<NoteAction> {
-		return this.noteService.createChangeKeyAction(noteId, newKeyName)
-	}
-
-	public async multiAction(actions: NoteAction[]): Promise<Guid[]> {
-		return this.noteService.multiAction(actions)
+	public beginMultiAction(): MultiAction {
+		return new MultiAction(this.noteService)
 	}
 
 	public async createNotificationUrl(): Promise<{ url: string; token: string }> {
