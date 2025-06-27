@@ -646,9 +646,6 @@ export class NoteManager {
 	}
 
 	public async createNote(parentNote: MimerNote, title: string) {
-		if (!this.client.isOnline) {
-			throw new MimerError('Offline', 'Cannot create notes while offline')
-		}
 		let parent = parentNote.note
 		this.beginAction()
 		try {
@@ -683,9 +680,6 @@ export class NoteManager {
 	}
 
 	public async saveNote(note: MimerNote) {
-		if (!this.client.isOnline) {
-			throw new MimerError('Offline', 'Cannot save while offline')
-		}
 		this.beginAction()
 		try {
 			if (note.note.types.includes('created')) {
@@ -833,9 +827,6 @@ export class NoteManager {
 	}
 
 	public async delete(mimerNote: MimerNote, physicallyDelete: boolean) {
-		if (!this.client.isOnline) {
-			throw new MimerError('Offline', 'Cannot delete while offline')
-		}
 		this.beginAction()
 		try {
 			const multiAction = this.client.beginMultiAction()
@@ -858,9 +849,6 @@ export class NoteManager {
 	}
 
 	private async copyTree(multiAction: MultiAction, id: Guid, keyName: Guid) {
-		if (!this.client.isOnline) {
-			throw new MimerError('Offline', 'Cannot copy while offline')
-		}
 		const note = await this.client.readNote(id)
 		if (note) {
 			const copied: Guid[] = []
@@ -881,9 +869,6 @@ export class NoteManager {
 	}
 
 	public async copy(targetId: Guid, mimerNote: MimerNote, index: number) {
-		if (!this.client.isOnline) {
-			throw new MimerError('Offline', 'Cannot copy while offline')
-		}
 		this.beginAction()
 		try {
 			const target = await this.client.readNote(targetId)
@@ -915,9 +900,6 @@ export class NoteManager {
 		keepKey: boolean,
 		select: boolean,
 	) {
-		if (!this.client.isOnline) {
-			throw new MimerError('Offline', 'Cannot move while offline')
-		}
 		this.beginAction()
 		try {
 			const source = await this.client.readNote(sourceId)
@@ -1088,7 +1070,11 @@ export class NoteManager {
 	}
 
 	public get workOffline() {
-		return false
+		return this.client.workOffline
+	}
+
+	public set workOffline(value: boolean) {
+		this.client.workOffline = value
 	}
 
 	public get isLoggedIn() {

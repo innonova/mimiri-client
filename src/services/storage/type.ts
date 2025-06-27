@@ -20,6 +20,7 @@ export interface SharedState {
 	userId: Guid | null
 	isLoggedIn: boolean
 	isOnline: boolean
+	workOffline: boolean
 	clientConfig: ClientConfig
 	userStats: UserStats
 }

@@ -34,13 +34,14 @@ export class MimiriStore {
 		host: string,
 		serverKeyId: string,
 		serverKey: string,
-		noteUpdatedCallback: (note: Note) => void,
+		noteUpdatedCallback: (note: Note) => Promise<void>,
 		statusCallback: (status: SharedState) => void,
 	) {
 		this.sharedState = reactive<SharedState>({
 			userId: null,
 			isLoggedIn: false,
 			isOnline: false,
+			workOffline: false,
 			clientConfig: { features: [] },
 			userStats: {
 				size: 0,
@@ -91,12 +92,12 @@ export class MimiriStore {
 			this.sharedState,
 			async (noteId: Guid) => {
 				const note = await this.noteService.readNote(noteId)
-				noteUpdatedCallback(note)
+				await noteUpdatedCallback(note)
 			},
 		)
 		this.noteService = new NoteService(this.db, this.cryptoManager, this.sharedState, async (noteId: Guid) => {
 			const note = await this.noteService.readNote(noteId)
-			noteUpdatedCallback(note)
+			await noteUpdatedCallback(note)
 		})
 		this.sharingService = new SharingService(this.api)
 	}
@@ -300,5 +301,12 @@ export class MimiriStore {
 
 	public get clientConfig(): ClientConfig {
 		return this.sharedState.clientConfig
+	}
+
+	get workOffline(): boolean {
+		return this.api.workOffline
+	}
+	set workOffline(value: boolean) {
+		this.api.workOffline = value
 	}
 }

@@ -260,12 +260,12 @@ const showMenu = (rect, menu) => {
 						MenuItems.ChangeUsername,
 						MenuItems.ChangePassword,
 						...(mimiriPlatform.isElectron ? [MenuItems.SetPin] : []),
-						MenuItems.DeleteAccount,
 					]),
 			...(mimiriPlatform.isDesktop ? [MenuItems.Separator, MenuItems.ManageSubscription] : []),
 			...(!noteManager.isAnonymous && ipcClient.isAvailable ? [MenuItems.Separator] : []),
 			...(noteManager.isAnonymous ? [MenuItems.Login] : [MenuItems.Logout]),
-			...(ipcClient.isAvailable ? [MenuItems.Separator, MenuItems.GoOnline] : []),
+			MenuItems.Separator,
+			MenuItems.WorkOffline,
 		])
 	}
 }

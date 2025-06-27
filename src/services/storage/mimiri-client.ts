@@ -392,6 +392,9 @@ export class MimiriClient extends HttpClientBase {
 
 	private async openWebSocket() {
 		try {
+			if (this.workOffline) {
+				return
+			}
 			const response = await this.createNotificationUrl()
 			if (!response?.url) {
 				return
@@ -452,5 +455,18 @@ export class MimiriClient extends HttpClientBase {
 		await this.closeWebSocket()
 		this.username = undefined
 		this.rootSignature = undefined
+	}
+
+	get workOffline(): boolean {
+		return this.sharedState.workOffline
+	}
+
+	set workOffline(value: boolean) {
+		this.sharedState.workOffline = value
+		if (value) {
+			this.closeWebSocket()
+		} else {
+			this.openWebSocket()
+		}
 	}
 }

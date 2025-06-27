@@ -11,7 +11,7 @@ export class SynchronizationService {
 	private _syncRequestedWhileInProgress = false
 	private _baseDelayMs = 1000 // 1 second base delay
 	private _maxDelayMs = 300000 // 5 minutes max delay
-	private _waitingForSync: (() => void)[] = []
+	private _waitingForSync: ((success: boolean) => void)[] = []
 	private _initialized: boolean = false
 
 	constructor(
@@ -46,6 +46,12 @@ export class SynchronizationService {
 					syncFailed = false
 					this._syncRequestedWhileInProgress = false
 					try {
+						if (!this._initialized || !this.sharedState.isOnline) {
+							for (const resolve of this._waitingForSync) {
+								resolve(false)
+							}
+							return
+						}
 						await this.syncPull(true)
 						if (await this.syncPush()) {
 							await this.syncPull(true)
@@ -59,7 +65,7 @@ export class SynchronizationService {
 			} finally {
 				this._syncInProgress = false
 				for (const resolve of this._waitingForSync) {
-					resolve()
+					resolve(true)
 				}
 				this._waitingForSync = []
 			}
@@ -69,11 +75,14 @@ export class SynchronizationService {
 	}
 
 	public queueSync(): void {
+		if (!this._initialized || !this.sharedState.isOnline) {
+			return
+		}
 		void this.sync()
 	}
 
 	waitForSync(timeoutMs?: number): Promise<boolean> {
-		if (!this.sharedState.isOnline) {
+		if (!this._initialized || !this.sharedState.isOnline) {
 			return Promise.resolve(false)
 		}
 		if (!this._syncInProgress) {
@@ -82,9 +91,9 @@ export class SynchronizationService {
 			return new Promise<boolean>(resolve => {
 				let timeoutId: number | undefined
 
-				const wrappedResolve = () => {
+				const wrappedResolve = (success: boolean) => {
 					cleanup()
-					resolve(true)
+					resolve(success)
 				}
 
 				const cleanup = () => {

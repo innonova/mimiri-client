@@ -68,6 +68,7 @@ export enum MenuItems {
 	PasswordGenerator = 'password-generator',
 	Settings = 'settings',
 	Properties = 'properties',
+	WorkOffline = 'work-offline',
 }
 
 class MenuManager {
@@ -251,6 +252,8 @@ class MenuManager {
 			noteManager.openNote('settings-general' as Guid)
 		} else if (itemId === 'properties') {
 			noteManager.openProperties()
+		} else if (itemId === 'work-offline') {
+			noteManager.workOffline = !noteManager.workOffline
 		}
 	}
 
@@ -650,6 +653,12 @@ class MenuManager {
 						title: 'Properties',
 					})
 					break
+				case MenuItems.WorkOffline:
+					result.push({
+						id: 'work-offline',
+						title: 'Work Offline',
+						checked: noteManager.workOffline,
+					})
 			}
 		}
 		return result

@@ -92,6 +92,8 @@ const accountClick = () => {
 		MenuItems.DeleteAccount,
 		MenuItems.Separator,
 		...(noteManager.isAnonymous ? [MenuItems.CreatePassword, MenuItems.Login] : [MenuItems.Logout]),
+		MenuItems.Separator,
+		MenuItems.WorkOffline,
 	])
 }
 

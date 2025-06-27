@@ -24,6 +24,12 @@
 					<div class="flex items-center w-full h-6">
 						<div class="min-w-8 pl-1.5 leading-3">
 							<ToolbarIcon v-if="item.icon" :keep-size-on-mobile="true" :icon="item.icon"></ToolbarIcon>
+							<ToolbarIcon
+								v-if="!item.icon && item.checked"
+								:keep-size-on-mobile="true"
+								icon="checkmark"
+								class="mt-1 mr-0.5"
+							></ToolbarIcon>
 						</div>
 						<!-- <img v-if="item.icon" class="toolbar-icon" :src="item.icon" draggable="false" /> -->
 						<div class="w-full whitespace-nowrap text-left">{{ item.title }}</div>
