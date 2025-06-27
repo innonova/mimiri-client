@@ -253,6 +253,14 @@ const showMenu = (rect, menu) => {
 		menuManager.showMenu({ x: rect.left, y: rect.bottom - 30, backdropTop: 32 }, menuManager.helpMenu)
 	}
 	if (menu === 'account') {
+		if (noteManager.isLocal) {
+			menuManager.showMenu({ x: rect.right, y: rect.bottom - 30, backdropTop: 32, alignRight: true }, [
+				MenuItems.CreateAccount,
+				MenuItems.Separator,
+				MenuItems.Login,
+			])
+			return
+		}
 		menuManager.showMenu({ x: rect.right, y: rect.bottom - 30, backdropTop: 32, alignRight: true }, [
 			...(noteManager.isAnonymous
 				? [MenuItems.CreatePassword, MenuItems.DeleteAccount]

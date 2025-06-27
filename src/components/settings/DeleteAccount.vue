@@ -135,7 +135,7 @@ const deleteAccount = async () => {
 			}
 			loading.value = false
 			if (deleteLocal.value || noteManager.isAnonymous) {
-				noteManager.logout()
+				await noteManager.logout()
 				location.reload()
 			}
 		} catch {

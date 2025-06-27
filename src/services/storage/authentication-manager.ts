@@ -3,11 +3,12 @@ import { CryptSignature } from '../crypt-signature'
 import { fromBase64, toBase64, toHex } from '../hex-base64'
 import { mimiriPlatform } from '../mimiri-platform'
 import { SymmetricCrypt } from '../symmetric-crypt'
-import { emptyGuid } from '../types/guid'
+import { emptyGuid, newGuid } from '../types/guid'
 import type { InitializationData, LoginData, SharedState } from './type'
 import type { MimiriDb } from './mimiri-db'
 import type { MimiriClient } from './mimiri-client'
 import type { CryptographyManager } from './cryptography-manager'
+import { deObfuscate, obfuscate } from '../helpers'
 
 const DEFAULT_ITERATIONS = 1000000
 const DEFAULT_SALT_SIZE = 32
@@ -53,6 +54,16 @@ export class AuthenticationManager {
 			str = sessionStorage.getItem('mimiri-login-data')
 		}
 		return str
+	}
+
+	private async clearLoginData() {
+		if (ipcClient.isAvailable && ipcClient.session.isAvailable) {
+			await ipcClient.session.set('mimiri-login-data', undefined)
+		} else if (mimiriPlatform.isIosApp || mimiriPlatform.isAndroidApp) {
+			localStorage.removeItem('mimiri-login-data')
+		} else {
+			sessionStorage.removeItem('mimiri-login-data')
+		}
 	}
 
 	public async persistLogin() {
@@ -204,10 +215,11 @@ export class AuthenticationManager {
 		initializationData.rootSignature.publicKey = await this._rootSignature.publicKeyPem()
 		initializationData.rootSignature.privateKey = await userCrypt.encrypt(await this._rootSignature.privateKeyPem())
 
-		await this.db.setInitializationData(initializationData)
+		// await this.db.setInitializationData(initializationData)
 
 		this._userData = userData
 		this._username = username
+		this.sharedState.isLocal = false
 		await this.db.setUserData(this._userData)
 	}
 
@@ -239,12 +251,45 @@ export class AuthenticationManager {
 		)
 		this._userData = JSON.parse(await this.cryptoManager.rootCrypt.decrypt(initializationData.userData))
 		this._username = data.username
+		this.sharedState.isLocal = false
 
-		this.api.setRootSignature(this._username, this._rootSignature)
-		await this.db.setInitializationData(initializationData)
+		await this.api.setRootSignature(this._username, this._rootSignature)
+		// await this.db.setInitializationData(initializationData)
 
 		await this.persistLogin()
 		return true
+	}
+
+	public async openLocal() {
+		await this.db.open('local')
+		const initializationData = await this.db.getLocalUserData()
+		if (!initializationData) {
+			this.cryptoManager.rootCrypt = await SymmetricCrypt.create(SymmetricCrypt.DEFAULT_SYMMETRIC_ALGORITHM)
+			await this.db.setLocalUserData({
+				rootCrypt: {
+					algorithm: this.cryptoManager.rootCrypt.algorithm,
+					key: await obfuscate(await this.cryptoManager.rootCrypt.getKeyString()),
+				},
+			})
+		} else {
+			this.cryptoManager.rootCrypt = await SymmetricCrypt.fromKeyString(
+				initializationData.rootCrypt.algorithm,
+				await deObfuscate(initializationData.rootCrypt.key),
+			)
+		}
+		this._userData = await this.db.getUserData()
+		if (!this._userData) {
+			this._userData = {
+				rootNote: newGuid(),
+				rootKey: newGuid(),
+				createComplete: false,
+			}
+			await this.db.setUserData(this._userData)
+		}
+		this.sharedState.isLocal = true
+		this._username = 'local'
+		this.sharedState.userId = emptyGuid()
+		this.sharedState.isLoggedIn = true
 	}
 
 	public async goOnline(): Promise<boolean> {
@@ -255,6 +300,12 @@ export class AuthenticationManager {
 			return true
 		}
 		return false
+	}
+
+	public async updateUserData(): Promise<void> {
+		if (this.sharedState.isLocal) {
+			return this.db.setUserData(this._userData)
+		}
 	}
 
 	public async changeUserNameAndPassword(
@@ -276,10 +327,12 @@ export class AuthenticationManager {
 		return this.api.verifyPassword(password)
 	}
 
-	public logout(): void {
+	public async logout(): Promise<void> {
+		this.clearLoginData()
 		this._userData = undefined
 		this._rootSignature = undefined
 		this._username = undefined
+		this.sharedState.isLocal = false
 
 		this.cryptoManager.rootCrypt = null
 		this.sharedState.userId = null
@@ -288,7 +341,7 @@ export class AuthenticationManager {
 		this.db
 			.close()
 			.then(() => {
-				console.log('Database closed after logout')
+				// console.log('Database closed after logout')
 			})
 			.catch(err => {
 				console.error('Error closing database:', err)

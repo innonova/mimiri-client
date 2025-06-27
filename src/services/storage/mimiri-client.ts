@@ -136,7 +136,6 @@ export class MimiriClient extends HttpClientBase {
 				userId: loginResponse.userId,
 				userData: loginResponse.data,
 			}
-			await this.openWebSocket()
 			return result
 		} catch (ex) {
 			debug.logError('Failed to login', ex)
@@ -164,9 +163,10 @@ export class MimiriClient extends HttpClientBase {
 		return false
 	}
 
-	public setRootSignature(username: string, signature: CryptSignature): void {
+	public async setRootSignature(username: string, signature: CryptSignature): Promise<void> {
 		this.username = username
 		this.rootSignature = signature
+		await this.openWebSocket()
 	}
 
 	public async verifyCredentials(): Promise<string | undefined> {
@@ -210,7 +210,6 @@ export class MimiriClient extends HttpClientBase {
 	}
 
 	public async multiAction(actions: NoteAction[]): Promise<Guid[]> {
-		console.log('MimiriClient: multiAction', actions.length, 'actions')
 		const request: MultiNoteRequest = {
 			username: this.username,
 			actions,

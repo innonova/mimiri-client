@@ -1,6 +1,6 @@
 import { openDB, type IDBPDatabase, type IDBPTransaction } from 'idb'
 import type { Guid } from '../types/guid'
-import type { InitializationData, KeyData, LocalData, NoteData } from './type'
+import type { KeyData, LocalData, LocalUserData, NoteData } from './type'
 
 export class MimiriDb {
 	private db: IDBPDatabase<any>
@@ -54,6 +54,8 @@ export class MimiriDb {
 		])
 	}
 
+	// TODO clean up unused methods
+
 	public async setLastSync(lastNoteSync: number, lastKeySync: number): Promise<void> {
 		return this.db.put('user-store', { lastNoteSync, lastKeySync }, 'last-sync')
 	}
@@ -62,12 +64,12 @@ export class MimiriDb {
 		return this.db.get('user-store', 'last-sync')
 	}
 
-	public async setInitializationData(data: InitializationData): Promise<void> {
-		await this.db.put('user-store', data, 'initialization-data')
+	public async setLocalUserData(data: LocalUserData): Promise<void> {
+		await this.db.put('user-store', data, 'local-user-data')
 	}
 
-	public async getInitializationData(): Promise<InitializationData | undefined> {
-		return this.db.get('user-store', 'initialization-data')
+	public async getLocalUserData(): Promise<LocalUserData | undefined> {
+		return this.db.get('user-store', 'local-user-data')
 	}
 
 	public async setLocalData(data: LocalData): Promise<void> {

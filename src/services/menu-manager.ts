@@ -56,6 +56,7 @@ export enum MenuItems {
 	SetPin = 'set-pin',
 	Logout = 'logout',
 	Login = 'login',
+	CreateAccount = 'create-account',
 	CreatePassword = 'create-password',
 	Quit = 'quit',
 	GoOnline = 'go-online',
@@ -132,6 +133,9 @@ class MenuManager {
 			window.location.reload()
 		} else if (itemId === 'login') {
 			loginDialog.value.show()
+		} else if (itemId === 'create-account') {
+			noteManager.controlPanel.expand()
+			noteManager.openNote('settings-create-account' as Guid)
 		} else if (itemId === 'create-password') {
 			noteManager.controlPanel.expand()
 			noteManager.openNote('settings-create-password' as Guid)
@@ -570,7 +574,14 @@ class MenuManager {
 						title: 'Log In / Switch User',
 						icon: 'login',
 						enabled: noteManager.isLoggedIn,
-						visible: noteManager.isAnonymous,
+						visible: noteManager.isAnonymous || noteManager.isLocal,
+					})
+					break
+				case MenuItems.CreateAccount:
+					result.push({
+						id: 'create-account',
+						title: 'Create Account',
+						icon: 'account',
 					})
 					break
 				case MenuItems.CreatePassword:
@@ -741,16 +752,16 @@ class MenuManager {
 			return [MenuItems.NewRootNote, MenuItems.NewNote]
 		}
 
-		const codeEnabled = features.includes('share-code')
+		const showShare = noteManager.isOnline
 
 		return [
 			MenuItems.NewRootNote,
 			MenuItems.NewNote,
-			...(codeEnabled ? [MenuItems.Separator, MenuItems.ReceiveShare] : []),
+			...(showShare ? [MenuItems.Separator, MenuItems.ReceiveShare] : []),
 			MenuItems.Separator,
 			MenuItems.CreatePassword,
 			MenuItems.Login,
-			MenuItems.Logout,
+			...(noteManager.isLocal ? [MenuItems.CreateAccount] : [MenuItems.Logout]),
 			MenuItems.Quit,
 		]
 	}
@@ -765,7 +776,7 @@ class MenuManager {
 			MenuItems.Copy,
 			MenuItems.Paste,
 			MenuItems.Separator,
-			MenuItems.Share,
+			...(noteManager.isOnline ? [MenuItems.Share] : []),
 			MenuItems.Rename,
 			noteManager.selectedNote?.isInRecycleBin ? MenuItems.Delete : MenuItems.Recycle,
 			MenuItems.Separator,
@@ -774,14 +785,7 @@ class MenuManager {
 	}
 
 	public get viewMenu() {
-		const showShareOffers = !features.includes('share-code')
-		return [
-			MenuItems.History,
-			...(showShareOffers ? [MenuItems.ShareOffers] : []),
-			MenuItems.Separator,
-			MenuItems.WordWrap,
-			MenuItems.DarkMode,
-		]
+		return [MenuItems.History, MenuItems.Separator, MenuItems.WordWrap, MenuItems.DarkMode]
 	}
 
 	public get toolsMenu() {

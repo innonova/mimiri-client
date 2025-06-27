@@ -422,11 +422,12 @@ useEventListener(window, 'resize', async () => {
 
 		if (!noteManager.isLoggedIn) {
 			if (settingsManager.isNewInstall) {
+				await noteManager.openLocal()
 				// await noteManager.loginAnonymousAccount()
-				// if (noteManager.isLoggedIn) {
-				// 	settingsManager.isNewInstall = false
-				// 	showLogin = false
-				// }
+				if (noteManager.isLoggedIn) {
+					// settingsManager.isNewInstall = false
+					showLogin = false
+				}
 			} else {
 				showLogin = true
 			}

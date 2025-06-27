@@ -41,6 +41,7 @@ export class MimiriStore {
 			userId: null,
 			isLoggedIn: false,
 			isOnline: false,
+			isLocal: false,
 			workOffline: false,
 			clientConfig: { features: [] },
 			userStats: {
@@ -135,11 +136,13 @@ export class MimiriStore {
 
 	public async createUser(username: string, password: string, userData: any, pow: string, iterations: number) {
 		await this.authManager.createUser(username, password, userData, pow, iterations)
+		await this.cryptoManager.ensureLocalCrypt()
 		await this.cryptoManager.loadAllKeys()
 	}
 
 	public async login(data: LoginData): Promise<boolean> {
 		if (await this.authManager.login(data)) {
+			await this.cryptoManager.ensureLocalCrypt()
 			await this.syncService.initialSync()
 			await this.cryptoManager.loadAllKeys()
 			await this.syncService.sync()
@@ -150,6 +153,12 @@ export class MimiriStore {
 
 	public async goOnline(password?: string): Promise<boolean> {
 		return this.authManager.goOnline()
+	}
+
+	public async openLocal() {
+		await this.authManager.openLocal()
+		await this.cryptoManager.ensureLocalCrypt()
+		await this.cryptoManager.loadAllKeys()
 	}
 
 	public async changeUserNameAndPassword(
@@ -235,18 +244,15 @@ export class MimiriStore {
 	}
 
 	public async updateUserData(): Promise<void> {
-		if (!this.isLoggedIn) {
-			throw new Error('Not Logged in')
-		}
-		return this.db.setUserData(this.userData)
+		return this.authManager.updateUserData()
 	}
 
 	public async addComment(postId: Guid, displayName: string, comment: string) {
 		return this.api.addComment(postId, displayName, comment)
 	}
 
-	public logout(): void {
-		this.authManager.logout()
+	public async logout(): Promise<void> {
+		await this.authManager.logout()
 		this.api.logout()
 		this.cryptoManager.clearKeys()
 		this.sharedState.clientConfig = { features: [] }

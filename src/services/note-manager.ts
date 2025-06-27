@@ -1,4 +1,4 @@
-import { reactive } from 'vue'
+import { computed, reactive } from 'vue'
 import { VersionConflictError, type LoginData } from './mimer-client'
 import { dateTimeNow } from './types/date-time'
 import { newGuid, type Guid } from './types/guid'
@@ -47,6 +47,7 @@ export enum ViewMode {
 interface NoteManagerState {
 	authenticated: boolean
 	online: boolean
+	local: boolean
 	busy: boolean
 	busyLong: boolean
 	busyLongDelay: number
@@ -107,6 +108,7 @@ export class NoteManager {
 			spinner: true,
 			authenticated: false,
 			online: false,
+			local: false,
 			noteOpen: !this._isMobile,
 			stateLoaded: false,
 			initInProgress: true,
@@ -123,6 +125,7 @@ export class NoteManager {
 			status => {
 				this.state.online = status.isOnline
 				this.state.authenticated = status.isLoggedIn
+				this.state.local = status.isLocal
 			},
 		)
 		this._paymentClient = new PaymentClient(this.client as any, paymentHost)
@@ -249,7 +252,7 @@ export class NoteManager {
 			this.emitStatusUpdated()
 		} else {
 			this.root = undefined
-			this.client.logout()
+			await this.client.logout()
 			this.emitStatusUpdated()
 			throw new MimerError('Login Error', 'Failed to read root node')
 		}
@@ -435,7 +438,7 @@ export class NoteManager {
 			this.emitStatusUpdated()
 		} else {
 			this.root = undefined
-			this.client.logout()
+			await this.client.logout()
 			this.emitStatusUpdated()
 			throw new MimerError('Login Error', 'Failed to read root node')
 		}
@@ -455,6 +458,7 @@ export class NoteManager {
 				if (this.client.isLoggedIn) {
 					await this.ensureCreateComplete()
 					await this.loadRootNote()
+					await this.loadState()
 					if (!this.client.isOnline && !this.workOffline) {
 						setTimeout(() => {
 							void this.goOnline(data.password)
@@ -469,6 +473,34 @@ export class NoteManager {
 					if (!this.client.isLoggedIn) {
 						return false
 					}
+				}
+			}
+		} finally {
+			this.state.busy = false
+			this.state.busyLong = false
+		}
+	}
+
+	public async openLocal() {
+		this.state.busy = true
+		this.state.spinner = false
+		this.state.busyLong = false
+		this.state.busyLongDelay = 10000
+		this.state.noteOpen = !this._isMobile
+		browserHistory.openTree(ipcClient.isAvailable && Capacitor.getPlatform() === 'web')
+		this.busyStart = Date.now()
+		try {
+			await this.client.openLocal()
+			while (true) {
+				if (this.client.isLoggedIn) {
+					await this.ensureCreateComplete()
+					await this.loadRootNote()
+					await this.loadState()
+					updateManager.good()
+					this._listener?.login()
+					return true
+				} else {
+					return false
 				}
 			}
 		} finally {
@@ -504,13 +536,14 @@ export class NoteManager {
 		}
 	}
 
-	public logout() {
+	public async logout() {
 		settingsManager.autoLogin = false
 		settingsManager.autoLoginData = undefined
+		this.state.stateLoaded = false
 		this._listener?.logout()
 		this.root = undefined
 		this.notes = {}
-		this.client.logout()
+		await this.client.logout()
 		this.emitStatusUpdated()
 	}
 
@@ -1067,6 +1100,10 @@ export class NoteManager {
 
 	public get isOnline() {
 		return this.client.isOnline
+	}
+
+	public get isLocal() {
+		return this.state.local
 	}
 
 	public get workOffline() {

@@ -7,7 +7,7 @@
 		data-testid="note-tree"
 	>
 		<TreeNode
-			v-if="noteManager.authenticated && noteManager.root?.viewModel.children.length"
+			v-if="showNodes && noteManager.root?.viewModel.children.length"
 			v-for="node of noteManager.root.viewModel.children"
 			:node="node"
 			:key="node.id"
@@ -30,6 +30,15 @@ import { searchManager } from '../services/search-manager'
 
 const mainElement = ref(null)
 let stateLoaded = false
+const showNodes = ref(false)
+
+watch(
+	noteManager.state,
+	() => {
+		showNodes.value = noteManager.state.stateLoaded && noteManager.state.authenticated && noteManager.state.stateLoaded
+	},
+	{ immediate: true },
+)
 
 const noSearchResults = computed(
 	() =>

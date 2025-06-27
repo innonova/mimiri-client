@@ -104,29 +104,32 @@ export class CryptographyManager {
 
 	public async loadAllKeys(): Promise<void> {
 		const localKeys = await this.db.getAllLocalKeys()
-		const removeKeys = await this.db.getAllKeys()
+		const remoteKeys = await this.db.getAllKeys()
 		this._keys = []
-		for (const keyData of [...localKeys, ...removeKeys]) {
+
+		await this.loadKeysFromSource(localKeys, this._localCrypt)
+		await this.loadKeysFromSource(remoteKeys, this._rootCrypt)
+	}
+
+	private async loadKeysFromSource(keyDataArray: KeyData[], crypt: SymmetricCrypt): Promise<void> {
+		for (const keyData of keyDataArray) {
 			if (!this._keys.some(key => key.id === keyData.id)) {
 				try {
-					const sym = await SymmetricCrypt.fromKey(
-						keyData.algorithm,
-						await this._rootCrypt.decryptBytes(keyData.keyData),
-					)
+					const sym = await SymmetricCrypt.fromKey(keyData.algorithm, await crypt.decryptBytes(keyData.keyData))
 					const signer = await CryptSignature.fromPem(
 						keyData.asymmetricAlgorithm,
 						keyData.publicKey,
-						await this._rootCrypt.decrypt(keyData.privateKey),
+						await crypt.decrypt(keyData.privateKey),
 					)
 					this._keys.push({
 						id: keyData.id,
 						name: keyData.name,
 						symmetric: sym,
 						signature: signer,
-						metadata: JSON.parse(await this._rootCrypt.decrypt(keyData.metadata)),
+						metadata: JSON.parse(await crypt.decrypt(keyData.metadata)),
 					})
 				} catch (ex) {
-					console.error('Error loading key:', keyData, await this._rootCrypt.decryptBytes(keyData.keyData))
+					console.error('Error loading key:', keyData, await crypt.decryptBytes(keyData.keyData))
 				}
 			}
 		}

@@ -36,7 +36,7 @@ class LocalAuth implements LoginListener, HideShowListener {
 			await this.unlock()
 		} else {
 			localStorage.setItem('lastPin', 'failure')
-			noteManager.logout()
+			await noteManager.logout()
 		}
 	}
 

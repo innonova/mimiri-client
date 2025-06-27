@@ -20,6 +20,7 @@ export interface SharedState {
 	userId: Guid | null
 	isLoggedIn: boolean
 	isOnline: boolean
+	isLocal: boolean
 	workOffline: boolean
 	clientConfig: ClientConfig
 	userStats: UserStats
@@ -51,6 +52,13 @@ export interface InitializationData {
 
 export interface LocalData {
 	localCrypt: {
+		algorithm: string
+		key: string
+	}
+}
+
+export interface LocalUserData {
+	rootCrypt: {
 		algorithm: string
 		key: string
 	}

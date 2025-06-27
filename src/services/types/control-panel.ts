@@ -8,10 +8,11 @@ import { VirtualNote } from './virtual-note'
 
 export const createControlPanelTree = (owner: NoteManager, parent: MimerNote): MimerNote[] => {
 	const showUpdate = !mimiriPlatform.isWeb || location.host === 'localhost:5173'
-	const showPin = mimiriPlatform.isElectron || location.host === 'localhost:5173'
+	const showPin = (mimiriPlatform.isElectron || location.host === 'localhost:5173') && !noteManager.isLocal
 	const showSubscription = mimiriPlatform.isDesktop
 	const showDevBlog = !settingsManager.disableDevBlog
 	const showDebug = settingsManager.debugEnabled
+	const isLocal = noteManager.isLocal
 
 	const items = [
 		...(showUpdate
@@ -80,52 +81,65 @@ export const createControlPanelTree = (owner: NoteManager, parent: MimerNote): M
 					: []),
 			],
 		},
-		{
-			id: 'settings-account' as Guid,
-			title: 'Account',
-			type: noteManager.isAnonymous ? 'settings-create-password' : 'settings-username',
-			icon: 'account',
-			children: [
-				...(!noteManager.isAnonymous
-					? [
+		...(isLocal
+			? [
+					{
+						id: 'settings-create-account' as Guid,
+						title: 'Create Account',
+						type: 'settings-create-account',
+						icon: 'account',
+						children: [],
+					},
+				]
+			: [
+					{
+						id: 'settings-account' as Guid,
+						title: 'Account',
+						type: noteManager.isAnonymous ? 'settings-create-password' : 'settings-username',
+						icon: 'account',
+						children: [
+							...(!noteManager.isAnonymous
+								? [
+										{
+											id: 'settings-username' as Guid,
+											title: 'Username',
+											type: 'settings-username',
+											icon: 'account',
+											children: [],
+										},
+										{
+											id: 'settings-password' as Guid,
+											title: 'Password',
+											type: 'settings-password',
+											icon: 'account',
+											children: [],
+										},
+									]
+								: [
+										{
+											id: 'settings-create-password' as Guid,
+											title: 'Create Password',
+											type: 'settings-create-password',
+											icon: 'account',
+											children: [],
+										},
+									]),
+
 							{
-								id: 'settings-username' as Guid,
-								title: 'Username',
-								type: 'settings-username',
+								id: 'settings-delete' as Guid,
+								title: 'Delete',
+								type: 'settings-delete',
 								icon: 'account',
 								children: [],
 							},
-							{
-								id: 'settings-password' as Guid,
-								title: 'Password',
-								type: 'settings-password',
-								icon: 'account',
-								children: [],
-							},
-						]
-					: [
-							{
-								id: 'settings-create-password' as Guid,
-								title: 'Create Password',
-								type: 'settings-create-password',
-								icon: 'account',
-								children: [],
-							},
-						]),
-				{
-					id: 'settings-delete' as Guid,
-					title: 'Delete',
-					type: 'settings-delete',
-					icon: 'account',
-					children: [],
-				},
-			],
-		},
-		...(showSubscription
+						],
+					},
+				]),
+		...(showSubscription && !isLocal
 			? [
 					{
 						id: 'settings-plan-group' as Guid,
-						title: 'Plan (BETA)',
+						title: 'Plan',
 						type: 'settings-plan',
 						icon: 'coins',
 						children: [
@@ -160,7 +174,17 @@ export const createControlPanelTree = (owner: NoteManager, parent: MimerNote): M
 						],
 					},
 				]
-			: []),
+			: isLocal
+				? [
+						{
+							id: 'settings-explain-plan' as Guid,
+							title: 'Plan',
+							type: 'settings-explain-plan',
+							icon: 'coins',
+							children: [],
+						},
+					]
+				: []),
 	]
 
 	return items.map(tree => {
