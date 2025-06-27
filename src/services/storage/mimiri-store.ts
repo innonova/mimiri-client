@@ -126,9 +126,13 @@ export class MimiriStore {
 	public async restoreLogin() {
 		if (await this.authManager.restoreLogin()) {
 			await this.cryptoManager.ensureLocalCrypt()
-			await this.syncService.initialSync()
-			await this.cryptoManager.loadAllKeys()
-			await this.syncService.sync()
+			if (this.sharedState.isOnline) {
+				await this.syncService.initialSync()
+				await this.cryptoManager.loadAllKeys()
+				await this.syncService.sync()
+			} else {
+				await this.cryptoManager.loadAllKeys()
+			}
 			return true
 		}
 		return false

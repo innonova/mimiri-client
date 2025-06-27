@@ -1,6 +1,6 @@
 import { openDB, type IDBPDatabase, type IDBPTransaction } from 'idb'
 import type { Guid } from '../types/guid'
-import type { KeyData, LocalData, LocalUserData, NoteData } from './type'
+import type { InitializationData, KeyData, LocalData, LocalUserData, NoteData } from './type'
 
 export class MimiriDb {
 	private db: IDBPDatabase<any>
@@ -78,6 +78,14 @@ export class MimiriDb {
 
 	public async getLocalData(): Promise<LocalData | undefined> {
 		return this.db.get('user-store', 'local-data')
+	}
+
+	public async setInitializationData(data: InitializationData): Promise<void> {
+		await this.db.put('user-store', data, 'initialization-data')
+	}
+
+	public async getInitializationData(): Promise<InitializationData | undefined> {
+		return this.db.get('user-store', 'initialization-data')
 	}
 
 	public async setObfuscationKey(obfuscationKey: string): Promise<void> {

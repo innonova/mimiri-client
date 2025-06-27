@@ -25,7 +25,7 @@ export abstract class HttpClientBase {
 		}
 	}
 
-	public get simulateOffline(): boolean {
+	protected get simulateOffline(): boolean {
 		return !!localStorage?.getItem('mimiri_simulate_no_network')
 	}
 

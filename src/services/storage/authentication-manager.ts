@@ -8,7 +8,7 @@ import type { InitializationData, LoginData, SharedState } from './type'
 import type { MimiriDb } from './mimiri-db'
 import type { MimiriClient } from './mimiri-client'
 import type { CryptographyManager } from './cryptography-manager'
-import { deObfuscate, obfuscate } from '../helpers'
+import { deObfuscate, incrementalDelay, obfuscate } from '../helpers'
 
 const DEFAULT_ITERATIONS = 1000000
 const DEFAULT_SALT_SIZE = 32
@@ -215,7 +215,7 @@ export class AuthenticationManager {
 		initializationData.rootSignature.publicKey = await this._rootSignature.publicKeyPem()
 		initializationData.rootSignature.privateKey = await userCrypt.encrypt(await this._rootSignature.privateKeyPem())
 
-		// await this.db.setInitializationData(initializationData)
+		await this.db.setInitializationData(initializationData)
 
 		this._userData = userData
 		this._username = username
@@ -224,11 +224,15 @@ export class AuthenticationManager {
 	}
 
 	public async login(data: LoginData): Promise<boolean> {
-		let initializationData = await this.api.authenticate(data.username, data.password)
+		await this.db.open(data.username)
+		let initializationData = await this.db.getInitializationData()
+		if (!initializationData) {
+			// TODO compare with local data after going online
+			initializationData = await this.api.authenticate(data.username, data.password)
+		}
 		if (!initializationData) {
 			return false
 		}
-		await this.db.open(data.username)
 		this._userCryptAlgorithm = initializationData.userCrypt.algorithm
 		const userCrypt = await SymmetricCrypt.fromPassword(
 			initializationData.userCrypt.algorithm,
@@ -254,7 +258,9 @@ export class AuthenticationManager {
 		this.sharedState.isLocal = false
 
 		await this.api.setRootSignature(this._username, this._rootSignature)
-		// await this.db.setInitializationData(initializationData)
+		await this.api.openWebSocket()
+
+		await this.db.setInitializationData(initializationData)
 
 		await this.persistLogin()
 		return true
@@ -292,12 +298,25 @@ export class AuthenticationManager {
 		this.sharedState.isLoggedIn = true
 	}
 
-	public async goOnline(): Promise<boolean> {
+	public async goOnline(attempt: number = 0): Promise<boolean> {
 		this.api.setRootSignature(this._username, this._rootSignature)
-		const data = await this.api.verifyCredentials()
-		if (data) {
-			this._userData = JSON.parse(await this.cryptoManager.rootCrypt.decrypt(data))
-			return true
+		try {
+			const data = await this.api.verifyCredentials()
+			if (data === 'REJECTED') {
+				console.log('AuthenticationManager.goOnline() - credentials rejected')
+				// TODO prompt user that password is changed on server and to re-enter password
+				return false
+			}
+			if (data) {
+				this._userData = JSON.parse(await this.cryptoManager.rootCrypt.decrypt(data))
+				return true
+			}
+		} catch (ex) {
+			console.log('Failed to verify credentials, retrying', ex)
+			incrementalDelay(attempt).then(() => {
+				void this.goOnline(attempt + 1)
+			})
+			return false
 		}
 		return false
 	}

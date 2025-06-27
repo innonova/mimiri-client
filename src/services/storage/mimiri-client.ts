@@ -44,6 +44,7 @@ import type { CryptographyManager } from './cryptography-manager'
 import type { InitializationData, SharedState, SyncInfo } from './type'
 import { HubConnectionBuilder } from '@microsoft/signalr'
 import { HttpClientBase } from './http-client-base'
+import { incrementalDelay } from '../helpers'
 
 export class VersionConflictError extends Error {
 	constructor(public conflicts: VersionConflict[]) {
@@ -56,6 +57,7 @@ export class MimiriClient extends HttpClientBase {
 	private username: string
 	private rootSignature: CryptSignature
 	private _signalRConnection: any = null
+	private _websocketRequested: boolean = false
 
 	constructor(
 		host: string,
@@ -166,7 +168,6 @@ export class MimiriClient extends HttpClientBase {
 	public async setRootSignature(username: string, signature: CryptSignature): Promise<void> {
 		this.username = username
 		this.rootSignature = signature
-		await this.openWebSocket()
 	}
 
 	public async verifyCredentials(): Promise<string | undefined> {
@@ -188,9 +189,11 @@ export class MimiriClient extends HttpClientBase {
 			await this.openWebSocket()
 			return response.data
 		} catch (ex) {
-			debug.logError('Failed to go online', ex)
+			if (ex.statusCode === 404) {
+				return 'REJECTED'
+			}
+			throw ex
 		}
-		return undefined
 	}
 
 	public async getChangesSince(noteSince: number, keySince: number): Promise<SyncInfo> {
@@ -389,13 +392,13 @@ export class MimiriClient extends HttpClientBase {
 		return response.participants
 	}
 
-	private async openWebSocket() {
+	public async openWebSocket(attempt: number = 0): Promise<void> {
 		try {
-			if (this.workOffline) {
+			if (this.workOffline || this._signalRConnection) {
 				return
 			}
 			const response = await this.createNotificationUrl()
-			if (!response?.url) {
+			if (!response?.url || this.workOffline || this._signalRConnection) {
 				return
 			}
 			const connection = new HubConnectionBuilder()
@@ -427,18 +430,29 @@ export class MimiriClient extends HttpClientBase {
 				this.notificationsCallback('closed')
 			})
 			this._signalRConnection = connection
+			if (this.simulateOffline) {
+				throw new Error('Simulate offline')
+			}
 			await connection.start()
 			this.sharedState.isOnline = true
 			this.notificationsCallback('connected')
 		} catch (ex) {
+			this._signalRConnection.stop().catch()
+			this._signalRConnection = null
 			debug.logError('Failed to connect for notifications', ex)
-			setTimeout(() => {
-				void this.openWebSocket()
-			}, 5000)
+			if (!this._websocketRequested) {
+				this._websocketRequested = true
+				incrementalDelay(attempt).then(() => {
+					if (this._websocketRequested) {
+						void this.openWebSocket(attempt + 1)
+					}
+				})
+			}
 		}
 	}
 
 	private async closeWebSocket() {
+		this._websocketRequested = false
 		if (this._signalRConnection) {
 			try {
 				await this._signalRConnection.stop()

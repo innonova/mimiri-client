@@ -184,3 +184,8 @@ export function formatBytes(bytes: number): string {
 	const tb = gb / 1024
 	return `${tb.toFixed(2)} TB`
 }
+
+export const incrementalDelay = async (attempt: number, baseDelay = 1000, maxDelay = 30000, multiplier = 2) => {
+	const delayMs = Math.min(baseDelay * Math.pow(multiplier, attempt), maxDelay)
+	await delay(delayMs)
+}
