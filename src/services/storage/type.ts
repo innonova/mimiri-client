@@ -5,7 +5,6 @@ import type { ClientConfig } from '../types/responses'
 export interface LoginData {
 	username: string
 	password: string
-	preferOffline?: boolean
 }
 
 export interface UserStats {

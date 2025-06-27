@@ -454,26 +454,21 @@ export class NoteManager {
 		this.busyStart = Date.now()
 		try {
 			await this.client.login({ ...data })
-			while (true) {
-				if (this.client.isLoggedIn) {
-					await this.ensureCreateComplete()
-					await this.loadRootNote()
-					await this.loadState()
-					if (!this.client.isOnline && !this.workOffline) {
-						setTimeout(() => {
-							void this.goOnline(data.password)
-						}, 1000)
-					} else {
-						updateManager.good()
-					}
-					this._listener?.login()
-					return true
+			if (this.client.isLoggedIn) {
+				await this.ensureCreateComplete()
+				await this.loadRootNote()
+				await this.loadState()
+				if (!this.client.isOnline && !this.workOffline) {
+					setTimeout(() => {
+						void this.goOnline(data.password)
+					}, 1000)
 				} else {
-					await this.client.login({ ...data, preferOffline: false })
-					if (!this.client.isLoggedIn) {
-						return false
-					}
+					updateManager.good()
 				}
+				this._listener?.login()
+				return true
+			} else {
+				return false
 			}
 		} finally {
 			this.state.busy = false

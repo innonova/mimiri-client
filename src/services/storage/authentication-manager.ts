@@ -225,37 +225,52 @@ export class AuthenticationManager {
 
 	public async login(data: LoginData): Promise<boolean> {
 		await this.db.open(data.username)
+		let localInitializationData = true
 		let initializationData = await this.db.getInitializationData()
 		if (!initializationData) {
+			localInitializationData = false
 			// TODO compare with local data after going online
 			initializationData = await this.api.authenticate(data.username, data.password)
 		}
 		if (!initializationData) {
 			return false
 		}
-		this._userCryptAlgorithm = initializationData.userCrypt.algorithm
-		const userCrypt = await SymmetricCrypt.fromPassword(
-			initializationData.userCrypt.algorithm,
-			data.password,
-			initializationData.userCrypt.salt,
-			initializationData.userCrypt.iterations,
-		)
+		while (true) {
+			try {
+				this._userCryptAlgorithm = initializationData.userCrypt.algorithm
+				const userCrypt = await SymmetricCrypt.fromPassword(
+					initializationData.userCrypt.algorithm,
+					data.password,
+					initializationData.userCrypt.salt,
+					initializationData.userCrypt.iterations,
+				)
 
-		this.cryptoManager.rootCrypt = await SymmetricCrypt.fromKey(
-			initializationData.rootCrypt.algorithm,
-			await userCrypt.decryptBytes(initializationData.rootCrypt.key),
-		)
-		this.sharedState.userId = initializationData.userId
-		this.sharedState.isLoggedIn = true
+				this.cryptoManager.rootCrypt = await SymmetricCrypt.fromKey(
+					initializationData.rootCrypt.algorithm,
+					await userCrypt.decryptBytes(initializationData.rootCrypt.key),
+				)
+				this.sharedState.userId = initializationData.userId
+				this.sharedState.isLoggedIn = true
 
-		this._rootSignature = await CryptSignature.fromPem(
-			initializationData.rootSignature.algorithm,
-			initializationData.rootSignature.publicKey,
-			await userCrypt.decrypt(initializationData.rootSignature.privateKey),
-		)
-		this._userData = JSON.parse(await this.cryptoManager.rootCrypt.decrypt(initializationData.userData))
-		this._username = data.username
-		this.sharedState.isLocal = false
+				this._rootSignature = await CryptSignature.fromPem(
+					initializationData.rootSignature.algorithm,
+					initializationData.rootSignature.publicKey,
+					await userCrypt.decrypt(initializationData.rootSignature.privateKey),
+				)
+				this._userData = JSON.parse(await this.cryptoManager.rootCrypt.decrypt(initializationData.userData))
+				this._username = data.username
+				this.sharedState.isLocal = false
+				break
+			} catch (ex) {
+				if (localInitializationData) {
+					console.error('Failed to login locally trying online')
+					localInitializationData = false
+					initializationData = await this.api.authenticate(data.username, data.password)
+					continue
+				}
+				return false
+			}
+		}
 
 		await this.api.setRootSignature(this._username, this._rootSignature)
 		await this.api.openWebSocket()
