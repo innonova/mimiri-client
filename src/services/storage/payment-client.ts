@@ -1,22 +1,22 @@
-import { HttpRequestError, type MimerClient } from './mimer-client'
 import type {
 	ChargeExistingMethodRequest,
 	CreateCustomerRequest,
 	CreatePaymentMethodRequest,
 	InvoiceToLinkRequest,
 	NewSubscriptionRequest,
-} from './types/payment-requests'
-import type { Country, Invoice, PaymentMethod, Subscription, SubscriptionProduct } from './types/subscription'
-import type { Guid } from './types/guid'
+} from '../types/payment-requests'
+import type { Country, Invoice, PaymentMethod, Subscription, SubscriptionProduct } from '../types/subscription'
+import type { Guid } from '../types/guid'
 import { add } from 'date-fns'
-import { updateManager } from '../global'
+import { updateManager } from '../../global'
+import { HttpRequestError } from './http-client-base'
 
 export class PaymentClient {
 	private _countries: Country[] | undefined
 	private _subscriptionProduct: SubscriptionProduct[] | undefined
 
 	constructor(
-		private mimerClient: MimerClient,
+		private mimerClient: any,
 		private host: string,
 	) {}
 

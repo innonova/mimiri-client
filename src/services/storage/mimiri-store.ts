@@ -14,6 +14,15 @@ import { MimiriClient } from './mimiri-client'
 import { MultiAction } from './multi-action'
 import { blogManager, updateManager } from '../../global'
 import { reactive, watch } from 'vue'
+import { PaymentClient } from './payment-client'
+import type {
+	ChargeExistingMethodRequest,
+	CreateCustomerRequest,
+	CreatePaymentMethodRequest,
+	InvoiceToLinkRequest,
+	NewSubscriptionRequest,
+} from '../types/payment-requests'
+import type { Invoice } from '../types/subscription'
 
 export const DEFAULT_ITERATIONS = 1000000
 export const DEFAULT_ITERATIONS_LOCAL = 100
@@ -29,9 +38,11 @@ export class MimiriStore {
 	private sharedState: SharedState
 	private db: MimiriDb
 	private api: MimiriClient
+	private paymentClient: PaymentClient
 
 	constructor(
 		host: string,
+		paymentHost: string,
 		serverKeyId: string,
 		serverKey: string,
 		noteUpdatedCallback: (note: Note) => Promise<void>,
@@ -85,6 +96,7 @@ export class MimiriStore {
 					break
 			}
 		})
+		this.paymentClient = new PaymentClient(this.api as any, paymentHost)
 		this.authManager = new AuthenticationManager(this.db, this.api, this.cryptoManager, this.sharedState)
 		this.syncService = new SynchronizationService(
 			this.db,
@@ -267,6 +279,98 @@ export class MimiriStore {
 			maxNoteBytes: 0,
 			maxNoteCount: 0,
 		}
+	}
+
+	public getIconPath(icon: string): string {
+		return this.paymentClient.getIconPath(icon)
+	}
+
+	public async createPaymentLink(request: InvoiceToLinkRequest): Promise<any> {
+		return this.paymentClient.createPaymentLink(request)
+	}
+
+	public async chargeExistingMethod(request: ChargeExistingMethodRequest): Promise<any> {
+		return this.paymentClient.chargeExistingMethod(request)
+	}
+
+	public async createAuthQuery(request: any): Promise<string> {
+		return this.paymentClient.createAuthQuery(request)
+	}
+
+	public async getPdfUrl(invoice: Invoice): Promise<string> {
+		return this.paymentClient.getPdfUrl(invoice)
+	}
+
+	public async getCustomerData() {
+		return this.paymentClient.getCustomerData()
+	}
+
+	public async saveCustomerData(data: CreateCustomerRequest) {
+		return this.paymentClient.saveCustomerData(data)
+	}
+
+	public async verifyEmail() {
+		return this.paymentClient.verifyEmail()
+	}
+
+	public async getCountries() {
+		return this.paymentClient.getCountries()
+	}
+
+	public async getInvoices() {
+		return this.paymentClient.getInvoices()
+	}
+
+	public async getOpenInvoices() {
+		return this.paymentClient.getOpenInvoices()
+	}
+
+	public async getCurrentSubscriptionProduct() {
+		return this.paymentClient.getCurrentSubscriptionProduct()
+	}
+
+	public async getCurrentSubscription() {
+		return this.paymentClient.getCurrentSubscription()
+	}
+
+	public async cancelSubscription() {
+		return this.paymentClient.cancelSubscription()
+	}
+
+	public async resumeSubscription() {
+		return this.paymentClient.resumeSubscription()
+	}
+
+	public async getSubscriptionProducts() {
+		return this.paymentClient.getSubscriptionProducts()
+	}
+
+	public async newSubscription(request: NewSubscriptionRequest) {
+		return this.paymentClient.newSubscription(request)
+	}
+
+	public async getPaymentMethods() {
+		return this.paymentClient.getPaymentMethods()
+	}
+
+	public async getInvoice(invoiceId: Guid, auth?: string) {
+		return this.paymentClient.getInvoice(invoiceId, auth)
+	}
+
+	public async getInvoicePaymentStatus(invoiceId: Guid) {
+		return this.paymentClient.getInvoicePaymentStatus(invoiceId)
+	}
+
+	public async createNewPaymentMethod(request: CreatePaymentMethodRequest) {
+		return this.paymentClient.createNewPaymentMethod(request)
+	}
+
+	public async makePaymentMethodDefault(methodId: Guid) {
+		return this.paymentClient.makePaymentMethodDefault(methodId)
+	}
+
+	public async deletePaymentMethodDefault(methodId: Guid) {
+		return this.paymentClient.deletePaymentMethodDefault(methodId)
 	}
 
 	public get userData(): any {

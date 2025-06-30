@@ -19,7 +19,7 @@ import { Capacitor } from '@capacitor/core'
 import { mimiriPlatform } from './mimiri-platform'
 import { persistedState } from './persisted-state'
 import { ProofOfWork } from './proof-of-work'
-import { PaymentClient } from './payment-client'
+// import { PaymentClient } from './payment-client'
 import type { ClientConfig } from './types/responses'
 import { createControlPanelTree } from './types/control-panel'
 import { settingsManager } from './settings-manager'
@@ -27,6 +27,14 @@ import { deObfuscate, obfuscate } from './helpers'
 import { toHex } from './hex-base64'
 import { MimiriStore } from './storage/mimiri-store'
 import type { MultiAction } from './storage/multi-action'
+import type {
+	ChargeExistingMethodRequest,
+	CreateCustomerRequest,
+	CreatePaymentMethodRequest,
+	InvoiceToLinkRequest,
+	NewSubscriptionRequest,
+} from './types/payment-requests'
+import type { Invoice } from './types/subscription'
 
 export enum ActionType {
 	Save,
@@ -86,7 +94,7 @@ export class NoteManager {
 	private busyStart: number
 
 	private client: MimiriStore
-	private _paymentClient: PaymentClient
+	// private _paymentClient: PaymentClient
 	private _root: MimerNote
 	private notes: { [id: Guid]: MimerNote } = {}
 	private outstandingActions: number = 0
@@ -117,6 +125,7 @@ export class NoteManager {
 		})
 		this.client = new MimiriStore(
 			host,
+			paymentHost,
 			serverKeyId,
 			serverKey,
 			async note => {
@@ -128,7 +137,7 @@ export class NoteManager {
 				this.state.local = status.isLocal
 			},
 		)
-		this._paymentClient = new PaymentClient(this.client as any, paymentHost)
+		// this._paymentClient = new PaymentClient(this.client as any, paymentHost)
 		browserHistory.init(noteId => {
 			if (noteId) {
 				this.getNoteById(noteId)?.select()
@@ -1081,8 +1090,96 @@ export class NoteManager {
 		return true
 	}
 
-	public get paymentClient() {
-		return this._paymentClient
+	public getIconPath(icon: string): string {
+		return this.client.getIconPath(icon)
+	}
+
+	public async createPaymentLink(request: InvoiceToLinkRequest): Promise<any> {
+		return this.client.createPaymentLink(request)
+	}
+
+	public async chargeExistingMethod(request: ChargeExistingMethodRequest): Promise<any> {
+		return this.client.chargeExistingMethod(request)
+	}
+
+	public async createAuthQuery(request: any): Promise<string> {
+		return this.client.createAuthQuery(request)
+	}
+
+	public async getPdfUrl(invoice: Invoice): Promise<string> {
+		return this.client.getPdfUrl(invoice)
+	}
+
+	public async getCustomerData() {
+		return this.client.getCustomerData()
+	}
+
+	public async saveCustomerData(data: CreateCustomerRequest) {
+		return this.client.saveCustomerData(data)
+	}
+
+	public async verifyEmail() {
+		return this.client.verifyEmail()
+	}
+
+	public async getCountries() {
+		return this.client.getCountries()
+	}
+
+	public async getInvoices() {
+		return this.client.getInvoices()
+	}
+
+	public async getOpenInvoices() {
+		return this.client.getOpenInvoices()
+	}
+
+	public async getCurrentSubscriptionProduct() {
+		return this.client.getCurrentSubscriptionProduct()
+	}
+
+	public async getCurrentSubscription() {
+		return this.client.getCurrentSubscription()
+	}
+
+	public async cancelSubscription() {
+		return this.client.cancelSubscription()
+	}
+
+	public async resumeSubscription() {
+		return this.client.resumeSubscription()
+	}
+
+	public async getSubscriptionProducts() {
+		return this.client.getSubscriptionProducts()
+	}
+
+	public async newSubscription(request: NewSubscriptionRequest) {
+		return this.client.newSubscription(request)
+	}
+
+	public async getPaymentMethods() {
+		return this.client.getPaymentMethods()
+	}
+
+	public async getInvoice(invoiceId: Guid, auth?: string) {
+		return this.client.getInvoice(invoiceId, auth)
+	}
+
+	public async getInvoicePaymentStatus(invoiceId: Guid) {
+		return this.client.getInvoicePaymentStatus(invoiceId)
+	}
+
+	public async createNewPaymentMethod(request: CreatePaymentMethodRequest) {
+		return this.client.createNewPaymentMethod(request)
+	}
+
+	public async makePaymentMethodDefault(methodId: Guid) {
+		return this.client.makePaymentMethodDefault(methodId)
+	}
+
+	public async deletePaymentMethodDefault(methodId: Guid) {
+		return this.client.deletePaymentMethodDefault(methodId)
 	}
 
 	public get userId() {

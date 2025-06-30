@@ -53,16 +53,14 @@ const emit = defineEmits(['choose'])
 
 const populate = async () => {
 	if (!currentLoaded) {
-		currentProduct.value = await noteManager.paymentClient.getCurrentSubscriptionProduct()
-		currentSubscription.value = await noteManager.paymentClient.getCurrentSubscription()
+		currentProduct.value = await noteManager.getCurrentSubscriptionProduct()
+		currentSubscription.value = await noteManager.getCurrentSubscription()
 		currentLoaded = true
 		if (currentSubscription.value) {
 			period.value = currentSubscription.value.period
 		}
 	}
-	products.value = (await noteManager.paymentClient.getSubscriptionProducts()).filter(
-		prod => prod.data.period === period.value,
-	)
+	products.value = (await noteManager.getSubscriptionProducts()).filter(prod => prod.data.period === period.value)
 }
 
 onMounted(async () => {

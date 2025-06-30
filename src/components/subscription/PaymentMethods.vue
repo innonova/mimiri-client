@@ -35,13 +35,13 @@ const showCreate = ref(false)
 
 const populate = async () => {
 	try {
-		const customer = await noteManager.paymentClient.getCustomerData()
+		const customer = await noteManager.getCustomerData()
 		showCreate.value = !!customer
 	} catch {
 		showCreate.value = false
 	}
 
-	const items = await noteManager.paymentClient.getPaymentMethods()
+	const items = await noteManager.getPaymentMethods()
 	methods.value = items
 	let def = items[0]
 	if (items.length > 1) {
@@ -55,20 +55,20 @@ onMounted(async () => {
 })
 
 const makeDefault = async (method: PaymentMethod) => {
-	await noteManager.paymentClient.makePaymentMethodDefault(method.id)
+	await noteManager.makePaymentMethodDefault(method.id)
 	await populate()
 }
 const deleteMethod = async (method: PaymentMethod) => {
 	deletePaymentMethodDialog.value.show(`${method.brand}, ${method.name}`, async confirmed => {
 		if (confirmed) {
-			await noteManager.paymentClient.deletePaymentMethodDefault(method.id)
+			await noteManager.deletePaymentMethodDefault(method.id)
 			await populate()
 		}
 	})
 }
 
 const createNew = async () => {
-	const result = await noteManager.paymentClient.createNewPaymentMethod({ clientReference: 'create-method' })
+	const result = await noteManager.createNewPaymentMethod({ clientReference: 'create-method' })
 	emit('pay-in-progress', emptyGuid(), true, result.link, methods.value.length + 1)
 	window.open(result.link, '_blank')
 }

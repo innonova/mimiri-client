@@ -4,7 +4,7 @@
 		:data-testid="`payment-method-${method.name}-container`"
 		:disabled="disabled"
 	>
-		<img class="h-10" :src="noteManager.paymentClient.getIconPath(method.brand)" />
+		<img class="h-10" :src="noteManager.getIconPath(method.brand)" />
 		<div class="text-right">{{ method.name }}</div>
 		<div></div>
 		<div class="text-right">

@@ -188,14 +188,14 @@ const showEmailVerification = computed(
 
 const verifyEmail = async () => {
 	if (customer.value && customer.value.email.includes('@') && !customer.value.emailVerified) {
-		await noteManager.paymentClient.verifyEmail()
+		await noteManager.verifyEmail()
 		emailVerificationEmailSent.value = true
 	}
 }
 
 const save = async (termsAccepted?: boolean, privacyPolicyAccepted?: boolean) => {
 	if (valid.value && changed.value) {
-		await noteManager.paymentClient.saveCustomerData({
+		await noteManager.saveCustomerData({
 			givenName: givenName.value,
 			familyName: familyName.value,
 			company: company.value,
@@ -218,7 +218,7 @@ const cancel = async () => {
 }
 
 const loadCustomer = async () => {
-	customer.value = await noteManager.paymentClient.getCustomerData()
+	customer.value = await noteManager.getCustomerData()
 	if (customer.value) {
 		givenName.value = customer.value.givenName
 		familyName.value = customer.value.familyName
@@ -258,7 +258,7 @@ watch(
 )
 
 watch(countryCode, async () => {
-	const countries = await noteManager.paymentClient.getCountries()
+	const countries = await noteManager.getCountries()
 	const country = countries.find(c => c.code === countryCode.value)
 	stateRequired.value = !!country?.states?.length
 })

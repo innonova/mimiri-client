@@ -72,7 +72,7 @@ const overdue = computed(
 
 onMounted(async () => {
 	if (props.invoice.status === InvoiceStatus.Issued && props.invoice.subscriptionId) {
-		const subscription = await noteManager.paymentClient.getCurrentSubscription()
+		const subscription = await noteManager.getCurrentSubscription()
 		if (subscription?.id === props.invoice.subscriptionId) {
 			autoPay.value = subscription.renewalType === RenewalType.Automatic
 		}
@@ -80,7 +80,7 @@ onMounted(async () => {
 })
 
 const showInvoice = async () => {
-	const auth = await noteManager.paymentClient.createAuthQuery({
+	const auth = await noteManager.createAuthQuery({
 		request: 'invoice',
 		timestamp: new Date(),
 		validUntil: add(new Date(), { hours: 12 }),
@@ -92,7 +92,7 @@ const showInvoice = async () => {
 }
 
 const showInvoicePdf = async () => {
-	window.open(await noteManager.paymentClient.getPdfUrl(props.invoice), '_blank')
+	window.open(await noteManager.getPdfUrl(props.invoice), '_blank')
 }
 
 const payNow = async () => {

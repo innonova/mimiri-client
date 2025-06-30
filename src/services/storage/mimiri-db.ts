@@ -54,8 +54,6 @@ export class MimiriDb {
 		])
 	}
 
-	// TODO clean up unused methods
-
 	public async setLastSync(lastNoteSync: number, lastKeySync: number): Promise<void> {
 		return this.db.put('user-store', { lastNoteSync, lastKeySync }, 'last-sync')
 	}
@@ -88,30 +86,6 @@ export class MimiriDb {
 		return this.db.get('user-store', 'initialization-data')
 	}
 
-	public async setObfuscationKey(obfuscationKey: string): Promise<void> {
-		await this.db.put('user-store', obfuscationKey, 'obfuscation-key')
-	}
-
-	public async getObfuscationKey(): Promise<string | undefined> {
-		return this.db.get('user-store', 'obfuscation-key')
-	}
-
-	public async setNoAccountData(data: any): Promise<void> {
-		await this.db.put('user-store', data, 'no-account-data')
-	}
-
-	public async getNoAccountData(): Promise<any | undefined> {
-		return this.db.get('user-store', 'no-account-data')
-	}
-
-	public async setAccountData(data: any): Promise<void> {
-		await this.db.put('user-store', data, 'account-data')
-	}
-
-	public async getAccountData(): Promise<any | undefined> {
-		return this.db.get('user-store', 'account-data')
-	}
-
 	public async setUserData(userData: any): Promise<void> {
 		await this.db.put('user-store', userData, 'user-data')
 	}
@@ -142,10 +116,6 @@ export class MimiriDb {
 
 	public async getAllLocalNotes(): Promise<NoteData[]> {
 		return this.db.getAll('note-local-store')
-	}
-
-	public async deleteRemoteNote(id: Guid): Promise<void> {
-		await this.db.put('note-deleted-store', id, `note-${id}`)
 	}
 
 	public async clearDeleteRemoteNote(id: Guid): Promise<void> {
@@ -184,6 +154,7 @@ export class MimiriDb {
 		return this.db.getAll('key-local-store')
 	}
 
+	// Never actually happens
 	public async deleteRemoteKey(id: Guid): Promise<void> {
 		await this.db.put('key-deleted-store', id, `key-${id}`)
 	}
