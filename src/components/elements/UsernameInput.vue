@@ -36,6 +36,9 @@ const props = defineProps<{
 	displayCurrent: boolean
 }>()
 
+const value = defineModel<string>('value')
+const valid = defineModel<boolean>('valid')
+
 const emit = defineEmits(['changed'])
 
 const canSave = ref(false)
@@ -93,6 +96,8 @@ const checkUsernameDebounce = new Debounce(async () => {
 		canSave.value =
 			usernameAvailable.value && !usernameInvalid.value && !usernameCurrent.value && !usernameUnavailable.value
 
+		value.value = username.value
+		valid.value = canSave.value
 		emit('changed', canSave.value, username.value)
 	}
 }, 500)

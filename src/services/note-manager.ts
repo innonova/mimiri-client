@@ -239,33 +239,47 @@ export class NoteManager {
 		}
 	}
 
-	public async createAccount(username: string, password: string, iterations: number) {
-		const userData = {
-			rootNote: newGuid(),
-			rootKey: newGuid(),
-			createComplete: false,
-		}
+	public async promoteToCloudAccount(username: string, password: string, iterations: number) {
 		let pow = ''
 		if (env.DEV && username.startsWith('auto_test_')) {
 			pow = 'test-mode'
 		} else {
 			pow = await ProofOfWork.compute(username, this._proofBits)
 		}
-		await this.client.createUser(username, password, userData, pow, iterations)
-
-		await this.ensureCreateComplete()
-
-		const note = await this.client.readNote(this.client.userData.rootNote)
-		if (note) {
-			this.root = new MimerNote(this as any, undefined, note)
-			this.emitStatusUpdated()
-		} else {
-			this.root = undefined
-			await this.client.logout()
-			this.emitStatusUpdated()
-			throw new MimerError('Login Error', 'Failed to read root node')
-		}
+		await this.client.promoteToCloudAccount(username, password, pow, iterations)
 	}
+
+	public async promoteToLocalAccount(username: string, password: string, iterations: number) {
+		await this.client.promoteToLocalAccount(username, password, iterations)
+	}
+
+	// public async createAccount(username: string, password: string, iterations: number) {
+	// 	const userData = {
+	// 		rootNote: newGuid(),
+	// 		rootKey: newGuid(),
+	// 		createComplete: false,
+	// 	}
+	// 	let pow = ''
+	// 	if (env.DEV && username.startsWith('auto_test_')) {
+	// 		pow = 'test-mode'
+	// 	} else {
+	// 		pow = await ProofOfWork.compute(username, this._proofBits)
+	// 	}
+	// 	await this.client.createUser(username, password, userData, pow, iterations)
+
+	// 	await this.ensureCreateComplete()
+
+	// 	const note = await this.client.readNote(this.client.userData.rootNote)
+	// 	if (note) {
+	// 		this.root = new MimerNote(this as any, undefined, note)
+	// 		this.emitStatusUpdated()
+	// 	} else {
+	// 		this.root = undefined
+	// 		await this.client.logout()
+	// 		this.emitStatusUpdated()
+	// 		throw new MimerError('Login Error', 'Failed to read root node')
+	// 	}
+	// }
 
 	public async setLoginData(data: string) {
 		await this.client.setLoginData(data)
@@ -293,43 +307,43 @@ export class NoteManager {
 		}
 	}
 
-	public async loginAnonymousAccount() {
-		console.log('Logging in anonymous account')
+	// public async loginAnonymousAccount() {
+	// 	console.log('Logging in anonymous account')
 
-		if (settingsManager.anonymousUsername && settingsManager.anonymousPassword) {
-			const password = await deObfuscate(settingsManager.anonymousPassword)
-			await this.login({
-				username: settingsManager.anonymousUsername,
-				password: password,
-			})
-			if (this.isLoggedIn) {
-				if (mimiriPlatform.isElectron || (mimiriPlatform.isWeb && env.DEV)) {
-					settingsManager.autoLoginData = await obfuscate(await this.getLoginData())
-					settingsManager.autoLogin = true
-				}
-				await settingsManager.waitForSaveComplete()
-				await this.loadState()
-			}
-		} else if (!mimiriPlatform.isWeb || env.DEV) {
-			const username = `mimiri_a_${Date.now()}_${`${Math.random()}`.substring(2, 6)}`
-			const password = toHex(crypto.getRandomValues(new Uint8Array(128)))
-			// high password complexity obviates the need for high iteration count so we can save time here
-			await this.createAccount(username, password, 100)
-			settingsManager.anonymousUsername = username
-			settingsManager.anonymousPassword = await obfuscate(password)
-			if (mimiriPlatform.isElectron || (mimiriPlatform.isWeb && env.DEV)) {
-				settingsManager.autoLoginData = await obfuscate(await this.getLoginData())
-				settingsManager.autoLogin = true
-			}
-			await settingsManager.waitForSaveComplete()
-			if (this.isLoggedIn) {
-				await this.root.ensureChildren()
-			}
-			const gettingStartedNote = this.root.children.find(note => note.note.getItem('metadata').isGettingStarted)
-			gettingStartedNote.expand()
-			gettingStartedNote.select()
-		}
-	}
+	// 	if (settingsManager.anonymousUsername && settingsManager.anonymousPassword) {
+	// 		const password = await deObfuscate(settingsManager.anonymousPassword)
+	// 		await this.login({
+	// 			username: settingsManager.anonymousUsername,
+	// 			password: password,
+	// 		})
+	// 		if (this.isLoggedIn) {
+	// 			if (mimiriPlatform.isElectron || (mimiriPlatform.isWeb && env.DEV)) {
+	// 				settingsManager.autoLoginData = await obfuscate(await this.getLoginData())
+	// 				settingsManager.autoLogin = true
+	// 			}
+	// 			await settingsManager.waitForSaveComplete()
+	// 			await this.loadState()
+	// 		}
+	// 	} else if (!mimiriPlatform.isWeb || env.DEV) {
+	// 		const username = `mimiri_a_${Date.now()}_${`${Math.random()}`.substring(2, 6)}`
+	// 		const password = toHex(crypto.getRandomValues(new Uint8Array(128)))
+	// 		// high password complexity obviates the need for high iteration count so we can save time here
+	// 		await this.createAccount(username, password, 100)
+	// 		settingsManager.anonymousUsername = username
+	// 		settingsManager.anonymousPassword = await obfuscate(password)
+	// 		if (mimiriPlatform.isElectron || (mimiriPlatform.isWeb && env.DEV)) {
+	// 			settingsManager.autoLoginData = await obfuscate(await this.getLoginData())
+	// 			settingsManager.autoLogin = true
+	// 		}
+	// 		await settingsManager.waitForSaveComplete()
+	// 		if (this.isLoggedIn) {
+	// 			await this.root.ensureChildren()
+	// 		}
+	// 		const gettingStartedNote = this.root.children.find(note => note.note.getItem('metadata').isGettingStarted)
+	// 		gettingStartedNote.expand()
+	// 		gettingStartedNote.select()
+	// 	}
+	// }
 
 	private async addGettingStartedNotesRecursive(parent: Note, notes: any[]) {
 		for (const noteData of notes) {

@@ -23,12 +23,14 @@ export class SynchronizationService {
 	) {}
 
 	public async initialSync(): Promise<void> {
-		await this.syncPull()
-		this._initialized = true
+		if (!this.sharedState.workOffline && !this.sharedState.isLocalOnly) {
+			await this.syncPull()
+			this._initialized = true
+		}
 	}
 
 	public async sync() {
-		if (!this._initialized || !this.sharedState.isOnline) {
+		if (!this._initialized || !this.sharedState.isOnline || this.sharedState.isLocalOnly) {
 			return
 		}
 		if (!this._syncInProgress) {
@@ -75,14 +77,14 @@ export class SynchronizationService {
 	}
 
 	public queueSync(): void {
-		if (!this._initialized || !this.sharedState.isOnline) {
+		if (!this._initialized || !this.sharedState.isOnline || this.sharedState.isLocalOnly) {
 			return
 		}
 		void this.sync()
 	}
 
 	waitForSync(timeoutMs?: number): Promise<boolean> {
-		if (!this._initialized || !this.sharedState.isOnline) {
+		if (!this._initialized || !this.sharedState.isOnline || this.sharedState.isLocalOnly) {
 			return Promise.resolve(false)
 		}
 		if (!this._syncInProgress) {

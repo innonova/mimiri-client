@@ -53,6 +53,7 @@ export class MimiriStore {
 			isLoggedIn: false,
 			isOnline: false,
 			isLocal: false,
+			isLocalOnly: false,
 			workOffline: false,
 			clientConfig: { features: [] },
 			userStats: {
@@ -96,8 +97,8 @@ export class MimiriStore {
 					break
 			}
 		})
-		this.paymentClient = new PaymentClient(this.api as any, paymentHost)
 		this.authManager = new AuthenticationManager(this.db, this.api, this.cryptoManager, this.sharedState)
+		this.paymentClient = new PaymentClient(this.authManager, paymentHost)
 		this.syncService = new SynchronizationService(
 			this.db,
 			this.api,
@@ -150,11 +151,19 @@ export class MimiriStore {
 		return false
 	}
 
-	public async createUser(username: string, password: string, userData: any, pow: string, iterations: number) {
-		await this.authManager.createUser(username, password, userData, pow, iterations)
-		await this.cryptoManager.ensureLocalCrypt()
-		await this.cryptoManager.loadAllKeys()
+	public async promoteToCloudAccount(username: string, password: string, pow: string, iterations: number) {
+		await this.authManager.promoteToCloudAccount(username, password, pow, iterations)
 	}
+
+	public async promoteToLocalAccount(username: string, password: string, iterations: number) {
+		await this.authManager.promoteToLocalAccount(username, password, iterations)
+	}
+
+	// public async createUser(username: string, password: string, userData: any, pow: string, iterations: number) {
+	// 	await this.authManager.createUser(username, password, userData, pow, iterations)
+	// 	await this.cryptoManager.ensureLocalCrypt()
+	// 	await this.cryptoManager.loadAllKeys()
+	// }
 
 	public async login(data: LoginData): Promise<boolean> {
 		if (await this.authManager.login(data)) {

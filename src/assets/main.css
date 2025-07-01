@@ -185,11 +185,17 @@ h2 {
 	@apply font-display text-size-header;
 }
 
-a {
+button.link {
+	@apply cursor-pointer;
+}
+
+a,
+button.link {
 	@apply underline;
 }
 
-a:hover {
+a:hover,
+button.link:hover {
 	@apply no-underline;
 }
 

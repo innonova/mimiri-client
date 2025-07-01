@@ -10,13 +10,14 @@ import type { Guid } from '../types/guid'
 import { add } from 'date-fns'
 import { updateManager } from '../../global'
 import { HttpRequestError } from './http-client-base'
+import type { AuthenticationManager } from './authentication-manager'
 
 export class PaymentClient {
 	private _countries: Country[] | undefined
 	private _subscriptionProduct: SubscriptionProduct[] | undefined
 
 	constructor(
-		private mimerClient: any,
+		private authManager: AuthenticationManager,
 		private host: string,
 	) {}
 
@@ -58,15 +59,15 @@ export class PaymentClient {
 	}
 
 	private async sign(request: any) {
-		request.username = this.mimerClient.username
+		request.username = this.authManager.username
 		request.timestamp = new Date()
-		await this.mimerClient.signRequest(request)
+		await this.authManager.signRequest(request)
 		return request
 	}
 
 	public async createAuthQuery(request: any) {
-		request.username = this.mimerClient.username
-		await this.mimerClient.signRequest(request)
+		request.username = this.authManager.username
+		await this.authManager.signRequest(request)
 		return btoa(JSON.stringify(request))
 	}
 

@@ -25,7 +25,9 @@ export class AuthenticationManager {
 		private api: MimiriClient,
 		private cryptoManager: CryptographyManager,
 		private sharedState: SharedState,
-	) {}
+	) {
+		this.api.setAuthManager(this)
+	}
 
 	public async checkUsername(
 		username: string,
@@ -153,6 +155,12 @@ export class AuthenticationManager {
 					loginData.rootSignature.privateKey,
 				)
 				await this.db.open(this._username)
+				const initializationData = await this.db.getInitializationData()
+				if (initializationData.local) {
+					this.sharedState.workOffline = true
+					this.sharedState.isLocalOnly = true
+				}
+
 				if (!(await this.goOnline())) {
 					const data = JSON.parse(await this.cryptoManager.rootCrypt.decrypt(loginData.data))
 					this.sharedState.clientConfig = data.clientConfig
@@ -167,15 +175,9 @@ export class AuthenticationManager {
 		return false
 	}
 
-	public async createUser(
-		username: string,
-		password: string,
-		userData: any,
-		pow: string,
-		iterations: number,
-	): Promise<void> {
-		console.log('Creating user:', username)
-		await this.db.open(username)
+	public async promoteToCloudAccount(username: string, password: string, pow: string, iterations: number) {}
+
+	public async promoteToLocalAccount(username: string, password: string, iterations: number) {
 		const initializationData: InitializationData = {
 			password: {
 				algorithm: DEFAULT_PASSWORD_ALGORITHM,
@@ -197,7 +199,8 @@ export class AuthenticationManager {
 				privateKey: '',
 			},
 			userId: emptyGuid(),
-			userData,
+			userData: '',
+			local: true,
 		}
 
 		this._userCryptAlgorithm = initializationData.userCrypt.algorithm
@@ -215,19 +218,18 @@ export class AuthenticationManager {
 		initializationData.rootSignature.publicKey = await this._rootSignature.publicKeyPem()
 		initializationData.rootSignature.privateKey = await userCrypt.encrypt(await this._rootSignature.privateKeyPem())
 
-		await this.db.setInitializationData(initializationData)
+		initializationData.userData = await this.cryptoManager.rootCrypt.encrypt(JSON.stringify(this.userData))
 
-		this._userData = userData
-		this._username = username
-		this.sharedState.isLocal = false
-		await this.db.setUserData(this._userData)
+		await this.db.setInitializationData(initializationData)
+		await this.cryptoManager.reencryptLocalCrypt()
+		await this.db.renameDatabase(username)
 	}
 
 	public async login(data: LoginData): Promise<boolean> {
 		await this.db.open(data.username)
 		let localInitializationData = true
 		let initializationData = await this.db.getInitializationData()
-		if (!initializationData) {
+		if (!initializationData?.local) {
 			localInitializationData = false
 			// TODO compare with local data after going online
 			initializationData = await this.api.authenticate(data.username, data.password)
@@ -263,7 +265,7 @@ export class AuthenticationManager {
 				break
 			} catch (ex) {
 				if (localInitializationData) {
-					console.error('Failed to login locally trying online')
+					console.error('Failed to login locally trying online', ex)
 					localInitializationData = false
 					initializationData = await this.api.authenticate(data.username, data.password)
 					continue
@@ -272,8 +274,12 @@ export class AuthenticationManager {
 			}
 		}
 
-		await this.api.setRootSignature(this._username, this._rootSignature)
-		await this.api.openWebSocket()
+		if (!initializationData.local) {
+			await this.api.openWebSocket()
+		} else {
+			this.sharedState.workOffline = true
+			this.sharedState.isLocalOnly = true
+		}
 
 		await this.db.setInitializationData(initializationData)
 
@@ -314,7 +320,9 @@ export class AuthenticationManager {
 	}
 
 	public async goOnline(attempt: number = 0): Promise<boolean> {
-		this.api.setRootSignature(this._username, this._rootSignature)
+		if (this.sharedState.isLocalOnly) {
+			return false
+		}
 		try {
 			const data = await this.api.verifyCredentials()
 			if (data === 'REJECTED') {
@@ -340,6 +348,14 @@ export class AuthenticationManager {
 		if (this.sharedState.isLocal) {
 			return this.db.setUserData(this._userData)
 		}
+	}
+
+	public async signRequest(request: any): Promise<any> {
+		await this._rootSignature.sign('user', request)
+	}
+
+	public async decrypt(data: string): Promise<string> {
+		return this._rootSignature.decrypt(data)
 	}
 
 	public async changeUserNameAndPassword(

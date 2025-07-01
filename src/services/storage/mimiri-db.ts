@@ -1,13 +1,41 @@
 import { openDB, type IDBPDatabase, type IDBPTransaction } from 'idb'
-import type { Guid } from '../types/guid'
+import { newGuid, type Guid } from '../types/guid'
 import type { InitializationData, KeyData, LocalData, LocalUserData, NoteData } from './type'
 
 export class MimiriDb {
+	private logicalName: string = ''
 	private db: IDBPDatabase<any>
 	constructor() {}
 
+	private async openMappingDb(): Promise<IDBPDatabase<any>> {
+		return openDB('mimiri', 1, {
+			upgrade(db) {
+				if (!db.objectStoreNames.contains('name-mappings')) {
+					db.createObjectStore('name-mappings')
+				}
+			},
+		})
+	}
+
+	private async getDbName(logicalName: string): Promise<string> {
+		const mappingDb = await this.openMappingDb()
+		try {
+			const mapping = await mappingDb.get('name-mappings', logicalName)
+			if (mapping) {
+				return mapping.actualName
+			}
+			const actualName = `mimiri-${newGuid()}`
+			await mappingDb.put('name-mappings', { actualName }, logicalName)
+			return actualName
+		} finally {
+			await mappingDb.close()
+		}
+	}
+
 	public async open(username: string) {
-		this.db = await openDB(`mimiri-${username}`, 4, {
+		this.logicalName = username
+		const actualDbName = await this.getDbName(this.logicalName)
+		this.db = await openDB(actualDbName, 4, {
 			upgrade(db) {
 				if (!db.objectStoreNames.contains('note-store')) {
 					db.createObjectStore('note-store')
@@ -39,6 +67,17 @@ export class MimiriDb {
 		if (db) {
 			this.db = undefined as any
 			await db.close()
+		}
+	}
+
+	public async renameDatabase(newName: string): Promise<void> {
+		const mappingDb = await this.openMappingDb()
+		try {
+			await mappingDb.put('name-mappings', { actualName: this.db.name }, newName)
+			await mappingDb.delete('name-mappings', this.logicalName)
+			this.logicalName = newName
+		} finally {
+			await mappingDb.close()
 		}
 	}
 

@@ -23,7 +23,7 @@ export class CryptographyManager {
 			this._localCrypt = await SymmetricCrypt.create(SymmetricCrypt.DEFAULT_SYMMETRIC_ALGORITHM)
 			localData = {
 				localCrypt: {
-					algorithm: SymmetricCrypt.DEFAULT_SYMMETRIC_ALGORITHM,
+					algorithm: this._localCrypt.algorithm,
 					key: await this._rootCrypt.encryptBytes(await this._localCrypt.getKey()),
 				},
 			}
@@ -34,6 +34,18 @@ export class CryptographyManager {
 				await this._rootCrypt.decryptBytes(localData.localCrypt.key),
 			)
 		}
+	}
+
+	public async reencryptLocalCrypt(): Promise<void> {
+		const localData = await this.db.getLocalData()
+		if (!localData) {
+			throw new Error('Local data not found, cannot re-encrypt local crypt.')
+		}
+		localData.localCrypt = {
+			algorithm: this._localCrypt.algorithm,
+			key: await this._rootCrypt.encryptBytes(await this._localCrypt.getKey()),
+		}
+		await this.db.setLocalData(localData)
 	}
 
 	public async tryDecryptNoteItemObject(item: { data: string; type: string }, crypt: SymmetricCrypt): Promise<any> {

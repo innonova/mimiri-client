@@ -1,6 +1,6 @@
 import { debug } from '../../global'
 import { CryptSignature } from '../crypt-signature'
-import { toBase64 } from '../hex-base64'
+import { toBase64, toHex } from '../hex-base64'
 import { passwordHasher } from '../password-hasher'
 import { dateTimeNow } from '../types/date-time'
 import { newGuid, type Guid } from '../types/guid'
@@ -9,6 +9,7 @@ import type {
 	AddCommentRequest,
 	BasicRequest,
 	CheckUsernameRequest,
+	CreateUserRequest,
 	DeleteShareRequest,
 	KeySyncAction,
 	LoginRequest,
@@ -45,6 +46,9 @@ import type { InitializationData, SharedState, SyncInfo } from './type'
 import { HubConnectionBuilder } from '@microsoft/signalr'
 import { HttpClientBase } from './http-client-base'
 import { incrementalDelay } from '../helpers'
+import type { AuthenticationManager } from './authentication-manager'
+import { SymmetricCrypt } from '../symmetric-crypt'
+import { DEFAULT_PASSWORD_ALGORITHM, DEFAULT_SALT_SIZE } from './mimiri-store'
 
 export class VersionConflictError extends Error {
 	constructor(public conflicts: VersionConflict[]) {
@@ -54,8 +58,7 @@ export class VersionConflictError extends Error {
 }
 
 export class MimiriClient extends HttpClientBase {
-	private username: string
-	private rootSignature: CryptSignature
+	private _authManager: AuthenticationManager
 	private _signalRConnection: any = null
 	private _websocketRequested: boolean = false
 
@@ -79,6 +82,61 @@ export class MimiriClient extends HttpClientBase {
 		}
 		return await this.post<CheckUsernameResponse>('/user/available', request)
 	}
+
+	// public async createUser(username: string, password: string, userData: any, pow: string, iterations: number) {
+	// 	try {
+	// 		const rootCrypt = await SymmetricCrypt.create(SymmetricCrypt.DEFAULT_SYMMETRIC_ALGORITHM)
+	// 		const rootSignature = await CryptSignature.create(CryptSignature.DEFAULT_ASYMMETRIC_ALGORITHM)
+
+	// 		const passwordAlgorithm = DEFAULT_PASSWORD_ALGORITHM
+	// 		const passwordIterations = iterations
+	// 		const passwordSalt = toHex(crypto.getRandomValues(new Uint8Array(DEFAULT_SALT_SIZE)))
+	// 		const passwordHash = await passwordHasher.hashPassword(
+	// 			password,
+	// 			passwordSalt,
+	// 			passwordAlgorithm,
+	// 			passwordIterations,
+	// 		)
+
+	// 		const salt = toHex(crypto.getRandomValues(new Uint8Array(DEFAULT_SALT_SIZE)))
+
+	// 		const userCrypt = await SymmetricCrypt.fromPassword(
+	// 			SymmetricCrypt.DEFAULT_SYMMETRIC_ALGORITHM,
+	// 			password,
+	// 			salt,
+	// 			iterations,
+	// 		)
+
+	// 		const request: CreateUserRequest = {
+	// 			username,
+	// 			iterations,
+	// 			salt,
+	// 			algorithm: userCrypt.algorithm,
+	// 			asymmetricAlgorithm: rootSignature.algorithm,
+	// 			publicKey: await rootSignature.publicKeyPem(),
+	// 			privateKey: await userCrypt.encrypt(await rootSignature.privateKeyPem()),
+	// 			password: {
+	// 				algorithm: passwordAlgorithm,
+	// 				iterations: passwordIterations,
+	// 				salt: passwordSalt,
+	// 				hash: passwordHash,
+	// 			},
+	// 			symmetricAlgorithm: rootCrypt.algorithm,
+	// 			symmetricKey: await userCrypt.encryptBytes(await rootCrypt.getKey()),
+	// 			data: await rootCrypt.encrypt(JSON.stringify(userData)),
+	// 			pow,
+	// 			timestamp: dateTimeNow(),
+	// 			requestId: newGuid(),
+	// 			signatures: [],
+	// 		}
+	// 		await rootSignature.sign('user', request)
+	// 		await this.post<BasicResponse>('/user/create', request, true)
+	// 	} catch (ex) {
+	// 		debug.logError('Failed to create user', ex)
+	// 		this.logout()
+	// 		throw ex
+	// 	}
+	// }
 
 	public async authenticate(username: string, password: string): Promise<InitializationData | undefined> {
 		let loginResponse: LoginResponse = undefined
@@ -107,7 +165,6 @@ export class MimiriClient extends HttpClientBase {
 
 			loginResponse = await this.post<LoginResponse>('/user/login', loginRequest)
 
-			this.username = username
 			this.sharedState.clientConfig = JSON.parse(loginResponse.config ?? '{}') as ClientConfig
 			this.sharedState.userStats.size = +loginResponse.size
 			this.sharedState.userStats.noteCount = +loginResponse.noteCount
@@ -147,7 +204,9 @@ export class MimiriClient extends HttpClientBase {
 
 	public async verifyPassword(password: string): Promise<boolean> {
 		try {
-			const preLoginResponse = await this.get<PreLoginResponse>(`/user/pre-login/${this.username}?q=${Date.now()}`)
+			const preLoginResponse = await this.get<PreLoginResponse>(
+				`/user/pre-login/${this._authManager.username}?q=${Date.now()}`,
+			)
 			const passwordHash = await passwordHasher.hashPassword(
 				password,
 				preLoginResponse.salt,
@@ -155,7 +214,7 @@ export class MimiriClient extends HttpClientBase {
 				preLoginResponse.iterations,
 			)
 			const loginRequest: LoginRequest = {
-				username: this.username,
+				username: this._authManager.username,
 				response: await passwordHasher.computeResponse(passwordHash, preLoginResponse.challenge),
 				hashLength: passwordHash.length / 2,
 			}
@@ -165,19 +224,18 @@ export class MimiriClient extends HttpClientBase {
 		return false
 	}
 
-	public async setRootSignature(username: string, signature: CryptSignature): Promise<void> {
-		this.username = username
-		this.rootSignature = signature
+	public setAuthManager(auth: AuthenticationManager) {
+		this._authManager = auth
 	}
 
 	public async verifyCredentials(): Promise<string | undefined> {
 		const getDataRequest: BasicRequest = {
-			username: this.username,
+			username: this._authManager.username,
 			timestamp: dateTimeNow(),
 			requestId: newGuid(),
 			signatures: [],
 		}
-		await this.rootSignature!.sign('user', getDataRequest)
+		await this._authManager.signRequest(getDataRequest)
 		try {
 			const response = await this.post<UserDataResponse>(`/user/get-data`, getDataRequest)
 			this.sharedState.clientConfig = JSON.parse(response.config ?? '{}') as ClientConfig
@@ -198,14 +256,14 @@ export class MimiriClient extends HttpClientBase {
 
 	public async getChangesSince(noteSince: number, keySince: number): Promise<SyncInfo> {
 		const request: SyncRequest = {
-			username: this.username,
+			username: this._authManager.username,
 			noteSince,
 			keySince,
 			timestamp: dateTimeNow(),
 			requestId: newGuid(),
 			signatures: [],
 		}
-		await this.rootSignature.sign('user', request)
+		await this._authManager.signRequest(request)
 
 		const response = await this.post<SyncResponse>('/sync/changes-since', request)
 
@@ -214,13 +272,13 @@ export class MimiriClient extends HttpClientBase {
 
 	public async multiAction(actions: NoteAction[]): Promise<Guid[]> {
 		const request: MultiNoteRequest = {
-			username: this.username,
+			username: this._authManager.username,
 			actions,
 			timestamp: dateTimeNow(),
 			requestId: newGuid(),
 			signatures: [],
 		}
-		await this.rootSignature.sign('user', request)
+		await this._authManager.signRequest(request)
 		const affectedIds: Guid[] = []
 		const keys: { [key: Guid]: boolean } = {}
 		for (const action of actions) {
@@ -243,14 +301,14 @@ export class MimiriClient extends HttpClientBase {
 
 	public async getPublicKey(keyOwnerName: string, pow: string) {
 		const request: PublicKeyRequest = {
-			username: this.username,
+			username: this._authManager.username,
 			pow,
 			keyOwnerName,
 			timestamp: dateTimeNow(),
 			requestId: newGuid(),
 			signatures: [],
 		}
-		await this.rootSignature.sign('user', request)
+		await this._authManager.signRequest(request)
 		const response = await this.post<PublicKeyResponse>('/user/public-key', request)
 
 		return await CryptSignature.fromPem(response.asymmetricAlgorithm, response.publicKey)
@@ -261,7 +319,7 @@ export class MimiriClient extends HttpClientBase {
 		const pub = await this.getPublicKey(recipient, pow)
 		const info: NoteShareInfo = {
 			id: newGuid(),
-			sender: this.username,
+			sender: this._authManager.username,
 			created: dateTimeNow(),
 			name,
 			noteId,
@@ -273,7 +331,7 @@ export class MimiriClient extends HttpClientBase {
 			privateKey: await keySet.signature.privateKeyPem(),
 		}
 		const request: ShareNoteRequest = {
-			username: this.username,
+			username: this._authManager.username,
 			recipient,
 			keyName,
 			data: await pub.encrypt(JSON.stringify(info)),
@@ -281,21 +339,21 @@ export class MimiriClient extends HttpClientBase {
 			requestId: newGuid(),
 			signatures: [],
 		}
-		await this.rootSignature.sign('user', request)
+		await this._authManager.signRequest(request)
 		await keySet.signature.sign('key', request)
 		return await this.post<ShareResponse>('/note/share', request)
 	}
 
 	public async syncPushChanges(noteActions: NoteSyncAction[], keyActions: KeySyncAction[]): Promise<SyncResult[]> {
 		const request: SyncPushRequest = {
-			username: this.username,
+			username: this._authManager.username,
 			notes: noteActions,
 			keys: keyActions,
 			timestamp: dateTimeNow(),
 			requestId: newGuid(),
 			signatures: [],
 		}
-		await this.rootSignature.sign('user', request)
+		await this._authManager.signRequest(request)
 		const response = await this.post<SyncPushResponse>('/sync/push-changes', request)
 		return response.results
 	}
@@ -307,18 +365,18 @@ export class MimiriClient extends HttpClientBase {
 
 	public async createNotificationUrl() {
 		const request: BasicRequest = {
-			username: this.username,
+			username: this._authManager.username,
 			timestamp: dateTimeNow(),
 			requestId: newGuid(),
 			signatures: [],
 		}
-		await this.rootSignature.sign('user', request)
+		await this._authManager.signRequest(request)
 		return await this.post<NotificationUrlResponse>('/notification/create-url', request)
 	}
 
 	public async addComment(postId: Guid, displayName: string, comment: string) {
 		const request: AddCommentRequest = {
-			username: this.username,
+			username: this._authManager.username,
 			postId,
 			displayName,
 			comment,
@@ -326,26 +384,26 @@ export class MimiriClient extends HttpClientBase {
 			requestId: newGuid(),
 			signatures: [],
 		}
-		await this.rootSignature.sign('user', request)
+		await this._authManager.signRequest(request)
 		return await this.post<BasicResponse>('/feedback/add-comment', request)
 	}
 
 	public async getShareOffer(code: string) {
 		try {
 			const request: ShareOfferRequest = {
-				username: this.username,
+				username: this._authManager.username,
 				timestamp: dateTimeNow(),
 				requestId: newGuid(),
 				code,
 				signatures: [],
 			}
-			await this.rootSignature.sign('user', request)
+			await this._authManager.signRequest(request)
 			const response = await this.post<ShareOffersResponse>('/note/share-offer', request)
 			const result: NoteShareInfo[] = []
 			for (const offer of response.offers) {
 				let offerData: any = {}
 				try {
-					offerData = JSON.parse(await this.rootSignature.decrypt(offer.data))
+					offerData = JSON.parse(await this._authManager.decrypt(offer.data))
 				} catch (ex) {
 					debug.logError('Failed to parse share offer data', ex)
 					offerData.sender = 'error'
@@ -369,25 +427,25 @@ export class MimiriClient extends HttpClientBase {
 
 	public async deleteShareOffer(id: Guid) {
 		const request: DeleteShareRequest = {
-			username: this.username,
+			username: this._authManager.username,
 			id,
 			timestamp: dateTimeNow(),
 			requestId: newGuid(),
 			signatures: [],
 		}
-		await this.rootSignature.sign('user', request)
+		await this._authManager.signRequest(request)
 		await this.post<BasicResponse>('/note/share/delete', request)
 	}
 
 	public async getShareParticipants(id: Guid) {
 		const request: ShareParticipantsRequest = {
-			username: this.username,
+			username: this._authManager.username,
 			timestamp: dateTimeNow(),
 			requestId: newGuid(),
 			id,
 			signatures: [],
 		}
-		await this.rootSignature.sign('user', request)
+		await this._authManager.signRequest(request)
 		const response = await this.post<ShareParticipantsResponse>('/note/share-participants', request)
 		return response.participants
 	}
@@ -466,8 +524,6 @@ export class MimiriClient extends HttpClientBase {
 
 	public async logout(): Promise<void> {
 		await this.closeWebSocket()
-		this.username = undefined
-		this.rootSignature = undefined
 	}
 
 	get workOffline(): boolean {

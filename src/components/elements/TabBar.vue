@@ -35,4 +35,15 @@ const tabClick = (item: string) => {
 	selected.value = item
 	emit('selected', item)
 }
+
+const selectTab = (item: string) => {
+	if (props.items.includes(item)) {
+		selected.value = item
+		emit('selected', item)
+	}
+}
+
+defineExpose({
+	selectTab,
+})
 </script>

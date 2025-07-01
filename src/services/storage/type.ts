@@ -20,6 +20,7 @@ export interface SharedState {
 	isLoggedIn: boolean
 	isOnline: boolean
 	isLocal: boolean
+	isLocalOnly: boolean
 	workOffline: boolean
 	clientConfig: ClientConfig
 	userStats: UserStats
@@ -47,6 +48,7 @@ export interface InitializationData {
 	}
 	userId: Guid
 	userData: string
+	local?: boolean
 }
 
 export interface LocalData {

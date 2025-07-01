@@ -106,7 +106,7 @@ const show = (initial: boolean = false) => {
 
 const cancel = async () => {
 	if (!noteManager.isLoggedIn) {
-		await noteManager.loginAnonymousAccount()
+		// await noteManager.loginAnonymousAccount()
 		if (settingsManager.showCreateOverCancel) {
 			noteManager.controlPanel.expand()
 			noteManager.getNoteById('settings-account' as Guid)?.select()

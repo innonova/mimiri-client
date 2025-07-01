@@ -89,7 +89,8 @@
 		</div>
 		<div
 			v-if="
-				!overdue && (showResume || showBuy || showUpgrade || showChange || showChangeTo || showCancel || showCurrent)
+				!overdue &&
+				(showResume || showBuy || showChoose || showUpgrade || showChange || showChangeTo || showCancel || showCurrent)
 			"
 			class="flex-1 w-full flex flex-col items-center justify-end pb-2"
 		>
@@ -112,6 +113,15 @@
 					:data-testid="`sub-${product.sku}-buy`"
 				>
 					Buy
+				</button>
+				<button
+					v-if="showChoose"
+					:disabled="disabled"
+					@click="emit('choose', product.sku)"
+					class="primary"
+					:data-testid="`sub-${product.sku}-choose`"
+				>
+					Choose
 				</button>
 				<button
 					v-if="showUpgrade"
@@ -172,6 +182,7 @@ const props = defineProps<{
 	product: SubscriptionProduct
 	subscription?: Subscription
 	showBuy?: boolean
+	showChoose?: boolean
 	showFeatures?: boolean
 	showResume?: boolean
 	showUpgrade?: boolean
@@ -185,7 +196,7 @@ const props = defineProps<{
 	disabled?: boolean
 }>()
 
-const emit = defineEmits(['buy', 'change', 'cancel', 'resume', 'pay-invoice'])
+const emit = defineEmits(['buy', 'choose', 'change', 'cancel', 'resume', 'pay-invoice'])
 
 const now = ref<Date>(currentTime())
 const overdue = computed(
