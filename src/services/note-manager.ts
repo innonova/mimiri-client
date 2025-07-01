@@ -247,39 +247,15 @@ export class NoteManager {
 			pow = await ProofOfWork.compute(username, this._proofBits)
 		}
 		await this.client.promoteToCloudAccount(username, password, pow, iterations)
+		await this.logout()
+		await this.login(username, password)
 	}
 
 	public async promoteToLocalAccount(username: string, password: string, iterations: number) {
 		await this.client.promoteToLocalAccount(username, password, iterations)
+		await this.logout()
+		await this.login(username, password)
 	}
-
-	// public async createAccount(username: string, password: string, iterations: number) {
-	// 	const userData = {
-	// 		rootNote: newGuid(),
-	// 		rootKey: newGuid(),
-	// 		createComplete: false,
-	// 	}
-	// 	let pow = ''
-	// 	if (env.DEV && username.startsWith('auto_test_')) {
-	// 		pow = 'test-mode'
-	// 	} else {
-	// 		pow = await ProofOfWork.compute(username, this._proofBits)
-	// 	}
-	// 	await this.client.createUser(username, password, userData, pow, iterations)
-
-	// 	await this.ensureCreateComplete()
-
-	// 	const note = await this.client.readNote(this.client.userData.rootNote)
-	// 	if (note) {
-	// 		this.root = new MimerNote(this as any, undefined, note)
-	// 		this.emitStatusUpdated()
-	// 	} else {
-	// 		this.root = undefined
-	// 		await this.client.logout()
-	// 		this.emitStatusUpdated()
-	// 		throw new MimerError('Login Error', 'Failed to read root node')
-	// 	}
-	// }
 
 	public async setLoginData(data: string) {
 		await this.client.setLoginData(data)
@@ -467,7 +443,7 @@ export class NoteManager {
 		}
 	}
 
-	public async login(data: LoginData) {
+	public async login(username: string, password: string) {
 		this.state.busy = true
 		this.state.spinner = false
 		this.state.busyLong = false
@@ -476,14 +452,14 @@ export class NoteManager {
 		browserHistory.openTree(ipcClient.isAvailable && Capacitor.getPlatform() === 'web')
 		this.busyStart = Date.now()
 		try {
-			await this.client.login({ ...data })
+			await this.client.login(username, password)
 			if (this.client.isLoggedIn) {
 				await this.ensureCreateComplete()
 				await this.loadRootNote()
 				await this.loadState()
 				if (!this.client.isOnline && !this.workOffline) {
 					setTimeout(() => {
-						void this.goOnline(data.password)
+						void this.goOnline(password)
 					}, 1000)
 				} else {
 					updateManager.good()
@@ -1286,6 +1262,10 @@ export class NoteManager {
 
 	public get isAnonymous() {
 		return !!this.client.username?.startsWith('mimiri_a_')
+	}
+
+	public get isLocalAccount() {
+		return this.client.isLocalAccount
 	}
 
 	public get isMobile() {

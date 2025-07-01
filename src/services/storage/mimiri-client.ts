@@ -83,60 +83,44 @@ export class MimiriClient extends HttpClientBase {
 		return await this.post<CheckUsernameResponse>('/user/available', request)
 	}
 
-	// public async createUser(username: string, password: string, userData: any, pow: string, iterations: number) {
-	// 	try {
-	// 		const rootCrypt = await SymmetricCrypt.create(SymmetricCrypt.DEFAULT_SYMMETRIC_ALGORITHM)
-	// 		const rootSignature = await CryptSignature.create(CryptSignature.DEFAULT_ASYMMETRIC_ALGORITHM)
-
-	// 		const passwordAlgorithm = DEFAULT_PASSWORD_ALGORITHM
-	// 		const passwordIterations = iterations
-	// 		const passwordSalt = toHex(crypto.getRandomValues(new Uint8Array(DEFAULT_SALT_SIZE)))
-	// 		const passwordHash = await passwordHasher.hashPassword(
-	// 			password,
-	// 			passwordSalt,
-	// 			passwordAlgorithm,
-	// 			passwordIterations,
-	// 		)
-
-	// 		const salt = toHex(crypto.getRandomValues(new Uint8Array(DEFAULT_SALT_SIZE)))
-
-	// 		const userCrypt = await SymmetricCrypt.fromPassword(
-	// 			SymmetricCrypt.DEFAULT_SYMMETRIC_ALGORITHM,
-	// 			password,
-	// 			salt,
-	// 			iterations,
-	// 		)
-
-	// 		const request: CreateUserRequest = {
-	// 			username,
-	// 			iterations,
-	// 			salt,
-	// 			algorithm: userCrypt.algorithm,
-	// 			asymmetricAlgorithm: rootSignature.algorithm,
-	// 			publicKey: await rootSignature.publicKeyPem(),
-	// 			privateKey: await userCrypt.encrypt(await rootSignature.privateKeyPem()),
-	// 			password: {
-	// 				algorithm: passwordAlgorithm,
-	// 				iterations: passwordIterations,
-	// 				salt: passwordSalt,
-	// 				hash: passwordHash,
-	// 			},
-	// 			symmetricAlgorithm: rootCrypt.algorithm,
-	// 			symmetricKey: await userCrypt.encryptBytes(await rootCrypt.getKey()),
-	// 			data: await rootCrypt.encrypt(JSON.stringify(userData)),
-	// 			pow,
-	// 			timestamp: dateTimeNow(),
-	// 			requestId: newGuid(),
-	// 			signatures: [],
-	// 		}
-	// 		await rootSignature.sign('user', request)
-	// 		await this.post<BasicResponse>('/user/create', request, true)
-	// 	} catch (ex) {
-	// 		debug.logError('Failed to create user', ex)
-	// 		this.logout()
-	// 		throw ex
-	// 	}
-	// }
+	public async createAccount(username: string, password: string, initializationData: InitializationData, pow: string) {
+		try {
+			const hash = await passwordHasher.hashPassword(
+				password,
+				initializationData.password.salt,
+				initializationData.password.algorithm,
+				initializationData.password.iterations,
+			)
+			const request: CreateUserRequest = {
+				username,
+				iterations: initializationData.userCrypt.iterations,
+				salt: initializationData.userCrypt.salt,
+				algorithm: initializationData.userCrypt.algorithm,
+				asymmetricAlgorithm: initializationData.rootSignature.algorithm,
+				publicKey: initializationData.rootSignature.publicKey,
+				privateKey: initializationData.rootSignature.privateKey,
+				password: {
+					algorithm: initializationData.password.algorithm,
+					iterations: initializationData.password.iterations,
+					salt: initializationData.password.salt,
+					hash,
+				},
+				symmetricAlgorithm: initializationData.rootCrypt.algorithm,
+				symmetricKey: initializationData.rootCrypt.key,
+				data: initializationData.userData,
+				pow,
+				timestamp: dateTimeNow(),
+				requestId: newGuid(),
+				signatures: [],
+			}
+			await this._authManager.signRequest(request)
+			await this.post<BasicResponse>('/user/create', request, true)
+		} catch (ex) {
+			debug.logError('Failed to create user', ex)
+			this.logout()
+			throw ex
+		}
+	}
 
 	public async authenticate(username: string, password: string): Promise<InitializationData | undefined> {
 		let loginResponse: LoginResponse = undefined

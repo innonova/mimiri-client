@@ -71,13 +71,15 @@ export class MimiriDb {
 	}
 
 	public async renameDatabase(newName: string): Promise<void> {
-		const mappingDb = await this.openMappingDb()
-		try {
-			await mappingDb.put('name-mappings', { actualName: this.db.name }, newName)
-			await mappingDb.delete('name-mappings', this.logicalName)
-			this.logicalName = newName
-		} finally {
-			await mappingDb.close()
+		if (this.logicalName !== newName) {
+			const mappingDb = await this.openMappingDb()
+			try {
+				await mappingDb.put('name-mappings', { actualName: this.db.name }, newName)
+				await mappingDb.delete('name-mappings', this.logicalName)
+				this.logicalName = newName
+			} finally {
+				await mappingDb.close()
+			}
 		}
 	}
 
@@ -123,6 +125,10 @@ export class MimiriDb {
 
 	public async getInitializationData(): Promise<InitializationData | undefined> {
 		return this.db.get('user-store', 'initialization-data')
+	}
+
+	public async deleteInitializationData(): Promise<void> {
+		return this.db.delete('user-store', 'initialization-data')
 	}
 
 	public async setUserData(userData: any): Promise<void> {

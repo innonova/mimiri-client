@@ -95,9 +95,24 @@ export const createControlPanelTree = (owner: NoteManager, parent: MimerNote): M
 					{
 						id: 'settings-account' as Guid,
 						title: 'Account',
-						type: noteManager.isAnonymous ? 'settings-create-password' : 'settings-username',
+						type: noteManager.isAnonymous
+							? 'settings-create-password'
+							: noteManager.isLocalAccount
+								? 'settings-upgrade'
+								: 'settings-username',
 						icon: 'account',
 						children: [
+							...(noteManager.isLocalAccount
+								? [
+										{
+											id: 'settings-upgrade' as Guid,
+											title: 'Connect Cloud',
+											type: 'settings-upgrade',
+											icon: 'account',
+											children: [],
+										},
+									]
+								: []),
 							...(!noteManager.isAnonymous
 								? [
 										{

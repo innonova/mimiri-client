@@ -123,7 +123,7 @@ const login = async () => {
 	const isPristine = await noteManager.isAccountPristine()
 	await noteManager.logout()
 
-	if (await noteManager.login({ username: username.value, password: password.value })) {
+	if (await noteManager.login(username.value, password.value)) {
 		if (isAnonymous) {
 			settingsManager.showCreateOverCancel = isPristine
 		}

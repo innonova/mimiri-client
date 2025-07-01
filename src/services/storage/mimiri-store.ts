@@ -165,8 +165,8 @@ export class MimiriStore {
 	// 	await this.cryptoManager.loadAllKeys()
 	// }
 
-	public async login(data: LoginData): Promise<boolean> {
-		if (await this.authManager.login(data)) {
+	public async login(username: string, password: string): Promise<boolean> {
+		if (await this.authManager.login(username, password)) {
 			await this.cryptoManager.ensureLocalCrypt()
 			await this.syncService.initialSync()
 			await this.cryptoManager.loadAllKeys()
@@ -426,10 +426,15 @@ export class MimiriStore {
 		return this.sharedState.clientConfig
 	}
 
-	get workOffline(): boolean {
+	public get isLocalAccount(): boolean {
+		return this.sharedState.isLocalOnly
+	}
+
+	public get workOffline(): boolean {
 		return this.api.workOffline
 	}
-	set workOffline(value: boolean) {
+
+	public set workOffline(value: boolean) {
 		this.api.workOffline = value
 	}
 }

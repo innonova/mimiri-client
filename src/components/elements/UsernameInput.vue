@@ -36,13 +36,12 @@ const props = defineProps<{
 	displayCurrent: boolean
 }>()
 
-const value = defineModel<string>('value')
+const username = defineModel<string>('value')
 const valid = defineModel<boolean>('valid')
 
 const emit = defineEmits(['changed'])
 
 const canSave = ref(false)
-const username = ref('')
 const usernameCurrent = ref(false)
 const usernameInvalid = ref(false)
 const usernameAvailable = ref(false)
@@ -51,7 +50,7 @@ const usernameInProgress = ref(false)
 
 const checkUsernameDebounce = new Debounce(async () => {
 	try {
-		if (noteManager.state.authenticated && username.value === noteManager.username) {
+		if (noteManager.state.authenticated && username.value === noteManager.username && !noteManager.isLocalAccount) {
 			usernameCurrent.value = true
 			usernameInvalid.value = false
 			usernameInProgress.value = false
@@ -96,7 +95,6 @@ const checkUsernameDebounce = new Debounce(async () => {
 		canSave.value =
 			usernameAvailable.value && !usernameInvalid.value && !usernameCurrent.value && !usernameUnavailable.value
 
-		value.value = username.value
 		valid.value = canSave.value
 		emit('changed', canSave.value, username.value)
 	}
@@ -107,7 +105,7 @@ watch(username, () => {
 })
 
 onMounted(() => {
-	if (noteManager.state.authenticated) {
+	if (noteManager.state.authenticated && !noteManager.isLocalAccount) {
 		usernameCurrent.value = true
 		usernameInvalid.value = false
 		usernameInProgress.value = false

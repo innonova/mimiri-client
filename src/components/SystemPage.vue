@@ -10,6 +10,7 @@
 				<PinCode v-if="type === 'settings-pin'"></PinCode>
 				<PromoteAccount v-if="type === 'settings-create-password'"></PromoteAccount>
 				<CreateAccount v-if="type === 'settings-create-account'"></CreateAccount>
+				<Upgrade v-if="type === 'settings-upgrade'"></Upgrade>
 				<Username v-if="type === 'settings-username'"></Username>
 				<Password v-if="type === 'settings-password'"></Password>
 				<DeleteAccount v-if="type === 'settings-delete'"></DeleteAccount>
@@ -40,6 +41,7 @@ import DeleteAccount from './settings/DeleteAccount.vue'
 import Account from './subscription/Account.vue'
 import PromoteAccount from './settings/PromoteAccount.vue'
 import CreateAccount from './settings/CreateAccount2.vue'
+import Upgrade from './settings/Upgrade.vue'
 import About from './settings/About.vue'
 import DevBlog from './settings/DevBlog.vue'
 import Debug from './settings/Debug.vue'

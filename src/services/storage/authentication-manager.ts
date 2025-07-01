@@ -156,7 +156,7 @@ export class AuthenticationManager {
 				)
 				await this.db.open(this._username)
 				const initializationData = await this.db.getInitializationData()
-				if (initializationData.local) {
+				if (initializationData?.local) {
 					this.sharedState.workOffline = true
 					this.sharedState.isLocalOnly = true
 				}
@@ -175,7 +175,87 @@ export class AuthenticationManager {
 		return false
 	}
 
-	public async promoteToCloudAccount(username: string, password: string, pow: string, iterations: number) {}
+	public async promoteToCloudAccount(username: string, password: string, pow: string, iterations: number) {
+		let initializationData = await this.db.getInitializationData()
+		if (initializationData?.local) {
+			initializationData.userCrypt = {
+				algorithm: SymmetricCrypt.DEFAULT_SYMMETRIC_ALGORITHM,
+				salt: toHex(crypto.getRandomValues(new Uint8Array(DEFAULT_SALT_SIZE))),
+				iterations,
+			}
+
+			const userCrypt = await SymmetricCrypt.fromPassword(
+				initializationData.userCrypt.algorithm,
+				password,
+				initializationData.userCrypt.salt,
+				initializationData.userCrypt.iterations,
+			)
+
+			initializationData.password = {
+				algorithm: DEFAULT_PASSWORD_ALGORITHM,
+				salt: toHex(crypto.getRandomValues(new Uint8Array(DEFAULT_SALT_SIZE))),
+				iterations,
+			}
+			initializationData.rootCrypt = {
+				algorithm: this.cryptoManager.rootCrypt.algorithm,
+				key: await userCrypt.encryptBytes(await this.cryptoManager.rootCrypt.getKey()),
+			}
+			initializationData.rootSignature = {
+				algorithm: CryptSignature.DEFAULT_ASYMMETRIC_ALGORITHM,
+				publicKey: await this._rootSignature.publicKeyPem(),
+				privateKey: await userCrypt.encrypt(await this._rootSignature.privateKeyPem()),
+			}
+			initializationData.userData = await this.cryptoManager.rootCrypt.encrypt(JSON.stringify(this.userData))
+			delete initializationData.local
+		} else {
+			initializationData = {
+				password: {
+					algorithm: DEFAULT_PASSWORD_ALGORITHM,
+					salt: toHex(crypto.getRandomValues(new Uint8Array(DEFAULT_SALT_SIZE))),
+					iterations,
+				},
+				userCrypt: {
+					algorithm: SymmetricCrypt.DEFAULT_SYMMETRIC_ALGORITHM,
+					salt: toHex(crypto.getRandomValues(new Uint8Array(DEFAULT_SALT_SIZE))),
+					iterations,
+				},
+				rootCrypt: {
+					algorithm: SymmetricCrypt.DEFAULT_SYMMETRIC_ALGORITHM,
+					key: '',
+				},
+				rootSignature: {
+					algorithm: CryptSignature.DEFAULT_ASYMMETRIC_ALGORITHM,
+					publicKey: '',
+					privateKey: '',
+				},
+				userId: emptyGuid(),
+				userData: '',
+			}
+
+			this._userCryptAlgorithm = initializationData.userCrypt.algorithm
+			const userCrypt = await SymmetricCrypt.fromPassword(
+				initializationData.userCrypt.algorithm,
+				password,
+				initializationData.userCrypt.salt,
+				initializationData.userCrypt.iterations,
+			)
+
+			this.cryptoManager.rootCrypt = await SymmetricCrypt.create(initializationData.rootCrypt.algorithm)
+			initializationData.rootCrypt.key = await userCrypt.encryptBytes(await this.cryptoManager.rootCrypt.getKey())
+
+			this._rootSignature = await CryptSignature.create(CryptSignature.DEFAULT_ASYMMETRIC_ALGORITHM)
+			initializationData.rootSignature.publicKey = await this._rootSignature.publicKeyPem()
+			initializationData.rootSignature.privateKey = await userCrypt.encrypt(await this._rootSignature.privateKeyPem())
+
+			initializationData.userData = await this.cryptoManager.rootCrypt.encrypt(JSON.stringify(this.userData))
+		}
+		await this.api.createAccount(username, password, initializationData, pow)
+		await this.cryptoManager.reencryptLocalCrypt()
+		await this.db.renameDatabase(username)
+		await this.db.deleteInitializationData()
+		this.sharedState.workOffline = false
+		this.sharedState.isLocalOnly = false
+	}
 
 	public async promoteToLocalAccount(username: string, password: string, iterations: number) {
 		const initializationData: InitializationData = {
@@ -225,14 +305,14 @@ export class AuthenticationManager {
 		await this.db.renameDatabase(username)
 	}
 
-	public async login(data: LoginData): Promise<boolean> {
-		await this.db.open(data.username)
+	public async login(username: string, password: string): Promise<boolean> {
+		await this.db.open(username)
 		let localInitializationData = true
 		let initializationData = await this.db.getInitializationData()
 		if (!initializationData?.local) {
 			localInitializationData = false
 			// TODO compare with local data after going online
-			initializationData = await this.api.authenticate(data.username, data.password)
+			initializationData = await this.api.authenticate(username, password)
 		}
 		if (!initializationData) {
 			return false
@@ -242,7 +322,7 @@ export class AuthenticationManager {
 				this._userCryptAlgorithm = initializationData.userCrypt.algorithm
 				const userCrypt = await SymmetricCrypt.fromPassword(
 					initializationData.userCrypt.algorithm,
-					data.password,
+					password,
 					initializationData.userCrypt.salt,
 					initializationData.userCrypt.iterations,
 				)
@@ -260,14 +340,14 @@ export class AuthenticationManager {
 					await userCrypt.decrypt(initializationData.rootSignature.privateKey),
 				)
 				this._userData = JSON.parse(await this.cryptoManager.rootCrypt.decrypt(initializationData.userData))
-				this._username = data.username
+				this._username = username
 				this.sharedState.isLocal = false
 				break
 			} catch (ex) {
 				if (localInitializationData) {
 					console.error('Failed to login locally trying online', ex)
 					localInitializationData = false
-					initializationData = await this.api.authenticate(data.username, data.password)
+					initializationData = await this.api.authenticate(username, password)
 					continue
 				}
 				return false

@@ -162,16 +162,10 @@ const emit = defineEmits(['choose'])
 
 const createAccount = async () => {
 	if (createMode.value === 'cloud') {
+		await noteManager.promoteToCloudAccount(username.value, password.value, DEFAULT_ITERATIONS)
 	} else {
 		await noteManager.promoteToLocalAccount(username.value, password.value, DEFAULT_ITERATIONS)
 	}
-
-	tabBarItems.value = ['Cloud Account']
-	loading.value = true
-	setTimeout(() => {
-		loading.value = false
-		stage.value = 'choose-plan'
-	}, 100)
 }
 
 const populate = async () => {
