@@ -16,7 +16,6 @@ import { ProofOfWork } from '../proof-of-work'
 import type { CryptographyManager } from './cryptography-manager'
 import type { NoteShareInfo } from '../types/note-share-info'
 import { DEFAULT_PROOF_BITS } from './mimiri-store'
-import type { SharingService } from './sharing-service'
 
 export class NoteOperationsManager {
 	private _proofBits = DEFAULT_PROOF_BITS
@@ -29,7 +28,6 @@ export class NoteOperationsManager {
 		private uiManager: UIStateManager,
 		private treeManager: NoteTreeManager,
 		private cryptoManager: CryptographyManager,
-		private sharingService: SharingService,
 	) {}
 
 	public async createNote(note: Note): Promise<void> {
@@ -267,7 +265,7 @@ export class NoteOperationsManager {
 			multiAction.onlineOnly()
 			const pow = await ProofOfWork.compute(recipient, this._proofBits)
 			await this.ensureShareAllowable(mimerNote)
-			await this.sharingService.getPublicKey(recipient, pow)
+			await this.api.getPublicKey(recipient, pow)
 			let sharedKey
 			if (mimerNote.isShared) {
 				sharedKey = this.cryptoManager.getKeyByName(mimerNote.keyName)
@@ -287,13 +285,7 @@ export class NoteOperationsManager {
 				}
 			}
 			await multiAction.commit()
-			const response = await this.sharingService.shareNote(
-				recipient,
-				sharedKey.name,
-				mimerNote.id,
-				mimerNote.title,
-				pow,
-			)
+			const response = await this.api.shareNote(recipient, sharedKey.name, mimerNote.id, mimerNote.title, pow)
 			return response
 		} finally {
 			this.uiManager.endAction()
@@ -349,7 +341,7 @@ export class NoteOperationsManager {
 				}
 				await multiAction.updateNote(shareParent)
 				await multiAction.commit()
-				await this.sharingService.deleteShareOffer(share.id)
+				await this.api.deleteShareOffer(share.id)
 				await parent?.expand()
 				this.treeManager.getNoteById(share.noteId)?.select()
 			}

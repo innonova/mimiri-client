@@ -7,7 +7,6 @@ import { AuthenticationManager } from './authentication-manager'
 import { CryptographyManager } from './cryptography-manager'
 import { SynchronizationService } from './synchronization-service'
 import { NoteService } from './note-service'
-import { SharingService } from './sharing-service'
 import { MimiriDb } from './mimiri-db'
 import { MimiriClient } from './mimiri-client'
 import { PaymentClient } from './payment-client'
@@ -34,7 +33,6 @@ export class MimiriStore {
 	private cryptoManager: CryptographyManager
 	private syncService: SynchronizationService
 	private noteService: NoteService
-	private sharingService: SharingService
 	private db: MimiriDb
 	private api: MimiriClient
 	private paymentClient: PaymentClient
@@ -136,7 +134,6 @@ export class MimiriStore {
 			const note = await this.noteService.readNote(noteId)
 			await noteUpdatedCallback(note)
 		})
-		this.sharingService = new SharingService(this.api)
 
 		this.uiManager = new UIStateManager(this.state)
 		this.treeManager = new NoteTreeManager(this, this.state, this.noteService, this.authManager)
@@ -148,7 +145,6 @@ export class MimiriStore {
 			this.uiManager,
 			this.treeManager,
 			this.cryptoManager,
-			this.sharingService,
 		)
 
 		this.sessionManager = new SessionManager(
@@ -249,8 +245,8 @@ export class MimiriStore {
 		isShared: (note: Note) => !!this.cryptoManager.getKeyByName(note.keyName).metadata.shared,
 		shareMimerNote: (mimerNote: MimerNote, recipient: string) =>
 			this.operationsManager.shareMimerNote(mimerNote, recipient),
-		getShareOffer: (code: string) => this.sharingService.getShareOffer(code),
-		getShareParticipants: (id: Guid) => this.sharingService.getShareParticipants(id),
+		getShareOffer: (code: string) => this.api.getShareOffer(code),
+		getShareParticipants: (id: Guid) => this.api.getShareParticipants(id),
 		acceptShare: (share: NoteShareInfo, parent?: MimerNote) => this.operationsManager.acceptShare(share, parent),
 	}
 
