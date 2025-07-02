@@ -72,7 +72,7 @@ export class MimerNote {
 		private _note: Note,
 		updateViewModel = true,
 	) {
-		this.owner.register(_note.id, this)
+		this.owner.tree.register(_note.id, this)
 		this.beforeChangeText = this.text
 		if (this.parent) {
 			this.viewModel = reactive({
@@ -232,7 +232,7 @@ export class MimerNote {
 				const ids = this._note.getItem('metadata').notes
 				for (const id of ids) {
 					if (!children.find(child => child.id == id)) {
-						const note = await this.owner.getNote(id)
+						const note = await this.owner.note.getNote(id)
 						if (note) {
 							children.push(new MimerNote(this.owner, this, note))
 							didChange = true
@@ -303,21 +303,14 @@ export class MimerNote {
 	}
 
 	public async shareWith(username: string) {
-		return this.owner.shareMimerNote(this, username)
+		return this.owner.note.shareMimerNote(this, username)
 	}
 
 	public async save() {
 		if (this.beforeChangeText !== this.text) {
-			this.owner.beginAction()
-			try {
-				await MimerNote.addHistoryEntry(this.note, this.text, this.owner.state.username, dateTimeNow())
-				await this.owner.saveNote(this)
-			} finally {
-				this.owner.endAction()
-			}
-		} else {
-			await this.owner.saveNote(this)
+			await MimerNote.addHistoryEntry(this.note, this.text, this.owner.state.username, dateTimeNow())
 		}
+		await this.owner.operations.saveNote(this)
 	}
 
 	public async expand() {
@@ -336,7 +329,7 @@ export class MimerNote {
 	}
 
 	public select() {
-		this.owner.select(this.id)
+		this.owner.tree.select(this.id)
 		let current = this.parent
 		while (current) {
 			current.expand()
@@ -347,12 +340,12 @@ export class MimerNote {
 
 	public async addChild(name: string = 'New Note') {
 		this.childrenPopulated = true
-		await this.owner.createMimerNote(this, name)
+		await this.owner.operations.createMimerNote(this, name)
 	}
 
 	public async delete() {
 		if (this.parent) {
-			await this.owner.delete(this, true)
+			await this.owner.operations.delete(this, true)
 		} else {
 			throw new Error('Cannot delete root')
 		}
@@ -374,10 +367,10 @@ export class MimerNote {
 			} else {
 				this.parent.select()
 			}
-			if (!this.owner.recycleBin.hasChildren) {
-				this.owner.recycleBin.collapse()
+			if (!this.owner.tree.recycleBin.hasChildren) {
+				this.owner.tree.recycleBin.collapse()
 			}
-			await this.owner.move(this.parent.id, this.owner.recycleBin.id, this, -1, this.isShareRoot, false)
+			await this.owner.operations.move(this.parent.id, this.owner.tree.recycleBin.id, this, -1, this.isShareRoot, false)
 		} else {
 			throw new Error('Cannot recycle root')
 		}
@@ -390,7 +383,7 @@ export class MimerNote {
 					'Deleting the reference of this note will leave it without any references, use Delete to delete the note, use force = true to override this check',
 				)
 			}
-			await this.owner.delete(this, false)
+			await this.owner.operations.delete(this, false)
 		} else {
 			throw new Error('Cannot delete root')
 		}
@@ -398,7 +391,7 @@ export class MimerNote {
 
 	public async copy(target: MimerNote, index: number = -1) {
 		if (this.parent != null) {
-			await this.owner.copy(target.id, this, index)
+			await this.owner.operations.copy(target.id, this, index)
 		} else {
 			throw new Error('Cannot copy root')
 		}
@@ -420,7 +413,7 @@ export class MimerNote {
 			if (this.isAncestorOf(target)) {
 				throw new Error('Cannot move a note into one of its children')
 			}
-			await this.owner.move(this.parent.id, target.id, this, index, this.isShareRoot, true)
+			await this.owner.operations.move(this.parent.id, target.id, this, index, this.isShareRoot, true)
 		} else {
 			throw new Error('Cannot move root')
 		}
@@ -538,7 +531,7 @@ export class MimerNote {
 	}
 
 	public get isShared() {
-		return this.owner.isShared(this.note)
+		return this.owner.note.isShared(this.note)
 	}
 
 	public get isShareRoot() {
@@ -564,7 +557,7 @@ export class MimerNote {
 	}
 
 	public get isTopLevel() {
-		return this.parent?.id === this.owner.root.id
+		return this.parent?.id === this.owner.tree.root.id
 	}
 
 	public get hasChildren() {

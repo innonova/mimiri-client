@@ -22,7 +22,7 @@ export class AuthenticationManager {
 		private db: MimiriDb,
 		private api: MimiriClient,
 		private cryptoManager: CryptographyManager,
-		private sharedState: SharedState,
+		private state: SharedState,
 	) {
 		this.api.setAuthManager(this)
 	}
@@ -83,8 +83,8 @@ export class AuthenticationManager {
 			((mimiriPlatform.isIosApp || mimiriPlatform.isAndroidApp) && mimiriPlatform.supportsBiometry)
 		) {
 			const loginData = {
-				username: this.sharedState.username,
-				userId: this.sharedState?.userId ?? emptyGuid(),
+				username: this.state.username,
+				userId: this.state?.userId ?? emptyGuid(),
 				userCryptAlgorithm: this._userCryptAlgorithm,
 				rootCrypt: {
 					algorithm: this.cryptoManager.rootCrypt.algorithm ?? '',
@@ -97,8 +97,8 @@ export class AuthenticationManager {
 				},
 				data: await this.cryptoManager.rootCrypt.encrypt(
 					JSON.stringify({
-						clientConfig: this.sharedState.clientConfig,
-						userStats: this.sharedState.userStats,
+						clientConfig: this.state.clientConfig,
+						userStats: this.state.userStats,
 						userData: this._userData,
 					}),
 					true,
@@ -147,32 +147,32 @@ export class AuthenticationManager {
 					new Blob([fromBase64(str)]).stream().pipeThrough(new DecompressionStream('gzip')),
 				).text()
 				const loginData = JSON.parse(unzipped)
-				this.sharedState.username = loginData.username
+				this.state.username = loginData.username
 				this._userCryptAlgorithm = loginData.userCryptAlgorithm
 
-				this.sharedState.userId = loginData.userId
+				this.state.userId = loginData.userId
 				this.cryptoManager.rootCrypt = await SymmetricCrypt.fromKeyString(
 					loginData.rootCrypt.algorithm,
 					loginData.rootCrypt.key,
 				)
-				this.sharedState.isLoggedIn = true
+				this.state.isLoggedIn = true
 
 				this._rootSignature = await CryptSignature.fromPem(
 					loginData.rootSignature.algorithm ?? CryptSignature.DEFAULT_ASYMMETRIC_ALGORITHM,
 					loginData.rootSignature.publicKey,
 					loginData.rootSignature.privateKey,
 				)
-				await this.db.open(this.sharedState.username)
+				await this.db.open(this.state.username)
 				const initializationData = await this.db.getInitializationData()
 				if (initializationData?.local) {
-					this.sharedState.workOffline = true
-					this.sharedState.isLocalOnly = true
+					this.state.workOffline = true
+					this.state.isLocalOnly = true
 				}
 
 				if (!(await this.goOnline())) {
 					const data = JSON.parse(await this.cryptoManager.rootCrypt.decrypt(loginData.data))
-					this.sharedState.clientConfig = data.clientConfig
-					this.sharedState.userStats = data.userStats
+					this.state.clientConfig = data.clientConfig
+					this.state.userStats = data.userStats
 					this._userData = data.userData
 				}
 				return true
@@ -268,8 +268,8 @@ export class AuthenticationManager {
 		await this.cryptoManager.reencryptLocalCrypt()
 		await this.db.renameDatabase(username)
 		await this.db.deleteInitializationData()
-		this.sharedState.workOffline = false
-		this.sharedState.isLocalOnly = false
+		this.state.workOffline = false
+		this.state.isLocalOnly = false
 	}
 
 	public async promoteToLocalAccount(username: string, password: string, iterations: number) {
@@ -346,8 +346,8 @@ export class AuthenticationManager {
 					initializationData.rootCrypt.algorithm,
 					await userCrypt.decryptBytes(initializationData.rootCrypt.key),
 				)
-				this.sharedState.userId = initializationData.userId
-				this.sharedState.isLoggedIn = true
+				this.state.userId = initializationData.userId
+				this.state.isLoggedIn = true
 
 				this._rootSignature = await CryptSignature.fromPem(
 					initializationData.rootSignature.algorithm,
@@ -355,8 +355,8 @@ export class AuthenticationManager {
 					await userCrypt.decrypt(initializationData.rootSignature.privateKey),
 				)
 				this._userData = JSON.parse(await this.cryptoManager.rootCrypt.decrypt(initializationData.userData))
-				this.sharedState.username = username
-				this.sharedState.isLocal = false
+				this.state.username = username
+				this.state.isLocal = false
 				break
 			} catch (ex) {
 				if (localInitializationData) {
@@ -372,8 +372,8 @@ export class AuthenticationManager {
 		if (!initializationData.local) {
 			await this.api.openWebSocket()
 		} else {
-			this.sharedState.workOffline = true
-			this.sharedState.isLocalOnly = true
+			this.state.workOffline = true
+			this.state.isLocalOnly = true
 		}
 
 		await this.db.setInitializationData(initializationData)
@@ -408,14 +408,14 @@ export class AuthenticationManager {
 			}
 			await this.db.setUserData(this._userData)
 		}
-		this.sharedState.isLocal = true
-		this.sharedState.username = 'local'
-		this.sharedState.userId = emptyGuid()
-		this.sharedState.isLoggedIn = true
+		this.state.isLocal = true
+		this.state.username = 'local'
+		this.state.userId = emptyGuid()
+		this.state.isLoggedIn = true
 	}
 
 	public async goOnline(attempt: number = 0): Promise<boolean> {
-		if (this.sharedState.isLocalOnly) {
+		if (this.state.isLocalOnly) {
 			return false
 		}
 		try {
@@ -440,7 +440,7 @@ export class AuthenticationManager {
 	}
 
 	public async updateUserData(): Promise<void> {
-		if (this.sharedState.isLocal) {
+		if (this.state.isLocal) {
 			return this.db.setUserData(this._userData)
 		}
 	}
@@ -476,12 +476,12 @@ export class AuthenticationManager {
 		this.clearLoginData()
 		this._userData = undefined
 		this._rootSignature = undefined
-		this.sharedState.username = undefined
-		this.sharedState.isLocal = false
+		this.state.username = undefined
+		this.state.isLocal = false
 
 		this.cryptoManager.rootCrypt = null
-		this.sharedState.userId = null
-		this.sharedState.isLoggedIn = false
+		this.state.userId = null
+		this.state.isLoggedIn = false
 
 		this.db
 			.close()

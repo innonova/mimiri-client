@@ -103,13 +103,13 @@ class MenuManager {
 
 	public async menuIdActivated(itemId: string) {
 		if (itemId === 'change-username') {
-			noteManager.openNote('settings-username' as Guid)
+			noteManager.tree.openNote('settings-username' as Guid)
 		} else if (itemId === 'change-password') {
-			noteManager.openNote('settings-password' as Guid)
+			noteManager.tree.openNote('settings-password' as Guid)
 		} else if (itemId === 'delete-account') {
-			noteManager.openNote('settings-delete' as Guid)
+			noteManager.tree.openNote('settings-delete' as Guid)
 		} else if (itemId === 'manage-subscription') {
-			noteManager.openNote('settings-plan' as Guid)
+			noteManager.tree.openNote('settings-plan' as Guid)
 		} else if (itemId === 'tray-double-click') {
 			ipcClient.menu.show()
 		} else if (itemId === 'tray-click') {
@@ -129,18 +129,18 @@ class MenuManager {
 				ipcClient.menu.hide()
 			}
 		} else if (itemId === 'logout') {
-			noteManager.logout()
+			noteManager.session.logout()
 			window.location.reload()
 		} else if (itemId === 'login') {
 			loginDialog.value.show()
 		} else if (itemId === 'create-account') {
-			noteManager.controlPanel.expand()
-			noteManager.openNote('settings-create-account' as Guid)
+			noteManager.tree.controlPanel.expand()
+			noteManager.tree.openNote('settings-create-account' as Guid)
 		} else if (itemId === 'create-password') {
-			noteManager.controlPanel.expand()
-			noteManager.openNote('settings-create-password' as Guid)
+			noteManager.tree.controlPanel.expand()
+			noteManager.tree.openNote('settings-create-password' as Guid)
 		} else if (itemId === 'go-online') {
-			noteManager.goOnline()
+			noteManager.session.goOnline()
 		} else if (itemId === 'toggle-screen-sharing') {
 			settingsManager.allowScreenSharing = !settingsManager.allowScreenSharing
 		} else if (itemId === 'toggle-notify-promoted') {
@@ -164,100 +164,100 @@ class MenuManager {
 		} else if (itemId === 'word-wrap') {
 			settingsManager.wordwrap = !settingsManager.wordwrap
 		} else if (itemId === 'about') {
-			noteManager.openNote(noteManager.controlPanelId)
+			noteManager.tree.openNote(noteManager.tree.controlPanelId)
 		} else if (itemId === 'show-dev-tools') {
 			ipcClient.menu.showDevTools()
 		}
 		if (itemId === 'new-note') {
-			noteManager.newNote()
+			noteManager.ui.newNote()
 		} else if (itemId === 'new-child-note') {
 			settingsManager.lastNoteCreateType = 'child'
-			noteManager.newNote()
+			noteManager.ui.newNote()
 		} else if (itemId === 'new-sibling-note') {
 			settingsManager.lastNoteCreateType = 'sibling'
-			if (noteManager.selectedNote.parent.isRoot) {
-				noteManager.newRootNote()
+			if (noteManager.tree.selectedNote.parent.isRoot) {
+				noteManager.ui.newRootNote()
 				return
 			}
-			noteManager.selectedNote.parent?.select()
-			noteManager.newNote()
+			noteManager.tree.selectedNote.parent?.select()
+			noteManager.ui.newNote()
 		} else if (itemId === 'new-root-note') {
-			noteManager.newRootNote()
+			noteManager.ui.newRootNote()
 		} else if (itemId === 'share') {
 			shareDialog.value.show()
 		} else if (itemId === 'receive-share') {
 			acceptShareDialog.value.show()
 		} else if (itemId === 'receive-share-under') {
-			acceptShareDialog.value.show(noteManager.selectedNote)
+			acceptShareDialog.value.show(noteManager.tree.selectedNote)
 		} else if (itemId === 'refresh') {
-			if (noteManager.selectedNote) {
+			if (noteManager.tree.selectedNote) {
 				// TODO handle
-				// await noteManager.selectedNote.refresh()
+				// await noteManager.tree.selectedNote.refresh()
 			}
 		} else if (itemId === 'refresh-root') {
 			// TODO handle
 			// await noteManager.root.refresh()
 		} else if (itemId === 'rename') {
-			if (noteManager.selectedNote) {
-				noteManager.selectedNote.viewModel.renaming = true
+			if (noteManager.tree.selectedNote) {
+				noteManager.tree.selectedNote.viewModel.renaming = true
 			}
 		} else if (itemId === 'delete') {
-			if (noteManager.selectedNote) {
+			if (noteManager.tree.selectedNote) {
 				deleteNodeDialog.value.show()
 			}
 		} else if (itemId === 'recycle') {
-			if (noteManager.selectedNote) {
-				if (noteManager.selectedNote.isShareRoot) {
+			if (noteManager.tree.selectedNote) {
+				if (noteManager.tree.selectedNote.isShareRoot) {
 					deleteNodeDialog.value.show()
 				} else {
-					noteManager.selectedNote.moveToRecycleBin()
+					noteManager.tree.selectedNote.moveToRecycleBin()
 				}
 			}
 		} else if (itemId === 'copy') {
-			clipboardNote.value = noteManager.selectedNote
+			clipboardNote.value = noteManager.tree.selectedNote
 			isCut.value = false
 		} else if (itemId === 'cut') {
-			clipboardNote.value = noteManager.selectedNote
+			clipboardNote.value = noteManager.tree.selectedNote
 			isCut.value = true
 		} else if (itemId === 'paste') {
-			if (clipboardNote.value && noteManager.selectedNote) {
-				noteManager.selectedNote.expand()
+			if (clipboardNote.value && noteManager.tree.selectedNote) {
+				noteManager.tree.selectedNote.expand()
 				if (isCut.value) {
-					await clipboardNote.value.move(noteManager.selectedNote)
+					await clipboardNote.value.move(noteManager.tree.selectedNote)
 				} else {
-					await clipboardNote.value.copy(noteManager.selectedNote)
+					await clipboardNote.value.copy(noteManager.tree.selectedNote)
 				}
 			}
 		} else if (itemId === 'copy-path') {
-			if (noteManager.selectedNote) {
-				navigator.clipboard.writeText(noteManager.selectedNote.path)
+			if (noteManager.tree.selectedNote) {
+				navigator.clipboard.writeText(noteManager.tree.selectedNote.path)
 			}
 		} else if (itemId === 'duplicate') {
-			if (noteManager.selectedNote) {
-				const index = noteManager.selectedNote.parent.childIds.indexOf(noteManager.selectedNote.id)
-				await noteManager.selectedNote.copy(noteManager.selectedNote.parent, index + 1)
+			if (noteManager.tree.selectedNote) {
+				const index = noteManager.tree.selectedNote.parent.childIds.indexOf(noteManager.tree.selectedNote.id)
+				await noteManager.tree.selectedNote.copy(noteManager.tree.selectedNote.parent, index + 1)
 			}
 		} else if (itemId === 'mark-as-read') {
 			notificationManager.markAllAsRead()
 		} else if (itemId === 'update-available') {
-			noteManager.openNote('settings-update' as Guid)
+			noteManager.tree.openNote('settings-update' as Guid)
 		} else if (itemId === 'check-for-update') {
 			await updateManager.check()
-			noteManager.openNote('settings-update' as Guid)
+			noteManager.tree.openNote('settings-update' as Guid)
 		} else if (itemId === 'add-getting-started') {
-			await noteManager.addGettingStarted()
+			await noteManager.session.addGettingStarted()
 		} else if (itemId === 'empty-recycle-bin') {
 			emptyRecycleBinDialog.value.show()
 		} else if (itemId === 'password-generator') {
 			passwordGeneratorDialog.value.show()
 		} else if (itemId === 'set-pin') {
-			noteManager.openNote('settings-pin' as Guid)
+			noteManager.tree.openNote('settings-pin' as Guid)
 		} else if (itemId === 'settings') {
-			noteManager.openNote('settings-general' as Guid)
+			noteManager.tree.openNote('settings-general' as Guid)
 		} else if (itemId === 'properties') {
-			noteManager.openProperties()
+			noteManager.tree.openProperties()
 		} else if (itemId === 'work-offline') {
-			noteManager.setWorkOffline(!noteManager.state.workOffline)
+			noteManager.session.toggleWorkOffline()
 		}
 	}
 
@@ -298,9 +298,9 @@ class MenuManager {
 						shortcut: ipcClient.isAvailable ? 'Ctrl+N' : undefined,
 						enabled:
 							noteManager.state.isLoggedIn &&
-							!!noteManager.selectedNote &&
-							!noteManager.selectedNote.isSystem &&
-							!noteManager.selectedNote.isInRecycleBin,
+							!!noteManager.tree.selectedNote &&
+							!noteManager.tree.selectedNote.isSystem &&
+							!noteManager.tree.selectedNote.isInRecycleBin,
 					})
 					break
 				case MenuItems.NewChildNote:
@@ -310,9 +310,9 @@ class MenuManager {
 						icon: 'add-note',
 						enabled:
 							noteManager.state.isLoggedIn &&
-							!!noteManager.selectedNote &&
-							!noteManager.selectedNote.isSystem &&
-							!noteManager.selectedNote.isInRecycleBin,
+							!!noteManager.tree.selectedNote &&
+							!noteManager.tree.selectedNote.isSystem &&
+							!noteManager.tree.selectedNote.isInRecycleBin,
 					})
 					break
 				case MenuItems.NewSiblingNote:
@@ -322,9 +322,9 @@ class MenuManager {
 						icon: 'add-sibling-note',
 						enabled:
 							noteManager.state.isLoggedIn &&
-							!!noteManager.selectedNote &&
-							!noteManager.selectedNote.isSystem &&
-							!noteManager.selectedNote.isInRecycleBin,
+							!!noteManager.tree.selectedNote &&
+							!noteManager.tree.selectedNote.isSystem &&
+							!noteManager.tree.selectedNote.isInRecycleBin,
 					})
 					break
 				case MenuItems.NewRootNote:
@@ -342,9 +342,9 @@ class MenuManager {
 						shortcut: 'Ctrl+D',
 						enabled:
 							noteManager.state.isLoggedIn &&
-							!!noteManager.selectedNote &&
-							!noteManager.selectedNote.isSystem &&
-							!noteManager.selectedNote.isInRecycleBin,
+							!!noteManager.tree.selectedNote &&
+							!noteManager.tree.selectedNote.isSystem &&
+							!noteManager.tree.selectedNote.isInRecycleBin,
 					})
 					break
 				case MenuItems.Cut:
@@ -352,7 +352,10 @@ class MenuManager {
 						id: 'cut',
 						title: 'Cut',
 						shortcut: 'Ctrl+X',
-						enabled: noteManager.state.isLoggedIn && !!noteManager.selectedNote && !noteManager.selectedNote.isSystem,
+						enabled:
+							noteManager.state.isLoggedIn &&
+							!!noteManager.tree.selectedNote &&
+							!noteManager.tree.selectedNote.isSystem,
 					})
 					break
 				case MenuItems.Copy:
@@ -360,7 +363,10 @@ class MenuManager {
 						id: 'copy',
 						title: 'Copy',
 						shortcut: 'Ctrl+C',
-						enabled: noteManager.state.isLoggedIn && !!noteManager.selectedNote && !noteManager.selectedNote.isSystem,
+						enabled:
+							noteManager.state.isLoggedIn &&
+							!!noteManager.tree.selectedNote &&
+							!noteManager.tree.selectedNote.isSystem,
 					})
 					break
 				case MenuItems.Paste:
@@ -370,9 +376,9 @@ class MenuManager {
 						shortcut: 'Ctrl+V',
 						enabled:
 							noteManager.state.isLoggedIn &&
-							!!noteManager.selectedNote &&
-							!noteManager.selectedNote.isSystem &&
-							!noteManager.selectedNote.isInRecycleBin,
+							!!noteManager.tree.selectedNote &&
+							!noteManager.tree.selectedNote.isSystem &&
+							!noteManager.tree.selectedNote.isInRecycleBin,
 					})
 					break
 					break
@@ -382,9 +388,9 @@ class MenuManager {
 						title: 'Copy Path',
 						enabled:
 							noteManager.state.isLoggedIn &&
-							!!noteManager.selectedNote &&
-							!noteManager.selectedNote.isSystem &&
-							!noteManager.selectedNote.isInRecycleBin,
+							!!noteManager.tree.selectedNote &&
+							!noteManager.tree.selectedNote.isSystem &&
+							!noteManager.tree.selectedNote.isInRecycleBin,
 					})
 					break
 				case MenuItems.Share:
@@ -394,9 +400,9 @@ class MenuManager {
 						icon: 'note-shared',
 						enabled:
 							noteManager.state.isLoggedIn &&
-							!!noteManager.selectedNote &&
-							!noteManager.selectedNote.isSystem &&
-							!noteManager.selectedNote.isInRecycleBin,
+							!!noteManager.tree.selectedNote &&
+							!noteManager.tree.selectedNote.isSystem &&
+							!noteManager.tree.selectedNote.isInRecycleBin,
 					})
 					break
 				case MenuItems.ReceiveShare:
@@ -420,7 +426,7 @@ class MenuManager {
 						id: 'refresh',
 						title: 'Refresh',
 						icon: 'refresh',
-						enabled: noteManager.state.isLoggedIn && !!noteManager.selectedNote,
+						enabled: noteManager.state.isLoggedIn && !!noteManager.tree.selectedNote,
 					})
 					break
 				case MenuItems.RefreshRoot:
@@ -439,9 +445,9 @@ class MenuManager {
 						icon: 'rename-note',
 						enabled:
 							noteManager.state.isLoggedIn &&
-							!!noteManager.selectedNote &&
-							!noteManager.selectedNote.isSystem &&
-							!noteManager.selectedNote.isInRecycleBin,
+							!!noteManager.tree.selectedNote &&
+							!noteManager.tree.selectedNote.isSystem &&
+							!noteManager.tree.selectedNote.isInRecycleBin,
 					})
 					break
 				case MenuItems.Delete:
@@ -450,7 +456,10 @@ class MenuManager {
 						title: 'Delete',
 						shortcut: 'Del',
 						icon: 'delete-note',
-						enabled: noteManager.state.isLoggedIn && !!noteManager.selectedNote && !noteManager.selectedNote.isSystem,
+						enabled:
+							noteManager.state.isLoggedIn &&
+							!!noteManager.tree.selectedNote &&
+							!noteManager.tree.selectedNote.isSystem,
 					})
 					break
 				case MenuItems.Recycle:
@@ -461,9 +470,9 @@ class MenuManager {
 						icon: 'delete-note',
 						enabled:
 							noteManager.state.isLoggedIn &&
-							!!noteManager.selectedNote &&
-							!noteManager.selectedNote.isSystem &&
-							!noteManager.selectedNote.isInRecycleBin,
+							!!noteManager.tree.selectedNote &&
+							!noteManager.tree.selectedNote.isSystem &&
+							!noteManager.tree.selectedNote.isInRecycleBin,
 					})
 					break
 				case MenuItems.FindInNotes:
@@ -481,7 +490,10 @@ class MenuManager {
 						title: 'Find',
 						shortcut: 'Ctrl+F',
 						icon: 'search-note',
-						enabled: noteManager.state.isLoggedIn && !!noteManager.selectedNote && !noteManager.selectedNote.isSystem,
+						enabled:
+							noteManager.state.isLoggedIn &&
+							!!noteManager.tree.selectedNote &&
+							!noteManager.tree.selectedNote.isSystem,
 					})
 					break
 				case MenuItems.History:
@@ -489,7 +501,10 @@ class MenuManager {
 						id: 'history',
 						title: 'History',
 						icon: 'history',
-						enabled: noteManager.state.isLoggedIn && !!noteManager.selectedNote && !noteManager.selectedNote.isSystem,
+						enabled:
+							noteManager.state.isLoggedIn &&
+							!!noteManager.tree.selectedNote &&
+							!noteManager.tree.selectedNote.isSystem,
 					})
 					break
 				case MenuItems.ShareOffers:
@@ -549,7 +564,7 @@ class MenuManager {
 						id: 'manage-subscription',
 						title: 'Plan',
 						enabled: noteManager.state.isLoggedIn && noteManager.state.isOnline,
-						visible: !noteManager.isAnonymous,
+						visible: !noteManager.session.isAnonymous,
 					})
 					break
 				case MenuItems.SetPin:
@@ -565,7 +580,7 @@ class MenuManager {
 						title: 'Logout',
 						icon: 'logout',
 						enabled: noteManager.state.isLoggedIn,
-						visible: !noteManager.isAnonymous,
+						visible: !noteManager.session.isAnonymous,
 					})
 					break
 				case MenuItems.Login:
@@ -574,7 +589,7 @@ class MenuManager {
 						title: 'Log In / Switch User',
 						icon: 'login',
 						enabled: noteManager.state.isLoggedIn,
-						visible: noteManager.isAnonymous || noteManager.state.isLocal,
+						visible: noteManager.session.isAnonymous || noteManager.state.isLocal,
 					})
 					break
 				case MenuItems.CreateAccount:
@@ -589,7 +604,7 @@ class MenuManager {
 						id: 'create-password',
 						title: 'Create Password',
 						icon: 'account',
-						visible: noteManager.isAnonymous,
+						visible: noteManager.session.isAnonymous,
 					})
 					break
 				case MenuItems.Quit:
@@ -613,7 +628,7 @@ class MenuManager {
 						type: 'checkbox',
 						checked: settingsManager.wordwrap,
 						icon: settingsManager.wordwrap ? 'checkmark' : '',
-						enabled: noteManager.state.isLoggedIn && !noteManager.selectedNote.isSystem,
+						enabled: noteManager.state.isLoggedIn && !noteManager.tree.selectedNote.isSystem,
 					})
 					break
 				case MenuItems.UpdateAvailable:
@@ -778,7 +793,7 @@ class MenuManager {
 			MenuItems.Separator,
 			...(noteManager.state.isOnline ? [MenuItems.Share] : []),
 			MenuItems.Rename,
-			noteManager.selectedNote?.isInRecycleBin ? MenuItems.Delete : MenuItems.Recycle,
+			noteManager.tree.selectedNote?.isInRecycleBin ? MenuItems.Delete : MenuItems.Recycle,
 			MenuItems.Separator,
 			MenuItems.Settings,
 		]

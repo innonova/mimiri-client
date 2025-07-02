@@ -162,9 +162,9 @@ const emit = defineEmits(['choose'])
 
 const createAccount = async () => {
 	if (createMode.value === 'cloud') {
-		await noteManager.promoteToCloudAccount(username.value, password.value, DEFAULT_ITERATIONS)
+		await noteManager.session.promoteToCloudAccount(username.value, password.value, DEFAULT_ITERATIONS)
 	} else {
-		await noteManager.promoteToLocalAccount(username.value, password.value, DEFAULT_ITERATIONS)
+		await noteManager.session.promoteToLocalAccount(username.value, password.value, DEFAULT_ITERATIONS)
 	}
 }
 

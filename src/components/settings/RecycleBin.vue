@@ -6,7 +6,11 @@
 			<div class="mt-5 max-w-110 mr-2">
 				<hr />
 				<div class="w-full flex justify-end mt-2 gap-2">
-					<button :disabled="noteManager.selectedNote?.viewModel?.children.length === 0" @click="empty" class="primary">
+					<button
+						:disabled="noteManager.tree.selectedNote?.viewModel?.children.length === 0"
+						@click="empty"
+						class="primary"
+					>
 						Empty Recycle Bin
 					</button>
 				</div>

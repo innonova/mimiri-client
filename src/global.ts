@@ -27,7 +27,7 @@ export const debug = new DebugManager()
 export const ipcClient = new IpcClient()
 export const browserHistory = new BrowserHistory()
 export const noteManager = new MimiriStore(host, paymentHost, serverKeyId, serverKey, async note => {
-	await noteManager.getNoteById(note.id)?.update(note)
+	await noteManager.tree.getNoteById(note.id)?.update(note)
 })
 export const updateManager = new UpdateManager(env.VITE_MIMER_UPDATE_HOST)
 export const blogManager = new BlogManager(noteManager)

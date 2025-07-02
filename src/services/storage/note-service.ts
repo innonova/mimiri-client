@@ -9,7 +9,7 @@ export class NoteService {
 	constructor(
 		private db: MimiriDb,
 		private cryptoManager: CryptographyManager,
-		private sharedState: SharedState,
+		private state: SharedState,
 		private noteUpdatedCallback: (noteId: Guid) => Promise<void>,
 	) {}
 
@@ -18,7 +18,7 @@ export class NoteService {
 	}
 
 	public async writeNote(note: Note): Promise<void> {
-		if (!this.sharedState.isLoggedIn) {
+		if (!this.state.isLoggedIn) {
 			throw new Error('Not Logged in')
 		}
 		// TODO use changed
@@ -44,7 +44,7 @@ export class NoteService {
 	}
 
 	public async readNote(id: Guid, base?: Note): Promise<Note> {
-		if (!this.sharedState.isLoggedIn) {
+		if (!this.state.isLoggedIn) {
 			throw new Error('Not Logged in')
 		}
 		let local = true

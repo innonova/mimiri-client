@@ -31,7 +31,7 @@ const activeInvoice = ref<Invoice>()
 const payLink = ref('')
 
 onMounted(() => {
-	noteManager.registerActionListener({
+	noteManager.tree.registerActionListener({
 		select: (id: Guid) => {
 			if (id === 'settings-invoices') {
 				selectedId.value = 'invoices'

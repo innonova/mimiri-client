@@ -235,7 +235,7 @@ const save = () => {
 		passwordDialog.value.showAction(async pwd => {
 			try {
 				if (passwordMode.value === 'generate') {
-					await noteManager.changeUserNameAndPassword(
+					await noteManager.auth.changeUserNameAndPassword(
 						noteManager.state.username,
 						pwd,
 						generatedPassword.value,
@@ -243,7 +243,7 @@ const save = () => {
 					)
 					generatedPasswordRepeat.value = ''
 				} else {
-					await noteManager.changeUserNameAndPassword(
+					await noteManager.auth.changeUserNameAndPassword(
 						noteManager.state.username,
 						pwd,
 						createdPassword.value,

@@ -34,21 +34,24 @@
 			<div class="w-2.5 min-w-2.5 bg-toolbar cursor-ew-resize hidden desktop:block" @mousedown="startDragging"></div>
 			<div class="h-full flex flex-col w-full divider-right" :class="{ 'hidden desktop:flex': !showEditor }">
 				<div
-					v-show="noteManager.selectedNote?.type === 'note-text' && noteManager.state.viewMode === ViewMode.Content"
+					v-show="
+						noteManager.tree.selectedNote?.type === 'note-text' && noteManager.state.viewMode === ViewMode.Content
+					"
 					class="h-full flex flex-col flex-1"
 				>
 					<NoteEditor ref="noteEditor"></NoteEditor>
 				</div>
 				<div
 					v-if="
-						noteManager.selectedNote?.type.startsWith('settings-') || noteManager.selectedNote?.type === 'recycle-bin'
+						noteManager.tree.selectedNote?.type.startsWith('settings-') ||
+						noteManager.tree.selectedNote?.type === 'recycle-bin'
 					"
 					class="h-full flex flex-col flex-1"
 				>
 					<SystemPage></SystemPage>
 				</div>
 				<div
-					v-if="!noteManager.selectedNote?.isSystem && noteManager.state.viewMode === ViewMode.Properties"
+					v-if="!noteManager.tree.selectedNote?.isSystem && noteManager.state.viewMode === ViewMode.Properties"
 					class="h-full flex flex-col flex-1"
 				>
 					<PropertiesPage></PropertiesPage>
@@ -235,7 +238,7 @@ const handleShortcut = event => {
 		!authenticated ||
 		localAuth.locked ||
 		showCreateAccount.value ||
-		noteManager.selectedNote?.id === 'settings-pin'
+		noteManager.tree.selectedNote?.id === 'settings-pin'
 	) {
 		return
 	}
@@ -243,7 +246,7 @@ const handleShortcut = event => {
 	const treeViewShortCutsActive =
 		(document.activeElement.tagName === 'BODY' || !noteEditor.value?.$el.contains(document.activeElement)) &&
 		event.target.tagName === 'BODY' &&
-		!noteManager.selectedNote?.isSystem
+		!noteManager.tree.selectedNote?.isSystem
 
 	if (event.key === 'd' && ctrlActive) {
 		if (treeViewShortCutsActive) {
@@ -286,7 +289,11 @@ const handleShortcut = event => {
 			event.preventDefault()
 			event.stopPropagation()
 			if (noteTreeView.value) {
-				if (event.shiftKey || !!noteManager.selectedNote?.isInRecycleBin || noteManager.selectedNote.isShared) {
+				if (
+					event.shiftKey ||
+					!!noteManager.tree.selectedNote?.isInRecycleBin ||
+					noteManager.tree.selectedNote.isShared
+				) {
 					noteTreeView.value.deleteActiveNote()
 				} else {
 					noteTreeView.value.recycleActiveNote()
@@ -351,7 +358,7 @@ const handleShortcut = event => {
 		if (treeViewShortCutsActive) {
 			event.preventDefault()
 			event.stopPropagation()
-			noteManager.newNote()
+			noteManager.ui.newNote()
 		}
 	}
 	if (event.key === 'F3' || (event.key === 'F' && ctrlActive)) {
@@ -368,7 +375,7 @@ const handleShortcut = event => {
 
 	if (!ctrlActive && !event.altKey) {
 		if (event.key.length === 1 && event.key === event.key.toLowerCase() && noteTreeView.value?.hasFocus()) {
-			noteManager.findNextNoteStartingWith(event.key)
+			noteManager.ui.findNextNoteStartingWith(event.key)
 		}
 	}
 }
@@ -402,9 +409,9 @@ useEventListener(window, 'resize', async () => {
 		}
 		try {
 			if (!noteManager.state.isLoggedIn && settingsManager.autoLogin && settingsManager.autoLoginData) {
-				await noteManager.setLoginData(await deObfuscate(settingsManager.autoLoginData))
+				await noteManager.auth.setLoginData(await deObfuscate(settingsManager.autoLoginData))
 				if (noteManager.state.isLoggedIn) {
-					await noteManager.loadState()
+					await noteManager.tree.loadState()
 				}
 			}
 		} catch (ex) {
@@ -412,7 +419,7 @@ useEventListener(window, 'resize', async () => {
 		}
 		if (!noteManager.state.isLoggedIn) {
 			try {
-				await noteManager.recoverLogin()
+				await noteManager.session.recoverLogin()
 			} catch (ex) {
 				debug.logError('Error recovering login', ex)
 			}
@@ -422,7 +429,7 @@ useEventListener(window, 'resize', async () => {
 
 		if (!noteManager.state.isLoggedIn) {
 			if (settingsManager.isNewInstall) {
-				await noteManager.openLocal()
+				await noteManager.session.openLocal()
 				// await noteManager.loginAnonymousAccount()
 				if (noteManager.state.isLoggedIn) {
 					// settingsManager.isNewInstall = false

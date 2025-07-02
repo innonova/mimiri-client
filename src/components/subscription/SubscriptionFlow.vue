@@ -43,7 +43,7 @@ const payLink = ref('')
 const subHome = ref()
 
 onMounted(() => {
-	noteManager.registerActionListener({
+	noteManager.tree.registerActionListener({
 		select: (id: Guid) => {
 			if (id === 'settings-plan' || id === 'settings-plan-group') {
 				selectedId.value = 'subscription'

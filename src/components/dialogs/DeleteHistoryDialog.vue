@@ -8,7 +8,7 @@
 				<div v-if="!deleteAllHistory">(keeping only the most recent 10 versions)</div>
 				<div class="mt-4">Affected note:</div>
 				<div class="mt-3 ml-3 mb-1 italic">
-					{{ noteManager.selectedViewModel?.title }}
+					{{ noteManager.tree.selectedViewModel?.title }}
 				</div>
 				<div v-if="shareParticipants.length > 0" class="mt-5">This note is shared with:</div>
 				<div
@@ -43,8 +43,8 @@ let callback: () => void
 const show = async (all: boolean, cb: () => void) => {
 	deleteAllHistory.value = !!all
 	callback = cb
-	if (noteManager.selectedNote?.isShared) {
-		shareParticipants.value = (await noteManager.getShareParticipants(noteManager.selectedNote.id)).filter(
+	if (noteManager.tree.selectedNote?.isShared) {
+		shareParticipants.value = (await noteManager.note.getShareParticipants(noteManager.tree.selectedNote.id)).filter(
 			item => item.username !== noteManager.state.username,
 		)
 	} else {
@@ -59,9 +59,9 @@ const close = () => {
 
 const submitDialog = async () => {
 	if (deleteAllHistory.value) {
-		await noteManager.selectedNote.deleteHistory()
+		await noteManager.tree.selectedNote.deleteHistory()
 	} else {
-		await noteManager.selectedNote.deleteArchivedHistory()
+		await noteManager.tree.selectedNote.deleteArchivedHistory()
 	}
 	callback()
 	close()

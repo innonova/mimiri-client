@@ -222,8 +222,8 @@ const onDrop = async event => {
 		event.stopPropagation()
 		dragOver = 0
 		indicatorVisible.value = false
-		const note = noteManager.getNoteById(dragId.value)
-		const dropNote = noteManager.getNoteById(props.node.id)
+		const note = noteManager.tree.getNoteById(dragId.value)
+		const dropNote = noteManager.tree.getNoteById(props.node.id)
 		if (target < 0) {
 			await note.move(dropNote.parent, dropNote.index)
 		} else if (target === 0) {
@@ -296,17 +296,17 @@ const toggleNode = async e => {
 	e.stopPropagation()
 	if (hasChildren.value && !searchModeActive.value) {
 		if (!props.node.expanded) {
-			const note = noteManager.getNoteById(props.node.id)
+			const note = noteManager.tree.getNoteById(props.node.id)
 			note.expand()
 		} else {
-			const note = noteManager.getNoteById(props.node.id)
+			const note = noteManager.tree.getNoteById(props.node.id)
 			note.collapse()
 		}
 	}
 }
 
 const selectNode = async (mobileSwitch: boolean) => {
-	noteManager.openNote(props.node.id, mobileSwitch)
+	noteManager.tree.openNote(props.node.id, mobileSwitch)
 }
 
 const checkCancelEdit = e => {
@@ -327,7 +327,7 @@ const endEdit = async e => {
 		const inputElement = e.target as HTMLInputElement
 		if (inputElement) {
 			const newName = inputElement.value
-			const note = noteManager.getNoteById(props.node.id)
+			const note = noteManager.tree.getNoteById(props.node.id)
 			if (note.title !== newName) {
 				props.node.title = newName
 				note.title = newName
@@ -351,7 +351,7 @@ const showContextMenu = async e => {
 		let showShare = true
 		let showAcceptShare = features.includes('share-code')
 		if (props.node.shared) {
-			const note = noteManager.getNoteById(props.node.id)
+			const note = noteManager.tree.getNoteById(props.node.id)
 			showShare = note.isShareRoot
 			showAcceptShare = false
 		}
@@ -360,7 +360,7 @@ const showContextMenu = async e => {
 			showAcceptShare = false
 		}
 
-		const note = noteManager.getNoteById(props.node.id)
+		const note = noteManager.tree.getNoteById(props.node.id)
 		const isInRecycleBin = note.isInRecycleBin
 
 		menuManager.showMenu({ x: e.x, y: e.y }, [

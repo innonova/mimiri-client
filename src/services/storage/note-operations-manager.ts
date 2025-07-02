@@ -22,7 +22,7 @@ export class NoteOperationsManager {
 	private _proofBits = DEFAULT_PROOF_BITS
 
 	constructor(
-		private sharedState: SharedState,
+		private state: SharedState,
 		private noteService: NoteService,
 		private syncService: SynchronizationService,
 		private api: MimiriClient,
@@ -258,7 +258,7 @@ export class NoteOperationsManager {
 	}
 
 	public async shareMimerNote(mimerNote: MimerNote, recipient: string) {
-		if (!this.sharedState.isOnline) {
+		if (!this.state.isOnline) {
 			throw new MimerError('Offline', 'Cannot share while offline')
 		}
 		this.uiManager.beginAction()
@@ -329,7 +329,7 @@ export class NoteOperationsManager {
 	}
 
 	public async acceptShare(share: NoteShareInfo, parent?: MimerNote) {
-		if (!this.sharedState.isOnline) {
+		if (!this.state.isOnline) {
 			throw new MimerError('Offline', 'Cannot share while offline')
 		}
 		this.uiManager.beginAction()

@@ -207,14 +207,14 @@ export class MimiriEditor {
 		const initialText = this._activeEditor.initialText
 		if (noteId && targetText !== initialText) {
 			if (targetText.length === 0 && initialText.length > 5) {
-				const doSave = await saveEmptyNodeDialog.value.show(noteManager.getNoteById(noteId))
+				const doSave = await saveEmptyNodeDialog.value.show(noteManager.tree.getNoteById(noteId))
 				if (!doSave) {
 					return 'not-saved-empty'
 				}
 			}
 			while (true) {
 				try {
-					const note = noteManager.getNoteById(noteId)
+					const note = noteManager.tree.getNoteById(noteId)
 					if (targetText === note.text) {
 						if (note.id === this.note.id) {
 							this.resetChanged()

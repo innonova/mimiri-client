@@ -245,13 +245,13 @@ const createAccount = async () => {
 	loading.value = true
 	try {
 		try {
-			await noteManager.changeUserNameAndPassword(
+			await noteManager.auth.changeUserNameAndPassword(
 				newUsername,
 				await deObfuscate(settingsManager.anonymousPassword),
 				password.value,
 				DEFAULT_ITERATIONS,
 			)
-			persistedState.storeSelectedNote(noteManager.getNoteById('settings-account' as Guid))
+			persistedState.storeSelectedNote(noteManager.tree.getNoteById('settings-account' as Guid))
 			settingsManager.anonymousUsername = undefined
 			settingsManager.anonymousPassword = undefined
 			settingsManager.autoLoginData = undefined
@@ -268,7 +268,7 @@ const createAccount = async () => {
 	if (!noteManager.state.isLoggedIn) {
 		errorText.value = 'Unknown Error'
 	} else {
-		await noteManager.root.ensureChildren()
+		await noteManager.tree.root.ensureChildren()
 	}
 }
 </script>

@@ -7,8 +7,8 @@
 		data-testid="note-tree"
 	>
 		<TreeNode
-			v-if="showNodes && noteManager.root?.viewModel.children.length"
-			v-for="node of noteManager.root.viewModel.children"
+			v-if="showNodes && noteManager.tree.root?.viewModel.children.length"
+			v-for="node of noteManager.tree.root.viewModel.children"
 			:node="node"
 			:key="node.id"
 		></TreeNode>
@@ -53,39 +53,39 @@ const stopWatching = watch(noteManager.state, () => {
 		noteManager.state.stateLoaded &&
 		!stateLoaded &&
 		noteManager.state.isLoggedIn &&
-		noteManager.root?.viewModel.children.length &&
-		noteManager.selectedNote
+		noteManager.tree.root?.viewModel.children.length &&
+		noteManager.tree.selectedNote
 	) {
 		stateLoaded = true
 		mainElement.value.scrollTop = persistedState.getTreeScrollTop()
-		if (noteManager.isMobile && persistedState.noteOpen && noteManager.selectedNote) {
-			noteManager.openNote(noteManager.selectedNote.id)
+		if (noteManager.isMobile && persistedState.noteOpen && noteManager.tree.selectedNote) {
+			noteManager.tree.openNote(noteManager.tree.selectedNote.id)
 		}
 		stopWatching()
 	}
 })
 
 const duplicateActiveNote = async () => {
-	if (noteManager.selectedNote) {
-		const index = noteManager.selectedNote.parent.childIds.indexOf(noteManager.selectedNote.id)
-		await noteManager.selectedNote.copy(noteManager.selectedNote.parent, index + 1)
+	if (noteManager.tree.selectedNote) {
+		const index = noteManager.tree.selectedNote.parent.childIds.indexOf(noteManager.tree.selectedNote.id)
+		await noteManager.tree.selectedNote.copy(noteManager.tree.selectedNote.parent, index + 1)
 	}
 }
 const copyActiveNote = () => {
-	clipboardNote.value = noteManager.selectedNote
+	clipboardNote.value = noteManager.tree.selectedNote
 	isCut.value = false
 }
 const cutActiveNote = () => {
-	clipboardNote.value = noteManager.selectedNote
+	clipboardNote.value = noteManager.tree.selectedNote
 	isCut.value = true
 }
 const pasteIntoActiveNote = async () => {
-	if (clipboardNote.value && noteManager.selectedNote) {
-		noteManager.selectedNote.expand()
+	if (clipboardNote.value && noteManager.tree.selectedNote) {
+		noteManager.tree.selectedNote.expand()
 		if (isCut.value) {
-			await clipboardNote.value.move(noteManager.selectedNote)
+			await clipboardNote.value.move(noteManager.tree.selectedNote)
 		} else {
-			await clipboardNote.value.copy(noteManager.selectedNote)
+			await clipboardNote.value.copy(noteManager.tree.selectedNote)
 		}
 	}
 }
@@ -95,16 +95,16 @@ const deleteActiveNote = () => {
 }
 
 const recycleActiveNote = () => {
-	if (noteManager.selectedNote.isShareRoot) {
+	if (noteManager.tree.selectedNote.isShareRoot) {
 		deleteNodeDialog.value.show()
 	} else {
-		noteManager.selectedNote.moveToRecycleBin()
+		noteManager.tree.selectedNote.moveToRecycleBin()
 	}
 }
 
 const renameActiveNote = () => {
-	if (noteManager.selectedNote && !noteManager.selectedNote.isSystem) {
-		noteManager.selectedNote.viewModel.renaming = true
+	if (noteManager.tree.selectedNote && !noteManager.tree.selectedNote.isSystem) {
+		noteManager.tree.selectedNote.viewModel.renaming = true
 	}
 }
 
@@ -125,7 +125,7 @@ const findNextNodeDown = (note: MimerNote) => {
 }
 
 const moveSelectionUp = () => {
-	const note = noteManager.selectedNote
+	const note = noteManager.tree.selectedNote
 	if (note) {
 		if (note.index == 0) {
 			if (note.parent && !note.isTopLevel) {
@@ -134,13 +134,13 @@ const moveSelectionUp = () => {
 		} else if (note.prevSibling) {
 			findBottomMostNode(note.prevSibling).select()
 		}
-	} else if (noteManager.root.children.length > 0) {
-		noteManager.root.children[0].select()
+	} else if (noteManager.tree.root.children.length > 0) {
+		noteManager.tree.root.children[0].select()
 	}
 }
 
 const moveSelectionDown = () => {
-	const note = noteManager.selectedNote
+	const note = noteManager.tree.selectedNote
 	if (note) {
 		if (note.expanded) {
 			if (note.children.length > 0) {
@@ -149,26 +149,26 @@ const moveSelectionDown = () => {
 		} else {
 			findNextNodeDown(note)?.select()
 		}
-	} else if (noteManager.root.children.length > 0) {
-		noteManager.root.children[0].select()
+	} else if (noteManager.tree.root.children.length > 0) {
+		noteManager.tree.root.children[0].select()
 	}
 }
 
 const moveSelectionLeft = () => {
-	const note = noteManager.selectedNote
+	const note = noteManager.tree.selectedNote
 	if (note) {
 		if (note.expanded) {
 			note.collapse()
 		} else if (note.parent && !note.isTopLevel) {
 			note.parent.select()
 		}
-	} else if (noteManager.root.children.length > 0) {
-		noteManager.root.children[0].select()
+	} else if (noteManager.tree.root.children.length > 0) {
+		noteManager.tree.root.children[0].select()
 	}
 }
 
 const moveSelectionRight = () => {
-	const note = noteManager.selectedNote
+	const note = noteManager.tree.selectedNote
 	if (note) {
 		if (note.expanded) {
 			if (note.children.length > 0) {
@@ -177,8 +177,8 @@ const moveSelectionRight = () => {
 		} else {
 			note.expand()
 		}
-	} else if (noteManager.root.children.length > 0) {
-		noteManager.root.children[0].select()
+	} else if (noteManager.tree.root.children.length > 0) {
+		noteManager.tree.root.children[0].select()
 	}
 }
 

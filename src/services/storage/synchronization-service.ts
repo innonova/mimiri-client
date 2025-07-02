@@ -18,19 +18,19 @@ export class SynchronizationService {
 		private db: MimiriDb,
 		private api: MimiriClient,
 		private cryptoManager: CryptographyManager,
-		private sharedState: SharedState,
+		private state: SharedState,
 		private noteUpdatedCallback: (noteId: Guid) => Promise<void>,
 	) {}
 
 	public async initialSync(): Promise<void> {
-		if (!this.sharedState.workOffline && !this.sharedState.isLocalOnly) {
+		if (!this.state.workOffline && !this.state.isLocalOnly) {
 			await this.syncPull()
 			this._initialized = true
 		}
 	}
 
 	public async sync() {
-		if (!this._initialized || !this.sharedState.isOnline || this.sharedState.isLocalOnly) {
+		if (!this._initialized || !this.state.isOnline || this.state.isLocalOnly) {
 			return
 		}
 		if (!this._syncInProgress) {
@@ -48,7 +48,7 @@ export class SynchronizationService {
 					syncFailed = false
 					this._syncRequestedWhileInProgress = false
 					try {
-						if (!this._initialized || !this.sharedState.isOnline) {
+						if (!this._initialized || !this.state.isOnline) {
 							for (const resolve of this._waitingForSync) {
 								resolve(false)
 							}
@@ -77,14 +77,14 @@ export class SynchronizationService {
 	}
 
 	public queueSync(): void {
-		if (!this._initialized || !this.sharedState.isOnline || this.sharedState.isLocalOnly) {
+		if (!this._initialized || !this.state.isLoggedIn || !this.state.isOnline || this.state.isLocalOnly) {
 			return
 		}
 		void this.sync()
 	}
 
 	waitForSync(timeoutMs?: number): Promise<boolean> {
-		if (!this._initialized || !this.sharedState.isOnline || this.sharedState.isLocalOnly) {
+		if (!this._initialized || !this.state.isOnline || this.state.isLocalOnly) {
 			return Promise.resolve(false)
 		}
 		if (!this._syncInProgress) {
@@ -259,7 +259,7 @@ export class SynchronizationService {
 				name: localKey.name,
 				data: JSON.stringify({
 					id: localKey.id,
-					userId: this.sharedState.userId,
+					userId: this.state.userId,
 					name: localKey.name,
 					algorithm: localKey.algorithm,
 					asymmetricAlgorithm: localKey.asymmetricAlgorithm,

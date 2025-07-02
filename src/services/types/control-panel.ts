@@ -95,7 +95,7 @@ export const createControlPanelTree = (owner: MimiriStore, parent: MimerNote): M
 					{
 						id: 'settings-account' as Guid,
 						title: 'Account',
-						type: noteManager.isAnonymous
+						type: noteManager.session.isAnonymous
 							? 'settings-create-password'
 							: noteManager.state.isLocalOnly
 								? 'settings-upgrade'
@@ -113,7 +113,7 @@ export const createControlPanelTree = (owner: MimiriStore, parent: MimerNote): M
 										},
 									]
 								: []),
-							...(!noteManager.isAnonymous
+							...(!noteManager.session.isAnonymous
 								? [
 										{
 											id: 'settings-username' as Guid,
@@ -203,7 +203,7 @@ export const createControlPanelTree = (owner: MimiriStore, parent: MimerNote): M
 	]
 
 	return items.map(tree => {
-		const existing = owner.getNoteById(tree.id)
+		const existing = owner.tree.getNoteById(tree.id)
 		if (existing) {
 			return existing
 		}

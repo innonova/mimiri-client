@@ -13,7 +13,9 @@
 		<ToolbarIcon
 			:icon="settingsManager.lastNoteCreateType === 'child' ? 'add-note' : 'add-sibling-note'"
 			:disabled="
-				!noteManager.selectedNote || noteManager.selectedNote.isSystem || noteManager.selectedNote.isInRecycleBin
+				!noteManager.tree.selectedNote ||
+				noteManager.tree.selectedNote.isSystem ||
+				noteManager.tree.selectedNote.isInRecycleBin
 			"
 			:hoverEffect="true"
 			:title="settingsManager.lastNoteCreateType === 'child' ? 'New Child Note' : 'New Sibling Note'"
@@ -91,7 +93,7 @@ const accountClick = () => {
 		MenuItems.ChangePassword,
 		MenuItems.DeleteAccount,
 		MenuItems.Separator,
-		...(noteManager.isAnonymous ? [MenuItems.CreatePassword, MenuItems.Login] : [MenuItems.Logout]),
+		...(noteManager.session.isAnonymous ? [MenuItems.CreatePassword, MenuItems.Login] : [MenuItems.Logout]),
 		MenuItems.Separator,
 		MenuItems.WorkOffline,
 	])
@@ -99,13 +101,13 @@ const accountClick = () => {
 
 const createChildNote = () => {
 	if (settingsManager.lastNoteCreateType === 'sibling') {
-		if (noteManager.selectedNote.parent.isRoot) {
-			noteManager.newRootNote()
+		if (noteManager.tree.selectedNote.parent.isRoot) {
+			noteManager.ui.newRootNote()
 			return
 		}
-		noteManager.selectedNote.parent.select()
+		noteManager.tree.selectedNote.parent.select()
 	}
-	noteManager.newNote()
+	noteManager.ui.newNote()
 }
 
 const searchAllNotes = () => {
@@ -129,18 +131,18 @@ const showCreateMenu = () => {
 
 	const rect = toolbar.value.getBoundingClientRect()
 
-	menuManager.showMenu({ x: 10, y: rect.bottom }, noteManager.selectedNote ? createMenu : createMenu)
+	menuManager.showMenu({ x: 10, y: rect.bottom }, noteManager.tree.selectedNote ? createMenu : createMenu)
 }
 
 const showMobileMenu = () => {
-	const isSystem = !!noteManager.selectedNote?.isSystem
-	const isRecycleBin = !!noteManager.selectedNote?.isRecycleBin
-	const isInRecycleBin = !!noteManager.selectedNote?.isInRecycleBin
+	const isSystem = !!noteManager.tree.selectedNote?.isSystem
+	const isRecycleBin = !!noteManager.tree.selectedNote?.isRecycleBin
+	const isInRecycleBin = !!noteManager.tree.selectedNote?.isInRecycleBin
 
 	let showShare = true
 	let showAcceptShare = true
-	if (!!noteManager.selectedNote?.isShared) {
-		const note = noteManager.selectedNote
+	if (!!noteManager.tree.selectedNote?.isShared) {
+		const note = noteManager.tree.selectedNote
 		showShare = note.isShareRoot
 		showAcceptShare = false
 	}
@@ -179,7 +181,7 @@ const showMobileMenu = () => {
 
 	const rect = toolbar.value.getBoundingClientRect()
 
-	menuManager.showMenu({ x: 10, y: rect.bottom }, noteManager.selectedNote ? whenSelectedNote : whenNoSelectedNote)
+	menuManager.showMenu({ x: 10, y: rect.bottom }, noteManager.tree.selectedNote ? whenSelectedNote : whenNoSelectedNote)
 }
 
 defineExpose({

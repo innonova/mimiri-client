@@ -18,11 +18,11 @@ import ToolbarIcon from './ToolbarIcon.vue'
 import TextNoteProperties from './properties/TextNoteProperties.vue'
 
 const type = computed(() => {
-	return noteManager.selectedNote?.type ?? ''
+	return noteManager.tree.selectedNote?.type ?? ''
 })
 
 const onBack = () => {
 	window.history.back()
-	noteManager.closeEditorIfMobile()
+	noteManager.ui.closeEditorIfMobile()
 }
 </script>

@@ -95,7 +95,7 @@ const submitDialog = async () => {
 		}
 		return
 	}
-	if (await noteManager.verifyPassword(password.value)) {
+	if (await noteManager.auth.verifyPassword(password.value)) {
 		busy.value = false
 		password.value = ''
 		okCallback()

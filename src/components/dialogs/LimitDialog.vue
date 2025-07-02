@@ -38,7 +38,7 @@ const show = (limit: string) => {
 	if (limit === 'save-note-size') {
 		title.value = 'Note Exceeds Max Size'
 		text.value = `The note you are trying to save is ${toMB(
-			noteManager.selectedNote?.size ?? 0,
+			noteManager.tree.selectedNote?.size ?? 0,
 		)} the maximum allowed is ${toMB(noteManager.state.userStats.maxNoteBytes)}`
 	}
 	dialog.value.showModal()

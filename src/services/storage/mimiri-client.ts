@@ -64,7 +64,7 @@ export class MimiriClient extends HttpClientBase {
 		host: string,
 		serverKeyId: string,
 		serverKey: string,
-		private sharedState: SharedState,
+		private state: SharedState,
 		private cryptoManager: CryptographyManager,
 		private notificationsCallback: (type: string) => void,
 	) {
@@ -147,12 +147,12 @@ export class MimiriClient extends HttpClientBase {
 
 			loginResponse = await this.post<LoginResponse>('/user/login', loginRequest)
 
-			this.sharedState.clientConfig = JSON.parse(loginResponse.config ?? '{}') as ClientConfig
-			this.sharedState.userStats.size = +loginResponse.size
-			this.sharedState.userStats.noteCount = +loginResponse.noteCount
-			this.sharedState.userStats.maxTotalBytes = +loginResponse.maxTotalBytes
-			this.sharedState.userStats.maxNoteBytes = +loginResponse.maxNoteBytes
-			this.sharedState.userStats.maxNoteCount = +loginResponse.maxNoteCount
+			this.state.clientConfig = JSON.parse(loginResponse.config ?? '{}') as ClientConfig
+			this.state.userStats.size = +loginResponse.size
+			this.state.userStats.noteCount = +loginResponse.noteCount
+			this.state.userStats.maxTotalBytes = +loginResponse.maxTotalBytes
+			this.state.userStats.maxNoteBytes = +loginResponse.maxNoteBytes
+			this.state.userStats.maxNoteCount = +loginResponse.maxNoteCount
 
 			const result: InitializationData = {
 				password: {
@@ -187,7 +187,7 @@ export class MimiriClient extends HttpClientBase {
 	public async verifyPassword(password: string): Promise<boolean> {
 		try {
 			const preLoginResponse = await this.get<PreLoginResponse>(
-				`/user/pre-login/${this.sharedState.username}?q=${Date.now()}`,
+				`/user/pre-login/${this.state.username}?q=${Date.now()}`,
 			)
 			const passwordHash = await passwordHasher.hashPassword(
 				password,
@@ -196,7 +196,7 @@ export class MimiriClient extends HttpClientBase {
 				preLoginResponse.iterations,
 			)
 			const loginRequest: LoginRequest = {
-				username: this.sharedState.username,
+				username: this.state.username,
 				response: await passwordHasher.computeResponse(passwordHash, preLoginResponse.challenge),
 				hashLength: passwordHash.length / 2,
 			}
@@ -212,7 +212,7 @@ export class MimiriClient extends HttpClientBase {
 
 	public async verifyCredentials(): Promise<string | undefined> {
 		const getDataRequest: BasicRequest = {
-			username: this.sharedState.username,
+			username: this.state.username,
 			timestamp: dateTimeNow(),
 			requestId: newGuid(),
 			signatures: [],
@@ -220,12 +220,12 @@ export class MimiriClient extends HttpClientBase {
 		await this._authManager.signRequest(getDataRequest)
 		try {
 			const response = await this.post<UserDataResponse>(`/user/get-data`, getDataRequest)
-			this.sharedState.clientConfig = JSON.parse(response.config ?? '{}') as ClientConfig
-			this.sharedState.userStats.size = +response.size
-			this.sharedState.userStats.noteCount = +response.noteCount
-			this.sharedState.userStats.maxTotalBytes = +response.maxTotalBytes
-			this.sharedState.userStats.maxNoteBytes = +response.maxNoteBytes
-			this.sharedState.userStats.maxNoteCount = +response.maxNoteCount
+			this.state.clientConfig = JSON.parse(response.config ?? '{}') as ClientConfig
+			this.state.userStats.size = +response.size
+			this.state.userStats.noteCount = +response.noteCount
+			this.state.userStats.maxTotalBytes = +response.maxTotalBytes
+			this.state.userStats.maxNoteBytes = +response.maxNoteBytes
+			this.state.userStats.maxNoteCount = +response.maxNoteCount
 			await this.openWebSocket()
 			return response.data
 		} catch (ex) {
@@ -238,7 +238,7 @@ export class MimiriClient extends HttpClientBase {
 
 	public async getChangesSince(noteSince: number, keySince: number): Promise<SyncInfo> {
 		const request: SyncRequest = {
-			username: this.sharedState.username,
+			username: this.state.username,
 			noteSince,
 			keySince,
 			timestamp: dateTimeNow(),
@@ -254,7 +254,7 @@ export class MimiriClient extends HttpClientBase {
 
 	public async multiAction(actions: NoteAction[]): Promise<Guid[]> {
 		const request: MultiNoteRequest = {
-			username: this.sharedState.username,
+			username: this.state.username,
 			actions,
 			timestamp: dateTimeNow(),
 			requestId: newGuid(),
@@ -283,7 +283,7 @@ export class MimiriClient extends HttpClientBase {
 
 	public async getPublicKey(keyOwnerName: string, pow: string) {
 		const request: PublicKeyRequest = {
-			username: this.sharedState.username,
+			username: this.state.username,
 			pow,
 			keyOwnerName,
 			timestamp: dateTimeNow(),
@@ -301,7 +301,7 @@ export class MimiriClient extends HttpClientBase {
 		const pub = await this.getPublicKey(recipient, pow)
 		const info: NoteShareInfo = {
 			id: newGuid(),
-			sender: this.sharedState.username,
+			sender: this.state.username,
 			created: dateTimeNow(),
 			name,
 			noteId,
@@ -313,7 +313,7 @@ export class MimiriClient extends HttpClientBase {
 			privateKey: await keySet.signature.privateKeyPem(),
 		}
 		const request: ShareNoteRequest = {
-			username: this.sharedState.username,
+			username: this.state.username,
 			recipient,
 			keyName,
 			data: await pub.encrypt(JSON.stringify(info)),
@@ -328,7 +328,7 @@ export class MimiriClient extends HttpClientBase {
 
 	public async syncPushChanges(noteActions: NoteSyncAction[], keyActions: KeySyncAction[]): Promise<SyncResult[]> {
 		const request: SyncPushRequest = {
-			username: this.sharedState.username,
+			username: this.state.username,
 			notes: noteActions,
 			keys: keyActions,
 			timestamp: dateTimeNow(),
@@ -347,7 +347,7 @@ export class MimiriClient extends HttpClientBase {
 
 	public async createNotificationUrl() {
 		const request: BasicRequest = {
-			username: this.sharedState.username,
+			username: this.state.username,
 			timestamp: dateTimeNow(),
 			requestId: newGuid(),
 			signatures: [],
@@ -358,7 +358,7 @@ export class MimiriClient extends HttpClientBase {
 
 	public async addComment(postId: Guid, displayName: string, comment: string) {
 		const request: AddCommentRequest = {
-			username: this.sharedState.username,
+			username: this.state.username,
 			postId,
 			displayName,
 			comment,
@@ -373,7 +373,7 @@ export class MimiriClient extends HttpClientBase {
 	public async getShareOffer(code: string) {
 		try {
 			const request: ShareOfferRequest = {
-				username: this.sharedState.username,
+				username: this.state.username,
 				timestamp: dateTimeNow(),
 				requestId: newGuid(),
 				code,
@@ -409,7 +409,7 @@ export class MimiriClient extends HttpClientBase {
 
 	public async deleteShareOffer(id: Guid) {
 		const request: DeleteShareRequest = {
-			username: this.sharedState.username,
+			username: this.state.username,
 			id,
 			timestamp: dateTimeNow(),
 			requestId: newGuid(),
@@ -421,7 +421,7 @@ export class MimiriClient extends HttpClientBase {
 
 	public async getShareParticipants(id: Guid) {
 		const request: ShareParticipantsRequest = {
-			username: this.sharedState.username,
+			username: this.state.username,
 			timestamp: dateTimeNow(),
 			requestId: newGuid(),
 			id,
@@ -458,15 +458,15 @@ export class MimiriClient extends HttpClientBase {
 				}
 			})
 			connection.onreconnecting(error => {
-				this.sharedState.isOnline = false
+				this.state.isOnline = false
 				this.notificationsCallback('reconnecting')
 			})
 			connection.onreconnected(() => {
-				this.sharedState.isOnline = true
+				this.state.isOnline = true
 				this.notificationsCallback('reconnected')
 			})
 			connection.onclose(error => {
-				this.sharedState.isOnline = false
+				this.state.isOnline = false
 				this.notificationsCallback('closed')
 			})
 			this._signalRConnection = connection
@@ -474,7 +474,7 @@ export class MimiriClient extends HttpClientBase {
 				throw new Error('Simulate offline')
 			}
 			await connection.start()
-			this.sharedState.isOnline = true
+			this.state.isOnline = true
 			this.notificationsCallback('connected')
 		} catch (ex) {
 			this._signalRConnection.stop().catch()
@@ -509,7 +509,7 @@ export class MimiriClient extends HttpClientBase {
 	}
 
 	set workOffline(value: boolean) {
-		this.sharedState.workOffline = value
+		this.state.workOffline = value
 		if (value) {
 			this.closeWebSocket()
 		} else {

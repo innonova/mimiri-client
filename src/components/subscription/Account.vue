@@ -25,7 +25,7 @@ const valid = ref()
 const customerElement = ref<typeof CustomerData>(undefined!)
 
 onMounted(() => {
-	noteManager.registerActionListener({
+	noteManager.tree.registerActionListener({
 		select: (id: Guid) => {
 			if (id === 'settings-billing-address') {
 				customerElement.value?.loadCustomer()

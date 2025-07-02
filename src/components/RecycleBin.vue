@@ -119,8 +119,8 @@ const onDrop = async event => {
 		event.stopPropagation()
 		dragOver = 0
 		indicatorVisible.value = false
-		const note = noteManager.getNoteById(dragId.value)
-		const dropNote = noteManager.getNoteById(props.node.id)
+		const note = noteManager.tree.getNoteById(dragId.value)
+		const dropNote = noteManager.tree.getNoteById(props.node.id)
 		if (target <= 0) {
 			await note.move(dropNote)
 		} else {
@@ -187,17 +187,17 @@ const toggleNode = async e => {
 	e.stopPropagation()
 	if (hasChildren.value && !searchModeActive.value) {
 		if (!props.node.expanded) {
-			const note = noteManager.getNoteById(props.node.id)
+			const note = noteManager.tree.getNoteById(props.node.id)
 			note.expand()
 		} else {
-			const note = noteManager.getNoteById(props.node.id)
+			const note = noteManager.tree.getNoteById(props.node.id)
 			note.collapse()
 		}
 	}
 }
 
 const selectNode = async (mobileSwitch: boolean) => {
-	noteManager.openNote(props.node.id, mobileSwitch)
+	noteManager.tree.openNote(props.node.id, mobileSwitch)
 }
 
 const showContextMenu = async e => {

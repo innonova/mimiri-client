@@ -14,7 +14,7 @@ export class CryptographyManager {
 
 	constructor(
 		private db: MimiriDb,
-		private sharedState: SharedState,
+		private state: SharedState,
 	) {}
 
 	public async ensureLocalCrypt(): Promise<void> {
@@ -183,7 +183,7 @@ export class CryptographyManager {
 
 		const keyData: KeyData = {
 			id,
-			userId: this.sharedState.userId,
+			userId: this.state.userId,
 			name: newGuid(),
 			algorithm: sym.algorithm,
 			asymmetricAlgorithm: signer.algorithm,
@@ -207,7 +207,7 @@ export class CryptographyManager {
 		)
 		const keyData: KeyData = {
 			id,
-			userId: this.sharedState.userId,
+			userId: this.state.userId,
 			name: share.keyName,
 			algorithm: share.algorithm,
 			asymmetricAlgorithm: signer.algorithm,

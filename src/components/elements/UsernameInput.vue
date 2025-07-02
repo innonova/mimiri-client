@@ -85,7 +85,7 @@ const checkUsernameDebounce = new Debounce(async () => {
 		usernameAvailable.value = false
 		usernameUnavailable.value = false
 		const value = username.value
-		const available = await noteManager.checkUsername(value)
+		const available = await noteManager.auth.checkUsername(value)
 		if (value === username.value) {
 			usernameAvailable.value = available
 			usernameUnavailable.value = !available

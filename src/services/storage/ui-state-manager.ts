@@ -9,17 +9,17 @@ export class UIStateManager {
 	private outstandingActions: number = 0
 	private _isMobile: boolean
 
-	constructor(private sharedState: SharedState) {
+	constructor(private state: SharedState) {
 		this._isMobile = mimiriPlatform.isPhoneSize
-		this.sharedState.noteOpen = !this._isMobile
+		this.state.noteOpen = !this._isMobile
 		setTimeout(() => this.checkBusyLength(), 100)
 	}
 
 	private checkBusyLength() {
-		if (this.sharedState.busy && !this.sharedState.busyLong) {
-			if (Date.now() - this.busyStart > this.sharedState.busyLongDelay) {
-				this.sharedState.busyLong = true
-				this.sharedState.spinner = true
+		if (this.state.busy && !this.state.busyLong) {
+			if (Date.now() - this.busyStart > this.state.busyLongDelay) {
+				this.state.busyLong = true
+				this.state.spinner = true
 			}
 		}
 		setTimeout(() => this.checkBusyLength(), 100)
@@ -28,11 +28,11 @@ export class UIStateManager {
 	public beginAction(longBusyDelay = 1000) {
 		this.outstandingActions++
 		if (this.outstandingActions > 0) {
-			if (!this.sharedState.busy) {
-				this.sharedState.busy = true
-				this.sharedState.spinner = false
-				this.sharedState.busyLong = false
-				this.sharedState.busyLongDelay = longBusyDelay
+			if (!this.state.busy) {
+				this.state.busy = true
+				this.state.spinner = false
+				this.state.busyLong = false
+				this.state.busyLongDelay = longBusyDelay
 				this.busyStart = Date.now()
 			}
 		}
@@ -40,37 +40,31 @@ export class UIStateManager {
 
 	public endAction() {
 		if (--this.outstandingActions <= 0) {
-			this.sharedState.busy = false
-			this.sharedState.busyLong = false
+			this.state.busy = false
+			this.state.busyLong = false
 		}
 	}
 
 	public closeNote() {
 		if (this._isMobile) {
-			this.sharedState.noteOpen = false
+			this.state.noteOpen = false
 			persistedState.noteOpen = false
 		}
 	}
 
 	public closeEditorIfMobile() {
-		if (this._isMobile && this.sharedState.noteOpen) {
-			this.sharedState.noteOpen = false
+		if (this._isMobile && this.state.noteOpen) {
+			this.state.noteOpen = false
 			persistedState.noteOpen = false
 		}
 	}
 
 	public newNote() {
-		if (
-			this.sharedState.userStats.noteCount >= this.sharedState.userStats.maxNoteCount &&
-			this.sharedState.userStats.maxNoteCount > 0
-		) {
+		if (this.state.userStats.noteCount >= this.state.userStats.maxNoteCount && this.state.userStats.maxNoteCount > 0) {
 			limitDialog.value.show('create-note-count')
 			return
 		}
-		if (
-			this.sharedState.userStats.size >= this.sharedState.userStats.maxTotalBytes &&
-			this.sharedState.userStats.maxTotalBytes > 0
-		) {
+		if (this.state.userStats.size >= this.state.userStats.maxTotalBytes && this.state.userStats.maxTotalBytes > 0) {
 			limitDialog.value.show('create-note-size')
 			return
 		}
@@ -78,17 +72,11 @@ export class UIStateManager {
 	}
 
 	public newRootNote() {
-		if (
-			this.sharedState.userStats.noteCount >= this.sharedState.userStats.maxNoteCount &&
-			this.sharedState.userStats.maxNoteCount > 0
-		) {
+		if (this.state.userStats.noteCount >= this.state.userStats.maxNoteCount && this.state.userStats.maxNoteCount > 0) {
 			limitDialog.value.show('create-note-count')
 			return
 		}
-		if (
-			this.sharedState.userStats.size >= this.sharedState.userStats.maxTotalBytes &&
-			this.sharedState.userStats.maxTotalBytes > 0
-		) {
+		if (this.state.userStats.size >= this.state.userStats.maxTotalBytes && this.state.userStats.maxTotalBytes > 0) {
 			limitDialog.value.show('create-note-size')
 			return
 		}

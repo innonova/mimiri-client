@@ -54,11 +54,11 @@ import ToolbarIcon from './ToolbarIcon.vue'
 import RecycleBin from './settings/RecycleBin.vue'
 
 const type = computed(() => {
-	return noteManager.selectedNote?.type ?? ''
+	return noteManager.tree.selectedNote?.type ?? ''
 })
 
 const onBack = () => {
 	window.history.back()
-	noteManager.closeEditorIfMobile()
+	noteManager.ui.closeEditorIfMobile()
 }
 </script>

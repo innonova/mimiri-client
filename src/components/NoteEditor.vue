@@ -14,7 +14,7 @@
 			<ToolbarIcon
 				:icon="settingsManager.wordwrap ? 'wordwrap-on' : 'wordwrap-off'"
 				:hoverEffect="true"
-				:disabled="noteManager.selectedNote?.isSystem"
+				:disabled="noteManager.tree.selectedNote?.isSystem"
 				:title="settingsManager.wordwrap ? 'Disable Word Wrap' : 'Enable Word Wrap'"
 				:toggledOn="settingsManager.wordwrap"
 				@click="toggleWordWrap"
@@ -38,7 +38,7 @@
 				icon="history"
 				:hoverEffect="true"
 				:title="historyVisible ? 'Hide History' : 'Show History'"
-				:disabled="noteManager.selectedNote?.isSystem"
+				:disabled="noteManager.tree.selectedNote?.isSystem"
 				:toggledOn="historyVisible"
 				@click="showHistory"
 			></ToolbarIcon>
@@ -134,7 +134,7 @@ const activateEdit = () => {
 }
 
 const activateSettings = () => {
-	noteManager.openNote('settings-general' as Guid)
+	noteManager.tree.openNote('settings-general' as Guid)
 }
 
 const formatDate = (value: string) => {
@@ -185,10 +185,10 @@ const setActiveViewModel = viewModel => {
 		}
 		activeViewModel = viewModel
 		if (activeViewModel) {
-			mimiriEditor.open(noteManager.getNoteById(activeViewModel.id))
+			mimiriEditor.open(noteManager.tree.getNoteById(activeViewModel.id))
 			activeViewModelStopWatch = watch(activeViewModel, () => {
 				if (activeViewModel && activeViewModel.id === mimiriEditor.note?.id) {
-					mimiriEditor.open(noteManager.getNoteById(activeViewModel.id))
+					mimiriEditor.open(noteManager.tree.getNoteById(activeViewModel.id))
 				}
 			})
 		}
@@ -200,7 +200,7 @@ onMounted(() => {
 	mimiriEditor.onSave(() => save())
 	mimiriEditor.onSearchAll(() => titleBar.value?.searchAllNotes())
 	mimiriEditor.onBlur(() => save())
-	setActiveViewModel(noteManager.selectedViewModel)
+	setActiveViewModel(noteManager.tree.selectedViewModel)
 
 	watch(settingsManager.state, () => {
 		mimiriEditor.syncSettings()
@@ -211,7 +211,7 @@ onMounted(() => {
 			historyVisible.value = false
 			mimiriEditor.clearSearchHighlights()
 			save().then(() => {
-				setActiveViewModel(noteManager.getViewModelById(newVal.selectedNoteId))
+				setActiveViewModel(noteManager.tree.getViewModelById(newVal.selectedNoteId))
 				if (showSearchBox.value) {
 					mimiriEditor.setSearchHighlights(searchManager.state.term)
 				}
@@ -258,7 +258,7 @@ const onBack = () => {
 	save()
 	mimiriEditor.mobileClosing()
 	window.history.back()
-	noteManager.closeEditorIfMobile()
+	noteManager.ui.closeEditorIfMobile()
 }
 
 const saveClicked = async () => {
@@ -289,10 +289,10 @@ const save = async () => {
 			console.log('result of save:', result)
 
 			if (result === 'note-size') {
-				noteManager.select(activeViewModel.id)
+				noteManager.tree.select(activeViewModel.id)
 				limitDialog.value.show('save-note-size')
 			} else if (result === 'total-size') {
-				noteManager.select(activeViewModel.id)
+				noteManager.tree.select(activeViewModel.id)
 				limitDialog.value.show('save-total-size')
 			} else if (result === 'lost-update') {
 				infoDialog.value.show(

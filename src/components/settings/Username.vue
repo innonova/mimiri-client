@@ -40,7 +40,7 @@ const save = () => {
 	if (canSave.value) {
 		passwordDialog.value.showAction(async pwd => {
 			try {
-				await noteManager.changeUserNameAndPassword(newUsername, pwd)
+				await noteManager.auth.changeUserNameAndPassword(newUsername, pwd)
 				usernameInput.value.refresh()
 				return true
 			} catch (ex) {

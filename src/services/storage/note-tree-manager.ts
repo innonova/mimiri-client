@@ -1,9 +1,11 @@
 import type { Guid } from '../types/guid'
-import type { MimerNote } from '../types/mimer-note'
+import { MimerNote } from '../types/mimer-note'
 import { ViewMode, type SharedState } from './type'
 import { persistedState } from '../persisted-state'
 import { browserHistory } from '../../global'
 import { mimiriPlatform } from '../mimiri-platform'
+import type { NoteService } from './note-service'
+import type { AuthenticationManager } from './authentication-manager'
 
 export interface ActionListener {
 	select(id: Guid)
@@ -15,8 +17,24 @@ export class NoteTreeManager {
 	private _actionListeners: ActionListener[] = []
 	private _isMobile: boolean
 
-	constructor(private sharedState: SharedState) {
+	constructor(
+		private owner: any,
+		private state: SharedState,
+		private noteService: NoteService,
+		private authManager: AuthenticationManager,
+	) {
 		this._isMobile = mimiriPlatform.isPhoneSize
+	}
+
+	public async ensureRoot() {
+		if (!this._root) {
+			const note = await this.noteService.readNote(this.authManager.userData.rootNote)
+			if (note) {
+				this._root = new MimerNote(this.owner, undefined, note)
+			} else {
+				this._root = undefined
+			}
+		}
 	}
 
 	public register(id: Guid, note: MimerNote) {
@@ -38,7 +56,7 @@ export class NoteTreeManager {
 	}
 
 	public select(id: Guid) {
-		this.sharedState.selectedNoteId = id
+		this.state.selectedNoteId = id
 		if (!this._isMobile) {
 			browserHistory.open(id)
 		}
@@ -49,11 +67,11 @@ export class NoteTreeManager {
 		const note = id ? this.getNoteById(id) : this.selectedNote
 		if (note) {
 			note.select()
-			this.sharedState.viewMode = ViewMode.Content
+			this.state.viewMode = ViewMode.Content
 			if (this._isMobile && mobileOpen) {
-				this.sharedState.noteOpen = true
+				this.state.noteOpen = true
 				persistedState.noteOpen = true
-				browserHistory.open(this.sharedState.selectedNoteId)
+				browserHistory.open(this.state.selectedNoteId)
 			}
 		}
 	}
@@ -62,19 +80,19 @@ export class NoteTreeManager {
 		const note = id ? this.getNoteById(id) : this.selectedNote
 		if (note) {
 			note.select()
-			this.sharedState.viewMode = ViewMode.Properties
+			this.state.viewMode = ViewMode.Properties
 			if (this._isMobile) {
-				this.sharedState.noteOpen = true
+				this.state.noteOpen = true
 				persistedState.noteOpen = true
-				browserHistory.open(this.sharedState.selectedNoteId)
+				browserHistory.open(this.state.selectedNoteId)
 			}
 		}
 	}
 
-	public async loadState(rootNote: MimerNote) {
+	public async loadState() {
 		const selectedList = persistedState.readSelectedNote()
 		const expanded = persistedState.expanded
-		await rootNote.ensureChildren()
+		await this._root.ensureChildren()
 
 		if (expanded) {
 			let maxIterations = 1000
@@ -99,7 +117,7 @@ export class NoteTreeManager {
 				}
 			}
 		}
-		this.sharedState.stateLoaded = true
+		this.state.stateLoaded = true
 	}
 
 	public registerActionListener(listener: ActionListener) {
@@ -113,11 +131,11 @@ export class NoteTreeManager {
 	}
 
 	public get selectedNote() {
-		return this.getNoteById(this.sharedState.selectedNoteId)
+		return this.getNoteById(this.state.selectedNoteId)
 	}
 
 	public get selectedViewModel() {
-		return this.getViewModelById(this.sharedState.selectedNoteId)
+		return this.getViewModelById(this.state.selectedNoteId)
 	}
 
 	public clearNotes() {
@@ -130,6 +148,10 @@ export class NoteTreeManager {
 
 	public set root(value: MimerNote) {
 		this._root = value
+	}
+
+	public get controlPanelId(): Guid {
+		return this._root?.note.getItem('metadata').controlPanel
 	}
 
 	public get controlPanel() {

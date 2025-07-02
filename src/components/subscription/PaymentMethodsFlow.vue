@@ -23,7 +23,7 @@ const payLink = ref('')
 const expectedMethodCount = ref(0)
 
 onMounted(() => {
-	noteManager.registerActionListener({
+	noteManager.tree.registerActionListener({
 		select: (id: Guid) => {
 			if (id === 'settings-payment-methods') {
 				selectedId.value = 'methods'

@@ -108,8 +108,8 @@ const cancel = async () => {
 	if (!noteManager.state.isLoggedIn) {
 		// await noteManager.loginAnonymousAccount()
 		if (settingsManager.showCreateOverCancel) {
-			noteManager.controlPanel.expand()
-			noteManager.getNoteById('settings-account' as Guid)?.select()
+			noteManager.tree.controlPanel.expand()
+			noteManager.tree.getNoteById('settings-account' as Guid)?.select()
 		}
 	}
 	showVersion.value = false
@@ -119,16 +119,16 @@ const cancel = async () => {
 const login = async () => {
 	loading.value = true
 	error.value = false
-	const isAnonymous = noteManager.isAnonymous
-	const isPristine = await noteManager.isAccountPristine()
-	await noteManager.logout()
+	const isAnonymous = noteManager.session.isAnonymous
+	const isPristine = await noteManager.session.isAccountPristine()
+	await noteManager.session.logout()
 
-	if (await noteManager.login(username.value, password.value)) {
+	if (await noteManager.session.login(username.value, password.value)) {
 		if (isAnonymous) {
 			settingsManager.showCreateOverCancel = isPristine
 		}
 		loading.value = false
-		await noteManager.loadState()
+		await noteManager.tree.loadState()
 		showVersion.value = false
 		dialog.value.close()
 	} else {

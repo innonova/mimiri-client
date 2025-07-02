@@ -48,7 +48,7 @@ const check = async () => {
 			running.value = false
 			status.value = 'Success'
 			await new Promise(resolve => setTimeout(resolve, 1000))
-			await noteManager.updateUserStats()
+			await noteManager.session.updateUserStats()
 			emit('close')
 			return
 		} else if (inv.status !== 'pending') {
@@ -64,7 +64,7 @@ const check = async () => {
 			running.value = false
 			status.value = 'Success'
 			await new Promise(resolve => setTimeout(resolve, 1000))
-			await noteManager.updateUserStats()
+			await noteManager.session.updateUserStats()
 			emit('close')
 			return
 		}

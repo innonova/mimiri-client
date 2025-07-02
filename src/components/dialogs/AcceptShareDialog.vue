@@ -62,9 +62,9 @@ const submitDialog = async () => {
 	}
 	try {
 		loading.value = true
-		const offer = await noteManager.getShareOffer(code.value.trim())
+		const offer = await noteManager.note.getShareOffer(code.value.trim())
 		if (offer) {
-			await noteManager.acceptShare(offer, parent)
+			await noteManager.note.acceptShare(offer, parent)
 			close()
 		} else {
 			invalid.value = true

@@ -86,7 +86,7 @@ const loading = ref(false)
 const codeEnabled = features.includes('share-code')
 
 const hasSelectedNode = computed(() => !!noteManager.state.selectedNoteId)
-const parentName = computed(() => noteManager.selectedViewModel?.title)
+const parentName = computed(() => noteManager.tree.selectedViewModel?.title)
 
 const copyCode = () => {
 	clipboardManager.write(code.value)
@@ -126,7 +126,7 @@ const submitDialog = async () => {
 	trimmedName.value = name.value.trim()
 	try {
 		loading.value = true
-		const response = await noteManager.selectedNote.shareWith(trimmedName.value)
+		const response = await noteManager.tree.selectedNote.shareWith(trimmedName.value)
 		if (codeEnabled) {
 			code.value = response.code
 		} else {

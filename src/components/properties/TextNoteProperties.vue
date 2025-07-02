@@ -43,11 +43,11 @@ const shareParticipants = ref([])
 const showDeleteOldHistory = ref(false)
 const showDeleteAllHistory = ref(false)
 
-const note = computed(() => noteManager.selectedNote)
+const note = computed(() => noteManager.tree.selectedNote)
 
 const update = async () => {
 	if (note.value.isShared) {
-		shareParticipants.value = (await noteManager.getShareParticipants(note.value.id)).filter(
+		shareParticipants.value = (await noteManager.note.getShareParticipants(note.value.id)).filter(
 			item => item.username !== noteManager.state.username,
 		)
 	} else {

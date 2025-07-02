@@ -68,6 +68,10 @@ onMounted(() => {
 })
 
 const createAccount = async () => {
-	await noteManager.promoteToCloudAccount(username.value, password.value || currentPassword.value, DEFAULT_ITERATIONS)
+	await noteManager.session.promoteToCloudAccount(
+		username.value,
+		password.value || currentPassword.value,
+		DEFAULT_ITERATIONS,
+	)
 }
 </script>
