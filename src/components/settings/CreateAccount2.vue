@@ -169,7 +169,7 @@ const createAccount = async () => {
 }
 
 const populate = async () => {
-	products.value = (await noteManager.getSubscriptionProducts()).filter(
+	products.value = (await noteManager.payment.getSubscriptionProducts()).filter(
 		prod => prod.data.period === period.value || prod.sku === 'free',
 	)
 }

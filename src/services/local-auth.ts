@@ -2,8 +2,8 @@ import { mimiriPlatform } from './mimiri-platform'
 import { settingsManager } from './settings-manager'
 import { blogManager, ipcClient, noteManager, updateManager } from '../global'
 import { reactive } from 'vue'
-import type { LoginListener } from './storage/mimiri-store'
 import type { HideShowListener } from './ipc-client'
+import type { LoginListener } from './storage/mimiri-store'
 
 class LocalAuth implements LoginListener, HideShowListener {
 	private _state: any = reactive({ locked: false, elapsed: true })

@@ -157,3 +157,12 @@ export interface SyncInfo {
 	notes: NoteInfo[]
 	keys: KeyInfo[]
 }
+
+export class MimerError extends Error {
+	constructor(
+		public title: string,
+		msg: string,
+	) {
+		super(msg)
+	}
+}

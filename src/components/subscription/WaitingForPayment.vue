@@ -43,7 +43,7 @@ let timerActive = false
 const check = async () => {
 	status.value = 'Checking...'
 	if (props.invoiceId) {
-		const inv = await noteManager.getInvoicePaymentStatus(props.invoiceId)
+		const inv = await noteManager.payment.getInvoicePaymentStatus(props.invoiceId)
 		if (inv.status === 'confirmed') {
 			running.value = false
 			status.value = 'Success'
@@ -59,7 +59,7 @@ const check = async () => {
 			return
 		}
 	} else if (props.expectedMethodCount) {
-		const methods = await noteManager.getPaymentMethods()
+		const methods = await noteManager.payment.getPaymentMethods()
 		if (methods.length === props.expectedMethodCount) {
 			running.value = false
 			status.value = 'Success'

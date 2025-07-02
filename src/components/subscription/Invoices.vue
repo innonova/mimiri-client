@@ -25,7 +25,7 @@ const emit = defineEmits(['pay-invoice'])
 const invoices = ref<Invoice[]>([])
 
 const populate = async () => {
-	invoices.value = await noteManager.getInvoices()
+	invoices.value = await noteManager.payment.getInvoices()
 }
 
 const payInvoice = (invoice: Invoice) => {

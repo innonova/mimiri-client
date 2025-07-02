@@ -211,7 +211,7 @@ const ended = computed(
 )
 
 const payNow = async () => {
-	const invoices = await noteManager.getOpenInvoices()
+	const invoices = await noteManager.payment.getOpenInvoices()
 	const overdue = invoices.filter(inv => inv.due && isAfter(now.value, inv.due))
 	if (overdue.length > 0) {
 		const invoiceId = overdue[0].id

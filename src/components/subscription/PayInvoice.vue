@@ -68,7 +68,7 @@ const submit = async () => {
 		await customerElement.value.verifyEmail()
 
 		if (method.value === 'NEW') {
-			const createPayResult = await noteManager.createPaymentLink({
+			const createPayResult = await noteManager.payment.createPaymentLink({
 				invoiceId: props.invoice.id,
 				save: true,
 				clientRef: 'pay-invoice',
@@ -78,7 +78,7 @@ const submit = async () => {
 		} else {
 			const methodId = method.value
 			assertGuid(methodId)
-			const payResult = await noteManager.chargeExistingMethod({
+			const payResult = await noteManager.payment.chargeExistingMethod({
 				invoiceId: props.invoice.id,
 				methodId,
 				purpose: 'Online order',

@@ -99,13 +99,13 @@ const submit = async () => {
 		payInProgress.value = true
 		await customerElement.value.save(termsAccepted.value, privacyAccepted.value)
 		await customerElement.value.verifyEmail()
-		const newSubResult = await noteManager.newSubscription({
+		const newSubResult = await noteManager.payment.newSubscription({
 			productId: props.product.id!,
 			renewalType: RenewalType.Automatic,
 			currency: props.currency,
 		})
 		if (method.value === 'NEW') {
-			const createPayResult = await noteManager.createPaymentLink({
+			const createPayResult = await noteManager.payment.createPaymentLink({
 				invoiceId: newSubResult.invoiceId,
 				save: true,
 				clientRef: 'upgrade',
@@ -115,7 +115,7 @@ const submit = async () => {
 		} else {
 			const methodId = method.value
 			assertGuid(methodId)
-			const payResult = await noteManager.chargeExistingMethod({
+			const payResult = await noteManager.payment.chargeExistingMethod({
 				invoiceId: newSubResult.invoiceId,
 				methodId,
 				purpose: 'Online order',

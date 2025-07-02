@@ -69,8 +69,8 @@ onMounted(async () => {
 
 const populate = async () => {
 	populated.value = false
-	product.value = await noteManager.getCurrentSubscriptionProduct()
-	subscription.value = await noteManager.getCurrentSubscription()
+	product.value = await noteManager.payment.getCurrentSubscriptionProduct()
+	subscription.value = await noteManager.payment.getCurrentSubscription()
 	populated.value = true
 }
 
@@ -79,12 +79,12 @@ const change = async () => {
 }
 
 const cancel = async () => {
-	await noteManager.cancelSubscription()
+	await noteManager.payment.cancelSubscription()
 	await populate()
 }
 
 const resume = async () => {
-	await noteManager.resumeSubscription()
+	await noteManager.payment.resumeSubscription()
 	await populate()
 }
 

@@ -63,7 +63,7 @@ const methods = ref<PaymentMethod[]>()
 const loaded = ref(false)
 
 onMounted(async () => {
-	const items = await noteManager.getPaymentMethods()
+	const items = await noteManager.payment.getPaymentMethods()
 	methods.value = items
 	if (methods.value.length > 0) {
 		model.value = undefined

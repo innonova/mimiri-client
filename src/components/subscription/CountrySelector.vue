@@ -27,11 +27,11 @@ const name = defineModel('name')
 
 const countries = ref<Country[]>([])
 
-void noteManager.getCountries().then(items => {
+void noteManager.payment.getCountries().then(items => {
 	countries.value = items
 })
 
-void noteManager.getCountries().then(c => (countries.value = c))
+void noteManager.payment.getCountries().then(c => (countries.value = c))
 
 watch(code, async () => {
 	const country = countries.value.find(c => c.code === code.value)

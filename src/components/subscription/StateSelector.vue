@@ -41,7 +41,7 @@ const mode = defineModel('mode')
 const states = ref<State[]>([])
 
 const updateStates = async () => {
-	const countries = await noteManager.getCountries()
+	const countries = await noteManager.payment.getCountries()
 	const country = countries.find(c => c.code === props.countryCode)
 	states.value = country?.states ?? []
 	mode.value = states.value.length > 0 ? 'selector' : 'text'

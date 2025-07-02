@@ -9,12 +9,14 @@ import type { MimiriDb } from './mimiri-db'
 import type { MimiriClient } from './mimiri-client'
 import type { CryptographyManager } from './cryptography-manager'
 import { deObfuscate, incrementalDelay, obfuscate } from '../helpers'
-import { DEFAULT_PASSWORD_ALGORITHM, DEFAULT_SALT_SIZE } from './mimiri-store'
+import { DEFAULT_PASSWORD_ALGORITHM, DEFAULT_PROOF_BITS, DEFAULT_SALT_SIZE } from './mimiri-store'
+import { ProofOfWork } from '../proof-of-work'
 
 export class AuthenticationManager {
 	private _userData: any
 	private _userCryptAlgorithm: string = SymmetricCrypt.DEFAULT_SYMMETRIC_ALGORITHM
 	private _rootSignature: CryptSignature
+	private _proofBits = DEFAULT_PROOF_BITS
 
 	constructor(
 		private db: MimiriDb,
@@ -25,11 +27,21 @@ export class AuthenticationManager {
 		this.api.setAuthManager(this)
 	}
 
-	public async checkUsername(
-		username: string,
-		pow: string,
-	): Promise<{ bitsExpected: number; proofAccepted: boolean; available: boolean }> {
-		return this.api.checkUsername(username, pow)
+	public async checkUsername(username: string): Promise<boolean> {
+		if (env.DEV && username.startsWith('auto_test_')) {
+			return true
+		}
+		while (true) {
+			const pow = await ProofOfWork.compute(username, this._proofBits)
+			const res = await this.api.checkUsername(username, pow)
+			if (res.bitsExpected) {
+				this._proofBits = res.bitsExpected
+			}
+			if (!res.proofAccepted) {
+				continue
+			}
+			return res.available
+		}
 	}
 
 	public async setLoginData(data: string) {
@@ -171,7 +183,14 @@ export class AuthenticationManager {
 		return false
 	}
 
-	public async promoteToCloudAccount(username: string, password: string, pow: string, iterations: number) {
+	public async promoteToCloudAccount(username: string, password: string, iterations: number) {
+		let pow = ''
+		if (env.DEV && username.startsWith('auto_test_')) {
+			pow = 'test-mode'
+		} else {
+			pow = await ProofOfWork.compute(username, this._proofBits)
+		}
+
 		let initializationData = await this.db.getInitializationData()
 		if (initializationData?.local) {
 			initializationData.userCrypt = {
