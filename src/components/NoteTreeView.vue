@@ -58,7 +58,7 @@ const stopWatching = watch(noteManager.state, () => {
 	) {
 		stateLoaded = true
 		mainElement.value.scrollTop = persistedState.getTreeScrollTop()
-		if (noteManager.isMobile && persistedState.noteOpen && noteManager.tree.selectedNote) {
+		if (noteManager.ui.isMobile && persistedState.noteOpen && noteManager.tree.selectedNote) {
 			noteManager.tree.openNote(noteManager.tree.selectedNote.id)
 		}
 		stopWatching()
@@ -193,7 +193,7 @@ const hasFocus = () => {
 }
 
 const scrollDebounce = new Debounce(async () => {
-	if (mainElement.value && noteManager && (!noteManager.state.noteOpen || !noteManager.isMobile)) {
+	if (mainElement.value && noteManager && (!noteManager.state.noteOpen || !noteManager.ui.isMobile)) {
 		const scrollTop = Math.round(mainElement.value.scrollTop)
 		persistedState.setTreeScrollTop(scrollTop)
 	}

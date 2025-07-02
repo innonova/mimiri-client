@@ -47,7 +47,7 @@ const findDialog = (elm: HTMLElement) => {
 const emit = defineEmits(['close'])
 
 const down = (e: PointerEvent) => {
-	if (noteManager.isMobile) {
+	if (noteManager.ui.isMobile) {
 		return
 	}
 	offsetY = e.offsetY
@@ -60,7 +60,7 @@ const down = (e: PointerEvent) => {
 }
 
 const up = (e: PointerEvent) => {
-	if (noteManager.isMobile) {
+	if (noteManager.ui.isMobile) {
 		return
 	}
 	captured = false
@@ -68,7 +68,7 @@ const up = (e: PointerEvent) => {
 }
 
 const move = (e: PointerEvent) => {
-	if (noteManager.isMobile) {
+	if (noteManager.ui.isMobile) {
 		return
 	}
 	if (captured) {

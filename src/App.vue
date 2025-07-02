@@ -169,7 +169,7 @@ const onResize = () => {
 	editorWidth.value = `${window.innerWidth - splitterPos - 10}px`
 }
 
-document.documentElement.setAttribute('data-device-type', noteManager.isMobile ? 'mobile' : 'desktop')
+document.documentElement.setAttribute('data-device-type', noteManager.ui.isMobile ? 'mobile' : 'desktop')
 
 const updateTheme = () => {
 	document.documentElement.setAttribute('data-theme', settingsManager.darkMode ? 'dark' : 'light')
