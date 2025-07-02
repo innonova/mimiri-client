@@ -224,12 +224,10 @@ export class MimiriStore {
 		openLocal: () => this.sessionManager.openLocal(),
 		updateUserStats: () => this.sessionManager.updateUserStats(),
 		logout: (): Promise<void> => this.sessionManager.logout(),
-		promoteToCloudAccount: (username: string, password: string, iterations: number) => {
-			return this.sessionManager.promoteToCloudAccount(username, password, iterations)
-		},
-		promoteToLocalAccount: (username: string, password: string, iterations: number) => {
-			return this.sessionManager.promoteToLocalAccount(username, password, iterations)
-		},
+		promoteToCloudAccount: (username: string, password: string, iterations: number) =>
+			this.sessionManager.promoteToCloudAccount(username, password, iterations),
+		promoteToLocalAccount: (username: string, password: string, iterations: number) =>
+			this.sessionManager.promoteToLocalAccount(username, password, iterations),
 		registerListener: (listener: LoginListener) => this.sessionManager.registerListener(listener),
 		queueSync: () => this.syncService.queueSync(),
 		toggleWorkOffline: () => {
@@ -247,24 +245,13 @@ export class MimiriStore {
 	}
 
 	public readonly note = {
-		getNote: (id: Guid) => {
-			return this.noteService.readNote(id)
-		},
-		isShared: (note: Note) => {
-			return !!this.cryptoManager.getKeyByName(note.keyName).metadata.shared
-		},
-		shareMimerNote: (mimerNote: MimerNote, recipient: string) => {
-			return this.operationsManager.shareMimerNote(mimerNote, recipient)
-		},
-		getShareOffer: (code: string) => {
-			return this.sharingService.getShareOffer(code)
-		},
-		getShareParticipants: (id: Guid) => {
-			return this.sharingService.getShareParticipants(id)
-		},
-		acceptShare: (share: NoteShareInfo, parent?: MimerNote) => {
-			return this.operationsManager.acceptShare(share, parent)
-		},
+		getNote: (id: Guid) => this.noteService.readNote(id),
+		isShared: (note: Note) => !!this.cryptoManager.getKeyByName(note.keyName).metadata.shared,
+		shareMimerNote: (mimerNote: MimerNote, recipient: string) =>
+			this.operationsManager.shareMimerNote(mimerNote, recipient),
+		getShareOffer: (code: string) => this.sharingService.getShareOffer(code),
+		getShareParticipants: (id: Guid) => this.sharingService.getShareParticipants(id),
+		acceptShare: (share: NoteShareInfo, parent?: MimerNote) => this.operationsManager.acceptShare(share, parent),
 	}
 
 	public readonly feedback = {
