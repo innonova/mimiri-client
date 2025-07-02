@@ -50,7 +50,7 @@ export class BlogManager {
 
 	public async addComment(postId: Guid, username: string, comment: string): Promise<void> {
 		if (settingsManager.disableDevBlog) return
-		await this.noteManager.addComment(postId, username, comment)
+		await this.noteManager.feedback.addComment(postId, username, comment)
 	}
 
 	public async initialize(): Promise<void> {

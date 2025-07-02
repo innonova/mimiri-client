@@ -19,6 +19,7 @@ import { UIStateManager } from './ui-state-manager'
 import { NoteTreeManager, type ActionListener } from './note-tree-manager'
 import { NoteOperationsManager } from './note-operations-manager'
 import { SessionManager, type LoginListener } from './session-manager'
+import { add } from 'date-fns/fp'
 
 export const DEFAULT_PROOF_BITS = 15
 export const DEFAULT_ITERATIONS = 1000000
@@ -296,8 +297,11 @@ export class MimiriStore {
 		}
 	}
 
-	public async addComment(postId: Guid, displayName: string, comment: string) {
-		return this.api.addComment(postId, displayName, comment)
+	public get feedback() {
+		return {
+			addComment: (postId: Guid, displayName: string, comment: string) =>
+				this.api.addComment(postId, displayName, comment),
+		}
 	}
 
 	public get payment() {
