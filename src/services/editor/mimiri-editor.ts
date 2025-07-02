@@ -8,7 +8,7 @@ import { EditorSimple } from './editor-simple'
 import { EditorDisplay } from './editor-display'
 import { settingsManager } from '../settings-manager'
 import { clipboardManager, debug, noteManager, saveEmptyNodeDialog } from '../../global'
-import { VersionConflictError } from '../mimer-client'
+import { VersionConflictError } from '../storage/mimiri-client'
 
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms))
 
@@ -227,12 +227,12 @@ export class MimiriEditor {
 					const sizeBefore = note.size
 					note.text = targetText
 					const sizeAfter = note.size
-					if (sizeAfter > noteManager.maxNoteSize && noteManager.maxNoteSize > 0) {
+					if (sizeAfter > noteManager.state.userStats.maxNoteBytes && noteManager.state.userStats.maxNoteBytes > 0) {
 						return 'note-size'
 					} else if (
-						noteManager.usedBytes > noteManager.maxBytes &&
+						noteManager.state.userStats.size > noteManager.state.userStats.maxTotalBytes &&
 						sizeAfter >= sizeBefore &&
-						noteManager.maxBytes > 0
+						noteManager.state.userStats.maxTotalBytes > 0
 					) {
 						return 'total-size'
 					} else {

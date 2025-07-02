@@ -168,7 +168,7 @@ const time20M = computed(() => `~${passwordTimeFactor.time20M}s`)
 
 watch(createdPassword, value => {
 	if (value) {
-		const result = zxcvbn(value, [noteManager.username])
+		const result = zxcvbn(value, [noteManager.state.username])
 		const days = result.crack_times_seconds.offline_slow_hashing_1e4_per_second / 60 / 60 / 24
 		if (days < 0.0001) {
 			passwordQuality.value = 'free-access'
@@ -236,7 +236,7 @@ const save = () => {
 			try {
 				if (passwordMode.value === 'generate') {
 					await noteManager.changeUserNameAndPassword(
-						noteManager.username,
+						noteManager.state.username,
 						pwd,
 						generatedPassword.value,
 						generatedIterations.value,
@@ -244,7 +244,7 @@ const save = () => {
 					generatedPasswordRepeat.value = ''
 				} else {
 					await noteManager.changeUserNameAndPassword(
-						noteManager.username,
+						noteManager.state.username,
 						pwd,
 						createdPassword.value,
 						iterations.value,

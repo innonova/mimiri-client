@@ -1,6 +1,6 @@
 import { computed } from 'vue'
 import { blogManager, updateManager } from '../../global'
-import type { NoteManager } from '../note-manager'
+import type { MimiriStore } from '../storage/mimiri-store'
 import { settingsManager, UpdateMode } from '../settings-manager'
 import { dateTimeNow } from './date-time'
 import type { Guid } from './guid'
@@ -19,7 +19,7 @@ export class VirtualNote extends MimerNote {
 	private _vChildren: MimerNote[] = []
 
 	constructor(
-		owner: NoteManager,
+		owner: MimiriStore,
 		parent: MimerNote | undefined,
 		private _tree: VirtualTree,
 	) {

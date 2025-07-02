@@ -26,7 +26,7 @@ const emit = defineEmits(['close'])
 
 const usernameInput = ref(null)
 const canSave = ref(false)
-let newUsername = noteManager.username
+let newUsername = noteManager.state.username
 
 const usernameChanged = (can: boolean, username: string) => {
 	canSave.value = can

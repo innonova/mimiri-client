@@ -5,7 +5,7 @@
 			<div class="grid grid-cols-[7rem_12rem] gap-2">
 				<ItemHeader class="col-span-2">Choose your credentials</ItemHeader>
 				<div class="col-span-2 mb-2">
-					You current local user is: &nbsp; <b>{{ noteManager.username }}</b>
+					You current local user is: &nbsp; <b>{{ noteManager.state.username }}</b>
 				</div>
 				<div class="flex items-center">Username:</div>
 				<UsernameInput :display-current="false" v-model:value="username" v-model:valid="usernameValid"></UsernameInput>
@@ -64,7 +64,7 @@ const canCreate = computed(() => {
 })
 
 onMounted(() => {
-	username.value = noteManager.username
+	username.value = noteManager.state.username
 })
 
 const createAccount = async () => {

@@ -4,18 +4,14 @@ import { fromBase64, toBase64, toHex } from '../hex-base64'
 import { mimiriPlatform } from '../mimiri-platform'
 import { SymmetricCrypt } from '../symmetric-crypt'
 import { emptyGuid, newGuid } from '../types/guid'
-import type { InitializationData, LoginData, SharedState } from './type'
+import type { InitializationData, SharedState } from './type'
 import type { MimiriDb } from './mimiri-db'
 import type { MimiriClient } from './mimiri-client'
 import type { CryptographyManager } from './cryptography-manager'
 import { deObfuscate, incrementalDelay, obfuscate } from '../helpers'
-
-const DEFAULT_ITERATIONS = 1000000
-const DEFAULT_SALT_SIZE = 32
-const DEFAULT_PASSWORD_ALGORITHM = 'PBKDF2;SHA512;256'
+import { DEFAULT_PASSWORD_ALGORITHM, DEFAULT_SALT_SIZE } from './mimiri-store'
 
 export class AuthenticationManager {
-	private _username: string
 	private _userData: any
 	private _userCryptAlgorithm: string = SymmetricCrypt.DEFAULT_SYMMETRIC_ALGORITHM
 	private _rootSignature: CryptSignature
@@ -75,7 +71,7 @@ export class AuthenticationManager {
 			((mimiriPlatform.isIosApp || mimiriPlatform.isAndroidApp) && mimiriPlatform.supportsBiometry)
 		) {
 			const loginData = {
-				username: this._username,
+				username: this.sharedState.username,
 				userId: this.sharedState?.userId ?? emptyGuid(),
 				userCryptAlgorithm: this._userCryptAlgorithm,
 				rootCrypt: {
@@ -139,7 +135,7 @@ export class AuthenticationManager {
 					new Blob([fromBase64(str)]).stream().pipeThrough(new DecompressionStream('gzip')),
 				).text()
 				const loginData = JSON.parse(unzipped)
-				this._username = loginData.username
+				this.sharedState.username = loginData.username
 				this._userCryptAlgorithm = loginData.userCryptAlgorithm
 
 				this.sharedState.userId = loginData.userId
@@ -154,7 +150,7 @@ export class AuthenticationManager {
 					loginData.rootSignature.publicKey,
 					loginData.rootSignature.privateKey,
 				)
-				await this.db.open(this._username)
+				await this.db.open(this.sharedState.username)
 				const initializationData = await this.db.getInitializationData()
 				if (initializationData?.local) {
 					this.sharedState.workOffline = true
@@ -340,7 +336,7 @@ export class AuthenticationManager {
 					await userCrypt.decrypt(initializationData.rootSignature.privateKey),
 				)
 				this._userData = JSON.parse(await this.cryptoManager.rootCrypt.decrypt(initializationData.userData))
-				this._username = username
+				this.sharedState.username = username
 				this.sharedState.isLocal = false
 				break
 			} catch (ex) {
@@ -394,7 +390,7 @@ export class AuthenticationManager {
 			await this.db.setUserData(this._userData)
 		}
 		this.sharedState.isLocal = true
-		this._username = 'local'
+		this.sharedState.username = 'local'
 		this.sharedState.userId = emptyGuid()
 		this.sharedState.isLoggedIn = true
 	}
@@ -461,7 +457,7 @@ export class AuthenticationManager {
 		this.clearLoginData()
 		this._userData = undefined
 		this._rootSignature = undefined
-		this._username = undefined
+		this.sharedState.username = undefined
 		this.sharedState.isLocal = false
 
 		this.cryptoManager.rootCrypt = null
@@ -480,9 +476,5 @@ export class AuthenticationManager {
 
 	public get userData(): any {
 		return this._userData
-	}
-
-	public get username(): string {
-		return this._username
 	}
 }

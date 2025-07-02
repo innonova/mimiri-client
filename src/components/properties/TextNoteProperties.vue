@@ -48,7 +48,7 @@ const note = computed(() => noteManager.selectedNote)
 const update = async () => {
 	if (note.value.isShared) {
 		shareParticipants.value = (await noteManager.getShareParticipants(note.value.id)).filter(
-			item => item.username !== noteManager.username,
+			item => item.username !== noteManager.state.username,
 		)
 	} else {
 		shareParticipants.value = []

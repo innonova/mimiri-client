@@ -1,5 +1,5 @@
 import { computed, reactive } from 'vue'
-import type { NoteManager } from '../note-manager'
+import type { MimiriStore } from '../storage/mimiri-store'
 import { dateTimeNow, type DateTime } from './date-time'
 import { type Guid } from './guid'
 import type { Note } from './note'
@@ -18,7 +18,7 @@ const unzip = async (text: string) => {
 }
 
 export const controlPanel = {
-	createChildren: (owner: NoteManager, parent: MimerNote) => {
+	createChildren: (owner: MimiriStore, parent: MimerNote) => {
 		return [] as MimerNote[]
 	},
 }
@@ -67,7 +67,7 @@ export class MimerNote {
 	private controlPanelLoadedAfterFeatures: boolean = false
 
 	constructor(
-		private owner: NoteManager,
+		private owner: MimiriStore,
 		private _parent: MimerNote | undefined,
 		private _note: Note,
 		updateViewModel = true,
@@ -212,7 +212,7 @@ export class MimerNote {
 
 	public async ensureChildren(skipUpdateViewModel: boolean = false) {
 		if (this.isControlPanel) {
-			if (this.owner.clientConfig && !this.controlPanelLoadedAfterFeatures) {
+			if (this.owner.state.clientConfig && !this.controlPanelLoadedAfterFeatures) {
 				this.controlPanelLoadedAfterFeatures = true
 				this._children = controlPanel.createChildren(this.owner, this)
 			}
@@ -303,14 +303,14 @@ export class MimerNote {
 	}
 
 	public async shareWith(username: string) {
-		return this.owner.shareNote(this, username)
+		return this.owner.shareMimerNote(this, username)
 	}
 
 	public async save() {
 		if (this.beforeChangeText !== this.text) {
 			this.owner.beginAction()
 			try {
-				await MimerNote.addHistoryEntry(this.note, this.text, this.owner.username, dateTimeNow())
+				await MimerNote.addHistoryEntry(this.note, this.text, this.owner.state.username, dateTimeNow())
 				await this.owner.saveNote(this)
 			} finally {
 				this.owner.endAction()
@@ -347,7 +347,7 @@ export class MimerNote {
 
 	public async addChild(name: string = 'New Note') {
 		this.childrenPopulated = true
-		await this.owner.createNote(this, name)
+		await this.owner.createMimerNote(this, name)
 	}
 
 	public async delete() {

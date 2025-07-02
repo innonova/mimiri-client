@@ -2,7 +2,7 @@ import { mimiriPlatform } from './mimiri-platform'
 import { settingsManager } from './settings-manager'
 import { blogManager, ipcClient, noteManager, updateManager } from '../global'
 import { reactive } from 'vue'
-import type { LoginListener } from './note-manager'
+import type { LoginListener } from './storage/mimiri-store'
 import type { HideShowListener } from './ipc-client'
 
 class LocalAuth implements LoginListener, HideShowListener {
@@ -45,7 +45,7 @@ class LocalAuth implements LoginListener, HideShowListener {
 		this._state.locked = false
 		this._state.elapsed = true
 		sessionStorage.setItem('locked', 'false')
-		if (noteManager.isLoggedIn) {
+		if (noteManager.state.isLoggedIn) {
 			updateManager.check()
 			blogManager.refreshAll()
 			noteManager.queueSync()

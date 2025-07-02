@@ -50,7 +50,7 @@ const usernameInProgress = ref(false)
 
 const checkUsernameDebounce = new Debounce(async () => {
 	try {
-		if (noteManager.state.authenticated && username.value === noteManager.username && !noteManager.isLocalAccount) {
+		if (noteManager.state.isOnline && username.value === noteManager.state.username && !noteManager.state.isLocalOnly) {
 			usernameCurrent.value = true
 			usernameInvalid.value = false
 			usernameInProgress.value = false
@@ -105,14 +105,14 @@ watch(username, () => {
 })
 
 onMounted(() => {
-	if (noteManager.state.authenticated && !noteManager.isLocalAccount) {
+	if (noteManager.state.isOnline && !noteManager.state.isLocalOnly) {
 		usernameCurrent.value = true
 		usernameInvalid.value = false
 		usernameInProgress.value = false
 		usernameAvailable.value = false
 		usernameUnavailable.value = false
 		if (props.displayCurrent) {
-			username.value = noteManager.username
+			username.value = noteManager.state.username
 		}
 		canSave.value = false
 		emit('changed', canSave.value)

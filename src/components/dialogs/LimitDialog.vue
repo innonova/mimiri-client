@@ -27,17 +27,19 @@ const toMB = bytes => {
 const show = (limit: string) => {
 	if (limit === 'create-note-count') {
 		title.value = 'Note Limit Reached'
-		text.value = `You have created ${noteManager.noteCount} of your ${noteManager.maxNoteCount} notes`
+		text.value = `You have created ${noteManager.state.userStats.noteCount} of your ${noteManager.state.userStats.maxNoteCount} notes`
 	}
 	if (limit === 'create-note-size' || limit === 'save-total-size') {
 		title.value = 'Data Limit Reached'
-		text.value = `You have used ${toMB(noteManager.usedBytes)} of your ${toMB(noteManager.maxBytes)}`
+		text.value = `You have used ${toMB(noteManager.state.userStats.size)} of your ${toMB(
+			noteManager.state.userStats.maxTotalBytes,
+		)}`
 	}
 	if (limit === 'save-note-size') {
 		title.value = 'Note Exceeds Max Size'
 		text.value = `The note you are trying to save is ${toMB(
 			noteManager.selectedNote?.size ?? 0,
-		)} the maximum allowed is ${toMB(noteManager.maxNoteSize)}`
+		)} the maximum allowed is ${toMB(noteManager.state.userStats.maxNoteBytes)}`
 	}
 	dialog.value.showModal()
 }

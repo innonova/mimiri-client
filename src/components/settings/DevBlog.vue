@@ -7,7 +7,7 @@
 				class="w-full h-full"
 				:src="`https://blog.mimiri.io/integrated/?q=${Date.now()}&color-scheme=${
 					settingsManager.darkMode ? 'dark' : 'light'
-				}&username=${noteManager.username.startsWith('mimiri_a_') ? 'Anonymous' : noteManager.username}`"
+				}&username=${noteManager.state.username.startsWith('mimiri_a_') ? 'Anonymous' : noteManager.state.username}`"
 			></iframe>
 
 			<!-- <iframe

@@ -144,13 +144,13 @@ import FreeAccessIcon from '../../icons/free-access.vue'
 import CasualOnlyIcon from '../../icons/casual-only.vue'
 import LightSecurityIcon from '../../icons/light-security.vue'
 import { passwordTimeFactor } from '../../services/password-generator'
-import { MimerClient } from '../../services/mimer-client'
 import { settingsManager } from '../../services/settings-manager'
 import { persistedState } from '../../services/persisted-state'
 import { deObfuscate } from '../../services/helpers'
 import UsernameInput from '../elements/UsernameInput.vue'
 import type { Guid } from '../../services/types/guid'
 import TabBar from '../elements/TabBar.vue'
+import { DEFAULT_ITERATIONS } from '../../services/storage/mimiri-store'
 
 const disallowString = '!"#$:%&@\'()*/=?[]{}~^`'
 const disallowRegex = /[!"#$:%&@'()*/=?[\]{}~\^\\`\s]/
@@ -249,7 +249,7 @@ const createAccount = async () => {
 				newUsername,
 				await deObfuscate(settingsManager.anonymousPassword),
 				password.value,
-				MimerClient.DEFAULT_ITERATIONS,
+				DEFAULT_ITERATIONS,
 			)
 			persistedState.storeSelectedNote(noteManager.getNoteById('settings-account' as Guid))
 			settingsManager.anonymousUsername = undefined
@@ -265,7 +265,7 @@ const createAccount = async () => {
 	} finally {
 		loading.value = false
 	}
-	if (!noteManager.isLoggedIn) {
+	if (!noteManager.state.isLoggedIn) {
 		errorText.value = 'Unknown Error'
 	} else {
 		await noteManager.root.ensureChildren()

@@ -1,7 +1,7 @@
 import { reactive } from 'vue'
-import { DEFAULT_PASSWORD_ALGORITHM } from './mimer-client'
 import { passwordHasher } from './password-hasher'
 import { SymmetricCrypt } from './symmetric-crypt'
+import { DEFAULT_PASSWORD_ALGORITHM } from './storage/mimiri-store'
 
 export interface PasswordOptions {
 	characters: number

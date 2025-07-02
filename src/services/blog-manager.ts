@@ -4,7 +4,7 @@ import { emptyGuid } from './types/guid'
 import type { Guid } from './types/guid'
 import type { BlogPost } from './types/responses'
 import { notificationManager } from '../global'
-import type { NoteManager } from './note-manager'
+import type { MimiriStore } from './storage/mimiri-store'
 
 export interface BlogConfig {
 	notificationLevel: 'notify-clearly' | 'notify-discreetly' | 'notify-never'
@@ -17,10 +17,10 @@ export interface BlogState {
 }
 
 export class BlogManager {
-	private noteManager: NoteManager
+	private noteManager: MimiriStore
 	public state: BlogState
 
-	constructor(noteManager: NoteManager) {
+	constructor(noteManager: MimiriStore) {
 		this.noteManager = noteManager
 		this.state = reactive<BlogState>({
 			latestPostId: emptyGuid(),

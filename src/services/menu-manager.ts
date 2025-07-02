@@ -257,7 +257,7 @@ class MenuManager {
 		} else if (itemId === 'properties') {
 			noteManager.openProperties()
 		} else if (itemId === 'work-offline') {
-			noteManager.workOffline = !noteManager.workOffline
+			noteManager.setWorkOffline(!noteManager.state.workOffline)
 		}
 	}
 
@@ -297,7 +297,7 @@ class MenuManager {
 						icon: 'add-note',
 						shortcut: ipcClient.isAvailable ? 'Ctrl+N' : undefined,
 						enabled:
-							noteManager.isLoggedIn &&
+							noteManager.state.isLoggedIn &&
 							!!noteManager.selectedNote &&
 							!noteManager.selectedNote.isSystem &&
 							!noteManager.selectedNote.isInRecycleBin,
@@ -309,7 +309,7 @@ class MenuManager {
 						title: 'New Child Note',
 						icon: 'add-note',
 						enabled:
-							noteManager.isLoggedIn &&
+							noteManager.state.isLoggedIn &&
 							!!noteManager.selectedNote &&
 							!noteManager.selectedNote.isSystem &&
 							!noteManager.selectedNote.isInRecycleBin,
@@ -321,7 +321,7 @@ class MenuManager {
 						title: 'New Sibling Note',
 						icon: 'add-sibling-note',
 						enabled:
-							noteManager.isLoggedIn &&
+							noteManager.state.isLoggedIn &&
 							!!noteManager.selectedNote &&
 							!noteManager.selectedNote.isSystem &&
 							!noteManager.selectedNote.isInRecycleBin,
@@ -332,7 +332,7 @@ class MenuManager {
 						id: 'new-root-note',
 						title: 'New Root Note',
 						icon: 'add-root-note',
-						enabled: noteManager.isLoggedIn,
+						enabled: noteManager.state.isLoggedIn,
 					})
 					break
 				case MenuItems.Duplicate:
@@ -341,7 +341,7 @@ class MenuManager {
 						title: 'Duplicate',
 						shortcut: 'Ctrl+D',
 						enabled:
-							noteManager.isLoggedIn &&
+							noteManager.state.isLoggedIn &&
 							!!noteManager.selectedNote &&
 							!noteManager.selectedNote.isSystem &&
 							!noteManager.selectedNote.isInRecycleBin,
@@ -352,7 +352,7 @@ class MenuManager {
 						id: 'cut',
 						title: 'Cut',
 						shortcut: 'Ctrl+X',
-						enabled: noteManager.isLoggedIn && !!noteManager.selectedNote && !noteManager.selectedNote.isSystem,
+						enabled: noteManager.state.isLoggedIn && !!noteManager.selectedNote && !noteManager.selectedNote.isSystem,
 					})
 					break
 				case MenuItems.Copy:
@@ -360,7 +360,7 @@ class MenuManager {
 						id: 'copy',
 						title: 'Copy',
 						shortcut: 'Ctrl+C',
-						enabled: noteManager.isLoggedIn && !!noteManager.selectedNote && !noteManager.selectedNote.isSystem,
+						enabled: noteManager.state.isLoggedIn && !!noteManager.selectedNote && !noteManager.selectedNote.isSystem,
 					})
 					break
 				case MenuItems.Paste:
@@ -369,7 +369,7 @@ class MenuManager {
 						title: 'Paste',
 						shortcut: 'Ctrl+V',
 						enabled:
-							noteManager.isLoggedIn &&
+							noteManager.state.isLoggedIn &&
 							!!noteManager.selectedNote &&
 							!noteManager.selectedNote.isSystem &&
 							!noteManager.selectedNote.isInRecycleBin,
@@ -381,7 +381,7 @@ class MenuManager {
 						id: 'copy-path',
 						title: 'Copy Path',
 						enabled:
-							noteManager.isLoggedIn &&
+							noteManager.state.isLoggedIn &&
 							!!noteManager.selectedNote &&
 							!noteManager.selectedNote.isSystem &&
 							!noteManager.selectedNote.isInRecycleBin,
@@ -393,7 +393,7 @@ class MenuManager {
 						title: 'Share',
 						icon: 'note-shared',
 						enabled:
-							noteManager.isLoggedIn &&
+							noteManager.state.isLoggedIn &&
 							!!noteManager.selectedNote &&
 							!noteManager.selectedNote.isSystem &&
 							!noteManager.selectedNote.isInRecycleBin,
@@ -404,7 +404,7 @@ class MenuManager {
 						id: 'receive-share',
 						title: 'Accept Share',
 						icon: 'note-shared',
-						enabled: noteManager.isLoggedIn,
+						enabled: noteManager.state.isLoggedIn,
 					})
 					break
 				case MenuItems.ReceiveShareUnder:
@@ -412,7 +412,7 @@ class MenuManager {
 						id: 'receive-share-under',
 						title: 'Accept Share Here',
 						icon: 'note-shared',
-						enabled: noteManager.isLoggedIn,
+						enabled: noteManager.state.isLoggedIn,
 					})
 					break
 				case MenuItems.Refresh:
@@ -420,7 +420,7 @@ class MenuManager {
 						id: 'refresh',
 						title: 'Refresh',
 						icon: 'refresh',
-						enabled: noteManager.isLoggedIn && !!noteManager.selectedNote,
+						enabled: noteManager.state.isLoggedIn && !!noteManager.selectedNote,
 					})
 					break
 				case MenuItems.RefreshRoot:
@@ -428,7 +428,7 @@ class MenuManager {
 						id: 'refresh-root',
 						title: 'Refresh',
 						icon: 'refresh',
-						enabled: noteManager.isLoggedIn,
+						enabled: noteManager.state.isLoggedIn,
 					})
 					break
 				case MenuItems.Rename:
@@ -438,7 +438,7 @@ class MenuManager {
 						shortcut: 'F2',
 						icon: 'rename-note',
 						enabled:
-							noteManager.isLoggedIn &&
+							noteManager.state.isLoggedIn &&
 							!!noteManager.selectedNote &&
 							!noteManager.selectedNote.isSystem &&
 							!noteManager.selectedNote.isInRecycleBin,
@@ -450,7 +450,7 @@ class MenuManager {
 						title: 'Delete',
 						shortcut: 'Del',
 						icon: 'delete-note',
-						enabled: noteManager.isLoggedIn && !!noteManager.selectedNote && !noteManager.selectedNote.isSystem,
+						enabled: noteManager.state.isLoggedIn && !!noteManager.selectedNote && !noteManager.selectedNote.isSystem,
 					})
 					break
 				case MenuItems.Recycle:
@@ -460,7 +460,7 @@ class MenuManager {
 						shortcut: 'Del',
 						icon: 'delete-note',
 						enabled:
-							noteManager.isLoggedIn &&
+							noteManager.state.isLoggedIn &&
 							!!noteManager.selectedNote &&
 							!noteManager.selectedNote.isSystem &&
 							!noteManager.selectedNote.isInRecycleBin,
@@ -472,7 +472,7 @@ class MenuManager {
 						title: 'Find in Notes',
 						shortcut: 'Ctrl+Shift+F',
 						icon: 'search-all-notes',
-						enabled: noteManager.isLoggedIn,
+						enabled: noteManager.state.isLoggedIn,
 					})
 					break
 				case MenuItems.Find:
@@ -481,7 +481,7 @@ class MenuManager {
 						title: 'Find',
 						shortcut: 'Ctrl+F',
 						icon: 'search-note',
-						enabled: noteManager.isLoggedIn && !!noteManager.selectedNote && !noteManager.selectedNote.isSystem,
+						enabled: noteManager.state.isLoggedIn && !!noteManager.selectedNote && !noteManager.selectedNote.isSystem,
 					})
 					break
 				case MenuItems.History:
@@ -489,7 +489,7 @@ class MenuManager {
 						id: 'history',
 						title: 'History',
 						icon: 'history',
-						enabled: noteManager.isLoggedIn && !!noteManager.selectedNote && !noteManager.selectedNote.isSystem,
+						enabled: noteManager.state.isLoggedIn && !!noteManager.selectedNote && !noteManager.selectedNote.isSystem,
 					})
 					break
 				case MenuItems.ShareOffers:
@@ -497,7 +497,7 @@ class MenuManager {
 						id: 'share-offers',
 						title: 'Share Offers',
 						icon: 'note-shared',
-						enabled: noteManager.isLoggedIn,
+						enabled: noteManager.state.isLoggedIn,
 					})
 					break
 				case MenuItems.DarkMode:
@@ -527,28 +527,28 @@ class MenuManager {
 					result.push({
 						id: 'change-username',
 						title: 'Change Username',
-						enabled: noteManager.isLoggedIn && noteManager.isOnline,
+						enabled: noteManager.state.isLoggedIn && noteManager.state.isOnline,
 					})
 					break
 				case MenuItems.ChangePassword:
 					result.push({
 						id: 'change-password',
 						title: 'Change Password',
-						enabled: noteManager.isLoggedIn && noteManager.isOnline,
+						enabled: noteManager.state.isLoggedIn && noteManager.state.isOnline,
 					})
 					break
 				case MenuItems.DeleteAccount:
 					result.push({
 						id: 'delete-account',
 						title: 'Delete Account',
-						enabled: noteManager.isLoggedIn && noteManager.isOnline,
+						enabled: noteManager.state.isLoggedIn && noteManager.state.isOnline,
 					})
 					break
 				case MenuItems.ManageSubscription:
 					result.push({
 						id: 'manage-subscription',
 						title: 'Plan',
-						enabled: noteManager.isLoggedIn && noteManager.isOnline,
+						enabled: noteManager.state.isLoggedIn && noteManager.state.isOnline,
 						visible: !noteManager.isAnonymous,
 					})
 					break
@@ -556,7 +556,7 @@ class MenuManager {
 					result.push({
 						id: 'set-pin',
 						title: 'Set PIN',
-						enabled: noteManager.isLoggedIn && noteManager.isOnline,
+						enabled: noteManager.state.isLoggedIn && noteManager.state.isOnline,
 					})
 					break
 				case MenuItems.Logout:
@@ -564,7 +564,7 @@ class MenuManager {
 						id: 'logout',
 						title: 'Logout',
 						icon: 'logout',
-						enabled: noteManager.isLoggedIn,
+						enabled: noteManager.state.isLoggedIn,
 						visible: !noteManager.isAnonymous,
 					})
 					break
@@ -573,8 +573,8 @@ class MenuManager {
 						id: 'login',
 						title: 'Log In / Switch User',
 						icon: 'login',
-						enabled: noteManager.isLoggedIn,
-						visible: noteManager.isAnonymous || noteManager.isLocal,
+						enabled: noteManager.state.isLoggedIn,
+						visible: noteManager.isAnonymous || noteManager.state.isLocal,
 					})
 					break
 				case MenuItems.CreateAccount:
@@ -603,7 +603,7 @@ class MenuManager {
 					result.push({
 						id: 'go-online',
 						title: 'Go Online',
-						enabled: noteManager.isLoggedIn && !noteManager.isOnline,
+						enabled: noteManager.state.isLoggedIn && !noteManager.state.isOnline,
 					})
 					break
 				case MenuItems.WordWrap:
@@ -613,7 +613,7 @@ class MenuManager {
 						type: 'checkbox',
 						checked: settingsManager.wordwrap,
 						icon: settingsManager.wordwrap ? 'checkmark' : '',
-						enabled: noteManager.isLoggedIn && !noteManager.selectedNote.isSystem,
+						enabled: noteManager.state.isLoggedIn && !noteManager.selectedNote.isSystem,
 					})
 					break
 				case MenuItems.UpdateAvailable:
@@ -668,7 +668,7 @@ class MenuManager {
 					result.push({
 						id: 'work-offline',
 						title: 'Work Offline',
-						checked: noteManager.workOffline,
+						checked: noteManager.state.workOffline,
 					})
 			}
 		}
@@ -752,7 +752,7 @@ class MenuManager {
 			return [MenuItems.NewRootNote, MenuItems.NewNote]
 		}
 
-		const showShare = noteManager.isOnline
+		const showShare = noteManager.state.isOnline
 
 		return [
 			MenuItems.NewRootNote,
@@ -761,7 +761,7 @@ class MenuManager {
 			MenuItems.Separator,
 			MenuItems.CreatePassword,
 			MenuItems.Login,
-			...(noteManager.isLocal ? [MenuItems.CreateAccount] : [MenuItems.Logout]),
+			...(noteManager.state.isLocal ? [MenuItems.CreateAccount] : [MenuItems.Logout]),
 			MenuItems.Quit,
 		]
 	}
@@ -776,7 +776,7 @@ class MenuManager {
 			MenuItems.Copy,
 			MenuItems.Paste,
 			MenuItems.Separator,
-			...(noteManager.isOnline ? [MenuItems.Share] : []),
+			...(noteManager.state.isOnline ? [MenuItems.Share] : []),
 			MenuItems.Rename,
 			noteManager.selectedNote?.isInRecycleBin ? MenuItems.Delete : MenuItems.Recycle,
 			MenuItems.Separator,

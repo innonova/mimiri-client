@@ -34,7 +34,7 @@
 			<div class="w-2.5 min-w-2.5 bg-toolbar cursor-ew-resize hidden desktop:block" @mousedown="startDragging"></div>
 			<div class="h-full flex flex-col w-full divider-right" :class="{ 'hidden desktop:flex': !showEditor }">
 				<div
-					v-show="noteManager.selectedNote?.type === 'note-text' && noteManager.viewMode === ViewMode.Content"
+					v-show="noteManager.selectedNote?.type === 'note-text' && noteManager.state.viewMode === ViewMode.Content"
 					class="h-full flex flex-col flex-1"
 				>
 					<NoteEditor ref="noteEditor"></NoteEditor>
@@ -48,7 +48,7 @@
 					<SystemPage></SystemPage>
 				</div>
 				<div
-					v-if="!noteManager.selectedNote?.isSystem && noteManager.viewMode === ViewMode.Properties"
+					v-if="!noteManager.selectedNote?.isSystem && noteManager.state.viewMode === ViewMode.Properties"
 					class="h-full flex flex-col flex-1"
 				>
 					<PropertiesPage></PropertiesPage>
@@ -142,7 +142,7 @@ import { localAuth } from './services/local-auth'
 import LockScreen from './components/LockScreen.vue'
 import { useEventListener } from '@vueuse/core'
 import SystemPage from './components/SystemPage.vue'
-import { ViewMode } from './services/note-manager'
+import { ViewMode } from './services/storage/type'
 import PropertiesPage from './components/PropertiesPage.vue'
 import DeleteHistoryDialog from './components/dialogs/DeleteHistoryDialog.vue'
 import InfoDialog from './components/dialogs/InfoDialog.vue'
@@ -152,7 +152,7 @@ const loading = ref(true)
 const secondPassed = ref(false)
 const activity = ref('')
 
-const authenticated = computed(() => noteManager.state.authenticated)
+const authenticated = computed(() => noteManager.state.isLoggedIn)
 
 const showNavigation = computed(() => !noteManager.state.noteOpen)
 const showEditor = computed(() => noteManager.state.noteOpen)
@@ -401,16 +401,16 @@ useEventListener(window, 'resize', async () => {
 			return
 		}
 		try {
-			if (!noteManager.isLoggedIn && settingsManager.autoLogin && settingsManager.autoLoginData) {
+			if (!noteManager.state.isLoggedIn && settingsManager.autoLogin && settingsManager.autoLoginData) {
 				await noteManager.setLoginData(await deObfuscate(settingsManager.autoLoginData))
-				if (noteManager.isLoggedIn) {
+				if (noteManager.state.isLoggedIn) {
 					await noteManager.loadState()
 				}
 			}
 		} catch (ex) {
 			debug.logError('Error setting login data', ex)
 		}
-		if (!noteManager.isLoggedIn) {
+		if (!noteManager.state.isLoggedIn) {
 			try {
 				await noteManager.recoverLogin()
 			} catch (ex) {
@@ -418,13 +418,13 @@ useEventListener(window, 'resize', async () => {
 			}
 		}
 
-		let showLogin = !noteManager.isLoggedIn
+		let showLogin = !noteManager.state.isLoggedIn
 
-		if (!noteManager.isLoggedIn) {
+		if (!noteManager.state.isLoggedIn) {
 			if (settingsManager.isNewInstall) {
 				await noteManager.openLocal()
 				// await noteManager.loginAnonymousAccount()
-				if (noteManager.isLoggedIn) {
+				if (noteManager.state.isLoggedIn) {
 					// settingsManager.isNewInstall = false
 					showLogin = false
 				}

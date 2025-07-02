@@ -35,7 +35,7 @@ const showNodes = ref(false)
 watch(
 	noteManager.state,
 	() => {
-		showNodes.value = noteManager.state.stateLoaded && noteManager.state.authenticated && noteManager.state.stateLoaded
+		showNodes.value = noteManager.state.stateLoaded && noteManager.state.isLoggedIn && noteManager.state.stateLoaded
 	},
 	{ immediate: true },
 )
@@ -52,7 +52,7 @@ const stopWatching = watch(noteManager.state, () => {
 	if (
 		noteManager.state.stateLoaded &&
 		!stateLoaded &&
-		noteManager.authenticated &&
+		noteManager.state.isLoggedIn &&
 		noteManager.root?.viewModel.children.length &&
 		noteManager.selectedNote
 	) {

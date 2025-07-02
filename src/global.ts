@@ -1,5 +1,5 @@
 import { ref } from 'vue'
-import { NoteManager } from './services/note-manager'
+import { MimiriStore } from './services/storage/mimiri-store'
 import type { ContextMenuControl } from './services/types/context-menu'
 import type { MimerNote } from './services/types/mimer-note'
 import type { Guid } from './services/types/guid'
@@ -26,7 +26,9 @@ export const debug = new DebugManager()
 
 export const ipcClient = new IpcClient()
 export const browserHistory = new BrowserHistory()
-export const noteManager = new NoteManager(host, paymentHost, serverKey, serverKeyId)
+export const noteManager = new MimiriStore(host, paymentHost, serverKeyId, serverKey, async note => {
+	await noteManager.getNoteById(note.id)?.update(note)
+})
 export const updateManager = new UpdateManager(env.VITE_MIMER_UPDATE_HOST)
 export const blogManager = new BlogManager(noteManager)
 export const notificationManager = new NotificationManager()

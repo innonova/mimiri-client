@@ -1,5 +1,6 @@
 import type { SymmetricCrypt } from '../symmetric-crypt'
 import type { Guid } from '../types/guid'
+import type { NoteShareInfo } from '../types/note-share-info'
 import type { ClientConfig } from '../types/responses'
 
 export interface LoginData {
@@ -15,7 +16,24 @@ export interface UserStats {
 	maxNoteCount: number
 }
 
+export enum ActionType {
+	Save,
+	CreateChild,
+	Share,
+	Delete,
+	Copy,
+	Move,
+	AcceptShare,
+	DeleteShareOffer,
+}
+
+export enum ViewMode {
+	Content = 'content',
+	Properties = 'properties',
+}
+
 export interface SharedState {
+	username: string
 	userId: Guid | null
 	isLoggedIn: boolean
 	isOnline: boolean
@@ -24,6 +42,17 @@ export interface SharedState {
 	workOffline: boolean
 	clientConfig: ClientConfig
 	userStats: UserStats
+
+	busy: boolean
+	busyLong: boolean
+	busyLongDelay: number
+	spinner: boolean
+	noteOpen: boolean
+	selectedNoteId?: Guid
+	stateLoaded: boolean
+	initInProgress: boolean
+	viewMode: ViewMode
+	shareOffers: NoteShareInfo[]
 }
 
 export interface InitializationData {

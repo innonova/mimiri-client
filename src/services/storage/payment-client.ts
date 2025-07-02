@@ -11,6 +11,7 @@ import { add } from 'date-fns'
 import { updateManager } from '../../global'
 import { HttpRequestError } from './http-client-base'
 import type { AuthenticationManager } from './authentication-manager'
+import type { SharedState } from './type'
 
 export class PaymentClient {
 	private _countries: Country[] | undefined
@@ -18,6 +19,7 @@ export class PaymentClient {
 
 	constructor(
 		private authManager: AuthenticationManager,
+		private sharedState: SharedState,
 		private host: string,
 	) {}
 
@@ -59,14 +61,14 @@ export class PaymentClient {
 	}
 
 	private async sign(request: any) {
-		request.username = this.authManager.username
+		request.username = this.sharedState.username
 		request.timestamp = new Date()
 		await this.authManager.signRequest(request)
 		return request
 	}
 
 	public async createAuthQuery(request: any) {
-		request.username = this.authManager.username
+		request.username = this.sharedState.username
 		await this.authManager.signRequest(request)
 		return btoa(JSON.stringify(request))
 	}

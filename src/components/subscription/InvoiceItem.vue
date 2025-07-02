@@ -86,7 +86,7 @@ const showInvoice = async () => {
 		validUntil: add(new Date(), { hours: 12 }),
 	})
 	window.open(
-		`${accountHost}/invoice/${props.invoice.id}?auth=${auth}&status=true&username=${noteManager.username}&environment=${pdfEnvironment}`,
+		`${accountHost}/invoice/${props.invoice.id}?auth=${auth}&status=true&username=${noteManager.state.username}&environment=${pdfEnvironment}`,
 		'_blank',
 	)
 }

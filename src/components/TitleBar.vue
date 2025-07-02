@@ -76,7 +76,7 @@
 				type="text"
 				placeholder="Search Notes"
 				:value="searchManager.state.term"
-				:disabled="!noteManager.state.authenticated"
+				:disabled="!noteManager.state.isLoggedIn"
 				class="bg-input rounded-md text-center no-drag text-size-base h-full pb-1 outline-none"
 				:class="{
 					'w-2/3 max-w-80': mimiriPlatform.isDesktop,
@@ -131,7 +131,7 @@
 		<div
 			class="h-full flex items-center justify-center"
 			:class="{
-				'hover:bg-toolbar-hover active:bg-toolbar-hover': noteManager.isLoggedIn,
+				'hover:bg-toolbar-hover active:bg-toolbar-hover': noteManager.state.isLoggedIn,
 				'min-w-[44px] w-[55px]': mimiriPlatform.isDesktop,
 				'w-16': !mimiriPlatform.isDesktop,
 			}"
@@ -143,9 +143,9 @@
 			<AccountIcon
 				class="w-9 h-6 p-0.5 px-1 no-drag pointer-events-none"
 				:class="{
-					'text-title-text-blur': !noteManager.state.authenticated,
-					'p-px text-online active:p-px': noteManager.state.online && noteManager.state.authenticated,
-					'p-px text-offline active:p-px': !noteManager.state.online && noteManager.state.authenticated,
+					'text-title-text-blur': !noteManager.state.isLoggedIn,
+					'p-px text-online active:p-px': noteManager.state.isOnline && noteManager.state.isLoggedIn,
+					'p-px text-offline active:p-px': !noteManager.state.isOnline && noteManager.state.isLoggedIn,
 				}"
 			></AccountIcon>
 		</div>
@@ -253,7 +253,7 @@ const showMenu = (rect, menu) => {
 		menuManager.showMenu({ x: rect.left, y: rect.bottom - 30, backdropTop: 32 }, menuManager.helpMenu)
 	}
 	if (menu === 'account') {
-		if (noteManager.isLocal) {
+		if (noteManager.state.isLocal) {
 			menuManager.showMenu({ x: rect.right, y: rect.bottom - 30, backdropTop: 32, alignRight: true }, [
 				MenuItems.CreateAccount,
 				MenuItems.Separator,

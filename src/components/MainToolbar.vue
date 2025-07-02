@@ -71,7 +71,7 @@ const accountIcon = computed(() => {
 	if (!ipcClient.isAvailable) {
 		return 'account'
 	}
-	if (noteManager.state.online && noteManager.state.authenticated) {
+	if (noteManager.state.isOnline && noteManager.state.isLoggedIn) {
 		return 'account-online'
 	}
 	return 'account-offline'
@@ -144,7 +144,7 @@ const showMobileMenu = () => {
 		showShare = note.isShareRoot
 		showAcceptShare = false
 	}
-	if (!noteManager.isOnline) {
+	if (!noteManager.state.isOnline) {
 		showShare = false
 		showAcceptShare = false
 	}

@@ -1,6 +1,6 @@
 import { debug } from '../../global'
 import { CryptSignature } from '../crypt-signature'
-import { toBase64, toHex } from '../hex-base64'
+import { toBase64 } from '../hex-base64'
 import { passwordHasher } from '../password-hasher'
 import { dateTimeNow } from '../types/date-time'
 import { newGuid, type Guid } from '../types/guid'
@@ -47,8 +47,6 @@ import { HubConnectionBuilder } from '@microsoft/signalr'
 import { HttpClientBase } from './http-client-base'
 import { incrementalDelay } from '../helpers'
 import type { AuthenticationManager } from './authentication-manager'
-import { SymmetricCrypt } from '../symmetric-crypt'
-import { DEFAULT_PASSWORD_ALGORITHM, DEFAULT_SALT_SIZE } from './mimiri-store'
 
 export class VersionConflictError extends Error {
 	constructor(public conflicts: VersionConflict[]) {
@@ -189,7 +187,7 @@ export class MimiriClient extends HttpClientBase {
 	public async verifyPassword(password: string): Promise<boolean> {
 		try {
 			const preLoginResponse = await this.get<PreLoginResponse>(
-				`/user/pre-login/${this._authManager.username}?q=${Date.now()}`,
+				`/user/pre-login/${this.sharedState.username}?q=${Date.now()}`,
 			)
 			const passwordHash = await passwordHasher.hashPassword(
 				password,
@@ -198,7 +196,7 @@ export class MimiriClient extends HttpClientBase {
 				preLoginResponse.iterations,
 			)
 			const loginRequest: LoginRequest = {
-				username: this._authManager.username,
+				username: this.sharedState.username,
 				response: await passwordHasher.computeResponse(passwordHash, preLoginResponse.challenge),
 				hashLength: passwordHash.length / 2,
 			}
@@ -214,7 +212,7 @@ export class MimiriClient extends HttpClientBase {
 
 	public async verifyCredentials(): Promise<string | undefined> {
 		const getDataRequest: BasicRequest = {
-			username: this._authManager.username,
+			username: this.sharedState.username,
 			timestamp: dateTimeNow(),
 			requestId: newGuid(),
 			signatures: [],
@@ -240,7 +238,7 @@ export class MimiriClient extends HttpClientBase {
 
 	public async getChangesSince(noteSince: number, keySince: number): Promise<SyncInfo> {
 		const request: SyncRequest = {
-			username: this._authManager.username,
+			username: this.sharedState.username,
 			noteSince,
 			keySince,
 			timestamp: dateTimeNow(),
@@ -256,7 +254,7 @@ export class MimiriClient extends HttpClientBase {
 
 	public async multiAction(actions: NoteAction[]): Promise<Guid[]> {
 		const request: MultiNoteRequest = {
-			username: this._authManager.username,
+			username: this.sharedState.username,
 			actions,
 			timestamp: dateTimeNow(),
 			requestId: newGuid(),
@@ -285,7 +283,7 @@ export class MimiriClient extends HttpClientBase {
 
 	public async getPublicKey(keyOwnerName: string, pow: string) {
 		const request: PublicKeyRequest = {
-			username: this._authManager.username,
+			username: this.sharedState.username,
 			pow,
 			keyOwnerName,
 			timestamp: dateTimeNow(),
@@ -303,7 +301,7 @@ export class MimiriClient extends HttpClientBase {
 		const pub = await this.getPublicKey(recipient, pow)
 		const info: NoteShareInfo = {
 			id: newGuid(),
-			sender: this._authManager.username,
+			sender: this.sharedState.username,
 			created: dateTimeNow(),
 			name,
 			noteId,
@@ -315,7 +313,7 @@ export class MimiriClient extends HttpClientBase {
 			privateKey: await keySet.signature.privateKeyPem(),
 		}
 		const request: ShareNoteRequest = {
-			username: this._authManager.username,
+			username: this.sharedState.username,
 			recipient,
 			keyName,
 			data: await pub.encrypt(JSON.stringify(info)),
@@ -330,7 +328,7 @@ export class MimiriClient extends HttpClientBase {
 
 	public async syncPushChanges(noteActions: NoteSyncAction[], keyActions: KeySyncAction[]): Promise<SyncResult[]> {
 		const request: SyncPushRequest = {
-			username: this._authManager.username,
+			username: this.sharedState.username,
 			notes: noteActions,
 			keys: keyActions,
 			timestamp: dateTimeNow(),
@@ -349,7 +347,7 @@ export class MimiriClient extends HttpClientBase {
 
 	public async createNotificationUrl() {
 		const request: BasicRequest = {
-			username: this._authManager.username,
+			username: this.sharedState.username,
 			timestamp: dateTimeNow(),
 			requestId: newGuid(),
 			signatures: [],
@@ -360,7 +358,7 @@ export class MimiriClient extends HttpClientBase {
 
 	public async addComment(postId: Guid, displayName: string, comment: string) {
 		const request: AddCommentRequest = {
-			username: this._authManager.username,
+			username: this.sharedState.username,
 			postId,
 			displayName,
 			comment,
@@ -375,7 +373,7 @@ export class MimiriClient extends HttpClientBase {
 	public async getShareOffer(code: string) {
 		try {
 			const request: ShareOfferRequest = {
-				username: this._authManager.username,
+				username: this.sharedState.username,
 				timestamp: dateTimeNow(),
 				requestId: newGuid(),
 				code,
@@ -411,7 +409,7 @@ export class MimiriClient extends HttpClientBase {
 
 	public async deleteShareOffer(id: Guid) {
 		const request: DeleteShareRequest = {
-			username: this._authManager.username,
+			username: this.sharedState.username,
 			id,
 			timestamp: dateTimeNow(),
 			requestId: newGuid(),
@@ -423,7 +421,7 @@ export class MimiriClient extends HttpClientBase {
 
 	public async getShareParticipants(id: Guid) {
 		const request: ShareParticipantsRequest = {
-			username: this._authManager.username,
+			username: this.sharedState.username,
 			timestamp: dateTimeNow(),
 			requestId: newGuid(),
 			id,
@@ -508,10 +506,6 @@ export class MimiriClient extends HttpClientBase {
 
 	public async logout(): Promise<void> {
 		await this.closeWebSocket()
-	}
-
-	get workOffline(): boolean {
-		return this.sharedState.workOffline
 	}
 
 	set workOffline(value: boolean) {

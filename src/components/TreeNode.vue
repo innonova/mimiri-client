@@ -208,7 +208,7 @@ const searchModeActive = computed(() => {
 
 const startDrag = event => {
 	event.stopPropagation()
-	if (noteManager.isOnline && !props.node.isSystem) {
+	if (noteManager.state.isOnline && !props.node.isSystem) {
 		event.dataTransfer.dropEffect = 'move'
 		event.dataTransfer.effectAllowed = 'move'
 		dragId.value = props.node.id
@@ -355,7 +355,7 @@ const showContextMenu = async e => {
 			showShare = note.isShareRoot
 			showAcceptShare = false
 		}
-		if (!noteManager.isOnline) {
+		if (!noteManager.state.isOnline) {
 			showShare = false
 			showAcceptShare = false
 		}

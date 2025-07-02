@@ -10,7 +10,7 @@
 				<div class="p-1 pl-4 pt-2">Released: {{ formatDate(updateManager.releaseDate) }}</div>
 				<div class="p-1 pl-4 pt-6">Notes: {{ noteCount }} / {{ maxNoteCount }} ({{ notesPercent }})</div>
 				<div class="p-1 pl-4 pt-2">Space Used: {{ usedBytes }} / {{ maxBytes }} ({{ bytesPercent }})</div>
-				<div class="p-1 pl-4 pt-2">Account: {{ noteManager.username }}</div>
+				<div class="p-1 pl-4 pt-2">Account: {{ noteManager.state.username }}</div>
 				<div class="pt-6 pl-4"><a href="https://mimiri.io/terms" target="_blank">Terms & Conditions</a></div>
 				<div class="pt-3 pl-4"><a href="https://mimiri.io/privacy" target="_blank">Privacy Policy</a></div>
 				<div class="pt-6 pl-4"><a href="https://mimiri.io" target="_blank">https://mimiri.io</a></div>
@@ -133,17 +133,17 @@ const toPercent = (used, max) => {
 }
 
 onMounted(() => {
-	if (noteManager.isLoggedIn) {
-		usedBytes.value = toMB(noteManager.usedBytes)
-		maxBytes.value = toMB(noteManager.maxBytes)
-		bytesPercent.value = toPercent(noteManager.usedBytes, noteManager.maxBytes)
-		noteCount.value = noteManager.noteCount - SYSTEM_NOTE_COUNT
-		maxNoteCount.value = noteManager.maxNoteCount
-		notesPercent.value = toPercent(noteManager.noteCount, noteManager.maxNoteCount)
-		maxNoteSize.value = toMB(noteManager.maxNoteSize)
+	if (noteManager.state.isLoggedIn) {
+		usedBytes.value = toMB(noteManager.state.userStats.size)
+		maxBytes.value = toMB(noteManager.state.userStats.maxTotalBytes)
+		bytesPercent.value = toPercent(noteManager.state.userStats.size, noteManager.state.userStats.maxTotalBytes)
+		noteCount.value = noteManager.state.userStats.noteCount - SYSTEM_NOTE_COUNT
+		maxNoteCount.value = noteManager.state.userStats.maxNoteCount
+		notesPercent.value = toPercent(noteManager.state.userStats.noteCount, noteManager.state.userStats.maxNoteCount)
+		maxNoteSize.value = toMB(noteManager.state.userStats.maxNoteBytes)
 		if (noteManager.selectedNote) {
 			currentNoteSize.value = toMB(noteManager.selectedNote.size)
-			currentNotePercent.value = toPercent(noteManager.selectedNote.size, noteManager.maxNoteSize)
+			currentNotePercent.value = toPercent(noteManager.selectedNote.size, noteManager.state.userStats.maxNoteBytes)
 		} else {
 			currentNoteSize.value = '0 MB'
 			currentNotePercent.value = '0 %'

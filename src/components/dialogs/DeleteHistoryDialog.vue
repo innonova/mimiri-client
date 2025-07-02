@@ -45,7 +45,7 @@ const show = async (all: boolean, cb: () => void) => {
 	callback = cb
 	if (noteManager.selectedNote?.isShared) {
 		shareParticipants.value = (await noteManager.getShareParticipants(noteManager.selectedNote.id)).filter(
-			item => item.username !== noteManager.username,
+			item => item.username !== noteManager.state.username,
 		)
 	} else {
 		shareParticipants.value = []

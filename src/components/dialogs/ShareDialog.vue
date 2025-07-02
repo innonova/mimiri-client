@@ -113,7 +113,7 @@ const submitDialog = async () => {
 	invalid.value = false
 	shareWithSelf.value = false
 	shareFailed.value = false
-	if (name.value.trim() === noteManager.username) {
+	if (name.value.trim() === noteManager.state.username) {
 		shareWithSelf.value = true
 		nameInput.value.focus()
 		return
