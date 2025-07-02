@@ -14,12 +14,11 @@ import { PaymentClient } from './payment-client'
 import { controlPanel, type MimerNote } from '../types/mimer-note'
 import { createControlPanelTree } from '../types/control-panel'
 import { mimiriPlatform } from '../mimiri-platform'
-import { browserHistory, updateManager } from '../../global'
+import { blogManager, browserHistory, updateManager } from '../../global'
 import { UIStateManager } from './ui-state-manager'
 import { NoteTreeManager, type ActionListener } from './note-tree-manager'
 import { NoteOperationsManager } from './note-operations-manager'
 import { SessionManager, type LoginListener } from './session-manager'
-import { add } from 'date-fns/fp'
 
 export const DEFAULT_PROOF_BITS = 15
 export const DEFAULT_ITERATIONS = 1000000
@@ -53,7 +52,7 @@ export class MimiriStore {
 		noteUpdatedCallback: (note: Note) => Promise<void>,
 		statusCallback?: (status: SharedState) => void,
 	) {
-		controlPanel.createChildren = (owner: any, parent: MimerNote) => {
+		controlPanel.createChildren = (owner: MimiriStore, parent: MimerNote) => {
 			return createControlPanelTree(owner, parent)
 		}
 
@@ -100,7 +99,7 @@ export class MimiriStore {
 			switch (type) {
 				case 'connected':
 					void updateManager.check()
-					void import('../../global').then(({ blogManager }) => blogManager.refreshAll())
+					void blogManager.refreshAll()
 					break
 				case 'sync':
 					this.syncService.queueSync()
@@ -109,11 +108,11 @@ export class MimiriStore {
 					void updateManager.check()
 					break
 				case 'blog-post':
-					void import('../../global').then(({ blogManager }) => blogManager.refreshAll())
+					void blogManager.refreshAll()
 					break
 				case 'reconnected':
 					void updateManager.check()
-					void import('../../global').then(({ blogManager }) => blogManager.refreshAll())
+					void blogManager.refreshAll()
 					this.syncService.queueSync()
 					break
 			}
