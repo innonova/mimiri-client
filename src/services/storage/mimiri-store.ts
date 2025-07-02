@@ -1,4 +1,4 @@
-import { markRaw, reactive, watch } from 'vue'
+import { reactive, watch } from 'vue'
 import { type Guid } from '../types/guid'
 import { Note } from '../types/note'
 import type { NoteShareInfo } from '../types/note-share-info'
@@ -11,7 +11,7 @@ import { SharingService } from './sharing-service'
 import { MimiriDb } from './mimiri-db'
 import { MimiriClient } from './mimiri-client'
 import { PaymentClient } from './payment-client'
-import { controlPanel, type MimerNote, type NoteViewModel } from '../types/mimer-note'
+import { controlPanel, type MimerNote } from '../types/mimer-note'
 import { createControlPanelTree } from '../types/control-panel'
 import { mimiriPlatform } from '../mimiri-platform'
 import { blogManager, browserHistory, updateManager } from '../../global'
@@ -19,7 +19,6 @@ import { UIStateManager } from './ui-state-manager'
 import { NoteTreeManager, type ActionListener } from './note-tree-manager'
 import { NoteOperationsManager } from './note-operations-manager'
 import { SessionManager, type LoginListener } from './session-manager'
-import type { ShareResponse } from '../types/responses'
 
 export const DEFAULT_PROOF_BITS = 15
 export const DEFAULT_ITERATIONS = 1000000
