@@ -1,4 +1,3 @@
-import type { SymmetricCrypt } from '../symmetric-crypt'
 import type { Guid } from '../types/guid'
 import type { NoteShareInfo } from '../types/note-share-info'
 import type { ClientConfig } from '../types/responses'
@@ -39,6 +38,7 @@ export interface SharedState {
 	isOnline: boolean
 	isLocal: boolean
 	isLocalOnly: boolean
+	isAnonymous: boolean
 	workOffline: boolean
 	clientConfig: ClientConfig
 	userStats: UserStats
@@ -53,6 +53,8 @@ export interface SharedState {
 	initInProgress: boolean
 	viewMode: ViewMode
 	shareOffers: NoteShareInfo[]
+
+	isMobile: boolean
 }
 
 export interface InitializationData {

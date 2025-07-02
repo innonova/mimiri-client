@@ -35,7 +35,8 @@
 			<div class="h-full flex flex-col w-full divider-right" :class="{ 'hidden desktop:flex': !showEditor }">
 				<div
 					v-show="
-						noteManager.tree.selectedNote?.type === 'note-text' && noteManager.state.viewMode === ViewMode.Content
+						noteManager.tree.selectedNoteRef().value?.type === 'note-text' &&
+						noteManager.state.viewMode === ViewMode.Content
 					"
 					class="h-full flex flex-col flex-1"
 				>
@@ -43,15 +44,17 @@
 				</div>
 				<div
 					v-if="
-						noteManager.tree.selectedNote?.type.startsWith('settings-') ||
-						noteManager.tree.selectedNote?.type === 'recycle-bin'
+						noteManager.tree.selectedNoteRef().value?.type.startsWith('settings-') ||
+						noteManager.tree.selectedNoteRef().value?.type === 'recycle-bin'
 					"
 					class="h-full flex flex-col flex-1"
 				>
 					<SystemPage></SystemPage>
 				</div>
 				<div
-					v-if="!noteManager.tree.selectedNote?.isSystem && noteManager.state.viewMode === ViewMode.Properties"
+					v-if="
+						!noteManager.tree.selectedNoteRef().value?.isSystem && noteManager.state.viewMode === ViewMode.Properties
+					"
 					class="h-full flex flex-col flex-1"
 				>
 					<PropertiesPage></PropertiesPage>
@@ -169,7 +172,7 @@ const onResize = () => {
 	editorWidth.value = `${window.innerWidth - splitterPos - 10}px`
 }
 
-document.documentElement.setAttribute('data-device-type', noteManager.ui.isMobile ? 'mobile' : 'desktop')
+document.documentElement.setAttribute('data-device-type', noteManager.state.isMobile ? 'mobile' : 'desktop')
 
 const updateTheme = () => {
 	document.documentElement.setAttribute('data-theme', settingsManager.darkMode ? 'dark' : 'light')
@@ -238,7 +241,7 @@ const handleShortcut = event => {
 		!authenticated ||
 		localAuth.locked ||
 		showCreateAccount.value ||
-		noteManager.tree.selectedNote?.id === 'settings-pin'
+		noteManager.tree.selectedNote()?.id === 'settings-pin'
 	) {
 		return
 	}
@@ -246,7 +249,7 @@ const handleShortcut = event => {
 	const treeViewShortCutsActive =
 		(document.activeElement.tagName === 'BODY' || !noteEditor.value?.$el.contains(document.activeElement)) &&
 		event.target.tagName === 'BODY' &&
-		!noteManager.tree.selectedNote?.isSystem
+		!noteManager.tree.selectedNote()?.isSystem
 
 	if (event.key === 'd' && ctrlActive) {
 		if (treeViewShortCutsActive) {
@@ -291,8 +294,8 @@ const handleShortcut = event => {
 			if (noteTreeView.value) {
 				if (
 					event.shiftKey ||
-					!!noteManager.tree.selectedNote?.isInRecycleBin ||
-					noteManager.tree.selectedNote.isShared
+					!!noteManager.tree.selectedNote()?.isInRecycleBin ||
+					noteManager.tree.selectedNote().isShared
 				) {
 					noteTreeView.value.deleteActiveNote()
 				} else {

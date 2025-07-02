@@ -141,9 +141,12 @@ onMounted(() => {
 		maxNoteCount.value = noteManager.state.userStats.maxNoteCount
 		notesPercent.value = toPercent(noteManager.state.userStats.noteCount, noteManager.state.userStats.maxNoteCount)
 		maxNoteSize.value = toMB(noteManager.state.userStats.maxNoteBytes)
-		if (noteManager.tree.selectedNote) {
-			currentNoteSize.value = toMB(noteManager.tree.selectedNote.size)
-			currentNotePercent.value = toPercent(noteManager.tree.selectedNote.size, noteManager.state.userStats.maxNoteBytes)
+		if (noteManager.tree.selectedNote()) {
+			currentNoteSize.value = toMB(noteManager.tree.selectedNote().size)
+			currentNotePercent.value = toPercent(
+				noteManager.tree.selectedNote().size,
+				noteManager.state.userStats.maxNoteBytes,
+			)
 		} else {
 			currentNoteSize.value = '0 MB'
 			currentNotePercent.value = '0 %'

@@ -108,7 +108,7 @@ const cancel = async () => {
 	if (!noteManager.state.isLoggedIn) {
 		// await noteManager.loginAnonymousAccount()
 		if (settingsManager.showCreateOverCancel) {
-			noteManager.tree.controlPanel.expand()
+			noteManager.tree.controlPanel().expand()
 			noteManager.tree.getNoteById('settings-account' as Guid)?.select()
 		}
 	}
@@ -119,7 +119,7 @@ const cancel = async () => {
 const login = async () => {
 	loading.value = true
 	error.value = false
-	const isAnonymous = noteManager.session.isAnonymous
+	const isAnonymous = noteManager.state.isAnonymous
 	const isPristine = await noteManager.session.isAccountPristine()
 	await noteManager.session.logout()
 

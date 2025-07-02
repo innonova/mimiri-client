@@ -434,11 +434,11 @@ export class MimiriClient extends HttpClientBase {
 
 	public async openWebSocket(attempt: number = 0): Promise<void> {
 		try {
-			if (this.workOffline || this._signalRConnection) {
+			if (this.state.workOffline || this._signalRConnection) {
 				return
 			}
 			const response = await this.createNotificationUrl()
-			if (!response?.url || this.workOffline || this._signalRConnection) {
+			if (!response?.url || this.state.workOffline || this._signalRConnection) {
 				return
 			}
 			const connection = new HubConnectionBuilder()
@@ -508,9 +508,9 @@ export class MimiriClient extends HttpClientBase {
 		await this.closeWebSocket()
 	}
 
-	set workOffline(value: boolean) {
-		this.state.workOffline = value
-		if (value) {
+	toggleWorkOffline() {
+		this.state.workOffline = !this.state.workOffline
+		if (this.state.workOffline) {
 			this.closeWebSocket()
 		} else {
 			this.openWebSocket()

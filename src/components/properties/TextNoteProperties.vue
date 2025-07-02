@@ -43,7 +43,7 @@ const shareParticipants = ref([])
 const showDeleteOldHistory = ref(false)
 const showDeleteAllHistory = ref(false)
 
-const note = computed(() => noteManager.tree.selectedNote)
+const note = computed(() => noteManager.tree.selectedNote())
 
 const update = async () => {
 	if (note.value.isShared) {

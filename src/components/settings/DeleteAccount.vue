@@ -41,7 +41,7 @@
 						</div>
 						<div class="max-w-110">
 							<hr class="my-5" />
-							<div v-if="!noteManager.session.isAnonymous" class="flex justify-end items-baseline">
+							<div v-if="!noteManager.state.isAnonymous" class="flex justify-end items-baseline">
 								<div class="mr-2">Password:</div>
 								<div class="text-right">
 									<input
@@ -54,12 +54,12 @@
 									/>
 								</div>
 							</div>
-							<div v-if="!noteManager.session.isAnonymous" class="flex justify-end items-baseline">
+							<div v-if="!noteManager.state.isAnonymous" class="flex justify-end items-baseline">
 								<div v-if="capsLockOn"></div>
 								<div v-if="capsLockOn" class="py-1">Caps Lock is on!</div>
 							</div>
 							<div
-								v-if="(!mimiriPlatform.isWeb || env.DEV) && !noteManager.session.isAnonymous"
+								v-if="(!mimiriPlatform.isWeb || env.DEV) && !noteManager.state.isAnonymous"
 								class="pt-2 pb-6 text-right"
 							>
 								<label>
@@ -126,9 +126,9 @@ const pwKeyDown = event => {
 const deleteAccount = async () => {
 	loading.value = true
 	error.value = ''
-	if (password.value || noteManager.session.isAnonymous) {
+	if (password.value || noteManager.state.isAnonymous) {
 		try {
-			if (noteManager.session.isAnonymous) {
+			if (noteManager.state.isAnonymous) {
 				await noteManager.auth.deleteAccount(await deObfuscate(settingsManager.anonymousPassword), true)
 				settingsManager.anonymousUsername = undefined
 				settingsManager.anonymousPassword = undefined
@@ -137,7 +137,7 @@ const deleteAccount = async () => {
 				await noteManager.auth.deleteAccount(password.value, deleteLocal.value)
 			}
 			loading.value = false
-			if (deleteLocal.value || noteManager.session.isAnonymous) {
+			if (deleteLocal.value || noteManager.state.isAnonymous) {
 				await noteManager.session.logout()
 				location.reload()
 			}

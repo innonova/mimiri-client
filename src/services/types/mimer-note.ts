@@ -367,10 +367,17 @@ export class MimerNote {
 			} else {
 				this.parent.select()
 			}
-			if (!this.owner.tree.recycleBin.hasChildren) {
-				this.owner.tree.recycleBin.collapse()
+			if (!this.owner.tree.recycleBin().hasChildren) {
+				this.owner.tree.recycleBin().collapse()
 			}
-			await this.owner.operations.move(this.parent.id, this.owner.tree.recycleBin.id, this, -1, this.isShareRoot, false)
+			await this.owner.operations.move(
+				this.parent.id,
+				this.owner.tree.recycleBin().id,
+				this,
+				-1,
+				this.isShareRoot,
+				false,
+			)
 		} else {
 			throw new Error('Cannot recycle root')
 		}
@@ -557,7 +564,7 @@ export class MimerNote {
 	}
 
 	public get isTopLevel() {
-		return this.parent?.id === this.owner.tree.root.id
+		return this.parent?.id === this.owner.tree.root()?.id
 	}
 
 	public get hasChildren() {

@@ -7,7 +7,7 @@
 				<hr />
 				<div class="w-full flex justify-end mt-2 gap-2">
 					<button
-						:disabled="noteManager.tree.selectedNote?.viewModel?.children.length === 0"
+						:disabled="noteManager.tree.selectedNote()?.viewModel?.children.length === 0"
 						@click="empty"
 						class="primary"
 					>

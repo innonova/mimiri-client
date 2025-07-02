@@ -7,11 +7,10 @@ import type { SharedState } from './type'
 export class UIStateManager {
 	private busyStart: number
 	private outstandingActions: number = 0
-	private _isMobile: boolean
 
 	constructor(private state: SharedState) {
-		this._isMobile = mimiriPlatform.isPhoneSize
-		this.state.noteOpen = !this._isMobile
+		this.state.isMobile = mimiriPlatform.isPhoneSize
+		this.state.noteOpen = !this.state.isMobile
 		setTimeout(() => this.checkBusyLength(), 100)
 	}
 
@@ -46,14 +45,14 @@ export class UIStateManager {
 	}
 
 	public closeNote() {
-		if (this._isMobile) {
+		if (this.state.isMobile) {
 			this.state.noteOpen = false
 			persistedState.noteOpen = false
 		}
 	}
 
 	public closeEditorIfMobile() {
-		if (this._isMobile && this.state.noteOpen) {
+		if (this.state.isMobile && this.state.noteOpen) {
 			this.state.noteOpen = false
 			persistedState.noteOpen = false
 		}
@@ -111,9 +110,5 @@ export class UIStateManager {
 			return this.recurseExpandedNotes(note.nextSibling, check)
 		}
 		return undefined
-	}
-
-	public get isMobile() {
-		return this._isMobile
 	}
 }

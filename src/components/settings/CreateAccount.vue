@@ -268,7 +268,7 @@ const createAccount = async () => {
 	if (!noteManager.state.isLoggedIn) {
 		errorText.value = 'Unknown Error'
 	} else {
-		await noteManager.tree.root.ensureChildren()
+		await noteManager.tree.root().ensureChildren()
 	}
 }
 </script>

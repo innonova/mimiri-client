@@ -14,7 +14,7 @@
 			<ToolbarIcon
 				:icon="settingsManager.wordwrap ? 'wordwrap-on' : 'wordwrap-off'"
 				:hoverEffect="true"
-				:disabled="noteManager.tree.selectedNote?.isSystem"
+				:disabled="noteManager.tree.selectedNoteRef().value?.isSystem"
 				:title="settingsManager.wordwrap ? 'Disable Word Wrap' : 'Enable Word Wrap'"
 				:toggledOn="settingsManager.wordwrap"
 				@click="toggleWordWrap"
@@ -38,7 +38,7 @@
 				icon="history"
 				:hoverEffect="true"
 				:title="historyVisible ? 'Hide History' : 'Show History'"
-				:disabled="noteManager.tree.selectedNote?.isSystem"
+				:disabled="noteManager.tree.selectedNoteRef().value?.isSystem"
 				:toggledOn="historyVisible"
 				@click="showHistory"
 			></ToolbarIcon>
@@ -200,7 +200,7 @@ onMounted(() => {
 	mimiriEditor.onSave(() => save())
 	mimiriEditor.onSearchAll(() => titleBar.value?.searchAllNotes())
 	mimiriEditor.onBlur(() => save())
-	setActiveViewModel(noteManager.tree.selectedViewModel)
+	setActiveViewModel(noteManager.tree.selectedViewModel())
 
 	watch(settingsManager.state, () => {
 		mimiriEditor.syncSettings()

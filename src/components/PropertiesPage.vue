@@ -18,7 +18,7 @@ import ToolbarIcon from './ToolbarIcon.vue'
 import TextNoteProperties from './properties/TextNoteProperties.vue'
 
 const type = computed(() => {
-	return noteManager.tree.selectedNote?.type ?? ''
+	return noteManager.tree.selectedNote()?.type ?? ''
 })
 
 const onBack = () => {

@@ -30,7 +30,7 @@ class LocalAuth implements LoginListener, HideShowListener {
 	online() {}
 
 	public async unlockWithPin(pin: string) {
-		const pinCode = noteManager.tree.root.note.getItem('config')?.pinCode
+		const pinCode = noteManager.tree.root().note.getItem('config')?.pinCode
 		if (pin === pinCode) {
 			localStorage.setItem('lastPin', 'success')
 			await this.unlock()
@@ -103,8 +103,8 @@ class LocalAuth implements LoginListener, HideShowListener {
 	}
 
 	public async setPin(pin: string) {
-		noteManager.tree.root.note.changeItem('config').pinCode = pin
-		await noteManager.tree.root.save()
+		noteManager.tree.root().note.changeItem('config').pinCode = pin
+		await noteManager.tree.root().save()
 		settingsManager.pinEnabled = true
 	}
 
@@ -113,7 +113,7 @@ class LocalAuth implements LoginListener, HideShowListener {
 	}
 
 	public get pinEnabled() {
-		return settingsManager.pinEnabled && !!noteManager.tree.root.note.getItem('config')?.pinCode
+		return settingsManager.pinEnabled && !!noteManager.tree.root().note.getItem('config')?.pinCode
 	}
 
 	public get locked() {
@@ -125,7 +125,7 @@ class LocalAuth implements LoginListener, HideShowListener {
 	}
 
 	public get pin() {
-		return noteManager.tree.root.note.getItem('config').pinCode
+		return noteManager.tree.root().note.getItem('config').pinCode
 	}
 
 	public get lastPinFailed() {

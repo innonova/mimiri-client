@@ -1,16 +1,18 @@
 <template>
 	<dialog class="w-72 bg-dialog text-text desktop:border border-solid border-dialog-border" ref="dialog">
 		<div
-			v-if="!noteManager.tree.selectedNote?.isShared || shareParticipants.length == 0"
+			v-if="!noteManager.tree.selectedNoteRef().value?.isShared || shareParticipants.length == 0"
 			class="grid grid-rows-[auto_1fr_auto] gap-6"
 		>
 			<DialogTitle @close="close">Delete Note</DialogTitle>
 			<main class="px-2 mobile:text-center">
 				<div>Are you sure you want to delete:</div>
 				<div class="mt-3 ml-3 mb-1 italic">
-					{{ noteManager.tree.selectedViewModel?.title }}
+					{{ noteManager.tree.selectedViewModelRef().value?.title }}
 				</div>
-				<div v-if="noteManager.tree.selectedNote?.isShared" class="mt-5">No other users have access to this note</div>
+				<div v-if="noteManager.tree.selectedNoteRef().value?.isShared" class="mt-5">
+					No other users have access to this note
+				</div>
 			</main>
 			<footer class="flex justify-end mobile:justify-center gap-2 pr-2 pb-2 mobile:mt-5">
 				<button class="primary" @click="submitDialog">Delete</button>
@@ -18,14 +20,14 @@
 			</footer>
 		</div>
 		<div
-			v-if="noteManager.tree.selectedNote?.isShareRoot && shareParticipants.length > 0"
+			v-if="noteManager.tree.selectedNoteRef().value?.isShareRoot && shareParticipants.length > 0"
 			class="grid grid-rows-[auto_1fr_auto] gap-6"
 		>
 			<DialogTitle @close="close">Leave Share</DialogTitle>
 			<main class="px-2 mobile:text-center">
 				<div>Are you sure you want to leave this share:</div>
 				<div class="mt-3 ml-3 mb-1 italic">
-					{{ noteManager.tree.selectedViewModel?.title }}
+					{{ noteManager.tree.selectedViewModelRef().value?.title }}
 				</div>
 				<div class="mt-5">This note will remain be accessible to:</div>
 				<div
@@ -46,14 +48,14 @@
 			</footer>
 		</div>
 		<div
-			v-if="!noteManager.tree.selectedNote?.isShareRoot && shareParticipants.length > 0"
+			v-if="!noteManager.tree.selectedNoteRef().value?.isShareRoot && shareParticipants.length > 0"
 			class="grid grid-rows-[auto_1fr_auto] gap-6"
 		>
 			<DialogTitle @close="close">Delete Note</DialogTitle>
 			<main class="px-2 mobile:text-center">
 				<div>Are you sure you want to delete:</div>
 				<div class="mt-3 ml-3 mb-1 italic">
-					{{ noteManager.tree.selectedViewModel?.title }}
+					{{ noteManager.tree.selectedViewModelRef().value?.title }}
 				</div>
 				<div class="mt-5">This note will also be deleted for:</div>
 				<div
@@ -84,8 +86,8 @@ const dialog = ref(null)
 const shareParticipants = ref([])
 
 const show = async () => {
-	if (noteManager.tree.selectedNote?.isShared) {
-		shareParticipants.value = (await noteManager.note.getShareParticipants(noteManager.tree.selectedNote.id)).filter(
+	if (noteManager.tree.selectedNote()?.isShared) {
+		shareParticipants.value = (await noteManager.note.getShareParticipants(noteManager.tree.selectedNote().id)).filter(
 			item => item.username !== noteManager.state.username,
 		)
 	} else {
@@ -99,10 +101,10 @@ const close = () => {
 }
 
 const submitDialog = async () => {
-	if (noteManager.tree.selectedNote.isShareRoot) {
-		await noteManager.tree.selectedNote.deleteReference()
+	if (noteManager.tree.selectedNote().isShareRoot) {
+		await noteManager.tree.selectedNote().deleteReference()
 	} else {
-		await noteManager.tree.selectedNote.delete()
+		await noteManager.tree.selectedNote().delete()
 	}
 	close()
 }

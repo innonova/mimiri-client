@@ -148,6 +148,7 @@ export class AuthenticationManager {
 				).text()
 				const loginData = JSON.parse(unzipped)
 				this.state.username = loginData.username
+				this.state.isAnonymous = this.state.username?.startsWith('mimiri_a_') ?? false
 				this._userCryptAlgorithm = loginData.userCryptAlgorithm
 
 				this.state.userId = loginData.userId
@@ -356,6 +357,7 @@ export class AuthenticationManager {
 				)
 				this._userData = JSON.parse(await this.cryptoManager.rootCrypt.decrypt(initializationData.userData))
 				this.state.username = username
+				this.state.isAnonymous = this.state.username?.startsWith('mimiri_a_') ?? false
 				this.state.isLocal = false
 				break
 			} catch (ex) {
@@ -410,6 +412,7 @@ export class AuthenticationManager {
 		}
 		this.state.isLocal = true
 		this.state.username = 'local'
+		this.state.isAnonymous = false
 		this.state.userId = emptyGuid()
 		this.state.isLoggedIn = true
 	}
@@ -477,6 +480,7 @@ export class AuthenticationManager {
 		this._userData = undefined
 		this._rootSignature = undefined
 		this.state.username = undefined
+		this.state.isAnonymous = false
 		this.state.isLocal = false
 
 		this.cryptoManager.rootCrypt = null

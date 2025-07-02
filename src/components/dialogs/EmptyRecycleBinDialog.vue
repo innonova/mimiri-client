@@ -28,7 +28,7 @@ const close = () => {
 }
 
 const submitDialog = async () => {
-	await noteManager.tree.recycleBin.deleteChildren()
+	await noteManager.tree.recycleBin().deleteChildren()
 	close()
 }
 

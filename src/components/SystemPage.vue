@@ -54,7 +54,7 @@ import ToolbarIcon from './ToolbarIcon.vue'
 import RecycleBin from './settings/RecycleBin.vue'
 
 const type = computed(() => {
-	return noteManager.tree.selectedNote?.type ?? ''
+	return noteManager.tree.selectedNote()?.type ?? ''
 })
 
 const onBack = () => {

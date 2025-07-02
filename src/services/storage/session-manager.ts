@@ -143,8 +143,8 @@ export class SessionManager {
 		}
 	}
 
-	public async isAccountPristine(rootNote: MimerNote, isAnonymous: boolean) {
-		if (!isAnonymous) {
+	public async isAccountPristine(rootNote: MimerNote) {
+		if (!this.state.isAnonymous) {
 			return false
 		}
 		const userNotes = rootNote.children.filter(child => !child.isSystem)
@@ -190,7 +190,7 @@ export class SessionManager {
 	public async recoverLogin() {
 		try {
 			if (await this.restoreLogin()) {
-				this.state.noteOpen = !this.uiManager.isMobile
+				this.state.noteOpen = !this.state.isMobile
 				browserHistory.openTree(ipcClient.isAvailable && Capacitor.getPlatform() === 'web')
 				await this.ensureCreateComplete()
 				await this.loadRootNote()
@@ -206,7 +206,7 @@ export class SessionManager {
 
 	public async login(username: string, password: string): Promise<boolean> {
 		this.uiManager.beginAction(10000)
-		this.state.noteOpen = !this.uiManager.isMobile
+		this.state.noteOpen = !this.state.isMobile
 		browserHistory.openTree(ipcClient.isAvailable && Capacitor.getPlatform() === 'web')
 		try {
 			if (await this.authManager.login(username, password)) {
@@ -251,7 +251,7 @@ export class SessionManager {
 
 	public async openLocal() {
 		this.uiManager.beginAction(10000)
-		this.state.noteOpen = !this.uiManager.isMobile
+		this.state.noteOpen = !this.state.isMobile
 		browserHistory.openTree(ipcClient.isAvailable && Capacitor.getPlatform() === 'web')
 		try {
 			await this.authManager.openLocal()
@@ -322,7 +322,6 @@ export class SessionManager {
 		}
 		this.state.stateLoaded = false
 		this._listener?.logout()
-		this.treeManager.root = undefined
-		this.treeManager.clearNotes()
+		this.treeManager.logout()
 	}
 }

@@ -1,3 +1,4 @@
+import { computed, ref } from 'vue'
 import type { Guid } from '../types/guid'
 import { MimerNote } from '../types/mimer-note'
 import { ViewMode, type SharedState } from './type'
@@ -12,7 +13,7 @@ export interface ActionListener {
 }
 
 export class NoteTreeManager {
-	private _root: MimerNote
+	private _root = ref<MimerNote>()
 	private notes: { [id: Guid]: MimerNote } = {}
 	private _actionListeners: ActionListener[] = []
 	private _isMobile: boolean
@@ -27,12 +28,12 @@ export class NoteTreeManager {
 	}
 
 	public async ensureRoot() {
-		if (!this._root) {
+		if (!this._root.value) {
 			const note = await this.noteService.readNote(this.authManager.userData.rootNote)
 			if (note) {
-				this._root = new MimerNote(this.owner, undefined, note)
+				this._root.value = new MimerNote(this.owner, undefined, note)
 			} else {
-				this._root = undefined
+				this._root.value = undefined
 			}
 		}
 	}
@@ -92,7 +93,7 @@ export class NoteTreeManager {
 	public async loadState() {
 		const selectedList = persistedState.readSelectedNote()
 		const expanded = persistedState.expanded
-		await this._root.ensureChildren()
+		await this._root.value.ensureChildren()
 
 		if (expanded) {
 			let maxIterations = 1000
@@ -130,35 +131,44 @@ export class NoteTreeManager {
 		}
 	}
 
+	public get selectedNoteRef() {
+		return computed(() => this.getNoteById(this.state.selectedNoteId))
+	}
+
 	public get selectedNote() {
 		return this.getNoteById(this.state.selectedNoteId)
+	}
+
+	public get selectedViewModelRef() {
+		return computed(() => this.getViewModelById(this.state.selectedNoteId))
 	}
 
 	public get selectedViewModel() {
 		return this.getViewModelById(this.state.selectedNoteId)
 	}
 
-	public clearNotes() {
+	public logout() {
 		this.notes = {}
+		this._root.value = undefined
 	}
 
-	public get root() {
+	public get rootRef() {
 		return this._root
 	}
 
-	public set root(value: MimerNote) {
-		this._root = value
+	public get root() {
+		return this._root.value
 	}
 
 	public get controlPanelId(): Guid {
-		return this._root?.note.getItem('metadata').controlPanel
+		return this.root?.note.getItem('metadata').controlPanel
 	}
 
 	public get controlPanel() {
-		return this._root?.children.find(child => child.id === this._root.note.getItem('metadata').controlPanel)
+		return this.root?.children.find(child => child.id === this.root.note.getItem('metadata').controlPanel)
 	}
 
 	public get recycleBin() {
-		return this._root?.children.find(child => child.id === this._root.note.getItem('metadata').recycleBin)
+		return this.root?.children.find(child => child.id === this.root.note.getItem('metadata').recycleBin)
 	}
 }

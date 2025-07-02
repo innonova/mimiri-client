@@ -1,4 +1,4 @@
-import { reactive, watch } from 'vue'
+import { markRaw, reactive, watch } from 'vue'
 import { type Guid } from '../types/guid'
 import { Note } from '../types/note'
 import type { NoteShareInfo } from '../types/note-share-info'
@@ -64,6 +64,7 @@ export class MimiriStore {
 			isOnline: false,
 			isLocal: false,
 			isLocalOnly: false,
+			isAnonymous: false,
 			workOffline: false,
 			clientConfig: { features: [] },
 			userStats: {
@@ -82,6 +83,7 @@ export class MimiriStore {
 			initInProgress: true,
 			viewMode: ViewMode.Content,
 			shareOffers: [],
+			isMobile: false,
 		})
 
 		watch(
@@ -165,249 +167,111 @@ export class MimiriStore {
 		browserHistory.init(noteId => {
 			if (noteId) {
 				this.treeManager.getNoteById(noteId)?.select()
-				if (this.uiManager.isMobile) {
+				if (this.state.isMobile) {
 					this.state.noteOpen = true
 				}
-			} else if (this.uiManager.isMobile) {
+			} else if (this.state.isMobile) {
 				this.state.noteOpen = false
 			}
 		})
 	}
 
-	private _ui: {
-		newNote: () => void
-		newRootNote: () => void
-		closeEditorIfMobile: () => void
-		findNextNoteStartingWith: (text: string) => void
-		isMobile: boolean
-	}
-	public get ui() {
-		if (!this._ui) {
-			const uiManager = this.uiManager
-			this._ui = {
-				newNote: () => this.uiManager.newNote(),
-				newRootNote: () => this.uiManager.newRootNote(),
-				closeEditorIfMobile: () => this.uiManager.closeEditorIfMobile(),
-				findNextNoteStartingWith: (text: string) =>
-					this.uiManager.findNextNoteStartingWith(text, this.treeManager.root, this.treeManager.selectedNote),
-				get isMobile() {
-					return uiManager.isMobile
-				},
-			}
-		}
-		return this._ui
+	public readonly ui = {
+		newNote: () => this.uiManager.newNote(),
+		newRootNote: () => this.uiManager.newRootNote(),
+		closeEditorIfMobile: () => this.uiManager.closeEditorIfMobile(),
+		findNextNoteStartingWith: (text: string) =>
+			this.uiManager.findNextNoteStartingWith(text, this.treeManager.root, this.treeManager.selectedNote),
 	}
 
-	private _tree: {
-		register: (id: Guid, note: MimerNote) => void
-		select: (id: Guid) => void
-		openNote: (id?: Guid, mobileOpen?: boolean) => void
-		openProperties: (id?: Guid) => void
-		getNoteById: (id: Guid) => MimerNote | undefined
-		getViewModelById: (id: Guid) => NoteViewModel | undefined
-		loadState: () => void
-		registerActionListener: (listener: ActionListener) => void
-		get root(): MimerNote | undefined
-		get controlPanelId(): Guid
-		get controlPanel(): MimerNote
-		get recycleBin(): MimerNote
-		get selectedNote(): MimerNote | undefined
-		get selectedViewModel(): NoteViewModel | undefined
-	}
-	public get tree() {
-		if (!this._tree) {
-			const treeManager = this.treeManager
-			this._tree = {
-				register: (id: Guid, note: MimerNote) => this.treeManager.register(id, note),
-				select: (id: Guid) => this.treeManager.select(id),
-				openNote: (id?: Guid, mobileOpen = true) => this.treeManager.openNote(id, mobileOpen),
-				openProperties: (id?: Guid) => this.treeManager.openProperties(id),
-				getNoteById: (id: Guid) => this.treeManager.getNoteById(id),
-				getViewModelById: (id: Guid) => this.treeManager.getViewModelById(id),
-				loadState: () => this.treeManager.loadState(),
-				registerActionListener: (listener: ActionListener) => this.treeManager.registerActionListener(listener),
-				get root() {
-					return treeManager.root
-				},
-				get controlPanelId() {
-					return treeManager.controlPanelId
-				},
-				get controlPanel() {
-					return treeManager.controlPanel
-				},
-				get recycleBin() {
-					return treeManager.recycleBin
-				},
-				get selectedNote() {
-					return treeManager.selectedNote
-				},
-				get selectedViewModel() {
-					return treeManager.selectedViewModel
-				},
-			}
-		}
-		return this._tree
+	public readonly tree = {
+		register: (id: Guid, note: MimerNote) => this.treeManager.register(id, note),
+		select: (id: Guid) => this.treeManager.select(id),
+		openNote: (id?: Guid, mobileOpen = true) => this.treeManager.openNote(id, mobileOpen),
+		openProperties: (id?: Guid) => this.treeManager.openProperties(id),
+		getNoteById: (id: Guid) => this.treeManager.getNoteById(id),
+		getViewModelById: (id: Guid) => this.treeManager.getViewModelById(id),
+		loadState: () => this.treeManager.loadState(),
+		registerActionListener: (listener: ActionListener) => this.treeManager.registerActionListener(listener),
+		root: () => this.treeManager.root,
+		rootRef: () => this.treeManager.rootRef,
+		controlPanelId: () => this.treeManager.controlPanelId,
+		controlPanel: () => this.treeManager.controlPanel,
+		recycleBin: () => this.treeManager.recycleBin,
+		selectedNoteRef: () => this.treeManager.selectedNoteRef,
+		selectedNote: () => this.treeManager.selectedNote,
+		selectedViewModelRef: () => this.treeManager.selectedViewModelRef,
+		selectedViewModel: () => this.treeManager.selectedViewModel,
 	}
 
-	private _operations: {
-		createMimerNote: (parentNote: MimerNote, title: string) => Promise<void>
-		saveNote: (note: MimerNote) => Promise<void>
-		delete: (mimerNote: MimerNote, physicallyDelete: boolean) => Promise<void>
-		copy: (targetId: Guid, mimerNote: MimerNote, index: number) => Promise<void>
-		move: (
-			sourceId: Guid,
-			targetId: Guid,
-			mimerNote: MimerNote,
-			index: number,
-			keepKey: boolean,
-			select: boolean,
-		) => Promise<void>
-	}
-	public get operations() {
-		if (!this._operations) {
-			this._operations = {
-				createMimerNote: (parentNote: MimerNote, title: string) =>
-					this.operationsManager.createMimerNote(parentNote, title),
-				saveNote: (note: MimerNote) => this.operationsManager.saveNote(note),
-				delete: (mimerNote: MimerNote, physicallyDelete: boolean) =>
-					this.operationsManager.delete(mimerNote, physicallyDelete),
-				copy: (targetId: Guid, mimerNote: MimerNote, index: number) =>
-					this.operationsManager.copy(targetId, mimerNote, index),
-				move: (
-					sourceId: Guid,
-					targetId: Guid,
-					mimerNote: MimerNote,
-					index: number,
-					keepKey: boolean,
-					select: boolean,
-				) =>
-					this.operationsManager.move(sourceId, targetId, mimerNote, index, keepKey, select, this.treeManager.root.id),
-			}
-		}
-		return this._operations
+	public readonly operations = {
+		createMimerNote: (parentNote: MimerNote, title: string) =>
+			this.operationsManager.createMimerNote(parentNote, title),
+		saveNote: (note: MimerNote) => this.operationsManager.saveNote(note),
+		delete: (mimerNote: MimerNote, physicallyDelete: boolean) =>
+			this.operationsManager.delete(mimerNote, physicallyDelete),
+		copy: (targetId: Guid, mimerNote: MimerNote, index: number) =>
+			this.operationsManager.copy(targetId, mimerNote, index),
+		move: (sourceId: Guid, targetId: Guid, mimerNote: MimerNote, index: number, keepKey: boolean, select: boolean) =>
+			this.operationsManager.move(sourceId, targetId, mimerNote, index, keepKey, select, this.treeManager.root.id),
 	}
 
-	private _session: {
-		addGettingStarted: (note?: Note) => Promise<void>
-		isAccountPristine: (isAnonymous?: boolean) => Promise<boolean>
-		recoverLogin: () => Promise<void>
-		login: (username: string, password: string) => Promise<boolean>
-		goOnline: (password?: string) => Promise<boolean>
-		openLocal: () => Promise<boolean>
-		updateUserStats: () => Promise<void>
-		logout: () => Promise<void>
-		promoteToCloudAccount: (username: string, password: string, iterations: number) => Promise<void>
-		promoteToLocalAccount: (username: string, password: string, iterations: number) => Promise<void>
-		registerListener: (listener: LoginListener) => void
-		queueSync: () => void
-		toggleWorkOffline: () => void
-		isAnonymous: boolean
-	}
-	public get session() {
-		const state = this.state
-		if (!this._session) {
-			this._session = {
-				addGettingStarted: (note?: Note) => this.sessionManager.addGettingStarted(note),
-				isAccountPristine: () =>
-					this.sessionManager.isAccountPristine(this.treeManager.root, !!state.username?.startsWith('mimiri_a_')),
-				recoverLogin: () => this.sessionManager.recoverLogin(),
-				login: (username: string, password: string): Promise<boolean> => this.sessionManager.login(username, password),
-				goOnline: (password?: string): Promise<boolean> => this.sessionManager.goOnline(password),
-				openLocal: () => this.sessionManager.openLocal(),
-				updateUserStats: () => this.sessionManager.updateUserStats(),
-				logout: (): Promise<void> => this.sessionManager.logout(),
-				promoteToCloudAccount: (username: string, password: string, iterations: number) => {
-					return this.sessionManager.promoteToCloudAccount(username, password, iterations)
-				},
-				promoteToLocalAccount: (username: string, password: string, iterations: number) => {
-					return this.sessionManager.promoteToLocalAccount(username, password, iterations)
-				},
-				registerListener: (listener: LoginListener) => this.sessionManager.registerListener(listener),
-				queueSync: () => this.syncService.queueSync(),
-				toggleWorkOffline: () => {
-					this.api.workOffline = !this.state.workOffline
-				},
-				get isAnonymous() {
-					return !!state.username?.startsWith('mimiri_a_')
-				},
-			}
-		}
-		return this._session
+	public readonly session = {
+		addGettingStarted: (note?: Note) => this.sessionManager.addGettingStarted(note),
+		isAccountPristine: () => this.sessionManager.isAccountPristine(this.treeManager.root),
+		recoverLogin: () => this.sessionManager.recoverLogin(),
+		login: (username: string, password: string): Promise<boolean> => this.sessionManager.login(username, password),
+		goOnline: (password?: string): Promise<boolean> => this.sessionManager.goOnline(password),
+		openLocal: () => this.sessionManager.openLocal(),
+		updateUserStats: () => this.sessionManager.updateUserStats(),
+		logout: (): Promise<void> => this.sessionManager.logout(),
+		promoteToCloudAccount: (username: string, password: string, iterations: number) => {
+			return this.sessionManager.promoteToCloudAccount(username, password, iterations)
+		},
+		promoteToLocalAccount: (username: string, password: string, iterations: number) => {
+			return this.sessionManager.promoteToLocalAccount(username, password, iterations)
+		},
+		registerListener: (listener: LoginListener) => this.sessionManager.registerListener(listener),
+		queueSync: () => this.syncService.queueSync(),
+		toggleWorkOffline: () => {
+			this.api.toggleWorkOffline()
+		},
 	}
 
-	private _auth: {
-		checkUsername: (username: string) => Promise<boolean>
-		setLoginData: (data: string) => Promise<void>
-		changeUserNameAndPassword: (
-			username: string,
-			oldPassword: string,
-			newPassword?: string,
-			iterations?: number,
-		) => Promise<void>
-		deleteAccount: (password: string, deleteLocal: boolean) => Promise<void>
-		verifyPassword: (password: string) => Promise<boolean>
-	}
-	public get auth() {
-		if (!this._auth) {
-			this._auth = {
-				checkUsername: (username: string) => this.authManager.checkUsername(username),
-				setLoginData: (data: string) => this.authManager.setLoginData(data),
-				changeUserNameAndPassword: (username: string, oldPassword: string, newPassword?: string, iterations?: number) =>
-					this.authManager.changeUserNameAndPassword(username, oldPassword, newPassword, iterations),
-				deleteAccount: (password: string, deleteLocal: boolean) =>
-					this.authManager.deleteAccount(password, deleteLocal),
-				verifyPassword: (password: string) => this.authManager.verifyPassword(password),
-			}
-		}
-		return this._auth
+	public readonly auth = {
+		checkUsername: (username: string) => this.authManager.checkUsername(username),
+		setLoginData: (data: string) => this.authManager.setLoginData(data),
+		changeUserNameAndPassword: (username: string, oldPassword: string, newPassword?: string, iterations?: number) =>
+			this.authManager.changeUserNameAndPassword(username, oldPassword, newPassword, iterations),
+		deleteAccount: (password: string, deleteLocal: boolean) => this.authManager.deleteAccount(password, deleteLocal),
+		verifyPassword: (password: string) => this.authManager.verifyPassword(password),
 	}
 
-	private _note: {
-		getNote: (id: Guid) => Promise<Note>
-		isShared: (note: Note) => boolean
-		shareMimerNote: (mimerNote: MimerNote, recipient: string) => Promise<ShareResponse>
-		getShareOffer: (code: string) => Promise<NoteShareInfo>
-		getShareParticipants: (id: Guid) => Promise<{ username: string; since: string }[]>
-		acceptShare: (share: NoteShareInfo, parent?: MimerNote) => Promise<void>
-	}
-	public get note() {
-		if (!this._note) {
-			this._note = {
-				getNote: (id: Guid) => {
-					return this.noteService.readNote(id)
-				},
-				isShared: (note: Note) => {
-					return !!this.cryptoManager.getKeyByName(note.keyName).metadata.shared
-				},
-				shareMimerNote: (mimerNote: MimerNote, recipient: string) => {
-					return this.operationsManager.shareMimerNote(mimerNote, recipient)
-				},
-				getShareOffer: (code: string) => {
-					return this.sharingService.getShareOffer(code)
-				},
-				getShareParticipants: (id: Guid) => {
-					return this.sharingService.getShareParticipants(id)
-				},
-				acceptShare: (share: NoteShareInfo, parent?: MimerNote) => {
-					return this.operationsManager.acceptShare(share, parent)
-				},
-			}
-		}
-		return this._note
+	public readonly note = {
+		getNote: (id: Guid) => {
+			return this.noteService.readNote(id)
+		},
+		isShared: (note: Note) => {
+			return !!this.cryptoManager.getKeyByName(note.keyName).metadata.shared
+		},
+		shareMimerNote: (mimerNote: MimerNote, recipient: string) => {
+			return this.operationsManager.shareMimerNote(mimerNote, recipient)
+		},
+		getShareOffer: (code: string) => {
+			return this.sharingService.getShareOffer(code)
+		},
+		getShareParticipants: (id: Guid) => {
+			return this.sharingService.getShareParticipants(id)
+		},
+		acceptShare: (share: NoteShareInfo, parent?: MimerNote) => {
+			return this.operationsManager.acceptShare(share, parent)
+		},
 	}
 
-	private _feedback: {
-		addComment: (postId: Guid, displayName: string, comment: string) => Promise<void>
-	}
-	public get feedback() {
-		if (!this._feedback) {
-			this._feedback = {
-				addComment: async (postId: Guid, displayName: string, comment: string) => {
-					await this.api.addComment(postId, displayName, comment)
-				},
-			}
-		}
-		return this._feedback
+	public readonly feedback = {
+		addComment: async (postId: Guid, displayName: string, comment: string) => {
+			await this.api.addComment(postId, displayName, comment)
+		},
 	}
 
 	public get payment() {

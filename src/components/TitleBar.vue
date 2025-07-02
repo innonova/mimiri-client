@@ -262,7 +262,7 @@ const showMenu = (rect, menu) => {
 			return
 		}
 		menuManager.showMenu({ x: rect.right, y: rect.bottom - 30, backdropTop: 32, alignRight: true }, [
-			...(noteManager.session.isAnonymous
+			...(noteManager.state.isAnonymous
 				? [MenuItems.CreatePassword, MenuItems.DeleteAccount]
 				: [
 						MenuItems.ChangeUsername,
@@ -270,8 +270,8 @@ const showMenu = (rect, menu) => {
 						...(mimiriPlatform.isElectron ? [MenuItems.SetPin] : []),
 					]),
 			...(mimiriPlatform.isDesktop ? [MenuItems.Separator, MenuItems.ManageSubscription] : []),
-			...(!noteManager.session.isAnonymous && ipcClient.isAvailable ? [MenuItems.Separator] : []),
-			...(noteManager.session.isAnonymous ? [MenuItems.Login] : [MenuItems.Logout]),
+			...(!noteManager.state.isAnonymous && ipcClient.isAvailable ? [MenuItems.Separator] : []),
+			...(noteManager.state.isAnonymous ? [MenuItems.Login] : [MenuItems.Logout]),
 			MenuItems.Separator,
 			MenuItems.WorkOffline,
 		])
