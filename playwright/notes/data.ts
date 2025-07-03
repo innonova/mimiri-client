@@ -879,3 +879,429 @@ export const complexTestTreeAfterCopy: StandardTreeNode[] = [
 		],
 	},
 ]
+
+// Tree structure designed for testing sharing functionality
+export const shareTestTree: StandardTreeNode[] = [
+	{
+		title: 'Public Projects',
+		text: 'Collection of projects intended for sharing with team members and external collaborators.',
+		children: [
+			{
+				title: 'Team Handbook',
+				text: 'Comprehensive guide for team processes and procedures. Perfect for sharing with new team members.',
+				children: [
+					{
+						title: 'Onboarding Process',
+						text: 'Step-by-step guide for new employee onboarding. Should be shared with HR and managers.',
+					},
+					{
+						title: 'Development Guidelines',
+						text: 'Coding standards and best practices for the development team.',
+						children: [
+							{
+								title: 'Code Review Checklist',
+								text: 'Detailed checklist for code review process. Share with all developers.',
+							},
+							{
+								title: 'Git Workflow',
+								text: 'Branch naming conventions and merge request procedures.',
+							},
+						],
+					},
+					{
+						title: 'Communication Protocols',
+						text: 'Guidelines for internal and external communication.',
+					},
+				],
+			},
+			{
+				title: 'Client Resources',
+				text: 'Materials and documentation for client sharing.',
+				children: [
+					{
+						title: 'Project Proposal Template',
+						text: 'Standard template for project proposals. Can be shared with potential clients.',
+					},
+					{
+						title: 'API Documentation',
+						text: 'Public API documentation for client integration.',
+						children: [
+							{
+								title: 'Authentication Guide',
+								text: 'How to authenticate with our API services.',
+							},
+							{
+								title: 'Rate Limiting Info',
+								text: 'Information about API rate limits and best practices.',
+							},
+						],
+					},
+					{
+						title: 'Support Contact Info',
+						text: 'Contact information for technical support and account management.',
+					},
+				],
+			},
+			{
+				title: 'Single Shareable Note',
+				text: 'A standalone note perfect for testing single note sharing functionality.',
+			},
+		],
+	},
+	{
+		title: 'Private Workspace',
+		text: 'Personal workspace with some items that should not be shared.',
+		children: [
+			{
+				title: 'Internal Planning',
+				text: 'Confidential planning documents for internal use only.',
+				children: [
+					{
+						title: 'Budget Considerations',
+						text: 'Financial planning and budget allocations - confidential.',
+					},
+					{
+						title: 'Staff Performance Reviews',
+						text: 'Sensitive HR information - should not be shared.',
+					},
+				],
+			},
+			{
+				title: 'Shareable Research',
+				text: 'Research findings that can be selectively shared.',
+				children: [
+					{
+						title: 'Market Analysis',
+						text: 'Market research findings suitable for sharing with partners.',
+					},
+					{
+						title: 'Technology Trends',
+						text: 'Industry trends analysis - good for sharing with technical teams.',
+					},
+				],
+			},
+		],
+	},
+]
+
+// Smaller tree for testing receiving shared notes and folders
+export const receiveShareTestTree: StandardTreeNode[] = [
+	{
+		title: 'My Workspace',
+		text: 'Personal workspace for receiving and organizing shared content.',
+		children: [
+			{
+				title: 'Shared Projects',
+				text: 'Folder for organizing projects shared by team members.',
+				children: [
+					{
+						title: 'Existing Project',
+						text: 'A project that was already in the workspace before receiving shares.',
+					},
+				],
+			},
+			{
+				title: 'Collaboration Hub',
+				text: 'Central location for collaborative work and shared resources.',
+			},
+			{
+				title: 'Personal Notes',
+				text: 'Private notes that should remain separate from shared content.',
+				children: [
+					{
+						title: 'Meeting Notes',
+						text: 'Personal meeting notes and observations.',
+					},
+					{
+						title: 'Todo List',
+						text: 'Personal task list and reminders.',
+					},
+				],
+			},
+		],
+	},
+	{
+		title: 'Archive',
+		text: 'Storage for older projects and completed work.',
+		children: [
+			{
+				title: 'Completed Projects',
+				text: 'Folder for finished projects and archived materials.',
+			},
+		],
+	},
+]
+
+// Expected state after receiving "Single Shareable Note" into "Collaboration Hub"
+export const receiveShareTestTreeAfterSingleNote: StandardTreeNode[] = [
+	{
+		title: 'My Workspace',
+		text: 'Personal workspace for receiving and organizing shared content.',
+		children: [
+			{
+				title: 'Shared Projects',
+				text: 'Folder for organizing projects shared by team members.',
+				children: [
+					{
+						title: 'Existing Project',
+						text: 'A project that was already in the workspace before receiving shares.',
+					},
+				],
+			},
+			{
+				title: 'Collaboration Hub',
+				text: 'Central location for collaborative work and shared resources.',
+				children: [
+					{
+						title: 'Single Shareable Note',
+						text: 'A standalone note perfect for testing single note sharing functionality.',
+					},
+				],
+			},
+			{
+				title: 'Personal Notes',
+				text: 'Private notes that should remain separate from shared content.',
+				children: [
+					{
+						title: 'Meeting Notes',
+						text: 'Personal meeting notes and observations.',
+					},
+					{
+						title: 'Todo List',
+						text: 'Personal task list and reminders.',
+					},
+				],
+			},
+		],
+	},
+	{
+		title: 'Archive',
+		text: 'Storage for older projects and completed work.',
+		children: [
+			{
+				title: 'Completed Projects',
+				text: 'Folder for finished projects and archived materials.',
+			},
+		],
+	},
+]
+
+// Expected state after receiving "Team Handbook" folder (with all children) into "Shared Projects"
+export const receiveShareTestTreeAfterFolder: StandardTreeNode[] = [
+	{
+		title: 'My Workspace',
+		text: 'Personal workspace for receiving and organizing shared content.',
+		children: [
+			{
+				title: 'Shared Projects',
+				text: 'Folder for organizing projects shared by team members.',
+				children: [
+					{
+						title: 'Existing Project',
+						text: 'A project that was already in the workspace before receiving shares.',
+					},
+					{
+						title: 'Team Handbook',
+						text: 'Comprehensive guide for team processes and procedures. Perfect for sharing with new team members.',
+						children: [
+							{
+								title: 'Onboarding Process',
+								text: 'Step-by-step guide for new employee onboarding. Should be shared with HR and managers.',
+							},
+							{
+								title: 'Development Guidelines',
+								text: 'Coding standards and best practices for the development team.',
+								children: [
+									{
+										title: 'Code Review Checklist',
+										text: 'Detailed checklist for code review process. Share with all developers.',
+									},
+									{
+										title: 'Git Workflow',
+										text: 'Branch naming conventions and merge request procedures.',
+									},
+								],
+							},
+							{
+								title: 'Communication Protocols',
+								text: 'Guidelines for internal and external communication.',
+							},
+						],
+					},
+				],
+			},
+			{
+				title: 'Collaboration Hub',
+				text: 'Central location for collaborative work and shared resources.',
+			},
+			{
+				title: 'Personal Notes',
+				text: 'Private notes that should remain separate from shared content.',
+				children: [
+					{
+						title: 'Meeting Notes',
+						text: 'Personal meeting notes and observations.',
+					},
+					{
+						title: 'Todo List',
+						text: 'Personal task list and reminders.',
+					},
+				],
+			},
+		],
+	},
+	{
+		title: 'Archive',
+		text: 'Storage for older projects and completed work.',
+		children: [
+			{
+				title: 'Completed Projects',
+				text: 'Folder for finished projects and archived materials.',
+			},
+		],
+	},
+]
+
+// Expected state after receiving multiple items: "API Documentation" into "Collaboration Hub" and "Market Analysis" into "Archive"
+export const receiveShareTestTreeAfterMultiple: StandardTreeNode[] = [
+	{
+		title: 'My Workspace',
+		text: 'Personal workspace for receiving and organizing shared content.',
+		children: [
+			{
+				title: 'Shared Projects',
+				text: 'Folder for organizing projects shared by team members.',
+				children: [
+					{
+						title: 'Existing Project',
+						text: 'A project that was already in the workspace before receiving shares.',
+					},
+				],
+			},
+			{
+				title: 'Collaboration Hub',
+				text: 'Central location for collaborative work and shared resources.',
+				children: [
+					{
+						title: 'API Documentation',
+						text: 'Public API documentation for client integration.',
+						children: [
+							{
+								title: 'Authentication Guide',
+								text: 'How to authenticate with our API services.',
+							},
+							{
+								title: 'Rate Limiting Info',
+								text: 'Information about API rate limits and best practices.',
+							},
+						],
+					},
+				],
+			},
+			{
+				title: 'Personal Notes',
+				text: 'Private notes that should remain separate from shared content.',
+				children: [
+					{
+						title: 'Meeting Notes',
+						text: 'Personal meeting notes and observations.',
+					},
+					{
+						title: 'Todo List',
+						text: 'Personal task list and reminders.',
+					},
+				],
+			},
+		],
+	},
+	{
+		title: 'Archive',
+		text: 'Storage for older projects and completed work.',
+		children: [
+			{
+				title: 'Completed Projects',
+				text: 'Folder for finished projects and archived materials.',
+			},
+			{
+				title: 'Market Analysis',
+				text: 'Market research findings suitable for sharing with partners.',
+			},
+		],
+	},
+]
+
+// Expected state after receiving shares into both empty and non-empty folders with mixed content types
+export const receiveShareTestTreeAfterMixed: StandardTreeNode[] = [
+	{
+		title: 'My Workspace',
+		text: 'Personal workspace for receiving and organizing shared content.',
+		children: [
+			{
+				title: 'Shared Projects',
+				text: 'Folder for organizing projects shared by team members.',
+				children: [
+					{
+						title: 'Existing Project',
+						text: 'A project that was already in the workspace before receiving shares.',
+					},
+					{
+						title: 'Project Proposal Template',
+						text: 'Standard template for project proposals. Can be shared with potential clients.',
+					},
+					{
+						title: 'Development Guidelines',
+						text: 'Coding standards and best practices for the development team.',
+						children: [
+							{
+								title: 'Code Review Checklist',
+								text: 'Detailed checklist for code review process. Share with all developers.',
+							},
+							{
+								title: 'Git Workflow',
+								text: 'Branch naming conventions and merge request procedures.',
+							},
+						],
+					},
+				],
+			},
+			{
+				title: 'Collaboration Hub',
+				text: 'Central location for collaborative work and shared resources.',
+				children: [
+					{
+						title: 'Support Contact Info',
+						text: 'Contact information for technical support and account management.',
+					},
+					{
+						title: 'Technology Trends',
+						text: 'Industry trends analysis - good for sharing with technical teams.',
+					},
+				],
+			},
+			{
+				title: 'Personal Notes',
+				text: 'Private notes that should remain separate from shared content.',
+				children: [
+					{
+						title: 'Meeting Notes',
+						text: 'Personal meeting notes and observations.',
+					},
+					{
+						title: 'Todo List',
+						text: 'Personal task list and reminders.',
+					},
+				],
+			},
+		],
+	},
+	{
+		title: 'Archive',
+		text: 'Storage for older projects and completed work.',
+		children: [
+			{
+				title: 'Completed Projects',
+				text: 'Folder for finished projects and archived materials.',
+			},
+		],
+	},
+]

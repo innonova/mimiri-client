@@ -77,17 +77,16 @@ export const createCloudAccount = async () => {
 export const logout = async () => {
 	await titleBar.accountButton().click()
 	await menu.logout().click()
-	await expect(loginCtrl.container()).toBeVisible()
+	await settingNodes.controlPanel().click()
+	await expect(aboutView.username()).toHaveText('local')
 }
 
 export const login = async () => {
-	await expect(loginCtrl.container()).toBeVisible()
-	await expect(loginCtrl.username()).toBeVisible()
-	await expect(loginCtrl.password()).toBeVisible()
-	await expect(loginCtrl.button()).toBeVisible()
+	await titleBar.accountButton().click()
+	await menu.login().click()
 	await loginCtrl.username().fill(mimiri().config.username)
 	await loginCtrl.password().fill(mimiri().config.password)
 	await loginCtrl.button().click()
-	await expect(mainToolbar.container()).toBeVisible()
-	await expect(titleBar.container()).toBeVisible()
+	await settingNodes.controlPanel().click()
+	await expect(aboutView.username()).toHaveText(mimiri().config.username)
 }

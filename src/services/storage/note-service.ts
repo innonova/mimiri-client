@@ -4,10 +4,12 @@ import { NoteActionType, type NoteAction } from '../types/requests'
 import type { NoteData, SharedState } from './type'
 import type { CryptographyManager } from './cryptography-manager'
 import type { MimiriDb } from './mimiri-db'
+import type { MimiriClient } from './mimiri-client'
 
 export class NoteService {
 	constructor(
 		private db: MimiriDb,
+		private api: MimiriClient,
 		private cryptoManager: CryptographyManager,
 		private state: SharedState,
 		private noteUpdatedCallback: (noteId: Guid) => Promise<void>,
@@ -55,8 +57,13 @@ export class NoteService {
 		}
 
 		if (!noteData) {
+			noteData = await this.api.readNote(id)
+			await this.db.setNote(noteData)
+		}
+		if (!noteData) {
 			return undefined
 		}
+
 		const keySet = await this.cryptoManager.getKeyByName(noteData.keyName)
 		const note = new Note()
 		note.id = noteData.id

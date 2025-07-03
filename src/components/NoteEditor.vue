@@ -314,7 +314,6 @@ const save = async () => {
 		saveInProgress = true
 		try {
 			const result = await mimiriEditor.save()
-			console.log('result of save:', result)
 
 			if (result === 'note-size') {
 				noteManager.tree.select(activeViewModel.id)

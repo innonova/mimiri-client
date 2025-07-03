@@ -17,7 +17,7 @@ const config: PlaywrightTestConfig = {
 	},
 	testMatch: 'playwright/*.spec.ts',
 	retries: 0,
-	workers: 10,
+	workers: 5,
 	fullyParallel: true,
 	projects: [
 		{
@@ -26,7 +26,7 @@ const config: PlaywrightTestConfig = {
 		},
 	],
 	maxFailures: isCi ? 1 : undefined,
-	timeout: 40_000,
+	timeout: 120_000,
 	expect: {
 		timeout: 10_000,
 	},

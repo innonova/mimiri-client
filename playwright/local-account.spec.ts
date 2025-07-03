@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test'
-import { mimiri, withMimiriContext } from './framework/mimiri-context'
+import { mimiri, mimiriClone, withMimiriContext } from './framework/mimiri-context'
 import { aboutView, editor, loginCtrl, menu, note, settingNodes, titleBar } from './selectors'
 import {
 	createChildNote,
@@ -14,11 +14,11 @@ import {
 	verifyMoveNoteIntoOwnChild,
 } from './notes/actions'
 import { standardTree } from './notes/data'
-import { createLocalAccount } from './core/actions'
+import { connectLocalAccount, createLocalAccount, login, logout } from './core/actions'
 
 // test.describe.configure({ mode: 'serial' })
 
-test.describe.only('local account', () => {
+test.describe('local account', () => {
 	test.use({
 		permissions: ['clipboard-read', 'clipboard-write'],
 	})
@@ -198,6 +198,25 @@ test.describe.only('local account', () => {
 			await expect(titleBar.accountButton()).toBeVisible()
 			await createLocalAccount()
 			await verifyMoveNoteIntoOwnChild()
+		})
+	})
+
+	test('upgrade to cloud account', async () => {
+		await withMimiriContext(async () => {
+			await mimiri().home()
+			await expect(titleBar.accountButton()).toBeVisible()
+			await createLocalAccount()
+			await createTestTree(standardTree)
+			await verifyTestTree(standardTree)
+			await connectLocalAccount()
+			await verifyTestTree(standardTree)
+			await logout()
+			await login()
+			await verifyTestTree(standardTree)
+			await mimiriClone(true)
+			await mimiri().home()
+			await login()
+			await verifyTestTree(standardTree)
 		})
 	})
 })

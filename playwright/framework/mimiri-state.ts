@@ -11,7 +11,8 @@ const createId = () => {
 }
 
 export class MimiriState {
-	private static _browser: Browser | undefined
+	private static _defaultBrowser: Browser | undefined
+	private _browser: Browser | undefined
 	private _context: BrowserContext
 	private _mainPage: Page
 	private _pageStack: Page[] = []
@@ -56,13 +57,31 @@ export class MimiriState {
 		this._orchestrationClient = new OrchestrationClient()
 	}
 
-	public async init() {
+	public clone() {
+		const newState = new MimiriState()
+		newState._config = { ...this._config }
+		newState._customer = { ...this._customer }
+		newState._mailClient = new MailPitClient(this._config.testId)
+		newState._orchestrationClient = new OrchestrationClient()
+		return newState
+	}
+
+	public async init(index = 0) {
 		// console.log('testId', this._config.testId)
 		this._start = performance.now()
-		if (!MimiriState._browser) {
-			MimiriState._browser = await chromium.launch()
+		if (!this._browser) {
+			if (index === 0) {
+				if (!MimiriState._defaultBrowser) {
+					MimiriState._defaultBrowser = await chromium.launch()
+				}
+				this._browser = MimiriState._defaultBrowser
+			} else {
+				this._browser = await chromium.launch({
+					args: ['--window-position=1350,10'],
+				})
+			}
 		}
-		this._context = await MimiriState._browser.newContext()
+		this._context = await this._browser.newContext()
 		this._mainPage = await this._context.newPage()
 		// this._mainPage.on('console', msg => console.log(msg.text()));
 		this._pageStack.push(this._mainPage)

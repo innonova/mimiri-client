@@ -130,7 +130,7 @@ export class MimiriStore {
 				await noteUpdatedCallback(note)
 			},
 		)
-		this.noteService = new NoteService(this.db, this.cryptoManager, this.state, async (noteId: Guid) => {
+		this.noteService = new NoteService(this.db, this.api, this.cryptoManager, this.state, async (noteId: Guid) => {
 			const note = await this.noteService.readNote(noteId)
 			await noteUpdatedCallback(note)
 		})

@@ -17,6 +17,7 @@ import type {
 	NoteAction,
 	NoteSyncAction,
 	PublicKeyRequest,
+	ReadNoteRequest,
 	ShareNoteRequest,
 	ShareOfferRequest,
 	ShareParticipantsRequest,
@@ -31,6 +32,7 @@ import type {
 	NotificationUrlResponse,
 	PreLoginResponse,
 	PublicKeyResponse,
+	ReadNoteResponse,
 	ShareOffersResponse,
 	ShareParticipantsResponse,
 	ShareResponse,
@@ -338,6 +340,31 @@ export class MimiriClient extends HttpClientBase {
 		await this._authManager.signRequest(request)
 		const response = await this.post<SyncPushResponse>('/sync/push-changes', request)
 		return response.results
+	}
+
+	public async readNote(id: Guid): Promise<any | undefined> {
+		try {
+			let response: ReadNoteResponse = undefined
+
+			// TODO return sync, created and modified from server
+			const request: ReadNoteRequest = {
+				username: this.state.username,
+				id,
+				include: '*',
+				timestamp: dateTimeNow(),
+				requestId: newGuid(),
+				signatures: [],
+				versions: [],
+			}
+			await this._authManager.signRequest(request)
+			response = await this.post<ReadNoteResponse>('/note/read', request)
+			return response
+		} catch (ex) {
+			if (ex.statusCode == 404) {
+				return undefined
+			}
+			throw ex
+		}
 	}
 
 	public async registerForChanges(callback: (changes: SyncInfo) => void): Promise<void> {

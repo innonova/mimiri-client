@@ -333,6 +333,7 @@ export class NoteOperationsManager {
 				multiAction.onlineOnly()
 				if (!this.cryptoManager.getKeyByName(share.keyName)) {
 					await this.cryptoManager.createKeyFromNoteShare(newGuid(), share, { shared: true })
+					this.syncService.queueSync()
 					if (!(await this.syncService.waitForSync(15000))) {
 						return
 					}
@@ -344,6 +345,8 @@ export class NoteOperationsManager {
 				await multiAction.updateNote(shareParent)
 				await multiAction.commit()
 				await this.api.deleteShareOffer(share.id)
+				this.syncService.queueSync()
+				await this.syncService.waitForSync(15000)
 				await parent?.expand()
 				this.treeManager.getNoteById(share.noteId)?.select()
 			}

@@ -345,3 +345,18 @@ export const aboutView = {
 	container: () => tid(`settings-view-about`),
 	username: () => tid(`about-username`),
 }
+
+export const shareDialog = {
+	container: () => tid(`share-dialog`),
+	username: () => tid(`share-dialog`).getByTestId(`share-username-input`),
+	okButton: () => tid(`share-dialog`).getByTestId(`share-ok-button`),
+	closeButton: () => tid(`share-dialog`).getByTestId(`share-close-button`),
+	cancelButton: () => tid(`share-dialog`).getByTestId(`share-cancel-button`),
+	code: () => tid(`share-dialog`).getByTestId(`share-code`),
+}
+export const acceptShareDialog = {
+	container: () => tid(`accept-share-dialog`),
+	code: () => tid(`accept-share-dialog`).getByTestId(`share-code-input`),
+	okButton: () => tid(`accept-share-dialog`).getByTestId(`share-ok-button`),
+	cancelButton: () => tid(`accept-share-dialog`).getByTestId(`share-cancel-button`),
+}
