@@ -14,6 +14,7 @@
 				type="text"
 				@blur="endEdit"
 				@keydown="checkCancelEdit"
+				data-testid="new-tree-node-input"
 			/>
 		</div>
 	</div>

@@ -82,6 +82,10 @@ export class MimiriState {
 		return this._pageStack[this._pageStack.length - 1]
 	}
 
+	public async getClipboardText() {
+		return this.page.evaluate(() => navigator.clipboard.readText())
+	}
+
 	public printElapsed() {
 		console.log(`${performance.now() - this._start}`)
 	}

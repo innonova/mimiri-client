@@ -1,7 +1,14 @@
 <template>
 	<div class="flex flex-col h-full">
 		<div class="flex items-center py-px px-2.5 bg-toolbar border-b border-solid border-toolbar mobile:justify-between">
-			<ToolbarIcon icon="back" :hoverEffect="true" title="Back" class="desktop:hidden" @click="onBack"></ToolbarIcon>
+			<ToolbarIcon
+				icon="back"
+				:hoverEffect="true"
+				title="Back"
+				class="desktop:hidden"
+				@click="onBack"
+				data-testid="editor-back-button"
+			></ToolbarIcon>
 			<div class="inline-block h-4 w-0 border border-solid border-toolbar-separator m-0.5 desktop:hidden"></div>
 			<ToolbarIcon
 				icon="save"
@@ -9,6 +16,7 @@
 				:disabled="!saveEnabled"
 				title="Save Note"
 				@click="saveClicked"
+				data-testid="editor-save-button"
 			></ToolbarIcon>
 			<div class="inline-block h-4/5 w-0 border border-solid border-toolbar-separator m-0.5"></div>
 			<ToolbarIcon
@@ -18,6 +26,7 @@
 				:title="settingsManager.wordwrap ? 'Disable Word Wrap' : 'Enable Word Wrap'"
 				:toggledOn="settingsManager.wordwrap"
 				@click="toggleWordWrap"
+				data-testid="editor-toggle-wordwrap"
 			></ToolbarIcon>
 			<ToolbarIcon
 				icon="undo"
@@ -25,6 +34,7 @@
 				:disabled="!mimiriEditor.canUndo"
 				title="Undo"
 				@click="undo"
+				data-testid="editor-undo-button"
 			></ToolbarIcon>
 			<ToolbarIcon
 				icon="redo"
@@ -32,6 +42,7 @@
 				:disabled="!mimiriEditor.canRedo"
 				title="Redo"
 				@click="redo"
+				data-testid="editor-redo-button"
 			></ToolbarIcon>
 			<div class="inline-block h-4/5 w-0 border border-solid border-toolbar-separator m-0.5"></div>
 			<ToolbarIcon
@@ -41,6 +52,7 @@
 				:disabled="noteManager.tree.selectedNoteRef().value?.isSystem"
 				:toggledOn="historyVisible"
 				@click="showHistory"
+				data-testid="editor-history-button"
 			></ToolbarIcon>
 			<ToolbarIcon
 				icon="hide"
@@ -48,15 +60,31 @@
 				:disabled="!mimiriEditor.canMarkAsPassword && !mimiriEditor.canUnMarkAsPassword"
 				title="Mark as Password Ctrl+Shift+C"
 				@click="markAsPassword"
+				data-testid="editor-mark-as-password"
 			></ToolbarIcon>
 		</div>
 		<div class="relative flex-auto flex flex-col items-stretch overflow-hidden">
 			<div v-if="historyVisible && selectedHistoryItem" class="px-2 py-1 bg-info-bar cursor-default text-size-menu">
 				{{ selectedHistoryItem.username }} - {{ formatDate(selectedHistoryItem.timestamp) }} (read-only)
 			</div>
-			<div class="overflow-hidden flex-1" style="display: none" ref="monacoContainer"></div>
-			<div class="overflow-hidden flex-1" style="display: none" ref="simpleContainer"></div>
-			<div class="overflow-hidden flex-1" style="display: none" ref="displayContainer"></div>
+			<div
+				class="overflow-hidden flex-1"
+				style="display: none"
+				ref="monacoContainer"
+				data-testid="editor-monaco-container"
+			></div>
+			<div
+				class="overflow-hidden flex-1"
+				style="display: none"
+				ref="simpleContainer"
+				data-testid="editor-simple-container"
+			></div>
+			<div
+				class="overflow-hidden flex-1"
+				style="display: none"
+				ref="displayContainer"
+				data-testid="editor-display-container"
+			></div>
 			<div v-if="!historyVisible && mimiriEditor.mode === 'display'" class="display-editor-toolbar flex flex-row gap-1">
 				<button
 					@click="activateEdit"

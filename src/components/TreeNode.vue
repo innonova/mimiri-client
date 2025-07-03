@@ -9,6 +9,7 @@
 		@dragover="onDragOver"
 		@dragenter="onDragEnter"
 		@dragleave="onDragLeave"
+		:title="node.title"
 	>
 		<div
 			class="rounded-sm relative overflow-hidden h-[30px] desktop:h-[25px] flex items-center py-[19px] desktop:py-0"
@@ -30,12 +31,14 @@
 				<PlusIcon
 					v-if="!node.expanded"
 					:data-testid="`${dataTestId}-closed`"
+					title="Expand"
 					class="h-5 w-5 desktop:h-4 desktop:w-4 mt-px"
 					:class="{ invisible: !hasChildren }"
 				></PlusIcon>
 				<MinusIcon
 					v-if="node.expanded"
 					:data-testid="`${dataTestId}-open`"
+					title="Collapse"
 					class="h-5 w-5 desktop:h-4 desktop:w-4 mt-px"
 					:class="{ invisible: !hasChildren }"
 				></MinusIcon>

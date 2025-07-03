@@ -136,7 +136,7 @@
 				'w-16': !mimiriPlatform.isDesktop,
 			}"
 			data-testid="account-button"
-			title="Account"
+			:title="noteManager.state.isOnline ? 'Account (Online)' : 'Account (Offline)'"
 			@click="menuClick($event, 'account')"
 			@mouseenter="menuHover($event, 'account')"
 		>

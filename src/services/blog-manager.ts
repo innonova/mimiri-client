@@ -53,12 +53,13 @@ export class BlogManager {
 		await this.noteManager.feedback.addComment(postId, username, comment)
 	}
 
-	public async initialize(): Promise<void> {
-		if (settingsManager.disableDevBlog) return
-		if (this.state.isInitialized) return
+	public async initialize(): Promise<boolean> {
+		if (settingsManager.disableDevBlog) return false
+		if (this.state.isInitialized) return false
 
 		await this.updateLatestBlogPost()
 		this.state.isInitialized = true
+		return true
 	}
 
 	public getConfig(): BlogConfig {
@@ -95,8 +96,9 @@ export class BlogManager {
 
 	public async refreshAll(): Promise<void> {
 		if (settingsManager.disableDevBlog) return
-		await this.initialize()
-		await this.updateLatestBlogPost()
+		if (!(await this.initialize())) {
+			await this.updateLatestBlogPost()
+		}
 	}
 
 	public markAsRead(): void {

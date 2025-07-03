@@ -1,5 +1,5 @@
 <template>
-	<div class="flex flex-col h-full">
+	<div class="flex flex-col h-full" data-testid="connect-cloud-view">
 		<TabBar ref="tabBar" :items="['Connect Cloud']"></TabBar>
 		<div class="pl-2 mt-1">
 			<div class="grid grid-cols-[7rem_12rem] gap-2">
@@ -10,7 +10,7 @@
 				<div class="flex items-center">Username:</div>
 				<UsernameInput :display-current="false" v-model:value="username" v-model:valid="usernameValid"></UsernameInput>
 				<div class="flex items-center">Current Password:</div>
-				<input class="basic-input" type="password" v-model="currentPassword" />
+				<input class="basic-input" type="password" v-model="currentPassword" data-testid="current-password-input" />
 				<div></div>
 				<label class="flex items-center gap-2">
 					<input class="basic-input" v-model="chooseNewPassword" type="checkbox" /> Choose a new password
@@ -27,7 +27,9 @@
 					></PasswordRepeatInput>
 				</template>
 				<div></div>
-				<PrimaryButton :enabled="canCreate" :loading="loading" @click="createAccount"> Create </PrimaryButton>
+				<PrimaryButton :enabled="canCreate" :loading="loading" @click="createAccount" data-testid="create-button">
+					Create
+				</PrimaryButton>
 			</div>
 		</div>
 

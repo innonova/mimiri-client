@@ -1,5 +1,5 @@
 <template>
-	<div class="flex flex-col h-full">
+	<div class="flex flex-col h-full" data-testid="create-account-view">
 		<TabBar ref="tabBar" @selected="tabSelected" :items="tabBarItems"></TabBar>
 
 		<div class="overflow-y-auto pb-10">
@@ -21,7 +21,9 @@
 						v-model:match="passwordMatch"
 					></PasswordRepeatInput>
 					<div></div>
-					<PrimaryButton :enabled="canCreate" :loading="loading" @click="createAccount"> Create </PrimaryButton>
+					<PrimaryButton :enabled="canCreate" :loading="loading" @click="createAccount" data-testid="create-button">
+						Create
+					</PrimaryButton>
 				</div>
 			</div>
 			<div v-if="stage === 'choose-plan'" class="flex flex-col items-left gap-2 pl-2 mt-1">

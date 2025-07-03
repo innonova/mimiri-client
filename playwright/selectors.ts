@@ -1,3 +1,4 @@
+import { Locator } from '@playwright/test'
 import { mimiri } from './framework/mimiri-context'
 
 const tid = (id: string) => {
@@ -12,6 +13,13 @@ export const subHomeView = {
 
 export const mainToolbar = {
 	container: () => tid('main-toolbar'),
+	mobileMenu: () => tid('toolbar-mobile-menu'),
+	createMenu: () => tid('toolbar-create-menu'),
+	createSubNote: () => tid('toolbar-create-sub-note'),
+	toggleSearch: () => tid('toolbar-toggle-search'),
+	gotoSearch: () => tid('toolbar-goto-search'),
+	notifications: () => tid('toolbar-notifications'),
+	account: () => tid('toolbar-account'),
 }
 
 export const titleBar = {
@@ -38,10 +46,42 @@ export const menu = {
 	copy: () => tid('menu-copy'),
 	cut: () => tid('menu-cut'),
 	paste: () => tid('menu-paste'),
+	copyPath: () => tid('menu-copy-path'),
 	share: () => tid('menu-share'),
+	receiveShare: () => tid('menu-receive-share'),
+	receiveShareUnder: () => tid('menu-receive-share-under'),
 	newNote: () => tid('menu-new-note'),
 	newRootNote: () => tid('menu-new-root-note'),
+	newChildNote: () => tid('menu-new-child-note'),
+	newSiblingNote: () => tid('menu-new-sibling-note'),
 	logout: () => tid('menu-logout'),
+	createAccount: () => tid('menu-create-account'),
+	login: () => tid('menu-login'),
+	workOffline: () => tid('menu-work-offline'),
+	properties: () => tid('menu-properties'),
+}
+
+export const note = {
+	newInput: () => tid('new-tree-node-input'),
+	container: (title: string, parent?: Locator) => (parent || tid(`note-tree`)).getByTitle(title),
+	item: (title: string, parent?: Locator) => (parent || tid(`note-tree`)).getByTitle(title).locator('div').nth(0),
+	expand: (title: string, parent?: Locator) =>
+		(parent || tid(`note-tree`)).getByTitle(title).locator('div').nth(0).getByTitle('Expand'),
+	collapse: (title: string, parent?: Locator) =>
+		(parent || tid(`note-tree`)).getByTitle(title).locator('div').nth(0).getByTitle('Collapse'),
+}
+
+export const editor = {
+	monaco: () => tid('editor-monaco-container').locator('.monaco-editor'),
+	simple: () => tid('editor-simple-container'),
+	display: () => tid('editor-display-container'),
+	back: () => tid('editor-back-button'),
+	save: () => tid('editor-save-button'),
+	toggleWordWrap: () => tid('editor-toggle-wordwrap'),
+	undo: () => tid('editor-undo-button'),
+	redo: () => tid('editor-redo-button'),
+	history: () => tid('editor-history-button'),
+	markAsPassword: () => tid('editor-mark-as-password'),
 }
 
 export const dialog = {
@@ -56,10 +96,14 @@ export const settingNodes = {
 	controlPanelClosed: () => tid('node-control-panel-closed'),
 	recycleBin: () => tid('node-recycle-bin'),
 	update: () => tid('node-settings-update'),
+	blog: () => tid('node-settings-blog'),
 	settingGroup: () => tid('node-settings-group'),
 	general: () => tid('node-settings-general'),
+	fontsAndColors: () => tid('node-settings-fonts-colors'),
 	pin: () => tid('node-settings-pin'),
 	account: () => tid('node-settings-account'),
+	connectCloud: () => tid('node-settings-upgrade'),
+	createAccount: () => tid('node-settings-create-account'),
 	username: () => tid('node-settings-username'),
 	password: () => tid('node-settings-password'),
 	delete: () => tid('node-settings-delete'),
@@ -80,6 +124,8 @@ export const settingView = {
 	username: () => tid('settings-view-username'),
 	password: () => tid('settings-view-password'),
 	deleteAccount: () => tid('settings-view-delete-account'),
+	cloudAccount: () => tid('settings-view-cloud-account'),
+	localAccount: () => tid('settings-view-local-account'),
 }
 
 export const loginCtrl = {
@@ -98,6 +144,25 @@ export const promoteAccount = {
 	repeat: () => tid('promote-account-view').getByTestId('repeat-input'),
 	noRecover: () => tid('promote-account-view').getByTestId('no-recover-checkbox'),
 	button: () => tid('promote-account-view').getByTestId('create-button'),
+}
+
+export const createAccountView = {
+	container: () => tid('create-account-view'),
+	cloudTab: () => tid('settings-view-cloud-account'),
+	localTab: () => tid('settings-view-local-account'),
+	username: () => tid('create-account-view').getByTestId('username-input'),
+	password: () => tid('create-account-view').getByTestId('password-input'),
+	repeat: () => tid('create-account-view').getByTestId('repeat-input'),
+	button: () => tid('create-account-view').getByTestId('create-button').locator('button'),
+}
+
+export const connectCloudView = {
+	container: () => tid('connect-cloud-view'),
+	username: () => tid('connect-cloud-view').getByTestId('username-input'),
+	currentPassword: () => tid('connect-cloud-view').getByTestId('current-password-input'),
+	newPassword: () => tid('connect-cloud-view').getByTestId('password-input'),
+	repeat: () => tid('connect-cloud-view').getByTestId('repeat-input'),
+	button: () => tid('connect-cloud-view').getByTestId('create-button').locator('button'),
 }
 
 export const createCtrl = {
@@ -274,4 +339,9 @@ export const waitingView = {
 	report: () => tid(`waiting-report`),
 	check: () => tid(`waiting-check`),
 	cancel: () => tid(`waiting-cancel`),
+}
+
+export const aboutView = {
+	container: () => tid(`settings-view-about`),
+	username: () => tid(`about-username`),
 }

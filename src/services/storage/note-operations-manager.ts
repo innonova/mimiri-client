@@ -213,6 +213,8 @@ export class NoteOperationsManager {
 				}
 			}
 			await multiAction.commit()
+			const targetMimerNote = await this.treeManager.getNoteById(targetId)
+			await targetMimerNote.expand()
 			if (select) {
 				;(await this.treeManager.getNoteById(mimerNote.id))?.select()
 			}

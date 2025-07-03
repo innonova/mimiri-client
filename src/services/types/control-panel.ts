@@ -9,7 +9,7 @@ import { VirtualNote } from './virtual-note'
 export const createControlPanelTree = (owner: MimiriStore, parent: MimerNote): MimerNote[] => {
 	const showUpdate = !mimiriPlatform.isWeb || location.host === 'localhost:5173'
 	const showPin = (mimiriPlatform.isElectron || location.host === 'localhost:5173') && !noteManager.state.isLocal
-	const showSubscription = mimiriPlatform.isDesktop
+	const showSubscription = mimiriPlatform.isDesktop && !noteManager.state.isLocalOnly && !noteManager.state.isLocal
 	const showDevBlog = !settingsManager.disableDevBlog
 	const showDebug = settingsManager.debugEnabled
 	const isLocal = noteManager.state.isLocal
@@ -150,7 +150,7 @@ export const createControlPanelTree = (owner: MimiriStore, parent: MimerNote): M
 						],
 					},
 				]),
-		...(showSubscription && !isLocal
+		...(showSubscription
 			? [
 					{
 						id: 'settings-plan-group' as Guid,
@@ -189,17 +189,18 @@ export const createControlPanelTree = (owner: MimiriStore, parent: MimerNote): M
 						],
 					},
 				]
-			: isLocal
-				? [
-						{
-							id: 'settings-explain-plan' as Guid,
-							title: 'Plan',
-							type: 'settings-explain-plan',
-							icon: 'coins',
-							children: [],
-						},
-					]
-				: []),
+			: []),
+		// isLocal
+		// 	? [
+		// 			{
+		// 				id: 'settings-explain-plan' as Guid,
+		// 				title: 'Plan',
+		// 				type: 'settings-explain-plan',
+		// 				icon: 'coins',
+		// 				children: [],
+		// 			},
+		// 		]
+		// 	: []),
 	]
 
 	return items.map(tree => {

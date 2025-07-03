@@ -1,4 +1,4 @@
-import { debug, env, ipcClient } from '../../global'
+import { blogManager, debug, env, ipcClient } from '../../global'
 import { CryptSignature } from '../crypt-signature'
 import { fromBase64, toBase64, toHex } from '../hex-base64'
 import { mimiriPlatform } from '../mimiri-platform'
@@ -415,6 +415,7 @@ export class AuthenticationManager {
 		this.state.isAnonymous = false
 		this.state.userId = emptyGuid()
 		this.state.isLoggedIn = true
+		void blogManager.refreshAll()
 	}
 
 	public async goOnline(attempt: number = 0): Promise<boolean> {
