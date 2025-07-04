@@ -28,7 +28,9 @@
 						<div v-if="capsLockOn" class="inline-block w-24 items-center"></div>
 						<div v-if="capsLockOn" class="inline-block py-1">Caps Lock is on!</div>
 					</div>
-					<div v-if="error" class="mt-4 text-right mr-1 text-error">Incorrect Password</div>
+					<div v-if="error" class="mt-4 text-right mr-1 text-error" data-testid="password-dialog-error">
+						Incorrect Password
+					</div>
 				</main>
 				<footer class="flex justify-end mobile:justify-center gap-2 pr-2 pb-2">
 					<LoadingIcon v-if="busy" class="animate-spin w-8 h-8 mr-8 inline-block"></LoadingIcon>

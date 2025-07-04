@@ -404,4 +404,5 @@ export const passwordDialog = {
 	password: () => tid(`password-dialog`).getByTestId(`password-dialog-input`),
 	okButton: () => tid(`password-dialog`).getByTestId(`password-dialog-ok`),
 	cancelButton: () => tid(`password-dialog`).getByTestId(`password-dialog-cancel`),
+	error: () => tid(`password-dialog`).getByTestId(`password-dialog-error`),
 }
