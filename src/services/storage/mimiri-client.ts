@@ -10,6 +10,7 @@ import type {
 	BasicRequest,
 	CheckUsernameRequest,
 	CreateUserRequest,
+	DeleteAccountRequest,
 	DeleteShareRequest,
 	KeySyncAction,
 	LoginRequest,
@@ -306,6 +307,28 @@ export class MimiriClient extends HttpClientBase {
 		await this._authManager.signRequest(request)
 		await this._authManager.rootSignature.sign('old-user', request)
 		return await this.post<BasicResponse>('/user/update', request, true)
+	}
+
+	public async deleteAccount(password: string) {
+		const preLoginResponse = await this.get<PreLoginResponse>(`/user/pre-login/${this.state.username}?q=${Date.now()}`)
+		const passwordHash = await passwordHasher.hashPassword(
+			password,
+			preLoginResponse.salt,
+			preLoginResponse.algorithm,
+			preLoginResponse.iterations,
+		)
+		const responseToChallenge = await passwordHasher.computeResponse(passwordHash, preLoginResponse.challenge)
+
+		const request: DeleteAccountRequest = {
+			username: this.state.username,
+			response: responseToChallenge,
+			hashLength: passwordHash.length / 2,
+			timestamp: dateTimeNow(),
+			requestId: newGuid(),
+			signatures: [],
+		}
+		await this._authManager.signRequest(request)
+		await this.post<BasicResponse>('/user/delete', request)
 	}
 
 	public async getChangesSince(noteSince: number, keySince: number): Promise<SyncInfo> {

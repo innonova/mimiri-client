@@ -546,8 +546,21 @@ export class AuthenticationManager {
 			window.location.reload()
 		}
 		if (this.state.accountType === AccountType.Cloud) {
+			const username = this.state.username
+			await this.api.deleteAccount(password)
+			if (deleteLocal) {
+				await this.db.deleteDatabase()
+				await this.logOutCallback()
+				window.location.reload()
+			} else {
+				const initializationData = await this.db.getInitializationData()
+				initializationData.local = true
+				initializationData.userId = emptyGuid()
+				await this.db.setInitializationData(initializationData)
+				await this.logOutCallback()
+				await this.loginCallback(username, password)
+			}
 		}
-		// TODO: Implement delete account logic
 		return Promise.resolve()
 	}
 
