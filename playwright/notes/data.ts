@@ -1541,3 +1541,35 @@ export const keyboardTestTreeAfterDuplicate: StandardTreeNode[] = [
 		],
 	},
 ]
+
+// Minimal tree specifically for testing data retention and persistence
+export const miniTestTree: StandardTreeNode[] = [
+	{
+		title: 'Data Container A',
+		text: 'First container for data retention testing',
+		children: [
+			{
+				title: 'Item 1',
+				text: 'First test item with important data that must persist',
+			},
+			{
+				title: 'Item 2',
+				text: 'Second test item for data integrity verification',
+			},
+		],
+	},
+	{
+		title: 'Data Container B',
+		text: 'Second container for cross-container data retention tests',
+		children: [
+			{
+				title: 'Persistent Item',
+				text: 'Item that should retain its data through all operations',
+			},
+		],
+	},
+	{
+		title: 'Single Data Item',
+		text: 'Standalone item for isolated data retention testing',
+	},
+]

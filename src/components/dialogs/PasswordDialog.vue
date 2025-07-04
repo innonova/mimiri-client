@@ -1,5 +1,9 @@
 <template>
-	<dialog class="bg-dialog desktop:border border-solid border-dialog-border text-text" ref="dialog">
+	<dialog
+		class="bg-dialog desktop:border border-solid border-dialog-border text-text"
+		ref="dialog"
+		data-testid="password-dialog"
+	>
 		<form v-on:submit.prevent="submitDialog">
 			<div class="grid grid-rows-[auto_1fr_auto] gap-6">
 				<DialogTitle @close="close">Verify that it is you</DialogTitle>
@@ -15,6 +19,7 @@
 								autofocus
 								type="password"
 								class="basic-input"
+								data-testid="password-dialog-input"
 								@keydown="pwKeyDown"
 							/>
 						</div>
@@ -27,8 +32,10 @@
 				</main>
 				<footer class="flex justify-end mobile:justify-center gap-2 pr-2 pb-2">
 					<LoadingIcon v-if="busy" class="animate-spin w-8 h-8 mr-8 inline-block"></LoadingIcon>
-					<button class="primary" v-if="!busy" type="submit">OK</button>
-					<button class="secondary" @click="close" :disabled="busy" type="button">Cancel</button>
+					<button class="primary" v-if="!busy" type="submit" data-testid="password-dialog-ok">OK</button>
+					<button class="secondary" @click="close" :disabled="busy" type="button" data-testid="password-dialog-cancel">
+						Cancel
+					</button>
 				</footer>
 			</div>
 		</form>

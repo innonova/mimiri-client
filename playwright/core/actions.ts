@@ -74,3 +74,12 @@ export const login = async () => {
 	await settingNodes.controlPanel().click()
 	await expect(aboutView.username()).toHaveText(mimiri().config.username)
 }
+
+export const loginFail = async () => {
+	await titleBar.accountButton().click()
+	await menu.login().click()
+	await loginCtrl.username().fill(mimiri().config.username)
+	await loginCtrl.password().fill(mimiri().config.password)
+	await loginCtrl.button().click()
+	await expect(loginCtrl.loginError()).toBeVisible()
+}

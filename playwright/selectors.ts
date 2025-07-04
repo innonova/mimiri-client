@@ -359,6 +359,7 @@ export const waitingView = {
 export const aboutView = {
 	container: () => tid(`settings-view-about`),
 	username: () => tid(`about-username`),
+	accountType: () => tid(`about-account-type`),
 }
 
 export const shareDialog = {
@@ -381,4 +382,26 @@ export const emptyRecycleBinDialog = {
 	container: () => tid(`empty-recycle-bin-dialog`),
 	okButton: () => tid(`empty-recycle-bin-dialog`).getByTestId(`empty-recycle-bin-yes`),
 	cancelButton: () => tid(`empty-recycle-bin-dialog`).getByTestId(`empty-recycle-bin-no`),
+}
+
+export const changeUsernameView = {
+	container: () => tid(`change-username`),
+	username: () => tid(`change-username`).getByTestId(`username-input`),
+	saveButton: () => tid(`change-username`).getByTestId(`save-button`),
+}
+
+export const changePasswordView = {
+	container: () => tid(`settings-view-password`),
+	create: () => tid(`settings-view-create`),
+	generate: () => tid(`settings-view-generate`),
+	password: () => tid(`settings-view-password`).getByTestId(`password-input`),
+	repeat: () => tid(`settings-view-password`).getByTestId(`repeat-input`),
+	saveButton: () => tid(`settings-view-password`).getByTestId(`save-button`),
+}
+
+export const passwordDialog = {
+	container: () => tid(`password-dialog`),
+	password: () => tid(`password-dialog`).getByTestId(`password-dialog-input`),
+	okButton: () => tid(`password-dialog`).getByTestId(`password-dialog-ok`),
+	cancelButton: () => tid(`password-dialog`).getByTestId(`password-dialog-cancel`),
 }

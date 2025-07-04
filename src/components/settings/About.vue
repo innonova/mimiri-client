@@ -12,10 +12,11 @@
 				<div class="p-1 pl-4 pt-2">Space Used: {{ usedBytes }} / {{ maxBytes }} ({{ bytesPercent }})</div>
 				<div class="p-1 pl-4 pt-2">
 					Account:
-					<span data-testid="about-username"
-						>{{ noteManager.state.username }} (<span class="inline-block mx-px capitalize">{{
-							noteManager.state.accountType
-						}}</span
+					<span
+						><span data-testid="about-username">{{ noteManager.state.username }}</span> (<span
+							class="inline-block mx-px capitalize"
+							data-testid="about-account-type"
+							>{{ noteManager.state.accountType }}</span
 						>)</span
 					>
 				</div>

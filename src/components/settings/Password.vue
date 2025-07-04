@@ -1,5 +1,5 @@
 <template>
-	<div class="flex flex-col h-full">
+	<div class="flex flex-col h-full" data-testid="settings-view-password">
 		<TabBar @selected="tabSelected" :items="['Generate', 'Create']"></TabBar>
 		<div class="overflow-y-auto pb-10">
 			<div v-if="passwordMode === 'generate'" class="max-w-110 mr-2" data-testid="settings-view-password">
@@ -116,8 +116,7 @@
 			<div class="mt-10 max-w-110 mr-2">
 				<hr />
 				<div class="w-full flex justify-end mt-2 gap-2">
-					<button class="primary" :disabled="!canSave" @click="save">Save</button>
-					<button class="secondary" @click="close">Close</button>
+					<button class="primary" :disabled="!canSave" @click="save" data-testid="save-button">Save</button>
 				</div>
 			</div>
 		</div>

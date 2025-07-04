@@ -565,6 +565,22 @@ export class AuthenticationManager {
 	}
 
 	public async verifyPassword(password: string): Promise<boolean> {
+		if (this.state.accountType === AccountType.Local) {
+			try {
+				const initializationData = await this.db.getInitializationData()
+				const userCrypt = await SymmetricCrypt.fromPassword(
+					initializationData.userCrypt.algorithm,
+					password,
+					initializationData.userCrypt.salt,
+					initializationData.userCrypt.iterations,
+				)
+				await userCrypt.decryptBytes(initializationData.rootCrypt.key)
+				return true
+			} catch (ex) {
+				console.error('Failed to verify password for local account', ex)
+				return false
+			}
+		}
 		return this.api.verifyPassword(password)
 	}
 
