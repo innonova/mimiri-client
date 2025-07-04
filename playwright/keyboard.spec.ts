@@ -13,9 +13,7 @@ import {
 
 test.describe.configure({ mode: 'serial' })
 
-const systemNotes = ['System', 'Settings', 'Updates', 'Dev Blog', 'Create Account', 'General', 'Fonts', 'Recycle Bin']
-
-test.describe.only('keyboard shortcuts', () => {
+test.describe('keyboard shortcuts', () => {
 	test('verify cut and paste with keyboard shortcuts', async () => {
 		await withMimiriContext(async () => {
 			await mimiri().home()
@@ -70,7 +68,7 @@ test.describe.only('keyboard shortcuts', () => {
 		})
 	})
 
-	test.only('verify duplicate with keyboard shortcut', async () => {
+	test('verify duplicate with keyboard shortcut', async () => {
 		await withMimiriContext(async () => {
 			await mimiri().home()
 			await expect(titleBar.accountButton()).toBeVisible()

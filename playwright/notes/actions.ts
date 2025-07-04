@@ -53,6 +53,7 @@ export const createSiblingNote = async (name: string, text?: string) => {
 export const createTestTree = async (tree: StandardTreeNode[]) => {
 	for (const root of tree) {
 		await createRootNote(root.title, root.text)
+		await editor.save().click()
 		if (root.children) {
 			const createChildren = async (parent: StandardTreeNode, children: StandardTreeNode[]) => {
 				let first = true
@@ -60,8 +61,10 @@ export const createTestTree = async (tree: StandardTreeNode[]) => {
 					if (first) {
 						first = false
 						await createChildNote(child.title, child.text)
+						await editor.save().click()
 					} else {
 						await createSiblingNote(child.title, child.text)
+						await editor.save().click()
 					}
 					if (child.children) {
 						await createChildren(child, child.children)
