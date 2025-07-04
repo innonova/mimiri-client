@@ -1305,3 +1305,239 @@ export const receiveShareTestTreeAfterMixed: StandardTreeNode[] = [
 		],
 	},
 ]
+
+// Minimal tree for testing keyboard shortcuts (cut, copy, paste, delete, rename, duplicate)
+export const keyboardTestTree: StandardTreeNode[] = [
+	{
+		title: 'Root A',
+		text: 'First root for keyboard shortcut testing',
+		children: [
+			{
+				title: 'Folder 1',
+				text: 'Source folder for operations',
+				children: [
+					{
+						title: 'Item X',
+						text: 'Item for cut/copy operations',
+					},
+					{
+						title: 'Item Y',
+						text: 'Item for delete/rename operations',
+					},
+				],
+			},
+			{
+				title: 'Folder 2',
+				text: 'Target folder for paste operations',
+			},
+		],
+	},
+	{
+		title: 'Root B',
+		text: 'Second root for cross-root operations',
+		children: [
+			{
+				title: 'Target Folder',
+				text: 'Alternative target for testing',
+			},
+		],
+	},
+]
+
+// Expected state after cutting "Item X" and pasting into "Folder 2"
+export const keyboardTestTreeAfterCut: StandardTreeNode[] = [
+	{
+		title: 'Root A',
+		text: 'First root for keyboard shortcut testing',
+		children: [
+			{
+				title: 'Folder 1',
+				text: 'Source folder for operations',
+				children: [
+					{
+						title: 'Item Y',
+						text: 'Item for delete/rename operations',
+					},
+				],
+			},
+			{
+				title: 'Folder 2',
+				text: 'Target folder for paste operations',
+				children: [
+					{
+						title: 'Item X',
+						text: 'Item for cut/copy operations',
+					},
+				],
+			},
+		],
+	},
+	{
+		title: 'Root B',
+		text: 'Second root for cross-root operations',
+		children: [
+			{
+				title: 'Target Folder',
+				text: 'Alternative target for testing',
+			},
+		],
+	},
+]
+
+// Expected state after copying "Item X" and pasting into "Target Folder"
+export const keyboardTestTreeAfterCopy: StandardTreeNode[] = [
+	{
+		title: 'Root A',
+		text: 'First root for keyboard shortcut testing',
+		children: [
+			{
+				title: 'Folder 1',
+				text: 'Source folder for operations',
+				children: [
+					{
+						title: 'Item X',
+						text: 'Item for cut/copy operations',
+					},
+					{
+						title: 'Item Y',
+						text: 'Item for delete/rename operations',
+					},
+				],
+			},
+			{
+				title: 'Folder 2',
+				text: 'Target folder for paste operations',
+			},
+		],
+	},
+	{
+		title: 'Root B',
+		text: 'Second root for cross-root operations',
+		children: [
+			{
+				title: 'Target Folder',
+				text: 'Alternative target for testing',
+				children: [
+					{
+						title: 'Item X',
+						text: 'Item for cut/copy operations',
+					},
+				],
+			},
+		],
+	},
+]
+
+// Expected state after deleting "Item Y"
+export const keyboardTestTreeAfterDelete: StandardTreeNode[] = [
+	{
+		title: 'Root A',
+		text: 'First root for keyboard shortcut testing',
+		children: [
+			{
+				title: 'Folder 1',
+				text: 'Source folder for operations',
+				children: [
+					{
+						title: 'Item X',
+						text: 'Item for cut/copy operations',
+					},
+				],
+			},
+			{
+				title: 'Folder 2',
+				text: 'Target folder for paste operations',
+			},
+		],
+	},
+	{
+		title: 'Root B',
+		text: 'Second root for cross-root operations',
+		children: [
+			{
+				title: 'Target Folder',
+				text: 'Alternative target for testing',
+			},
+		],
+	},
+]
+
+// Expected state after renaming "Item Y" to "Renamed Item"
+export const keyboardTestTreeAfterRename: StandardTreeNode[] = [
+	{
+		title: 'Root A',
+		text: 'First root for keyboard shortcut testing',
+		children: [
+			{
+				title: 'Folder 1',
+				text: 'Source folder for operations',
+				children: [
+					{
+						title: 'Item X',
+						text: 'Item for cut/copy operations',
+					},
+					{
+						title: 'Renamed Item',
+						text: 'Item for delete/rename operations',
+					},
+				],
+			},
+			{
+				title: 'Folder 2',
+				text: 'Target folder for paste operations',
+			},
+		],
+	},
+	{
+		title: 'Root B',
+		text: 'Second root for cross-root operations',
+		children: [
+			{
+				title: 'Target Folder',
+				text: 'Alternative target for testing',
+			},
+		],
+	},
+]
+
+// Expected state after duplicating "Item X" (creates second "Item X Copy")
+export const keyboardTestTreeAfterDuplicate: StandardTreeNode[] = [
+	{
+		title: 'Root A',
+		text: 'First root for keyboard shortcut testing',
+		children: [
+			{
+				title: 'Folder 1',
+				text: 'Source folder for operations',
+				children: [
+					{
+						title: 'Item X',
+						text: 'Item for cut/copy operations',
+					},
+					{
+						title: 'Item X',
+						text: 'Item for cut/copy operations',
+					},
+					{
+						title: 'Item Y',
+						text: 'Item for delete/rename operations',
+					},
+				],
+			},
+			{
+				title: 'Folder 2',
+				text: 'Target folder for paste operations',
+			},
+		],
+	},
+	{
+		title: 'Root B',
+		text: 'Second root for cross-root operations',
+		children: [
+			{
+				title: 'Target Folder',
+				text: 'Alternative target for testing',
+			},
+		],
+	},
+]

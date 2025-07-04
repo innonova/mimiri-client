@@ -112,6 +112,7 @@
 				:value="node.title"
 				@blur="endEdit"
 				@keydown="checkCancelEdit"
+				data-testid="rename-input"
 			/>
 			<div
 				v-if="!editName"

@@ -37,10 +37,6 @@ import { createCloudAccount } from './core/actions'
 // test.describe.configure({ mode: 'serial' })
 
 test.describe('cloud account', () => {
-	test.use({
-		permissions: ['clipboard-read', 'clipboard-write'],
-	})
-
 	test('verify online', async () => {
 		await withMimiriContext(async () => {
 			await mimiri().home()

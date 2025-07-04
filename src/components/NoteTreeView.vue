@@ -58,45 +58,70 @@ const stopWatching = watch(noteManager.state, () => {
 })
 
 const duplicateActiveNote = async () => {
-	if (noteManager.tree.selectedNote()) {
-		const index = noteManager.tree.selectedNote().parent.childIds.indexOf(noteManager.tree.selectedNote().id)
-		await noteManager.tree.selectedNote().copy(noteManager.tree.selectedNote().parent, index + 1)
+	const note = noteManager.tree.selectedNote()
+	if (note) {
+		if (note.isSystem) {
+			return
+		}
+		const index = note.parent.childIds.indexOf(note.id)
+		await note.copy(note.parent, index + 1)
 	}
 }
 const copyActiveNote = () => {
-	clipboardNote.value = noteManager.tree.selectedNote()
+	const note = noteManager.tree.selectedNote()
+	if (note?.isSystem) {
+		return
+	}
+	clipboardNote.value = note
 	isCut.value = false
 }
 const cutActiveNote = () => {
-	clipboardNote.value = noteManager.tree.selectedNote()
+	const note = noteManager.tree.selectedNote()
+	if (note?.isSystem) {
+		return
+	}
+	clipboardNote.value = note
 	isCut.value = true
 }
 const pasteIntoActiveNote = async () => {
-	if (clipboardNote.value && noteManager.tree.selectedNote()) {
-		noteManager.tree.selectedNote().expand()
+	const note = noteManager.tree.selectedNote()
+	if (note?.isSystem) {
+		return
+	}
+	if (clipboardNote.value && note) {
+		note.expand()
 		if (isCut.value) {
-			await clipboardNote.value.move(noteManager.tree.selectedNote())
+			await clipboardNote.value.move(note)
 		} else {
-			await clipboardNote.value.copy(noteManager.tree.selectedNote())
+			await clipboardNote.value.copy(note)
 		}
 	}
 }
 
 const deleteActiveNote = () => {
+	const note = noteManager.tree.selectedNote()
+	if (note?.isSystem) {
+		return
+	}
 	deleteNodeDialog.value.show()
 }
 
 const recycleActiveNote = () => {
-	if (noteManager.tree.selectedNote().isShareRoot) {
+	const note = noteManager.tree.selectedNote()
+	if (note?.isSystem) {
+		return
+	}
+	if (note.isShareRoot) {
 		deleteNodeDialog.value.show()
 	} else {
-		noteManager.tree.selectedNote().moveToRecycleBin()
+		note.moveToRecycleBin()
 	}
 }
 
 const renameActiveNote = () => {
-	if (noteManager.tree.selectedNote() && !noteManager.tree.selectedNote().isSystem) {
-		noteManager.tree.selectedNote().viewModel.renaming = true
+	const note = noteManager.tree.selectedNote()
+	if (note && !note.isSystem) {
+		note.viewModel.renaming = true
 	}
 }
 

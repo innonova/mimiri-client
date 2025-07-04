@@ -42,7 +42,9 @@ export const menu = {
 	settings: () => tid('menu-settings'),
 	refresh: () => tid('menu-refresh'),
 	delete: () => tid('menu-delete'),
+	recycle: () => tid('menu-recycle'),
 	rename: () => tid('menu-rename'),
+	duplicate: () => tid('menu-duplicate'),
 	copy: () => tid('menu-copy'),
 	cut: () => tid('menu-cut'),
 	paste: () => tid('menu-paste'),
@@ -59,12 +61,15 @@ export const menu = {
 	login: () => tid('menu-login'),
 	workOffline: () => tid('menu-work-offline'),
 	properties: () => tid('menu-properties'),
+	emptyRecycleBin: () => tid('menu-empty-recycle-bin'),
 }
 
 export const note = {
 	newInput: () => tid('new-tree-node-input'),
+	renameInput: () => tid('rename-input'),
 	container: (title: string, parent?: Locator) => (parent || tid(`note-tree`)).getByTitle(title),
 	item: (title: string, parent?: Locator) => (parent || tid(`note-tree`)).getByTitle(title).locator('div').nth(0),
+	items: (title: string, parent?: Locator) => (parent || tid(`note-tree`)).getByTitle(title),
 	expand: (title: string, parent?: Locator) =>
 		(parent || tid(`note-tree`)).getByTitle(title).locator('div').nth(0).getByTitle('Expand'),
 	collapse: (title: string, parent?: Locator) =>
@@ -354,9 +359,16 @@ export const shareDialog = {
 	cancelButton: () => tid(`share-dialog`).getByTestId(`share-cancel-button`),
 	code: () => tid(`share-dialog`).getByTestId(`share-code`),
 }
+
 export const acceptShareDialog = {
 	container: () => tid(`accept-share-dialog`),
 	code: () => tid(`accept-share-dialog`).getByTestId(`share-code-input`),
 	okButton: () => tid(`accept-share-dialog`).getByTestId(`share-ok-button`),
 	cancelButton: () => tid(`accept-share-dialog`).getByTestId(`share-cancel-button`),
+}
+
+export const emptyRecycleBinDialog = {
+	container: () => tid(`empty-recycle-bin-dialog`),
+	okButton: () => tid(`empty-recycle-bin-dialog`).getByTestId(`empty-recycle-bin-yes`),
+	cancelButton: () => tid(`empty-recycle-bin-dialog`).getByTestId(`empty-recycle-bin-no`),
 }

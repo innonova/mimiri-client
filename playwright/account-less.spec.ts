@@ -19,10 +19,6 @@ import { createCloudAccount, createLocalAccount, login, logout } from './core/ac
 // test.describe.configure({ mode: 'serial' })
 
 test.describe('account-less', () => {
-	test.use({
-		permissions: ['clipboard-read', 'clipboard-write'],
-	})
-
 	test('verify offline', async () => {
 		await withMimiriContext(async () => {
 			await mimiri().home()

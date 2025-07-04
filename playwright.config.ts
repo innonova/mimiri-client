@@ -14,6 +14,7 @@ const config: PlaywrightTestConfig = {
 		video: 'on-first-retry',
 		baseURL: testServerUrl,
 		screenshot: 'only-on-failure',
+		permissions: ['clipboard-read', 'clipboard-write'],
 	},
 	testMatch: 'playwright/*.spec.ts',
 	retries: 0,

@@ -303,6 +303,9 @@ export class MimerNote {
 	}
 
 	public async shareWith(username: string) {
+		if (this.isSystem) {
+			return
+		}
 		return this.owner.note.shareMimerNote(this, username)
 	}
 
@@ -344,6 +347,9 @@ export class MimerNote {
 	}
 
 	public async delete() {
+		if (this.isSystem) {
+			return
+		}
 		if (this.parent) {
 			await this.owner.operations.delete(this, true)
 		} else {
@@ -352,6 +358,9 @@ export class MimerNote {
 	}
 
 	public async deleteChildren() {
+		if (this.isSystem && !this.isRecycleBin) {
+			return
+		}
 		await this.ensureChildren()
 		for (const child of this.children) {
 			await child.delete()
@@ -359,6 +368,9 @@ export class MimerNote {
 	}
 
 	public async moveToRecycleBin() {
+		if (this.isSystem) {
+			return
+		}
 		if (this.parent) {
 			if (this.prevSibling) {
 				this.prevSibling.select()
@@ -384,6 +396,9 @@ export class MimerNote {
 	}
 
 	public async deleteReference(force: boolean = false) {
+		if (this.isSystem) {
+			return
+		}
 		if (this.parent != null) {
 			if (!this.isShareRoot && !force) {
 				throw new Error(
@@ -397,6 +412,9 @@ export class MimerNote {
 	}
 
 	public async copy(target: MimerNote, index: number = -1) {
+		if (this.isSystem || target.isSystem) {
+			return
+		}
 		if (this.parent != null) {
 			await this.owner.operations.copy(target.id, this, index)
 		} else {
@@ -416,6 +434,9 @@ export class MimerNote {
 	}
 
 	public async move(target: MimerNote, index: number = -1) {
+		if (this.isSystem || target.isSystem) {
+			return
+		}
 		if (this.parent != null) {
 			if (this.isAncestorOf(target)) {
 				throw new Error('Cannot move a note into one of its children')

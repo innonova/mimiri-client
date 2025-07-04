@@ -19,10 +19,6 @@ import { connectLocalAccount, createLocalAccount, login, logout } from './core/a
 // test.describe.configure({ mode: 'serial' })
 
 test.describe('local account', () => {
-	test.use({
-		permissions: ['clipboard-read', 'clipboard-write'],
-	})
-
 	test('verify offline', async () => {
 		await withMimiriContext(async () => {
 			await mimiri().home()

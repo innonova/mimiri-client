@@ -248,10 +248,13 @@ const handleShortcut = event => {
 
 	const treeViewShortCutsActive =
 		(document.activeElement.tagName === 'BODY' || !noteEditor.value?.$el.contains(document.activeElement)) &&
-		event.target.tagName === 'BODY' &&
-		!noteManager.tree.selectedNote()?.isSystem
+		event.target.tagName === 'BODY'
+	const isSystemNote = noteManager.tree.selectedNote()?.isSystem
 
 	if (event.key === 'd' && ctrlActive) {
+		if (isSystemNote) {
+			return
+		}
 		if (treeViewShortCutsActive) {
 			event.preventDefault()
 			event.stopPropagation()
@@ -261,6 +264,9 @@ const handleShortcut = event => {
 		}
 	}
 	if (event.key === 'x' && ctrlActive) {
+		if (isSystemNote) {
+			return
+		}
 		if (treeViewShortCutsActive) {
 			event.preventDefault()
 			event.stopPropagation()
@@ -270,6 +276,9 @@ const handleShortcut = event => {
 		}
 	}
 	if (event.key === 'c' && ctrlActive) {
+		if (isSystemNote) {
+			return
+		}
 		if (treeViewShortCutsActive) {
 			event.preventDefault()
 			event.stopPropagation()
@@ -279,6 +288,9 @@ const handleShortcut = event => {
 		}
 	}
 	if (event.key === 'v' && ctrlActive) {
+		if (isSystemNote) {
+			return
+		}
 		if (treeViewShortCutsActive) {
 			event.preventDefault()
 			event.stopPropagation()
@@ -288,6 +300,9 @@ const handleShortcut = event => {
 		}
 	}
 	if (event.key === 'Delete') {
+		if (isSystemNote) {
+			return
+		}
 		if (treeViewShortCutsActive) {
 			event.preventDefault()
 			event.stopPropagation()
@@ -305,6 +320,9 @@ const handleShortcut = event => {
 		}
 	}
 	if (event.key === 'F2') {
+		if (isSystemNote) {
+			return
+		}
 		if (treeViewShortCutsActive) {
 			event.preventDefault()
 			event.stopPropagation()
@@ -350,14 +368,23 @@ const handleShortcut = event => {
 		}
 	}
 	if (event.key === 's' && ctrlActive) {
+		if (isSystemNote) {
+			return
+		}
 		event.preventDefault()
 		noteEditor.value.save()
 	}
 	if (event.key === 'C' && ctrlActive) {
+		if (isSystemNote) {
+			return
+		}
 		event.preventDefault()
 		mimiriEditor.toggleSelectionAsPassword()
 	}
 	if (event.key === 'n' && ctrlActive) {
+		if (isSystemNote) {
+			return
+		}
 		if (treeViewShortCutsActive) {
 			event.preventDefault()
 			event.stopPropagation()

@@ -101,6 +101,10 @@ export class MimiriState {
 		return this._pageStack[this._pageStack.length - 1]
 	}
 
+	public get keyboard() {
+		return this.page.keyboard
+	}
+
 	public async getClipboardText() {
 		return this.page.evaluate(() => navigator.clipboard.readText())
 	}
