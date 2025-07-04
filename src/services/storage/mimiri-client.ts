@@ -1,6 +1,6 @@
 import { debug } from '../../global'
 import { CryptSignature } from '../crypt-signature'
-import { toBase64 } from '../hex-base64'
+import { toBase64, toHex } from '../hex-base64'
 import { passwordHasher } from '../password-hasher'
 import { dateTimeNow } from '../types/date-time'
 import { newGuid, type Guid } from '../types/guid'
@@ -23,6 +23,7 @@ import type {
 	ShareParticipantsRequest,
 	SyncPushRequest,
 	SyncRequest,
+	UpdateUserRequest,
 } from '../types/requests'
 import type {
 	BasicResponse,
@@ -49,6 +50,8 @@ import { HubConnectionBuilder } from '@microsoft/signalr'
 import { HttpClientBase } from './http-client-base'
 import { incrementalDelay } from '../helpers'
 import type { AuthenticationManager } from './authentication-manager'
+import { DEFAULT_PASSWORD_ALGORITHM, DEFAULT_SALT_SIZE } from './mimiri-store'
+import { SymmetricCrypt } from '../symmetric-crypt'
 
 export class VersionConflictError extends Error {
 	constructor(public conflicts: VersionConflict[]) {
@@ -236,6 +239,73 @@ export class MimiriClient extends HttpClientBase {
 			}
 			throw ex
 		}
+	}
+
+	public async changeUserNameAndPassword(
+		newUsername: string,
+		oldPassword: string,
+		newPassword?: string,
+		iterations?: number,
+	) {
+		const preLoginResponse = await this.get<PreLoginResponse>(`/user/pre-login/${this.state.username}?q=${Date.now()}`)
+		const oldPasswordHash = await passwordHasher.hashPassword(
+			oldPassword,
+			preLoginResponse.salt,
+			preLoginResponse.algorithm,
+			preLoginResponse.iterations,
+		)
+		const responseToChallenge = await passwordHasher.computeResponse(oldPasswordHash, preLoginResponse.challenge)
+
+		let passwordAlgorithm = preLoginResponse.algorithm
+		let passwordIterations = preLoginResponse.iterations
+		let passwordSalt = preLoginResponse.salt
+		let passwordHash = oldPasswordHash
+
+		if (newPassword) {
+			passwordAlgorithm = DEFAULT_PASSWORD_ALGORITHM
+			passwordIterations = iterations
+			passwordSalt = toHex(crypto.getRandomValues(new Uint8Array(DEFAULT_SALT_SIZE)))
+			passwordHash = await passwordHasher.hashPassword(newPassword, passwordSalt, passwordAlgorithm, passwordIterations)
+		} else {
+			newPassword = oldPassword
+		}
+
+		const salt = toHex(crypto.getRandomValues(new Uint8Array(DEFAULT_SALT_SIZE)))
+
+		const userCrypt = await SymmetricCrypt.fromPassword(
+			SymmetricCrypt.DEFAULT_SYMMETRIC_ALGORITHM,
+			newPassword,
+			salt,
+			passwordIterations,
+		)
+
+		const request: UpdateUserRequest = {
+			oldUsername: this.state.username,
+			response: responseToChallenge,
+			hashLength: oldPasswordHash.length / 2,
+			username: newUsername || this.state.username,
+			iterations: passwordIterations,
+			salt,
+			algorithm: userCrypt.algorithm,
+			asymmetricAlgorithm: this._authManager.rootSignature.algorithm,
+			publicKey: await this._authManager.rootSignature.publicKeyPem(),
+			privateKey: await userCrypt.encrypt(await this._authManager.rootSignature.privateKeyPem()),
+			password: {
+				algorithm: passwordAlgorithm,
+				iterations: passwordIterations,
+				salt: passwordSalt,
+				hash: passwordHash,
+			},
+			symmetricAlgorithm: this.cryptoManager.rootCrypt.algorithm,
+			symmetricKey: await userCrypt.encryptBytes(await this.cryptoManager.rootCrypt.getKey()),
+			data: await this.cryptoManager.rootCrypt.encrypt(JSON.stringify(this._authManager.userData)),
+			timestamp: dateTimeNow(),
+			requestId: newGuid(),
+			signatures: [],
+		}
+		await this._authManager.signRequest(request)
+		await this._authManager.rootSignature.sign('old-user', request)
+		return await this.post<BasicResponse>('/user/update', request, true)
 	}
 
 	public async getChangesSince(noteSince: number, keySince: number): Promise<SyncInfo> {

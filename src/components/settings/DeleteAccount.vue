@@ -59,8 +59,8 @@
 								<div v-if="capsLockOn" class="py-1">Caps Lock is on!</div>
 							</div>
 							<div
-								v-if="(!mimiriPlatform.isWeb || env.DEV) && !noteManager.state.isAnonymous"
-								class="pt-2 pb-6 text-right"
+								v-if="(!mimiriPlatform.isWeb || env.DEV) && noteManager.state.accountType !== AccountType.Local"
+								class="pt-2 text-right"
 							>
 								<label>
 									Also delete local data from this device
@@ -73,10 +73,10 @@
 								</label>
 							</div>
 
-							<div class="flex justify-end" v-if="error">
-								<div class="text-error pb-4 text-right">{{ error }}</div>
+							<div class="flex justify-end mt-2" v-if="error">
+								<div class="text-error text-right">{{ error }}</div>
 							</div>
-							<div class="flex justify-end gap-2">
+							<div class="flex justify-end gap-2 mt-4">
 								<div v-if="loading" class="flex items-center justify-end">
 									<LoadingIcon class="animate-spin w-8 h-8 mr-2 inline-block"></LoadingIcon>
 									Please wait
@@ -108,6 +108,7 @@ import { mimiriPlatform } from '../../services/mimiri-platform'
 import { settingsManager } from '../../services/settings-manager'
 import { deObfuscate } from '../../services/helpers'
 import TabBar from '../elements/TabBar.vue'
+import { AccountType } from '../../services/storage/type'
 
 const understandDeleteAccount = ref(false)
 const understandDeleteData = ref(false)

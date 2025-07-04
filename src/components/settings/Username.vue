@@ -7,7 +7,7 @@
 				<UsernameInput
 					ref="usernameInput"
 					:display-current="true"
-					:check-username="true"
+					:check-username="noteManager.state.accountType === AccountType.Cloud"
 					@changed="usernameChanged"
 				></UsernameInput>
 			</div>
@@ -26,6 +26,7 @@ import { ref } from 'vue'
 import UsernameInput from '../elements/UsernameInput.vue'
 import { debug, noteManager, passwordDialog } from '../../global'
 import TabBar from '../elements/TabBar.vue'
+import { AccountType } from '../../services/storage/type'
 
 const emit = defineEmits(['close'])
 
@@ -46,7 +47,7 @@ const save = () => {
 		passwordDialog.value.showAction(async pwd => {
 			try {
 				await noteManager.auth.changeUserNameAndPassword(newUsername, pwd)
-				usernameInput.value.refresh()
+				usernameInput.value?.refresh()
 				return true
 			} catch (ex) {
 				debug.logError('Error changing username', ex)

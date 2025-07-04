@@ -4,12 +4,12 @@ import { fromBase64, toBase64, toHex } from '../hex-base64'
 import { mimiriPlatform } from '../mimiri-platform'
 import { SymmetricCrypt } from '../symmetric-crypt'
 import { emptyGuid, newGuid } from '../types/guid'
-import type { InitializationData, SharedState } from './type'
+import { AccountType, type InitializationData, type SharedState } from './type'
 import type { MimiriDb } from './mimiri-db'
 import type { MimiriClient } from './mimiri-client'
 import type { CryptographyManager } from './cryptography-manager'
 import { deObfuscate, incrementalDelay, obfuscate } from '../helpers'
-import { DEFAULT_PASSWORD_ALGORITHM, DEFAULT_PROOF_BITS, DEFAULT_SALT_SIZE } from './mimiri-store'
+import { DEFAULT_ITERATIONS, DEFAULT_PASSWORD_ALGORITHM, DEFAULT_PROOF_BITS, DEFAULT_SALT_SIZE } from './mimiri-store'
 import { ProofOfWork } from '../proof-of-work'
 
 export class AuthenticationManager {
@@ -23,6 +23,8 @@ export class AuthenticationManager {
 		private api: MimiriClient,
 		private cryptoManager: CryptographyManager,
 		private state: SharedState,
+		private logOutCallback: () => Promise<void>,
+		private loginCallback: (username: string, password: string) => Promise<void>,
 	) {
 		this.api.setAuthManager(this)
 	}
@@ -148,7 +150,10 @@ export class AuthenticationManager {
 				).text()
 				const loginData = JSON.parse(unzipped)
 				this.state.username = loginData.username
-				this.state.isAnonymous = this.state.username?.startsWith('mimiri_a_') ?? false
+				if (this.state.username?.startsWith('mimiri_a_')) {
+					this.state.accountType = AccountType.Cloud
+					this.state.isAnonymous = true
+				}
 				this._userCryptAlgorithm = loginData.userCryptAlgorithm
 
 				this.state.userId = loginData.userId
@@ -163,11 +168,15 @@ export class AuthenticationManager {
 					loginData.rootSignature.publicKey,
 					loginData.rootSignature.privateKey,
 				)
+
 				await this.db.open(this.state.username)
 				const initializationData = await this.db.getInitializationData()
 				if (initializationData?.local) {
 					this.state.workOffline = true
-					this.state.isLocalOnly = true
+					this.state.accountType = AccountType.Local
+				} else {
+					this.state.workOffline = false
+					this.state.accountType = AccountType.Cloud
 				}
 
 				if (!(await this.goOnline())) {
@@ -270,7 +279,7 @@ export class AuthenticationManager {
 		await this.db.renameDatabase(username)
 		await this.db.deleteInitializationData()
 		this.state.workOffline = false
-		this.state.isLocalOnly = false
+		this.state.accountType = AccountType.Cloud
 	}
 
 	public async promoteToLocalAccount(username: string, password: string, iterations: number) {
@@ -357,8 +366,14 @@ export class AuthenticationManager {
 				)
 				this._userData = JSON.parse(await this.cryptoManager.rootCrypt.decrypt(initializationData.userData))
 				this.state.username = username
-				this.state.isAnonymous = this.state.username?.startsWith('mimiri_a_') ?? false
-				this.state.isLocal = false
+				if (this.state.username?.startsWith('mimiri_a_')) {
+					this.state.accountType = AccountType.Cloud
+					this.state.isAnonymous = true
+				} else if (initializationData.local) {
+					this.state.accountType = AccountType.Local
+				} else {
+					this.state.accountType = AccountType.Cloud
+				}
 				break
 			} catch (ex) {
 				if (localInitializationData) {
@@ -375,7 +390,7 @@ export class AuthenticationManager {
 			await this.api.openWebSocket()
 		} else {
 			this.state.workOffline = true
-			this.state.isLocalOnly = true
+			this.state.accountType = AccountType.Local
 		}
 
 		await this.db.setInitializationData(initializationData)
@@ -410,16 +425,15 @@ export class AuthenticationManager {
 			}
 			await this.db.setUserData(this._userData)
 		}
-		this.state.isLocal = true
+		this.state.accountType = AccountType.None
 		this.state.username = 'local'
-		this.state.isAnonymous = false
 		this.state.userId = emptyGuid()
 		this.state.isLoggedIn = true
 		void blogManager.refreshAll()
 	}
 
 	public async goOnline(attempt: number = 0): Promise<boolean> {
-		if (this.state.isLocalOnly) {
+		if (this.state.accountType === AccountType.Local || this.state.accountType === AccountType.None) {
 			return false
 		}
 		try {
@@ -444,9 +458,10 @@ export class AuthenticationManager {
 	}
 
 	public async updateUserData(): Promise<void> {
-		if (this.state.isLocal) {
+		if (this.state.accountType === AccountType.None) {
 			return this.db.setUserData(this._userData)
 		}
+		// TODO this seems like we need to update user data on the server too
 	}
 
 	public async signRequest(request: any): Promise<any> {
@@ -463,11 +478,75 @@ export class AuthenticationManager {
 		newPassword?: string,
 		iterations?: number,
 	): Promise<void> {
-		// TODO: Implement change username and password
-		return Promise.resolve()
+		if (this.state.accountType === AccountType.Local) {
+			if (this.state.username !== username) {
+				await this.db.renameDatabase(username)
+				this.state.username = username
+			}
+			if (newPassword) {
+				const initializationData = await this.db.getInitializationData()
+				const oldUserCrypt = await SymmetricCrypt.fromPassword(
+					initializationData.userCrypt.algorithm,
+					oldPassword,
+					initializationData.userCrypt.salt,
+					initializationData.userCrypt.iterations,
+				)
+				const newUserCrypt = await SymmetricCrypt.fromPassword(
+					initializationData.userCrypt.algorithm,
+					newPassword,
+					initializationData.userCrypt.salt,
+					iterations ?? DEFAULT_ITERATIONS,
+				)
+
+				const rootCrypt = await SymmetricCrypt.fromKey(
+					initializationData.rootCrypt.algorithm,
+					await oldUserCrypt.decryptBytes(initializationData.rootCrypt.key),
+				)
+
+				initializationData.rootCrypt.key = await newUserCrypt.encryptBytes(await rootCrypt.getKey())
+
+				const rootSignature = await CryptSignature.fromPem(
+					initializationData.rootSignature.algorithm,
+					initializationData.rootSignature.publicKey,
+					await oldUserCrypt.decrypt(initializationData.rootSignature.privateKey),
+				)
+
+				initializationData.rootSignature.publicKey = await rootSignature.publicKeyPem()
+				initializationData.rootSignature.privateKey = await newUserCrypt.encrypt(await rootSignature.privateKeyPem())
+
+				initializationData.userData = await rootCrypt.encrypt(JSON.stringify(this.userData))
+				await this.db.setInitializationData(initializationData)
+			}
+			await this.persistLogin()
+		}
+		if (this.state.accountType === AccountType.Cloud) {
+			await this.api.changeUserNameAndPassword(username, oldPassword, newPassword, iterations)
+			if (this.state.username !== username) {
+				await this.db.renameDatabase(username)
+				this.state.username = username
+			}
+			await this.db.deleteInitializationData()
+			await this.logOutCallback()
+			await this.loginCallback(username, newPassword ?? oldPassword)
+		}
 	}
 
 	public async deleteAccount(password: string, deleteLocal: boolean): Promise<void> {
+		if (this.state.accountType === AccountType.Local) {
+			const initializationData = await this.db.getInitializationData()
+			const userCrypt = await SymmetricCrypt.fromPassword(
+				initializationData.userCrypt.algorithm,
+				password,
+				initializationData.userCrypt.salt,
+				initializationData.userCrypt.iterations,
+			)
+			await userCrypt.decryptBytes(initializationData.rootCrypt.key)
+			await this.db.deleteDatabase()
+			await this.logOutCallback()
+			window.location.reload()
+		}
+		if (this.state.accountType === AccountType.Cloud) {
+		}
 		// TODO: Implement delete account logic
 		return Promise.resolve()
 	}
@@ -477,28 +556,25 @@ export class AuthenticationManager {
 	}
 
 	public async logout(): Promise<void> {
-		this.clearLoginData()
+		await this.clearLoginData()
 		this._userData = undefined
 		this._rootSignature = undefined
 		this.state.username = undefined
+		this.state.accountType = AccountType.None
 		this.state.isAnonymous = false
-		this.state.isLocal = false
 
 		this.cryptoManager.rootCrypt = null
 		this.state.userId = null
 		this.state.isLoggedIn = false
 
-		this.db
-			.close()
-			.then(() => {
-				// console.log('Database closed after logout')
-			})
-			.catch(err => {
-				console.error('Error closing database:', err)
-			})
+		await this.db.close()
 	}
 
 	public get userData(): any {
 		return this._userData
+	}
+
+	public get rootSignature(): CryptSignature {
+		return this._rootSignature
 	}
 }

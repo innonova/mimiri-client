@@ -39,9 +39,9 @@ import {
 	upgradeSubscription,
 } from './subscription/change'
 import { mimiri, withMimiriContext } from './framework/mimiri-context'
-import { createAccount } from './core/actions'
+import { createCloudAccount } from './core/actions'
 
-test.describe.skip('subscription', () => {
+test.describe('subscription', () => {
 	test.skip('setup ui for dev', async () => {
 		await withMimiriContext(async () => {
 			// test(`login`, doLogin)
@@ -60,7 +60,7 @@ test.describe.skip('subscription', () => {
 	test('create subscription', async () => {
 		await withMimiriContext(async () => {
 			await mimiri().home()
-			await createAccount()
+			await createCloudAccount()
 			await checkUserTier0()
 			await createSubscription()
 			await checkPaymentMethods()
@@ -74,7 +74,7 @@ test.describe.skip('subscription', () => {
 	test('set billing address from empty', async () => {
 		await withMimiriContext(async () => {
 			await mimiri().home()
-			await createAccount()
+			await createCloudAccount()
 			await createBillingAddress()
 			await changeBillingAddress()
 		})
@@ -83,7 +83,7 @@ test.describe.skip('subscription', () => {
 	test('create monthly subscription', async () => {
 		await withMimiriContext(async () => {
 			await mimiri().home()
-			await createAccount()
+			await createCloudAccount()
 			await createMonthlySubscription()
 		})
 	})
@@ -91,7 +91,7 @@ test.describe.skip('subscription', () => {
 	test.skip('real payrexx visa', async () => {
 		await withMimiriContext(async () => {
 			await mimiri().home()
-			await createAccount()
+			await createCloudAccount()
 			await mimiri().useRealPayrexx()
 			mimiri().setVisaSuccess()
 			await createSubscription()
@@ -103,7 +103,7 @@ test.describe.skip('subscription', () => {
 	test.skip('real payrexx mastercard', async () => {
 		await withMimiriContext(async () => {
 			await mimiri().home()
-			await createAccount()
+			await createCloudAccount()
 			await mimiri().useRealPayrexx()
 			mimiri().setMasterSuccess()
 			await createSubscription()
@@ -115,7 +115,7 @@ test.describe.skip('subscription', () => {
 	test.skip('real payrexx twint', async () => {
 		await withMimiriContext(async () => {
 			await mimiri().home()
-			await createAccount()
+			await createCloudAccount()
 			await mimiri().useRealPayrexx()
 			mimiri().setTwintSuccess()
 			await createSubscription()
@@ -127,7 +127,7 @@ test.describe.skip('subscription', () => {
 	test('renewal', async () => {
 		await withMimiriContext(async () => {
 			await mimiri().home()
-			await createAccount()
+			await createCloudAccount()
 			await createSubscription()
 			await firstRenewal()
 			await secondRenewal()
@@ -137,7 +137,7 @@ test.describe.skip('subscription', () => {
 	test('renewal (monthly)', async () => {
 		await withMimiriContext(async () => {
 			await mimiri().home()
-			await createAccount()
+			await createCloudAccount()
 			await createMonthlySubscription()
 			await firstRenewal()
 			await secondRenewal()
@@ -147,7 +147,7 @@ test.describe.skip('subscription', () => {
 	test('renewal retry once', async () => {
 		await withMimiriContext(async () => {
 			await mimiri().home()
-			await createAccount()
+			await createCloudAccount()
 			await createSubscription()
 			await retryRenewal()
 		})
@@ -156,7 +156,7 @@ test.describe.skip('subscription', () => {
 	test('renewal retry once (monthly)', async () => {
 		await withMimiriContext(async () => {
 			await mimiri().home()
-			await createAccount()
+			await createCloudAccount()
 			await createMonthlySubscription()
 			await retryRenewal()
 		})
@@ -165,7 +165,7 @@ test.describe.skip('subscription', () => {
 	test('renewal retry twice', async () => {
 		await withMimiriContext(async () => {
 			await mimiri().home()
-			await createAccount()
+			await createCloudAccount()
 			await createSubscription()
 			await retryRenewalTwice()
 		})
@@ -174,7 +174,7 @@ test.describe.skip('subscription', () => {
 	test('renewal retry twice (monthly)', async () => {
 		await withMimiriContext(async () => {
 			await mimiri().home()
-			await createAccount()
+			await createCloudAccount()
 			await createMonthlySubscription()
 			await retryRenewalTwice()
 		})
@@ -183,7 +183,7 @@ test.describe.skip('subscription', () => {
 	test('renewal fail', async () => {
 		await withMimiriContext(async () => {
 			await mimiri().home()
-			await createAccount()
+			await createCloudAccount()
 			await createSubscription()
 			await failRenewal()
 		})
@@ -192,7 +192,7 @@ test.describe.skip('subscription', () => {
 	test('renewal fail (monthly)', async () => {
 		await withMimiriContext(async () => {
 			await mimiri().home()
-			await createAccount()
+			await createCloudAccount()
 			await createMonthlySubscription()
 			await failRenewal()
 		})
@@ -201,7 +201,7 @@ test.describe.skip('subscription', () => {
 	test('renewal fail -> recover from home', async () => {
 		await withMimiriContext(async () => {
 			await mimiri().home()
-			await createAccount()
+			await createCloudAccount()
 			await createSubscription()
 			await verifyEmail()
 			await failRenewal()
@@ -212,7 +212,7 @@ test.describe.skip('subscription', () => {
 	test('renewal fail -> recover from home (monthly)', async () => {
 		await withMimiriContext(async () => {
 			await mimiri().home()
-			await createAccount()
+			await createCloudAccount()
 			await createMonthlySubscription()
 			await verifyEmail()
 			await failRenewal()
@@ -223,7 +223,7 @@ test.describe.skip('subscription', () => {
 	test('renewal fail -> recover from invoices', async () => {
 		await withMimiriContext(async () => {
 			await mimiri().home()
-			await createAccount()
+			await createCloudAccount()
 			await createSubscription()
 			await verifyEmail()
 			await failRenewal()
@@ -234,7 +234,7 @@ test.describe.skip('subscription', () => {
 	test('renewal fail -> recover from invoices (monthly)', async () => {
 		await withMimiriContext(async () => {
 			await mimiri().home()
-			await createAccount()
+			await createCloudAccount()
 			await createSubscription()
 			await verifyEmail()
 			await failRenewal()
@@ -245,7 +245,7 @@ test.describe.skip('subscription', () => {
 	test('renewal fail no methods', async () => {
 		await withMimiriContext(async () => {
 			await mimiri().home()
-			await createAccount()
+			await createCloudAccount()
 			await createSubscription()
 			await failRenewalNoMethods()
 		})
@@ -254,7 +254,7 @@ test.describe.skip('subscription', () => {
 	test('renewal fail no methods (monthly)', async () => {
 		await withMimiriContext(async () => {
 			await mimiri().home()
-			await createAccount()
+			await createCloudAccount()
 			await createSubscription()
 			await failRenewalNoMethods()
 		})
@@ -263,7 +263,7 @@ test.describe.skip('subscription', () => {
 	test('renewal fail declined', async () => {
 		await withMimiriContext(async () => {
 			await mimiri().home()
-			await createAccount()
+			await createCloudAccount()
 			await createSubscription()
 			await failRenewalDeclined()
 		})
@@ -272,7 +272,7 @@ test.describe.skip('subscription', () => {
 	test('mastercard', async () => {
 		await withMimiriContext(async () => {
 			await mimiri().home()
-			await createAccount()
+			await createCloudAccount()
 			mimiri().setMasterSuccess()
 			await createSubscription()
 			await firstRenewal()
@@ -283,7 +283,7 @@ test.describe.skip('subscription', () => {
 	test('twint', async () => {
 		await withMimiriContext(async () => {
 			await mimiri().home()
-			await createAccount()
+			await createCloudAccount()
 			mimiri().setTwintSuccess()
 			await createSubscription()
 			await firstRenewal()
@@ -294,7 +294,7 @@ test.describe.skip('subscription', () => {
 	test('cancel subscription', async () => {
 		await withMimiriContext(async () => {
 			await mimiri().home()
-			await createAccount()
+			await createCloudAccount()
 			await createSubscription()
 			await cancelSubscription()
 		})
@@ -303,7 +303,7 @@ test.describe.skip('subscription', () => {
 	test('renewal fail no reaction', async () => {
 		await withMimiriContext(async () => {
 			await mimiri().home()
-			await createAccount()
+			await createCloudAccount()
 			await createSubscription()
 			await checkUserTier1()
 			await failRenewal()
@@ -315,7 +315,7 @@ test.describe.skip('subscription', () => {
 	test('renewal fail no reaction (monthly)', async () => {
 		await withMimiriContext(async () => {
 			await mimiri().home()
-			await createAccount()
+			await createCloudAccount()
 			await createMonthlySubscription()
 			await checkUserTier1()
 			await failRenewal()
@@ -327,7 +327,7 @@ test.describe.skip('subscription', () => {
 	test('create new subscription after cancel', async () => {
 		await withMimiriContext(async () => {
 			await mimiri().home()
-			await createAccount()
+			await createCloudAccount()
 			await createSubscription()
 			await verifyEmail()
 			await cancelSubscription()
@@ -338,7 +338,7 @@ test.describe.skip('subscription', () => {
 	test('change subscription', async () => {
 		await withMimiriContext(async () => {
 			await mimiri().home()
-			await createAccount()
+			await createCloudAccount()
 			await createSubscription()
 			await checkUserTier1()
 			await verifyEmail()
@@ -352,7 +352,7 @@ test.describe.skip('subscription', () => {
 	test('change period', async () => {
 		await withMimiriContext(async () => {
 			await mimiri().home()
-			await createAccount()
+			await createCloudAccount()
 			await createSubscription()
 			await checkUserTier1()
 			await verifyEmail()
@@ -366,7 +366,7 @@ test.describe.skip('subscription', () => {
 	test('change period and tier (year to month)', async () => {
 		await withMimiriContext(async () => {
 			await mimiri().home()
-			await createAccount()
+			await createCloudAccount()
 			await createSubscription()
 			await checkUserTier1()
 			await verifyEmail()
@@ -378,7 +378,7 @@ test.describe.skip('subscription', () => {
 	test('change period and tier (month to year)', async () => {
 		await withMimiriContext(async () => {
 			await mimiri().home()
-			await createAccount()
+			await createCloudAccount()
 			await createMonthlySubscription()
 			await checkUserTier1()
 			await verifyEmail()
@@ -390,7 +390,7 @@ test.describe.skip('subscription', () => {
 	test('currency USD', async () => {
 		await withMimiriContext(async () => {
 			await mimiri().home()
-			await createAccount()
+			await createCloudAccount()
 			mimiri().config.currency = 'USD'
 			mimiri().config.currencySymbol = '$'
 			await createSubscription()
@@ -404,7 +404,7 @@ test.describe.skip('subscription', () => {
 	test('currency EUR', async () => {
 		await withMimiriContext(async () => {
 			await mimiri().home()
-			await createAccount()
+			await createCloudAccount()
 			mimiri().config.currency = 'EUR'
 			mimiri().config.currencySymbol = '€'
 			await createSubscription()
@@ -418,7 +418,7 @@ test.describe.skip('subscription', () => {
 	test('fail payment', async () => {
 		await withMimiriContext(async () => {
 			await mimiri().home()
-			await createAccount()
+			await createCloudAccount()
 			mimiri().setVisaFailure()
 			await failCreateSubscription()
 			await verifyEmail()
@@ -432,7 +432,7 @@ test.describe.skip('subscription', () => {
 	test('cancel payment', async () => {
 		await withMimiriContext(async () => {
 			await mimiri().home()
-			await createAccount()
+			await createCloudAccount()
 			await cancelCreateSubscription()
 			await verifyEmail()
 			await checkNoInvoices()
@@ -444,7 +444,7 @@ test.describe.skip('subscription', () => {
 	test('navigate away from payment', async () => {
 		await withMimiriContext(async () => {
 			await mimiri().home()
-			await createAccount()
+			await createCloudAccount()
 			await navigateAwayCreateSubscription()
 			await verifyEmail()
 			await checkNoInvoices()

@@ -34,6 +34,7 @@ import { Debounce } from '../../services/helpers'
 import LoadingIcon from '../../icons/loading.vue'
 import AvailableIcon from '../../icons/available.vue'
 import UnavailableIcon from '../../icons/unavailable.vue'
+import { AccountType } from '../../services/storage/type'
 
 const disallowString = '!"#$:%&@\'()*/=?[]{}~^`'
 const disallowRegex = /[!"#$:%&@'()*/=?[\]{}~\^\\`\s]/
@@ -55,9 +56,15 @@ const usernameAvailable = ref(false)
 const usernameUnavailable = ref(false)
 const usernameInProgress = ref(false)
 
+let lastUsernameChecked = ''
+
 const checkUsernameDebounce = new Debounce(async () => {
+	if (lastUsernameChecked === username.value) {
+		return
+	}
+	lastUsernameChecked = username.value
 	try {
-		if (noteManager.state.isOnline && username.value === noteManager.state.username && !noteManager.state.isLocalOnly) {
+		if (noteManager.state.isOnline && username.value === noteManager.state.username) {
 			usernameCurrent.value = true
 			usernameInvalid.value = false
 			usernameInProgress.value = false
@@ -116,18 +123,21 @@ watch([username, props], () => {
 })
 
 onMounted(() => {
-	if (noteManager.state.isOnline && !noteManager.state.isLocalOnly) {
-		usernameCurrent.value = true
-		usernameInvalid.value = false
-		usernameInProgress.value = false
-		usernameAvailable.value = false
-		usernameUnavailable.value = false
-		if (props.displayCurrent) {
-			username.value = noteManager.state.username
-		}
-		canSave.value = false
-		emit('changed', canSave.value)
+	const shouldCheck = props.checkUsername === undefined || props.checkUsername === true
+	usernameCurrent.value = true
+	usernameInvalid.value = false
+	usernameInProgress.value = false
+	usernameAvailable.value = false
+	usernameUnavailable.value = false
+	if (props.displayCurrent) {
+		username.value = noteManager.state.username
 	}
+	if (noteManager.state.accountType === AccountType.Local && shouldCheck) {
+		usernameCurrent.value = false
+		usernameInProgress.value = true
+	}
+	canSave.value = !shouldCheck
+	emit('changed', canSave.value)
 })
 
 const refresh = () => {

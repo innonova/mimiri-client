@@ -31,13 +31,18 @@ export enum ViewMode {
 	Properties = 'properties',
 }
 
+export enum AccountType {
+	None = 'none',
+	Local = 'local',
+	Cloud = 'cloud',
+}
+
 export interface SharedState {
 	username: string
 	userId: Guid | null
 	isLoggedIn: boolean
 	isOnline: boolean
-	isLocal: boolean
-	isLocalOnly: boolean
+	accountType: AccountType
 	isAnonymous: boolean
 	workOffline: boolean
 	clientConfig: ClientConfig

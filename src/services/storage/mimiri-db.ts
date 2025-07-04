@@ -1,4 +1,4 @@
-import { openDB, type IDBPDatabase, type IDBPTransaction } from 'idb'
+import { deleteDB, openDB, type IDBPDatabase, type IDBPTransaction } from 'idb'
 import { newGuid, type Guid } from '../types/guid'
 import type { InitializationData, KeyData, LocalData, LocalUserData, NoteData } from './type'
 
@@ -67,6 +67,24 @@ export class MimiriDb {
 		if (db) {
 			this.db = undefined as any
 			await db.close()
+		}
+	}
+
+	public async deleteDatabase() {
+		const mappingDb = await this.openMappingDb()
+		try {
+			await mappingDb.delete('name-mappings', this.logicalName)
+		} finally {
+			await mappingDb.close()
+		}
+		if (this.db?.name) {
+			const actualDbName = this.db.name
+			await this.close()
+			await deleteDB(actualDbName, {
+				blocked() {
+					console.warn(`Database ${actualDbName} is blocked and cannot be deleted immediately.`)
+				},
+			})
 		}
 	}
 

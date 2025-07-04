@@ -2,7 +2,7 @@ import { reactive, watch } from 'vue'
 import { type Guid } from '../types/guid'
 import { Note } from '../types/note'
 import type { NoteShareInfo } from '../types/note-share-info'
-import { ViewMode, type SharedState } from './type'
+import { AccountType, ViewMode, type SharedState } from './type'
 import { AuthenticationManager } from './authentication-manager'
 import { CryptographyManager } from './cryptography-manager'
 import { SynchronizationService } from './synchronization-service'
@@ -59,8 +59,7 @@ export class MimiriStore {
 			userId: null,
 			isLoggedIn: false,
 			isOnline: false,
-			isLocal: false,
-			isLocalOnly: false,
+			accountType: AccountType.None,
 			isAnonymous: false,
 			workOffline: false,
 			clientConfig: { features: [] },
@@ -118,7 +117,18 @@ export class MimiriStore {
 			}
 		})
 
-		this.authManager = new AuthenticationManager(this.db, this.api, this.cryptoManager, this.state)
+		this.authManager = new AuthenticationManager(
+			this.db,
+			this.api,
+			this.cryptoManager,
+			this.state,
+			async () => {
+				await this.sessionManager.logout()
+			},
+			async (username: string, password: string) => {
+				await this.sessionManager.login(username, password)
+			},
+		)
 		this.paymentClient = new PaymentClient(this.authManager, this.state, paymentHost)
 		this.syncService = new SynchronizationService(
 			this.db,

@@ -6,7 +6,7 @@ import type { AuthenticationManager } from './authentication-manager'
 import type { CryptographyManager } from './cryptography-manager'
 import type { NoteService } from './note-service'
 import type { NoteOperationsManager } from './note-operations-manager'
-import { MimerError, type SharedState } from './type'
+import { AccountType, MimerError, type SharedState } from './type'
 import type { SynchronizationService } from './synchronization-service'
 import { Capacitor } from '@capacitor/core'
 import type { UIStateManager } from './ui-state-manager'
@@ -144,7 +144,7 @@ export class SessionManager {
 	}
 
 	public async isAccountPristine(rootNote: MimerNote) {
-		if (!this.state.isAnonymous) {
+		if (this.state.isAnonymous) {
 			return false
 		}
 		const userNotes = rootNote.children.filter(child => !child.isSystem)

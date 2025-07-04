@@ -4,32 +4,12 @@ import {
 	connectCloudView,
 	createAccountView,
 	loginCtrl,
-	mainToolbar,
 	menu,
-	promoteAccount,
 	settingNodes,
-	settingView,
 	titleBar,
 	usernameInput,
 } from '../selectors'
 import { mimiri } from '../framework/mimiri-context'
-
-export const createAccount = async () => {
-	await settingNodes.controlPanel().dblclick()
-	await settingNodes.account().click()
-	await expect(promoteAccount.container()).toBeVisible()
-	await promoteAccount.username().fill(mimiri().config.username)
-	await promoteAccount.password().fill(mimiri().config.password)
-	await promoteAccount.repeat().fill(mimiri().config.password)
-	await promoteAccount.noRecover().check()
-	await promoteAccount.button().click()
-	await expect(settingView.username()).toBeVisible()
-	await expect(mainToolbar.container()).toBeVisible({ timeout: 30000 })
-	await expect(titleBar.container()).toBeVisible()
-	if (await settingNodes.controlPanelOpen().isVisible()) {
-		await settingNodes.controlPanel().dblclick()
-	}
-}
 
 export const createLocalAccount = async () => {
 	await settingNodes.controlPanel().dblclick()

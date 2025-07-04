@@ -5,14 +5,20 @@ import { settingsManager } from '../settings-manager'
 import type { Guid } from './guid'
 import type { MimerNote } from './mimer-note'
 import { VirtualNote } from './virtual-note'
+import { AccountType } from '../storage/type'
 
 export const createControlPanelTree = (owner: MimiriStore, parent: MimerNote): MimerNote[] => {
 	const showUpdate = !mimiriPlatform.isWeb || location.host === 'localhost:5173'
-	const showPin = (mimiriPlatform.isElectron || location.host === 'localhost:5173') && !noteManager.state.isLocal
-	const showSubscription = mimiriPlatform.isDesktop && !noteManager.state.isLocalOnly && !noteManager.state.isLocal
+	const showPin =
+		(mimiriPlatform.isElectron || location.host === 'localhost:5173') &&
+		noteManager.state.accountType !== AccountType.None
+	const showSubscription =
+		mimiriPlatform.isDesktop &&
+		noteManager.state.accountType !== AccountType.Local &&
+		noteManager.state.accountType !== AccountType.None
 	const showDevBlog = !settingsManager.disableDevBlog
 	const showDebug = settingsManager.debugEnabled
-	const isLocal = noteManager.state.isLocal
+	const isLocal = noteManager.state.accountType === AccountType.None
 
 	const items = [
 		...(showUpdate
@@ -97,12 +103,12 @@ export const createControlPanelTree = (owner: MimiriStore, parent: MimerNote): M
 						title: 'Account',
 						type: noteManager.state.isAnonymous
 							? 'settings-create-password'
-							: noteManager.state.isLocalOnly
+							: noteManager.state.accountType === AccountType.Local
 								? 'settings-upgrade'
 								: 'settings-username',
 						icon: 'account',
 						children: [
-							...(noteManager.state.isLocalOnly
+							...(noteManager.state.accountType === AccountType.Local
 								? [
 										{
 											id: 'settings-upgrade' as Guid,

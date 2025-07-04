@@ -22,6 +22,7 @@ import type { ContextMenuItem, ContextMenuPosition } from './types/context-menu'
 import { settingsManager } from './settings-manager'
 import { mimiriPlatform } from './mimiri-platform'
 import type { Guid } from './types/guid'
+import { AccountType } from './storage/type'
 
 export enum MenuItems {
 	Separator = 'separator',
@@ -564,7 +565,7 @@ class MenuManager {
 						id: 'manage-subscription',
 						title: 'Plan',
 						enabled: noteManager.state.isLoggedIn && noteManager.state.isOnline,
-						visible: !noteManager.state.isAnonymous,
+						visible: noteManager.state.accountType === AccountType.Cloud,
 					})
 					break
 				case MenuItems.SetPin:
@@ -580,7 +581,7 @@ class MenuManager {
 						title: 'Logout',
 						icon: 'logout',
 						enabled: noteManager.state.isLoggedIn,
-						visible: !noteManager.state.isAnonymous,
+						visible: noteManager.state.accountType !== AccountType.None,
 					})
 					break
 				case MenuItems.Login:
@@ -589,7 +590,7 @@ class MenuManager {
 						title: 'Log In / Switch User',
 						icon: 'login',
 						enabled: noteManager.state.isLoggedIn,
-						visible: noteManager.state.isAnonymous || noteManager.state.isLocal,
+						visible: noteManager.state.accountType === AccountType.None || noteManager.state.isAnonymous,
 					})
 					break
 				case MenuItems.CreateAccount:
@@ -776,7 +777,7 @@ class MenuManager {
 			MenuItems.Separator,
 			MenuItems.CreatePassword,
 			MenuItems.Login,
-			...(noteManager.state.isLocal ? [MenuItems.CreateAccount] : [MenuItems.Logout]),
+			...(noteManager.state.accountType === AccountType.None ? [MenuItems.CreateAccount] : [MenuItems.Logout]),
 			MenuItems.Quit,
 		]
 	}

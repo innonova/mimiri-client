@@ -162,9 +162,10 @@ import NotificationIcon from '../icons/notification.vue'
 import NotificationActiveIcon from '../icons/notification-active.vue'
 import { searchManager } from '../services/search-manager'
 import { MenuItems, menuManager } from '../services/menu-manager'
-import { settingsManager, UpdateMode } from '../services/settings-manager'
+import { settingsManager } from '../services/settings-manager'
 import { mimiriPlatform } from '../services/mimiri-platform'
 import { useEventListener } from '@vueuse/core'
+import { AccountType } from '../services/storage/type'
 
 const hasFocus = ref(true)
 
@@ -253,7 +254,7 @@ const showMenu = (rect, menu) => {
 		menuManager.showMenu({ x: rect.left, y: rect.bottom - 30, backdropTop: 32 }, menuManager.helpMenu)
 	}
 	if (menu === 'account') {
-		if (noteManager.state.isLocal) {
+		if (noteManager.state.accountType === AccountType.None) {
 			menuManager.showMenu({ x: rect.right, y: rect.bottom - 30, backdropTop: 32, alignRight: true }, [
 				MenuItems.CreateAccount,
 				MenuItems.Separator,

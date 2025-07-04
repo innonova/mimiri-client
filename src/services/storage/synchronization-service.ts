@@ -1,6 +1,6 @@
 import { emptyGuid, type Guid } from '../types/guid'
 import type { KeySyncAction, NoteSyncAction } from '../types/requests'
-import type { KeyData, SharedState } from './type'
+import { AccountType, type KeyData, type SharedState } from './type'
 import type { CryptographyManager } from './cryptography-manager'
 import type { MimiriDb } from './mimiri-db'
 import type { MimiriClient } from './mimiri-client'
@@ -23,14 +23,19 @@ export class SynchronizationService {
 	) {}
 
 	public async initialSync(): Promise<void> {
-		if (!this.state.workOffline && !this.state.isLocalOnly) {
+		if (!this.state.workOffline && this.state.accountType === AccountType.Cloud) {
 			await this.syncPull()
 			this._initialized = true
 		}
 	}
 
 	public async sync() {
-		if (!this._initialized || !this.state.isOnline || this.state.isLocalOnly) {
+		if (
+			!this._initialized ||
+			!this.state.isOnline ||
+			this.state.accountType === AccountType.Local ||
+			this.state.accountType === AccountType.None
+		) {
 			return
 		}
 		if (!this._syncInProgress) {
@@ -77,14 +82,25 @@ export class SynchronizationService {
 	}
 
 	public queueSync(): void {
-		if (!this._initialized || !this.state.isLoggedIn || !this.state.isOnline || this.state.isLocalOnly) {
+		if (
+			!this._initialized ||
+			!this.state.isLoggedIn ||
+			!this.state.isOnline ||
+			this.state.accountType === AccountType.Local ||
+			this.state.accountType === AccountType.None
+		) {
 			return
 		}
 		void this.sync()
 	}
 
 	waitForSync(timeoutMs?: number): Promise<boolean> {
-		if (!this._initialized || !this.state.isOnline || this.state.isLocalOnly) {
+		if (
+			!this._initialized ||
+			!this.state.isOnline ||
+			this.state.accountType === AccountType.Local ||
+			this.state.accountType === AccountType.None
+		) {
 			return Promise.resolve(false)
 		}
 		if (!this._syncInProgress) {
