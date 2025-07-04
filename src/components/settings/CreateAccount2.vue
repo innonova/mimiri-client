@@ -9,6 +9,7 @@
 					<div class="flex items-center">Username:</div>
 					<UsernameInput
 						:display-current="false"
+						:check-username="createMode === 'cloud'"
 						v-model:value="username"
 						v-model:valid="usernameValid"
 					></UsernameInput>
@@ -177,8 +178,6 @@ const populate = async () => {
 }
 
 const tabSelected = item => {
-	console.log(item)
-
 	if (item === 'Cloud Account') {
 		createMode.value = 'cloud'
 	} else {

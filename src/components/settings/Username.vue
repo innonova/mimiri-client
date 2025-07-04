@@ -4,7 +4,12 @@
 		<div class="overflow-y-auto pb-10">
 			<div class="grid grid-cols-[5rem_14rem] gap-3 items-baseline m-1 mt-5">
 				<div class="flex items-center">Username:</div>
-				<UsernameInput ref="usernameInput" :display-current="true" @changed="usernameChanged"></UsernameInput>
+				<UsernameInput
+					ref="usernameInput"
+					:display-current="true"
+					:check-username="true"
+					@changed="usernameChanged"
+				></UsernameInput>
 			</div>
 			<div class="mt-10 max-w-110 mr-2">
 				<hr />

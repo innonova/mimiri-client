@@ -9,7 +9,7 @@
 				<form class="w-96" v-on:submit.prevent="createAccount">
 					<div class="grid grid-cols-[5rem_12rem] gap-3 items-baseline">
 						<div class="flex items-center">Username:</div>
-						<UsernameInput :display-current="false" @changed="usernameChanged"></UsernameInput>
+						<UsernameInput :display-current="false" :check-username="true" @changed="usernameChanged"></UsernameInput>
 						<div class="flex items-center">Password:</div>
 						<div class="text-right relative desktop:flex">
 							<input

@@ -133,6 +133,16 @@ export const settingView = {
 	localAccount: () => tid('settings-view-local-account'),
 }
 
+export const usernameInput = {
+	container: () => tid('username-input'),
+	status: () => tid('username-status'),
+	current: () => tid('username-status').getByTestId('username-current'),
+	invalid: () => tid('username-status').getByTestId('username-invalid'),
+	checking: () => tid('username-status').getByTestId('username-checking'),
+	unavailable: () => tid('username-status').getByTestId('username-unavailable'),
+	available: () => tid('username-status').getByTestId('username-available'),
+}
+
 export const loginCtrl = {
 	container: () => tid('login-view'),
 	username: () => tid('username-input'),

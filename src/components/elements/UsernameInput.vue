@@ -1,21 +1,27 @@
 <template>
 	<div class="relative desktop:flex">
 		<input v-model="username" tabindex="1" type="text" class="basic-input" autofocus data-testid="username-input" />
-		<div v-if="username" class="desktop:w-0 desktop:h-0 pt-0.5 overflow-visible">
+		<div
+			v-if="username && checkUsername"
+			class="desktop:w-0 desktop:h-0 pt-0.5 overflow-visible"
+			data-testid="username-status"
+		>
 			<div v-if="usernameCurrent" class="flex items-center w-52 desktop:ml-2 mt-1.5 desktop:mt-0.5">
-				<AvailableIcon class="w-5 h-5 mr-1 inline-block"></AvailableIcon> Current
+				<AvailableIcon class="w-5 h-5 mr-1 inline-block" data-testid="username-current"></AvailableIcon> Current
 			</div>
 			<div v-if="usernameInProgress" class="flex items-center w-52 desktop:ml-2 mt-1.5 desktop:mt-0">
-				<LoadingIcon class="animate-spin w-5 h-5 mr-1 inline-block"></LoadingIcon> Checking
+				<LoadingIcon class="animate-spin w-5 h-5 mr-1 inline-block" data-testid="username-checking"></LoadingIcon>
+				Checking
 			</div>
 			<div v-if="usernameAvailable" class="flex items-center w-52 desktop:ml-2 mt-1.5 desktop:mt-0.5">
-				<AvailableIcon class="w-5 h-5 mr-1 inline-block"></AvailableIcon> Available
+				<AvailableIcon class="w-5 h-5 mr-1 inline-block" data-testid="username-available"></AvailableIcon> Available
 			</div>
 			<div v-if="usernameUnavailable" class="flex items-center w-52 desktop:ml-2 mt-1.5 desktop:mt-0.5">
-				<UnavailableIcon class="w-5 h-5 mr-1 inline-block"></UnavailableIcon> Unavailable
+				<UnavailableIcon class="w-5 h-5 mr-1 inline-block" data-testid="username-unavailable"></UnavailableIcon>
+				Unavailable
 			</div>
 			<div v-if="usernameInvalid" class="flex items-center w-52 desktop:ml-2 mt-1.5 desktop:mt-0.5">
-				<UnavailableIcon class="w-5 h-5 mr-1 inline-block"></UnavailableIcon> Invalid
+				<UnavailableIcon class="w-5 h-5 mr-1 inline-block" data-testid="username-invalid"></UnavailableIcon> Invalid
 			</div>
 		</div>
 	</div>
@@ -34,6 +40,7 @@ const disallowRegex = /[!"#$:%&@'()*/=?[\]{}~\^\\`\s]/
 
 const props = defineProps<{
 	displayCurrent: boolean
+	checkUsername: boolean
 }>()
 
 const username = defineModel<string>('value')
@@ -85,7 +92,11 @@ const checkUsernameDebounce = new Debounce(async () => {
 		usernameAvailable.value = false
 		usernameUnavailable.value = false
 		const value = username.value
-		const available = await noteManager.auth.checkUsername(value)
+
+		let available = true
+		if (props.checkUsername === undefined || props.checkUsername === true) {
+			available = await noteManager.auth.checkUsername(value)
+		}
 		if (value === username.value) {
 			usernameAvailable.value = available
 			usernameUnavailable.value = !available
@@ -100,7 +111,7 @@ const checkUsernameDebounce = new Debounce(async () => {
 	}
 }, 500)
 
-watch(username, () => {
+watch([username, props], () => {
 	checkUsernameDebounce.activate()
 })
 

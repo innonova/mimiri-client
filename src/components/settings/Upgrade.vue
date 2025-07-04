@@ -8,7 +8,12 @@
 					You current local user is: &nbsp; <b>{{ noteManager.state.username }}</b>
 				</div>
 				<div class="flex items-center">Username:</div>
-				<UsernameInput :display-current="false" v-model:value="username" v-model:valid="usernameValid"></UsernameInput>
+				<UsernameInput
+					:display-current="false"
+					:check-username="true"
+					v-model:value="username"
+					v-model:valid="usernameValid"
+				></UsernameInput>
 				<div class="flex items-center">Current Password:</div>
 				<input class="basic-input" type="password" v-model="currentPassword" data-testid="current-password-input" />
 				<div></div>

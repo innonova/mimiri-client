@@ -10,6 +10,7 @@ import {
 	settingNodes,
 	settingView,
 	titleBar,
+	usernameInput,
 } from '../selectors'
 import { mimiri } from '../framework/mimiri-context'
 
@@ -37,6 +38,7 @@ export const createLocalAccount = async () => {
 	await createAccountView.username().fill(mimiri().config.username)
 	await createAccountView.password().fill(mimiri().config.password)
 	await createAccountView.repeat().fill(mimiri().config.password)
+	await expect(usernameInput.status()).not.toBeVisible()
 	await createAccountView.button().click()
 	await expect(createAccountView.container()).not.toBeVisible()
 	await expect(settingNodes.controlPanel()).toBeVisible()
@@ -53,6 +55,7 @@ export const connectLocalAccount = async () => {
 	}
 	await settingNodes.account().click()
 	await connectCloudView.currentPassword().fill(mimiri().config.password)
+	await expect(usernameInput.available()).toBeVisible()
 	await connectCloudView.button().click()
 	await expect(connectCloudView.container()).not.toBeVisible()
 	await expect(settingNodes.controlPanel()).toBeVisible()
@@ -67,6 +70,7 @@ export const createCloudAccount = async () => {
 	await createAccountView.username().fill(mimiri().config.username)
 	await createAccountView.password().fill(mimiri().config.password)
 	await createAccountView.repeat().fill(mimiri().config.password)
+	await expect(usernameInput.available()).toBeVisible()
 	await createAccountView.button().click()
 	await expect(createAccountView.container()).not.toBeVisible()
 	await expect(settingNodes.controlPanel()).toBeVisible()
