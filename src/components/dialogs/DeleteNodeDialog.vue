@@ -1,8 +1,13 @@
 <template>
-	<dialog class="w-72 bg-dialog text-text desktop:border border-solid border-dialog-border" ref="dialog">
+	<dialog
+		class="w-72 bg-dialog text-text desktop:border border-solid border-dialog-border"
+		ref="dialog"
+		data-testid="delete-note-dialog"
+	>
 		<div
 			v-if="!noteManager.tree.selectedNoteRef().value?.isShared || shareParticipants.length == 0"
 			class="grid grid-rows-[auto_1fr_auto] gap-6"
+			data-testid="delete-note"
 		>
 			<DialogTitle @close="close">Delete Note</DialogTitle>
 			<main class="px-2 mobile:text-center">
@@ -15,13 +20,14 @@
 				</div>
 			</main>
 			<footer class="flex justify-end mobile:justify-center gap-2 pr-2 pb-2 mobile:mt-5">
-				<button class="primary" @click="submitDialog">Delete</button>
-				<button class="secondary" @click="close">Cancel</button>
+				<button class="primary" @click="submitDialog" data-testid="delete-dialog-confirm">Delete</button>
+				<button class="secondary" @click="close" data-testid="delete-dialog-cancel">Cancel</button>
 			</footer>
 		</div>
 		<div
 			v-if="noteManager.tree.selectedNoteRef().value?.isShareRoot && shareParticipants.length > 0"
 			class="grid grid-rows-[auto_1fr_auto] gap-6"
+			data-testid="leave-share"
 		>
 			<DialogTitle @close="close">Leave Share</DialogTitle>
 			<main class="px-2 mobile:text-center">
@@ -43,13 +49,14 @@
 				</div>
 			</main>
 			<footer class="flex justify-end mobile:justify-center gap-2 pr-2 pb-2 mobile:mt-5">
-				<button class="primary" @click="submitDialog">Leave</button>
-				<button class="secondary" @click="close">Cancel</button>
+				<button class="primary" @click="submitDialog" data-testid="leave-dialog-confirm">Leave</button>
+				<button class="secondary" @click="close" data-testid="leave-dialog-cancel">Cancel</button>
 			</footer>
 		</div>
 		<div
 			v-if="!noteManager.tree.selectedNoteRef().value?.isShareRoot && shareParticipants.length > 0"
 			class="grid grid-rows-[auto_1fr_auto] gap-6"
+			data-testid="delete-share"
 		>
 			<DialogTitle @close="close">Delete Note</DialogTitle>
 			<main class="px-2 mobile:text-center">
@@ -71,8 +78,8 @@
 				</div>
 			</main>
 			<footer class="flex justify-end mobile:justify-center gap-2 pr-2 pb-2 mobile:mt-5">
-				<button class="primary" @click="submitDialog">Delete</button>
-				<button class="secondary" @click="close">Cancel</button>
+				<button class="primary" @click="submitDialog" data-testid="delete-dialog-confirm">Delete</button>
+				<button class="secondary" @click="close" data-testid="delete-dialog-cancel">Cancel</button>
 			</footer>
 		</div>
 	</dialog>

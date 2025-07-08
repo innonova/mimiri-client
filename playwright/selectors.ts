@@ -406,3 +406,12 @@ export const passwordDialog = {
 	cancelButton: () => tid(`password-dialog`).getByTestId(`password-dialog-cancel`),
 	error: () => tid(`password-dialog`).getByTestId(`password-dialog-error`),
 }
+
+export const deleteNoteDialog = {
+	container: () => tid(`delete-note-dialog`),
+	confirmButton: () => tid(`delete-note-dialog`).getByTestId(`delete-dialog-confirm`),
+	cancelButton: () => tid(`delete-note-dialog`).getByTestId(`delete-dialog-cancel`),
+	deleteNote: () => tid(`delete-note-dialog`).getByTestId(`delete-note`),
+	deleteShare: () => tid(`delete-note-dialog`).getByTestId(`delete-share`),
+	leaveShare: () => tid(`delete-note-dialog`).getByTestId(`leave-share`),
+}

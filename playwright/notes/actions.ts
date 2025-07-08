@@ -12,48 +12,62 @@ import {
 } from './data'
 
 export const createRootNote = async (name: string, text?: string) => {
-	await mainToolbar.container().click()
-	await mainToolbar.createMenu().click()
-	await menu.newRootNote().click()
+	await mainToolbar.container().click({ timeout: 2000 })
+	await mainToolbar.createMenu().click({ timeout: 2000 })
+	await menu.newRootNote().click({ timeout: 2000 })
 	await note.newInput().fill(name)
 	await note.newInput().press('Enter')
+	await mimiri().waitForTimeout(250)
 	if (text) {
-		await expect(editor.monaco()).toHaveClass(/\bfocused\b/)
+		await editor.monaco().click({ timeout: 2000 })
+		await expect(editor.monaco()).toHaveClass(/\bfocused\b/, { timeout: 2000 })
 		await mimiri().page.keyboard.type(text)
 		await mimiri().page.keyboard.press('Enter')
+		await note.item('System').click({ timeout: 4000 })
+		await note.item(name).click({ timeout: 4000 })
+		await expect(editor.monaco()).toHaveText(text, { timeout: 2000 })
 	}
 }
 
 export const createChildNote = async (name: string, text?: string) => {
-	await mainToolbar.container().click()
-	await mainToolbar.createMenu().click()
-	await menu.newChildNote().click()
+	await mainToolbar.container().click({ timeout: 2000 })
+	await mainToolbar.createMenu().click({ timeout: 2000 })
+	await menu.newChildNote().click({ timeout: 2000 })
 	await note.newInput().fill(name)
 	await note.newInput().press('Enter')
+	await mimiri().waitForTimeout(250)
 	if (text) {
-		await expect(editor.monaco()).toHaveClass(/\bfocused\b/)
+		await editor.monaco().click({ timeout: 2000 })
+		await expect(editor.monaco()).toHaveClass(/\bfocused\b/, { timeout: 2000 })
 		await mimiri().page.keyboard.type(text)
 		await mimiri().page.keyboard.press('Enter')
+		await note.item('System').click({ timeout: 4000 })
+		await note.item(name).click({ timeout: 4000 })
+		await expect(editor.monaco()).toHaveText(text, { timeout: 2000 })
 	}
 }
 
 export const createSiblingNote = async (name: string, text?: string) => {
-	await mainToolbar.container().click()
-	await mainToolbar.createMenu().click()
-	await menu.newSiblingNote().click()
+	await mainToolbar.container().click({ timeout: 2000 })
+	await mainToolbar.createMenu().click({ timeout: 2000 })
+	await menu.newSiblingNote().click({ timeout: 2000 })
 	await note.newInput().fill(name)
 	await note.newInput().press('Enter')
+	await mimiri().waitForTimeout(250)
 	if (text) {
-		await expect(editor.monaco()).toHaveClass(/\bfocused\b/)
+		await editor.monaco().click({ timeout: 2000 })
+		await expect(editor.monaco()).toHaveClass(/\bfocused\b/, { timeout: 2000 })
 		await mimiri().page.keyboard.type(text)
 		await mimiri().page.keyboard.press('Enter')
+		await note.item('System').click({ timeout: 4000 })
+		await note.item(name).click({ timeout: 4000 })
+		await expect(editor.monaco()).toHaveText(text, { timeout: 2000 })
 	}
 }
 
 export const createTestTree = async (tree: StandardTreeNode[]) => {
 	for (const root of tree) {
 		await createRootNote(root.title, root.text)
-		await editor.save().click()
 		if (root.children) {
 			const createChildren = async (parent: StandardTreeNode, children: StandardTreeNode[]) => {
 				let first = true
@@ -61,14 +75,11 @@ export const createTestTree = async (tree: StandardTreeNode[]) => {
 					if (first) {
 						first = false
 						await createChildNote(child.title, child.text)
-						await editor.save().click()
 					} else {
 						await createSiblingNote(child.title, child.text)
-						await editor.save().click()
 					}
 					if (child.children) {
 						await createChildren(child, child.children)
-						await editor.save().click()
 						await note.item(parent.title).click()
 						first = true
 					}
@@ -82,23 +93,23 @@ export const createTestTree = async (tree: StandardTreeNode[]) => {
 
 export const verifyTestTree = async (tree: StandardTreeNode[]) => {
 	for (const root of tree) {
-		await note.item(root.title).click()
-		if (await note.expand(root.title).isVisible()) {
-			await note.expand(root.title).click()
+		await note.item(root.title).click({ timeout: 10000 })
+		if (await note.expand(root.title).isVisible({ timeout: 2000 })) {
+			await note.expand(root.title).click({ timeout: 2000 })
 		}
 		if (root.text) {
-			await editor.monaco().waitFor({ state: 'visible' })
-			await expect(editor.monaco()).toHaveText(root.text)
+			await editor.monaco().waitFor({ state: 'visible', timeout: 2000 })
+			await expect(editor.monaco()).toHaveText(root.text, { timeout: 2000 })
 		}
 		if (root.children) {
 			const verifyChildren = async (parent: Locator, children: StandardTreeNode[]) => {
 				for (const child of children) {
-					await note.item(child.title, parent).click()
-					if (await note.expand(child.title, parent).isVisible()) {
-						await note.expand(child.title, parent).click()
+					await note.item(child.title, parent).click({ timeout: 2000 })
+					if (await note.expand(child.title, parent).isVisible({ timeout: 2000 })) {
+						await note.expand(child.title, parent).click({ timeout: 2000 })
 					}
 					if (child.text) {
-						await expect(editor.monaco()).toHaveText(child.text)
+						await expect(editor.monaco()).toHaveText(child.text, { timeout: 2000 })
 					}
 					if (child.children) {
 						await verifyChildren(note.container(child.title, parent), child.children)
