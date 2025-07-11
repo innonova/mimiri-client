@@ -4,6 +4,7 @@ import {
 	aboutView,
 	changePasswordView,
 	changeUsernameView,
+	connectCloudView,
 	deleteView,
 	passwordDialog,
 	settingNodes,
@@ -11,7 +12,16 @@ import {
 } from './selectors'
 import { createTestTree, verifyTestTree } from './notes/actions'
 import { miniTestTree } from './notes/data'
-import { connectLocalAccount, createCloudAccount, createLocalAccount, login, loginFail, logout } from './core/actions'
+import {
+	appReadyCycle,
+	connectLocalAccount,
+	createCloudAccount,
+	createLocalAccount,
+	login,
+	loginFail,
+	logout,
+} from './core/actions'
+import exp from 'constants'
 
 // test.describe.configure({ mode: 'serial' })
 
@@ -50,6 +60,8 @@ test.describe('account-mutations', () => {
 			await deleteView.noRecovery().click()
 			await deleteView.password().fill(mimiri().password)
 			await deleteView.submit().click()
+			await expect(deleteView.submit()).not.toBeVisible()
+			await expect(connectCloudView.container()).toBeVisible()
 			await settingNodes.controlPanel().click()
 			await expect(aboutView.accountType()).toHaveText('local')
 			await logout()
@@ -131,7 +143,7 @@ test.describe('account-mutations', () => {
 			await deleteView.deleteLocal().click()
 			await deleteView.password().fill(mimiri().password)
 			await deleteView.submit().click()
-			await expect(deleteView.submit()).not.toBeVisible()
+			await appReadyCycle()
 			await settingNodes.controlPanel().click()
 			await expect(aboutView.accountType()).toHaveText('none')
 			await loginFail()

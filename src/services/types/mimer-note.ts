@@ -755,6 +755,10 @@ export class MimerNote {
 		return persistedState.getScrollTop(this)
 	}
 
+	public get isGettingStarted() {
+		return !!this.note.getItem('metadata').isGettingStarted
+	}
+
 	public set scrollTop(value: number) {
 		persistedState.setScrollTop(this, value)
 	}

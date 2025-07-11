@@ -1,7 +1,7 @@
 <template>
 	<div class="flex flex-col h-full" data-testid="connect-cloud-view">
 		<TabBar ref="tabBar" :items="['Connect Cloud']"></TabBar>
-		<div class="pl-2 mt-1">
+		<form v-on:submit.prevent="createAccount" class="pl-2 mt-1">
 			<div class="grid grid-cols-[7rem_12rem] gap-2">
 				<ItemHeader class="col-span-2">Choose your credentials</ItemHeader>
 				<div class="col-span-2 mb-2">
@@ -31,12 +31,11 @@
 						v-model:match="passwordMatch"
 					></PasswordRepeatInput>
 				</template>
+				<div v-if="errorMessage" class="col-span-2 text-right text-error my-1">{{ errorMessage }}</div>
 				<div></div>
-				<PrimaryButton :enabled="canCreate" :loading="loading" @click="createAccount" data-testid="create-button">
-					Create
-				</PrimaryButton>
+				<PrimaryButton :enabled="canCreate" :loading="loading" data-testid="create-button"> Create </PrimaryButton>
 			</div>
-		</div>
+		</form>
 
 		<div class="overflow-y-auto pb-10"></div>
 	</div>
@@ -49,7 +48,7 @@ import UsernameInput from '../elements/UsernameInput.vue'
 import PasswordInput from '../elements/PasswordInput.vue'
 import PasswordRepeatInput from '../elements/PasswordRepeatInput.vue'
 import PrimaryButton from '../elements/PrimaryButton.vue'
-import { noteManager } from '../../global'
+import { blockUserInput, noteManager } from '../../global'
 import { DEFAULT_ITERATIONS } from '../../services/storage/mimiri-store'
 
 const username = ref('')
@@ -59,6 +58,7 @@ const password = ref('')
 const passwordMatch = ref(false)
 const loading = ref(false)
 const chooseNewPassword = ref(false)
+const errorMessage = ref('')
 
 const canCreate = computed(() => {
 	let result = !!password.value
@@ -75,10 +75,25 @@ onMounted(() => {
 })
 
 const createAccount = async () => {
-	await noteManager.session.promoteToCloudAccount(
-		username.value,
-		password.value || currentPassword.value,
-		DEFAULT_ITERATIONS,
-	)
+	loading.value = true
+	blockUserInput.value = true
+	try {
+		await noteManager.session.promoteToCloudAccount(
+			username.value,
+			currentPassword.value,
+			password.value || currentPassword.value,
+			DEFAULT_ITERATIONS,
+		)
+	} catch (error) {
+		if (error instanceof Error && error.message === 'Incorrect password') {
+			errorMessage.value = 'Incorrect current password'
+		} else {
+			errorMessage.value = 'Error upgrading account. Please try again later.'
+			console.error('Error upgrading account:', error)
+		}
+	} finally {
+		loading.value = false
+		blockUserInput.value = false
+	}
 }
 </script>

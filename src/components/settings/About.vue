@@ -10,7 +10,9 @@
 				<div class="p-1 pl-4 pt-2">Released: {{ formatDate(updateManager.releaseDate) }}</div>
 				<div class="p-1 pl-4 pt-6">Notes: {{ noteCount }} / {{ maxNoteCount }} ({{ notesPercent }})</div>
 				<div class="p-1 pl-4 pt-2">Space Used: {{ usedBytes }} / {{ maxBytes }} ({{ bytesPercent }})</div>
-				<div class="p-1 pl-4 pt-2">
+				<div class="p-1 pl-4 pt-2">Unsynced Notes: {{ localNoteCount }}</div>
+				<div class="p-1 pl-4 pt-2">Unsynced Data: {{ localUsedBytes }}</div>
+				<div class="p-1 pl-4 pt-6">
 					Account:
 					<span
 						><span data-testid="about-username">{{ noteManager.state.username }}</span> (<span
@@ -93,6 +95,7 @@ import { iconAttributions } from '../../icons/attributions'
 import { mimiriPlatform } from '../../services/mimiri-platform'
 import TabBar from '../elements/TabBar.vue'
 import { fontManager } from '../../global'
+import { formatBytes } from '../../services/helpers'
 
 const SYSTEM_NOTE_COUNT = 3
 
@@ -100,8 +103,10 @@ const dialog = ref(null)
 
 const usedBytes = ref('0 MB')
 const maxBytes = ref('10 MB')
+const localUsedBytes = ref('0 MB')
 const bytesPercent = ref('0 %')
 const noteCount = ref(0)
+const localNoteCount = ref(0)
 const maxNoteCount = ref(0)
 const notesPercent = ref('0 %')
 const maxNoteSize = ref('1 MB')
@@ -143,15 +148,24 @@ const toPercent = (used, max) => {
 
 onMounted(() => {
 	if (noteManager.state.isLoggedIn) {
-		usedBytes.value = toMB(noteManager.state.userStats.size)
-		maxBytes.value = toMB(noteManager.state.userStats.maxTotalBytes)
-		bytesPercent.value = toPercent(noteManager.state.userStats.size, noteManager.state.userStats.maxTotalBytes)
-		noteCount.value = noteManager.state.userStats.noteCount - SYSTEM_NOTE_COUNT
+		usedBytes.value = formatBytes(noteManager.state.userStats.size + noteManager.state.userStats.localSizeDelta)
+		maxBytes.value = formatBytes(noteManager.state.userStats.maxTotalBytes)
+		localUsedBytes.value = formatBytes(noteManager.state.userStats.localSize)
+		bytesPercent.value = toPercent(
+			noteManager.state.userStats.size + noteManager.state.userStats.localSizeDelta,
+			noteManager.state.userStats.maxTotalBytes,
+		)
+		noteCount.value =
+			noteManager.state.userStats.noteCount + noteManager.state.userStats.localNoteCountDelta - SYSTEM_NOTE_COUNT
 		maxNoteCount.value = noteManager.state.userStats.maxNoteCount
-		notesPercent.value = toPercent(noteManager.state.userStats.noteCount, noteManager.state.userStats.maxNoteCount)
-		maxNoteSize.value = toMB(noteManager.state.userStats.maxNoteBytes)
+		localNoteCount.value = noteManager.state.userStats.localNoteCount
+		notesPercent.value = toPercent(
+			noteManager.state.userStats.noteCount + noteManager.state.userStats.localNoteCountDelta,
+			noteManager.state.userStats.maxNoteCount,
+		)
+		maxNoteSize.value = formatBytes(noteManager.state.userStats.maxNoteBytes)
 		if (noteManager.tree.selectedNote()) {
-			currentNoteSize.value = toMB(noteManager.tree.selectedNote().size)
+			currentNoteSize.value = formatBytes(noteManager.tree.selectedNote().size)
 			currentNotePercent.value = toPercent(
 				noteManager.tree.selectedNote().size,
 				noteManager.state.userStats.maxNoteBytes,

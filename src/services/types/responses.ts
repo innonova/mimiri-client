@@ -128,17 +128,10 @@ export interface BlogPost {
 export interface SyncResponse {
 	keys: any[]
 	notes: any[]
-}
-
-export interface SyncResult {
-	itemType: string
-	action: string
-	id: Guid
-	type: string
-	expected: number
-	actual: number
+	noteCount: number
+	size: number
 }
 
 export interface SyncPushResponse {
-	results: SyncResult[]
+	status: 'success' | 'conflict' | 'no-data' | 'error'
 }

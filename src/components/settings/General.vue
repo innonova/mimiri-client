@@ -26,7 +26,7 @@
 			>
 				<label>
 					<input type="checkbox" v-model="openAtLogin" class="mr-1 relative top-0.5" />
-					Lunch Mimiri Notes on Login
+					Launch Mimiri Notes on Login
 				</label>
 			</div>
 			<div v-if="mimiriPlatform.isDesktop && !mimiriPlatform.isWeb" class="p-1 pt-2 m-auto text-left">

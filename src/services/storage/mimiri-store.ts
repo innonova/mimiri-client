@@ -2,7 +2,7 @@ import { reactive, watch } from 'vue'
 import { type Guid } from '../types/guid'
 import { Note } from '../types/note'
 import type { NoteShareInfo } from '../types/note-share-info'
-import { AccountType, ViewMode, type SharedState } from './type'
+import { AccountType, ViewMode, type LocalState, type SharedState } from './type'
 import { AuthenticationManager } from './authentication-manager'
 import { CryptographyManager } from './cryptography-manager'
 import { SynchronizationService } from './synchronization-service'
@@ -66,6 +66,10 @@ export class MimiriStore {
 			userStats: {
 				size: 0,
 				noteCount: 0,
+				localSizeDelta: 0,
+				localNoteCountDelta: 0,
+				localSize: 0,
+				localNoteCount: 0,
 				maxTotalBytes: 0,
 				maxNoteBytes: 0,
 				maxNoteCount: 0,
@@ -94,14 +98,17 @@ export class MimiriStore {
 
 		this.db = new MimiriDb()
 		this.cryptoManager = new CryptographyManager(this.db, this.state)
-		this.api = new MimiriClient(host, serverKeyId, serverKey, this.state, this.cryptoManager, type => {
+		this.api = new MimiriClient(host, serverKeyId, serverKey, this.state, this.cryptoManager, (type, payload) => {
 			switch (type) {
 				case 'connected':
 					void updateManager.check()
 					void blogManager.refreshAll()
+					this.syncService.queueSync()
 					break
 				case 'sync':
-					this.syncService.queueSync()
+					if (!this.syncService.isSyncIdIssued(payload)) {
+						this.syncService.queueSync()
+					}
 					break
 				case 'bundle-update':
 					void updateManager.check()
@@ -167,6 +174,7 @@ export class MimiriStore {
 			this.uiManager,
 			this.treeManager,
 			this.api,
+			this.db,
 		)
 
 		browserHistory.init(noteId => {
@@ -223,15 +231,14 @@ export class MimiriStore {
 
 	public readonly session = {
 		addGettingStarted: (note?: Note) => this.sessionManager.addGettingStarted(note),
-		isAccountPristine: () => this.sessionManager.isAccountPristine(this.treeManager.root),
 		recoverLogin: () => this.sessionManager.recoverLogin(),
 		login: (username: string, password: string): Promise<boolean> => this.sessionManager.login(username, password),
 		goOnline: (password?: string): Promise<boolean> => this.sessionManager.goOnline(password),
 		openLocal: () => this.sessionManager.openLocal(),
 		updateUserStats: () => this.sessionManager.updateUserStats(),
 		logout: (): Promise<void> => this.sessionManager.logout(),
-		promoteToCloudAccount: (username: string, password: string, iterations: number) =>
-			this.sessionManager.promoteToCloudAccount(username, password, iterations),
+		promoteToCloudAccount: (username: string, oldPassword: string, newPassword: string, iterations: number) =>
+			this.sessionManager.promoteToCloudAccount(username, oldPassword, newPassword, iterations),
 		promoteToLocalAccount: (username: string, password: string, iterations: number) =>
 			this.sessionManager.promoteToLocalAccount(username, password, iterations),
 		registerListener: (listener: LoginListener) => this.sessionManager.registerListener(listener),
@@ -239,6 +246,8 @@ export class MimiriStore {
 		toggleWorkOffline: () => {
 			this.api.toggleWorkOffline()
 		},
+		setLocalState: (state: LocalState) => this.sessionManager.setLocalState(state),
+		getLocalState: (): Promise<LocalState> => this.sessionManager.getLocalState(),
 	}
 
 	public readonly auth = {
@@ -248,6 +257,7 @@ export class MimiriStore {
 			this.authManager.changeUserNameAndPassword(username, oldPassword, newPassword, iterations),
 		deleteAccount: (password: string, deleteLocal: boolean) => this.authManager.deleteAccount(password, deleteLocal),
 		verifyPassword: (password: string) => this.authManager.verifyPassword(password),
+		hasOneOrMoreAccounts: () => this.authManager.hasOneOrMoreAccounts(),
 	}
 
 	public readonly note = {

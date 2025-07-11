@@ -190,4 +190,5 @@ export interface KeySyncAction {
 export interface SyncPushRequest extends BasicRequest {
 	notes: NoteSyncAction[]
 	keys: KeySyncAction[]
+	syncId: string
 }

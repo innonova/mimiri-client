@@ -1,6 +1,6 @@
 <template>
 	<div class="text-right">
-		<button :disabled="loading || !enabled" class="primary" type="button" @click="$emit('click')">
+		<button :disabled="loading || !enabled" class="primary" type="submit" @click="$emit('click')">
 			<div v-if="loading" class="h-[18px]">
 				<LoadingIcon class="animate-spin w-6 h-6 mt-[-3px] inline-block"></LoadingIcon>
 			</div>

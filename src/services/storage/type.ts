@@ -10,6 +10,10 @@ export interface LoginData {
 export interface UserStats {
 	size: number
 	noteCount: number
+	localSizeDelta: number
+	localNoteCountDelta: number
+	localSize: number
+	localNoteCount: number
 	maxTotalBytes: number
 	maxNoteBytes: number
 	maxNoteCount: number
@@ -94,6 +98,10 @@ export interface LocalData {
 	}
 }
 
+export interface LocalState {
+	firstLogin: boolean
+}
+
 export interface LocalUserData {
 	rootCrypt: {
 		algorithm: string
@@ -122,6 +130,7 @@ export interface NoteItem {
 	data: string
 	modified: string
 	created: string
+	size: number
 }
 
 export interface NoteData {
@@ -131,6 +140,8 @@ export interface NoteData {
 	modified: string
 	created: string
 	sync: number
+	size: number
+	base?: NoteData
 }
 
 export interface KeyInfo {
@@ -149,6 +160,7 @@ export interface NoteInfoItem {
 	data: string
 	modified: string
 	created: string
+	size: number
 }
 
 export interface NoteInfo {
@@ -157,12 +169,15 @@ export interface NoteInfo {
 	modified: string
 	created: string
 	sync: number
+	size: number
 	items: NoteInfoItem[]
 }
 
 export interface SyncInfo {
 	notes: NoteInfo[]
 	keys: KeyInfo[]
+	noteCount: number
+	size: number
 }
 
 export class MimerError extends Error {

@@ -14,7 +14,6 @@ test.describe('system notes', () => {
 			await expect(titleBar.accountButton()).toBeVisible()
 			await createRootNote('Test Target Note')
 			await createRootNote('Test Source Note')
-			await note.item('System').dblclick()
 			await note.item('Settings').dblclick()
 			for (const item of systemNotes) {
 				await note.item(item).click({ button: 'right' })
@@ -42,7 +41,6 @@ test.describe('system notes', () => {
 		await withMimiriContext(async () => {
 			await mimiri().home()
 			await expect(titleBar.accountButton()).toBeVisible()
-			await note.item('System').dblclick()
 			await note.item('Settings').dblclick()
 			await createRootNote('Test Target Note')
 			await createRootNote('Test Source Note')

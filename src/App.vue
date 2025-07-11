@@ -1,4 +1,5 @@
 <template>
+	<input :value="appStatus" type="hidden" data-testid="app-status" />
 	<div
 		v-if="loading"
 		class="h-full dark-mode safe-area-padding text-size-base"
@@ -67,6 +68,7 @@
 		>
 			<LockScreen></LockScreen>
 		</div>
+		<div v-if="blockUserInput" class="absolute left-0 top-0 w-full h-full flex bg-transparent"></div>
 		<ContextMenu ref="contextMenu"></ContextMenu>
 		<NotificationList ref="notificationList"></NotificationList>
 		<DeleteNodeDialog ref="deleteNodeDialog"></DeleteNodeDialog>
@@ -92,7 +94,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import NoteTreeView from './components/NoteTreeView.vue'
 import NoteEditor from './components/NoteEditor.vue'
 import MainToolbar from './components/MainToolbar.vue'
@@ -138,6 +140,8 @@ import {
 	deleteHistoryDialog,
 	infoDialog,
 	debug,
+	blockUserInput,
+	appStatus,
 } from './global'
 import { settingsManager } from './services/settings-manager'
 import LoadingIcon from './icons/loading.vue'
@@ -421,8 +425,11 @@ const resizeDebounce = new Debounce(async () => {
 useEventListener(window, 'resize', async () => {
 	resizeDebounce.activate()
 })
-;(async () => {
+
+appStatus.value = 'loading'
+onMounted(async () => {
 	try {
+		appStatus.value = 'loading'
 		setTimeout(() => (secondPassed.value = true), 1000)
 		progressActivity()
 
@@ -435,6 +442,7 @@ useEventListener(window, 'resize', async () => {
 
 		updateTheme()
 		if (await updateManager.checkUpdateInitial()) {
+			appStatus.value = 'update'
 			return
 		}
 		try {
@@ -458,11 +466,9 @@ useEventListener(window, 'resize', async () => {
 		let showLogin = !noteManager.state.isLoggedIn
 
 		if (!noteManager.state.isLoggedIn) {
-			if (settingsManager.isNewInstall) {
+			if (!(await noteManager.auth.hasOneOrMoreAccounts())) {
 				await noteManager.session.openLocal()
-				// await noteManager.loginAnonymousAccount()
 				if (noteManager.state.isLoggedIn) {
-					// settingsManager.isNewInstall = false
 					showLogin = false
 				}
 			} else {
@@ -475,11 +481,14 @@ useEventListener(window, 'resize', async () => {
 		if (showLogin) {
 			loginDialog.value.show(true)
 		}
+
+		appStatus.value = 'ready'
 	} catch (ex) {
+		appStatus.value = 'error'
 		debug.logError('Error during app initialization', ex)
 		// setTimeout(() => location.reload(), 1000)
 	}
-})()
+})
 
 const handleDragging = e => {
 	let pos = e.pageX

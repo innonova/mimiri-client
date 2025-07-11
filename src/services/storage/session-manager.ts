@@ -6,12 +6,13 @@ import type { AuthenticationManager } from './authentication-manager'
 import type { CryptographyManager } from './cryptography-manager'
 import type { NoteService } from './note-service'
 import type { NoteOperationsManager } from './note-operations-manager'
-import { AccountType, MimerError, type SharedState } from './type'
+import { AccountType, MimerError, type LocalState, type SharedState } from './type'
 import type { SynchronizationService } from './synchronization-service'
 import { Capacitor } from '@capacitor/core'
 import type { UIStateManager } from './ui-state-manager'
 import type { NoteTreeManager } from './note-tree-manager'
 import type { MimiriClient } from './mimiri-client'
+import type { MimiriDb } from './mimiri-db'
 
 export interface LoginListener {
 	login()
@@ -31,6 +32,7 @@ export class SessionManager {
 		private uiManager: UIStateManager,
 		private treeManager: NoteTreeManager,
 		private api: MimiriClient,
+		private db: MimiriDb,
 	) {}
 
 	public registerListener(listener: LoginListener) {
@@ -143,46 +145,21 @@ export class SessionManager {
 		}
 	}
 
-	public async isAccountPristine(rootNote: MimerNote) {
-		if (this.state.isAnonymous) {
-			return false
-		}
-		const userNotes = rootNote.children.filter(child => !child.isSystem)
-		if (userNotes.length !== 1) {
-			return false
-		}
-		if (!(await this.isNotePristine(userNotes[0]))) {
-			return false
-		}
-		return true
-	}
-
-	private async isNotePristine(note: MimerNote) {
-		const metadata = note.note.getItem('metadata')
-		const history = note.note.getItem('history')
-
-		if (!metadata.isGettingStarted || history.active) {
-			return false
-		}
-		await note.ensureChildren()
-		for (const child of note.children) {
-			if (!(await this.isNotePristine(child))) {
-				return false
-			}
-		}
-		return true
-	}
 	private async restoreLogin() {
-		if (await this.authManager.restoreLogin()) {
-			await this.cryptoManager.ensureLocalCrypt()
-			if (this.state.isOnline) {
-				await this.syncService.initialSync()
-				await this.cryptoManager.loadAllKeys()
-				await this.syncService.sync()
-			} else {
-				await this.cryptoManager.loadAllKeys()
+		try {
+			if (await this.authManager.restoreLogin()) {
+				await this.cryptoManager.ensureLocalCrypt()
+				if (this.state.isOnline) {
+					await this.syncService.initialSync()
+					await this.cryptoManager.loadAllKeys()
+					await this.syncService.sync()
+				} else {
+					await this.cryptoManager.loadAllKeys()
+				}
+				return true
 			}
-			return true
+		} catch (ex) {
+			debug.logError('Failed to restore login', ex)
 		}
 		return false
 	}
@@ -263,6 +240,14 @@ export class SessionManager {
 				await this.treeManager.loadState()
 				updateManager.good()
 				this._listener?.login()
+				const localState = await this.getLocalState()
+				if (localState.firstLogin) {
+					await this.treeManager.controlPanel.expand()
+					await this.treeManager.gettingStarted?.expand()
+					await this.treeManager.gettingStarted?.select()
+					localState.firstLogin = false
+					await this.setLocalState(localState)
+				}
 				return true
 			} else {
 				return false
@@ -296,16 +281,30 @@ export class SessionManager {
 		}
 	}
 
-	public async promoteToCloudAccount(username: string, password: string, iterations: number) {
-		await this.authManager.promoteToCloudAccount(username, password, iterations)
+	public async promoteToCloudAccount(username: string, oldPassword: string, newPassword: string, iterations: number) {
+		await this.authManager.promoteToCloudAccount(username, oldPassword, newPassword, iterations)
 		await this.logout()
-		await this.login(username, password)
+		await this.login(username, newPassword)
 	}
 
 	public async promoteToLocalAccount(username: string, password: string, iterations: number) {
 		await this.authManager.promoteToLocalAccount(username, password, iterations)
 		await this.logout()
 		await this.login(username, password)
+	}
+
+	public async getLocalState(): Promise<LocalState> {
+		let localState = await this.db.getLocalState()
+		if (!localState) {
+			localState = {
+				firstLogin: true,
+			}
+		}
+		return localState
+	}
+
+	public async setLocalState(state: LocalState): Promise<void> {
+		await this.db.setLocalState(state)
 	}
 
 	public async logout(): Promise<void> {
@@ -316,6 +315,10 @@ export class SessionManager {
 		this.state.userStats = {
 			size: 0,
 			noteCount: 0,
+			localSizeDelta: 0,
+			localNoteCountDelta: 0,
+			localSize: 0,
+			localNoteCount: 0,
 			maxTotalBytes: 0,
 			maxNoteBytes: 0,
 			maxNoteCount: 0,

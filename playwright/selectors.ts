@@ -4,6 +4,9 @@ import { mimiri } from './framework/mimiri-context'
 const tid = (id: string) => {
 	return mimiri().getByTestId(id)
 }
+export const appMain = {
+	status: () => tid('app-status'),
+}
 
 export const subHomeView = {
 	container: () => tid('home-view'),
@@ -144,12 +147,12 @@ export const usernameInput = {
 }
 
 export const loginCtrl = {
-	container: () => tid('login-view'),
-	username: () => tid('username-input'),
-	password: () => tid('password-input'),
-	button: () => tid('login-button'),
-	createAccountLink: () => tid('create-account-link'),
-	loginError: () => tid('login-error'),
+	container: () => tid('login-dialog'),
+	username: () => tid('login-dialog').getByTestId('username-input'),
+	password: () => tid('login-dialog').getByTestId('password-input'),
+	button: () => tid('login-dialog').getByTestId('login-button'),
+	createAccountLink: () => tid('login-dialog').getByTestId('create-account-link'),
+	loginError: () => tid('login-dialog').getByTestId('login-error'),
 }
 
 export const promoteAccount = {

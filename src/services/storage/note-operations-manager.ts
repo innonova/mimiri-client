@@ -348,7 +348,11 @@ export class NoteOperationsManager {
 				this.syncService.queueSync()
 				await this.syncService.waitForSync(15000)
 				await parent?.expand()
-				this.treeManager.getNoteById(share.noteId)?.select()
+				const note = await this.treeManager.getNoteById(share.noteId)
+				if (note) {
+					await note.select()
+					await this.treeManager.ensureChildrenRecursive(share.noteId)
+				}
 			}
 		} finally {
 			this.uiManager.endAction()

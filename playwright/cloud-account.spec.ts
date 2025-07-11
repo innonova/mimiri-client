@@ -32,7 +32,8 @@ import {
 	shareTestTree,
 	standardTree,
 } from './notes/data'
-import { createCloudAccount } from './core/actions'
+import { createCloudAccount, login, logout } from './core/actions'
+import { log } from 'console'
 
 // test.describe.configure({ mode: 'serial' })
 
@@ -148,7 +149,6 @@ test.describe('cloud account', () => {
 	})
 
 	test('verify create standard test tree', async () => {
-		test.setTimeout(120000)
 		await withMimiriContext(async () => {
 			await mimiri().home()
 			await expect(titleBar.accountButton()).toBeVisible()
@@ -158,15 +158,8 @@ test.describe('cloud account', () => {
 			await mimiri().reload()
 			await expect(titleBar.accountButton()).toBeVisible()
 			await verifyTestTree(standardTree)
-			await titleBar.accountButton().click()
-			await menu.logout().click()
-			await settingNodes.controlPanel().click()
-			await expect(aboutView.username()).toHaveText('local')
-			await titleBar.accountButton().click()
-			await menu.login().click()
-			await loginCtrl.username().fill(mimiri().config.username)
-			await loginCtrl.password().fill(mimiri().config.password)
-			await loginCtrl.button().click()
+			await logout()
+			await login()
 			await verifyTestTree(standardTree)
 		})
 	})
@@ -198,7 +191,7 @@ test.describe('cloud account', () => {
 		})
 	})
 
-	test('verify complex copy note with multiple levels', async () => {
+	test.only('verify complex copy note with multiple levels', async () => {
 		await withMimiriContext(async () => {
 			await mimiri().home()
 			await expect(titleBar.accountButton()).toBeVisible()

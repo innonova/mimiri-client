@@ -59,26 +59,26 @@ export class UIStateManager {
 	}
 
 	public newNote() {
-		if (this.state.userStats.noteCount >= this.state.userStats.maxNoteCount && this.state.userStats.maxNoteCount > 0) {
-			limitDialog.value.show('create-note-count')
-			return
-		}
-		if (this.state.userStats.size >= this.state.userStats.maxTotalBytes && this.state.userStats.maxTotalBytes > 0) {
-			limitDialog.value.show('create-note-size')
-			return
-		}
+		// if (this.state.userStats.noteCount >= this.state.userStats.maxNoteCount && this.state.userStats.maxNoteCount > 0) {
+		// 	limitDialog.value.show('create-note-count')
+		// 	return
+		// }
+		// if (this.state.userStats.size >= this.state.userStats.maxTotalBytes && this.state.userStats.maxTotalBytes > 0) {
+		// 	limitDialog.value.show('create-note-size')
+		// 	return
+		// }
 		createNewNode.value = true
 	}
 
 	public newRootNote() {
-		if (this.state.userStats.noteCount >= this.state.userStats.maxNoteCount && this.state.userStats.maxNoteCount > 0) {
-			limitDialog.value.show('create-note-count')
-			return
-		}
-		if (this.state.userStats.size >= this.state.userStats.maxTotalBytes && this.state.userStats.maxTotalBytes > 0) {
-			limitDialog.value.show('create-note-size')
-			return
-		}
+		// if (this.state.userStats.noteCount >= this.state.userStats.maxNoteCount && this.state.userStats.maxNoteCount > 0) {
+		// 	limitDialog.value.show('create-note-count')
+		// 	return
+		// }
+		// if (this.state.userStats.size >= this.state.userStats.maxTotalBytes && this.state.userStats.maxTotalBytes > 0) {
+		// 	limitDialog.value.show('create-note-size')
+		// 	return
+		// }
 		createNewRootNode.value = true
 	}
 

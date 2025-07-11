@@ -15,6 +15,8 @@ const config: PlaywrightTestConfig = {
 		baseURL: testServerUrl,
 		screenshot: 'only-on-failure',
 		permissions: ['clipboard-read', 'clipboard-write'],
+		actionTimeout: 10_000,
+		navigationTimeout: 30_000,
 	},
 	testMatch: 'playwright/*.spec.ts',
 	retries: 0,

@@ -102,7 +102,6 @@ test.describe('account-less', () => {
 		await withMimiriContext(async () => {
 			await mimiri().home()
 			await expect(titleBar.accountButton()).toBeVisible()
-			await settingNodes.controlPanel().dblclick()
 			await expect(settingNodes.settingGroup()).toBeVisible()
 			await expect(settingNodes.update()).toBeVisible()
 			await expect(settingNodes.blog()).toBeVisible()
@@ -119,7 +118,6 @@ test.describe('account-less', () => {
 	})
 
 	test('verify create standard test tree', async () => {
-		test.setTimeout(120000)
 		await withMimiriContext(async () => {
 			await mimiri().home()
 			await expect(titleBar.accountButton()).toBeVisible()

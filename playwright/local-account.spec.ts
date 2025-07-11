@@ -14,7 +14,7 @@ import {
 	verifyMoveNoteIntoOwnChild,
 } from './notes/actions'
 import { standardTree } from './notes/data'
-import { connectLocalAccount, createLocalAccount, login, logout } from './core/actions'
+import { appReadyCycle, connectLocalAccount, createLocalAccount, login, logout } from './core/actions'
 
 // test.describe.configure({ mode: 'serial' })
 
@@ -129,7 +129,6 @@ test.describe('local account', () => {
 	})
 
 	test('verify create standard test tree', async () => {
-		test.setTimeout(120000)
 		await withMimiriContext(async () => {
 			await mimiri().home()
 			await expect(titleBar.accountButton()).toBeVisible()
@@ -139,15 +138,9 @@ test.describe('local account', () => {
 			await mimiri().reload()
 			await expect(titleBar.accountButton()).toBeVisible()
 			await verifyTestTree(standardTree)
-			await titleBar.accountButton().click()
-			await menu.logout().click()
-			await settingNodes.controlPanel().click()
-			await expect(aboutView.username()).toHaveText('local')
-			await titleBar.accountButton().click()
-			await menu.login().click()
-			await loginCtrl.username().fill(mimiri().config.username)
-			await loginCtrl.password().fill(mimiri().config.password)
-			await loginCtrl.button().click()
+			await logout()
+			await expect(loginCtrl.container()).toBeVisible()
+			await login()
 			await verifyTestTree(standardTree)
 		})
 	})

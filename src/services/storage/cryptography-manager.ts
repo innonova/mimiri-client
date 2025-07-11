@@ -115,12 +115,14 @@ export class CryptographyManager {
 	}
 
 	public async loadAllKeys(): Promise<void> {
-		const localKeys = await this.db.getAllLocalKeys()
-		const remoteKeys = await this.db.getAllKeys()
-		this._keys = []
+		return this.db.syncLock.withLock('loadAllKeys', async () => {
+			const localKeys = await this.db.getAllLocalKeys()
+			const remoteKeys = await this.db.getAllKeys()
+			this._keys = []
 
-		await this.loadKeysFromSource(localKeys, this._localCrypt)
-		await this.loadKeysFromSource(remoteKeys, this._rootCrypt)
+			await this.loadKeysFromSource(localKeys, this._localCrypt)
+			await this.loadKeysFromSource(remoteKeys, this._rootCrypt)
+		})
 	}
 
 	private async loadKeysFromSource(keyDataArray: KeyData[], crypt: SymmetricCrypt): Promise<void> {
@@ -147,7 +149,7 @@ export class CryptographyManager {
 		}
 	}
 
-	public async loadKeyById(id: Guid): Promise<KeySet | undefined> {
+	private async loadKeyById(id: Guid): Promise<KeySet | undefined> {
 		let local = true
 		let keyData = await this.db.getLocalKey(id)
 		if (!keyData) {
@@ -178,49 +180,53 @@ export class CryptographyManager {
 	}
 
 	public async createKey(id: Guid, metadata: any): Promise<void> {
-		const sym = await SymmetricCrypt.create(SymmetricCrypt.DEFAULT_SYMMETRIC_ALGORITHM)
-		const signer = await CryptSignature.create(CryptSignature.DEFAULT_ASYMMETRIC_ALGORITHM)
+		return this.db.syncLock.withLock('createKey', async () => {
+			const sym = await SymmetricCrypt.create(SymmetricCrypt.DEFAULT_SYMMETRIC_ALGORITHM)
+			const signer = await CryptSignature.create(CryptSignature.DEFAULT_ASYMMETRIC_ALGORITHM)
 
-		const keyData: KeyData = {
-			id,
-			userId: this.state.userId,
-			name: newGuid(),
-			algorithm: sym.algorithm,
-			asymmetricAlgorithm: signer.algorithm,
-			keyData: await this._localCrypt.encryptBytes(await sym.getKey()),
-			publicKey: await signer.publicKeyPem(),
-			privateKey: await this._localCrypt.encrypt(await signer.privateKeyPem()),
-			metadata: await this._localCrypt.encrypt(JSON.stringify(metadata)),
-			sync: 0,
-			modified: new Date().toISOString(),
-			created: new Date().toISOString(),
-		}
-		await this.db.setLocalKey(keyData)
-		await this.loadKeyById(id)
+			const keyData: KeyData = {
+				id,
+				userId: this.state.userId,
+				name: newGuid(),
+				algorithm: sym.algorithm,
+				asymmetricAlgorithm: signer.algorithm,
+				keyData: await this._localCrypt.encryptBytes(await sym.getKey()),
+				publicKey: await signer.publicKeyPem(),
+				privateKey: await this._localCrypt.encrypt(await signer.privateKeyPem()),
+				metadata: await this._localCrypt.encrypt(JSON.stringify(metadata)),
+				sync: 0,
+				modified: new Date().toISOString(),
+				created: new Date().toISOString(),
+			}
+			await this.db.setLocalKey(keyData)
+			await this.loadKeyById(id)
+		})
 	}
 
 	public async createKeyFromNoteShare(id: Guid, share: NoteShareInfo, metadata: any): Promise<void> {
-		const signer = await CryptSignature.fromPem(
-			CryptSignature.DEFAULT_ASYMMETRIC_ALGORITHM,
-			share.publicKey,
-			share.privateKey,
-		)
-		const keyData: KeyData = {
-			id,
-			userId: this.state.userId,
-			name: share.keyName,
-			algorithm: share.algorithm,
-			asymmetricAlgorithm: signer.algorithm,
-			keyData: await this._localCrypt.encryptBytes(await fromBase64(share.keyData)),
-			publicKey: await signer.publicKeyPem(),
-			privateKey: await this._localCrypt.encrypt(await signer.privateKeyPem()),
-			metadata: await this._localCrypt.encrypt(JSON.stringify(metadata)),
-			sync: 0,
-			modified: new Date().toISOString(),
-			created: new Date().toISOString(),
-		}
-		await this.db.setLocalKey(keyData)
-		await this.loadKeyById(id)
+		return this.db.syncLock.withLock('createKeyFromNoteShare', async () => {
+			const signer = await CryptSignature.fromPem(
+				CryptSignature.DEFAULT_ASYMMETRIC_ALGORITHM,
+				share.publicKey,
+				share.privateKey,
+			)
+			const keyData: KeyData = {
+				id,
+				userId: this.state.userId,
+				name: share.keyName,
+				algorithm: share.algorithm,
+				asymmetricAlgorithm: signer.algorithm,
+				keyData: await this._localCrypt.encryptBytes(await fromBase64(share.keyData)),
+				publicKey: await signer.publicKeyPem(),
+				privateKey: await this._localCrypt.encrypt(await signer.privateKeyPem()),
+				metadata: await this._localCrypt.encrypt(JSON.stringify(metadata)),
+				sync: 0,
+				modified: new Date().toISOString(),
+				created: new Date().toISOString(),
+			}
+			await this.db.setLocalKey(keyData)
+			await this.loadKeyById(id)
+		})
 	}
 
 	public getKeyByName(name: Guid): KeySet {

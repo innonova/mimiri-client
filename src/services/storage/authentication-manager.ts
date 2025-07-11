@@ -171,7 +171,10 @@ export class AuthenticationManager {
 
 				await this.db.open(this.state.username)
 				const initializationData = await this.db.getInitializationData()
-				if (initializationData?.local) {
+				if (!initializationData) {
+					return false
+				}
+				if (initializationData.local) {
 					this.state.workOffline = true
 					this.state.accountType = AccountType.Local
 				} else {
@@ -179,12 +182,16 @@ export class AuthenticationManager {
 					this.state.accountType = AccountType.Cloud
 				}
 
-				if (!(await this.goOnline())) {
+				if (!this.state.workOffline && !(await this.goOnline())) {
 					const data = JSON.parse(await this.cryptoManager.rootCrypt.decrypt(loginData.data))
 					this.state.clientConfig = data.clientConfig
 					this.state.userStats = data.userStats
 					this._userData = data.userData
+				} else {
+					this._userData = JSON.parse(await this.cryptoManager.rootCrypt.decrypt(initializationData.userData))
+					// TODO user stats and client config
 				}
+
 				return true
 			} catch (ex) {
 				debug.logError('Failed to restore login data', ex)
@@ -193,7 +200,10 @@ export class AuthenticationManager {
 		return false
 	}
 
-	public async promoteToCloudAccount(username: string, password: string, iterations: number) {
+	public async promoteToCloudAccount(username: string, oldPassword: string, newPassword: string, iterations: number) {
+		if (this.state.accountType === AccountType.Local && !(await this.verifyPassword(oldPassword))) {
+			throw new Error('Incorrect password')
+		}
 		let pow = ''
 		if (env.DEV && username.startsWith('auto_test_')) {
 			pow = 'test-mode'
@@ -211,7 +221,7 @@ export class AuthenticationManager {
 
 			const userCrypt = await SymmetricCrypt.fromPassword(
 				initializationData.userCrypt.algorithm,
-				password,
+				newPassword,
 				initializationData.userCrypt.salt,
 				initializationData.userCrypt.iterations,
 			)
@@ -260,7 +270,7 @@ export class AuthenticationManager {
 			this._userCryptAlgorithm = initializationData.userCrypt.algorithm
 			const userCrypt = await SymmetricCrypt.fromPassword(
 				initializationData.userCrypt.algorithm,
-				password,
+				newPassword,
 				initializationData.userCrypt.salt,
 				initializationData.userCrypt.iterations,
 			)
@@ -274,7 +284,7 @@ export class AuthenticationManager {
 
 			initializationData.userData = await this.cryptoManager.rootCrypt.encrypt(JSON.stringify(this.userData))
 		}
-		await this.api.createAccount(username, password, initializationData, pow)
+		await this.api.createAccount(username, newPassword, initializationData, pow)
 		await this.cryptoManager.reencryptLocalCrypt()
 		await this.db.renameDatabase(username)
 		await this.db.deleteInitializationData()
@@ -582,6 +592,10 @@ export class AuthenticationManager {
 			}
 		}
 		return this.api.verifyPassword(password)
+	}
+
+	public async hasOneOrMoreAccounts(): Promise<boolean> {
+		return this.db.hasOneOrMoreAccounts()
 	}
 
 	public async logout(): Promise<void> {

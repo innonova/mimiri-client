@@ -1,8 +1,10 @@
 import { deleteDB, openDB, type IDBPDatabase, type IDBPTransaction } from 'idb'
 import { newGuid, type Guid } from '../types/guid'
-import type { InitializationData, KeyData, LocalData, LocalUserData, NoteData } from './type'
+import type { InitializationData, KeyData, LocalData, LocalState, LocalUserData, NoteData } from './type'
+import { SyncLock } from './sync-lock'
 
 export class MimiriDb {
+	private _syncLock: SyncLock = new SyncLock()
 	private logicalName: string = ''
 	private db: IDBPDatabase<any>
 	constructor() {}
@@ -101,6 +103,16 @@ export class MimiriDb {
 		}
 	}
 
+	public async hasOneOrMoreAccounts(): Promise<boolean> {
+		const mappingDb = await this.openMappingDb()
+		try {
+			const mappings = await mappingDb.getAllKeys('name-mappings')
+			return mappings.some(mapping => mapping !== 'local')
+		} finally {
+			await mappingDb.close()
+		}
+	}
+
 	public beginTransaction(): MimiriTransaction {
 		return new MimiriTransaction(this.db, [
 			'note-store',
@@ -135,6 +147,14 @@ export class MimiriDb {
 
 	public async getLocalData(): Promise<LocalData | undefined> {
 		return this.db.get('user-store', 'local-data')
+	}
+
+	public async setLocalState(data: LocalState): Promise<void> {
+		await this.db.put('user-store', data, 'local-state')
+	}
+
+	public async getLocalState(): Promise<LocalState | undefined> {
+		return this.db.get('user-store', 'local-state')
 	}
 
 	public async setInitializationData(data: InitializationData): Promise<void> {
@@ -228,6 +248,10 @@ export class MimiriDb {
 
 	public async getAllDeletedKeys(): Promise<Guid[]> {
 		return this.db.getAll('key-deleted-store')
+	}
+
+	public get syncLock(): SyncLock {
+		return this._syncLock
 	}
 }
 

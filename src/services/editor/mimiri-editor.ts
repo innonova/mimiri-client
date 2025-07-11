@@ -226,21 +226,21 @@ export class MimiriEditor {
 					}
 					const sizeBefore = note.size
 					note.text = targetText
-					const sizeAfter = note.size
-					if (sizeAfter > noteManager.state.userStats.maxNoteBytes && noteManager.state.userStats.maxNoteBytes > 0) {
-						return 'note-size'
-					} else if (
-						noteManager.state.userStats.size > noteManager.state.userStats.maxTotalBytes &&
-						sizeAfter >= sizeBefore &&
-						noteManager.state.userStats.maxTotalBytes > 0
-					) {
-						return 'total-size'
-					} else {
-						await note.save()
-						if (note.id === this.note.id) {
-							this.resetChanged()
-						}
+					// const sizeAfter = note.size
+					// if (sizeAfter > noteManager.state.userStats.maxNoteBytes && noteManager.state.userStats.maxNoteBytes > 0) {
+					// 	return 'note-size'
+					// } else if (
+					// 	noteManager.state.userStats.size > noteManager.state.userStats.maxTotalBytes &&
+					// 	sizeAfter >= sizeBefore &&
+					// 	noteManager.state.userStats.maxTotalBytes > 0
+					// ) {
+					// 	return 'total-size'
+					// } else {
+					await note.save()
+					if (note.id === this.note.id) {
+						this.resetChanged()
 					}
+					// }
 					break
 				} catch (ex) {
 					debug.logError(`Failed to save note ${noteId}`, ex)

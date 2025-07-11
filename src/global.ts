@@ -58,6 +58,9 @@ export const conversionData = ref({ username: '', password: '' })
 export const createNewNode = ref(false)
 export const createNewRootNode = ref(false)
 export const searchInput = ref(null)
+export const appStatus = ref<string | null>('initializing')
+
+export const blockUserInput = ref(false)
 
 export const clipboardNote = ref<MimerNote>(undefined)
 export const isCut = ref(false)

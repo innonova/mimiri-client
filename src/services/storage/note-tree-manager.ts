@@ -121,6 +121,16 @@ export class NoteTreeManager {
 		this.state.stateLoaded = true
 	}
 
+	public async ensureChildrenRecursive(noteId: Guid): Promise<void> {
+		const note = this.getNoteById(noteId)
+		if (note) {
+			await note.ensureChildren()
+			for (const child of note.children) {
+				await this.ensureChildrenRecursive(child.id)
+			}
+		}
+	}
+
 	public registerActionListener(listener: ActionListener) {
 		this._actionListeners.push(listener)
 	}
@@ -170,5 +180,9 @@ export class NoteTreeManager {
 
 	public get recycleBin() {
 		return this.root?.children.find(child => child.id === this.root.note.getItem('metadata').recycleBin)
+	}
+
+	public get gettingStarted() {
+		return this.root?.children.find(child => child.isGettingStarted)
 	}
 }

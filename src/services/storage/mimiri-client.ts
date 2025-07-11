@@ -40,7 +40,6 @@ import type {
 	ShareResponse,
 	SyncPushResponse,
 	SyncResponse,
-	SyncResult,
 	UpdateNoteResponse,
 	UserDataResponse,
 	VersionConflict,
@@ -72,7 +71,7 @@ export class MimiriClient extends HttpClientBase {
 		serverKey: string,
 		private state: SharedState,
 		private cryptoManager: CryptographyManager,
-		private notificationsCallback: (type: string) => void,
+		private notificationsCallback: (type: string, payload: any) => void,
 	) {
 		super(host, serverKeyId, serverKey)
 	}
@@ -154,8 +153,6 @@ export class MimiriClient extends HttpClientBase {
 			loginResponse = await this.post<LoginResponse>('/user/login', loginRequest)
 
 			this.state.clientConfig = JSON.parse(loginResponse.config ?? '{}') as ClientConfig
-			this.state.userStats.size = +loginResponse.size
-			this.state.userStats.noteCount = +loginResponse.noteCount
 			this.state.userStats.maxTotalBytes = +loginResponse.maxTotalBytes
 			this.state.userStats.maxNoteBytes = +loginResponse.maxNoteBytes
 			this.state.userStats.maxNoteCount = +loginResponse.maxNoteCount
@@ -227,8 +224,8 @@ export class MimiriClient extends HttpClientBase {
 		try {
 			const response = await this.post<UserDataResponse>(`/user/get-data`, getDataRequest)
 			this.state.clientConfig = JSON.parse(response.config ?? '{}') as ClientConfig
-			this.state.userStats.size = +response.size
-			this.state.userStats.noteCount = +response.noteCount
+			// this.state.userStats.size = +response.size
+			// this.state.userStats.noteCount = +response.noteCount
 			this.state.userStats.maxTotalBytes = +response.maxTotalBytes
 			this.state.userStats.maxNoteBytes = +response.maxNoteBytes
 			this.state.userStats.maxNoteCount = +response.maxNoteCount
@@ -344,7 +341,7 @@ export class MimiriClient extends HttpClientBase {
 
 		const response = await this.post<SyncResponse>('/sync/changes-since', request)
 
-		return { keys: response.keys, notes: response.notes }
+		return { keys: response.keys, notes: response.notes, noteCount: response.noteCount, size: response.size }
 	}
 
 	public async multiAction(actions: NoteAction[]): Promise<Guid[]> {
@@ -421,18 +418,24 @@ export class MimiriClient extends HttpClientBase {
 		return await this.post<ShareResponse>('/note/share', request)
 	}
 
-	public async syncPushChanges(noteActions: NoteSyncAction[], keyActions: KeySyncAction[]): Promise<SyncResult[]> {
+	public async syncPushChanges(
+		noteActions: NoteSyncAction[],
+		keyActions: KeySyncAction[],
+		syncId: string,
+	): Promise<string> {
 		const request: SyncPushRequest = {
 			username: this.state.username,
 			notes: noteActions,
 			keys: keyActions,
+			syncId,
 			timestamp: dateTimeNow(),
 			requestId: newGuid(),
 			signatures: [],
 		}
 		await this._authManager.signRequest(request)
 		const response = await this.post<SyncPushResponse>('/sync/push-changes', request)
-		return response.results
+
+		return response.status
 	}
 
 	public async readNote(id: Guid): Promise<any | undefined> {
@@ -567,27 +570,29 @@ export class MimiriClient extends HttpClientBase {
 				.withAutomaticReconnect()
 				.build()
 			connection.on('notification', async (sender, type, payload) => {
+				// console.log(`Notification received: ${type}`, payload)
+
 				if (type === 'note-update' || type === 'sync') {
-					this.notificationsCallback('sync')
+					this.notificationsCallback('sync', payload)
 				}
 				if (type === 'bundle-update') {
-					this.notificationsCallback('bundle-update')
+					this.notificationsCallback('bundle-update', payload)
 				}
 				if (type === 'blog-post') {
-					this.notificationsCallback('blog-post')
+					this.notificationsCallback('blog-post', payload)
 				}
 			})
 			connection.onreconnecting(error => {
 				this.state.isOnline = false
-				this.notificationsCallback('reconnecting')
+				this.notificationsCallback('reconnecting', error)
 			})
 			connection.onreconnected(() => {
 				this.state.isOnline = true
-				this.notificationsCallback('reconnected')
+				this.notificationsCallback('reconnected', null)
 			})
 			connection.onclose(error => {
 				this.state.isOnline = false
-				this.notificationsCallback('closed')
+				this.notificationsCallback('closed', error)
 			})
 			this._signalRConnection = connection
 			if (this.simulateOffline) {
@@ -595,7 +600,7 @@ export class MimiriClient extends HttpClientBase {
 			}
 			await connection.start()
 			this.state.isOnline = true
-			this.notificationsCallback('connected')
+			this.notificationsCallback('connected', null)
 		} catch (ex) {
 			this._signalRConnection.stop().catch()
 			this._signalRConnection = null

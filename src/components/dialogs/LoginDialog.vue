@@ -2,9 +2,10 @@
 	<dialog
 		class="modal bg-dialog text-text desktop:border border-solid border-dialog-border backdrop-grayscale"
 		ref="dialog"
+		data-testid="login-dialog"
 	>
-		<div class="grid grid-rows-[auto_1fr_auto] gap-3 content-between" data-testid="login-view">
-			<DialogTitle @close="cancel" :disabled="loading || showCreate || !showCancel">Login</DialogTitle>
+		<div class="grid grid-rows-[auto_1fr_auto] gap-3 content-between">
+			<DialogTitle @close="cancel" :disabled="loading">Login</DialogTitle>
 			<form v-on:submit.prevent="login" class="mx-2 mobile:mx-8">
 				<div class="grid grid-cols-[4rem_10rem] mobile:grid-cols-[4rem_auto] items-center gap-2 mx-2 mb-2">
 					<div>Username:</div>
@@ -38,21 +39,7 @@
 						<div v-if="longTime" class="mt-1">{{ timeElapsed }}</div>
 					</div>
 				</div>
-				<div
-					class="flex items-center gap-2 mt-3 mobile:mt-8"
-					:class="{
-						'justify-end mobile:justify-center': !showCreate,
-						'justify-between': showCreate,
-					}"
-				>
-					<a
-						v-if="showCreate"
-						:disabled="loading"
-						@click="cancel"
-						class="text-link hover:underline ml-2 cursor-pointer"
-					>
-						Create New
-					</a>
+				<div class="flex items-center gap-2 mt-3 mobile:mt-8 justify-end mobile:justify-center">
 					<button
 						tabindex="3"
 						:disabled="loading || !canLogin"
@@ -62,7 +49,7 @@
 					>
 						Login
 					</button>
-					<button v-if="showCancel" :disabled="loading" class="secondary" type="button" @click="cancel">Cancel</button>
+					<button :disabled="loading" class="secondary" type="button" @click="cancel">Cancel</button>
 				</div>
 			</form>
 		</div>
@@ -74,10 +61,8 @@
 import { computed, ref } from 'vue'
 import DialogTitle from '../elements/DialogTitle.vue'
 import LoadingIcon from '../../icons/loading.vue'
-import { env, noteManager, updateManager } from '../../global'
-import { settingsManager } from '../../services/settings-manager'
-import { mimiriPlatform } from '../../services/mimiri-platform'
-import type { Guid } from '../../services/types/guid'
+import { noteManager, updateManager } from '../../global'
+
 const dialog = ref(null)
 const username = ref('')
 const password = ref('')
@@ -89,13 +74,6 @@ const isInitial = ref(false)
 const showVersion = ref(false)
 const capsLockOn = ref(false)
 
-const showCreate = computed(
-	() => isInitial.value && settingsManager.showCreateOverCancel && (!mimiriPlatform.isWeb || env.DEV),
-)
-const showCancel = computed(
-	() => (!isInitial.value || !settingsManager.showCreateOverCancel) && (!mimiriPlatform.isWeb || env.DEV),
-)
-
 const canLogin = computed(() => !!username.value && !!password.value)
 
 const show = (initial: boolean = false) => {
@@ -106,11 +84,7 @@ const show = (initial: boolean = false) => {
 
 const cancel = async () => {
 	if (!noteManager.state.isLoggedIn) {
-		// await noteManager.loginAnonymousAccount()
-		if (settingsManager.showCreateOverCancel) {
-			noteManager.tree.controlPanel().expand()
-			noteManager.tree.getNoteById('settings-account' as Guid)?.select()
-		}
+		await noteManager.session.openLocal()
 	}
 	showVersion.value = false
 	dialog.value.close()
@@ -119,14 +93,9 @@ const cancel = async () => {
 const login = async () => {
 	loading.value = true
 	error.value = false
-	const isAnonymous = noteManager.state.isAnonymous
-	const isPristine = await noteManager.session.isAccountPristine()
 	await noteManager.session.logout()
 
 	if (await noteManager.session.login(username.value, password.value)) {
-		if (isAnonymous) {
-			settingsManager.showCreateOverCancel = isPristine
-		}
 		loading.value = false
 		await noteManager.tree.loadState()
 		showVersion.value = false

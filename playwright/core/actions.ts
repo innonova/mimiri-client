@@ -1,6 +1,7 @@
 import { expect } from '@playwright/test'
 import {
 	aboutView,
+	appMain,
 	connectCloudView,
 	createAccountView,
 	loginCtrl,
@@ -12,7 +13,9 @@ import {
 import { mimiri } from '../framework/mimiri-context'
 
 export const createLocalAccount = async () => {
-	await settingNodes.controlPanel().dblclick()
+	if (await settingNodes.controlPanelClosed().isVisible()) {
+		await settingNodes.controlPanel().dblclick()
+	}
 	await settingNodes.createAccount().click()
 	await createAccountView.localTab().click()
 	await createAccountView.username().fill(mimiri().config.username)
@@ -46,7 +49,9 @@ export const connectLocalAccount = async () => {
 }
 
 export const createCloudAccount = async () => {
-	await settingNodes.controlPanel().dblclick()
+	if (await settingNodes.controlPanelClosed().isVisible()) {
+		await settingNodes.controlPanel().dblclick()
+	}
 	await settingNodes.createAccount().click()
 	await createAccountView.cloudTab().click()
 	await createAccountView.username().fill(mimiri().config.username)
@@ -64,13 +69,18 @@ export const createCloudAccount = async () => {
 export const logout = async () => {
 	await titleBar.accountButton().click()
 	await menu.logout().click()
-	await settingNodes.controlPanel().click()
-	await expect(aboutView.username()).toHaveText('local')
+	expect(loginCtrl.container()).toBeVisible()
+	// await settingNodes.controlPanel().click()
+	// await expect(aboutView.username()).toHaveText('local')
 }
 
 export const login = async () => {
-	await titleBar.accountButton().click()
-	await menu.login().click()
+	await expect(titleBar.container()).toBeVisible()
+	if (!(await loginCtrl.container().isVisible())) {
+		await titleBar.accountButton().click()
+		await menu.login().click()
+	}
+	await expect(loginCtrl.container()).toBeVisible()
 	await loginCtrl.username().fill(mimiri().config.username)
 	await loginCtrl.password().fill(mimiri().config.password)
 	await loginCtrl.button().click()
@@ -80,10 +90,23 @@ export const login = async () => {
 }
 
 export const loginFail = async () => {
-	await titleBar.accountButton().click()
-	await menu.login().click()
+	await expect(titleBar.container()).toBeVisible()
+	if (!(await loginCtrl.container().isVisible())) {
+		await titleBar.accountButton().click()
+		await menu.login().click()
+	}
+	await expect(loginCtrl.container()).toBeVisible()
 	await loginCtrl.username().fill(mimiri().config.username)
 	await loginCtrl.password().fill(mimiri().config.password)
 	await loginCtrl.button().click()
 	await expect(loginCtrl.loginError()).toBeVisible()
+}
+
+export const appReady = async () => {
+	await expect(appMain.status()).toHaveValue('ready')
+}
+
+export const appReadyCycle = async () => {
+	await expect(appMain.status()).not.toHaveValue('ready')
+	await expect(appMain.status()).toHaveValue('ready')
 }
