@@ -306,7 +306,7 @@ html[data-theme='dark'] {
 		@apply cursor-pointer;
 	}
 
-	span.mtk23 {
+	span.mtk29 {
 		-webkit-text-security: disc;
 	}
 }
@@ -317,7 +317,7 @@ html[data-theme='light'] {
 		@apply cursor-pointer;
 	}
 
-	span.mtk24 {
+	span.mtk29 {
 		-webkit-text-security: disc;
 	}
 }

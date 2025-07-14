@@ -199,4 +199,154 @@ describe('ConflictResolver', () => {
 			expect(mergeEntry!.text).toBe(textItem.data.text)
 		})
 	})
+
+	describe('Smart Conflict Resolution', () => {
+		it('should auto-resolve when last line is modified and new lines are added', () => {
+			// The classic case: one side modifies the last line, other side adds new content
+			const base = note([text('Line 1\nLine 2\nLine 3'), history([])])
+			const local = note([text('Line 1\nLine 2\nLine 3 modified'), history([])])
+			const remote = note([text('Line 1\nLine 2\nLine 3\nLine 4\nLine 5'), history([])])
+
+			// Act
+			const result = resolver.resolveConflict(base, local, remote)
+
+			// Assert
+			const textItem = result.items.find(item => item.type === 'text') as MergeableTextItem
+			expect(textItem).toBeDefined()
+			expect(textItem.mergeType).toBe('merged')
+			expect(textItem.data.text).toBe('Line 1\nLine 2\nLine 3 modified\nLine 4\nLine 5')
+
+			// Should not contain conflict markers
+			expect(textItem.data.text).not.toContain('<<<<<<< HEAD')
+			expect(textItem.data.text).not.toContain('=======')
+			expect(textItem.data.text).not.toContain('>>>>>>> REMOTE')
+		})
+
+		it('should auto-resolve when one side only adds content at the end', () => {
+			// Pure addition case - should always merge cleanly
+			const base = note([text('Line 1\nLine 2'), history([])])
+			const local = note([text('Line 1\nLine 2'), history([])])
+			const remote = note([text('Line 1\nLine 2\nAdded line 3\nAdded line 4'), history([])])
+
+			// Act
+			const result = resolver.resolveConflict(base, local, remote)
+
+			// Assert
+			const textItem = result.items.find(item => item.type === 'text') as MergeableTextItem
+			expect(textItem).toBeDefined()
+			expect(textItem.data.text).toBe('Line 1\nLine 2\nAdded line 3\nAdded line 4')
+
+			// Should not contain conflict markers
+			expect(textItem.data.text).not.toContain('<<<<<<< HEAD')
+		})
+
+		it('should create conflict when both sides extend and modify overlapping areas', () => {
+			// This case is ambiguous: local adds content, remote modifies last line and adds different content
+			// This should be treated as a conflict since both sides are changing the "end" of the document
+			const base = note([text('Line 1\nLine 2'), history([])])
+			const local = note([text('Line 1\nLine 2\nLocal addition'), history([])])
+			const remote = note([text('Line 1\nLine 2 modified\nRemote addition'), history([])])
+
+			// Act
+			const result = resolver.resolveConflict(base, local, remote)
+
+			// Assert
+			const textItem = result.items.find(item => item.type === 'text') as MergeableTextItem
+			expect(textItem).toBeDefined()
+
+			// This should create conflict markers since it's ambiguous
+			expect(textItem.data.text).toContain('<<<<<<< HEAD (Local)')
+			expect(textItem.data.text).toContain('=======')
+			expect(textItem.data.text).toContain('>>>>>>> REMOTE')
+		})
+
+		it('should auto-resolve when one modifies middle line and other adds at end', () => {
+			// Clear case for auto-resolution: modification doesn't overlap with addition
+			const base = note([text('Line 1\nLine 2\nLine 3'), history([])])
+			const local = note([text('Line 1\nLine 2 modified\nLine 3'), history([])])
+			const remote = note([text('Line 1\nLine 2\nLine 3\nAdded line 4'), history([])])
+
+			// Act
+			const result = resolver.resolveConflict(base, local, remote)
+
+			// Assert
+			const textItem = result.items.find(item => item.type === 'text') as MergeableTextItem
+			expect(textItem).toBeDefined()
+			expect(textItem.data.text).toBe('Line 1\nLine 2 modified\nLine 3\nAdded line 4')
+
+			// Should not contain conflict markers
+			expect(textItem.data.text).not.toContain('<<<<<<< HEAD')
+		})
+
+		it('should preserve trailing empty lines during smart resolution', () => {
+			// Test that trailing whitespace is handled correctly
+			const base = note([text('Line 1\nLine 2\n\n'), history([])])
+			const local = note([text('Line 1\nLine 2 modified\n\n'), history([])])
+			const remote = note([text('Line 1\nLine 2\nLine 3\n\n\n'), history([])])
+
+			// Act
+			const result = resolver.resolveConflict(base, local, remote)
+
+			// Assert
+			const textItem = result.items.find(item => item.type === 'text') as MergeableTextItem
+			expect(textItem).toBeDefined()
+			expect(textItem.data.text).toBe('Line 1\nLine 2 modified\nLine 3\n\n\n')
+		})
+
+		it('should still create conflict markers for genuine conflicts', () => {
+			// When both sides modify the same line differently, should still conflict
+			const base = note([text('Line 1\nLine 2\nLine 3'), history([])])
+			const local = note([text('Line 1\nLine 2 local change\nLine 3'), history([])])
+			const remote = note([text('Line 1\nLine 2 remote change\nLine 3'), history([])])
+
+			// Act
+			const result = resolver.resolveConflict(base, local, remote)
+
+			// Assert
+			const textItem = result.items.find(item => item.type === 'text') as MergeableTextItem
+			expect(textItem).toBeDefined()
+			expect(textItem.mergeType).toBe('merged')
+
+			// Should contain conflict markers for genuine conflicts
+			expect(textItem.data.text).toContain('<<<<<<< HEAD (Local)')
+			expect(textItem.data.text).toContain('=======')
+			expect(textItem.data.text).toContain('>>>>>>> REMOTE')
+			expect(textItem.data.text).toContain('Line 2 local change')
+			expect(textItem.data.text).toContain('Line 2 remote change')
+		})
+
+		it('should handle empty content scenarios gracefully', () => {
+			// Edge case: one side becomes empty
+			const base = note([text('Line 1\nLine 2'), history([])])
+			const local = note([text(''), history([])])
+			const remote = note([text('Line 1\nLine 2\nLine 3'), history([])])
+
+			// Act
+			const result = resolver.resolveConflict(base, local, remote)
+
+			// Assert
+			const textItem = result.items.find(item => item.type === 'text') as MergeableTextItem
+			expect(textItem).toBeDefined()
+			// In this case, local completely cleared content while remote added - should use remote
+			expect(textItem.data.text).toBe('Line 1\nLine 2\nLine 3')
+		})
+
+		it('should handle single line modifications with additions', () => {
+			// Simple single-line case
+			const base = note([text('Hello world'), history([])])
+			const local = note([text('Hello modified world'), history([])])
+			const remote = note([text('Hello world\nAdded second line'), history([])])
+
+			// Act
+			const result = resolver.resolveConflict(base, local, remote)
+
+			// Assert
+			const textItem = result.items.find(item => item.type === 'text') as MergeableTextItem
+			expect(textItem).toBeDefined()
+			expect(textItem.data.text).toBe('Hello modified world\nAdded second line')
+			expect(textItem.data.text).not.toContain('<<<<<<< HEAD')
+		})
+	})
+
+	// ...existing code...
 })

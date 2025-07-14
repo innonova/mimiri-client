@@ -267,26 +267,28 @@ export class ConflictResolver {
 			if (chunk.ok) {
 				mergedLines.push(...chunk.ok)
 			} else if (chunk.conflict) {
-				const isNewlineOnlyConflict = this.isNewlineOnlyConflict(chunk.conflict.a || [], chunk.conflict.b || [])
+				const localConflictLines = chunk.conflict.a || []
+				const remoteConflictLines = chunk.conflict.b || []
+
+				const isNewlineOnlyConflict = this.isNewlineOnlyConflict(localConflictLines, remoteConflictLines)
 
 				if (isNewlineOnlyConflict) {
 					const longerSide =
-						(chunk.conflict.a || []).length >= (chunk.conflict.b || []).length
-							? chunk.conflict.a || []
-							: chunk.conflict.b || []
+						localConflictLines.length >= remoteConflictLines.length ? localConflictLines : remoteConflictLines
 					mergedLines.push(...longerSide)
 				} else {
-					hasConflict = true
+					const autoResolve = this.canAutoResolveConflict(localConflictLines, remoteConflictLines)
 
-					mergedLines.push('<<<<<<< HEAD (Local)')
-					if (chunk.conflict.a) {
-						mergedLines.push(...chunk.conflict.a)
+					if (autoResolve.canResolve && autoResolve.resolution) {
+						mergedLines.push(...autoResolve.resolution)
+					} else {
+						hasConflict = true
+						mergedLines.push('<<<<<<< HEAD (Local)')
+						mergedLines.push(...localConflictLines)
+						mergedLines.push('=======')
+						mergedLines.push(...remoteConflictLines)
+						mergedLines.push('>>>>>>> REMOTE')
 					}
-					mergedLines.push('=======')
-					if (chunk.conflict.b) {
-						mergedLines.push(...chunk.conflict.b)
-					}
-					mergedLines.push('>>>>>>> REMOTE')
 				}
 			}
 		}
@@ -300,22 +302,65 @@ export class ConflictResolver {
 	private isNewlineOnlyConflict(localLines: string[], remoteLines: string[]): boolean {
 		const localNonEmpty = localLines.filter(line => line.trim() !== '')
 		const remoteNonEmpty = remoteLines.filter(line => line.trim() !== '')
-
 		if (localNonEmpty.length === 0 && remoteNonEmpty.length === 0) {
 			return true
 		}
-
 		if (localNonEmpty.length === remoteNonEmpty.length) {
 			return localNonEmpty.every((line, index) => line === remoteNonEmpty[index])
 		}
-
-		const shorter = localNonEmpty.length < remoteNonEmpty.length ? localNonEmpty : remoteNonEmpty
-		const longer = localNonEmpty.length >= remoteNonEmpty.length ? localNonEmpty : remoteNonEmpty
-
-		if (shorter.length === 0) {
+		if (localNonEmpty.length === 0 || remoteNonEmpty.length === 0) {
 			return true
 		}
+		return false
+	}
 
-		return shorter.every((line, index) => line === longer[index])
+	private canAutoResolveConflict(
+		localLines: string[],
+		remoteLines: string[],
+	): { canResolve: boolean; resolution?: string[] } {
+		const localTrimmed = this.trimTrailingEmpty(localLines)
+		const remoteTrimmed = this.trimTrailingEmpty(remoteLines)
+
+		if (localTrimmed.length <= remoteTrimmed.length) {
+			if (localTrimmed.every((line, index) => line === remoteTrimmed[index])) {
+				return { canResolve: true, resolution: remoteLines }
+			}
+		}
+		if (remoteTrimmed.length <= localTrimmed.length) {
+			if (remoteTrimmed.every((line, index) => line === localTrimmed[index])) {
+				return { canResolve: true, resolution: localLines }
+			}
+		}
+
+		const shorter = localTrimmed.length <= remoteTrimmed.length ? localTrimmed : remoteTrimmed
+		const longer = localTrimmed.length > remoteTrimmed.length ? localTrimmed : remoteTrimmed
+		const longerOriginal = localTrimmed.length > remoteTrimmed.length ? localLines : remoteLines
+		const shorterOriginal = localTrimmed.length <= remoteTrimmed.length ? localLines : remoteLines
+
+		if (shorter.length > 0 && longer.length > shorter.length) {
+			const allButLastMatch = shorter.slice(0, -1).every((line, index) => line === longer[index])
+
+			if (allButLastMatch) {
+				const shorterLastLine = shorter[shorter.length - 1]
+				const longerCorrespondingLine = longer[shorter.length - 1]
+
+				if (shorterLastLine !== longerCorrespondingLine) {
+					const resolution = [...shorter.slice(0, -1), shorterLastLine, ...longer.slice(shorter.length)]
+
+					const originalLongerTrailing = longerOriginal.slice(longer.length)
+					return { canResolve: true, resolution: [...resolution, ...originalLongerTrailing] }
+				}
+			}
+		}
+
+		return { canResolve: false }
+	}
+
+	private trimTrailingEmpty(lines: string[]): string[] {
+		let lastNonEmpty = lines.length - 1
+		while (lastNonEmpty >= 0 && lines[lastNonEmpty].trim() === '') {
+			lastNonEmpty--
+		}
+		return lines.slice(0, lastNonEmpty + 1)
 	}
 }
