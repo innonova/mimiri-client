@@ -171,6 +171,7 @@ export class SessionManager {
 				browserHistory.openTree(ipcClient.isAvailable && Capacitor.getPlatform() === 'web')
 				await this.ensureCreateComplete()
 				await this.loadRootNote()
+				await this.syncService.scanForConsistency()
 				await this.treeManager.loadState()
 				updateManager.good()
 			} else {
@@ -193,6 +194,7 @@ export class SessionManager {
 				await this.syncService.sync()
 				await this.ensureCreateComplete()
 				await this.loadRootNote()
+				await this.syncService.scanForConsistency()
 				await this.treeManager.loadState()
 				if (!this.state.isOnline && !this.state.workOffline) {
 					setTimeout(() => {

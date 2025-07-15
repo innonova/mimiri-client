@@ -76,7 +76,9 @@ export class NoteService {
 
 			if (!noteData) {
 				noteData = await this.api.readNote(id)
-				await this.db.setNote(noteData)
+				if (noteData) {
+					await this.db.setNote(noteData)
+				}
 			}
 			if (!noteData) {
 				return undefined

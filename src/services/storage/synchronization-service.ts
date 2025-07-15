@@ -1,6 +1,6 @@
 import { emptyGuid, newGuid, type Guid } from '../types/guid'
 import type { KeySyncAction, NoteSyncAction } from '../types/requests'
-import { AccountType, type KeyData, type NoteData, type SharedState } from './type'
+import { AccountType, type KeyData, type NoteData, type NoteItem, type SharedState } from './type'
 import type { CryptographyManager } from './cryptography-manager'
 import type { MimiriDb } from './mimiri-db'
 import type { MimiriClient } from './mimiri-client'
@@ -12,6 +12,7 @@ import {
 	type MergeableNote,
 	type MergeableTextItem,
 } from './conflict-resolver'
+import type { NoteTreeManager } from './note-tree-manager'
 
 export class SynchronizationService {
 	private _conflictResolver: ConflictResolver = new ConflictResolver()
@@ -28,6 +29,7 @@ export class SynchronizationService {
 		private api: MimiriClient,
 		private cryptoManager: CryptographyManager,
 		private state: SharedState,
+		private treeManager: NoteTreeManager,
 		private noteUpdatedCallback: (noteId: Guid) => Promise<void>,
 	) {}
 
@@ -79,7 +81,6 @@ export class SynchronizationService {
 						syncFailed = true
 						console.error('Synchronization error:', error)
 					}
-					console.log('while', this._syncRequestedWhileInProgress, syncFailed)
 				} while (this._syncRequestedWhileInProgress || syncFailed)
 			} finally {
 				this._syncInProgress = false
@@ -228,6 +229,127 @@ export class SynchronizationService {
 		}
 	}
 
+	private async mergeIfNeeded(
+		baseNote: NoteData,
+		localNote: NoteData,
+		remoteNote: NoteData,
+	): Promise<NoteData | undefined> {
+		let differenceFound = remoteNote.items.length !== baseNote.items.length
+		if (!differenceFound) {
+			for (const item of remoteNote.items) {
+				const baseItem = baseNote.items.find(i => i.type === item.type)
+				if (!baseItem || baseItem.version !== item.version) {
+					differenceFound = true
+					break
+				}
+			}
+		}
+
+		if (differenceFound) {
+			const local: MergeableNote = {
+				items: await Promise.all(
+					localNote.items.map(async item => ({
+						type: item.type,
+						data: JSON.parse(await this.cryptoManager.localCrypt.decrypt(item.data)),
+					})),
+				),
+			}
+
+			const remoteKeySet = await this.cryptoManager.getKeyByName(remoteNote.keyName)
+			const remote: MergeableNote = {
+				items: await Promise.all(
+					remoteNote.items.map(async item => ({
+						type: item.type,
+						data: JSON.parse(await remoteKeySet.symmetric.decrypt(item.data)),
+					})),
+				),
+			}
+			const baseKeySet = await this.cryptoManager.getKeyByName(baseNote.keyName)
+			const base: MergeableNote = {
+				items: await Promise.all(
+					baseNote.items.map(async item => ({
+						type: item.type,
+						data: JSON.parse(await baseKeySet.symmetric.decrypt(item.data)),
+					})),
+				),
+			}
+
+			const merged = this._conflictResolver.resolveConflict(base, local, remote)
+			const resultNote = await this.db.getLocalNote(localNote.id)
+
+			for (const mergedItem of merged.items) {
+				const resultItem = resultNote.items.find(i => i.type === mergedItem.type)
+				const remoteItem = remoteNote.items.find(i => i.type === mergedItem.type)
+				if (mergedItem.type === 'text') {
+					const mergedTextItem = mergedItem as MergeableTextItem
+					if (resultItem) {
+						const resultData = JSON.parse(await this.cryptoManager.localCrypt.decrypt(resultItem.data))
+						resultData.text = mergedTextItem.data.text
+						resultItem.data = await this.cryptoManager.localCrypt.encrypt(JSON.stringify(resultData))
+						resultItem.version = remoteItem?.version ?? 0
+					} else if (remoteItem) {
+						const remoteData = JSON.parse(await remoteKeySet.symmetric.decrypt(remoteItem.data))
+						remoteData.text = mergedTextItem.data.text
+						resultItem.data = await this.cryptoManager.localCrypt.encrypt(JSON.stringify(remoteData))
+						resultItem.version = remoteItem.version
+					}
+				}
+				if (mergedItem.type === 'metadata') {
+					const mergedMetadataItem = mergedItem as MergeableMetadataItem
+					if (resultItem) {
+						const resultData = JSON.parse(await this.cryptoManager.localCrypt.decrypt(resultItem.data))
+						resultData.notes = mergedMetadataItem.data.notes
+						resultData.title = mergedMetadataItem.data.title
+						resultItem.data = await this.cryptoManager.localCrypt.encrypt(JSON.stringify(resultData))
+						resultItem.version = remoteItem?.version ?? 0
+					} else if (remoteItem) {
+						const remoteData = JSON.parse(await remoteKeySet.symmetric.decrypt(remoteItem.data))
+						remoteData.notes = mergedMetadataItem.data.notes
+						remoteData.title = mergedMetadataItem.data.title
+						resultItem.data = await this.cryptoManager.localCrypt.encrypt(JSON.stringify(remoteData))
+						resultItem.version = remoteItem.version
+					}
+				}
+				if (mergedItem.type === 'history') {
+					const mergedHistoryItem = mergedItem as MergeableHistoryItem
+					if (resultItem) {
+						const resultData = JSON.parse(await this.cryptoManager.localCrypt.decrypt(resultItem.data))
+						resultData.active = mergedHistoryItem.data.active
+						resultItem.data = await this.cryptoManager.localCrypt.encrypt(JSON.stringify(resultData))
+						resultItem.version = remoteItem?.version ?? 0
+					} else if (remoteItem) {
+						const remoteData = JSON.parse(await remoteKeySet.symmetric.decrypt(remoteItem.data))
+						remoteData.active = mergedHistoryItem.data.active
+						resultItem.data = await this.cryptoManager.localCrypt.encrypt(JSON.stringify(remoteData))
+						resultItem.version = remoteItem.version
+					}
+				}
+			}
+			return resultNote
+		}
+		return undefined
+	}
+
+	private async decryptNoteItemData(keyName: Guid, item: NoteItem) {
+		const keySet = this.cryptoManager.getKeyByName(keyName)
+		if (!keySet) {
+			throw new Error(`Key not found: ${keyName}`)
+		}
+		return this.cryptoManager.tryDecryptNoteItemText(item, keySet.symmetric)
+	}
+
+	private async decryptLocalNoteItemData(item: NoteItem) {
+		return this.cryptoManager.tryDecryptNoteItemText(item, this.cryptoManager.localCrypt)
+	}
+
+	private async encryptData(keyName: Guid, data: string) {
+		const keySet = this.cryptoManager.getKeyByName(keyName)
+		if (!keySet) {
+			throw new Error(`Key not found: ${keyName}`)
+		}
+		return keySet.symmetric.encrypt(data)
+	}
+
 	private async syncPush(): Promise<boolean> {
 		console.log('SynchronizationService.syncPush() called')
 
@@ -240,151 +362,60 @@ export class SynchronizationService {
 		let localNoteCount = 0
 
 		let localNotes: NoteData[]
-		let originalLocalNotes: NoteData[]
 		let localKeys: KeyData[]
 		let deletedNotes: Guid[]
 		let deletedKeys: Guid[]
 
 		await this.db.syncLock.withLock('syncPush', async () => {
 			localNotes = await this.db.getAllLocalNotes()
-			// TODO do something less wasteful
-			originalLocalNotes = await this.db.getAllLocalNotes()
 			for (const localNote of localNotes) {
-				const keySet = this.cryptoManager.getKeyByName(localNote.keyName)
+				let keyMode = 'same'
+				let targetKeyName = localNote.keyName
 				const remoteNote = await this.db.getNote(localNote.id)
-				const baseNote = localNote.base
+				if (remoteNote.keyName !== localNote.keyName) {
+					if (localNote.base.keyName === remoteNote.keyName) {
+						keyMode = 'switch'
+					}
+					if (localNote.base.keyName === localNote.keyName) {
+						keyMode = 'switch'
+						targetKeyName = remoteNote.keyName
+					}
+				}
 				if (remoteNote) {
-					let differenceFound = remoteNote.items.length !== baseNote.items.length
-					if (!differenceFound) {
-						for (const item of remoteNote.items) {
-							const baseItem = baseNote.items.find(i => i.type === item.type)
-							if (!baseItem || baseItem.version !== item.version) {
-								differenceFound = true
-								break
-							}
-						}
-					}
-
-					if (differenceFound) {
-						const local: MergeableNote = {
-							items: await Promise.all(
-								localNote.items.map(async item => ({
-									type: item.type,
-									data: JSON.parse(await this.cryptoManager.localCrypt.decrypt(item.data)),
-								})),
-							),
-						}
-
-						const remoteKeySet = await this.cryptoManager.getKeyByName(remoteNote.keyName)
-						const remote: MergeableNote = {
-							items: await Promise.all(
-								remoteNote.items.map(async item => ({
-									type: item.type,
-									data: JSON.parse(await remoteKeySet.symmetric.decrypt(item.data)),
-								})),
-							),
-						}
-						const baseKeySet = await this.cryptoManager.getKeyByName(baseNote.keyName)
-						const base: MergeableNote = {
-							items: await Promise.all(
-								baseNote.items.map(async item => ({
-									type: item.type,
-									data: JSON.parse(await baseKeySet.symmetric.decrypt(item.data)),
-								})),
-							),
-						}
-
-						const merged = this._conflictResolver.resolveConflict(base, local, remote)
-
-						for (const mergedItem of merged.items) {
-							const localItem = localNote.items.find(i => i.type === mergedItem.type)
-							const remoteItem = remoteNote.items.find(i => i.type === mergedItem.type)
-							if (mergedItem.type === 'text') {
-								const textItem = mergedItem as MergeableTextItem
-								if (localItem) {
-									const localData = JSON.parse(await this.cryptoManager.localCrypt.decrypt(localItem.data))
-									localData.text = textItem.data.text
-									localItem.data = await this.cryptoManager.localCrypt.encrypt(JSON.stringify(localData))
-									localItem.version = remoteItem?.version ?? 0
-								} else if (remoteItem) {
-									const remoteData = JSON.parse(await remoteKeySet.symmetric.decrypt(remoteItem.data))
-									remoteData.text = textItem.data.text
-									localItem.data = await this.cryptoManager.localCrypt.encrypt(JSON.stringify(remoteData))
-									localItem.version = remoteItem.version
-								}
-							}
-							if (mergedItem.type === 'metadata') {
-								const metadataItem = mergedItem as MergeableMetadataItem
-								if (localItem) {
-									const localData = JSON.parse(await this.cryptoManager.localCrypt.decrypt(localItem.data))
-									localData.notes = metadataItem.data.notes
-									localData.title = metadataItem.data.title
-									localItem.data = await this.cryptoManager.localCrypt.encrypt(JSON.stringify(localData))
-									localItem.version = remoteItem?.version ?? 0
-								} else if (remoteItem) {
-									const remoteData = JSON.parse(await remoteKeySet.symmetric.decrypt(remoteItem.data))
-									remoteData.notes = metadataItem.data.notes
-									remoteData.title = metadataItem.data.title
-									localItem.data = await this.cryptoManager.localCrypt.encrypt(JSON.stringify(remoteData))
-									localItem.version = remoteItem.version
-								}
-							}
-							if (mergedItem.type === 'history') {
-								const historyItem = mergedItem as MergeableHistoryItem
-								if (localItem) {
-									const localData = JSON.parse(await this.cryptoManager.localCrypt.decrypt(localItem.data))
-									localData.active = historyItem.data.active
-									localItem.data = await this.cryptoManager.localCrypt.encrypt(JSON.stringify(localData))
-									localItem.version = remoteItem?.version ?? 0
-								} else if (remoteItem) {
-									const remoteData = JSON.parse(await remoteKeySet.symmetric.decrypt(remoteItem.data))
-									remoteData.active = historyItem.data.active
-									localItem.data = await this.cryptoManager.localCrypt.encrypt(JSON.stringify(remoteData))
-									localItem.version = remoteItem.version
-								}
-							}
-						}
-					}
+					const mergedNote = (await this.mergeIfNeeded(localNote.base, localNote, remoteNote)) ?? localNote
 
 					const action: NoteSyncAction = {
 						type: 'update',
-						id: localNote.id,
-						keyName: localNote.keyName,
+						id: mergedNote.id,
+						keyName: mergedNote.keyName,
 						items: [],
 					}
-					for (const localItem of localNote.items) {
-						const remoteItem = remoteNote?.items.find(item => item.type === localItem.type)
-						const remoteItemVersion = remoteItem?.version ?? 0
-						const localItemData = await this.cryptoManager.tryDecryptNoteItemText(
-							localItem,
-							this.cryptoManager.localCrypt,
-						)
-						const remoteItemData = remoteItem
-							? await this.cryptoManager.tryDecryptNoteItemText(remoteItem, keySet.symmetric)
-							: undefined
-						// TODO cleanup
-						// if (localItem.version !== remoteItemVersion) {
-						// 	if (localItemData === remoteItemData) {
-						// 		continue
-						// 	}
-						// 	// TODO: Handle conflict resolution
-						// 	console.log('conflict', localItem, remoteItem)
-						// }
-						if (localItem.version === 0 || localItemData !== remoteItemData) {
+					for (const mergedItem of mergedNote.items) {
+						const remoteItem = remoteNote?.items.find(item => item.type === mergedItem.type)
+						const localItemData = await this.decryptLocalNoteItemData(mergedItem)
+
+						if (
+							keyMode === 'switch' ||
+							mergedItem.version === 0 ||
+							localItemData !== (await this.decryptNoteItemData(remoteNote.keyName, remoteItem))
+						) {
 							action.items.push({
-								version: localItem.version,
-								type: localItem.type,
-								data: await keySet.symmetric.encrypt(localItemData),
+								version: mergedItem.version,
+								type: mergedItem.type,
+								data: await this.encryptData(targetKeyName, localItemData),
 							})
 						}
 					}
 					if (action.items.length > 0) {
 						noteActions.push(action)
 					} else {
-						this.db.deleteLocalNote(localNote.id)
+						// local note is identical to remote note, delete local note
+						this.db.deleteLocalNote(mergedNote.id)
 					}
 				} else {
-					// TODO is special case needed if base note exists without a remote note?
+					if (localNote.base) {
+						console.log('Restoring remotely deleted note', localNote.id)
+					}
 					const action: NoteSyncAction = {
 						type: 'create',
 						id: localNote.id,
@@ -395,7 +426,7 @@ export class SynchronizationService {
 						action.items.push({
 							version: 0,
 							type: item.type,
-							data: await this.cryptoManager.tryReencryptNoteItemDataFromLocal(item, keySet.name),
+							data: await this.cryptoManager.tryReencryptNoteItemDataFromLocal(item, localNote.keyName),
 						})
 					}
 					if (action.items.length > 0) {
@@ -467,6 +498,7 @@ export class SynchronizationService {
 			this._issuedSyncIds.shift()
 		}
 
+		await this.scanForConsistency()
 		if (noteActions.length === 0 && keyActions.length === 0) {
 			return true
 		}
@@ -478,7 +510,7 @@ export class SynchronizationService {
 		}
 
 		await this.db.syncLock.withLock('syncPush', async () => {
-			for (const localNote of originalLocalNotes) {
+			for (const localNote of localNotes) {
 				const current = await this.db.getLocalNote(localNote.id)
 				let differenceFound = current.items.length !== localNote.items.length
 				if (!differenceFound) {
@@ -498,6 +530,7 @@ export class SynchronizationService {
 				await this.db.deleteLocalKey(localKey.id)
 			}
 			for (const deletedNoteId of deletedNotes) {
+				await this.db.deleteNote(deletedNoteId)
 				await this.db.clearDeleteRemoteNote(deletedNoteId)
 			}
 			for (const deletedKeyId of deletedKeys) {
@@ -513,6 +546,65 @@ export class SynchronizationService {
 		console.log('SynchronizationService.syncPush() completed successfully')
 
 		return true
+	}
+
+	public async scanForConsistency(): Promise<void> {
+		console.log('Scanning for consistency...')
+
+		const allNotes = await this.db.getAllNotes()
+		const deletedNotes = await this.db.getAllDeletedNotes()
+		const idsWithParent = new Set<Guid>()
+
+		for (const note of allNotes) {
+			if (deletedNotes.includes(note.id)) {
+				continue
+			}
+			const metadata = note.items.find(item => item.type === 'metadata')
+			if (metadata) {
+				const data = JSON.parse(await this.decryptNoteItemData(note.keyName, metadata)) as { notes: Guid[] }
+				for (const childId of data.notes) {
+					idsWithParent.add(childId)
+				}
+			}
+		}
+		const idsWithoutParent: Guid[] = []
+		for (const note of allNotes) {
+			if (deletedNotes.includes(note.id)) {
+				continue
+			}
+			if (!idsWithParent.has(note.id)) {
+				idsWithoutParent.push(note.id)
+			}
+		}
+
+		if (idsWithoutParent.length > 0) {
+			await this.treeManager.root?.ensureChildren()
+			if (this.treeManager.recycleBin) {
+				let addedItems = false
+				for (const id of idsWithoutParent) {
+					if (id === this.treeManager.root?.id) {
+						continue
+					}
+					const item = await this.db.getNote(id)
+					const data = JSON.parse(await this.decryptNoteItemData(item.keyName, item.items[0]))
+					if (data.isRecycleBin) {
+						if (data.id !== this.treeManager.recycleBin.id) {
+							await this.db.deleteRemoteNote(id)
+						}
+					} else if (data.isControlPanel) {
+						if (data.id !== this.treeManager.controlPanelId) {
+							await this.db.deleteRemoteNote(id)
+						}
+					} else {
+						this.treeManager.recycleBin.note.changeItem('metadata').notes.push(id)
+						addedItems = true
+					}
+				}
+				if (addedItems) {
+					this.treeManager.recycleBin.save()
+				}
+			}
+		}
 	}
 
 	public isSyncIdIssued(syncId: string): boolean {

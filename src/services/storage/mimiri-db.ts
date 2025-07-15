@@ -185,6 +185,14 @@ export class MimiriDb {
 		return this.db.get('note-store', `note-${id}`)
 	}
 
+	public async deleteNote(id: Guid): Promise<void> {
+		return this.db.delete('note-store', `note-${id}`)
+	}
+
+	public async getAllNotes(): Promise<NoteData[]> {
+		return this.db.getAll('note-store')
+	}
+
 	public async setLocalNote(note: NoteData): Promise<void> {
 		await this.db.put('note-local-store', note, `note-${note.id}`)
 	}
@@ -235,6 +243,10 @@ export class MimiriDb {
 
 	public async getAllLocalKeys(): Promise<KeyData[]> {
 		return this.db.getAll('key-local-store')
+	}
+
+	public async deleteRemoteNote(id: Guid): Promise<void> {
+		return this.db.put('note-deleted-store', id, `note-${id}`)
 	}
 
 	// Never actually happens

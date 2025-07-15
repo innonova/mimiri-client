@@ -136,17 +136,6 @@ export class MimiriStore {
 				await this.sessionManager.login(username, password)
 			},
 		)
-		this.paymentClient = new PaymentClient(this.authManager, this.state, paymentHost)
-		this.syncService = new SynchronizationService(
-			this.db,
-			this.api,
-			this.cryptoManager,
-			this.state,
-			async (noteId: Guid) => {
-				const note = await this.noteService.readNote(noteId)
-				await noteUpdatedCallback(note)
-			},
-		)
 		this.noteService = new NoteService(this.db, this.api, this.cryptoManager, this.state, async (noteId: Guid) => {
 			const note = await this.noteService.readNote(noteId)
 			await noteUpdatedCallback(note)
@@ -154,6 +143,18 @@ export class MimiriStore {
 
 		this.uiManager = new UIStateManager(this.state)
 		this.treeManager = new NoteTreeManager(this, this.state, this.noteService, this.authManager)
+		this.paymentClient = new PaymentClient(this.authManager, this.state, paymentHost)
+		this.syncService = new SynchronizationService(
+			this.db,
+			this.api,
+			this.cryptoManager,
+			this.state,
+			this.treeManager,
+			async (noteId: Guid) => {
+				const note = await this.noteService.readNote(noteId)
+				await noteUpdatedCallback(note)
+			},
+		)
 		this.operationsManager = new NoteOperationsManager(
 			this.state,
 			this.noteService,

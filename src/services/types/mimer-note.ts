@@ -365,6 +365,10 @@ export class MimerNote {
 		for (const child of this.children) {
 			await child.delete()
 		}
+		if (this.childIds.length > 0) {
+			this.note.changeItem('metadata').notes = []
+			this.save()
+		}
 	}
 
 	public async moveToRecycleBin() {

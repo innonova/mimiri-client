@@ -13,6 +13,7 @@
 # Code Style
 
 - I find it easier to read code that is light on comments, reading code is faster than reading comments for me
+- prefer awaiting promises over using `.then()`
 
 # Test Code Organization
 
