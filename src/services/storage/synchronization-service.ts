@@ -44,6 +44,7 @@ export class SynchronizationService {
 		if (
 			!this._initialized ||
 			!this.state.isOnline ||
+			this.state.workOffline ||
 			this.state.accountType === AccountType.Local ||
 			this.state.accountType === AccountType.None
 		) {
@@ -55,8 +56,6 @@ export class SynchronizationService {
 				let syncFailed = false
 				let retryCount = 0
 				do {
-					console.log('do')
-
 					if (syncFailed) {
 						const delayMs = Math.min(this._baseDelayMs * Math.pow(2, retryCount), this._maxDelayMs)
 						console.log(`Synchronization failed. Retrying in ${delayMs}ms (attempt ${retryCount + 1})`)
@@ -81,7 +80,7 @@ export class SynchronizationService {
 						syncFailed = true
 						console.error('Synchronization error:', error)
 					}
-				} while (this._syncRequestedWhileInProgress || syncFailed)
+				} while ((this._syncRequestedWhileInProgress || syncFailed) && !this.state.workOffline)
 			} finally {
 				this._syncInProgress = false
 				for (const resolve of this._waitingForSync) {
@@ -372,7 +371,7 @@ export class SynchronizationService {
 				let keyMode = 'same'
 				let targetKeyName = localNote.keyName
 				const remoteNote = await this.db.getNote(localNote.id)
-				if (remoteNote.keyName !== localNote.keyName) {
+				if (remoteNote && remoteNote.keyName !== localNote.keyName) {
 					if (localNote.base.keyName === remoteNote.keyName) {
 						keyMode = 'switch'
 					}
@@ -498,7 +497,6 @@ export class SynchronizationService {
 			this._issuedSyncIds.shift()
 		}
 
-		await this.scanForConsistency()
 		if (noteActions.length === 0 && keyActions.length === 0) {
 			return true
 		}
@@ -508,6 +506,8 @@ export class SynchronizationService {
 		if (status !== 'success') {
 			return false
 		}
+
+		await this.scanForConsistency()
 
 		await this.db.syncLock.withLock('syncPush', async () => {
 			for (const localNote of localNotes) {

@@ -11,6 +11,25 @@ import {
 	testTreeAfterMove,
 } from './data'
 
+export const replaceTextInEditor = async (text: string) => {
+	await mimiri().page.evaluate(text => {
+		navigator.clipboard.writeText(text)
+	}, text)
+
+	await editor.monaco().click({ timeout: 2000 })
+	await expect(editor.monaco()).toHaveClass(/\bfocused\b/, { timeout: 2000 })
+	await mimiri().page.keyboard.press('Control+a')
+	await mimiri().page.keyboard.press('Control+v')
+}
+export const getTextFromEditor = async () => {
+	await editor.monaco().click({ timeout: 2000 })
+	await expect(editor.monaco()).toHaveClass(/\bfocused\b/, { timeout: 2000 })
+	await mimiri().page.keyboard.press('Control+a')
+	await mimiri().waitForTimeout(250)
+	await mimiri().page.keyboard.press('Control+c')
+	return await mimiri().page.evaluate(() => navigator.clipboard.readText())
+}
+
 export const createRootNote = async (name: string, text?: string) => {
 	await mainToolbar.container().click({ timeout: 2000 })
 	await mainToolbar.createMenu().click({ timeout: 2000 })
@@ -25,7 +44,7 @@ export const createRootNote = async (name: string, text?: string) => {
 		await mimiri().page.keyboard.press('Enter')
 		await note.item('System').click({ timeout: 4000 })
 		await note.item(name).click({ timeout: 4000 })
-		await expect(editor.monaco()).toHaveText(text, { timeout: 2000 })
+		await expect(editor.monaco()).toHaveText(text.replaceAll('\n', ''), { timeout: 2000 })
 	}
 }
 
@@ -43,7 +62,7 @@ export const createChildNote = async (name: string, text?: string) => {
 		await mimiri().page.keyboard.press('Enter')
 		await note.item('System').click({ timeout: 4000 })
 		await note.item(name).click({ timeout: 4000 })
-		await expect(editor.monaco()).toHaveText(text, { timeout: 2000 })
+		await expect(editor.monaco()).toHaveText(text.replaceAll('\n', ''), { timeout: 2000 })
 	}
 }
 
@@ -61,7 +80,7 @@ export const createSiblingNote = async (name: string, text?: string) => {
 		await mimiri().page.keyboard.press('Enter')
 		await note.item('System').click({ timeout: 4000 })
 		await note.item(name).click({ timeout: 4000 })
-		await expect(editor.monaco()).toHaveText(text, { timeout: 2000 })
+		await expect(editor.monaco()).toHaveText(text.replaceAll('\n', ''), { timeout: 2000 })
 	}
 }
 

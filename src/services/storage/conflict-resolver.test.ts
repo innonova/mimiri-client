@@ -185,9 +185,9 @@ describe('ConflictResolver', () => {
 			expect(textItem.mergeType).toBe('merged')
 
 			// Should contain conflict markers
-			expect(textItem.data.text).toContain('<<<<<<< HEAD (Local)')
+			expect(textItem.data.text).toContain('<<<<<<< HEAD')
 			expect(textItem.data.text).toContain('=======')
-			expect(textItem.data.text).toContain('>>>>>>> REMOTE')
+			expect(textItem.data.text).toContain('>>>>>>> remote')
 			expect(textItem.data.text).toContain('Local changed line')
 			expect(textItem.data.text).toContain('Remote changed line')
 
@@ -219,7 +219,7 @@ describe('ConflictResolver', () => {
 			// Should not contain conflict markers
 			expect(textItem.data.text).not.toContain('<<<<<<< HEAD')
 			expect(textItem.data.text).not.toContain('=======')
-			expect(textItem.data.text).not.toContain('>>>>>>> REMOTE')
+			expect(textItem.data.text).not.toContain('>>>>>>> remote')
 		})
 
 		it('should auto-resolve when one side only adds content at the end', () => {
@@ -255,9 +255,9 @@ describe('ConflictResolver', () => {
 			expect(textItem).toBeDefined()
 
 			// This should create conflict markers since it's ambiguous
-			expect(textItem.data.text).toContain('<<<<<<< HEAD (Local)')
+			expect(textItem.data.text).toContain('<<<<<<< HEAD')
 			expect(textItem.data.text).toContain('=======')
-			expect(textItem.data.text).toContain('>>>>>>> REMOTE')
+			expect(textItem.data.text).toContain('>>>>>>> remote')
 		})
 
 		it('should auto-resolve when one modifies middle line and other adds at end', () => {
@@ -308,9 +308,9 @@ describe('ConflictResolver', () => {
 			expect(textItem.mergeType).toBe('merged')
 
 			// Should contain conflict markers for genuine conflicts
-			expect(textItem.data.text).toContain('<<<<<<< HEAD (Local)')
+			expect(textItem.data.text).toContain('<<<<<<< HEAD')
 			expect(textItem.data.text).toContain('=======')
-			expect(textItem.data.text).toContain('>>>>>>> REMOTE')
+			expect(textItem.data.text).toContain('>>>>>>> remote')
 			expect(textItem.data.text).toContain('Line 2 local change')
 			expect(textItem.data.text).toContain('Line 2 remote change')
 		})
@@ -348,5 +348,383 @@ describe('ConflictResolver', () => {
 		})
 	})
 
-	// ...existing code...
+	describe('Conflict Coalescing', () => {
+		describe('Should coalesce conflicts', () => {
+			it('should coalesce conflicts separated by 1 shared line', () => {
+				// Create a scenario where two conflicts are separated by just one shared line
+				const baseText = 'Line 1\nShared line\nLine 3\nAnother shared\nLine 5'
+				const localText = 'Line 1 LOCAL\nShared line\nLine 3 LOCAL\nAnother shared\nLine 5 LOCAL'
+				const remoteText = 'Line 1 REMOTE\nShared line\nLine 3 REMOTE\nAnother shared\nLine 5 REMOTE'
+
+				const base = note([text(baseText)])
+				const local = note([text(localText)])
+				const remote = note([text(remoteText)])
+
+				const result = resolver.resolveConflict(base, local, remote)
+
+				const textItem = result.items.find(item => item.type === 'text') as MergeableTextItem
+				expect(textItem).toBeDefined()
+				expect(textItem.mergeType).toBe('merged')
+
+				// Should have conflict markers but they should be coalesced into fewer blocks
+				const conflictMarkerCount = (textItem.data.text.match(/<<<<<<< HEAD/g) || []).length
+				expect(conflictMarkerCount).toBe(1) // Should be coalesced into a single conflict
+
+				// Both shared lines should appear in both sides of the conflict
+				expect(textItem.data.text).toContain('Shared line')
+				expect(textItem.data.text).toContain('Another shared')
+			})
+
+			it('should coalesce conflicts separated by 2 shared lines', () => {
+				const baseText = 'Line 1\nShared A\nShared B\nLine 4'
+				const localText = 'Line 1 LOCAL\nShared A\nShared B\nLine 4 LOCAL'
+				const remoteText = 'Line 1 REMOTE\nShared A\nShared B\nLine 4 REMOTE'
+
+				const base = note([text(baseText)])
+				const local = note([text(localText)])
+				const remote = note([text(remoteText)])
+
+				const result = resolver.resolveConflict(base, local, remote)
+
+				const textItem = result.items.find(item => item.type === 'text') as MergeableTextItem
+				expect(textItem).toBeDefined()
+
+				const conflictMarkerCount = (textItem.data.text.match(/<<<<<<< HEAD/g) || []).length
+				expect(conflictMarkerCount).toBe(1) // Should be coalesced
+			})
+
+			it('should coalesce conflicts separated by 3 shared lines (at the limit)', () => {
+				const baseText = 'Line 1\nShared A\nShared B\nShared C\nLine 5'
+				const localText = 'Line 1 LOCAL\nShared A\nShared B\nShared C\nLine 5 LOCAL'
+				const remoteText = 'Line 1 REMOTE\nShared A\nShared B\nShared C\nLine 5 REMOTE'
+
+				const base = note([text(baseText)])
+				const local = note([text(localText)])
+				const remote = note([text(remoteText)])
+
+				const result = resolver.resolveConflict(base, local, remote)
+
+				const textItem = result.items.find(item => item.type === 'text') as MergeableTextItem
+				expect(textItem).toBeDefined()
+
+				const conflictMarkerCount = (textItem.data.text.match(/<<<<<<< HEAD/g) || []).length
+				expect(conflictMarkerCount).toBe(1) // Should be coalesced at the limit
+			})
+
+			it('should coalesce multiple consecutive conflicts with small shared chunks', () => {
+				const baseText = 'Line 1\nShared A\nLine 3\nShared B\nLine 5'
+				const localText = 'Line 1 LOCAL\nShared A\nLine 3 LOCAL\nShared B\nLine 5 LOCAL'
+				const remoteText = 'Line 1 REMOTE\nShared A\nLine 3 REMOTE\nShared B\nLine 5 REMOTE'
+
+				const base = note([text(baseText)])
+				const local = note([text(localText)])
+				const remote = note([text(remoteText)])
+
+				const result = resolver.resolveConflict(base, local, remote)
+
+				const textItem = result.items.find(item => item.type === 'text') as MergeableTextItem
+				expect(textItem).toBeDefined()
+
+				const conflictMarkerCount = (textItem.data.text.match(/<<<<<<< HEAD/g) || []).length
+				expect(conflictMarkerCount).toBe(1) // All conflicts should be coalesced
+			})
+
+			it('should coalesce conflicts separated by empty lines', () => {
+				const baseText = 'Line 1\n\n\nLine 4'
+				const localText = 'Line 1 LOCAL\n\n\nLine 4 LOCAL'
+				const remoteText = 'Line 1 REMOTE\n\n\nLine 4 REMOTE'
+
+				const base = note([text(baseText)])
+				const local = note([text(localText)])
+				const remote = note([text(remoteText)])
+
+				const result = resolver.resolveConflict(base, local, remote)
+
+				const textItem = result.items.find(item => item.type === 'text') as MergeableTextItem
+				expect(textItem).toBeDefined()
+
+				const conflictMarkerCount = (textItem.data.text.match(/<<<<<<< HEAD/g) || []).length
+				expect(conflictMarkerCount).toBe(1) // Should be coalesced
+			})
+		})
+
+		describe('Should NOT coalesce conflicts', () => {
+			it('should not coalesce conflicts separated by 4 shared lines', () => {
+				const baseText = 'Line 1\nShared A\nShared B\nShared C\nShared D\nLine 6'
+				const localText = 'Line 1 LOCAL\nShared A\nShared B\nShared C\nShared D\nLine 6 LOCAL'
+				const remoteText = 'Line 1 REMOTE\nShared A\nShared B\nShared C\nShared D\nLine 6 REMOTE'
+
+				const base = note([text(baseText)])
+				const local = note([text(localText)])
+				const remote = note([text(remoteText)])
+
+				const result = resolver.resolveConflict(base, local, remote)
+
+				const textItem = result.items.find(item => item.type === 'text') as MergeableTextItem
+				expect(textItem).toBeDefined()
+
+				const conflictMarkerCount = (textItem.data.text.match(/<<<<<<< HEAD/g) || []).length
+				expect(conflictMarkerCount).toBe(2) // Should remain as separate conflicts
+			})
+
+			it('should not coalesce conflicts separated by large shared content', () => {
+				const baseText = 'Line 1\nShared 1\nShared 2\nShared 3\nShared 4\nShared 5\nLine 7'
+				const localText = 'Line 1 LOCAL\nShared 1\nShared 2\nShared 3\nShared 4\nShared 5\nLine 7 LOCAL'
+				const remoteText = 'Line 1 REMOTE\nShared 1\nShared 2\nShared 3\nShared 4\nShared 5\nLine 7 REMOTE'
+
+				const base = note([text(baseText)])
+				const local = note([text(localText)])
+				const remote = note([text(remoteText)])
+
+				const result = resolver.resolveConflict(base, local, remote)
+
+				const textItem = result.items.find(item => item.type === 'text') as MergeableTextItem
+				expect(textItem).toBeDefined()
+
+				const conflictMarkerCount = (textItem.data.text.match(/<<<<<<< HEAD/g) || []).length
+				expect(conflictMarkerCount).toBe(2) // Should remain as separate conflicts
+			})
+
+			it('should not coalesce when there is no conflict after shared content', () => {
+				const baseText = 'Line 1\nShared line\nLine 3'
+				const localText = 'Line 1 LOCAL\nShared line\nLine 3'
+				const remoteText = 'Line 1 REMOTE\nShared line\nLine 3'
+
+				const base = note([text(baseText)])
+				const local = note([text(localText)])
+				const remote = note([text(remoteText)])
+
+				const result = resolver.resolveConflict(base, local, remote)
+
+				const textItem = result.items.find(item => item.type === 'text') as MergeableTextItem
+				expect(textItem).toBeDefined()
+
+				const conflictMarkerCount = (textItem.data.text.match(/<<<<<<< HEAD/g) || []).length
+				expect(conflictMarkerCount).toBe(1) // Single conflict, not coalesced
+			})
+
+			it('should handle single conflict without coalescing', () => {
+				const baseText = 'Line 1\nLine 2\nLine 3'
+				const localText = 'Line 1 LOCAL\nLine 2\nLine 3'
+				const remoteText = 'Line 1 REMOTE\nLine 2\nLine 3'
+
+				const base = note([text(baseText)])
+				const local = note([text(localText)])
+				const remote = note([text(remoteText)])
+
+				const result = resolver.resolveConflict(base, local, remote)
+
+				const textItem = result.items.find(item => item.type === 'text') as MergeableTextItem
+				expect(textItem).toBeDefined()
+
+				const conflictMarkerCount = (textItem.data.text.match(/<<<<<<< HEAD/g) || []).length
+				expect(conflictMarkerCount).toBe(1) // Single conflict
+			})
+
+			it('should not coalesce conflicts with substantial shared content between them', () => {
+				const baseText =
+					'Conflict 1\nLarge shared section line 1\nLarge shared section line 2\nLarge shared section line 3\nLarge shared section line 4\nLarge shared section line 5\nConflict 2'
+				const localText =
+					'Conflict 1 LOCAL\nLarge shared section line 1\nLarge shared section line 2\nLarge shared section line 3\nLarge shared section line 4\nLarge shared section line 5\nConflict 2 LOCAL'
+				const remoteText =
+					'Conflict 1 REMOTE\nLarge shared section line 1\nLarge shared section line 2\nLarge shared section line 3\nLarge shared section line 4\nLarge shared section line 5\nConflict 2 REMOTE'
+
+				const base = note([text(baseText)])
+				const local = note([text(localText)])
+				const remote = note([text(remoteText)])
+
+				const result = resolver.resolveConflict(base, local, remote)
+
+				const textItem = result.items.find(item => item.type === 'text') as MergeableTextItem
+				expect(textItem).toBeDefined()
+
+				const conflictMarkerCount = (textItem.data.text.match(/<<<<<<< HEAD/g) || []).length
+				expect(conflictMarkerCount).toBe(2) // Should remain as separate conflicts
+
+				// Verify the shared content appears between conflicts
+				expect(textItem.data.text).toContain('Large shared section line 1')
+				expect(textItem.data.text).toContain('Large shared section line 5')
+			})
+
+			it('should not coalesce consecutive conflicts without shared content between them', () => {
+				// This creates two separate conflicts that are adjacent but don't have shared content between
+				const baseText = 'Line 1\nLine 2\nLine 3\nLine 4'
+				const localText = 'Line 1 LOCAL\nLine 2 LOCAL\nLine 3 LOCAL\nLine 4 LOCAL'
+				const remoteText = 'Line 1 REMOTE\nLine 2 REMOTE\nLine 3 REMOTE\nLine 4 REMOTE'
+
+				const base = note([text(baseText)])
+				const local = note([text(localText)])
+				const remote = note([text(remoteText)])
+
+				const result = resolver.resolveConflict(base, local, remote)
+
+				const textItem = result.items.find(item => item.type === 'text') as MergeableTextItem
+				expect(textItem).toBeDefined()
+
+				// This should create a single conflict, not multiple to coalesce
+				const conflictMarkerCount = (textItem.data.text.match(/<<<<<<< HEAD/g) || []).length
+				expect(conflictMarkerCount).toBe(1) // Single conflict, not coalesced
+			})
+		})
+
+		describe('Edge cases and complex scenarios', () => {
+			it('should handle mixed coalescing scenarios', () => {
+				// First two conflicts should coalesce, third should remain separate
+				const baseText =
+					'Conflict 1\nShared A\nConflict 2\nLarge shared 1\nLarge shared 2\nLarge shared 3\nLarge shared 4\nLarge shared 5\nConflict 3'
+				const localText =
+					'Conflict 1 LOCAL\nShared A\nConflict 2 LOCAL\nLarge shared 1\nLarge shared 2\nLarge shared 3\nLarge shared 4\nLarge shared 5\nConflict 3 LOCAL'
+				const remoteText =
+					'Conflict 1 REMOTE\nShared A\nConflict 2 REMOTE\nLarge shared 1\nLarge shared 2\nLarge shared 3\nLarge shared 4\nLarge shared 5\nConflict 3 REMOTE'
+
+				const base = note([text(baseText)])
+				const local = note([text(localText)])
+				const remote = note([text(remoteText)])
+
+				const result = resolver.resolveConflict(base, local, remote)
+
+				const textItem = result.items.find(item => item.type === 'text') as MergeableTextItem
+				expect(textItem).toBeDefined()
+
+				const conflictMarkerCount = (textItem.data.text.match(/<<<<<<< HEAD/g) || []).length
+				expect(conflictMarkerCount).toBe(2) // First two coalesced, third separate
+			})
+
+			it('should work with no conflicts (sanity check)', () => {
+				const baseText = 'Line 1\nLine 2\nLine 3'
+				const localText = 'Line 1\nLine 2\nLine 3'
+				const remoteText = 'Line 1\nLine 2\nLine 3'
+
+				const base = note([text(baseText)])
+				const local = note([text(localText)])
+				const remote = note([text(remoteText)])
+
+				const result = resolver.resolveConflict(base, local, remote)
+
+				const textItem = result.items.find(item => item.type === 'text') as MergeableTextItem
+				expect(textItem).toBeDefined()
+				expect(textItem.data.text).toBe(baseText)
+				expect(textItem.data.text).not.toContain('<<<<<<< HEAD')
+			})
+
+			it('should preserve coalesced conflict content correctly', () => {
+				const baseText = 'Line 1\nShared\nLine 3'
+				const localText = 'Line 1 LOCAL CHANGE\nShared\nLine 3 LOCAL CHANGE'
+				const remoteText = 'Line 1 REMOTE CHANGE\nShared\nLine 3 REMOTE CHANGE'
+
+				const base = note([text(baseText)])
+				const local = note([text(localText)])
+				const remote = note([text(remoteText)])
+
+				const result = resolver.resolveConflict(base, local, remote)
+
+				const textItem = result.items.find(item => item.type === 'text') as MergeableTextItem
+				expect(textItem).toBeDefined()
+
+				// Should contain all the expected content
+				expect(textItem.data.text).toContain('Line 1 LOCAL CHANGE')
+				expect(textItem.data.text).toContain('Line 1 REMOTE CHANGE')
+				expect(textItem.data.text).toContain('Line 3 LOCAL CHANGE')
+				expect(textItem.data.text).toContain('Line 3 REMOTE CHANGE')
+				expect(textItem.data.text).toContain('Shared')
+
+				// Should have single conflict marker set
+				const conflictMarkerCount = (textItem.data.text.match(/<<<<<<< HEAD/g) || []).length
+				expect(conflictMarkerCount).toBe(1)
+			})
+		})
+	})
+
+	describe('Conflict Cleanup', () => {
+		it('should remove shared prefix lines from conflict markers', () => {
+			const baseText = '\n# Base comment\nconfig: base'
+			const localText = '\n# Local development settings\ndebug: true'
+			const remoteText = '\n# Production overrides\nssl: enabled'
+
+			const base = note([text(baseText)])
+			const local = note([text(localText)])
+			const remote = note([text(remoteText)])
+
+			const result = resolver.resolveConflict(base, local, remote)
+
+			const textItem = result.items.find(item => item.type === 'text') as MergeableTextItem
+			expect(textItem).toBeDefined()
+			expect(textItem.mergeType).toBe('merged')
+
+			// Should not have the shared blank line in the conflict markers
+			expect(textItem.data.text).not.toMatch(/<<<<<<< HEAD\n\n/)
+			expect(textItem.data.text).not.toMatch(/=======\n\n/)
+
+			// But should still contain the conflict content
+			expect(textItem.data.text).toContain('Local development settings')
+			expect(textItem.data.text).toContain('Production overrides')
+			expect(textItem.data.text).toContain('<<<<<<< HEAD')
+			expect(textItem.data.text).toContain('=======')
+			expect(textItem.data.text).toContain('>>>>>>> remote')
+		})
+
+		it('should remove shared suffix lines from conflict markers', () => {
+			const baseText = 'config: base\n# Base comment\n'
+			const localText = 'debug: true\n# Local development settings\n'
+			const remoteText = 'ssl: enabled\n# Production overrides\n'
+
+			const base = note([text(baseText)])
+			const local = note([text(localText)])
+			const remote = note([text(remoteText)])
+
+			const result = resolver.resolveConflict(base, local, remote)
+
+			const textItem = result.items.find(item => item.type === 'text') as MergeableTextItem
+			expect(textItem).toBeDefined()
+			expect(textItem.mergeType).toBe('merged')
+
+			// Should not have the shared blank line at the end of conflict markers
+			expect(textItem.data.text).not.toMatch(/=======\n.*\n\n>>>>>>> remote/)
+
+			// But should still contain the conflict content
+			expect(textItem.data.text).toContain('debug: true')
+			expect(textItem.data.text).toContain('ssl: enabled')
+		})
+
+		it('should handle both shared prefix and suffix', () => {
+			const baseText = '\nconfig: base\n'
+			const localText = '\ndebug: true\n'
+			const remoteText = '\nssl: enabled\n'
+
+			const base = note([text(baseText)])
+			const local = note([text(localText)])
+			const remote = note([text(remoteText)])
+
+			const result = resolver.resolveConflict(base, local, remote)
+
+			const textItem = result.items.find(item => item.type === 'text') as MergeableTextItem
+			expect(textItem).toBeDefined()
+			expect(textItem.mergeType).toBe('merged')
+
+			// Should not have shared blank lines in conflict markers
+			expect(textItem.data.text).not.toMatch(/<<<<<<< HEAD\n\n/)
+			expect(textItem.data.text).not.toMatch(/\n\n>>>>>>> remote/)
+
+			// Should contain the actual differing content
+			expect(textItem.data.text).toContain('debug: true')
+			expect(textItem.data.text).toContain('ssl: enabled')
+		})
+
+		it('should not create empty conflicts when everything is shared', () => {
+			const baseText = '\nshared content\n'
+			const localText = '\nshared content\n'
+			const remoteText = '\nshared content\n'
+
+			const base = note([text(baseText)])
+			const local = note([text(localText)])
+			const remote = note([text(remoteText)])
+
+			const result = resolver.resolveConflict(base, local, remote)
+
+			const textItem = result.items.find(item => item.type === 'text') as MergeableTextItem
+			expect(textItem).toBeDefined()
+			expect(textItem.data.text).toBe('\nshared content\n')
+			expect(textItem.data.text).not.toContain('<<<<<<< HEAD')
+		})
+	})
 })

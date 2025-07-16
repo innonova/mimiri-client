@@ -191,7 +191,7 @@ test.describe('cloud account', () => {
 		})
 	})
 
-	test.only('verify complex copy note with multiple levels', async () => {
+	test('verify complex copy note with multiple levels', async () => {
 		await withMimiriContext(async () => {
 			await mimiri().home()
 			await expect(titleBar.accountButton()).toBeVisible()

@@ -260,10 +260,13 @@ export class ConflictResolver {
 
 		const result = diff3Merge(localLines, baseLines, remoteLines)
 
+		// First pass: coalesce adjacent conflicts
+		const coalescedResult = this.coalesceConflicts(result)
+
 		const mergedLines: string[] = []
 		let hasConflict = false
 
-		for (const chunk of result) {
+		for (const chunk of coalescedResult) {
 			if (chunk.ok) {
 				mergedLines.push(...chunk.ok)
 			} else if (chunk.conflict) {
@@ -282,12 +285,32 @@ export class ConflictResolver {
 					if (autoResolve.canResolve && autoResolve.resolution) {
 						mergedLines.push(...autoResolve.resolution)
 					} else {
-						hasConflict = true
-						mergedLines.push('<<<<<<< HEAD (Local)')
-						mergedLines.push(...localConflictLines)
-						mergedLines.push('=======')
-						mergedLines.push(...remoteConflictLines)
-						mergedLines.push('>>>>>>> REMOTE')
+						// Try to clean up the conflict by removing shared prefix/suffix
+						const cleanedConflict = this.cleanupConflictMarkers(localConflictLines, remoteConflictLines)
+
+						// If after cleanup both sides are empty, treat as no conflict
+						if (cleanedConflict.local.length === 0 && cleanedConflict.remote.length === 0) {
+							// Use the local version (they should be identical after cleanup)
+							mergedLines.push(...localConflictLines)
+						} else {
+							hasConflict = true
+
+							// Add shared prefix if it exists
+							if (cleanedConflict.sharedPrefix.length > 0) {
+								mergedLines.push(...cleanedConflict.sharedPrefix)
+							}
+
+							mergedLines.push('<<<<<<< HEAD')
+							mergedLines.push(...cleanedConflict.local)
+							mergedLines.push('=======')
+							mergedLines.push(...cleanedConflict.remote)
+							mergedLines.push('>>>>>>> remote')
+
+							// Add shared suffix if it exists
+							if (cleanedConflict.sharedSuffix.length > 0) {
+								mergedLines.push(...cleanedConflict.sharedSuffix)
+							}
+						}
 					}
 				}
 			}
@@ -296,6 +319,50 @@ export class ConflictResolver {
 		return {
 			conflict: hasConflict,
 			result: mergedLines.join('\n'),
+		}
+	}
+
+	private cleanupConflictMarkers(
+		localLines: string[],
+		remoteLines: string[],
+	): {
+		local: string[]
+		remote: string[]
+		sharedPrefix: string[]
+		sharedSuffix: string[]
+	} {
+		// Remove shared prefix
+		let prefixLength = 0
+		const minLength = Math.min(localLines.length, remoteLines.length)
+
+		while (prefixLength < minLength && localLines[prefixLength] === remoteLines[prefixLength]) {
+			prefixLength++
+		}
+
+		const sharedPrefix = localLines.slice(0, prefixLength)
+
+		// Remove shared suffix
+		let suffixLength = 0
+		const localTrimmed = localLines.slice(prefixLength)
+		const remoteTrimmed = remoteLines.slice(prefixLength)
+		const minTrimmedLength = Math.min(localTrimmed.length, remoteTrimmed.length)
+
+		while (
+			suffixLength < minTrimmedLength &&
+			localTrimmed[localTrimmed.length - 1 - suffixLength] === remoteTrimmed[remoteTrimmed.length - 1 - suffixLength]
+		) {
+			suffixLength++
+		}
+
+		const sharedSuffix = localTrimmed.slice(localTrimmed.length - suffixLength)
+		const cleanedLocal = localTrimmed.slice(0, localTrimmed.length - suffixLength)
+		const cleanedRemote = remoteTrimmed.slice(0, remoteTrimmed.length - suffixLength)
+
+		return {
+			local: cleanedLocal,
+			remote: cleanedRemote,
+			sharedPrefix,
+			sharedSuffix,
 		}
 	}
 
@@ -362,5 +429,89 @@ export class ConflictResolver {
 			lastNonEmpty--
 		}
 		return lines.slice(0, lastNonEmpty + 1)
+	}
+
+	private coalesceConflicts(chunks: any[]): any[] {
+		if (chunks.length <= 1) {
+			return chunks
+		}
+
+		const coalescedChunks: any[] = []
+		const maxSharedLinesToCoalesce = 3 // Maximum lines of shared content to merge through
+
+		for (let i = 0; i < chunks.length; i++) {
+			const currentChunk = chunks[i]
+
+			if (currentChunk.conflict) {
+				// Look ahead to see if we should coalesce with future conflicts
+				const conflictsToMerge = [currentChunk]
+				let j = i + 1
+				let hasFoundSharedContentBetween = false
+
+				while (j < chunks.length) {
+					const nextChunk = chunks[j]
+
+					if (nextChunk.conflict) {
+						// Found another conflict
+						conflictsToMerge.push(nextChunk)
+						j++
+					} else if (nextChunk.ok && nextChunk.ok.length <= maxSharedLinesToCoalesce) {
+						// Small shared chunk - check if there's a conflict after it
+						const hasConflictAfter = j + 1 < chunks.length && chunks[j + 1].conflict
+						if (hasConflictAfter) {
+							// This shared content is between conflicts, mark it for coalescing
+							conflictsToMerge.push(nextChunk)
+							hasFoundSharedContentBetween = true
+							j++
+						} else {
+							// No conflict after this shared chunk, stop coalescing
+							break
+						}
+					} else {
+						// Large shared chunk or end of chunks, stop coalescing
+						break
+					}
+				}
+
+				// Only coalesce if we found shared content between conflicts
+				// This prevents coalescing conflicts that are naturally separate
+				if (conflictsToMerge.length > 1 && hasFoundSharedContentBetween) {
+					const mergedConflict = this.mergeConflictChunks(conflictsToMerge)
+					coalescedChunks.push(mergedConflict)
+					i = j - 1 // Skip the chunks we just merged
+				} else {
+					// Single conflict or no shared content between conflicts, add as-is
+					coalescedChunks.push(currentChunk)
+				}
+			} else {
+				// Non-conflict chunk, add as-is
+				coalescedChunks.push(currentChunk)
+			}
+		}
+
+		return coalescedChunks
+	}
+
+	private mergeConflictChunks(chunks: any[]): any {
+		const localLines: string[] = []
+		const remoteLines: string[] = []
+
+		for (const chunk of chunks) {
+			if (chunk.conflict) {
+				localLines.push(...(chunk.conflict.a || []))
+				remoteLines.push(...(chunk.conflict.b || []))
+			} else if (chunk.ok) {
+				// Shared content goes to both sides
+				localLines.push(...chunk.ok)
+				remoteLines.push(...chunk.ok)
+			}
+		}
+
+		return {
+			conflict: {
+				a: localLines,
+				b: remoteLines,
+			},
+		}
 	}
 }

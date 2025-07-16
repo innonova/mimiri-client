@@ -1,6 +1,7 @@
 import { debug, updateManager } from '../../global'
 import { CryptSignature } from '../crypt-signature'
 import { settingsManager } from '../settings-manager'
+import type { SharedState } from './type'
 
 export class HttpRequestError extends Error {
 	constructor(
@@ -18,6 +19,7 @@ export abstract class HttpClientBase {
 	protected constructor(
 		protected host: string,
 		private serverKeyId: string,
+		protected state: SharedState,
 		serverKey: string,
 	) {
 		if (serverKey) {
@@ -32,6 +34,9 @@ export abstract class HttpClientBase {
 	protected async get<T>(path: string): Promise<T> {
 		if (this.simulateOffline) {
 			throw new Error('Simulate offline')
+		}
+		if (this.state.workOffline) {
+			throw new Error('API called while in offline mode')
 		}
 		const start = performance.now()
 		if (settingsManager.debugEnabled) {
@@ -77,6 +82,9 @@ export abstract class HttpClientBase {
 	protected async post<T>(path: string, data: any, encrypt: boolean = false): Promise<T> {
 		if (this.simulateOffline) {
 			throw new Error('Simulate offline')
+		}
+		if (this.state.workOffline) {
+			throw new Error('API called while in offline mode')
 		}
 		const start = performance.now()
 		if (settingsManager.debugEnabled) {

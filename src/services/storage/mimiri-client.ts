@@ -69,11 +69,11 @@ export class MimiriClient extends HttpClientBase {
 		host: string,
 		serverKeyId: string,
 		serverKey: string,
-		private state: SharedState,
+		state: SharedState,
 		private cryptoManager: CryptographyManager,
 		private notificationsCallback: (type: string, payload: any) => void,
 	) {
-		super(host, serverKeyId, serverKey)
+		super(host, serverKeyId, state, serverKey)
 	}
 
 	public async checkUsername(username: string, pow: string) {
