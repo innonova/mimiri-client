@@ -194,7 +194,7 @@ export class SessionManager {
 				await this.ensureCreateComplete()
 				await this.loadRootNote()
 				await this.treeManager.loadState()
-				if (!this.state.isOnline && !this.state.workOffline) {
+				if (!this.state.isOnline && !this.state.workOffline && this.state.accountType === AccountType.Cloud) {
 					setTimeout(() => {
 						void this.goOnline(password)
 					}, 1000)

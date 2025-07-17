@@ -148,65 +148,6 @@ test.describe('sync tests', () => {
 		})
 	})
 
-	test.skip('verify live sync between two devices - concurrent edits handling', async () => {
-		await withMimiriContext(async () => {
-			await mimiri().home()
-			await createCloudAccount()
-			await createTestTree(syncNoteCreationTree)
-
-			await mimiriClone(true)
-			await mimiri().home()
-			await login()
-
-			await expect(note.item('Sync Marker')).toBeVisible()
-
-			mimiri(0, true)
-			await createRootNote('Concurrent Edit Test', 'Base content for concurrent edit testing.')
-			await editor.save().click()
-
-			mimiri(1, true)
-			await expect(note.item('Concurrent Edit Test')).toBeVisible()
-
-			mimiri(0, true)
-			await note.item('Concurrent Edit Test').click()
-			await editor.monaco().click()
-			await mimiri().page.keyboard.press('Control+a')
-			await mimiri().page.keyboard.type('Edit from device 1')
-
-			mimiri(1, true)
-			await note.item('Concurrent Edit Test').click()
-			await editor.monaco().click()
-			await mimiri().page.keyboard.press('Control+a')
-			await mimiri().page.keyboard.type('Edit from device 2')
-			await editor.save().click()
-
-			mimiri(0, true)
-			await editor.save().click()
-
-			mimiri(0, true)
-			await note.item('Sync Marker').click()
-
-			mimiri(1, true)
-			await note.item('Sync Marker').click()
-
-			await mimiri().page.waitForTimeout(2000)
-
-			mimiri(1, true)
-			await note.item('Concurrent Edit Test').click()
-			const device2Content = await editor.monaco().textContent()
-
-			mimiri(0, true)
-			await note.item('Concurrent Edit Test').click()
-			const device1Content = await editor.monaco().textContent()
-
-			console.log('Device 1 content:', device1Content)
-			console.log('Device 2 content:', device2Content)
-
-			expect(device1Content === 'Edit from device 1' || device1Content === 'Edit from device 2').toBe(true)
-			expect(device2Content === 'Edit from device 1' || device2Content === 'Edit from device 2').toBe(true)
-		})
-	})
-
 	test('verify live sync between two devices - note deletion', async () => {
 		await withMimiriContext(async () => {
 			await mimiri().home()

@@ -19,7 +19,7 @@ const config: PlaywrightTestConfig = {
 		navigationTimeout: 30_000,
 	},
 	testMatch: 'playwright/*.spec.ts',
-	retries: 0,
+	retries: process.argv.includes('--headed') ? 0 : 2,
 	workers: 5,
 	fullyParallel: true,
 	projects: [

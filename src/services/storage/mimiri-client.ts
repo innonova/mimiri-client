@@ -45,7 +45,7 @@ import type {
 	VersionConflict,
 } from '../types/responses'
 import type { CryptographyManager } from './cryptography-manager'
-import type { InitializationData, SharedState, SyncInfo } from './type'
+import { AccountType, type InitializationData, type SharedState, type SyncInfo } from './type'
 import { HubConnectionBuilder } from '@microsoft/signalr'
 import { HttpClientBase } from './http-client-base'
 import { incrementalDelay } from '../helpers'
@@ -563,11 +563,11 @@ export class MimiriClient extends HttpClientBase {
 
 	public async openWebSocket(attempt: number = 0): Promise<void> {
 		try {
-			if (this.state.workOffline || this._signalRConnection) {
+			if (this.state.workOffline || this._signalRConnection || this.state.accountType !== AccountType.Cloud) {
 				return
 			}
 			const response = await this.createNotificationUrl()
-			if (!response?.url || this.state.workOffline || this._signalRConnection) {
+			if (!response?.url) {
 				return
 			}
 			const connection = new HubConnectionBuilder()

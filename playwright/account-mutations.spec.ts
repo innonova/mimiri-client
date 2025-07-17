@@ -13,7 +13,7 @@ import {
 import { createTestTree, verifyTestTree } from './notes/actions'
 import { miniTestTree } from './notes/data'
 import {
-	appReadyCycle,
+	appReady,
 	connectLocalAccount,
 	createCloudAccount,
 	createLocalAccount,
@@ -21,7 +21,6 @@ import {
 	loginFail,
 	logout,
 } from './core/actions'
-import exp from 'constants'
 
 // test.describe.configure({ mode: 'serial' })
 
@@ -143,7 +142,8 @@ test.describe('account-mutations', () => {
 			await deleteView.deleteLocal().click()
 			await deleteView.password().fill(mimiri().password)
 			await deleteView.submit().click()
-			await appReadyCycle()
+			await expect(deleteView.container()).not.toBeVisible()
+			await appReady()
 			await settingNodes.controlPanel().click()
 			await expect(aboutView.accountType()).toHaveText('none')
 			await loginFail()

@@ -9,7 +9,7 @@ import { moveTestTree, moveTestTreeAfterConflict } from './notes/data.metadata-c
 
 // test.describe.configure({ mode: 'serial' })
 
-test.describe.only('conflict tests', () => {
+test.describe('conflict tests', () => {
 	test('verify all text merge scenarios are covered', async () => {
 		await withMimiriContext(async () => {
 			await mimiri().home()
@@ -24,6 +24,7 @@ test.describe.only('conflict tests', () => {
 			let text = ''
 			for (const scenario of conflictScenarios) {
 				try {
+					await mimiri().waitForTimeout(250)
 					mimiri(0, true)
 					await createRootNote(scenario.description, '')
 
@@ -51,11 +52,11 @@ test.describe.only('conflict tests', () => {
 
 					await expect(text.replaceAll('\r', '')).toBe(scenario.expected.replaceAll('\r', ''))
 				} catch (error) {
-					console.log(
-						`\n\n\n\n\nScenario: ${scenario.description}, \n\nExpected: \n###${scenario.expected}###\n\nActual: \n###${text}###`,
-					)
-					console.error(`Error in scenario "${scenario.description}":`, scenario)
-					await mimiri().pause()
+					// 	console.log(
+					// 		`\n\n\n\n\nScenario: ${scenario.description}, \n\nExpected: \n###${scenario.expected}###\n\nActual: \n###${text}###`,
+					// 	)
+					// 	console.error(`Error in scenario "${scenario.description}":`, scenario)
+					// 	await mimiri().pause()
 					throw error
 				}
 			}

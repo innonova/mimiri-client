@@ -175,14 +175,12 @@ export class AuthenticationManager {
 					return false
 				}
 				if (initializationData.local) {
-					this.state.workOffline = true
 					this.state.accountType = AccountType.Local
 				} else {
-					this.state.workOffline = false
 					this.state.accountType = AccountType.Cloud
 				}
 
-				if (!this.state.workOffline && !(await this.goOnline())) {
+				if (this.state.accountType === AccountType.Cloud && !this.state.workOffline && !(await this.goOnline())) {
 					const data = JSON.parse(await this.cryptoManager.rootCrypt.decrypt(loginData.data))
 					this.state.clientConfig = data.clientConfig
 					this.state.userStats = data.userStats
@@ -399,7 +397,6 @@ export class AuthenticationManager {
 		if (!initializationData.local) {
 			await this.api.openWebSocket()
 		} else {
-			this.state.workOffline = true
 			this.state.accountType = AccountType.Local
 		}
 
