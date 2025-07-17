@@ -341,7 +341,13 @@ export class MimiriClient extends HttpClientBase {
 
 		const response = await this.post<SyncResponse>('/sync/changes-since', request)
 
-		return { keys: response.keys, notes: response.notes, noteCount: response.noteCount, size: response.size }
+		return {
+			keys: response.keys,
+			notes: response.notes,
+			deletedNotes: response.deletedNotes,
+			noteCount: response.noteCount,
+			size: response.size,
+		}
 	}
 
 	public async multiAction(actions: NoteAction[]): Promise<Guid[]> {

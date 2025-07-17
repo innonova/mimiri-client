@@ -42,6 +42,12 @@ export class NoteTreeManager {
 		this.notes[id] = note
 	}
 
+	public async ensureNote(id: Guid) {
+		if (!this.notes[id]) {
+			await this.noteService.readNote(id)
+		}
+	}
+
 	public getNoteById(id: Guid) {
 		if (id) {
 			return this.notes[id]

@@ -83,6 +83,7 @@
 		<PasswordDialog ref="passwordDialog"></PasswordDialog>
 		<LoginDialog ref="loginDialog"></LoginDialog>
 		<InfoDialog ref="infoDialog"></InfoDialog>
+		<InconsistencyDialog ref="inconsistencyDialog"></InconsistencyDialog>
 		<div
 			v-if="noteManager.state.busy"
 			class="absolute left-0 top-0 w-full h-full flex items-center justify-around text-white"
@@ -142,6 +143,7 @@ import {
 	debug,
 	blockUserInput,
 	appStatus,
+	inconsistencyDialog,
 } from './global'
 import { settingsManager } from './services/settings-manager'
 import LoadingIcon from './icons/loading.vue'
@@ -156,6 +158,7 @@ import { ViewMode } from './services/storage/type'
 import PropertiesPage from './components/PropertiesPage.vue'
 import DeleteHistoryDialog from './components/dialogs/DeleteHistoryDialog.vue'
 import InfoDialog from './components/dialogs/InfoDialog.vue'
+import InconsistencyDialog from './components/dialogs/InconsistencyDialog.vue'
 
 const colorScheme = ref('only light')
 const loading = ref(true)

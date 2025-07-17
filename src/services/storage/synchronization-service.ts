@@ -13,6 +13,7 @@ import {
 	type MergeableTextItem,
 } from './conflict-resolver'
 import type { NoteTreeManager } from './note-tree-manager'
+import { inconsistencyDialog } from '../../global'
 
 export class SynchronizationService {
 	private _conflictResolver: ConflictResolver = new ConflictResolver()
@@ -40,7 +41,7 @@ export class SynchronizationService {
 		}
 	}
 
-	public async sync() {
+	public async sync(shouldCheckConsistency: boolean = false) {
 		if (
 			!this._initialized ||
 			!this.state.isOnline ||
@@ -71,11 +72,20 @@ export class SynchronizationService {
 							}
 							return
 						}
-						await this.syncPull(true)
+						const { keyChanges, noteChanges } = await this.syncPull(true)
+						if (keyChanges) {
+							await this.cryptoManager.loadAllKeys()
+						}
+						let didPush = false
 						if (await this.syncPush()) {
+							didPush = true
 							await this.syncPull(true)
 						}
-						retryCount = 0
+						if (shouldCheckConsistency && (noteChanges || didPush)) {
+							if (await this.checkForConsistency()) {
+								inconsistencyDialog.value.show()
+							}
+						}
 					} catch (error) {
 						syncFailed = true
 						console.error('Synchronization error:', error)
@@ -94,7 +104,7 @@ export class SynchronizationService {
 		}
 	}
 
-	public queueSync(): void {
+	public queueSync(shouldCheckConsistency: boolean = false): void {
 		console.log('SynchronizationService.queueSync() called')
 
 		if (
@@ -106,7 +116,7 @@ export class SynchronizationService {
 		) {
 			return
 		}
-		void this.sync()
+		void this.sync(shouldCheckConsistency)
 	}
 
 	waitForSync(timeoutMs?: number): Promise<boolean> {
@@ -151,12 +161,17 @@ export class SynchronizationService {
 		}
 	}
 
-	private async syncPull(pushUpdates: boolean = false): Promise<void> {
+	private async syncPull(pushUpdates: boolean = false): Promise<{ noteChanges: boolean; keyChanges: boolean }> {
+		let noteChanges = false
+		let keyChanges = false
 		const lastSync = await this.db.getLastSync()
 
 		let nextNoteSync = lastSync?.lastNoteSync ?? 0
 		let nextKeySync = lastSync?.lastKeySync ?? 0
+		console.log('SynchronizationService.syncPull() called', nextNoteSync, nextKeySync)
 		let changes = await this.api.getChangesSince(nextNoteSync, nextKeySync)
+
+		console.log('Synchronization changes:', changes)
 
 		this.state.userStats.size = +changes.size
 		this.state.userStats.noteCount = +changes.noteCount
@@ -188,7 +203,13 @@ export class SynchronizationService {
 							created: key.created,
 							sync: key.sync,
 						})
+						keyChanges = true
 					}
+
+					for (const noteId of changes.deletedNotes) {
+						await this.db.deleteNote(noteId)
+					}
+
 					for (const note of changes.notes) {
 						if (+note.sync > nextNoteSync) {
 							nextNoteSync = +note.sync
@@ -210,6 +231,7 @@ export class SynchronizationService {
 								size: item.size,
 							})),
 						})
+						noteChanges = true
 						updatedNoteIds.push(note.id)
 					}
 				},
@@ -223,9 +245,11 @@ export class SynchronizationService {
 		}
 		if (pushUpdates) {
 			for (const noteId of updatedNoteIds) {
+				console.log(`Note ${noteId} updated during sync pull`)
 				await this.noteUpdatedCallback(noteId)
 			}
 		}
+		return { noteChanges, keyChanges }
 	}
 
 	private async mergeIfNeeded(
@@ -481,6 +505,8 @@ export class SynchronizationService {
 				})
 			}
 
+			console.log('Note actions:', noteActions)
+
 			if (noteActions.length === 0 && keyActions.length === 0) {
 				return false
 			}
@@ -507,11 +533,12 @@ export class SynchronizationService {
 			return false
 		}
 
-		await this.scanForConsistency()
-
 		await this.db.syncLock.withLock('syncPush', async () => {
 			for (const localNote of localNotes) {
 				const current = await this.db.getLocalNote(localNote.id)
+				if (!current) {
+					continue
+				}
 				let differenceFound = current.items.length !== localNote.items.length
 				if (!differenceFound) {
 					for (const localItem of localNote.items) {
@@ -538,6 +565,8 @@ export class SynchronizationService {
 			}
 		})
 
+		// TODO need to refresh all changed notes in the tree manager
+
 		this.state.userStats.localSizeDelta -= localSizeDelta
 		this.state.userStats.localNoteCountDelta -= localNoteCountDelta
 		this.state.userStats.localSize -= localSize
@@ -548,12 +577,14 @@ export class SynchronizationService {
 		return true
 	}
 
-	public async scanForConsistency(): Promise<void> {
-		console.log('Scanning for consistency...')
-
+	private async getConsistencyData(): Promise<{
+		allNotes: NoteData[]
+		deletedNotes: Guid[]
+		parents: { [key: Guid]: { id: Guid; modified: string }[] }
+	}> {
 		const allNotes = await this.db.getAllNotes()
 		const deletedNotes = await this.db.getAllDeletedNotes()
-		const idsWithParent = new Set<Guid>()
+		const parents: { [key: Guid]: { id: Guid; modified: string }[] } = {}
 
 		for (const note of allNotes) {
 			if (deletedNotes.includes(note.id)) {
@@ -563,17 +594,88 @@ export class SynchronizationService {
 			if (metadata) {
 				const data = JSON.parse(await this.decryptNoteItemData(note.keyName, metadata)) as { notes: Guid[] }
 				for (const childId of data.notes) {
-					idsWithParent.add(childId)
+					if (parents[childId]) {
+						parents[childId].push({ id: note.id, modified: metadata.modified })
+					} else {
+						parents[childId] = [{ id: note.id, modified: metadata.modified }]
+					}
 				}
 			}
 		}
+		return {
+			allNotes,
+			deletedNotes,
+			parents,
+		}
+	}
+
+	public async checkForConsistency(): Promise<boolean> {
+		if (await this.scanForConsistency()) {
+			await this.syncPush()
+			return true
+		}
+		return false
+	}
+
+	public async detectConsistencyIssues(): Promise<boolean> {
+		const { allNotes, deletedNotes, parents } = await this.getConsistencyData()
+
+		for (const note of allNotes) {
+			if (deletedNotes.includes(note.id)) {
+				continue
+			}
+			if (!parents[note.id]) {
+				return true
+			}
+		}
+
+		return Object.keys(parents)
+			.map(key => parents[key])
+			.some(parentIds => parentIds.length > 1)
+	}
+
+	private async scanForConsistency(): Promise<boolean> {
+		let correctedIssues = false
+		const { allNotes, deletedNotes, parents } = await this.getConsistencyData()
+
 		const idsWithoutParent: Guid[] = []
 		for (const note of allNotes) {
 			if (deletedNotes.includes(note.id)) {
 				continue
 			}
-			if (!idsWithParent.has(note.id)) {
+			if (!parents[note.id]) {
 				idsWithoutParent.push(note.id)
+			}
+		}
+
+		const ensureLineage = async (id: Guid): Promise<void> => {
+			let currentId = id
+			while (parents[currentId] && parents[currentId].length > 0) {
+				if (currentId !== this.treeManager.root?.id) {
+					await this.treeManager.getNoteById(currentId)?.ensureChildren()
+				}
+				currentId = parents[currentId][0].id
+			}
+		}
+
+		for (const id of Object.keys(parents) as Guid[]) {
+			if (parents[id].length > 1) {
+				console.log(`Note ${id} has multiple parents:`, parents[id])
+				if (this.treeManager.root) {
+					await this.treeManager.root.ensureChildren()
+					parents[id].sort((a, b) => new Date(a.modified).getTime() - new Date(b.modified).getTime())
+					for (let i = 1; i < parents[id].length; i++) {
+						const parentId = parents[id][i].id
+						await ensureLineage(parentId)
+						const parentNote = this.treeManager.getNoteById(parentId)
+						const index = parentNote.note.changeItem('metadata').notes.indexOf(id)
+						parentNote.note.changeItem('metadata').notes.splice(index, 1)
+						console.log(`Removing duplicate parent ${parentId} for note ${id}`)
+						await parentNote.save()
+						await parentNote.ensureChildren()
+						correctedIssues = true
+					}
+				}
 			}
 		}
 
@@ -585,6 +687,7 @@ export class SynchronizationService {
 					if (id === this.treeManager.root?.id) {
 						continue
 					}
+					console.log(`Note ${id} has no parent, adding to recycle bin`)
 					const item = await this.db.getNote(id)
 					const data = JSON.parse(await this.decryptNoteItemData(item.keyName, item.items[0]))
 					if (data.isRecycleBin) {
@@ -602,9 +705,11 @@ export class SynchronizationService {
 				}
 				if (addedItems) {
 					this.treeManager.recycleBin.save()
+					correctedIssues = true
 				}
 			}
 		}
+		return correctedIssues
 	}
 
 	public isSyncIdIssued(syncId: string): boolean {

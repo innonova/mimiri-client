@@ -63,7 +63,7 @@ export class CryptographyManager {
 		}
 	}
 
-	public async tryDecryptNoteItemText(item: { data: string; type: string }, crypt: SymmetricCrypt): Promise<any> {
+	public async tryDecryptNoteItemText(item: { data: string; type: string }, crypt: SymmetricCrypt): Promise<string> {
 		try {
 			return await crypt.decrypt(item.data)
 		} catch (ex) {
@@ -78,7 +78,10 @@ export class CryptographyManager {
 		}
 	}
 
-	public async tryReencryptNoteItemDataToLocal(item: { data: string; type: string }, oldKeyName: Guid): Promise<any> {
+	public async tryReencryptNoteItemDataToLocal(
+		item: { data: string; type: string },
+		oldKeyName: Guid,
+	): Promise<string> {
 		try {
 			const oldKey = await this.getKeyByName(oldKeyName)
 			return await this._localCrypt.encrypt(await oldKey.symmetric.decrypt(item.data))
@@ -96,7 +99,10 @@ export class CryptographyManager {
 		}
 	}
 
-	public async tryReencryptNoteItemDataFromLocal(item: { data: string; type: string }, newKeyName: Guid): Promise<any> {
+	public async tryReencryptNoteItemDataFromLocal(
+		item: { data: string; type: string },
+		newKeyName: Guid,
+	): Promise<string> {
 		const newKey = await this.getKeyByName(newKeyName)
 		try {
 			return await newKey.symmetric.encrypt(await this._localCrypt.decrypt(item.data))

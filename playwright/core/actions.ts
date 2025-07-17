@@ -110,3 +110,15 @@ export const appReadyCycle = async () => {
 	await expect(appMain.status()).not.toHaveValue('ready')
 	await expect(appMain.status()).toHaveValue('ready')
 }
+
+export const goOffline = async () => {
+	await titleBar.accountButton().click()
+	await menu.workOffline().click()
+	await expect(titleBar.accountButton()).toHaveAttribute('title', 'Account (Offline)')
+}
+
+export const goOnline = async () => {
+	await titleBar.accountButton().click()
+	await menu.workOffline().click()
+	await expect(titleBar.accountButton()).toHaveAttribute('title', 'Account (Online)')
+}

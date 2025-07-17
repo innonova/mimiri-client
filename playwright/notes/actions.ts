@@ -21,6 +21,7 @@ export const replaceTextInEditor = async (text: string) => {
 	await mimiri().page.keyboard.press('Control+a')
 	await mimiri().page.keyboard.press('Control+v')
 }
+
 export const getTextFromEditor = async () => {
 	await editor.monaco().click({ timeout: 2000 })
 	await expect(editor.monaco()).toHaveClass(/\bfocused\b/, { timeout: 2000 })

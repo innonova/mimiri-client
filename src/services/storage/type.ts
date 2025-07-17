@@ -176,6 +176,7 @@ export interface NoteInfo {
 export interface SyncInfo {
 	notes: NoteInfo[]
 	keys: KeyInfo[]
+	deletedNotes: Guid[]
 	noteCount: number
 	size: number
 }

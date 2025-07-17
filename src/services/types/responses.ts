@@ -128,6 +128,7 @@ export interface BlogPost {
 export interface SyncResponse {
 	keys: any[]
 	notes: any[]
+	deletedNotes: Guid[]
 	noteCount: number
 	size: number
 }

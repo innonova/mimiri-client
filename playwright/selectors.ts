@@ -103,6 +103,8 @@ export const settingNodes = {
 	controlPanelOpen: () => tid('node-control-panel-open'),
 	controlPanelClosed: () => tid('node-control-panel-closed'),
 	recycleBin: () => tid('node-recycle-bin'),
+	recycleBinOpen: () => tid('node-recycle-bin-open'),
+	recycleBinClosed: () => tid('node-recycle-bin-closed'),
 	update: () => tid('node-settings-update'),
 	blog: () => tid('node-settings-blog'),
 	settingGroup: () => tid('node-settings-group'),
@@ -417,4 +419,10 @@ export const deleteNoteDialog = {
 	deleteNote: () => tid(`delete-note-dialog`).getByTestId(`delete-note`),
 	deleteShare: () => tid(`delete-note-dialog`).getByTestId(`delete-share`),
 	leaveShare: () => tid(`delete-note-dialog`).getByTestId(`leave-share`),
+}
+
+export const inconsistencyDialog = {
+	container: () => tid(`inconsistency-dialog`),
+	reloadButton: () => tid(`inconsistency-dialog`).getByTestId(`inconsistency-dialog-reload`),
+	cancelButton: () => tid(`inconsistency-dialog`).getByTestId(`inconsistency-dialog-cancel`),
 }

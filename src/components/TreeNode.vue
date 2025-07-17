@@ -128,11 +128,12 @@
 				<OpenIcon class="w-[23px] h-[23px] p-0.5 mr-1"></OpenIcon>
 			</button>
 		</div>
-		<template v-for="childNode of node.children" :key="childNode.id">
-			<TreeNode
-				v-show="(node.expanded && !searchModeActive) || searchModeActive"
-				:node="<NoteViewModel>childNode"
-			></TreeNode>
+		<template
+			v-if="(node.expanded && !searchModeActive) || searchModeActive"
+			v-for="childNode of node.children"
+			:key="childNode.id"
+		>
+			<TreeNode :node="<NoteViewModel>childNode"></TreeNode>
 		</template>
 		<NewTreeNode v-if="isSelected && createNewNode"></NewTreeNode>
 	</div>
