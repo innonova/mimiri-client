@@ -9,18 +9,18 @@
 			icon="menu"
 			@click="showMobileMenu"
 			data-testid="toolbar-mobile-menu"
-		></ToolbarIcon>
+		/>
 		<div
 			v-if="!mimiriPlatform.isDesktop"
 			class="inline-block h-4/5 w-0 border border-solid border-toolbar-separator m-0.5"
-		></div>
+		/>
 		<ToolbarIcon
 			icon="plus-small"
 			:hoverEffect="true"
 			title="New Root Note"
 			@click="showCreateMenu"
 			data-testid="toolbar-create-menu"
-		></ToolbarIcon>
+		/>
 		<ToolbarIcon
 			:icon="settingsManager.lastNoteCreateType === 'child' ? 'add-note' : 'add-sibling-note'"
 			:disabled="
@@ -32,8 +32,8 @@
 			:title="settingsManager.lastNoteCreateType === 'child' ? 'New Child Note' : 'New Sibling Note'"
 			@click="createChildNote"
 			data-testid="toolbar-create-sub-note"
-		></ToolbarIcon>
-		<div class="inline-block h-4/5 w-0 border border-solid border-toolbar-separator m-0.5"></div>
+		/>
+		<div class="inline-block h-4/5 w-0 border border-solid border-toolbar-separator m-0.5" />
 		<ToolbarIcon
 			class="desktop:hidden"
 			icon="search-all-notes"
@@ -41,7 +41,7 @@
 			title="Search All Notes"
 			@click="toggleSearchAllNotes"
 			data-testid="toolbar-toggle-search"
-		></ToolbarIcon>
+		/>
 		<ToolbarIcon
 			class="hidden! desktop:block!"
 			icon="search-all-notes"
@@ -49,11 +49,11 @@
 			title="Search All Notes"
 			@click="gotoSearchAllNotes"
 			data-testid="toolbar-goto-search"
-		></ToolbarIcon>
+		/>
 		<div
 			v-if="mimiriPlatform.isPhone"
 			class="inline-block h-4/5 w-0 border border-solid border-toolbar-separator m-0.5"
-		></div>
+		/>
 		<ToolbarIcon
 			v-if="mimiriPlatform.isPhone"
 			:icon="notificationManager.unread > 0 ? 'notifications-active' : 'notifications'"
@@ -63,7 +63,7 @@
 			title="Notifications"
 			@click="notificationsClick"
 			data-testid="toolbar-notifications"
-		></ToolbarIcon>
+		/>
 		<ToolbarIcon
 			v-if="mimiriPlatform.isPhone"
 			:icon="accountIcon"
@@ -71,7 +71,7 @@
 			title="Account"
 			@click="accountClick"
 			data-testid="toolbar-account"
-		></ToolbarIcon>
+		/>
 	</div>
 </template>
 

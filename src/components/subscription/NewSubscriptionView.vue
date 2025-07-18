@@ -2,12 +2,12 @@
 	<div class="flex select-none">
 		<div class="py-2 px-4 bg-info cursor-default">Choose new plan</div>
 	</div>
-	<div class="bg-info w-full h-2 mb-4"></div>
+	<div class="bg-info w-full h-2 mb-4" />
 	<div data-testid="new-subscription-view">
 		<div class="pb-4 cursor-default flex gap-5 justify-start items-center">
-			<PeriodSelector v-model="period"></PeriodSelector>
-			<div class="inline-block"></div>
-			<CurrencySelector v-model="currency"></CurrencySelector>
+			<PeriodSelector v-model="period" />
+			<div class="inline-block" />
+			<CurrencySelector v-model="currency" />
 		</div>
 		<div class="flex gap-1">
 			<SubscriptionItem
@@ -16,7 +16,7 @@
 				:subscription="currentSubscription"
 				:show-features="true"
 				:showCurrent="true"
-			></SubscriptionItem>
+			/>
 			<template v-for="product of products" :key="product.sku">
 				<SubscriptionItem
 					:product="product"
@@ -27,9 +27,9 @@
 					:show-features="true"
 					:currency="currency"
 					@buy="buy"
-				></SubscriptionItem>
+				/>
 			</template>
-			<input type="hidden" data-testid="subscriptions-loaded" :value="!!products?.length" />
+			<input type="hidden" data-testid="subscriptions-loaded" :value="!!products?.length">
 		</div>
 	</div>
 </template>

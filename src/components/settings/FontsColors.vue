@@ -1,10 +1,10 @@
 <template>
 	<div class="flex flex-col h-full">
-		<TabBar :items="['Fonts']"></TabBar>
+		<TabBar :items="['Fonts']" />
 		<div class="overflow-y-auto pb-10">
 			<div class="grid grid-cols-[5rem_12rem] gap-3 items-baseline mx-1 mt-2">
 				<div class="col-span-2">Editor</div>
-				<hr class="col-span-2 mt-[-0.4rem]" />
+				<hr class="col-span-2 mt-[-0.4rem]">
 				<div>Font Family:</div>
 				<select v-model="editorFontFamily">
 					<template v-for="item of fontManager.families" :key="item">
@@ -16,7 +16,7 @@
 					Name of a font installed on your system:
 				</div>
 				<div v-if="editorFontFamily === 'CUSTOM'">Font Name:</div>
-				<input v-if="editorFontFamily === 'CUSTOM'" type="text" class="basic-input" v-model="customFontFamily" />
+				<input v-if="editorFontFamily === 'CUSTOM'" type="text" class="basic-input" v-model="customFontFamily">
 				<div>Font Size:</div>
 				<select v-model="editorFontSize">
 					<template v-for="item of fontManager.sizes" :key="item">
@@ -27,7 +27,7 @@
 		<hr class="col-span-2 mt-[-0.4rem]" /> -->
 			</div>
 			<div class="mt-10 max-w-110 mr-2">
-				<hr />
+				<hr>
 				<div class="w-full flex justify-between mt-2 gap-2">
 					<button @click="reset" class="secondary">Restore defaults</button>
 					<button :disabled="!canSave" @click="save" class="primary">Save</button>
@@ -39,10 +39,10 @@
 				:style="`font-family: '${currentFontFamily}', 'Courier New'; font-size: ${editorFontSize}px; line-height:1em`"
 			>
 				{{ sampleText }}
-				<br />
-				<span>normal text</span><br />
-				<b>bold text</b><br />
-				<i>italic text</i><br />
+				<br>
+				<span>normal text</span><br>
+				<b>bold text</b><br>
+				<i>italic text</i><br>
 				<i><b>bold italic text</b></i>
 			</div>
 			<div class="mt-10 mb-2 ml-1 text-size-title">
@@ -53,10 +53,10 @@
 				:style="`font-family: '${settingsManager.editorFontFamily}', 'Blackadder ITC'; font-size: ${settingsManager.editorFontSize}px; line-height:1em`"
 			>
 				{{ sampleText }}
-				<br />
-				<span>normal text</span><br />
-				<b>bold text</b><br />
-				<i>italic text</i><br />
+				<br>
+				<span>normal text</span><br>
+				<b>bold text</b><br>
+				<i>italic text</i><br>
 				<i><b>bold italic text</b></i>
 			</div>
 		</div>
@@ -114,7 +114,7 @@ const save = async () => {
 		settingsManager.editorFontFamily = customFontFamily.value
 	}
 	settingsManager.editorFontSize = editorFontSize.value
-	var root = document.querySelector(':root') as HTMLElement
+	const root = document.querySelector(':root') as HTMLElement
 	root.style.setProperty(
 		'--font-editor',
 		`'${editorFontFamily.value}', 'Consolas', 'Menlo', 'Droid Sans Mono', 'monospace', 'Courier New'`,

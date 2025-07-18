@@ -36,7 +36,7 @@
 				class="mt-1"
 				type="checkbox"
 				data-testid="accept-terms"
-		/></label>
+		></label>
 		<label class="flex items-center mt-1.5 gap-2 justify-end"
 			>I have read and accept the <a href="https://mimiri.io/privacy" target="_blank">Privacy Policy</a
 			><input
@@ -46,7 +46,7 @@
 				class="mt-1"
 				type="checkbox"
 				data-testid="accept-privacy"
-		/></label>
+		></label>
 	</div>
 </template>
 

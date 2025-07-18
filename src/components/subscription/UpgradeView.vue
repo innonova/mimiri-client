@@ -3,9 +3,9 @@
 		<div class="flex select-none">
 			<div class="py-2 px-4 bg-info cursor-default">Upgrade</div>
 		</div>
-		<div class="bg-info w-full h-2 mb-4"></div>
+		<div class="bg-info w-full h-2 mb-4" />
 		<div class="flex flex-col overflow-y-auto pr-2" data-testid="upgrade-view">
-			<form v-on:submit.prevent="submit" class="max-w-110 relative">
+			<form @submit.prevent="submit" class="max-w-110 relative">
 				<ItemHeader>Chosen Plan</ItemHeader>
 				<div class="flex justify-center pb-5">
 					<Subscription
@@ -16,7 +16,7 @@
 						:currency="currency"
 						:disabled="payInProgress"
 						@change="changePlan"
-					></Subscription>
+					/>
 				</div>
 				<ItemHeader>Billing address</ItemHeader>
 				<CustomerData
@@ -26,8 +26,8 @@
 					v-model:valid="valid"
 					v-model:country-code="countryCode"
 					:disabled="payInProgress"
-				></CustomerData>
-				<PaymentMethodSelector v-model="method" :disabled="payInProgress"></PaymentMethodSelector>
+				/>
+				<PaymentMethodSelector v-model="method" :disabled="payInProgress" />
 				<PaymentSummary
 					v-if="product"
 					:items="[{ sku: product.sku, text: product.name, price: product.price, quantity: 1 }]"
@@ -36,9 +36,9 @@
 					:disabled="payInProgress"
 					v-model:terms="termsAccepted"
 					v-model:privacy="privacyAccepted"
-				></PaymentSummary>
+				/>
 				<div class="mb-20 flex items-center justify-end">
-					<LoadingIcon v-if="payInProgress" class="animate-spin w-8 h-8 mr-2 inline-block"></LoadingIcon>
+					<LoadingIcon v-if="payInProgress" class="animate-spin w-8 h-8 mr-2 inline-block" />
 					<button
 						type="submit"
 						class="primary"

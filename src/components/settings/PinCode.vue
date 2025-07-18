@@ -1,6 +1,6 @@
 <template>
 	<div class="flex flex-col h-full">
-		<TabBar :items="['PIN Code']"></TabBar>
+		<TabBar :items="['PIN Code']" />
 		<div class="overflow-y-auto pb-10">
 			<div class="flex flex-col items-center mt-10 max-w-110">
 				<div class="flex">
@@ -19,13 +19,13 @@
 				</div>
 				<div class="p-1 pt-2 mt-5 m-auto text-left">
 					<label>
-						<input type="checkbox" v-model="enabled" class="mr-1 relative top-0.5" />
+						<input type="checkbox" v-model="enabled" class="mr-1 relative top-0.5">
 						Enable PIN
 					</label>
 				</div>
 			</div>
 			<div class="mt-10 max-w-110 mr-2">
-				<hr />
+				<hr>
 				<div class="w-full flex justify-end mt-2 gap-2">
 					<button :disabled="!canSave" @click="save" class="primary">Save</button>
 				</div>

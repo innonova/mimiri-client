@@ -1,6 +1,6 @@
 <template>
 	<div v-if="!settingsManager.disableDevBlog" class="flex flex-col h-full">
-		<TabBar :items="['Dev Blog']"></TabBar>
+		<TabBar :items="['Dev Blog']" />
 		<div class="w-full h-full">
 			<iframe
 				ref="blogFrame"
@@ -8,7 +8,7 @@
 				:src="`https://blog.mimiri.io/integrated/?q=${Date.now()}&color-scheme=${
 					settingsManager.darkMode ? 'dark' : 'light'
 				}&username=${noteManager.state.username.startsWith('mimiri_a_') ? 'Anonymous' : noteManager.state.username}`"
-			></iframe>
+			/>
 
 			<!-- <iframe
 				ref="blogFrame"

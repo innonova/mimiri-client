@@ -1,8 +1,8 @@
 <template>
 	<div class="flex flex-col h-full" data-testid="create-account-view">
-		<TabBar ref="tabBar" @selected="tabSelected" :items="tabBarItems"></TabBar>
+		<TabBar ref="tabBar" @selected="tabSelected" :items="tabBarItems" />
 
-		<form v-on:submit.prevent="createAccount" class="overflow-y-auto pb-10">
+		<form @submit.prevent="createAccount" class="overflow-y-auto pb-10">
 			<div v-if="stage === 'create-account'" class="pl-2 mt-1">
 				<div class="grid grid-cols-[5rem_12rem] gap-2">
 					<ItemHeader class="col-span-2">Choose your credentials</ItemHeader>
@@ -12,16 +12,16 @@
 						:check-username="createMode === 'cloud'"
 						v-model:value="username"
 						v-model:valid="usernameValid"
-					></UsernameInput>
+					/>
 					<div class="flex items-center">Password:</div>
-					<PasswordInput :display-current="false" v-model:value="password"></PasswordInput>
+					<PasswordInput :display-current="false" v-model:value="password" />
 					<div class="flex items-center">Repeat:</div>
 					<PasswordRepeatInput
 						:display-current="false"
 						:value="password"
 						v-model:match="passwordMatch"
-					></PasswordRepeatInput>
-					<div></div>
+					/>
+					<div />
 					<PrimaryButton :enabled="canCreate" :loading="loading" data-testid="create-button">Create</PrimaryButton>
 				</div>
 			</div>

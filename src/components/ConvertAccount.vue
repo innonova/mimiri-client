@@ -1,12 +1,12 @@
 <template>
-	<div id="title-bar" class="w-full h-[36px] pl-px select-none drag"></div>
+	<div id="title-bar" class="w-full h-[36px] pl-px select-none drag" />
 	<div class="m-auto p-10">
 		<div class="mb-14">
 			<h1 class="text-center font-bold text-size-header">Convert Existing Account</h1>
 		</div>
 		<div class="w-[300px] m-auto">
 			<div class="relative w-[300px] h-[30px] border border-solid border-dialog-border">
-				<div class="h-[30px] bg-progress-indicator progress"></div>
+				<div class="h-[30px] bg-progress-indicator progress" />
 				<div
 					v-if="running && convertedNodes === 0"
 					class="absolute h-full w-full top-0 left-0 text-center leading-[27px]"

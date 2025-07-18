@@ -1,6 +1,6 @@
 <template>
 	<div v-if="settingsManager.debugEnabled" class="flex flex-col h-full">
-		<TabBar @selected="tabSelected" :items="['Settings', 'Errors', 'Messages', 'Latency']"></TabBar>
+		<TabBar @selected="tabSelected" :items="['Settings', 'Errors', 'Messages', 'Latency']" />
 		<div v-if="selectedTab === 'Settings'" class="w-full h-full overflow-y-auto">
 			<div class="flex items-center gap-2 p-2">
 				<button @click="testError" class="primary">Test Error</button>
@@ -8,46 +8,46 @@
 				<button @click="clearMessages" class="primary">Clear Messages</button>
 				<button @click="clearLatency" class="primary">Clear Latency</button>
 			</div>
-			<hr class="my-2" />
+			<hr class="my-2">
 			<div class="grid grid-cols-[1rem_8rem_8rem_10rem] gap-2 p-2 items-center">
-				<input id="pre-call-latency-enabled" type="checkbox" v-model="preCallLatencyEnabled" />
+				<input id="pre-call-latency-enabled" type="checkbox" v-model="preCallLatencyEnabled">
 				<label for="pre-call-latency-enabled">Pre call latency</label>
 				<div class="flex items-baseline gap-1">
-					<input type="number" v-model="preCallLatency" class="border border-gray-300 w-24 rounded p-1" />ms
+					<input type="number" v-model="preCallLatency" class="border border-gray-300 w-24 rounded p-1">ms
 				</div>
 				<div>
 					<label class="flex items-center gap-1"
-						><input type="checkbox" v-model="preCallLatencyRandom" /> Random (0-{{ preCallLatency }}ms)</label
+						><input type="checkbox" v-model="preCallLatencyRandom"> Random (0-{{ preCallLatency }}ms)</label
 					>
 				</div>
-				<input id="post-call-latency-enabled" type="checkbox" v-model="postCallLatencyEnabled" />
+				<input id="post-call-latency-enabled" type="checkbox" v-model="postCallLatencyEnabled">
 				<label for="post-call-latency-enabled">Post call latency</label>
 				<div class="flex items-baseline gap-1">
-					<input type="number" v-model="postCallLatency" class="border border-gray-300 w-24 rounded p-1" />ms
+					<input type="number" v-model="postCallLatency" class="border border-gray-300 w-24 rounded p-1">ms
 				</div>
 				<div>
 					<label class="flex items-center gap-1"
-						><input type="checkbox" v-model="postCallLatencyRandom" /> Random (0-{{ postCallLatency }}ms)</label
+						><input type="checkbox" v-model="postCallLatencyRandom"> Random (0-{{ postCallLatency }}ms)</label
 					>
 				</div>
-				<input id="call-error-frequency-enabled" type="checkbox" v-model="callErrorFrequencyEnabled" />
+				<input id="call-error-frequency-enabled" type="checkbox" v-model="callErrorFrequencyEnabled">
 				<label for="call-error-frequency-enabled">Call error frequency</label>
 				<div class="flex items-baseline gap-1">
-					<input type="number" v-model="callErrorFrequency" class="border border-gray-300 w-24 rounded p-1" />%
+					<input type="number" v-model="callErrorFrequency" class="border border-gray-300 w-24 rounded p-1">%
 				</div>
-				<div></div>
-				<div></div>
+				<div />
+				<div />
 				<label for="call-error-delay">Call error delay</label>
 				<div class="flex items-baseline gap-1">
-					<input type="number" v-model="callErrorDelay" class="border border-gray-300 w-24 rounded p-1" />ms
+					<input type="number" v-model="callErrorDelay" class="border border-gray-300 w-24 rounded p-1">ms
 				</div>
-				<div></div>
-				<div></div>
+				<div />
+				<div />
 				<label for="latency-threshold-enabled">Latency Threshold</label>
 				<div class="flex items-baseline gap-1">
-					<input type="number" v-model="latencyThreshold" class="border border-gray-300 w-24 rounded p-1" />ms
+					<input type="number" v-model="latencyThreshold" class="border border-gray-300 w-24 rounded p-1">ms
 				</div>
-				<div></div>
+				<div />
 				<div class="col-span-4 text-right">
 					<button @click="save" class="primary mt-3">Save</button>
 				</div>

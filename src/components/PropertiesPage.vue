@@ -1,11 +1,11 @@
 <template>
 	<div v-if="noteManager.state.isLoggedIn" class="flex flex-col h-full">
 		<div class="flex items-center py-px px-1 bg-toolbar border-b border-solid border-toolbar min-h-9 select-none">
-			<ToolbarIcon icon="back" :hoverEffect="true" title="Back" class="desktop:hidden" @click="onBack"></ToolbarIcon>
+			<ToolbarIcon icon="back" :hoverEffect="true" title="Back" class="desktop:hidden" @click="onBack" />
 		</div>
 		<div class="flex overflow-hidden pl-2 pt-2 h-full">
 			<div class="w-full">
-				<TextNoteProperties></TextNoteProperties>
+				<TextNoteProperties />
 			</div>
 		</div>
 	</div>

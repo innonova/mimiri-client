@@ -83,7 +83,7 @@ export class UIStateManager {
 	}
 
 	public findNextNoteStartingWith(text: string, rootNote: MimerNote, selectedNote: MimerNote) {
-		let current = selectedNote
+		const current = selectedNote
 		let note: MimerNote | undefined = undefined
 		if (current) {
 			note = this.recurseExpandedNotes(current, note => note !== current && note.title.toLowerCase().startsWith(text))

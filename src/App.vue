@@ -1,5 +1,5 @@
 <template>
-	<input :value="appStatus" type="hidden" data-testid="app-status" />
+	<input :value="appStatus" type="hidden" data-testid="app-status">
 	<div
 		v-if="loading"
 		class="h-full dark-mode safe-area-padding text-size-base"
@@ -10,7 +10,7 @@
 	>
 		<div id="title-bar" class="w-full h-[36px] pl-px select-none drag" />
 		<div v-if="secondPassed" class="flex flex-col items-center justify-center h-full pb-10">
-			<img v-if="!mimiriPlatform.isElectron" class="ml-1.5 mr-1 mt-px p-1 w-32 h-32" src="/img/logo-big.png" />
+			<img v-if="!mimiriPlatform.isElectron" class="ml-1.5 mr-1 mt-px p-1 w-32 h-32" src="/img/logo-big.png">
 			<div class="flex text-size-header">
 				<div>Initializing</div>
 				<div class="w-0">{{ activity }}</div>

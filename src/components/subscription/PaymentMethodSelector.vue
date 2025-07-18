@@ -15,7 +15,7 @@
 				class="mt-1.5 mr-1"
 				:disabled="disabled"
 				data-testid="payment-method-NEW"
-			/>
+			>
 			<div class="border shadow-sm px-3 pt-3 pb-4 w-80">Create new payment method</div></label
 		>
 		<template v-for="method of methods" :key="method.id">
@@ -28,13 +28,13 @@
 					class="mt-1.5 mr-1"
 					:disabled="disabled"
 					:data-testid="`payment-method-${method.name}`"
-				/>
+				>
 				<PaymentMethodItem
 					:method="method"
 					:is-default="false"
 					:show-actions="false"
 					:disabled="disabled"
-				></PaymentMethodItem>
+				/>
 				<!-- <div class="flex flex-col">
 					<div>
 						<img class="h-8" :src="`https://mimiri.payrexx.com/Frontend/Images/CardIcons/card_${method.brand}.svg`" />
@@ -45,7 +45,7 @@
 			</label>
 		</template>
 	</div>
-	<input type="hidden" data-testid="payment-methods-loaded" :value="loaded" />
+	<input type="hidden" data-testid="payment-methods-loaded" :value="loaded">
 </template>
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'

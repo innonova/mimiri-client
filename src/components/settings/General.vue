@@ -1,22 +1,22 @@
 <template>
 	<div class="flex flex-col h-full">
-		<TabBar :items="['General']"></TabBar>
+		<TabBar :items="['General']" />
 		<div class="overflow-y-auto pb-10">
 			<div class="p-1 pt-2 m-auto text-left">
 				<label>
-					<input type="checkbox" v-model="darkMode" class="mr-1 relative top-0.5" />
+					<input type="checkbox" v-model="darkMode" class="mr-1 relative top-0.5">
 					Dark Mode
 				</label>
 			</div>
 			<div v-if="!mimiriPlatform.isDesktop || !alwaysEdit || env.DEV" class="p-1 pt-2 m-auto text-left">
 				<label>
-					<input type="checkbox" v-model="alwaysEdit" class="mr-1 relative top-0.5" />
+					<input type="checkbox" v-model="alwaysEdit" class="mr-1 relative top-0.5">
 					Always edit
 				</label>
 			</div>
 			<div v-if="!mimiriPlatform.isDesktop || simpleEditor || env.DEV" class="p-1 pt-2 m-auto text-left">
 				<label>
-					<input type="checkbox" v-model="simpleEditor" class="mr-1 relative top-0.5" />
+					<input type="checkbox" v-model="simpleEditor" class="mr-1 relative top-0.5">
 					Use simplified editor
 				</label>
 			</div>
@@ -25,31 +25,31 @@
 				class="p-1 pt-2 m-auto text-left"
 			>
 				<label>
-					<input type="checkbox" v-model="openAtLogin" class="mr-1 relative top-0.5" />
+					<input type="checkbox" v-model="openAtLogin" class="mr-1 relative top-0.5">
 					Launch Mimiri Notes on Login
 				</label>
 			</div>
 			<div v-if="mimiriPlatform.isDesktop && !mimiriPlatform.isWeb" class="p-1 pt-2 m-auto text-left">
 				<label>
-					<input type="checkbox" v-model="showInTaskBar" class="mr-1 relative top-0.5" />
+					<input type="checkbox" v-model="showInTaskBar" class="mr-1 relative top-0.5">
 					Show in Taskbar
 				</label>
 			</div>
 			<div v-if="mimiriPlatform.isWindowsApp" class="p-1 pt-2 m-auto text-left">
 				<label>
-					<input type="checkbox" v-model="keepTrayIconVisible" class="mr-1 relative top-0.5" />
+					<input type="checkbox" v-model="keepTrayIconVisible" class="mr-1 relative top-0.5">
 					Keep Tray Icon Visible
 				</label>
 			</div>
 			<div v-if="mimiriPlatform.isElectron" class="p-1 pt-2 m-auto text-left">
 				<label>
-					<input type="checkbox" v-model="closeOnX" class="mr-1 relative top-0.5" />
+					<input type="checkbox" v-model="closeOnX" class="mr-1 relative top-0.5">
 					Quit when closing application window
 				</label>
 			</div>
 			<div class="p-1 pt-2 m-auto text-left">
 				<label>
-					<input type="checkbox" v-model="disableDevBlog" class="mr-1 relative top-0.5" />
+					<input type="checkbox" v-model="disableDevBlog" class="mr-1 relative top-0.5">
 					Disable Dev Blog
 				</label>
 			</div>
@@ -62,7 +62,7 @@
 				</select>
 			</div>
 			<div class="mt-10 max-w-110 mr-2">
-				<hr />
+				<hr>
 				<div class="w-full flex justify-end mt-2 gap-2">
 					<button :disabled="!canSave" @click="save" class="primary">Save</button>
 				</div>

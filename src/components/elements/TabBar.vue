@@ -14,7 +14,7 @@
 			</div>
 		</template>
 	</div>
-	<div class="bg-info min-h-2 h-2 mb-2 mr-2 rounded-b-sm rounded-r-sm"></div>
+	<div class="bg-info min-h-2 h-2 mb-2 mr-2 rounded-b-sm rounded-r-sm" />
 </template>
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'

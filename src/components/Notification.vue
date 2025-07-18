@@ -8,7 +8,7 @@
 				:is="getIcon()"
 				class="h-5 mr-1.5"
 				:class="{ 'text-shared': props.notification.icon === 'share' }"
-			></component>
+			/>
 			<div :class="{ 'font-bold': !props.notification.read }">{{ props.notification.title }}</div>
 		</div>
 	</div>

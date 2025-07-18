@@ -4,7 +4,7 @@
 		ref="dialog"
 		data-testid="password-dialog"
 	>
-		<form v-on:submit.prevent="submitDialog">
+		<form @submit.prevent="submitDialog">
 			<div class="grid grid-rows-[auto_1fr_auto] gap-6">
 				<DialogTitle @close="close">Verify that it is you</DialogTitle>
 				<main class="px-2">
@@ -21,11 +21,11 @@
 								class="basic-input"
 								data-testid="password-dialog-input"
 								@keydown="pwKeyDown"
-							/>
+							>
 						</div>
 					</div>
 					<div>
-						<div v-if="capsLockOn" class="inline-block w-24 items-center"></div>
+						<div v-if="capsLockOn" class="inline-block w-24 items-center" />
 						<div v-if="capsLockOn" class="inline-block py-1">Caps Lock is on!</div>
 					</div>
 					<div v-if="error" class="mt-4 text-right mr-1 text-error" data-testid="password-dialog-error">
@@ -33,7 +33,7 @@
 					</div>
 				</main>
 				<footer class="flex justify-end mobile:justify-center gap-2 pr-2 pb-2">
-					<LoadingIcon v-if="busy" class="animate-spin w-8 h-8 mr-8 inline-block"></LoadingIcon>
+					<LoadingIcon v-if="busy" class="animate-spin w-8 h-8 mr-8 inline-block" />
 					<button class="primary" v-if="!busy" type="submit" data-testid="password-dialog-ok">OK</button>
 					<button class="secondary" @click="close" :disabled="busy" type="button" data-testid="password-dialog-cancel">
 						Cancel

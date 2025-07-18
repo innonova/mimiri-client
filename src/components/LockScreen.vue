@@ -15,7 +15,7 @@
 		</div>
 		<div class="mt-5">Attempts remaining: 1</div>
 	</div>
-	<div v-if="!localAuth.elapsed" class="bg-input h-full w-full"></div>
+	<div v-if="!localAuth.elapsed" class="bg-input h-full w-full" />
 </template>
 
 <script setup lang="ts">

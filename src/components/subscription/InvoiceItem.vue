@@ -30,7 +30,7 @@
 			>
 				Status: <span class="text-good font-bold">CREDIT NOTE</span>
 			</div>
-			<div v-if="invoice.status === 'issued'"></div>
+			<div v-if="invoice.status === 'issued'" />
 			<div v-if="invoice.status === 'issued'">Due: {{ formatInvoiceDate(invoice.due) }}</div>
 			<div v-if="invoice.status === 'issued'" class="text-right">
 				<button class="primary" @click="payNow" :data-testid="`invoice-${invoice.no}-pay-now`">Pay Now</button>
@@ -43,7 +43,7 @@
 				<button class="primary" @click="showInvoice" :data-testid="`invoice-${invoice.no}-view-link`">View</button>
 				<button class="primary" @click="showInvoicePdf" :data-testid="`invoice-${invoice.no}-pdf-link`">PDF</button>
 			</div>
-			<div></div>
+			<div />
 			<div class="text-right" :data-testid="`invoice-${invoice.no}-total`">
 				{{ invoice.currency }} {{ formatCurrency(invoice.data.total) }}
 			</div>

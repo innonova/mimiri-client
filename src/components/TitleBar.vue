@@ -18,7 +18,7 @@
 			v-if="mimiriPlatform.isDesktop && !mimiriPlatform.isMacApp"
 			class="ml-[0.3rem] mr-1 mt-px p-1 min-w-[1.6rem] w-[1.6rem] h-[1.6rem]"
 			src="/img/logo.png"
-		/>
+		>
 		<div
 			v-if="mimiriPlatform.isDesktop && !mimiriPlatform.isMacApp"
 			class="hover:bg-title-hover cursor-default rounded-sm px-2 no-drag"
@@ -84,7 +84,7 @@
 				}"
 				@blur="endEdit"
 				@keydown="checkSearch"
-			/>
+			>
 		</div>
 		<div
 			v-if="mimiriPlatform.isWindowsApp || mimiriPlatform.isMacApp"
@@ -99,11 +99,11 @@
 			<ScreenShareEnabledIcon
 				v-if="settingsManager.allowScreenSharing"
 				class="w-9 h-6 p-0.5 px-1 no-drag pointer-events-none text-warning"
-			></ScreenShareEnabledIcon>
+			/>
 			<ScreenShareDisabledIcon
 				v-if="!settingsManager.allowScreenSharing"
 				class="w-9 h-6 p-0.5 px-1 no-drag pointer-events-none text-title-text-blur"
-			></ScreenShareDisabledIcon>
+			/>
 		</div>
 		<div
 			class="h-full flex items-center justify-center relative"
@@ -121,12 +121,12 @@
 				:class="{
 					'text-title-text-blur': notificationManager.count <= 0,
 				}"
-			></NotificationIcon>
+			/>
 			<NotificationActiveIcon
 				v-if="notificationManager.unread > 0"
 				class="w-9 h-6 p-px no-drag pointer-events-none"
-			></NotificationActiveIcon>
-			<div v-if="notificationManager.strong" class="absolute bottom-1 left-px w-2 h-2 rounded-sm bg-bad"></div>
+			/>
+			<div v-if="notificationManager.strong" class="absolute bottom-1 left-px w-2 h-2 rounded-sm bg-bad" />
 		</div>
 		<div
 			class="h-full flex items-center justify-center"
@@ -147,7 +147,7 @@
 					'p-px text-online active:p-px': noteManager.state.isOnline && noteManager.state.isLoggedIn,
 					'p-px text-offline active:p-px': !noteManager.state.isOnline && noteManager.state.isLoggedIn,
 				}"
-			></AccountIcon>
+			/>
 		</div>
 	</div>
 </template>

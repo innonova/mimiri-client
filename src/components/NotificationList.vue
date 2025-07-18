@@ -10,7 +10,7 @@
 			@mouseup="stopPropagation"
 		>
 			<template v-for="item of notificationManager.state.notifications" :key="item.id">
-				<Notification :notification="item"></Notification>
+				<Notification :notification="item" />
 			</template>
 			<button
 				class="w-full text-center mt-2 py-2 bg-button-secondary hover:opacity-80 rounded-sm"

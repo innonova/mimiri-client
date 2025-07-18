@@ -1,17 +1,17 @@
 <template>
-	<Invoices v-if="selectedId === 'invoices'" @pay-invoice="payInvoice"></Invoices>
+	<Invoices v-if="selectedId === 'invoices'" @pay-invoice="payInvoice" />
 	<PayInvoice
 		v-if="selectedId === 'pay-invoice'"
 		:invoice="activeInvoice"
 		@pay-in-progress="payInProgress"
-	></PayInvoice>
+	/>
 	<WaitingForPayment
 		v-if="selectedId === 'pay-in-progress'"
 		:invoice-id="invoiceId"
 		@close="closeWaiting"
 		:waiting-for-user="waitingForUser"
 		:link="payLink"
-	></WaitingForPayment>
+	/>
 </template>
 
 <script setup lang="ts">

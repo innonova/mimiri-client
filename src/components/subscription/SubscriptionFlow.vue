@@ -1,25 +1,25 @@
 <template>
-	<SubHome v-if="selectedId === 'subscription'" ref="subHome" @change="change" @pay-invoice="payInvoice"></SubHome>
-	<NewSubscriptionView v-if="selectedId === 'new'" @choose="chooseNewPlan"></NewSubscriptionView>
+	<SubHome v-if="selectedId === 'subscription'" ref="subHome" @change="change" @pay-invoice="payInvoice" />
+	<NewSubscriptionView v-if="selectedId === 'new'" @choose="chooseNewPlan" />
 	<PayInvoice
 		v-if="selectedId === 'pay-invoice'"
 		:invoice="activeInvoice"
 		@pay-in-progress="payInProgress"
-	></PayInvoice>
+	/>
 	<UpgradeView
 		v-if="selectedId === 'upgrade'"
 		:product="newProduct"
 		:currency="currency"
 		@pay-in-progress="payInProgress"
 		@change-plan="change"
-	></UpgradeView>
+	/>
 	<WaitingForPayment
 		v-if="selectedId === 'pay-in-progress'"
 		:invoice-id="invoiceId"
 		@close="closeWaiting"
 		:waiting-for-user="waitingForUser"
 		:link="payLink"
-	></WaitingForPayment>
+	/>
 </template>
 
 <script setup lang="ts">

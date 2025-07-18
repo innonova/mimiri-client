@@ -20,37 +20,37 @@
 		<div v-if="showDetails || custom" class="mb-3">
 			<div class="mt-1">
 				<label>
-					<input type="checkbox" v-model="includeLowerCase" :disabled="!custom" class="mr-1 relative top-0.5" />
+					<input type="checkbox" v-model="includeLowerCase" :disabled="!custom" class="mr-1 relative top-0.5">
 					Include lower case <code>a-z</code>
 				</label>
 			</div>
 			<div class="mt-1">
 				<label>
-					<input type="checkbox" v-model="includeUpperCase" :disabled="!custom" class="mr-1 relative top-0.5" />
+					<input type="checkbox" v-model="includeUpperCase" :disabled="!custom" class="mr-1 relative top-0.5">
 					Include upper case <code>A-Z</code>
 				</label>
 			</div>
 			<div class="mt-1">
 				<label>
-					<input type="checkbox" v-model="includeNumbers" :disabled="!custom" class="mr-1 relative top-0.5" />
+					<input type="checkbox" v-model="includeNumbers" :disabled="!custom" class="mr-1 relative top-0.5">
 					Include numbers <code>0-9</code>
 				</label>
 			</div>
 			<div class="mt-1">
 				<label>
-					<input type="checkbox" v-model="includeFriendlySymbols" :disabled="!custom" class="mr-1 relative top-0.5" />
+					<input type="checkbox" v-model="includeFriendlySymbols" :disabled="!custom" class="mr-1 relative top-0.5">
 					Include friendly symbols <code>{{ generator.friendlySymbols }}</code>
 				</label>
 			</div>
 			<div class="mt-1">
 				<label>
-					<input type="checkbox" v-model="includeExtendedSymbols" :disabled="!custom" class="mr-1 relative top-0.5" />
+					<input type="checkbox" v-model="includeExtendedSymbols" :disabled="!custom" class="mr-1 relative top-0.5">
 					Include extended symbols <code>{{ generator.extendedSymbols }}</code>
 				</label>
 			</div>
 			<div class="mt-1">
 				<label>
-					<input type="checkbox" v-model="includeDifficultSymbols" :disabled="!custom" class="mr-1 relative top-0.5" />
+					<input type="checkbox" v-model="includeDifficultSymbols" :disabled="!custom" class="mr-1 relative top-0.5">
 					Include difficult symbols <code>{{ generator.difficultSymbols }}</code>
 				</label>
 			</div>
@@ -61,7 +61,7 @@
 						v-model="includeOneSymbol"
 						:disabled="!custom || noSymbolsSelected"
 						class="mr-1 relative top-0.5"
-					/>
+					>
 					Include exactly 1 Symbol
 				</label>
 			</div>
@@ -103,9 +103,9 @@
 				<span v-if="iterations === 10000000">{{ time10M }}</span>
 				<span v-if="iterations === 20000000">{{ time20M }}</span>
 			</div>
-			<div v-if="showDetails || props.mode !== 'mimiri'"></div>
+			<div v-if="showDetails || props.mode !== 'mimiri'" />
 			<div class="underline cursor-pointer" @click="toggleDetails">
-				<span v-if="!showDetails"></span>
+				<span v-if="!showDetails" />
 				<span v-if="showDetails">hide</span>
 				details
 			</div>
@@ -130,7 +130,7 @@
 			</div>
 			<div v-if="!custom" class="flex justify-end mt-1.5 px-1">
 				<div class="underline cursor-pointer" @click="toggleInvestmentDetails">
-					<span v-if="!showInvestmentDetails"></span>
+					<span v-if="!showInvestmentDetails" />
 					<span v-if="showInvestmentDetails">hide</span>
 					details
 				</div>

@@ -2,7 +2,7 @@
 	<div class="flex select-none">
 		<div class="py-2 px-4 bg-info cursor-default">Payment in progress</div>
 	</div>
-	<div class="bg-info w-full h-2 mb-2"></div>
+	<div class="bg-info w-full h-2 mb-2" />
 	<div class="p-1 pt-2 mt-5 text-center max-w-110" data-testid="waiting-view">
 		<div v-if="waitingForUser">
 			<div>Waiting for payment to be completed in browser window</div>
@@ -12,7 +12,7 @@
 		</div>
 		<div v-if="!waitingForUser">Waiting for payment to complete (this will happen automatically)</div>
 		<div class="flex items-center justify-center my-6">
-			<LoadingIcon class="animate-spin w-8 h-8 mr-2 inline-block"></LoadingIcon> {{ status }}
+			<LoadingIcon class="animate-spin w-8 h-8 mr-2 inline-block" /> {{ status }}
 		</div>
 		<div v-if="running" class="flex justify-center gap-2 mt-8">
 			<button class="primary" @click="check" data-testid="waiting-check">Check</button>

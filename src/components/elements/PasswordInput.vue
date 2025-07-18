@@ -7,11 +7,11 @@
 			class="basic-input"
 			data-testid="password-input"
 			@keydown="pwKeyDown"
-		/>
+		>
 		<div class="desktop:w-0 desktop:h-0 overflow-visible">
 			<div class="absolute right-2 invisible desktop:visible" @mousedown="showPassword" @mouseup="hidePassword">
-				<ShowPasswordIcon v-if="passwordFieldType === 'password'" class="w-5 h-5 mt-1"></ShowPasswordIcon>
-				<ShowingPasswordIcon v-if="passwordFieldType === 'text'" class="w-5 h-5 mt-1"></ShowingPasswordIcon>
+				<ShowPasswordIcon v-if="passwordFieldType === 'password'" class="w-5 h-5 mt-1" />
+				<ShowingPasswordIcon v-if="passwordFieldType === 'text'" class="w-5 h-5 mt-1" />
 			</div>
 		</div>
 		<div v-if="passwordQuality" class="desktop:w-0 desktop:h-0 overflow-visible">
@@ -19,19 +19,19 @@
 				v-if="passwordQuality === 'free-access'"
 				class="flex items-center w-52 h-7 desktop:ml-2 mt-1.5 desktop:mt-0 text-left"
 			>
-				<FreeAccessIcon class="w-5 h-5 mr-1 inline-block"></FreeAccessIcon> Not really a password
+				<FreeAccessIcon class="w-5 h-5 mr-1 inline-block" /> Not really a password
 			</div>
 			<div
 				v-if="passwordQuality === 'casual-use-only'"
 				class="flex items-center w-52 h-7 desktop:ml-2 mt-1.5 desktop:mt-0 text-left"
 			>
-				<CasualOnlyIcon class="w-5 h-5 mr-1 inline-block"></CasualOnlyIcon> Very limited security
+				<CasualOnlyIcon class="w-5 h-5 mr-1 inline-block" /> Very limited security
 			</div>
 			<div
 				v-if="passwordQuality === 'acceptable-security'"
 				class="flex items-center w-52 h-7 desktop:ml-2 mt-1.5 desktop:mt-0 text-left"
 			>
-				<LightSecurityIcon class="w-5 h-5 mr-1 inline-block"></LightSecurityIcon> Acceptable
+				<LightSecurityIcon class="w-5 h-5 mr-1 inline-block" /> Acceptable
 			</div>
 		</div>
 	</div>

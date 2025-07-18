@@ -6,7 +6,7 @@
 	>
 		<div class="grid grid-rows-[auto_1fr_auto]">
 			<DialogTitle @close="close">Accept Share</DialogTitle>
-			<form v-on:submit.prevent="submitDialog" class="mx-2 mt-5 mb-2 mobile:mx-8">
+			<form @submit.prevent="submitDialog" class="mx-2 mt-5 mb-2 mobile:mx-8">
 				<div class="grid grid-cols-[4rem_10rem] mobile:grid-cols-[4rem_auto] items-center gap-2 mx-2 mb-2">
 					<span class="whitespace-nowrap">Code:</span>
 					<input
@@ -16,13 +16,13 @@
 						autofocus
 						v-model="code"
 						:class="{ invalid: invalid }"
-						v-on:keyup.enter="submitDialog"
+						@keyup.enter="submitDialog"
 						data-testid="share-code-input"
-					/>
-					<div v-if="invalid"></div>
+					>
+					<div v-if="invalid" />
 					<div v-if="invalid" class="text-error leading-4">No share found</div>
 					<div class="col-span-2 flex justify-end mobile:justify-center gap-2 mt-2 mobile:mt-8">
-						<LoadingIcon v-if="loading" class="animate-spin w-8 h-8 mr-2 inline-block"></LoadingIcon>
+						<LoadingIcon v-if="loading" class="animate-spin w-8 h-8 mr-2 inline-block" />
 						<button v-if="!loading" class="primary" @click="submitDialog" data-testid="share-ok-button">OK</button>
 						<button class="secondary" @click="close" data-testid="share-cancel-button">Cancel</button>
 					</div>

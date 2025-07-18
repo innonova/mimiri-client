@@ -1,12 +1,12 @@
 <template>
-	<PaymentMethods v-if="selectedId === 'methods'" @pay-in-progress="payInProgress"></PaymentMethods>
+	<PaymentMethods v-if="selectedId === 'methods'" @pay-in-progress="payInProgress" />
 	<WaitingForPayment
 		v-if="selectedId === 'pay-in-progress'"
 		@close="closeWaiting"
 		:waiting-for-user="waitingForUser"
 		:expected-method-count="expectedMethodCount"
 		:link="payLink"
-	></WaitingForPayment>
+	/>
 </template>
 
 <script setup lang="ts">

@@ -6,14 +6,14 @@
 	>
 		<div class="grid grid-rows-[auto_1fr_auto]">
 			<DialogTitle @close="close">Share Note</DialogTitle>
-			<form v-on:submit.prevent="submitDialog" class="mx-2 mt-5 mb-2 mobile:mx-8">
+			<form @submit.prevent="submitDialog" class="mx-2 mt-5 mb-2 mobile:mx-8">
 				<div class="grid grid-cols-[5.5rem_10rem] mobile:grid-cols-[5.5rem_auto] items-center gap-2 mx-2 mb-2">
 					<div v-if="code" class="col-span-2 flex flex-col items-center">
 						<div class="text-center leading-5">Share this code with {{ name }} to complete the share</div>
 						<div class="text-size-header my-5 flex gap-1 items-center">
 							<div class="mb-1 ml-2" data-testid="share-code">{{ code }}</div>
 							<div class="w-6">
-								<CopyIcon v-if="!copied" title="copy" @click="copyCode" class="w-5 hover:w-6 cursor-pointer"></CopyIcon>
+								<CopyIcon v-if="!copied" title="copy" @click="copyCode" class="w-5 hover:w-6 cursor-pointer" />
 								<div v-if="copied" class="ml-1 mb-1 cursor-default select-none text-size-base">Copied</div>
 							</div>
 						</div>
@@ -39,8 +39,8 @@
 						v-model="name"
 						:class="{ invalid: invalid }"
 						data-testid="share-username-input"
-					/>
-					<div v-if="invalid || shareWithSelf || shareFailed"></div>
+					>
+					<div v-if="invalid || shareWithSelf || shareFailed" />
 					<div v-if="invalid" class="text-error leading-4">You must enter a username</div>
 					<div v-if="shareWithSelf" class="text-error leading-4">You cannot share with yourself.</div>
 					<div v-if="shareFailed" class="text-error leading-4">
@@ -60,7 +60,7 @@
 						<button class="primary" type="button" @click="close" data-testid="share-close-button">Close</button>
 					</div>
 					<div v-if="!code" class="col-span-2 flex justify-end mobile:justify-center gap-2 mt-2 mobile:mt-8">
-						<LoadingIcon v-if="loading" class="animate-spin w-8 h-8 mr-2 inline-block"></LoadingIcon>
+						<LoadingIcon v-if="loading" class="animate-spin w-8 h-8 mr-2 inline-block" />
 						<button v-if="!loading" class="primary" data-testid="share-ok-button">OK</button>
 						<button class="secondary" type="button" @click="close" data-testid="share-cancel-button">Cancel</button>
 					</div>

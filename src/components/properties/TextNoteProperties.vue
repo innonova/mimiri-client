@@ -1,6 +1,6 @@
 <template>
 	<div class="flex flex-col h-full">
-		<TabBar :items="['Properties']"></TabBar>
+		<TabBar :items="['Properties']" />
 		<div class="flex flex-col overflow-y-auto h-full">
 			<div class="grid grid-cols-[7rem_15rem] gap-3 items-baseline px-1 mt-2 mb-10">
 				<div>Data:</div>

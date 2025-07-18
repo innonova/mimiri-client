@@ -24,29 +24,29 @@
 				v-show="indicatorVisible"
 				id="drop-indicator"
 				class="absolute left-4 indicator-top w-full h-0 border-2 border-solid border-drop-indicator pointer-events-none"
-			></div>
+			/>
 			<div v-show="!searchModeActive" class="flex items-center pl-1 pr-0.5 h-full" @click="toggleNode">
 				<PlusIcon
 					v-if="!node.expanded"
 					class="h-5 w-5 desktop:h-4 desktop:w-4 mt-px"
 					:class="{ invisible: !hasChildren }"
-				></PlusIcon>
+				/>
 				<MinusIcon
 					v-if="node.expanded"
 					class="h-5 w-5 desktop:h-4 desktop:w-4 mt-px"
 					:class="{ invisible: !hasChildren }"
-				></MinusIcon>
+				/>
 			</div>
 			<RecycleBinIcon
 				v-if="hasChildren"
 				class="w-[30px] h-[30px] desktop:w-[23px] desktop:h-[23px] p-0.5 mr-1 desktop:mr-0.5"
 				:class="{ 'text-shared': node.shared }"
-			></RecycleBinIcon>
+			/>
 			<RecycleBinEmptyIcon
 				v-if="!hasChildren"
 				class="w-[30px] h-[30px] desktop:w-[23px] desktop:h-[23px] p-0.5 mr-1 desktop:mr-0.5"
 				:class="{ 'text-shared': node.shared }"
-			></RecycleBinEmptyIcon>
+			/>
 			<div
 				class="select-none flex-1 overflow-hidden text-ellipsis"
 				:class="{
@@ -57,14 +57,14 @@
 				Recycle Bin
 			</div>
 			<div class="desktop:hidden pl-14 flex justify-end" @click="selectNode(true)">
-				<OpenIcon class="w-[23px] h-[23px] p-0.5"></OpenIcon>
+				<OpenIcon class="w-[23px] h-[23px] p-0.5" />
 			</div>
 		</div>
 		<template v-for="childNode of node.children" :key="childNode.id">
 			<TreeNode
 				v-show="(node.expanded && !searchModeActive) || searchModeActive"
 				:node="<NoteViewModel>childNode"
-			></TreeNode>
+			/>
 		</template>
 	</div>
 </template>

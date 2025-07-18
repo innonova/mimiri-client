@@ -1,15 +1,15 @@
 <template>
 	<div class="flex flex-col h-full">
-		<TabBar :items="['Invoices']"></TabBar>
+		<TabBar :items="['Invoices']" />
 		<div v-if="!invoices?.length" class="m-5" data-testid="invoices-none">No Invoices Yet</div>
 		<div class="p-1 pt-2 text-left overflow-y-auto" data-testid="invoices-view">
 			<div class="flex flex-col gap-2">
 				<template v-for="invoice of invoices" :key="invoice.id">
-					<InvoiceItem :invoice="invoice" @pay-invoice="payInvoice"></InvoiceItem>
+					<InvoiceItem :invoice="invoice" @pay-invoice="payInvoice" />
 				</template>
 			</div>
 		</div>
-		<input type="hidden" data-testid="invoice-numbers" :value="invoices.map(inv => inv.no)" />
+		<input type="hidden" data-testid="invoice-numbers" :value="invoices.map(inv => inv.no)">
 	</div>
 </template>
 

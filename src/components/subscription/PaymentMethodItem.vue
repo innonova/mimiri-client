@@ -4,9 +4,9 @@
 		:data-testid="`payment-method-${method.name}-container`"
 		:disabled="disabled"
 	>
-		<img class="h-10" :src="noteManager.payment.getIconPath(method.brand)" />
+		<img class="h-10" :src="noteManager.payment.getIconPath(method.brand)">
 		<div class="text-right">{{ method.name }}</div>
-		<div></div>
+		<div />
 		<div class="text-right">
 			<span v-if="method.expiry">Expires: {{ method.expiry }}</span>
 		</div>

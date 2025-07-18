@@ -10,7 +10,7 @@
 				type="text"
 				class="basic-input"
 				data-testid="given-name"
-			/>
+			>
 			<div class="text-right" :class="{ 'text-red-500': changed && !familyNameValid }">Last name *</div>
 			<input
 				v-model="familyName"
@@ -20,7 +20,7 @@
 				type="text"
 				class="basic-input"
 				data-testid="family-name"
-			/>
+			>
 			<div class="text-right">Company <sup>1)</sup></div>
 			<input
 				v-model="company"
@@ -30,7 +30,7 @@
 				type="text"
 				class="basic-input"
 				data-testid="company"
-			/>
+			>
 			<div class="text-right" :class="{ 'text-red-500': changed && !emailValid }">Email *</div>
 			<div class="flex flex-col items-end">
 				<input
@@ -41,7 +41,7 @@
 					type="text"
 					class="basic-input w-full!"
 					data-testid="email"
-				/>
+				>
 				<div
 					v-if="showEmailVerification && emailVerified"
 					class="text-good mb-[-0.5em] mt-0.5"
@@ -67,7 +67,7 @@
 				</button>
 			</div>
 			<div class="text-right" :class="{ 'text-red-500': changed && !countryValid }">Country *</div>
-			<CountrySelector v-model:code="countryCode" v-model:name="countryName" :disabled="disabled"></CountrySelector>
+			<CountrySelector v-model:code="countryCode" v-model:name="countryName" :disabled="disabled" />
 			<div class="text-right" :class="{ 'text-red-500': changed && !stateValid }">
 				State/Province <span v-if="stateRequired">*</span><sup v-if="!stateRequired">1)</sup>
 			</div>
@@ -77,7 +77,7 @@
 				v-model:name="stateName"
 				v-model:mode="stateMode"
 				:disabled="disabled"
-			></StateSelector>
+			/>
 			<div class="text-right">City <sup>1)</sup></div>
 			<input
 				v-model="city"
@@ -87,7 +87,7 @@
 				type="text"
 				class="basic-input"
 				data-testid="city"
-			/>
+			>
 			<div class="text-right">Postal Code <sup>1)</sup></div>
 			<input
 				v-model="postalCode"
@@ -97,7 +97,7 @@
 				type="text"
 				class="basic-input"
 				data-testid="postal-code"
-			/>
+			>
 			<div class="text-right">Address <sup>1)</sup></div>
 			<textarea
 				v-model="address"
@@ -106,12 +106,12 @@
 				autocomplete="street-address"
 				data-testid="address"
 				:disabled="disabled"
-			></textarea>
-			<div></div>
+			/>
+			<div />
 			<div>* required</div>
-			<div></div>
+			<div />
 			<div><sup>1)</sup> We recommend filling out all relevant fields if you need a tax invoice</div>
-			<div></div>
+			<div />
 		</div>
 	</div>
 </template>

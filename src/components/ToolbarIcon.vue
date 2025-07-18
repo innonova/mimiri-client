@@ -16,10 +16,10 @@
 				'text-offline': props.icon === 'account-offline',
 				'text-shared': props.icon === 'note-shared',
 			}"
-		></component>
+		/>
 		<div v-if="props.icon === 'history' && props.toggledOn" class="h-0 group-hover:invisible">
 			<!-- Connects the history icon with the info bar -->
-			<div class="relative -top-0.5 bg-toolbar-toggled h-1 ml-0.5 mr-1"></div>
+			<div class="relative -top-0.5 bg-toolbar-toggled h-1 ml-0.5 mr-1" />
 		</div>
 	</button>
 </template>

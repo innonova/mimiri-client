@@ -1,6 +1,6 @@
 <template>
 	<div class="flex flex-col h-full">
-		<TabBar :items="['About']"></TabBar>
+		<TabBar :items="['About']" />
 		<div class="flex flex-col overflow-y-auto">
 			<div @click="boxClicked">
 				<div class="p-1 pl-4">Bundle Version: {{ updateManager.currentVersion }}</div>
@@ -45,13 +45,13 @@
 					<div class="flex info flex-col mx-4 mt-4 bg-info">
 						<b>Attributions:</b>
 						<template v-for="att of iconAttributions">
-							<div class="mt-2 leading-5" v-html="att"></div>
+							<div class="mt-2 leading-5" v-html="att" />
 						</template>
 					</div>
 					<div class="flex info flex-col mx-4 mt-4 mb-10 bg-info">
 						<b>Font Licenses:</b>
 						<div class="mt-2 mb-1 leading-5">
-							All fonts are directly referenced either from the operating system or fonts.mimiri.io <br />
+							All fonts are directly referenced either from the operating system or fonts.mimiri.io <br>
 							Licenses and project links for fonts referenced from fonts.mimiri.io listed below
 						</div>
 						<select v-model="selectedFont" class="mt-2">

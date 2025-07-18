@@ -9,7 +9,7 @@
 		:disabled="disabled"
 		data-testid="state-selector"
 	>
-		<option value=""></option>
+		<option value="" />
 		<template v-for="state of states" :key="state.code">
 			<option :value="state.code">{{ state.name }}</option>
 		</template>
@@ -21,7 +21,7 @@
 		type="text"
 		class="basic-input"
 		data-testid="state-text"
-	/>
+	>
 </template>
 <script setup lang="ts">
 import { ref, watch } from 'vue'

@@ -8,7 +8,7 @@
 		:disabled="disabled"
 		data-testid="country-selector"
 	>
-		<option value=""></option>
+		<option value="" />
 		<template v-for="country of countries" :key="country.code">
 			<option :value="country.code">{{ country.name }}</option>
 		</template>

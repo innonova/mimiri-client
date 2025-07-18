@@ -1,7 +1,7 @@
 <template>
 	<div class="flex flex-col h-full" data-testid="connect-cloud-view">
-		<TabBar ref="tabBar" :items="['Connect Cloud']"></TabBar>
-		<form v-on:submit.prevent="createAccount" class="pl-2 mt-1">
+		<TabBar ref="tabBar" :items="['Connect Cloud']" />
+		<form @submit.prevent="createAccount" class="pl-2 mt-1">
 			<div class="grid grid-cols-[7rem_12rem] gap-2">
 				<ItemHeader class="col-span-2">Choose your credentials</ItemHeader>
 				<div class="col-span-2 mb-2">
@@ -13,31 +13,31 @@
 					:check-username="true"
 					v-model:value="username"
 					v-model:valid="usernameValid"
-				></UsernameInput>
+				/>
 				<div class="flex items-center">Current Password:</div>
-				<input class="basic-input" type="password" v-model="currentPassword" data-testid="current-password-input" />
-				<div></div>
+				<input class="basic-input" type="password" v-model="currentPassword" data-testid="current-password-input">
+				<div />
 				<label class="flex items-center gap-2">
-					<input class="basic-input" v-model="chooseNewPassword" type="checkbox" /> Choose a new password
+					<input class="basic-input" v-model="chooseNewPassword" type="checkbox"> Choose a new password
 				</label>
 
 				<template v-if="chooseNewPassword">
 					<div class="flex items-center">New Password:</div>
-					<PasswordInput :display-current="false" v-model:value="password"></PasswordInput>
+					<PasswordInput :display-current="false" v-model:value="password" />
 					<div class="flex items-center">Repeat:</div>
 					<PasswordRepeatInput
 						:display-current="false"
 						:value="password"
 						v-model:match="passwordMatch"
-					></PasswordRepeatInput>
+					/>
 				</template>
 				<div v-if="errorMessage" class="col-span-2 text-right text-error my-1">{{ errorMessage }}</div>
-				<div></div>
+				<div />
 				<PrimaryButton :enabled="canCreate" :loading="loading" data-testid="create-button"> Create </PrimaryButton>
 			</div>
 		</form>
 
-		<div class="overflow-y-auto pb-10"></div>
+		<div class="overflow-y-auto pb-10" />
 	</div>
 </template>
 <script setup lang="ts">

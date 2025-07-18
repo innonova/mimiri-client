@@ -7,9 +7,9 @@
 			@pointerup="up"
 			@pointermove="move"
 		>
-			<slot></slot>
+			<slot />
 		</div>
-		<CloseButton :disabled="disabled" @click="close" class="mr-1.5 w-7 mobile:hidden"></CloseButton>
+		<CloseButton :disabled="disabled" @click="close" class="mr-1.5 w-7 mobile:hidden" />
 	</header>
 </template>
 

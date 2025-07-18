@@ -8,8 +8,8 @@
 				class="desktop:hidden"
 				@click="onBack"
 				data-testid="editor-back-button"
-			></ToolbarIcon>
-			<div class="inline-block h-4 w-0 border border-solid border-toolbar-separator m-0.5 desktop:hidden"></div>
+			/>
+			<div class="inline-block h-4 w-0 border border-solid border-toolbar-separator m-0.5 desktop:hidden" />
 			<ToolbarIcon
 				icon="save"
 				:hoverEffect="true"
@@ -17,8 +17,8 @@
 				title="Save Note"
 				@click="saveClicked"
 				data-testid="editor-save-button"
-			></ToolbarIcon>
-			<div class="inline-block h-4/5 w-0 border border-solid border-toolbar-separator m-0.5"></div>
+			/>
+			<div class="inline-block h-4/5 w-0 border border-solid border-toolbar-separator m-0.5" />
 			<ToolbarIcon
 				:icon="settingsManager.wordwrap ? 'wordwrap-on' : 'wordwrap-off'"
 				:hoverEffect="true"
@@ -27,7 +27,7 @@
 				:toggledOn="settingsManager.wordwrap"
 				@click="toggleWordWrap"
 				data-testid="editor-toggle-wordwrap"
-			></ToolbarIcon>
+			/>
 			<ToolbarIcon
 				icon="undo"
 				:hoverEffect="true"
@@ -35,7 +35,7 @@
 				title="Undo"
 				@click="undo"
 				data-testid="editor-undo-button"
-			></ToolbarIcon>
+			/>
 			<ToolbarIcon
 				icon="redo"
 				:hoverEffect="true"
@@ -43,8 +43,8 @@
 				title="Redo"
 				@click="redo"
 				data-testid="editor-redo-button"
-			></ToolbarIcon>
-			<div class="inline-block h-4/5 w-0 border border-solid border-toolbar-separator m-0.5"></div>
+			/>
+			<div class="inline-block h-4/5 w-0 border border-solid border-toolbar-separator m-0.5" />
 			<ToolbarIcon
 				icon="history"
 				:hoverEffect="true"
@@ -53,7 +53,7 @@
 				:toggledOn="historyVisible"
 				@click="showHistory"
 				data-testid="editor-history-button"
-			></ToolbarIcon>
+			/>
 			<ToolbarIcon
 				icon="hide"
 				:hoverEffect="true"
@@ -61,7 +61,7 @@
 				title="Mark as Password Ctrl+Shift+C"
 				@click="markAsPassword"
 				data-testid="editor-mark-as-password"
-			></ToolbarIcon>
+			/>
 		</div>
 		<div class="relative flex-auto flex flex-col items-stretch overflow-hidden">
 			<div v-if="historyVisible && selectedHistoryItem" class="px-2 py-1 bg-info-bar cursor-default text-size-menu">
@@ -72,19 +72,19 @@
 				style="display: none"
 				ref="monacoContainer"
 				data-testid="editor-monaco-container"
-			></div>
+			/>
 			<div
 				class="overflow-hidden flex-1"
 				style="display: none"
 				ref="simpleContainer"
 				data-testid="editor-simple-container"
-			></div>
+			/>
 			<div
 				class="overflow-hidden flex-1"
 				style="display: none"
 				ref="displayContainer"
 				data-testid="editor-display-container"
-			></div>
+			/>
 			<div v-if="!historyVisible && mimiriEditor.mode === 'display'" class="display-editor-toolbar flex flex-row gap-1">
 				<button
 					@click="activateEdit"
@@ -93,16 +93,16 @@
 					Edit
 				</button>
 				<button @click="activateSettings" class="bg-button-primary text-button-primary-text hover:brightness-125">
-					<SettingIcon class="w-6 h-6 my-1 mx-3"></SettingIcon>
+					<SettingIcon class="w-6 h-6 my-1 mx-3" />
 				</button>
 			</div>
-			<SelectionControl v-if="mimiriEditor.mode === 'advanced'"></SelectionControl>
+			<SelectionControl v-if="mimiriEditor.mode === 'advanced'" />
 			<div v-if="historyVisible" class="w-full h-1/3 flex flex-col">
 				<div
 					class="flex items-center justify-between bg-toolbar border-b border-solid border-toolbar cursor-default text-size-menu p-0.5"
 				>
 					<div>History entries:</div>
-					<CloseButton @click="showHistory" class="w-6 h-6"></CloseButton>
+					<CloseButton @click="showHistory" class="w-6 h-6" />
 				</div>
 				<div class="flex-auto overflow-y-auto h-0 pb-5 w-full bg-input">
 					<template v-for="(historyItem, index) of mimiriEditor.history.historyItems" :key="historyItem.timestamp">

@@ -30,7 +30,7 @@
 				{{ formatCurrency(product.price / 12, currency) }}/month
 			</div>
 		</div>
-		<hr v-if="showFeatures" class="w-[95%]" />
+		<hr v-if="showFeatures" class="w-[95%]">
 		<div v-if="showFeatures" class="py-4 pl-8 pr-4">
 			<ul class="list-disc">
 				<template v-for="feature of product.data.features" :key="feature.title">
@@ -43,7 +43,7 @@
 			class="pt-2 flex-1 w-full flex flex-col items-center"
 			data-testid="subscription-ends"
 		>
-			<hr class="w-[95%]" />
+			<hr class="w-[95%]">
 			<div class="text-bad py-2">Ends on:</div>
 			<div class="text-bad pb-3" data-testid="subscription-end-date">
 				{{ formatExpirationDate(subscription.paidUntil) }}
@@ -54,7 +54,7 @@
 			class="pt-2 flex-1 w-full flex flex-col items-center"
 			data-testid="subscription-ends"
 		>
-			<hr class="w-[95%]" />
+			<hr class="w-[95%]">
 			<div class="py-2">Ended on:</div>
 			<div class="pb-3" data-testid="subscription-end-date">
 				{{ formatExpirationDate(subscription.paidUntil) }}
@@ -65,14 +65,14 @@
 			class="pt-2 flex-1 w-full flex flex-col items-center"
 			data-testid="subscription-renews-automatically"
 		>
-			<hr class="w-[95%]" />
+			<hr class="w-[95%]">
 			<div class="text-good py-2">Renews automatically on:</div>
 			<div class="text-good pb-3" data-testid="subscription-end-date">
 				{{ formatExpirationDate(subscription.paidUntil) }}
 			</div>
 		</div>
 		<div v-if="overdue" class="pt-2 flex-1 w-full flex flex-col items-center" data-testid="subscription-overdue">
-			<hr class="w-[95%]" />
+			<hr class="w-[95%]">
 			<div class="text-bad py-2">Payment overdue!</div>
 			<div class="pb-3"><button @click="payNow" data-testid="subscription-overdue-pay-now">Pay Now</button></div>
 		</div>
@@ -81,7 +81,7 @@
 			class="pt-2 flex-1 w-full flex flex-col items-center"
 			data-testid="renews-manually"
 		>
-			<hr class="w-[95%]" />
+			<hr class="w-[95%]">
 			<div class="text-good py-2">Manually renew before:</div>
 			<div class="text-good pb-3" data-testid="subscription-end-date">
 				{{ formatExpirationDate(subscription.paidUntil) }}
@@ -94,7 +94,7 @@
 			"
 			class="flex-1 w-full flex flex-col items-center justify-end pb-2"
 		>
-			<hr class="w-[95%]" />
+			<hr class="w-[95%]">
 			<div class="pt-4 h-10 flex gap-2 items-center mb-2 px-2">
 				<button
 					v-if="showResume"

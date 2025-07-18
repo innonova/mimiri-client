@@ -1,10 +1,10 @@
 <template>
 	<div class="flex flex-col h-full">
-		<TabBar :items="['Billing Address']"></TabBar>
+		<TabBar :items="['Billing Address']" />
 		<div class="p-1 pt-2 flex-col overflow-y-auto" data-testid="account-view">
-			<CustomerData ref="customerElement" mode="edit" v-model:changed="changed" v-model:valid="valid"></CustomerData>
+			<CustomerData ref="customerElement" mode="edit" v-model:changed="changed" v-model:valid="valid" />
 			<div class="mt-4 grid grid-cols-[9em_18em] gap-4">
-				<div></div>
+				<div />
 				<div class="text-right">
 					<button class="primary" :disabled="!valid || !changed" @click="save" data-testid="account-save">Save</button>
 				</div>

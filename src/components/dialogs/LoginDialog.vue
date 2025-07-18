@@ -6,7 +6,7 @@
 	>
 		<div class="grid grid-rows-[auto_1fr_auto] gap-3 content-between">
 			<DialogTitle @close="cancel" :disabled="loading">Login</DialogTitle>
-			<form v-on:submit.prevent="login" class="mx-2 mobile:mx-8">
+			<form @submit.prevent="login" class="mx-2 mobile:mx-8">
 				<div class="grid grid-cols-[4rem_10rem] mobile:grid-cols-[4rem_auto] items-center gap-2 mx-2 mb-2">
 					<div>Username:</div>
 					<input
@@ -16,7 +16,7 @@
 						class="basic-input ml-2"
 						data-testid="username-input"
 						autofocus
-					/>
+					>
 					<div>Password:</div>
 					<input
 						v-model="password"
@@ -25,15 +25,15 @@
 						data-testid="password-input"
 						class="basic-input ml-2"
 						@keydown="pwKeyDown"
-					/>
-					<div v-if="capsLockOn"></div>
+					>
+					<div v-if="capsLockOn" />
 					<div v-if="capsLockOn" class="ml-2">Caps Lock is on!</div>
 				</div>
 				<div class="text-right pr-1" v-if="error" data-testid="login-error">
 					<div class="text-error text-right">Incorrect username or password</div>
 				</div>
 				<div v-if="loading" class="flex items-center justify-end m-1 pr-1 mt-2">
-					<LoadingIcon class="animate-spin w-8 h-8 mr-2 inline-block"></LoadingIcon>
+					<LoadingIcon class="animate-spin w-8 h-8 mr-2 inline-block" />
 					<div class="flex flex-col items-center">
 						<div>Please wait</div>
 						<div v-if="longTime" class="mt-1">{{ timeElapsed }}</div>

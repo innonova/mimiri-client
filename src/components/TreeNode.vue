@@ -26,7 +26,7 @@
 				v-show="indicatorVisible"
 				id="drop-indicator"
 				class="absolute left-4 indicator-top w-full h-0 border-2 border-solid border-drop-indicator pointer-events-none"
-			></div>
+			/>
 			<div v-show="!searchModeActive" class="flex items-center pl-1 pr-0.5 h-full" @click="toggleNode">
 				<PlusIcon
 					v-if="!node.expanded"
@@ -34,76 +34,76 @@
 					title="Expand"
 					class="h-5 w-5 desktop:h-4 desktop:w-4 mt-px"
 					:class="{ invisible: !hasChildren }"
-				></PlusIcon>
+				/>
 				<MinusIcon
 					v-if="node.expanded"
 					:data-testid="`${dataTestId}-open`"
 					title="Collapse"
 					class="h-5 w-5 desktop:h-4 desktop:w-4 mt-px"
 					:class="{ invisible: !hasChildren }"
-				></MinusIcon>
+				/>
 			</div>
 			<NoteIcon
 				v-if="node.icon === 'note'"
 				class="w-[30px] h-[30px] desktop:w-[23px] desktop:h-[23px] p-0.5 mr-1 desktop:mr-0.5"
 				:class="{ 'text-shared': node.shared }"
-			></NoteIcon>
+			/>
 			<CogIcon
 				v-if="node.icon === 'cog'"
 				class="w-[30px] h-[30px] desktop:w-[23px] desktop:h-[23px] p-0.5 mr-1 desktop:mr-0.5"
 				:class="{ 'text-shared': node.shared }"
-			></CogIcon>
+			/>
 			<FontIcon
 				v-if="node.icon === 'font'"
 				class="w-[30px] h-[30px] desktop:w-[23px] desktop:h-[23px] p-0.5 mr-1 desktop:mr-0.5"
 				:class="{ 'text-shared': node.shared }"
-			></FontIcon>
+			/>
 			<CoinsIcon
 				v-if="node.icon === 'coins'"
 				class="w-[30px] h-[30px] desktop:w-[23px] desktop:h-[23px] p-0.5 mr-1 desktop:mr-0.5"
 				:class="{ 'text-shared': node.shared }"
-			></CoinsIcon>
+			/>
 			<InfoIcon
 				v-if="node.icon === 'info'"
 				class="w-[30px] h-[30px] desktop:w-[23px] desktop:h-[23px] p-0.5 mr-1 desktop:mr-0.5"
 				:class="{ 'text-shared': node.shared }"
-			></InfoIcon>
+			/>
 			<DownloadIcon
 				v-if="node.icon === 'download'"
 				class="w-[30px] h-[30px] desktop:w-[23px] desktop:h-[23px] p-0.5 mr-1 desktop:mr-0.5"
 				:class="{ 'text-shared': node.shared }"
-			></DownloadIcon>
+			/>
 			<LockIcon
 				v-if="node.icon === 'lock'"
 				class="w-[30px] h-[30px] desktop:w-[23px] desktop:h-[23px] p-0.5 mr-1 desktop:mr-0.5"
 				:class="{ 'text-shared': node.shared }"
-			></LockIcon>
+			/>
 			<AccountIcon
 				v-if="node.icon === 'account'"
 				class="w-[30px] h-[30px] desktop:w-[23px] desktop:h-[23px] p-0.5 mr-1 desktop:mr-0.5"
 				:class="{ 'text-shared': node.shared }"
-			></AccountIcon>
+			/>
 			<AnnouncementIcon
 				v-if="node.icon === 'announcement'"
 				class="w-[30px] h-[30px] desktop:w-[23px] desktop:h-[23px] p-0.5 mr-1 desktop:mr-0.5"
 				:class="{ 'text-shared': node.shared }"
-			></AnnouncementIcon>
+			/>
 			<BulbIcon
 				v-if="node.icon === 'bulb'"
 				class="w-[30px] h-[30px] desktop:w-[23px] desktop:h-[23px] p-0.5 mr-1 desktop:mr-0.5"
 				:class="{ 'text-shared': node.shared }"
-			></BulbIcon>
+			/>
 			<RecycleBinIcon
 				v-if="node.icon === 'recycle-bin' && hasChildren"
 				class="w-[30px] h-[30px] desktop:w-[23px] desktop:h-[23px] p-0.5 mr-1 desktop:mr-0.5"
 				:class="{ 'text-shared': node.shared }"
-			></RecycleBinIcon>
+			/>
 			<RecycleBinEmptyIcon
 				v-if="node.icon === 'recycle-bin' && !hasChildren"
 				class="w-[30px] h-[30px] desktop:w-[23px] desktop:h-[23px] p-0.5 mr-1 desktop:mr-0.5"
 				:class="{ 'text-shared': node.shared }"
-			></RecycleBinEmptyIcon>
-			<div v-if="node.hasInfo" class="absolute bottom-0.5 left-[35px] w-2 h-2 rounded-sm bg-bad"></div>
+			/>
+			<div v-if="node.hasInfo" class="absolute bottom-0.5 left-[35px] w-2 h-2 rounded-sm bg-bad" />
 			<input
 				v-if="editName"
 				class="outline-hidden bg-item-selected! border-collapse p-0! pt-px! flex-1 min-w-1 text-size-base!"
@@ -113,7 +113,7 @@
 				@blur="endEdit"
 				@keydown="checkCancelEdit"
 				data-testid="rename-input"
-			/>
+			>
 			<div
 				v-if="!editName"
 				class="select-none flex-1 overflow-hidden text-ellipsis"
@@ -125,7 +125,7 @@
 				{{ node.title }}
 			</div>
 			<button class="desktop:hidden pl-10 py-[7px] flex justify-end" @click="selectNode(true)">
-				<OpenIcon class="w-[23px] h-[23px] p-0.5 mr-1"></OpenIcon>
+				<OpenIcon class="w-[23px] h-[23px] p-0.5 mr-1" />
 			</button>
 		</div>
 		<template
@@ -133,9 +133,9 @@
 			v-for="childNode of node.children"
 			:key="childNode.id"
 		>
-			<TreeNode :node="<NoteViewModel>childNode"></TreeNode>
+			<TreeNode :node="<NoteViewModel>childNode" />
 		</template>
-		<NewTreeNode v-if="isSelected && createNewNode"></NewTreeNode>
+		<NewTreeNode v-if="isSelected && createNewNode" />
 	</div>
 </template>
 

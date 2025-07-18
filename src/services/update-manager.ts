@@ -378,14 +378,16 @@ export class UpdateManager {
 
 			const reader = await this.getReader(bundlePath)
 
-			let total = electronInfo ? electronInfo.size : info.size
+			const total = electronInfo ? electronInfo.size : info.size
 			let downloaded = 0
 			let stage = 'download'
 			let error = ''
 			const values = []
 			while (true) {
 				const { done, value } = await reader.read()
-				if (done) break
+				if (done) {
+					break
+				}
 				values.push(value)
 				downloaded += value.length
 				if (status) {
