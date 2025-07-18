@@ -19,36 +19,36 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { localAuth } from '../services/local-auth'
-import { useEventListener } from '@vueuse/core'
+	import { ref } from 'vue'
+	import { localAuth } from '../services/local-auth'
+	import { useEventListener } from '@vueuse/core'
 
-const pin = ref('')
+	const pin = ref('')
 
-useEventListener(document, 'keydown', e => {
-	if (localAuth.locked) {
-		if (e.key === 'Backspace') {
-			if (pin.value.length > 1) {
-				pin.value = pin.value.substring(0, pin.value.length - 1)
-			} else {
-				pin.value = ''
+	useEventListener(document, 'keydown', e => {
+		if (localAuth.locked) {
+			if (e.key === 'Backspace') {
+				if (pin.value.length > 1) {
+					pin.value = pin.value.substring(0, pin.value.length - 1)
+				} else {
+					pin.value = ''
+				}
+			}
+		} else {
+			pin.value = ''
+		}
+	})
+
+	useEventListener(document, 'keypress', e => {
+		if (localAuth.locked) {
+			if (e.key.charCodeAt(0) >= '0'.charCodeAt(0) && e.key.charCodeAt(0) <= '9'.charCodeAt(0)) {
+				pin.value += e.key
+				if (pin.value.length === 4) {
+					const pinCode = pin.value
+					pin.value = ''
+					localAuth.unlockWithPin(pinCode)
+				}
 			}
 		}
-	} else {
-		pin.value = ''
-	}
-})
-
-useEventListener(document, 'keypress', e => {
-	if (localAuth.locked) {
-		if (e.key.charCodeAt(0) >= '0'.charCodeAt(0) && e.key.charCodeAt(0) <= '9'.charCodeAt(0)) {
-			pin.value += e.key
-			if (pin.value.length === 4) {
-				const pinCode = pin.value
-				pin.value = ''
-				localAuth.unlockWithPin(pinCode)
-			}
-		}
-	}
-})
+	})
 </script>

@@ -39,7 +39,7 @@
 						v-model="name"
 						:class="{ invalid: invalid }"
 						data-testid="share-username-input"
-					>
+					/>
 					<div v-if="invalid || shareWithSelf || shareFailed" />
 					<div v-if="invalid" class="text-error leading-4">You must enter a username</div>
 					<div v-if="shareWithSelf" class="text-error leading-4">You cannot share with yourself.</div>
@@ -71,82 +71,82 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-import { clipboardManager, features, noteManager } from '../../global'
-import LoadingIcon from '../../icons/loading.vue'
-import DialogTitle from '../elements/DialogTitle.vue'
-import CopyIcon from '../../icons/copy.vue'
-const dialog = ref(null)
-const nameInput = ref(null)
-const code = ref('')
-const trimmedName = ref('')
+	import { computed, ref } from 'vue'
+	import { clipboardManager, features, noteManager } from '../../global'
+	import LoadingIcon from '../../icons/loading.vue'
+	import DialogTitle from '../elements/DialogTitle.vue'
+	import CopyIcon from '../../icons/copy.vue'
+	const dialog = ref(null)
+	const nameInput = ref(null)
+	const code = ref('')
+	const trimmedName = ref('')
 
-const name = ref('')
-const invalid = ref(false)
-const shareWithSelf = ref(false)
-const shareFailed = ref(false)
-const copied = ref(false)
-const loading = ref(false)
+	const name = ref('')
+	const invalid = ref(false)
+	const shareWithSelf = ref(false)
+	const shareFailed = ref(false)
+	const copied = ref(false)
+	const loading = ref(false)
 
-const codeEnabled = features.includes('share-code')
+	const codeEnabled = features.includes('share-code')
 
-const hasSelectedNode = computed(() => !!noteManager.state.selectedNoteId)
-const parentName = computed(() => noteManager.tree.selectedViewModel()?.title)
+	const hasSelectedNode = computed(() => !!noteManager.state.selectedNoteId)
+	const parentName = computed(() => noteManager.tree.selectedViewModel()?.title)
 
-const copyCode = () => {
-	clipboardManager.write(code.value)
-	copied.value = true
-	setTimeout(() => (copied.value = false), 1000)
-}
-
-const show = () => {
-	name.value = ''
-	code.value = ''
-	loading.value = false
-	invalid.value = false
-	shareWithSelf.value = false
-	shareFailed.value = false
-	dialog.value.showModal()
-	nameInput.value?.focus()
-}
-
-const close = () => {
-	dialog.value.close()
-}
-
-const submitDialog = async () => {
-	invalid.value = false
-	shareWithSelf.value = false
-	shareFailed.value = false
-	if (name.value.trim() === noteManager.state.username) {
-		shareWithSelf.value = true
-		nameInput.value.focus()
-		return
+	const copyCode = () => {
+		clipboardManager.write(code.value)
+		copied.value = true
+		setTimeout(() => (copied.value = false), 1000)
 	}
-	if (!name.value.trim()) {
-		invalid.value = true
-		nameInput.value.focus()
-		return
-	}
-	trimmedName.value = name.value.trim()
-	try {
-		loading.value = true
-		const response = await noteManager.tree.selectedNote().shareWith(trimmedName.value)
-		if (codeEnabled) {
-			code.value = response.code
-		} else {
-			close()
-			name.value = ''
-		}
-	} catch (ex) {
-		console.error('Error sharing note:', ex)
-		shareFailed.value = true
-	} finally {
+
+	const show = () => {
+		name.value = ''
+		code.value = ''
 		loading.value = false
+		invalid.value = false
+		shareWithSelf.value = false
+		shareFailed.value = false
+		dialog.value.showModal()
+		nameInput.value?.focus()
 	}
-}
 
-defineExpose({
-	show,
-})
+	const close = () => {
+		dialog.value.close()
+	}
+
+	const submitDialog = async () => {
+		invalid.value = false
+		shareWithSelf.value = false
+		shareFailed.value = false
+		if (name.value.trim() === noteManager.state.username) {
+			shareWithSelf.value = true
+			nameInput.value.focus()
+			return
+		}
+		if (!name.value.trim()) {
+			invalid.value = true
+			nameInput.value.focus()
+			return
+		}
+		trimmedName.value = name.value.trim()
+		try {
+			loading.value = true
+			const response = await noteManager.tree.selectedNote().shareWith(trimmedName.value)
+			if (codeEnabled) {
+				code.value = response.code
+			} else {
+				close()
+				name.value = ''
+			}
+		} catch (ex) {
+			console.error('Error sharing note:', ex)
+			shareFailed.value = true
+		} finally {
+			loading.value = false
+		}
+	}
+
+	defineExpose({
+		show,
+	})
 </script>

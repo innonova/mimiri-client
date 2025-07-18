@@ -6,7 +6,6 @@ import {
 	deleteNodeDialog,
 	emptyRecycleBinDialog,
 	env,
-	features,
 	ipcClient,
 	isCut,
 	loginDialog,
@@ -130,18 +129,18 @@ class MenuManager {
 				ipcClient.menu.hide()
 			}
 		} else if (itemId === 'logout') {
-			noteManager.session.logout()
+			await noteManager.session.logout()
 			window.location.reload()
 		} else if (itemId === 'login') {
 			loginDialog.value.show()
 		} else if (itemId === 'create-account') {
-			noteManager.tree.controlPanel().expand()
+			await noteManager.tree.controlPanel().expand()
 			noteManager.tree.openNote('settings-create-account' as Guid)
 		} else if (itemId === 'create-password') {
-			noteManager.tree.controlPanel().expand()
+			await noteManager.tree.controlPanel().expand()
 			noteManager.tree.openNote('settings-create-password' as Guid)
 		} else if (itemId === 'go-online') {
-			noteManager.session.goOnline()
+			await noteManager.session.goOnline()
 		} else if (itemId === 'toggle-screen-sharing') {
 			settingsManager.allowScreenSharing = !settingsManager.allowScreenSharing
 		} else if (itemId === 'toggle-notify-promoted') {
@@ -180,7 +179,7 @@ class MenuManager {
 				noteManager.ui.newRootNote()
 				return
 			}
-			noteManager.tree.selectedNote().parent?.select()
+			await noteManager.tree.selectedNote().parent?.select()
 			noteManager.ui.newNote()
 		} else if (itemId === 'new-root-note') {
 			noteManager.ui.newRootNote()
@@ -211,7 +210,7 @@ class MenuManager {
 				if (noteManager.tree.selectedNote().isShareRoot) {
 					deleteNodeDialog.value.show()
 				} else {
-					noteManager.tree.selectedNote().moveToRecycleBin()
+					await noteManager.tree.selectedNote().moveToRecycleBin()
 				}
 			}
 		} else if (itemId === 'copy') {
@@ -222,7 +221,7 @@ class MenuManager {
 			isCut.value = true
 		} else if (itemId === 'paste') {
 			if (clipboardNote.value && noteManager.tree.selectedNote()) {
-				noteManager.tree.selectedNote().expand()
+				await noteManager.tree.selectedNote().expand()
 				if (isCut.value) {
 					await clipboardNote.value.move(noteManager.tree.selectedNote())
 				} else {
@@ -231,7 +230,7 @@ class MenuManager {
 			}
 		} else if (itemId === 'copy-path') {
 			if (noteManager.tree.selectedNote()) {
-				navigator.clipboard.writeText(noteManager.tree.selectedNote().path)
+				await navigator.clipboard.writeText(noteManager.tree.selectedNote().path)
 			}
 		} else if (itemId === 'duplicate') {
 			if (noteManager.tree.selectedNote()) {
@@ -258,14 +257,14 @@ class MenuManager {
 		} else if (itemId === 'properties') {
 			noteManager.tree.openProperties()
 		} else if (itemId === 'work-offline') {
-			noteManager.session.toggleWorkOffline()
+			await noteManager.session.toggleWorkOffline()
 		}
 	}
 
 	public showMenu(position: ContextMenuPosition, items: MenuItems[]) {
 		this.state.menuShowing = true
 		contextMenu.value.show(position, { items: this.toItems(items, false) }, item => {
-			this.menuActivated(item)
+			void this.menuActivated(item)
 		})
 	}
 

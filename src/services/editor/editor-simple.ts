@@ -333,7 +333,7 @@ export class EditorSimple implements TextEditor {
 	}
 
 	public clearSearchHighlights() {}
-	public setSearchHighlights(text: string) {}
+	public setSearchHighlights(_text: string) {}
 	public find() {}
 
 	public toggleWordWrap() {
@@ -383,7 +383,7 @@ export class EditorSimple implements TextEditor {
 		}
 	}
 
-	public expandSelection(type: SelectionExpansion) {}
+	public expandSelection(_type: SelectionExpansion) {}
 	public focus() {
 		if (!this.historyShowing) {
 			this._element.focus()
@@ -406,7 +406,7 @@ export class EditorSimple implements TextEditor {
 		} catch {}
 	}
 
-	public paste(text: string) {
+	public paste(_text: string) {
 		try {
 			document.execCommand('paste')
 		} catch {}

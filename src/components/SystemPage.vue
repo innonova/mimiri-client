@@ -30,35 +30,35 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { noteManager } from '../global'
-import General from './settings/General.vue'
-import FontsColors from './settings/FontsColors.vue'
-import PinCode from './settings/PinCode.vue'
-import Username from './settings/Username.vue'
-import Password from './settings/Password.vue'
-import DeleteAccount from './settings/DeleteAccount.vue'
-import Account from './subscription/Account.vue'
-import PromoteAccount from './settings/PromoteAccount.vue'
-import CreateAccount from './settings/CreateAccount2.vue'
-import Upgrade from './settings/Upgrade.vue'
-import About from './settings/About.vue'
-import DevBlog from './settings/DevBlog.vue'
-import Debug from './settings/Debug.vue'
-import Update from './settings/Update.vue'
-import SubscriptionFlow from './subscription/SubscriptionFlow.vue'
-import ExplainPlan from './settings/ExplainPlan.vue'
-import InvoiceFlow from './subscription/InvoiceFlow.vue'
-import PaymentMethodsFlow from './subscription/PaymentMethodsFlow.vue'
-import ToolbarIcon from './ToolbarIcon.vue'
-import RecycleBin from './settings/RecycleBin.vue'
+	import { computed } from 'vue'
+	import { noteManager } from '../global'
+	import General from './settings/General.vue'
+	import FontsColors from './settings/FontsColors.vue'
+	import PinCode from './settings/PinCode.vue'
+	import Username from './settings/Username.vue'
+	import Password from './settings/Password.vue'
+	import DeleteAccount from './settings/DeleteAccount.vue'
+	import Account from './subscription/Account.vue'
+	import PromoteAccount from './settings/PromoteAccount.vue'
+	import CreateAccount from './settings/CreateAccount2.vue'
+	import Upgrade from './settings/Upgrade.vue'
+	import About from './settings/About.vue'
+	import DevBlog from './settings/DevBlog.vue'
+	import Debug from './settings/Debug.vue'
+	import Update from './settings/Update.vue'
+	import SubscriptionFlow from './subscription/SubscriptionFlow.vue'
+	import ExplainPlan from './settings/ExplainPlan.vue'
+	import InvoiceFlow from './subscription/InvoiceFlow.vue'
+	import PaymentMethodsFlow from './subscription/PaymentMethodsFlow.vue'
+	import ToolbarIcon from './ToolbarIcon.vue'
+	import RecycleBin from './settings/RecycleBin.vue'
 
-const type = computed(() => {
-	return noteManager.tree.selectedNote()?.type ?? ''
-})
+	const type = computed(() => {
+		return noteManager.tree.selectedNote()?.type ?? ''
+	})
 
-const onBack = () => {
-	window.history.back()
-	noteManager.ui.closeEditorIfMobile()
-}
+	const onBack = () => {
+		window.history.back()
+		noteManager.ui.closeEditorIfMobile()
+	}
 </script>

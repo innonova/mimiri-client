@@ -18,7 +18,7 @@ const unzip = async (text: string) => {
 }
 
 export const controlPanel = {
-	createChildren: (owner: MimiriStore, parent: MimerNote) => {
+	createChildren: (_owner: MimiriStore, _parent: MimerNote) => {
 		return [] as MimerNote[]
 	},
 }
@@ -326,16 +326,16 @@ export class MimerNote {
 		}
 	}
 
-	public async collapse() {
+	public collapse() {
 		this.viewModel.expanded = false
 		persistedState.collapse(this)
 	}
 
-	public select() {
+	public async select() {
 		this.owner.tree.select(this.id)
 		let current = this.parent
 		while (current) {
-			current.expand()
+			await current.expand()
 			current = current.parent
 		}
 		persistedState.storeSelectedNote(this)
@@ -367,7 +367,7 @@ export class MimerNote {
 		}
 		if (this.childIds.length > 0) {
 			this.note.changeItem('metadata').notes = []
-			this.save()
+			await this.save()
 		}
 	}
 
@@ -377,11 +377,11 @@ export class MimerNote {
 		}
 		if (this.parent) {
 			if (this.prevSibling) {
-				this.prevSibling.select()
+				await this.prevSibling.select()
 			} else if (this.nextSibling) {
-				this.nextSibling.select()
+				await this.nextSibling.select()
 			} else {
-				this.parent.select()
+				await this.parent.select()
 			}
 			if (!this.owner.tree.recycleBin().hasChildren) {
 				this.owner.tree.recycleBin().collapse()

@@ -14,30 +14,30 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
-import CustomerData from './CustomerData.vue'
-import { noteManager } from '../../global'
-import type { Guid } from '../../services/types/guid'
-import TabBar from '../elements/TabBar.vue'
+	import { onMounted, ref } from 'vue'
+	import CustomerData from './CustomerData.vue'
+	import { noteManager } from '../../global'
+	import type { Guid } from '../../services/types/guid'
+	import TabBar from '../elements/TabBar.vue'
 
-const changed = ref()
-const valid = ref()
-const customerElement = ref<typeof CustomerData>(undefined!)
+	const changed = ref()
+	const valid = ref()
+	const customerElement = ref<typeof CustomerData>(undefined!)
 
-onMounted(() => {
-	noteManager.tree.registerActionListener({
-		select: (id: Guid) => {
-			if (id === 'settings-billing-address') {
-				customerElement.value?.loadCustomer()
-			}
-		},
+	onMounted(() => {
+		noteManager.tree.registerActionListener({
+			select: (id: Guid) => {
+				if (id === 'settings-billing-address') {
+					customerElement.value?.loadCustomer()
+				}
+			},
+		})
 	})
-})
 
-const save = async () => {
-	await customerElement.value.save()
-}
-const cancel = async () => {
-	await customerElement.value.cancel()
-}
+	const save = async () => {
+		await customerElement.value.save()
+	}
+	const cancel = async () => {
+		await customerElement.value.cancel()
+	}
 </script>

@@ -12,7 +12,7 @@
 				/>
 			</div>
 			<div class="mt-10 max-w-110 mr-2">
-				<hr>
+				<hr />
 				<div class="w-full flex justify-end mt-2 gap-2">
 					<button :disabled="!canSave" @click="save" class="primary" data-testid="save-button">Save</button>
 				</div>
@@ -22,29 +22,29 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import UsernameInput from '../elements/UsernameInput.vue'
-import { debug, noteManager, passwordDialog } from '../../global'
-import TabBar from '../elements/TabBar.vue'
-import { AccountType } from '../../services/storage/type'
+	import { ref } from 'vue'
+	import UsernameInput from '../elements/UsernameInput.vue'
+	import { debug, noteManager, passwordDialog } from '../../global'
+	import TabBar from '../elements/TabBar.vue'
+	import { AccountType } from '../../services/storage/type'
 
-const emit = defineEmits(['close'])
+	const emit = defineEmits(['close'])
 
-const canSave = ref(false)
-const username = ref('')
+	const canSave = ref(false)
+	const username = ref('')
 
-const save = () => {
-	if (canSave.value) {
-		passwordDialog.value.showAction(async pwd => {
-			try {
-				await noteManager.auth.changeUserNameAndPassword(username.value, pwd)
-				username.value = noteManager.state.username
-				return true
-			} catch (ex) {
-				debug.logError('Error changing username', ex)
-			}
-			return false
-		})
+	const save = () => {
+		if (canSave.value) {
+			passwordDialog.value.showAction(async pwd => {
+				try {
+					await noteManager.auth.changeUserNameAndPassword(username.value, pwd)
+					username.value = noteManager.state.username
+					return true
+				} catch (ex) {
+					debug.logError('Error changing username', ex)
+				}
+				return false
+			})
+		}
 	}
-}
 </script>

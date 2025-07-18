@@ -19,7 +19,7 @@
 								class="basic-input"
 								data-testid="password-input"
 								@keydown="pwKeyDown"
-							>
+							/>
 							<div class="desktop:w-0 desktop:h-0 overflow-visible">
 								<div
 									class="absolute right-2 invisible desktop:visible"
@@ -60,7 +60,7 @@
 								class="basic-input"
 								data-testid="repeat-input"
 								@keydown="pwKeyDown"
-							>
+							/>
 							<div v-if="password" class="desktop:w-0 desktop:h-0 pt-0.5 overflow-visible">
 								<div v-if="passwordMatch" class="flex items-center w-52 desktop:ml-2 mt-1.5 desktop:mt-0.5">
 									<AvailableIcon class="w-5 h-5 mr-1 inline-block" /> Matching
@@ -90,7 +90,7 @@
 									v-model="understandNoRecover"
 									class="mr-1 relative top-0.5"
 									data-testid="no-recover-checkbox"
-								>
+								/>
 								I understand that I am solely responsible for remembering my password and innonova GmbH has
 								<b>no way</b> to recover my data or account if I lose my password
 							</label>
@@ -132,143 +132,143 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
-import { noteManager } from '../../global'
-import zxcvbn from 'zxcvbn'
-import LoadingIcon from '../../icons/loading.vue'
-import AvailableIcon from '../../icons/available.vue'
-import UnavailableIcon from '../../icons/unavailable.vue'
-import ShowPasswordIcon from '../../icons/show-password.vue'
-import ShowingPasswordIcon from '../../icons/showing-password.vue'
-import FreeAccessIcon from '../../icons/free-access.vue'
-import CasualOnlyIcon from '../../icons/casual-only.vue'
-import LightSecurityIcon from '../../icons/light-security.vue'
-import { passwordTimeFactor } from '../../services/password-generator'
-import { settingsManager } from '../../services/settings-manager'
-import { persistedState } from '../../services/persisted-state'
-import { deObfuscate } from '../../services/helpers'
-import UsernameInput from '../elements/UsernameInput.vue'
-import type { Guid } from '../../services/types/guid'
-import TabBar from '../elements/TabBar.vue'
-import { DEFAULT_ITERATIONS } from '../../services/storage/mimiri-store'
+	import { computed, ref, watch } from 'vue'
+	import { noteManager } from '../../global'
+	import zxcvbn from 'zxcvbn'
+	import LoadingIcon from '../../icons/loading.vue'
+	import AvailableIcon from '../../icons/available.vue'
+	import UnavailableIcon from '../../icons/unavailable.vue'
+	import ShowPasswordIcon from '../../icons/show-password.vue'
+	import ShowingPasswordIcon from '../../icons/showing-password.vue'
+	import FreeAccessIcon from '../../icons/free-access.vue'
+	import CasualOnlyIcon from '../../icons/casual-only.vue'
+	import LightSecurityIcon from '../../icons/light-security.vue'
+	import { passwordTimeFactor } from '../../services/password-generator'
+	import { settingsManager } from '../../services/settings-manager'
+	import { persistedState } from '../../services/persisted-state'
+	import { deObfuscate } from '../../services/helpers'
+	import UsernameInput from '../elements/UsernameInput.vue'
+	import type { Guid } from '../../services/types/guid'
+	import TabBar from '../elements/TabBar.vue'
+	import { DEFAULT_ITERATIONS } from '../../services/storage/mimiri-store'
 
-const disallowString = '!"#$:%&@\'()*/=?[]{}~^`'
-const disallowRegex = /[!"#$:%&@'()*/=?[\]{}~\^\\`\s]/
+	const disallowString = '!"#$:%&@\'()*/=?[]{}~^`'
+	const disallowRegex = /[!"#$:%&@'()*/=?[\]{}~\^\\`\s]/
 
-const password = ref('')
-const passwordRepeat = ref('')
-const loading = ref(false)
-const errorText = ref('')
-const successText = ref('')
-const passwordQuality = ref('')
-const passwordMatch = ref(true)
-const understandNoRecover = ref(false)
-const passwordFieldType = ref('password')
-const advancedSettingsVisible = ref(false)
-const capsLockOn = ref(false)
-const iterations = ref(1000000)
-const time1M = computed(() => `~${passwordTimeFactor.time1M}s`)
-const time2M = computed(() => `~${passwordTimeFactor.time2M}s`)
-const time10M = computed(() => `~${passwordTimeFactor.time10M}s`)
-const time20M = computed(() => `~${passwordTimeFactor.time20M}s`)
+	const password = ref('')
+	const passwordRepeat = ref('')
+	const loading = ref(false)
+	const errorText = ref('')
+	const successText = ref('')
+	const passwordQuality = ref('')
+	const passwordMatch = ref(true)
+	const understandNoRecover = ref(false)
+	const passwordFieldType = ref('password')
+	const advancedSettingsVisible = ref(false)
+	const capsLockOn = ref(false)
+	const iterations = ref(1000000)
+	const time1M = computed(() => `~${passwordTimeFactor.time1M}s`)
+	const time2M = computed(() => `~${passwordTimeFactor.time2M}s`)
+	const time10M = computed(() => `~${passwordTimeFactor.time10M}s`)
+	const time20M = computed(() => `~${passwordTimeFactor.time20M}s`)
 
-const emit = defineEmits(['create'])
+	const emit = defineEmits(['create'])
 
-const usernameValid = ref(false)
-let newUsername = ''
+	const usernameValid = ref(false)
+	let newUsername = ''
 
-const usernameChanged = (valid: boolean, username: string) => {
-	usernameValid.value = valid
-	newUsername = username
-}
+	const usernameChanged = (valid: boolean, username: string) => {
+		usernameValid.value = valid
+		newUsername = username
+	}
 
-const canCreate = computed(() => understandNoRecover.value && passwordMatch.value && usernameValid.value)
+	const canCreate = computed(() => understandNoRecover.value && passwordMatch.value && usernameValid.value)
 
-watch(password, value => {
-	if (value) {
-		const result = zxcvbn(value, [newUsername])
-		const days = result.crack_times_seconds.offline_slow_hashing_1e4_per_second / 60 / 60 / 24
-		if (days < 0.0001) {
-			passwordQuality.value = 'free-access'
-		} else if (days < 0.1) {
-			passwordQuality.value = 'casual-use-only'
+	watch(password, value => {
+		if (value) {
+			const result = zxcvbn(value, [newUsername])
+			const days = result.crack_times_seconds.offline_slow_hashing_1e4_per_second / 60 / 60 / 24
+			if (days < 0.0001) {
+				passwordQuality.value = 'free-access'
+			} else if (days < 0.1) {
+				passwordQuality.value = 'casual-use-only'
+			} else {
+				passwordQuality.value = 'acceptable-security'
+			}
+			checkPasswordMatch()
 		} else {
-			passwordQuality.value = 'acceptable-security'
+			passwordQuality.value = ''
 		}
+	})
+
+	watch(passwordRepeat, value => {
 		checkPasswordMatch()
-	} else {
-		passwordQuality.value = ''
-	}
-})
+	})
 
-watch(passwordRepeat, value => {
-	checkPasswordMatch()
-})
-
-const pwKeyDown = event => {
-	capsLockOn.value = event.getModifierState('CapsLock')
-}
-
-const checkPasswordMatch = () => {
-	passwordMatch.value = password.value === passwordRepeat.value
-}
-
-const showPassword = () => {
-	passwordFieldType.value = 'text'
-}
-
-const hidePassword = () => {
-	passwordFieldType.value = 'password'
-}
-
-const createAccount = async () => {
-	if (!canCreate.value) {
-		return
+	const pwKeyDown = event => {
+		capsLockOn.value = event.getModifierState('CapsLock')
 	}
-	if (disallowRegex.test(newUsername)) {
-		errorText.value = 'Invalid username'
-		return
+
+	const checkPasswordMatch = () => {
+		passwordMatch.value = password.value === passwordRepeat.value
 	}
-	if (!newUsername) {
-		errorText.value = 'Must enter a username'
-		return
+
+	const showPassword = () => {
+		passwordFieldType.value = 'text'
 	}
-	if (password.value !== passwordRepeat.value) {
-		errorText.value = 'Passwords do not match'
-		return
+
+	const hidePassword = () => {
+		passwordFieldType.value = 'password'
 	}
-	if (!password.value) {
-		errorText.value = 'Must enter a password'
-		return
-	}
-	errorText.value = ''
-	loading.value = true
-	try {
-		try {
-			await noteManager.auth.changeUserNameAndPassword(
-				newUsername,
-				await deObfuscate(settingsManager.anonymousPassword),
-				password.value,
-				DEFAULT_ITERATIONS,
-			)
-			persistedState.storeSelectedNote(noteManager.tree.getNoteById('settings-account' as Guid))
-			settingsManager.anonymousUsername = undefined
-			settingsManager.anonymousPassword = undefined
-			settingsManager.autoLoginData = undefined
-			settingsManager.autoLogin = false
-			await settingsManager.waitForSaveComplete()
-			location.reload()
-		} catch (ex) {
-			errorText.value = ex.message
+
+	const createAccount = async () => {
+		if (!canCreate.value) {
 			return
 		}
-	} finally {
-		loading.value = false
+		if (disallowRegex.test(newUsername)) {
+			errorText.value = 'Invalid username'
+			return
+		}
+		if (!newUsername) {
+			errorText.value = 'Must enter a username'
+			return
+		}
+		if (password.value !== passwordRepeat.value) {
+			errorText.value = 'Passwords do not match'
+			return
+		}
+		if (!password.value) {
+			errorText.value = 'Must enter a password'
+			return
+		}
+		errorText.value = ''
+		loading.value = true
+		try {
+			try {
+				await noteManager.auth.changeUserNameAndPassword(
+					newUsername,
+					await deObfuscate(settingsManager.anonymousPassword),
+					password.value,
+					DEFAULT_ITERATIONS,
+				)
+				persistedState.storeSelectedNote(noteManager.tree.getNoteById('settings-account' as Guid))
+				settingsManager.anonymousUsername = undefined
+				settingsManager.anonymousPassword = undefined
+				settingsManager.autoLoginData = undefined
+				settingsManager.autoLogin = false
+				await settingsManager.waitForSaveComplete()
+				location.reload()
+			} catch (ex) {
+				errorText.value = ex.message
+				return
+			}
+		} finally {
+			loading.value = false
+		}
+		if (!noteManager.state.isLoggedIn) {
+			errorText.value = 'Unknown Error'
+		} else {
+			await noteManager.tree.root().ensureChildren()
+		}
 	}
-	if (!noteManager.state.isLoggedIn) {
-		errorText.value = 'Unknown Error'
-	} else {
-		await noteManager.tree.root().ensureChildren()
-	}
-}
 </script>

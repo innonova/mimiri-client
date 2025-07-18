@@ -13,42 +13,42 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { noteManager } from '../../global'
-import DialogTitle from '../elements/DialogTitle.vue'
-const dialog = ref(null)
-const title = ref('')
-const text = ref('')
+	import { ref } from 'vue'
+	import { noteManager } from '../../global'
+	import DialogTitle from '../elements/DialogTitle.vue'
+	const dialog = ref(null)
+	const title = ref('')
+	const text = ref('')
 
-const toMB = bytes => {
-	return `${Math.round((100 * bytes) / 1024 / 1024) / 100} MB`
-}
-
-const show = (limit: string) => {
-	if (limit === 'create-note-count') {
-		title.value = 'Note Limit Reached'
-		text.value = `You have created ${noteManager.state.userStats.noteCount} of your ${noteManager.state.userStats.maxNoteCount} notes`
+	const toMB = bytes => {
+		return `${Math.round((100 * bytes) / 1024 / 1024) / 100} MB`
 	}
-	if (limit === 'create-note-size' || limit === 'save-total-size') {
-		title.value = 'Data Limit Reached'
-		text.value = `You have used ${toMB(noteManager.state.userStats.size)} of your ${toMB(
-			noteManager.state.userStats.maxTotalBytes,
-		)}`
-	}
-	if (limit === 'save-note-size') {
-		title.value = 'Note Exceeds Max Size'
-		text.value = `The note you are trying to save is ${toMB(
-			noteManager.tree.selectedNote()?.size ?? 0,
-		)} the maximum allowed is ${toMB(noteManager.state.userStats.maxNoteBytes)}`
-	}
-	dialog.value.showModal()
-}
 
-const close = () => {
-	dialog.value.close()
-}
+	const show = (limit: string) => {
+		if (limit === 'create-note-count') {
+			title.value = 'Note Limit Reached'
+			text.value = `You have created ${noteManager.state.userStats.noteCount} of your ${noteManager.state.userStats.maxNoteCount} notes`
+		}
+		if (limit === 'create-note-size' || limit === 'save-total-size') {
+			title.value = 'Data Limit Reached'
+			text.value = `You have used ${toMB(noteManager.state.userStats.size)} of your ${toMB(
+				noteManager.state.userStats.maxTotalBytes,
+			)}`
+		}
+		if (limit === 'save-note-size') {
+			title.value = 'Note Exceeds Max Size'
+			text.value = `The note you are trying to save is ${toMB(
+				noteManager.tree.selectedNote()?.size ?? 0,
+			)} the maximum allowed is ${toMB(noteManager.state.userStats.maxNoteBytes)}`
+		}
+		dialog.value.showModal()
+	}
 
-defineExpose({
-	show,
-})
+	const close = () => {
+		dialog.value.close()
+	}
+
+	defineExpose({
+		show,
+	})
 </script>

@@ -52,50 +52,50 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
-import { currentTime, formatCurrency, formatInvoiceDate } from '../../services/helpers'
-import { InvoiceStatus, RenewalType, type Invoice } from '../../services/types/subscription'
-import { add, isAfter } from 'date-fns'
-import { accountHost, noteManager, pdfEnvironment } from '../../global'
+	import { computed, onMounted, ref } from 'vue'
+	import { currentTime, formatCurrency, formatInvoiceDate } from '../../services/helpers'
+	import { InvoiceStatus, RenewalType, type Invoice } from '../../services/types/subscription'
+	import { add, isAfter } from 'date-fns'
+	import { accountHost, noteManager, pdfEnvironment } from '../../global'
 
-const props = defineProps<{
-	invoice: Invoice
-}>()
+	const props = defineProps<{
+		invoice: Invoice
+	}>()
 
-const emit = defineEmits(['pay-invoice'])
+	const emit = defineEmits(['pay-invoice'])
 
-const now = ref<Date>(currentTime())
-const autoPay = ref(false)
-const overdue = computed(
-	() => props.invoice.status === InvoiceStatus.Issued && isAfter(now.value, props.invoice.due ?? now.value),
-)
-
-onMounted(async () => {
-	if (props.invoice.status === InvoiceStatus.Issued && props.invoice.subscriptionId) {
-		const subscription = await noteManager.payment.getCurrentSubscription()
-		if (subscription?.id === props.invoice.subscriptionId) {
-			autoPay.value = subscription.renewalType === RenewalType.Automatic
-		}
-	}
-})
-
-const showInvoice = async () => {
-	const auth = await noteManager.payment.createAuthQuery({
-		request: 'invoice',
-		timestamp: new Date(),
-		validUntil: add(new Date(), { hours: 12 }),
-	})
-	window.open(
-		`${accountHost}/invoice/${props.invoice.id}?auth=${auth}&status=true&username=${noteManager.state.username}&environment=${pdfEnvironment}`,
-		'_blank',
+	const now = ref<Date>(currentTime())
+	const autoPay = ref(false)
+	const overdue = computed(
+		() => props.invoice.status === InvoiceStatus.Issued && isAfter(now.value, props.invoice.due ?? now.value),
 	)
-}
 
-const showInvoicePdf = async () => {
-	window.open(await noteManager.payment.getPdfUrl(props.invoice), '_blank')
-}
+	onMounted(async () => {
+		if (props.invoice.status === InvoiceStatus.Issued && props.invoice.subscriptionId) {
+			const subscription = await noteManager.payment.getCurrentSubscription()
+			if (subscription?.id === props.invoice.subscriptionId) {
+				autoPay.value = subscription.renewalType === RenewalType.Automatic
+			}
+		}
+	})
 
-const payNow = async () => {
-	emit('pay-invoice', props.invoice)
-}
+	const showInvoice = async () => {
+		const auth = await noteManager.payment.createAuthQuery({
+			request: 'invoice',
+			timestamp: new Date(),
+			validUntil: add(new Date(), { hours: 12 }),
+		})
+		window.open(
+			`${accountHost}/invoice/${props.invoice.id}?auth=${auth}&status=true&username=${noteManager.state.username}&environment=${pdfEnvironment}`,
+			'_blank',
+		)
+	}
+
+	const showInvoicePdf = async () => {
+		window.open(await noteManager.payment.getPdfUrl(props.invoice), '_blank')
+	}
+
+	const payNow = async () => {
+		emit('pay-invoice', props.invoice)
+	}
 </script>

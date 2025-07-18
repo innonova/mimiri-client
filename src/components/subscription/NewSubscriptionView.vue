@@ -29,56 +29,56 @@
 					@buy="buy"
 				/>
 			</template>
-			<input type="hidden" data-testid="subscriptions-loaded" :value="!!products?.length">
+			<input type="hidden" data-testid="subscriptions-loaded" :value="!!products?.length" />
 		</div>
 	</div>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue'
-import { Currency, Period, type Subscription, type SubscriptionProduct } from '../../services/types/subscription'
-import SubscriptionItem from './SubscriptionItem.vue'
-import CurrencySelector from './CurrencySelector.vue'
-import PeriodSelector from './PeriodSelector.vue'
-import { noteManager } from '../../global'
+	import { onMounted, ref, watch } from 'vue'
+	import { Currency, Period, type Subscription, type SubscriptionProduct } from '../../services/types/subscription'
+	import SubscriptionItem from './SubscriptionItem.vue'
+	import CurrencySelector from './CurrencySelector.vue'
+	import PeriodSelector from './PeriodSelector.vue'
+	import { noteManager } from '../../global'
 
-let currentLoaded = false
-const currentProduct = ref<SubscriptionProduct>()
-const currentSubscription = ref<Subscription>()
-const period = ref(Period.Year)
-const products = ref<SubscriptionProduct[]>([])
-const currency = ref(Currency.CHF)
+	let currentLoaded = false
+	const currentProduct = ref<SubscriptionProduct>()
+	const currentSubscription = ref<Subscription>()
+	const period = ref(Period.Year)
+	const products = ref<SubscriptionProduct[]>([])
+	const currency = ref(Currency.CHF)
 
-const emit = defineEmits(['choose'])
+	const emit = defineEmits(['choose'])
 
-const populate = async () => {
-	if (!currentLoaded) {
-		currentProduct.value = await noteManager.payment.getCurrentSubscriptionProduct()
-		currentSubscription.value = await noteManager.payment.getCurrentSubscription()
-		currentLoaded = true
-		if (currentSubscription.value) {
-			period.value = currentSubscription.value.period
+	const populate = async () => {
+		if (!currentLoaded) {
+			currentProduct.value = await noteManager.payment.getCurrentSubscriptionProduct()
+			currentSubscription.value = await noteManager.payment.getCurrentSubscription()
+			currentLoaded = true
+			if (currentSubscription.value) {
+				period.value = currentSubscription.value.period
+			}
 		}
+		products.value = (await noteManager.payment.getSubscriptionProducts()).filter(
+			prod => prod.data.period === period.value,
+		)
 	}
-	products.value = (await noteManager.payment.getSubscriptionProducts()).filter(
-		prod => prod.data.period === period.value,
-	)
-}
 
-onMounted(async () => {
-	currentLoaded = false
-	await populate()
-})
+	onMounted(async () => {
+		currentLoaded = false
+		await populate()
+	})
 
-watch(period, async () => {
-	await populate()
-})
+	watch(period, async () => {
+		await populate()
+	})
 
-const buy = (sku: string) => {
-	emit(
-		'choose',
-		products.value.find(p => p.sku === sku),
-		currency.value,
-	)
-}
+	const buy = (sku: string) => {
+		emit(
+			'choose',
+			products.value.find(p => p.sku === sku),
+			currency.value,
+		)
+	}
 </script>

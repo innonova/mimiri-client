@@ -9,10 +9,10 @@
 	</div>
 </template>
 <script setup lang="ts">
-import { ref } from 'vue'
-import { Currency } from '../../services/types/subscription'
-const selectElement = ref<HTMLSelectElement>(undefined!)
-const model = defineModel<Currency>()
+	import { ref } from 'vue'
+	import { Currency } from '../../services/types/subscription'
+	const selectElement = ref<HTMLSelectElement>(undefined!)
+	const model = defineModel<Currency>()
 
-const currencies = ref<Currency[]>([Currency.CHF, Currency.EUR, Currency.USD])
+	const currencies = ref<Currency[]>([Currency.CHF, Currency.EUR, Currency.USD])
 </script>

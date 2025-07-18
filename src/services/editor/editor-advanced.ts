@@ -552,7 +552,7 @@ export class EditorAdvanced implements TextEditor {
 	}
 
 	public find() {
-		this.monacoEditor.getAction('actions.find').run()
+		void this.monacoEditor.getAction('actions.find').run()
 	}
 
 	public focus() {

@@ -4,7 +4,7 @@
 		:data-testid="`payment-method-${method.name}-container`"
 		:disabled="disabled"
 	>
-		<img class="h-10" :src="noteManager.payment.getIconPath(method.brand)">
+		<img class="h-10" :src="noteManager.payment.getIconPath(method.brand)" />
 		<div class="text-right">{{ method.name }}</div>
 		<div />
 		<div class="text-right">
@@ -37,15 +37,15 @@
 </template>
 
 <script setup lang="ts">
-import type { PaymentMethod } from '../../services/types/subscription'
-import { noteManager } from '../../global'
+	import type { PaymentMethod } from '../../services/types/subscription'
+	import { noteManager } from '../../global'
 
-const props = defineProps<{
-	method: PaymentMethod
-	isDefault: boolean
-	showActions: boolean
-	disabled?: boolean
-}>()
+	const props = defineProps<{
+		method: PaymentMethod
+		isDefault: boolean
+		showActions: boolean
+		disabled?: boolean
+	}>()
 
-const emit = defineEmits(['make-default', 'delete'])
+	const emit = defineEmits(['make-default', 'delete'])
 </script>

@@ -36,14 +36,11 @@
 					{{ noteManager.tree.selectedViewModelRef().value?.title }}
 				</div>
 				<div class="mt-5">This note will remain be accessible to:</div>
-				<div
-					v-if="shareParticipants.length < 5"
-					v-for="participant in shareParticipants"
-					:key="participant.username"
-					class="mt-3 ml-3 mb-1 italic"
-				>
-					{{ participant.username }}
-				</div>
+				<template v-if="shareParticipants.length < 5">
+					<div v-for="participant in shareParticipants" :key="participant.username" class="mt-3 ml-3 mb-1 italic">
+						{{ participant.username }}
+					</div>
+				</template>
 				<div v-if="shareParticipants.length >= 5" class="mt-3 ml-3 mb-1 italic">
 					{{ shareParticipants.length }} other users
 				</div>
@@ -65,14 +62,11 @@
 					{{ noteManager.tree.selectedViewModelRef().value?.title }}
 				</div>
 				<div class="mt-5">This note will also be deleted for:</div>
-				<div
-					v-if="shareParticipants.length < 5"
-					v-for="participant in shareParticipants"
-					:key="participant.username"
-					class="mt-3 ml-3 mb-1 italic"
-				>
-					{{ participant.username }}
-				</div>
+				<template v-if="shareParticipants.length < 5">
+					<div v-for="participant in shareParticipants" :key="participant.username" class="mt-3 ml-3 mb-1 italic">
+						{{ participant.username }}
+					</div>
+				</template>
 				<div v-if="shareParticipants.length >= 5" class="mt-3 ml-3 mb-1 italic">
 					{{ shareParticipants.length }} other users
 				</div>
@@ -86,37 +80,37 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { noteManager } from '../../global'
-import DialogTitle from '../elements/DialogTitle.vue'
-const dialog = ref(null)
-const shareParticipants = ref([])
+	import { ref } from 'vue'
+	import { noteManager } from '../../global'
+	import DialogTitle from '../elements/DialogTitle.vue'
+	const dialog = ref(null)
+	const shareParticipants = ref([])
 
-const show = async () => {
-	if (noteManager.tree.selectedNote()?.isShared) {
-		shareParticipants.value = (await noteManager.note.getShareParticipants(noteManager.tree.selectedNote().id)).filter(
-			item => item.username !== noteManager.state.username,
-		)
-	} else {
-		shareParticipants.value = []
+	const show = async () => {
+		if (noteManager.tree.selectedNote()?.isShared) {
+			shareParticipants.value = (
+				await noteManager.note.getShareParticipants(noteManager.tree.selectedNote().id)
+			).filter(item => item.username !== noteManager.state.username)
+		} else {
+			shareParticipants.value = []
+		}
+		dialog.value.showModal()
 	}
-	dialog.value.showModal()
-}
 
-const close = () => {
-	dialog.value.close()
-}
-
-const submitDialog = async () => {
-	if (noteManager.tree.selectedNote().isShareRoot) {
-		await noteManager.tree.selectedNote().deleteReference()
-	} else {
-		await noteManager.tree.selectedNote().delete()
+	const close = () => {
+		dialog.value.close()
 	}
-	close()
-}
 
-defineExpose({
-	show,
-})
+	const submitDialog = async () => {
+		if (noteManager.tree.selectedNote().isShareRoot) {
+			await noteManager.tree.selectedNote().deleteReference()
+		} else {
+			await noteManager.tree.selectedNote().delete()
+		}
+		close()
+	}
+
+	defineExpose({
+		show,
+	})
 </script>

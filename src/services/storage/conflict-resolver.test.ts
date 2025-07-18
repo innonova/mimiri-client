@@ -1,7 +1,6 @@
 import { describe, it, expect, beforeEach } from '@jest/globals'
 import {
 	ConflictResolver,
-	type MergeableNote,
 	type MergeableTextItem,
 	type MergeableHistoryItem,
 	type MergeableMetadataItem,

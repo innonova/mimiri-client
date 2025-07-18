@@ -34,49 +34,49 @@
 	</div>
 </template>
 <script lang="ts" setup>
-import { computed, ref, watch } from 'vue'
-import { deleteHistoryDialog, noteManager } from '../../global'
-import { formatBytes, formatDateTime } from '../../services/helpers'
-import TabBar from '../elements/TabBar.vue'
+	import { computed, ref, watch } from 'vue'
+	import { deleteHistoryDialog, noteManager } from '../../global'
+	import { formatBytes, formatDateTime } from '../../services/helpers'
+	import TabBar from '../elements/TabBar.vue'
 
-const shareParticipants = ref([])
-const showDeleteOldHistory = ref(false)
-const showDeleteAllHistory = ref(false)
+	const shareParticipants = ref([])
+	const showDeleteOldHistory = ref(false)
+	const showDeleteAllHistory = ref(false)
 
-const note = computed(() => noteManager.tree.selectedNote())
+	const note = computed(() => noteManager.tree.selectedNote())
 
-const update = async () => {
-	if (note.value.isShared) {
-		shareParticipants.value = (await noteManager.note.getShareParticipants(note.value.id)).filter(
-			item => item.username !== noteManager.state.username,
-		)
-	} else {
-		shareParticipants.value = []
+	const update = async () => {
+		if (note.value.isShared) {
+			shareParticipants.value = (await noteManager.note.getShareParticipants(note.value.id)).filter(
+				item => item.username !== noteManager.state.username,
+			)
+		} else {
+			shareParticipants.value = []
+		}
+		if (note.value.historyItems.length === 0) {
+			await note.value.loadHistory()
+		}
+		showDeleteOldHistory.value = note.value.historyItems.length > 10 || note.value.hasMoreHistory
+		showDeleteAllHistory.value = note.value.historyItems.length > 0
 	}
-	if (note.value.historyItems.length === 0) {
-		await note.value.loadHistory()
+
+	watch(
+		[note],
+		async () => {
+			await update()
+		},
+		{ immediate: true },
+	)
+
+	const deleteOldHistory = async () => {
+		deleteHistoryDialog.value.show(false, () => {
+			void update()
+		})
 	}
-	showDeleteOldHistory.value = note.value.historyItems.length > 10 || note.value.hasMoreHistory
-	showDeleteAllHistory.value = note.value.historyItems.length > 0
-}
 
-watch(
-	[note],
-	async () => {
-		await update()
-	},
-	{ immediate: true },
-)
-
-const deleteOldHistory = async () => {
-	deleteHistoryDialog.value.show(false, () => {
-		void update()
-	})
-}
-
-const deleteAllHistory = async () => {
-	deleteHistoryDialog.value.show(true, () => {
-		void update()
-	})
-}
+	const deleteAllHistory = async () => {
+		deleteHistoryDialog.value.show(true, () => {
+			void update()
+		})
+	}
 </script>

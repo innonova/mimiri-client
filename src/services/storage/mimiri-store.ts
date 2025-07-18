@@ -2,7 +2,7 @@ import { reactive, watch } from 'vue'
 import { type Guid } from '../types/guid'
 import { Note } from '../types/note'
 import type { NoteShareInfo } from '../types/note-share-info'
-import { AccountType, ViewMode, type LocalState, type SharedState } from './type'
+import { AccountType, ViewMode, type SharedState } from './type'
 import { AuthenticationManager } from './authentication-manager'
 import { CryptographyManager } from './cryptography-manager'
 import { SynchronizationService } from './synchronization-service'
@@ -201,7 +201,7 @@ export class MimiriStore {
 
 		browserHistory.init(noteId => {
 			if (noteId) {
-				this.treeManager.getNoteById(noteId)?.select()
+				void this.treeManager.getNoteById(noteId)?.select()
 				if (this.state.isMobile) {
 					this.state.noteOpen = true
 				}
@@ -265,8 +265,8 @@ export class MimiriStore {
 			this.sessionManager.promoteToLocalAccount(username, password, iterations),
 		registerListener: (listener: LoginListener) => this.sessionManager.registerListener(listener),
 		queueSync: () => this.syncService.queueSync(),
-		toggleWorkOffline: () => {
-			this.api.toggleWorkOffline()
+		toggleWorkOffline: async () => {
+			await this.api.toggleWorkOffline()
 		},
 	}
 

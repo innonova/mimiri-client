@@ -463,7 +463,7 @@ export class AuthenticationManager {
 			}
 		} catch (ex) {
 			console.log('Failed to verify credentials, retrying', ex)
-			incrementalDelay(attempt).then(() => {
+			void incrementalDelay(attempt).then(() => {
 				void this.goOnline(attempt + 1)
 			})
 			return false

@@ -17,36 +17,36 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { MimerNote } from '../../services/types/mimer-note'
-import { mimiriEditor } from '../../global'
-import DialogTitle from '../elements/DialogTitle.vue'
-const dialog = ref(null)
-const noteItem = ref<MimerNote>(undefined)
-let complete: (value: boolean) => void
+	import { ref } from 'vue'
+	import { MimerNote } from '../../services/types/mimer-note'
+	import { mimiriEditor } from '../../global'
+	import DialogTitle from '../elements/DialogTitle.vue'
+	const dialog = ref(null)
+	const noteItem = ref<MimerNote>(undefined)
+	let complete: (value: boolean) => void
 
-const show = (note: MimerNote) => {
-	return new Promise<boolean>(resolve => {
-		complete = resolve
-		noteItem.value = note
-		dialog.value.showModal()
-	})
-}
-
-const close = () => {
-	if (mimiriEditor.note.id === noteItem.value.id) {
-		mimiriEditor.reloadNode()
+	const show = (note: MimerNote) => {
+		return new Promise<boolean>(resolve => {
+			complete = resolve
+			noteItem.value = note
+			dialog.value.showModal()
+		})
 	}
-	complete(false)
-	dialog.value.close()
-}
 
-const submitDialog = async () => {
-	complete(true)
-	dialog.value.close()
-}
+	const close = () => {
+		if (mimiriEditor.note.id === noteItem.value.id) {
+			mimiriEditor.reloadNode()
+		}
+		complete(false)
+		dialog.value.close()
+	}
 
-defineExpose({
-	show,
-})
+	const submitDialog = async () => {
+		complete(true)
+		dialog.value.close()
+	}
+
+	defineExpose({
+		show,
+	})
 </script>

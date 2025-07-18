@@ -1,7 +1,7 @@
 import type { MimerNote } from '../types/mimer-note'
 import { mimiriPlatform } from '../mimiri-platform'
 import { persistedState } from '../persisted-state'
-import { createNewNode, createNewRootNode, limitDialog } from '../../global'
+import { createNewNode, createNewRootNode } from '../../global'
 import type { SharedState } from './type'
 
 export class UIStateManager {
@@ -92,7 +92,7 @@ export class UIStateManager {
 			note = this.recurseExpandedNotes(rootNote.children[0], note => note.title.toLowerCase().startsWith(text))
 		}
 		if (note) {
-			note.select()
+			void note.select()
 		}
 	}
 

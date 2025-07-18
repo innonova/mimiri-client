@@ -40,22 +40,22 @@
 							href="https://mimiri.com/eu-vat"
 							target="_blank"
 							>more information</a
-						>).<br>
-						<br>
+						>).<br />
+						<br />
 						We will use your email address solely to send you receipts, notifications of failed payments and reminders
 						prior to renewal. Your email address also serves as a last resort for canceling your subscription in case
-						you lose access to your account.<br>
-						<br>
+						you lose access to your account.<br />
+						<br />
 						We will never use your email address for marketing purposes, news letters or any other kind of unsolicited
-						communication.<br>
-						<br>
+						communication.<br />
+						<br />
 						The above data is shared with our payment provider to process your payment (primarily for fraud prevention).
-						<br>
-						<br>
+						<br />
+						<br />
 						We will, however, never share your data with any other parties see
 						<a href="https://mimiri.com/privacy" target="_blank">Privacy Policy</a> for details.
-						<br>
-						<br>
+						<br />
+						<br />
 						All data is handled in compliance with the GDPR and Swiss data protection laws.
 					</div>
 				</div>
@@ -65,55 +65,55 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import CustomerData from './CustomerData.vue'
-import PaymentMethodSelector from './PaymentMethodSelector.vue'
-import { type Invoice } from '../../services/types/subscription'
-import { noteManager } from '../../global'
-import { assertGuid } from '../../services/types/guid'
-import ItemHeader from './ItemHeader.vue'
-import PaymentSummary from './PaymentSummary.vue'
+	import { ref } from 'vue'
+	import CustomerData from './CustomerData.vue'
+	import PaymentMethodSelector from './PaymentMethodSelector.vue'
+	import { type Invoice } from '../../services/types/subscription'
+	import { noteManager } from '../../global'
+	import { assertGuid } from '../../services/types/guid'
+	import ItemHeader from './ItemHeader.vue'
+	import PaymentSummary from './PaymentSummary.vue'
 
-const props = defineProps<{
-	invoice: Invoice
-}>()
+	const props = defineProps<{
+		invoice: Invoice
+	}>()
 
-const emit = defineEmits(['pay-in-progress'])
+	const emit = defineEmits(['pay-in-progress'])
 
-const changed = ref()
-const valid = ref()
-const termsAccepted = ref(false)
-const privacyAccepted = ref(false)
-const customerElement = ref<typeof CustomerData>()
-const countryCode = ref()
+	const changed = ref()
+	const valid = ref()
+	const termsAccepted = ref(false)
+	const privacyAccepted = ref(false)
+	const customerElement = ref<typeof CustomerData>()
+	const countryCode = ref()
 
-const method = ref('')
+	const method = ref('')
 
-const submit = async () => {
-	if (customerElement.value && valid && termsAccepted.value && privacyAccepted.value && props.invoice) {
-		await customerElement.value.save(termsAccepted.value, privacyAccepted.value)
-		await customerElement.value.verifyEmail()
+	const submit = async () => {
+		if (customerElement.value && valid && termsAccepted.value && privacyAccepted.value && props.invoice) {
+			await customerElement.value.save(termsAccepted.value, privacyAccepted.value)
+			await customerElement.value.verifyEmail()
 
-		if (method.value === 'NEW') {
-			const createPayResult = await noteManager.payment.createPaymentLink({
-				invoiceId: props.invoice.id,
-				save: true,
-				clientRef: 'pay-invoice',
-			})
-			window.open(createPayResult.link, '_blank')
-			emit('pay-in-progress', props.invoice.id, true, createPayResult.link)
-		} else {
-			const methodId = method.value
-			assertGuid(methodId)
-			const payResult = await noteManager.payment.chargeExistingMethod({
-				invoiceId: props.invoice.id,
-				methodId,
-				purpose: 'Online order',
-			})
-			if (payResult.success) {
-				emit('pay-in-progress', props.invoice.id, false)
+			if (method.value === 'NEW') {
+				const createPayResult = await noteManager.payment.createPaymentLink({
+					invoiceId: props.invoice.id,
+					save: true,
+					clientRef: 'pay-invoice',
+				})
+				window.open(createPayResult.link, '_blank')
+				emit('pay-in-progress', props.invoice.id, true, createPayResult.link)
+			} else {
+				const methodId = method.value
+				assertGuid(methodId)
+				const payResult = await noteManager.payment.chargeExistingMethod({
+					invoiceId: props.invoice.id,
+					methodId,
+					purpose: 'Online order',
+				})
+				if (payResult.success) {
+					emit('pay-in-progress', props.invoice.id, false)
+				}
 			}
 		}
 	}
-}
 </script>

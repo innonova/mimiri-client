@@ -402,7 +402,7 @@ export class ConflictResolver {
 		const shorter = localTrimmed.length <= remoteTrimmed.length ? localTrimmed : remoteTrimmed
 		const longer = localTrimmed.length > remoteTrimmed.length ? localTrimmed : remoteTrimmed
 		const longerOriginal = localTrimmed.length > remoteTrimmed.length ? localLines : remoteLines
-		const shorterOriginal = localTrimmed.length <= remoteTrimmed.length ? localLines : remoteLines
+		// const shorterOriginal = localTrimmed.length <= remoteTrimmed.length ? localLines : remoteLines
 
 		if (shorter.length > 0 && longer.length > shorter.length) {
 			const allButLastMatch = shorter.slice(0, -1).every((line, index) => line === longer[index])

@@ -19,8 +19,8 @@
 					@resume="resume"
 					@pay-invoice="payInvoice"
 				/>
-				<input type="hidden" data-testid="current-subscription-sku" :value="product?.sku">
-				<input type="hidden" data-testid="current-subscription-paid-until" :value="subscription?.paidUntil">
+				<input type="hidden" data-testid="current-subscription-sku" :value="product?.sku" />
+				<input type="hidden" data-testid="current-subscription-paid-until" :value="subscription?.paidUntil" />
 			</div>
 			<div class="p-1 mt-4">
 				Read more about plans <a href="https://mimiri.io/subscription" target="_blank">here</a>
@@ -48,57 +48,57 @@
 </template>
 
 <script setup lang="ts">
-import { clipboardManager, noteManager } from '../../global'
-import { type Invoice, type Subscription, type SubscriptionProduct } from '../../services/types/subscription'
-import ItemHeader from './ItemHeader.vue'
-import CopyIcon from '../../icons/copy.vue'
-import SubscriptionItem from './SubscriptionItem.vue'
-import { onMounted, ref } from 'vue'
-import TabBar from '../elements/TabBar.vue'
+	import { clipboardManager, noteManager } from '../../global'
+	import { type Invoice, type Subscription, type SubscriptionProduct } from '../../services/types/subscription'
+	import ItemHeader from './ItemHeader.vue'
+	import CopyIcon from '../../icons/copy.vue'
+	import SubscriptionItem from './SubscriptionItem.vue'
+	import { onMounted, ref } from 'vue'
+	import TabBar from '../elements/TabBar.vue'
 
-const product = ref<SubscriptionProduct>()
-const subscription = ref<Subscription>()
-const populated = ref(false)
-const copied = ref(false)
+	const product = ref<SubscriptionProduct>()
+	const subscription = ref<Subscription>()
+	const populated = ref(false)
+	const copied = ref(false)
 
-const emit = defineEmits(['change', 'pay-invoice'])
+	const emit = defineEmits(['change', 'pay-invoice'])
 
-onMounted(async () => {
-	await populate()
-})
+	onMounted(async () => {
+		await populate()
+	})
 
-const populate = async () => {
-	populated.value = false
-	product.value = await noteManager.payment.getCurrentSubscriptionProduct()
-	subscription.value = await noteManager.payment.getCurrentSubscription()
-	populated.value = true
-}
+	const populate = async () => {
+		populated.value = false
+		product.value = await noteManager.payment.getCurrentSubscriptionProduct()
+		subscription.value = await noteManager.payment.getCurrentSubscription()
+		populated.value = true
+	}
 
-const change = async () => {
-	emit('change')
-}
+	const change = async () => {
+		emit('change')
+	}
 
-const cancel = async () => {
-	await noteManager.payment.cancelSubscription()
-	await populate()
-}
+	const cancel = async () => {
+		await noteManager.payment.cancelSubscription()
+		await populate()
+	}
 
-const resume = async () => {
-	await noteManager.payment.resumeSubscription()
-	await populate()
-}
+	const resume = async () => {
+		await noteManager.payment.resumeSubscription()
+		await populate()
+	}
 
-const payInvoice = (invoice: Invoice) => {
-	emit('pay-invoice', invoice)
-}
+	const payInvoice = (invoice: Invoice) => {
+		emit('pay-invoice', invoice)
+	}
 
-const copyEmail = () => {
-	clipboardManager.write('info@innonova.ch')
-	copied.value = true
-	setTimeout(() => (copied.value = false), 1000)
-}
+	const copyEmail = () => {
+		clipboardManager.write('info@innonova.ch')
+		copied.value = true
+		setTimeout(() => (copied.value = false), 1000)
+	}
 
-defineExpose({
-	populate,
-})
+	defineExpose({
+		populate,
+	})
 </script>

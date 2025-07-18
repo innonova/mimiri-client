@@ -13,7 +13,7 @@
 									v-model="understandDeleteAccount"
 									class="mr-1 relative top-0.5"
 									data-testid="delete-account-checkbox"
-								>
+								/>
 								this will <b>permanently</b> delete my account
 							</label>
 						</div>
@@ -24,7 +24,7 @@
 									v-model="understandDeleteData"
 									class="mr-1 relative top-0.5"
 									data-testid="delete-data-checkbox"
-								>
+								/>
 								this will <b>permanently</b> delete all my data
 							</label>
 						</div>
@@ -35,12 +35,12 @@
 									v-model="understandRoRecovery"
 									class="mr-1 relative top-0.5"
 									data-testid="no-recovery-checkbox"
-								>
+								/>
 								that there is <b>no way</b> to recover my data
 							</label>
 						</div>
 						<div class="max-w-110">
-							<hr class="my-5">
+							<hr class="my-5" />
 							<div v-if="!noteManager.state.isAnonymous" class="flex justify-end items-baseline">
 								<div class="mr-2">Password:</div>
 								<div class="text-right">
@@ -51,7 +51,7 @@
 										class="basic-input"
 										data-testid="delete-account-password-input"
 										@keydown="pwKeyDown"
-									>
+									/>
 								</div>
 							</div>
 							<div v-if="!noteManager.state.isAnonymous" class="flex justify-end items-baseline">
@@ -69,7 +69,7 @@
 										v-model="deleteLocal"
 										class="ml-1 relative top-0.5"
 										data-testid="delete-local-checkbox"
-									>
+									/>
 								</label>
 							</div>
 
@@ -101,54 +101,54 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { env, noteManager } from '../../global'
-import LoadingIcon from '../../icons/loading.vue'
-import { mimiriPlatform } from '../../services/mimiri-platform'
-import { settingsManager } from '../../services/settings-manager'
-import { deObfuscate } from '../../services/helpers'
-import TabBar from '../elements/TabBar.vue'
-import { AccountType } from '../../services/storage/type'
+	import { ref } from 'vue'
+	import { env, noteManager } from '../../global'
+	import LoadingIcon from '../../icons/loading.vue'
+	import { mimiriPlatform } from '../../services/mimiri-platform'
+	import { settingsManager } from '../../services/settings-manager'
+	import { deObfuscate } from '../../services/helpers'
+	import TabBar from '../elements/TabBar.vue'
+	import { AccountType } from '../../services/storage/type'
 
-const understandDeleteAccount = ref(false)
-const understandDeleteData = ref(false)
-const understandRoRecovery = ref(false)
-const deleteLocal = ref(false)
-const capsLockOn = ref(false)
-const error = ref('')
+	const understandDeleteAccount = ref(false)
+	const understandDeleteData = ref(false)
+	const understandRoRecovery = ref(false)
+	const deleteLocal = ref(false)
+	const capsLockOn = ref(false)
+	const error = ref('')
 
-const loading = ref(false)
-const password = ref('')
+	const loading = ref(false)
+	const password = ref('')
 
-const pwKeyDown = event => {
-	capsLockOn.value = event.getModifierState('CapsLock')
-}
-
-const deleteAccount = async () => {
-	loading.value = true
-	error.value = ''
-	if (password.value || noteManager.state.isAnonymous) {
-		try {
-			if (noteManager.state.isAnonymous) {
-				await noteManager.auth.deleteAccount(await deObfuscate(settingsManager.anonymousPassword), true)
-				settingsManager.anonymousUsername = undefined
-				settingsManager.anonymousPassword = undefined
-				settingsManager.showCreateOverCancel = true
-			} else {
-				await noteManager.auth.deleteAccount(password.value, deleteLocal.value)
-			}
-			loading.value = false
-			if (deleteLocal.value || noteManager.state.isAnonymous) {
-				await noteManager.session.logout()
-				location.reload()
-			}
-		} catch {
-			loading.value = false
-			error.value = 'Invalid password'
-		}
-	} else {
-		loading.value = false
-		error.value = 'Password required'
+	const pwKeyDown = event => {
+		capsLockOn.value = event.getModifierState('CapsLock')
 	}
-}
+
+	const deleteAccount = async () => {
+		loading.value = true
+		error.value = ''
+		if (password.value || noteManager.state.isAnonymous) {
+			try {
+				if (noteManager.state.isAnonymous) {
+					await noteManager.auth.deleteAccount(await deObfuscate(settingsManager.anonymousPassword), true)
+					settingsManager.anonymousUsername = undefined
+					settingsManager.anonymousPassword = undefined
+					settingsManager.showCreateOverCancel = true
+				} else {
+					await noteManager.auth.deleteAccount(password.value, deleteLocal.value)
+				}
+				loading.value = false
+				if (deleteLocal.value || noteManager.state.isAnonymous) {
+					await noteManager.session.logout()
+					location.reload()
+				}
+			} catch {
+				loading.value = false
+				error.value = 'Invalid password'
+			}
+		} else {
+			loading.value = false
+			error.value = 'Password required'
+		}
+	}
 </script>

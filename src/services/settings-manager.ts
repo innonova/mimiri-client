@@ -1,9 +1,9 @@
 import { reactive } from 'vue'
-import { env, fontManager, ipcClient } from '../global'
+import { fontManager, ipcClient } from '../global'
 import { menuManager } from './menu-manager'
 import { toRaw } from 'vue'
 import { mimiriPlatform } from './mimiri-platform'
-import { compareVersions, delay } from './helpers'
+import { delay } from './helpers'
 import { emptyGuid, type Guid } from './types/guid'
 
 export enum UpdateMode {

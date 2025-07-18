@@ -21,30 +21,30 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { noteManager } from '../../global'
-import DialogTitle from '../elements/DialogTitle.vue'
-const dialog = ref(null)
-const text = ref('')
-let cb: (confirmed: boolean) => void | undefined = undefined
+	import { ref } from 'vue'
+	import { noteManager } from '../../global'
+	import DialogTitle from '../elements/DialogTitle.vue'
+	const dialog = ref(null)
+	const text = ref('')
+	let cb: (confirmed: boolean) => void | undefined = undefined
 
-const show = (name: string, callback: (confirmed: boolean) => void) => {
-	dialog.value.showModal()
-	text.value = name
-	cb = callback
-}
+	const show = (name: string, callback: (confirmed: boolean) => void) => {
+		dialog.value.showModal()
+		text.value = name
+		cb = callback
+	}
 
-const close = () => {
-	cb(false)
-	dialog.value.close()
-}
+	const close = () => {
+		cb(false)
+		dialog.value.close()
+	}
 
-const submitDialog = async () => {
-	cb(true)
-	close()
-}
+	const submitDialog = async () => {
+		cb(true)
+		close()
+	}
 
-defineExpose({
-	show,
-})
+	defineExpose({
+		show,
+	})
 </script>

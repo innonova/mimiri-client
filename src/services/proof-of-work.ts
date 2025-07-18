@@ -8,7 +8,6 @@ export class ProofOfWork {
 		const remainingBits = entropyBits - fullBytes * 8
 		let hash
 		let nonce = 0
-		const start = Date.now()
 
 		while (true) {
 			const message = `${Date.now()}:${hash ?? '-'}:${nonce++}:${value}`

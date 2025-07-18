@@ -10,7 +10,7 @@
 				type="text"
 				class="basic-input"
 				data-testid="given-name"
-			>
+			/>
 			<div class="text-right" :class="{ 'text-red-500': changed && !familyNameValid }">Last name *</div>
 			<input
 				v-model="familyName"
@@ -20,7 +20,7 @@
 				type="text"
 				class="basic-input"
 				data-testid="family-name"
-			>
+			/>
 			<div class="text-right">Company <sup>1)</sup></div>
 			<input
 				v-model="company"
@@ -30,7 +30,7 @@
 				type="text"
 				class="basic-input"
 				data-testid="company"
-			>
+			/>
 			<div class="text-right" :class="{ 'text-red-500': changed && !emailValid }">Email *</div>
 			<div class="flex flex-col items-end">
 				<input
@@ -41,7 +41,7 @@
 					type="text"
 					class="basic-input w-full!"
 					data-testid="email"
-				>
+				/>
 				<div
 					v-if="showEmailVerification && emailVerified"
 					class="text-good mb-[-0.5em] mt-0.5"
@@ -87,7 +87,7 @@
 				type="text"
 				class="basic-input"
 				data-testid="city"
-			>
+			/>
 			<div class="text-right">Postal Code <sup>1)</sup></div>
 			<input
 				v-model="postalCode"
@@ -97,7 +97,7 @@
 				type="text"
 				class="basic-input"
 				data-testid="postal-code"
-			>
+			/>
 			<div class="text-right">Address <sup>1)</sup></div>
 			<textarea
 				v-model="address"
@@ -117,156 +117,156 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue'
-import CountrySelector from './CountrySelector.vue'
-import StateSelector from './StateSelector.vue'
-import { noteManager } from '../../global'
-import type { Customer } from '../../services/types/subscription'
+	import { computed, onMounted, ref, watch } from 'vue'
+	import CountrySelector from './CountrySelector.vue'
+	import StateSelector from './StateSelector.vue'
+	import { noteManager } from '../../global'
+	import type { Customer } from '../../services/types/subscription'
 
-const props = defineProps<{
-	mode: 'edit' | 'create'
-	disabled?: boolean
-}>()
+	const props = defineProps<{
+		mode: 'edit' | 'create'
+		disabled?: boolean
+	}>()
 
-const model = defineModel()
-const givenName = ref('')
-const familyName = ref('')
-const company = ref('')
-const email = ref('')
-const countryCode = ref('')
-const countryName = ref('')
-const stateCode = ref('')
-const stateName = ref('')
-const stateMode = ref('')
-const city = ref('')
-const postalCode = ref('')
-const address = ref('')
-const stateRequired = ref(false)
-const emailVerified = ref(false)
-const emailVerificationEmailSent = ref(false)
-const customer = ref<Customer>()
+	const model = defineModel()
+	const givenName = ref('')
+	const familyName = ref('')
+	const company = ref('')
+	const email = ref('')
+	const countryCode = ref('')
+	const countryName = ref('')
+	const stateCode = ref('')
+	const stateName = ref('')
+	const stateMode = ref('')
+	const city = ref('')
+	const postalCode = ref('')
+	const address = ref('')
+	const stateRequired = ref(false)
+	const emailVerified = ref(false)
+	const emailVerificationEmailSent = ref(false)
+	const customer = ref<Customer>()
 
-const valid = defineModel('valid')
-const changed = defineModel('changed')
-const countryCodeOut = defineModel('countryCode')
+	const valid = defineModel('valid')
+	const changed = defineModel('changed')
+	const countryCodeOut = defineModel('countryCode')
 
-const givenNameValid = computed(() => givenName.value?.length > 0)
-const familyNameValid = computed(() => familyName.value?.length > 0)
-const emailValid = computed(() => email.value?.length > 0)
-const countryValid = computed(() => countryName.value?.length > 0)
-const stateValid = computed(() => stateMode.value === 'text' || stateName.value?.length > 0)
+	const givenNameValid = computed(() => givenName.value?.length > 0)
+	const familyNameValid = computed(() => familyName.value?.length > 0)
+	const emailValid = computed(() => email.value?.length > 0)
+	const countryValid = computed(() => countryName.value?.length > 0)
+	const stateValid = computed(() => stateMode.value === 'text' || stateName.value?.length > 0)
 
-watch(countryCode, () => {
-	countryCodeOut.value = countryCode.value
-})
+	watch(countryCode, () => {
+		countryCodeOut.value = countryCode.value
+	})
 
-watch([givenNameValid, familyNameValid, emailValid, countryValid, stateValid], () => {
-	valid.value =
-		givenNameValid.value && familyNameValid.value && emailValid.value && countryValid.value && stateValid.value
-})
+	watch([givenNameValid, familyNameValid, emailValid, countryValid, stateValid], () => {
+		valid.value =
+			givenNameValid.value && familyNameValid.value && emailValid.value && countryValid.value && stateValid.value
+	})
 
-watch([customer, givenName, familyName, company, email, countryCode, stateCode, city, postalCode, address], () => {
-	changed.value =
-		givenName.value !== (customer.value?.givenName ?? '') ||
-		familyName.value !== (customer.value?.familyName ?? '') ||
-		company.value !== (customer.value?.company ?? '') ||
-		email.value !== (customer.value?.email ?? '') ||
-		countryCode.value !== (customer.value?.countryCode ?? '') ||
-		stateCode.value !== (customer.value?.stateCode ?? '') ||
-		city.value !== (customer.value?.city ?? '') ||
-		postalCode.value !== (customer.value?.postalCode ?? '') ||
-		address.value !== (customer.value?.address ?? '')
-})
+	watch([customer, givenName, familyName, company, email, countryCode, stateCode, city, postalCode, address], () => {
+		changed.value =
+			givenName.value !== (customer.value?.givenName ?? '') ||
+			familyName.value !== (customer.value?.familyName ?? '') ||
+			company.value !== (customer.value?.company ?? '') ||
+			email.value !== (customer.value?.email ?? '') ||
+			countryCode.value !== (customer.value?.countryCode ?? '') ||
+			stateCode.value !== (customer.value?.stateCode ?? '') ||
+			city.value !== (customer.value?.city ?? '') ||
+			postalCode.value !== (customer.value?.postalCode ?? '') ||
+			address.value !== (customer.value?.address ?? '')
+	})
 
-const showEmailVerification = computed(
-	() =>
-		props.mode === 'edit' &&
-		customer.value &&
-		customer.value.email === email.value &&
-		!emailVerificationEmailSent.value,
-)
+	const showEmailVerification = computed(
+		() =>
+			props.mode === 'edit' &&
+			customer.value &&
+			customer.value.email === email.value &&
+			!emailVerificationEmailSent.value,
+	)
 
-const verifyEmail = async () => {
-	if (customer.value && customer.value.email.includes('@') && !customer.value.emailVerified) {
-		await noteManager.payment.verifyEmail()
-		emailVerificationEmailSent.value = true
+	const verifyEmail = async () => {
+		if (customer.value && customer.value.email.includes('@') && !customer.value.emailVerified) {
+			await noteManager.payment.verifyEmail()
+			emailVerificationEmailSent.value = true
+		}
 	}
-}
 
-const save = async (termsAccepted?: boolean, privacyPolicyAccepted?: boolean) => {
-	if (valid.value && changed.value) {
-		await noteManager.payment.saveCustomerData({
-			givenName: givenName.value,
-			familyName: familyName.value,
-			company: company.value,
-			email: email.value,
-			countryCode: countryCode.value,
-			country: countryName.value,
-			stateCode: stateCode.value,
-			state: stateCode.value,
-			city: city.value,
-			postalCode: postalCode.value,
-			address: address.value,
-			termsAccepted,
-			privacyPolicyAccepted,
-		})
+	const save = async (termsAccepted?: boolean, privacyPolicyAccepted?: boolean) => {
+		if (valid.value && changed.value) {
+			await noteManager.payment.saveCustomerData({
+				givenName: givenName.value,
+				familyName: familyName.value,
+				company: company.value,
+				email: email.value,
+				countryCode: countryCode.value,
+				country: countryName.value,
+				stateCode: stateCode.value,
+				state: stateCode.value,
+				city: city.value,
+				postalCode: postalCode.value,
+				address: address.value,
+				termsAccepted,
+				privacyPolicyAccepted,
+			})
+			await loadCustomer()
+		}
+	}
+	const cancel = async () => {
 		await loadCustomer()
 	}
-}
-const cancel = async () => {
-	await loadCustomer()
-}
 
-const loadCustomer = async () => {
-	customer.value = await noteManager.payment.getCustomerData()
-	if (customer.value) {
-		givenName.value = customer.value.givenName
-		familyName.value = customer.value.familyName
-		company.value = customer.value.company
-		email.value = customer.value.email
-		countryCode.value = customer.value.countryCode
-		stateCode.value = customer.value.stateCode
-		city.value = customer.value.city
-		postalCode.value = customer.value.postalCode
-		address.value = customer.value.address
-		emailVerified.value = customer.value.emailVerified
-		emailVerificationEmailSent.value = false
-	}
-}
-
-onMounted(async () => {
-	await loadCustomer()
-})
-
-watch(
-	[givenName, familyName, company, email, countryCode, countryName, stateCode, stateName, city, postalCode, address],
-	() => {
-		model.value = {
-			givenName: givenName.value,
-			familyName: familyName.value,
-			company: company.value,
-			email: email.value,
-			countryCode: countryCode.value,
-			country: countryName.value,
-			stateCode: stateCode.value,
-			state: stateCode.value,
-			city: city.value,
-			postalCode: postalCode.value,
-			address: address.value,
+	const loadCustomer = async () => {
+		customer.value = await noteManager.payment.getCustomerData()
+		if (customer.value) {
+			givenName.value = customer.value.givenName
+			familyName.value = customer.value.familyName
+			company.value = customer.value.company
+			email.value = customer.value.email
+			countryCode.value = customer.value.countryCode
+			stateCode.value = customer.value.stateCode
+			city.value = customer.value.city
+			postalCode.value = customer.value.postalCode
+			address.value = customer.value.address
+			emailVerified.value = customer.value.emailVerified
+			emailVerificationEmailSent.value = false
 		}
-	},
-)
+	}
 
-watch(countryCode, async () => {
-	const countries = await noteManager.payment.getCountries()
-	const country = countries.find(c => c.code === countryCode.value)
-	stateRequired.value = !!country?.states?.length
-})
+	onMounted(async () => {
+		await loadCustomer()
+	})
 
-defineExpose({
-	save,
-	cancel,
-	verifyEmail,
-	loadCustomer,
-})
+	watch(
+		[givenName, familyName, company, email, countryCode, countryName, stateCode, stateName, city, postalCode, address],
+		() => {
+			model.value = {
+				givenName: givenName.value,
+				familyName: familyName.value,
+				company: company.value,
+				email: email.value,
+				countryCode: countryCode.value,
+				country: countryName.value,
+				stateCode: stateCode.value,
+				state: stateCode.value,
+				city: city.value,
+				postalCode: postalCode.value,
+				address: address.value,
+			}
+		},
+	)
+
+	watch(countryCode, async () => {
+		const countries = await noteManager.payment.getCountries()
+		const country = countries.find(c => c.code === countryCode.value)
+		stateRequired.value = !!country?.states?.length
+	})
+
+	defineExpose({
+		save,
+		cancel,
+		verifyEmail,
+		loadCustomer,
+	})
 </script>

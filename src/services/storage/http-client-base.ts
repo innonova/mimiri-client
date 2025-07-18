@@ -23,7 +23,7 @@ export abstract class HttpClientBase {
 		serverKey: string,
 	) {
 		if (serverKey) {
-			CryptSignature.fromPem('RSA;3072', serverKey).then(sig => (this._serverSignature = sig))
+			void CryptSignature.fromPem('RSA;3072', serverKey).then(sig => (this._serverSignature = sig))
 		}
 	}
 

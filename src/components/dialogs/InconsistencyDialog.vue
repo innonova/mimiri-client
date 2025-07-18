@@ -19,24 +19,24 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import DialogTitle from '../elements/DialogTitle.vue'
-const dialog = ref(null)
-const text = ref('')
+	import { ref } from 'vue'
+	import DialogTitle from '../elements/DialogTitle.vue'
+	const dialog = ref(null)
+	const text = ref('')
 
-const show = () => {
-	dialog.value.showModal()
-}
+	const show = () => {
+		dialog.value.showModal()
+	}
 
-const close = () => {
-	dialog.value.close()
-}
+	const close = () => {
+		dialog.value.close()
+	}
 
-const reload = () => {
-	location.reload()
-}
+	const reload = () => {
+		location.reload()
+	}
 
-defineExpose({
-	show,
-})
+	defineExpose({
+		show,
+	})
 </script>

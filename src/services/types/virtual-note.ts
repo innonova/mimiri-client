@@ -32,18 +32,18 @@ export class VirtualNote extends MimerNote {
 		this.updateViewModel()
 	}
 
-	public async ensureChildren(skipUpdateViewModel: boolean = false) {}
+	public async ensureChildren(_skipUpdateViewModel: boolean = false) {}
 
 	public async refresh() {}
 	public async save() {
 		throw new Error('Cannot save virtual')
 	}
 
-	public async copy(target: MimerNote, index: number = -1) {
+	public async copy(target: MimerNote, _index: number = -1) {
 		throw new Error('Cannot copy virtual')
 	}
 
-	public async move(target: MimerNote, index: number = -1) {
+	public async move(target: MimerNote, _index: number = -1) {
 		throw new Error('Cannot move virtual')
 	}
 

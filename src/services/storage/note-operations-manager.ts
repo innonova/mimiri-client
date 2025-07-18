@@ -83,7 +83,7 @@ export class NoteOperationsManager {
 				}
 			}
 			await parentNote.expand()
-			this.treeManager.getNoteById(note.id)?.select()
+			await this.treeManager.getNoteById(note.id)?.select()
 		} finally {
 			this.uiManager.endAction()
 		}
@@ -128,7 +128,7 @@ export class NoteOperationsManager {
 				await this.recursiveDelete(multiAction, mimerNote.id)
 			}
 			await multiAction.commit()
-			;(await this.treeManager.getNoteById(parent.id))?.select()
+			await (await this.treeManager.getNoteById(parent.id))?.select()
 		} finally {
 			this.uiManager.endAction()
 		}
@@ -152,7 +152,7 @@ export class NoteOperationsManager {
 
 			const targetMimerNote = await this.treeManager.getNoteById(targetId)
 			await targetMimerNote.expand()
-			;(await this.treeManager.getNoteById(newId))?.select()
+			await (await this.treeManager.getNoteById(newId))?.select()
 		} finally {
 			this.uiManager.endAction()
 		}
@@ -216,7 +216,7 @@ export class NoteOperationsManager {
 			const targetMimerNote = await this.treeManager.getNoteById(targetId)
 			await targetMimerNote.expand()
 			if (select) {
-				;(await this.treeManager.getNoteById(mimerNote.id))?.select()
+				await (await this.treeManager.getNoteById(mimerNote.id))?.select()
 			}
 		} finally {
 			this.uiManager.endAction()
@@ -306,7 +306,6 @@ export class NoteOperationsManager {
 			}
 			ancestor = ancestor.parent
 		}
-		const key = this.cryptoManager.getKeyByName(note.note.keyName)
 		const affectedNotes = await this.readFlatTree(note.id)
 		for (const subNote of affectedNotes) {
 			if (subNote.keyName !== note.note.keyName) {

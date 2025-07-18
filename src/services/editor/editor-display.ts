@@ -259,7 +259,7 @@ export class EditorDisplay implements TextEditor {
 	}
 
 	public clearSearchHighlights() {}
-	public setSearchHighlights(text: string) {}
+	public setSearchHighlights(_text: string) {}
 	public find() {}
 
 	public toggleWordWrap() {
@@ -286,7 +286,7 @@ export class EditorDisplay implements TextEditor {
 		}
 	}
 
-	public expandSelection(type: SelectionExpansion) {}
+	public expandSelection(_type: SelectionExpansion) {}
 
 	public focus() {}
 
@@ -306,7 +306,7 @@ export class EditorDisplay implements TextEditor {
 		} catch {}
 	}
 
-	public paste(text: string) {}
+	public paste(_text: string) {}
 
 	public get readonly() {
 		return true

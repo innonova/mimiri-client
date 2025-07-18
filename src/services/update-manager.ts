@@ -216,7 +216,7 @@ export class UpdateManager {
 									settingsManager.updateMode === UpdateMode.AutomaticOnStart
 								) {
 									if (allowUpdate) {
-										this.performAutomaticUpdate()
+										void this.performAutomaticUpdate()
 									}
 								} else if (
 									settingsManager.updateMode === UpdateMode.StrongNotify ||
@@ -258,7 +258,7 @@ export class UpdateManager {
 										settingsManager.updateMode === UpdateMode.AutomaticOnStart
 									) {
 										if (allowUpdate) {
-											this.performAutomaticUpdate()
+											void this.performAutomaticUpdate()
 										}
 									} else if (
 										settingsManager.updateMode === UpdateMode.StrongNotify ||
@@ -279,7 +279,7 @@ export class UpdateManager {
 									settingsManager.updateMode === UpdateMode.AutomaticOnStart
 								) {
 									if (allowUpdate) {
-										this.performAutomaticUpdate()
+										void this.performAutomaticUpdate()
 									}
 								} else if (
 									settingsManager.updateMode === UpdateMode.StrongNotify ||
@@ -299,7 +299,7 @@ export class UpdateManager {
 									settingsManager.updateMode === UpdateMode.AutomaticOnStart
 								) {
 									if (allowUpdate) {
-										this.performAutomaticUpdate()
+										void this.performAutomaticUpdate()
 									}
 								} else if (
 									settingsManager.updateMode === UpdateMode.StrongNotify ||
@@ -392,7 +392,7 @@ export class UpdateManager {
 				downloaded += value.length
 				if (status) {
 					if (!status({ total, downloaded, stage, error })) {
-						reader.cancel()
+						void reader.cancel()
 						return
 					}
 				}

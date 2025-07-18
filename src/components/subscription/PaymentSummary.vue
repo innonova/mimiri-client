@@ -36,7 +36,7 @@
 				class="mt-1"
 				type="checkbox"
 				data-testid="accept-terms"
-		></label>
+		/></label>
 		<label class="flex items-center mt-1.5 gap-2 justify-end"
 			>I have read and accept the <a href="https://mimiri.io/privacy" target="_blank">Privacy Policy</a
 			><input
@@ -46,25 +46,25 @@
 				class="mt-1"
 				type="checkbox"
 				data-testid="accept-privacy"
-		></label>
+		/></label>
 	</div>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-import type { Currency, SummaryItem } from '../../services/types/subscription'
-import ItemHeader from './ItemHeader.vue'
-import { calculateReverseVat, formatCurrency, vatRate } from '../../services/helpers'
+	import { computed } from 'vue'
+	import type { Currency, SummaryItem } from '../../services/types/subscription'
+	import ItemHeader from './ItemHeader.vue'
+	import { calculateReverseVat, formatCurrency, vatRate } from '../../services/helpers'
 
-const props = defineProps<{
-	items: SummaryItem[]
-	currency: Currency
-	countryCode: string
-	disabled?: boolean
-}>()
+	const props = defineProps<{
+		items: SummaryItem[]
+		currency: Currency
+		countryCode: string
+		disabled?: boolean
+	}>()
 
-const termsAccepted = defineModel('terms')
-const privacyAccepted = defineModel('privacy')
+	const termsAccepted = defineModel('terms')
+	const privacyAccepted = defineModel('privacy')
 
-const total = computed(() => props.items.map(item => item.price * item.quantity).reduce((p, n) => p + n, 0))
+	const total = computed(() => props.items.map(item => item.price * item.quantity).reduce((p, n) => p + n, 0))
 </script>

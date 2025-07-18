@@ -1,4 +1,3 @@
-import { MimerNote } from '../types/mimer-note'
 import { Note } from '../types/note'
 import { dateTimeNow } from '../types/date-time'
 import { browserHistory, debug, env, ipcClient, updateManager } from '../../global'
@@ -6,7 +5,7 @@ import type { AuthenticationManager } from './authentication-manager'
 import type { CryptographyManager } from './cryptography-manager'
 import type { NoteService } from './note-service'
 import type { NoteOperationsManager } from './note-operations-manager'
-import { AccountType, MimerError, type LocalState, type SharedState } from './type'
+import { AccountType, MimerError, type SharedState } from './type'
 import type { SynchronizationService } from './synchronization-service'
 import { Capacitor } from '@capacitor/core'
 import type { UIStateManager } from './ui-state-manager'
@@ -174,7 +173,7 @@ export class SessionManager {
 				await this.ensureCreateComplete()
 				await this.loadRootNote()
 				await this.treeManager.loadState()
-				updateManager.good()
+				await updateManager.good()
 			} else {
 				await this.logout()
 			}
@@ -201,7 +200,7 @@ export class SessionManager {
 						void this.goOnline(password)
 					}, 1000)
 				} else {
-					updateManager.good()
+					await updateManager.good()
 				}
 				this._listener?.login()
 				return true
@@ -213,11 +212,11 @@ export class SessionManager {
 		}
 	}
 
-	public async goOnline(password?: string): Promise<boolean> {
+	public async goOnline(_password?: string): Promise<boolean> {
 		this.uiManager.beginAction()
 		try {
 			const result = await this.authManager.goOnline()
-			updateManager.good()
+			await updateManager.good()
 			this._listener?.online()
 			return result
 		} catch (ex) {
@@ -240,7 +239,7 @@ export class SessionManager {
 				await this.ensureCreateComplete()
 				await this.loadRootNote()
 				await this.treeManager.loadState()
-				updateManager.good()
+				await updateManager.good()
 				this._listener?.login()
 				const localState = await this.db.getLocalState()
 				if (localState.firstLogin) {
@@ -297,8 +296,8 @@ export class SessionManager {
 
 	public async logout(): Promise<void> {
 		await this.authManager.logout()
-		this.api.logout()
-		this.localStateManager.logout()
+		await this.api.logout()
+		await this.localStateManager.logout()
 		this.cryptoManager.clearKeys()
 		this.state.clientConfig = { features: [] }
 		this.state.userStats = {

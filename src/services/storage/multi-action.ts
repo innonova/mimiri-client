@@ -40,7 +40,7 @@ export class MultiAction {
 			throw new Error('No actions to commit')
 		}
 		if (this._onlineOnly) {
-			const result = await this.api.multiAction(this.actions)
+			await this.api.multiAction(this.actions)
 			this.syncService.queueSync()
 		} else {
 			const result = await this.noteService.multiAction(this.actions)

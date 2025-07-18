@@ -15,7 +15,7 @@
 				class="mt-1.5 mr-1"
 				:disabled="disabled"
 				data-testid="payment-method-NEW"
-			>
+			/>
 			<div class="border shadow-sm px-3 pt-3 pb-4 w-80">Create new payment method</div></label
 		>
 		<template v-for="method of methods" :key="method.id">
@@ -28,13 +28,8 @@
 					class="mt-1.5 mr-1"
 					:disabled="disabled"
 					:data-testid="`payment-method-${method.name}`"
-				>
-				<PaymentMethodItem
-					:method="method"
-					:is-default="false"
-					:show-actions="false"
-					:disabled="disabled"
 				/>
+				<PaymentMethodItem :method="method" :is-default="false" :show-actions="false" :disabled="disabled" />
 				<!-- <div class="flex flex-col">
 					<div>
 						<img class="h-8" :src="`https://mimiri.payrexx.com/Frontend/Images/CardIcons/card_${method.brand}.svg`" />
@@ -45,31 +40,31 @@
 			</label>
 		</template>
 	</div>
-	<input type="hidden" data-testid="payment-methods-loaded" :value="loaded">
+	<input type="hidden" data-testid="payment-methods-loaded" :value="loaded" />
 </template>
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
-import type { PaymentMethod } from '../../services/types/subscription'
-import { noteManager } from '../../global'
-import ItemHeader from './ItemHeader.vue'
-import PaymentMethodItem from './PaymentMethodItem.vue'
+	import { onMounted, ref } from 'vue'
+	import type { PaymentMethod } from '../../services/types/subscription'
+	import { noteManager } from '../../global'
+	import ItemHeader from './ItemHeader.vue'
+	import PaymentMethodItem from './PaymentMethodItem.vue'
 
-const props = defineProps<{
-	disabled?: boolean
-}>()
+	defineProps<{
+		disabled?: boolean
+	}>()
 
-const model = defineModel()
-const methods = ref<PaymentMethod[]>()
-const loaded = ref(false)
+	const model = defineModel()
+	const methods = ref<PaymentMethod[]>()
+	const loaded = ref(false)
 
-onMounted(async () => {
-	const items = await noteManager.payment.getPaymentMethods()
-	methods.value = items
-	if (methods.value.length > 0) {
-		model.value = undefined
-	} else {
-		model.value = 'NEW'
-	}
-	loaded.value = true
-})
+	onMounted(async () => {
+		const items = await noteManager.payment.getPaymentMethods()
+		methods.value = items
+		if (methods.value.length > 0) {
+			model.value = undefined
+		} else {
+			model.value = 'NEW'
+		}
+		loaded.value = true
+	})
 </script>

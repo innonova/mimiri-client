@@ -73,7 +73,7 @@ export class NoteTreeManager {
 	public openNote(id?: Guid, mobileOpen = true) {
 		const note = id ? this.getNoteById(id) : this.selectedNote
 		if (note) {
-			note.select()
+			void note.select()
 			this.state.viewMode = ViewMode.Content
 			if (this._isMobile && mobileOpen) {
 				this.state.noteOpen = true
@@ -86,7 +86,7 @@ export class NoteTreeManager {
 	public openProperties(id?: Guid) {
 		const note = id ? this.getNoteById(id) : this.selectedNote
 		if (note) {
-			note.select()
+			void note.select()
 			this.state.viewMode = ViewMode.Properties
 			if (this._isMobile) {
 				this.state.noteOpen = true
@@ -120,7 +120,7 @@ export class NoteTreeManager {
 			while (selectedList.length > 0 && --maxIterations > 0) {
 				const note = this.getNoteById(selectedList.pop())
 				if (selectedList.length === 0) {
-					note?.select()
+					await note?.select()
 				}
 			}
 		}

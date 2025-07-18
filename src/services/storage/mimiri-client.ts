@@ -53,7 +53,6 @@ import { incrementalDelay } from '../helpers'
 import type { AuthenticationManager } from './authentication-manager'
 import { DEFAULT_PASSWORD_ALGORITHM, DEFAULT_SALT_SIZE } from './mimiri-store'
 import { SymmetricCrypt } from '../symmetric-crypt'
-import { toRaw } from 'vue'
 import type { LocalStateManager } from './local-state-manager'
 
 export class VersionConflictError extends Error {
@@ -124,7 +123,7 @@ export class MimiriClient extends HttpClientBase {
 			await this.post<BasicResponse>('/user/create', request, true)
 		} catch (ex) {
 			debug.logError('Failed to create user', ex)
-			this.logout()
+			await this.logout()
 			throw ex
 		}
 	}
@@ -493,7 +492,7 @@ export class MimiriClient extends HttpClientBase {
 		}
 	}
 
-	public async registerForChanges(callback: (changes: SyncInfo) => void): Promise<void> {
+	public async registerForChanges(_callback: (changes: SyncInfo) => void): Promise<void> {
 		// Implement logic to register for push notifications
 		throw new Error('Method not implemented.')
 	}
@@ -637,7 +636,7 @@ export class MimiriClient extends HttpClientBase {
 			debug.logError('Failed to connect for notifications', ex)
 			if (!this._websocketRequested) {
 				this._websocketRequested = true
-				incrementalDelay(attempt).then(() => {
+				void incrementalDelay(attempt).then(() => {
 					if (this._websocketRequested) {
 						void this.openWebSocket(attempt + 1)
 					}
@@ -670,9 +669,9 @@ export class MimiriClient extends HttpClientBase {
 			await this.localStateManager.workOffline()
 		}
 		if (this.state.workOffline) {
-			this.closeWebSocket()
+			await this.closeWebSocket()
 		} else {
-			this.openWebSocket()
+			await this.openWebSocket()
 		}
 	}
 }

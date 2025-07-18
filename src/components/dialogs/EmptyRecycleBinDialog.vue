@@ -18,25 +18,25 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { noteManager } from '../../global'
-import DialogTitle from '../elements/DialogTitle.vue'
-const dialog = ref(null)
+	import { ref } from 'vue'
+	import { noteManager } from '../../global'
+	import DialogTitle from '../elements/DialogTitle.vue'
+	const dialog = ref(null)
 
-const show = () => {
-	dialog.value.showModal()
-}
+	const show = () => {
+		dialog.value.showModal()
+	}
 
-const close = () => {
-	dialog.value.close()
-}
+	const close = () => {
+		dialog.value.close()
+	}
 
-const submitDialog = async () => {
-	await noteManager.tree.recycleBin().deleteChildren()
-	close()
-}
+	const submitDialog = async () => {
+		await noteManager.tree.recycleBin().deleteChildren()
+		close()
+	}
 
-defineExpose({
-	show,
-})
+	defineExpose({
+		show,
+	})
 </script>

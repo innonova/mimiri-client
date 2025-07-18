@@ -4,7 +4,7 @@
 		<div class="overflow-y-auto pb-10">
 			<div class="p-1">Permanently delete all items in the Recycle Bin</div>
 			<div class="mt-5 max-w-110 mr-2">
-				<hr>
+				<hr />
 				<div class="w-full flex justify-end mt-2 gap-2">
 					<button
 						:disabled="noteManager.tree.selectedNote()?.viewModel?.children.length === 0"
@@ -20,10 +20,10 @@
 </template>
 
 <script setup lang="ts">
-import { emptyRecycleBinDialog, noteManager } from '../../global'
-import TabBar from '../elements/TabBar.vue'
+	import { emptyRecycleBinDialog, noteManager } from '../../global'
+	import TabBar from '../elements/TabBar.vue'
 
-const empty = () => {
-	emptyRecycleBinDialog.value.show()
-}
+	const empty = () => {
+		emptyRecycleBinDialog.value.show()
+	}
 </script>

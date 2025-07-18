@@ -32,18 +32,19 @@
 		"vue/html-closing-bracket-newline": "off",
 		"vue/attributes-order": "off",
 		"vue/attribute-hyphenation": "off",
-		"@typescript-eslint/no-explicit-any": "warn",
+		"vue/html-self-closing": "off",
+		"@typescript-eslint/no-explicit-any": "off",
 		"@typescript-eslint/no-unused-vars": [
 			"warn",
 			{
-				"varsIgnorePattern": "^_+$",
-				"argsIgnorePattern": "^_+$"
+				"varsIgnorePattern": "^_",
+				"argsIgnorePattern": "^_"
 			}
 		],
 		"vue/no-unused-vars": [
 			"error",
 			{
-				"ignorePattern": "^_+$"
+				"ignorePattern": "^_"
 			}
 		],
 		"curly": "error",
