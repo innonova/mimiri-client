@@ -55,7 +55,6 @@ import PlusIcon from '../icons/plus.vue'
 import PlusSmallIcon from '../icons/plus-small.vue'
 import AnnouncementIcon from '../icons/announcement.vue'
 import { mimiriPlatform } from '../services/mimiri-platform'
-import { debug } from '../global'
 
 const props = defineProps<{
 	icon: string

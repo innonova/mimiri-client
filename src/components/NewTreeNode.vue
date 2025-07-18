@@ -46,7 +46,7 @@ const checkCancelEdit = e => {
 	}
 }
 
-const endEdit = async e => {
+const endEdit = async () => {
 	const name = nameInput.value?.value.trim()
 	if (name) {
 		if (createNewNode.value && noteManager.tree.selectedNote()) {

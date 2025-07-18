@@ -139,7 +139,7 @@ import CasualOnlyIcon from '../../icons/casual-only.vue'
 import LightSecurityIcon from '../../icons/light-security.vue'
 import TabBar from '../elements/TabBar.vue'
 
-const emit = defineEmits(['close'])
+// const emit = defineEmits(['close'])
 
 const passwordGenerator = ref(null)
 const generatedPassword = ref('')
@@ -184,11 +184,11 @@ watch(createdPassword, value => {
 		passwordQuality.value = ''
 	}
 })
-watch([createdPassword, createdPasswordRepeat], value => {
+watch([createdPassword, createdPasswordRepeat], () => {
 	createdPasswordMatch.value = createdPassword.value === createdPasswordRepeat.value
 })
 
-watch([generatedPassword, generatedPasswordRepeat], value => {
+watch([generatedPassword, generatedPasswordRepeat], () => {
 	generatedPasswordMatch.value = generatedPassword.value === generatedPasswordRepeat.value
 })
 
@@ -204,13 +204,13 @@ const hidePassword = () => {
 	passwordFieldType.value = 'password'
 }
 
-const tabGenerateClick = () => {
-	passwordMode.value = 'generate'
-}
+// const tabGenerateClick = () => {
+// 	passwordMode.value = 'generate'
+// }
 
-const tabCreateClick = () => {
-	passwordMode.value = 'create'
-}
+// const tabCreateClick = () => {
+// 	passwordMode.value = 'create'
+// }
 
 const tabSelected = item => {
 	if (item === 'Create') {
@@ -256,9 +256,5 @@ const save = () => {
 			return false
 		})
 	}
-}
-
-const close = () => {
-	emit('close')
 }
 </script>

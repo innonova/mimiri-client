@@ -286,21 +286,21 @@ export class MimiriTransaction {
 
 	public async setLocalNote(note: NoteData): Promise<void> {
 		this.actions.push(tx => {
-			tx.objectStore('note-local-store').put(note, `note-${note.id}`)
+			void tx.objectStore('note-local-store').put(note, `note-${note.id}`)
 		})
 		return Promise.resolve()
 	}
 
 	public async deleteLocalNote(id: Guid): Promise<void> {
 		this.actions.push(tx => {
-			tx.objectStore('note-local-store').delete(`note-${id}`)
+			void tx.objectStore('note-local-store').delete(`note-${id}`)
 		})
 		return Promise.resolve()
 	}
 
 	public async deleteRemoteNote(id: Guid): Promise<void> {
 		this.actions.push(tx => {
-			tx.objectStore('note-deleted-store').put(id, `note-${id}`)
+			void tx.objectStore('note-deleted-store').put(id, `note-${id}`)
 		})
 		return Promise.resolve()
 	}
@@ -312,6 +312,6 @@ export class MimiriTransaction {
 	public async commit() {
 		const tx = this.db.transaction(this.storeNames, 'readwrite')
 		this.actions.forEach(action => action(tx))
-		return tx.done
+		await tx.done
 	}
 }

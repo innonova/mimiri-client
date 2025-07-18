@@ -78,8 +78,6 @@ import { mimiriPlatform } from '../../services/mimiri-platform'
 import TabBar from '../elements/TabBar.vue'
 import { env } from '../../global'
 
-const emit = defineEmits(['close'])
-
 const darkMode = ref(false)
 const openAtLogin = ref(false)
 const showInTaskBar = ref(false)

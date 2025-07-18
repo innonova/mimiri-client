@@ -319,9 +319,9 @@ const update = async () => {
 	}
 	// running.value = false
 }
-const later = () => {
-	// showUpdate.value = false
-}
+// const later = () => {
+// showUpdate.value = false
+// }
 
 const restart = async () => {
 	await updateManager.use(version, true)

@@ -46,7 +46,7 @@ useEventListener(document, 'keypress', e => {
 			if (pin.value.length === 4) {
 				const pinCode = pin.value
 				pin.value = ''
-				localAuth.unlockWithPin(pinCode)
+				void localAuth.unlockWithPin(pinCode)
 			}
 		}
 	}

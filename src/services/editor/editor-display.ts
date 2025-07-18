@@ -269,7 +269,6 @@ export class EditorDisplay implements TextEditor {
 
 	public syncSettings() {
 		if (this._wordWrap !== settingsManager.wordwrap) {
-			const elm = this.historyShowing ? this._history : this._element
 			if (settingsManager.wordwrap) {
 				this._element.style.whiteSpace = 'pre-wrap'
 				this._history.style.whiteSpace = 'pre-wrap'

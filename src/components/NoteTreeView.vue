@@ -27,7 +27,6 @@ import { searchManager } from '../services/search-manager'
 
 const mainElement = ref(null)
 let stateLoaded = false
-const showNodes = ref(false)
 
 const noSearchResults = computed(
 	() =>
@@ -86,7 +85,7 @@ const pasteIntoActiveNote = async () => {
 		return
 	}
 	if (clipboardNote.value && note) {
-		note.expand()
+		await note.expand()
 		if (isCut.value) {
 			await clipboardNote.value.move(note)
 		} else {
@@ -111,7 +110,7 @@ const recycleActiveNote = () => {
 	if (note.isShareRoot) {
 		deleteNodeDialog.value.show()
 	} else {
-		note.moveToRecycleBin()
+		void note.moveToRecycleBin()
 	}
 }
 
@@ -143,13 +142,13 @@ const moveSelectionUp = () => {
 	if (note) {
 		if (note.index == 0) {
 			if (note.parent && !note.isTopLevel) {
-				note.parent.select()
+				void note.parent.select()
 			}
 		} else if (note.prevSibling) {
 			findBottomMostNode(note.prevSibling).select()
 		}
 	} else if (noteManager.tree.root().children.length > 0) {
-		noteManager.tree.root().children[0].select()
+		void noteManager.tree.root().children[0].select()
 	}
 }
 
@@ -158,13 +157,13 @@ const moveSelectionDown = () => {
 	if (note) {
 		if (note.expanded) {
 			if (note.children.length > 0) {
-				note.children[0].select()
+				void note.children[0].select()
 			}
 		} else {
 			findNextNodeDown(note)?.select()
 		}
 	} else if (noteManager.tree.root().children.length > 0) {
-		noteManager.tree.root().children[0].select()
+		void noteManager.tree.root().children[0].select()
 	}
 }
 
@@ -172,12 +171,12 @@ const moveSelectionLeft = () => {
 	const note = noteManager.tree.selectedNote()
 	if (note) {
 		if (note.expanded) {
-			note.collapse()
+			void note.collapse()
 		} else if (note.parent && !note.isTopLevel) {
-			note.parent.select()
+			void note.parent.select()
 		}
 	} else if (noteManager.tree.root().children.length > 0) {
-		noteManager.tree.root().children[0].select()
+		void noteManager.tree.root().children[0].select()
 	}
 }
 
@@ -186,13 +185,13 @@ const moveSelectionRight = () => {
 	if (note) {
 		if (note.expanded) {
 			if (note.children.length > 0) {
-				note.children[0].select()
+				void note.children[0].select()
 			}
 		} else {
-			note.expand()
+			void note.expand()
 		}
 	} else if (noteManager.tree.root().children.length > 0) {
-		noteManager.tree.root().children[0].select()
+		void noteManager.tree.root().children[0].select()
 	}
 }
 

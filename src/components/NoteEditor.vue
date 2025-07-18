@@ -192,7 +192,7 @@ const markAsPassword = () => {
 
 watch(historyVisible, (newVal, _) => {
 	if (newVal) {
-		checkLoadHistory()
+		void checkLoadHistory()
 	}
 })
 
@@ -201,7 +201,7 @@ useEventListener(window, 'focus', () => {
 })
 
 useEventListener(window, 'blur', () => {
-	save()
+	void save()
 	windowFocus.value = false
 })
 
@@ -238,7 +238,7 @@ onMounted(() => {
 		if (newVal?.selectedNoteId && newVal?.selectedNoteId !== activeViewModel?.id) {
 			historyVisible.value = false
 			mimiriEditor.clearSearchHighlights()
-			save().then(() => {
+			void save().then(() => {
 				setActiveViewModel(noteManager.tree.getViewModelById(newVal.selectedNoteId))
 				if (showSearchBox.value) {
 					mimiriEditor.setSearchHighlights(searchManager.state.term)
@@ -283,7 +283,7 @@ const find = () => {
 }
 
 const onBack = () => {
-	save()
+	void save()
 	mimiriEditor.mobileClosing()
 	window.history.back()
 	noteManager.ui.closeEditorIfMobile()
@@ -291,10 +291,10 @@ const onBack = () => {
 
 const saveClicked = async () => {
 	mimiriEditor.focus()
-	save()
+	void save()
 }
 
-const toggleWordWrap = event => {
+const toggleWordWrap = () => {
 	mimiriEditor.toggleWordWrap()
 	mimiriEditor.focus()
 }

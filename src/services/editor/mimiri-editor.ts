@@ -10,8 +10,6 @@ import { settingsManager } from '../settings-manager'
 import { clipboardManager, debug, noteManager, saveEmptyNodeDialog } from '../../global'
 import { VersionConflictError } from '../storage/mimiri-client'
 
-const delay = ms => new Promise(resolve => setTimeout(resolve, ms))
-
 export class MimiriEditor {
 	private _history = new NoteHistory(this)
 	private _note: MimerNote
@@ -224,7 +222,7 @@ export class MimiriEditor {
 					if (initialText !== note.text) {
 						result = 'lost-update'
 					}
-					const sizeBefore = note.size
+					// const sizeBefore = note.size
 					note.text = targetText
 					// const sizeAfter = note.size
 					// if (sizeAfter > noteManager.state.userStats.maxNoteBytes && noteManager.state.userStats.maxNoteBytes > 0) {

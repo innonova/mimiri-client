@@ -197,7 +197,7 @@ const checkSearch = e => {
 	}
 }
 
-const endEdit = e => {
+const endEdit = () => {
 	searchManager.updateTerm(searchInput.value.value)
 }
 

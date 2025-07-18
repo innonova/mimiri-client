@@ -22,7 +22,6 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { noteManager } from '../../global'
 import DialogTitle from '../elements/DialogTitle.vue'
 const dialog = ref(null)
 const text = ref('')

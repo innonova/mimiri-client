@@ -28,8 +28,6 @@ import { debug, noteManager, passwordDialog } from '../../global'
 import TabBar from '../elements/TabBar.vue'
 import { AccountType } from '../../services/storage/type'
 
-const emit = defineEmits(['close'])
-
 const canSave = ref(false)
 const username = ref('')
 

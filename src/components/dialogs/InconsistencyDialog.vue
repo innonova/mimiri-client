@@ -22,7 +22,7 @@
 import { ref } from 'vue'
 import DialogTitle from '../elements/DialogTitle.vue'
 const dialog = ref(null)
-const text = ref('')
+// const text = ref('')
 
 const show = () => {
 	dialog.value.showModal()

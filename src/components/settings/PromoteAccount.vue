@@ -152,7 +152,7 @@ import type { Guid } from '../../services/types/guid'
 import TabBar from '../elements/TabBar.vue'
 import { DEFAULT_ITERATIONS } from '../../services/storage/mimiri-store'
 
-const disallowString = '!"#$:%&@\'()*/=?[]{}~^`'
+// const disallowString = '!"#$:%&@\'()*/=?[]{}~^`'
 const disallowRegex = /[!"#$:%&@'()*/=?[\]{}~\^\\`\s]/
 
 const password = ref('')
@@ -171,8 +171,6 @@ const time1M = computed(() => `~${passwordTimeFactor.time1M}s`)
 const time2M = computed(() => `~${passwordTimeFactor.time2M}s`)
 const time10M = computed(() => `~${passwordTimeFactor.time10M}s`)
 const time20M = computed(() => `~${passwordTimeFactor.time20M}s`)
-
-const emit = defineEmits(['create'])
 
 const usernameValid = ref(false)
 let newUsername = ''
@@ -201,7 +199,7 @@ watch(password, value => {
 	}
 })
 
-watch(passwordRepeat, value => {
+watch(passwordRepeat, () => {
 	checkPasswordMatch()
 })
 

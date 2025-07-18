@@ -20,7 +20,7 @@ import { noteManager } from '../../global'
 
 const titleBar = ref(null)
 
-const props = defineProps<{
+defineProps<{
 	disabled?: boolean
 }>()
 

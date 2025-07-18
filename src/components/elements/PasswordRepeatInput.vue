@@ -30,9 +30,9 @@ const props = defineProps<{
 
 const passwordMatch = defineModel<boolean>('match')
 const passwordRepeat = ref('')
-const pwKeyDown = event => {}
+const pwKeyDown = () => {}
 
-watch([passwordRepeat, props], value => {
+watch([passwordRepeat, props], () => {
 	checkPasswordMatch()
 })
 

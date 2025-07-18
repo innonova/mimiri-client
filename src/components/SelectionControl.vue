@@ -40,7 +40,7 @@ const menuVisibility = ref('hidden')
 const toolbarVisibility = ref('hidden')
 
 if (!mimiriPlatform.isDesktop) {
-	visualViewport.addEventListener('resize', e => {
+	visualViewport.addEventListener('resize', () => {
 		const isPortrait = window.innerHeight > window.innerWidth
 		const viewPortHeight = visualViewport.height * visualViewport.scale
 		const screenHeight =
@@ -96,7 +96,7 @@ const copy = () => {
 
 const paste = () => {
 	menuVisibility.value = 'hidden'
-	mimiriEditor.paste()
+	void mimiriEditor.paste()
 }
 
 const menu = () => {

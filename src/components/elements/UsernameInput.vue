@@ -35,7 +35,7 @@ import AvailableIcon from '../../icons/available.vue'
 import UnavailableIcon from '../../icons/unavailable.vue'
 import { AccountType } from '../../services/storage/type'
 
-const disallowString = '!"#$:%&@\'()*/=?[]{}~^`'
+// const disallowString = '!"#$:%&@\'()*/=?[]{}~^`'
 const disallowRegex = /[!"#$:%&@'()*/=?[\]{}~\^\\`\s]/
 
 const props = defineProps<{

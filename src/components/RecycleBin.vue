@@ -78,10 +78,8 @@ import PlusIcon from '../icons/plus.vue'
 import MinusIcon from '../icons/minus.vue'
 import OpenIcon from '../icons/open.vue'
 import { MenuItems, menuManager } from '../services/menu-manager'
-import { de } from 'date-fns/locale'
 
 const visualElement = ref(null)
-const renameInput = ref(null)
 const indicatorTop = ref('0px')
 const indicatorVisible = ref(false)
 let dragOver = 0
@@ -135,7 +133,7 @@ const onDragOver = event => {
 		if (id !== props.node.id) {
 			event.preventDefault()
 			const height = visualElement.value.offsetHeight
-			const top = height / 3
+			// const top = height / 3
 			const bottom = (2 * height) / 3
 
 			if (event.offsetY > bottom) {
@@ -185,7 +183,7 @@ const toggleNode = async e => {
 	if (hasChildren.value && !searchModeActive.value) {
 		if (!props.node.expanded) {
 			const note = noteManager.tree.getNoteById(props.node.id)
-			note.expand()
+			void note.expand()
 		} else {
 			const note = noteManager.tree.getNoteById(props.node.id)
 			note.collapse()

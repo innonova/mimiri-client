@@ -100,7 +100,7 @@ const save = () => {
 	inputEnabled = false
 	passwordDialog.value.show(
 		() => {
-			localAuth.setPin(pin.value)
+			void localAuth.setPin(pin.value)
 			inputEnabled = true
 			changed.value = false
 		},

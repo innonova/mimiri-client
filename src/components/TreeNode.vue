@@ -230,7 +230,7 @@ const onDrop = async event => {
 		if (target < 0) {
 			await note.move(dropNote.parent, dropNote.index)
 		} else if (target === 0) {
-			dropNote.expand()
+			await dropNote.expand()
 			await note.move(dropNote)
 		} else {
 			await note.move(dropNote.parent, dropNote.index + 1)
@@ -300,7 +300,7 @@ const toggleNode = async e => {
 	if (hasChildren.value && !searchModeActive.value) {
 		if (!props.node.expanded) {
 			const note = noteManager.tree.getNoteById(props.node.id)
-			note.expand()
+			void note.expand()
 		} else {
 			const note = noteManager.tree.getNoteById(props.node.id)
 			note.collapse()

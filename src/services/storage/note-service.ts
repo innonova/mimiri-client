@@ -5,7 +5,6 @@ import type { NoteData, SharedState } from './type'
 import type { CryptographyManager } from './cryptography-manager'
 import type { MimiriDb } from './mimiri-db'
 import type { MimiriClient } from './mimiri-client'
-import { de } from 'date-fns/locale'
 import type { LocalStateManager } from './local-state-manager'
 
 export class NoteService {
@@ -65,7 +64,7 @@ export class NoteService {
 		})
 	}
 
-	public async readNote(id: Guid, base?: Note): Promise<Note> {
+	public async readNote(id: Guid): Promise<Note> {
 		if (!this.state.isLoggedIn) {
 			throw new Error('Not Logged in')
 		}
@@ -134,15 +133,13 @@ export class NoteService {
 			items: [],
 		}
 		const keySet = await this.cryptoManager.getKeyByName(note.keyName)
-		let deltaSize = 0
 		for (const item of note.items) {
 			if (item.changed) {
 				const data = await keySet.symmetric.encrypt(JSON.stringify(item.data))
-				deltaSize += data.length - item.size
 				action.items.push({
 					version: item.version,
 					type: item.type,
-					data: await keySet.symmetric.encrypt(JSON.stringify(item.data)),
+					data,
 				})
 			}
 		}
@@ -157,10 +154,8 @@ export class NoteService {
 			items: [],
 		}
 		const keySet = await this.cryptoManager.getKeyByName(note.keyName)
-		let totalSize = 0
 		for (const item of note.items) {
 			const data = await keySet.symmetric.encrypt(JSON.stringify(item.data))
-			totalSize += data.length
 			action.items.push({
 				version: 0,
 				type: item.type,
@@ -193,8 +188,6 @@ export class NoteService {
 	public async multiAction(actions: NoteAction[]): Promise<Guid[]> {
 		let deltaSize = 0
 		let deltaNoteCount = 0
-		let localNoteCount = 0
-		let localSize = 0
 		return this.db.syncLock.withLock('multiAction', async () => {
 			const transaction = await this.db.beginTransaction()
 			try {
@@ -227,8 +220,6 @@ export class NoteService {
 						note.size = note.items.reduce((sum, item) => sum + item.size, 0)
 						deltaSize += note.size
 						deltaNoteCount += 1
-						localSize += note.size
-						localNoteCount += 1
 						await transaction.setLocalNote(note)
 					} else if (action.type === NoteActionType.Update) {
 						let note = await transaction.getLocalNote(action.id)
@@ -273,10 +264,6 @@ export class NoteService {
 						note.size = note.items.reduce((sum, item) => sum + item.size, 0)
 						if (!local) {
 							note.base = await transaction.getNote(note.id)
-							localNoteCount += 1
-							localSize += note.size
-						} else {
-							localSize += note.size - sizeBefore
 						}
 						deltaSize += note.size - sizeBefore
 						await transaction.setLocalNote(note)
@@ -291,6 +278,7 @@ export class NoteService {
 					}
 				}
 				await transaction.commit()
+				// TODO does this size logic work?
 				this.state.userStats.localSizeDelta += deltaSize
 				this.state.userStats.localNoteCountDelta += deltaNoteCount
 				for (const noteId of updatedNoteIds) {

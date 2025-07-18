@@ -115,13 +115,13 @@ const accountClick = () => {
 	])
 }
 
-const createChildNote = () => {
+const createChildNote = async () => {
 	if (settingsManager.lastNoteCreateType === 'sibling') {
 		if (noteManager.tree.selectedNote().parent.isRoot) {
 			noteManager.ui.newRootNote()
 			return
 		}
-		noteManager.tree.selectedNote().parent.select()
+		await noteManager.tree.selectedNote().parent.select()
 	}
 	noteManager.ui.newNote()
 }

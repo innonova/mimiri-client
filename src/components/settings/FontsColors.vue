@@ -69,8 +69,6 @@ import { settingsManager } from '../../services/settings-manager'
 import TabBar from '../elements/TabBar.vue'
 import { fontManager } from '../../global'
 
-const emit = defineEmits(['close'])
-
 const editorFontFamily = ref('')
 const customFontFamily = ref('')
 const editorFontSize = ref(14)

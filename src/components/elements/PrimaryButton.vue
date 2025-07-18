@@ -12,9 +12,9 @@
 <script setup lang="ts">
 import LoadingIcon from '../../icons/loading.vue'
 
-const emit = defineEmits(['click'])
+defineEmits(['click'])
 
-const props = defineProps<{
+defineProps<{
 	enabled: boolean
 	loading: boolean
 }>()

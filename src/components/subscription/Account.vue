@@ -37,7 +37,4 @@ onMounted(() => {
 const save = async () => {
 	await customerElement.value.save()
 }
-const cancel = async () => {
-	await customerElement.value.cancel()
-}
 </script>

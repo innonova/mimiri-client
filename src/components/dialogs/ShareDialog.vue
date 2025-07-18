@@ -71,7 +71,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { ref } from 'vue'
 import { clipboardManager, features, noteManager } from '../../global'
 import LoadingIcon from '../../icons/loading.vue'
 import DialogTitle from '../elements/DialogTitle.vue'
@@ -90,8 +90,8 @@ const loading = ref(false)
 
 const codeEnabled = features.includes('share-code')
 
-const hasSelectedNode = computed(() => !!noteManager.state.selectedNoteId)
-const parentName = computed(() => noteManager.tree.selectedViewModel()?.title)
+// const hasSelectedNode = computed(() => !!noteManager.state.selectedNoteId)
+// const parentName = computed(() => noteManager.tree.selectedViewModel()?.title)
 
 const copyCode = () => {
 	clipboardManager.write(code.value)

@@ -105,8 +105,6 @@ import { formatBytes } from '../../services/helpers'
 
 const SYSTEM_NOTE_COUNT = 3
 
-const dialog = ref(null)
-
 const usedBytes = ref('0 MB')
 const maxBytes = ref('10 MB')
 const localUsedBytes = ref('0 MB')
@@ -134,14 +132,6 @@ const biCif = value => {
 const formatDate = (date: Date) => {
 	const result = `${date.getFullYear()}.${biCif(date.getMonth() + 1)}.${biCif(date.getDate())}`
 	return result
-}
-
-const toMB = bytes => {
-	const mb = bytes / 1024 / 1024
-	if (mb < 0.1) {
-		return `${Math.round(1000 * mb) / 1000} MB`
-	}
-	return `${Math.round(100 * mb) / 100} MB`
 }
 
 const toPercent = (used, max) => {

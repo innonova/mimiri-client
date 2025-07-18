@@ -452,14 +452,14 @@ watchEffect(async () => {
 		breachLikelyHood.value = calculateLikelyHood(complexity.value.hmacYear, 10)
 		targetedLikelyHood.value = calculateLikelyHood(complexity.value.hmacYear, 100000)
 	}
-	generator.generate().then(pwd => {
+	void generator.generate().then(pwd => {
 		password.value = pwd
 		emit('password', pwd, iterations.value)
 	})
 })
 
 const regeneratePassword = () => {
-	generator.generate().then(pwd => {
+	void generator.generate().then(pwd => {
 		password.value = pwd
 		emit('password', pwd, iterations.value)
 	})

@@ -19,7 +19,7 @@ import { ref, watch } from 'vue'
 import type { Country } from '../../services/types/subscription'
 import { noteManager } from '../../global'
 const selectElement = ref<HTMLSelectElement>(undefined!)
-const props = defineProps<{
+defineProps<{
 	disabled?: boolean
 }>()
 const code = defineModel('code')

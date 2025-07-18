@@ -27,7 +27,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
-import { Currency, Period, type Invoice, type SubscriptionProduct } from '../../services/types/subscription'
+import { Period, type SubscriptionProduct } from '../../services/types/subscription'
 import { blockUserInput, noteManager } from '../../global'
 import UsernameInput from '../elements/UsernameInput.vue'
 import PasswordInput from '../elements/PasswordInput.vue'
@@ -48,13 +48,6 @@ const usernameValid = ref(false)
 const password = ref('')
 const passwordMatch = ref(false)
 
-const invoice = ref<Invoice>({
-	data: {
-		items: [],
-	},
-	currency: Currency.CHF,
-} as any)
-
 const canCreate = computed(() => {
 	const mode = createMode.value
 	let result = !!password.value
@@ -63,8 +56,6 @@ const canCreate = computed(() => {
 	result &&= usernameValid.value || mode === 'local'
 	return result
 })
-
-const emit = defineEmits(['choose'])
 
 const createAccount = async () => {
 	loading.value = true

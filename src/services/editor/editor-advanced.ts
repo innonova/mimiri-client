@@ -3,7 +3,6 @@ import { SelectionExpansion, type EditorState, type TextEditor, type TextEditorL
 import { settingsManager } from '../settings-manager'
 import { mimiriPlatform } from '../mimiri-platform'
 import { Debounce } from '../helpers'
-import { reactive } from 'vue'
 
 export class EditorAdvanced implements TextEditor {
 	// private backgroundEditor: editor.IStandaloneCodeEditor
@@ -184,7 +183,7 @@ export class EditorAdvanced implements TextEditor {
 			}
 		})
 
-		this.monacoEditorModel.onDidChangeContent(event => {
+		this.monacoEditorModel.onDidChangeContent(() => {
 			if (this._active) {
 				this._text = this.monacoEditorModel.getValue()
 				this._state.canUndo = (this.monacoEditorModel as any).canUndo()
@@ -309,7 +308,7 @@ export class EditorAdvanced implements TextEditor {
 			this.updateAbilities()
 		})
 
-		this.monacoEditor.onDidBlurEditorText(e => {
+		this.monacoEditor.onDidBlurEditorText(() => {
 			if (!this.historyShowing) {
 				this.listener.onEditorBlur()
 			}
