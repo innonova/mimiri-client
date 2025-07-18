@@ -13,7 +13,8 @@ import {
 	type MergeableTextItem,
 } from './conflict-resolver'
 import type { NoteTreeManager } from './note-tree-manager'
-import { inconsistencyDialog } from '../../global'
+import { inconsistencyDialog, syncStatus } from '../../global'
+import type { LocalStateManager } from './local-state-manager'
 
 export class SynchronizationService {
 	private _conflictResolver: ConflictResolver = new ConflictResolver()
@@ -22,6 +23,7 @@ export class SynchronizationService {
 	private _baseDelayMs = 1000 // 1 second base delay
 	private _maxDelayMs = 300000 // 5 minutes max delay
 	private _waitingForSync: ((success: boolean) => void)[] = []
+	private _initializing: boolean = false
 	private _initialized: boolean = false
 	private _issuedSyncIds: string[] = []
 
@@ -29,26 +31,34 @@ export class SynchronizationService {
 		private db: MimiriDb,
 		private api: MimiriClient,
 		private cryptoManager: CryptographyManager,
+		private localStateManager: LocalStateManager,
 		private state: SharedState,
 		private treeManager: NoteTreeManager,
 		private noteUpdatedCallback: (noteId: Guid) => Promise<void>,
 	) {}
 
+	private get canSync(): boolean {
+		return this.state.isOnline && !this.state.workOffline && this.state.accountType === AccountType.Cloud
+	}
+
 	public async initialSync(): Promise<void> {
 		if (!this.state.workOffline && this.state.accountType === AccountType.Cloud) {
-			await this.syncPull()
-			this._initialized = true
+			if (!this._initializing) {
+				this._initializing = true
+				try {
+					await this.syncPull()
+					this._initialized = true
+				} finally {
+					this._initializing = false
+				}
+			}
+		} else {
+			console.log('SynchronizationService.initialSync() skipped due to work offline or local account type')
 		}
 	}
 
 	public async sync(shouldCheckConsistency: boolean = false) {
-		if (
-			!this._initialized ||
-			!this.state.isOnline ||
-			this.state.workOffline ||
-			this.state.accountType === AccountType.Local ||
-			this.state.accountType === AccountType.None
-		) {
+		if (!this._initialized || !this.canSync) {
 			return
 		}
 		if (!this._syncInProgress) {
@@ -105,15 +115,21 @@ export class SynchronizationService {
 	}
 
 	public queueSync(shouldCheckConsistency: boolean = false): void {
-		console.log('SynchronizationService.queueSync() called')
-
-		if (
-			!this._initialized ||
-			!this.state.isLoggedIn ||
-			!this.state.isOnline ||
-			this.state.accountType === AccountType.Local ||
-			this.state.accountType === AccountType.None
-		) {
+		console.log('SynchronizationService.queueSync() called', this._initialized, this.canSync)
+		if (!this._initialized && this.canSync) {
+			void this.initialSync().then(() => {
+				void this.sync(shouldCheckConsistency)
+			})
+			return
+		}
+		if (!this._initialized || !this.canSync) {
+			console.log(
+				'SynchronizationService.queueSync() ignored',
+				this._initialized,
+				this.state.isLoggedIn,
+				this.state.isOnline,
+				this.state.accountType,
+			)
 			return
 		}
 		void this.sync(shouldCheckConsistency)
@@ -132,7 +148,7 @@ export class SynchronizationService {
 			return Promise.resolve(true)
 		} else {
 			return new Promise<boolean>(resolve => {
-				let timeoutId: any
+				let timeoutId: NodeJS.Timeout | undefined
 
 				const wrappedResolve = (success: boolean) => {
 					cleanup()
@@ -162,19 +178,20 @@ export class SynchronizationService {
 	}
 
 	private async syncPull(pushUpdates: boolean = false): Promise<{ noteChanges: boolean; keyChanges: boolean }> {
+		syncStatus.value = 'retrieving-changes'
 		let noteChanges = false
 		let keyChanges = false
 		const lastSync = await this.db.getLastSync()
 
 		let nextNoteSync = lastSync?.lastNoteSync ?? 0
 		let nextKeySync = lastSync?.lastKeySync ?? 0
-		console.log('SynchronizationService.syncPull() called', nextNoteSync, nextKeySync)
 		let changes = await this.api.getChangesSince(nextNoteSync, nextKeySync)
-
-		console.log('Synchronization changes:', changes)
 
 		this.state.userStats.size = +changes.size
 		this.state.userStats.noteCount = +changes.noteCount
+		this.state.userStats.maxTotalBytes = +changes.maxTotalBytes
+		this.state.userStats.maxNoteBytes = +changes.maxNoteBytes
+		this.state.userStats.maxNoteCount = +changes.maxNoteCount
 
 		const updatedNoteIds: Guid[] = []
 
@@ -189,7 +206,7 @@ export class SynchronizationService {
 							syncChanged = true
 						}
 						const data = JSON.parse(key.data) as KeyData
-						this.db.setKey({
+						await this.db.setKey({
 							id: key.id,
 							userId: data.userId,
 							name: key.name,
@@ -215,7 +232,7 @@ export class SynchronizationService {
 							nextNoteSync = +note.sync
 							syncChanged = true
 						}
-						this.db.setNote({
+						await this.db.setNote({
 							id: note.id,
 							keyName: note.keyName,
 							modified: note.modified,
@@ -243,12 +260,14 @@ export class SynchronizationService {
 			await this.db.setLastSync(nextNoteSync, nextKeySync)
 			changes = await this.api.getChangesSince(nextNoteSync, nextKeySync)
 		}
+
 		if (pushUpdates) {
 			for (const noteId of updatedNoteIds) {
 				console.log(`Note ${noteId} updated during sync pull`)
 				await this.noteUpdatedCallback(noteId)
 			}
 		}
+		syncStatus.value = 'idle'
 		return { noteChanges, keyChanges }
 	}
 
@@ -373,8 +392,28 @@ export class SynchronizationService {
 		return keySet.symmetric.encrypt(data)
 	}
 
+	private isSizeAllowedOnServer(): boolean {
+		return this.state.userStats.size + this.state.userStats.localSizeDelta <= this.state.userStats.maxTotalBytes
+	}
+
+	private isCountAllowedOnServer(): boolean {
+		return (
+			this.state.userStats.noteCount + this.state.userStats.localNoteCountDelta <= this.state.userStats.maxNoteCount
+		)
+	}
+
 	private async syncPush(): Promise<boolean> {
 		console.log('SynchronizationService.syncPush() called')
+		syncStatus.value = 'sending-changes'
+		if (!this.isSizeAllowedOnServer()) {
+			syncStatus.value = 'total-size-limit-exceeded'
+			return false
+		}
+
+		if (!this.isCountAllowedOnServer()) {
+			syncStatus.value = 'count-limit-exceeded'
+			return false
+		}
 
 		const noteActions: NoteSyncAction[] = []
 		const keyActions: KeySyncAction[] = []
@@ -422,10 +461,15 @@ export class SynchronizationService {
 							mergedItem.version === 0 ||
 							localItemData !== (await this.decryptNoteItemData(remoteNote.keyName, remoteItem))
 						) {
+							const data = await this.encryptData(targetKeyName, localItemData)
+							if (data.length > this.state.userStats.maxNoteBytes) {
+								syncStatus.value = 'note-size-limit-exceeded'
+								return false
+							}
 							action.items.push({
 								version: mergedItem.version,
 								type: mergedItem.type,
-								data: await this.encryptData(targetKeyName, localItemData),
+								data,
 							})
 						}
 					}
@@ -433,7 +477,7 @@ export class SynchronizationService {
 						noteActions.push(action)
 					} else {
 						// local note is identical to remote note, delete local note
-						this.db.deleteLocalNote(mergedNote.id)
+						await this.db.deleteLocalNote(mergedNote.id)
 					}
 				} else {
 					if (localNote.base) {
@@ -446,10 +490,15 @@ export class SynchronizationService {
 						items: [],
 					}
 					for (const item of localNote.items) {
+						const data = await this.cryptoManager.tryReencryptNoteItemDataFromLocal(item, localNote.keyName)
+						if (data.length > this.state.userStats.maxNoteBytes) {
+							syncStatus.value = 'note-size-limit-exceeded'
+							return false
+						}
 						action.items.push({
 							version: 0,
 							type: item.type,
-							data: await this.cryptoManager.tryReencryptNoteItemDataFromLocal(item, localNote.keyName),
+							data,
 						})
 					}
 					if (action.items.length > 0) {
@@ -524,12 +573,14 @@ export class SynchronizationService {
 		}
 
 		if (noteActions.length === 0 && keyActions.length === 0) {
+			syncStatus.value = 'idle'
 			return true
 		}
 
 		const status = await this.api.syncPushChanges(noteActions, keyActions, syncId)
 
 		if (status !== 'success') {
+			syncStatus.value = 'error'
 			return false
 		}
 
@@ -571,6 +622,10 @@ export class SynchronizationService {
 		this.state.userStats.localNoteCountDelta -= localNoteCountDelta
 		this.state.userStats.localSize -= localSize
 		this.state.userStats.localNoteCount -= localNoteCount
+
+		await this.localStateManager.updateLocalSizeData()
+
+		syncStatus.value = 'idle'
 
 		console.log('SynchronizationService.syncPush() completed successfully')
 
@@ -704,7 +759,7 @@ export class SynchronizationService {
 					}
 				}
 				if (addedItems) {
-					this.treeManager.recycleBin.save()
+					await this.treeManager.recycleBin.save()
 					correctedIssues = true
 				}
 			}

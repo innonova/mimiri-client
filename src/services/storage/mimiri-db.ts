@@ -34,6 +34,11 @@ export class MimiriDb {
 		}
 	}
 
+	public async exists(username: string) {
+		const actualDbName = await this.getDbName(username)
+		return actualDbName !== undefined
+	}
+
 	public async open(username: string) {
 		this.logicalName = username
 		const actualDbName = await this.getDbName(this.logicalName)
@@ -141,6 +146,10 @@ export class MimiriDb {
 		return this.db.get('user-store', 'local-user-data')
 	}
 
+	public async deleteLocalUserData(): Promise<void> {
+		return this.db.delete('user-store', 'local-user-data')
+	}
+
 	public async setLocalData(data: LocalData): Promise<void> {
 		await this.db.put('user-store', data, 'local-data')
 	}
@@ -167,14 +176,6 @@ export class MimiriDb {
 
 	public async deleteInitializationData(): Promise<void> {
 		return this.db.delete('user-store', 'initialization-data')
-	}
-
-	public async setUserData(userData: any): Promise<void> {
-		await this.db.put('user-store', userData, 'user-data')
-	}
-
-	public async getUserData(): Promise<any | undefined> {
-		return this.db.get('user-store', 'user-data')
 	}
 
 	public async setNote(note: NoteData): Promise<void> {

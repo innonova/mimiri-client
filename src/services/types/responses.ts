@@ -34,21 +34,21 @@ export interface LoginResponse {
 	symmetricKey: string
 	data: string
 	config: string
-	size: number
-	noteCount: number
-	maxTotalBytes: number
-	maxNoteBytes: number
-	maxNoteCount: number
+	size: string
+	noteCount: string
+	maxTotalBytes: string
+	maxNoteBytes: string
+	maxNoteCount: string
 }
 
 export interface UserDataResponse {
 	data: string
 	config: string
-	size: number
-	noteCount: number
-	maxTotalBytes: number
-	maxNoteBytes: number
-	maxNoteCount: number
+	size: string
+	noteCount: string
+	maxTotalBytes: string
+	maxNoteBytes: string
+	maxNoteCount: string
 }
 
 export interface PreLoginResponse {
@@ -129,8 +129,11 @@ export interface SyncResponse {
 	keys: any[]
 	notes: any[]
 	deletedNotes: Guid[]
-	noteCount: number
-	size: number
+	noteCount: string
+	size: string
+	maxTotalBytes: string
+	maxNoteBytes: string
+	maxNoteCount: string
 }
 
 export interface SyncPushResponse {

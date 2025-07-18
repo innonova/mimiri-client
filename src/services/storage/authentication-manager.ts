@@ -11,6 +11,7 @@ import type { CryptographyManager } from './cryptography-manager'
 import { deObfuscate, incrementalDelay, obfuscate } from '../helpers'
 import { DEFAULT_ITERATIONS, DEFAULT_PASSWORD_ALGORITHM, DEFAULT_PROOF_BITS, DEFAULT_SALT_SIZE } from './mimiri-store'
 import { ProofOfWork } from '../proof-of-work'
+import type { LocalStateManager } from './local-state-manager'
 
 export class AuthenticationManager {
 	private _userData: any
@@ -22,6 +23,7 @@ export class AuthenticationManager {
 		private db: MimiriDb,
 		private api: MimiriClient,
 		private cryptoManager: CryptographyManager,
+		private localStateManager: LocalStateManager,
 		private state: SharedState,
 		private logOutCallback: () => Promise<void>,
 		private loginCallback: (username: string, password: string) => Promise<void>,
@@ -169,7 +171,11 @@ export class AuthenticationManager {
 					loginData.rootSignature.privateKey,
 				)
 
+				if (!(await this.db.exists(this.state.username))) {
+					return false
+				}
 				await this.db.open(this.state.username)
+				await this.localStateManager.login()
 				const initializationData = await this.db.getInitializationData()
 				if (!initializationData) {
 					return false
@@ -285,8 +291,8 @@ export class AuthenticationManager {
 		await this.api.createAccount(username, newPassword, initializationData, pow)
 		await this.cryptoManager.reencryptLocalCrypt()
 		await this.db.renameDatabase(username)
+		await this.db.deleteLocalUserData()
 		await this.db.deleteInitializationData()
-		this.state.workOffline = false
 		this.state.accountType = AccountType.Cloud
 	}
 
@@ -336,10 +342,12 @@ export class AuthenticationManager {
 		await this.db.setInitializationData(initializationData)
 		await this.cryptoManager.reencryptLocalCrypt()
 		await this.db.renameDatabase(username)
+		await this.db.deleteLocalUserData()
 	}
 
 	public async login(username: string, password: string): Promise<boolean> {
 		await this.db.open(username)
+		await this.localStateManager.login()
 		let localInitializationData = true
 		let initializationData = await this.db.getInitializationData()
 		if (!initializationData?.local) {
@@ -408,29 +416,28 @@ export class AuthenticationManager {
 
 	public async openLocal() {
 		await this.db.open('local')
+		await this.localStateManager.login()
 		const initializationData = await this.db.getLocalUserData()
 		if (!initializationData) {
 			this.cryptoManager.rootCrypt = await SymmetricCrypt.create(SymmetricCrypt.DEFAULT_SYMMETRIC_ALGORITHM)
+			this._userData = {
+				rootNote: newGuid(),
+				rootKey: newGuid(),
+				createComplete: false,
+			}
 			await this.db.setLocalUserData({
 				rootCrypt: {
 					algorithm: this.cryptoManager.rootCrypt.algorithm,
 					key: await obfuscate(await this.cryptoManager.rootCrypt.getKeyString()),
 				},
+				userData: this._userData,
 			})
 		} else {
 			this.cryptoManager.rootCrypt = await SymmetricCrypt.fromKeyString(
 				initializationData.rootCrypt.algorithm,
 				await deObfuscate(initializationData.rootCrypt.key),
 			)
-		}
-		this._userData = await this.db.getUserData()
-		if (!this._userData) {
-			this._userData = {
-				rootNote: newGuid(),
-				rootKey: newGuid(),
-				createComplete: false,
-			}
-			await this.db.setUserData(this._userData)
+			this._userData = initializationData.userData
 		}
 		this.state.accountType = AccountType.None
 		this.state.username = 'local'
@@ -466,9 +473,20 @@ export class AuthenticationManager {
 
 	public async updateUserData(): Promise<void> {
 		if (this.state.accountType === AccountType.None) {
-			return this.db.setUserData(this._userData)
+			const localUserData = await this.db.getLocalUserData()
+			localUserData.userData = this._userData
+			await this.db.setLocalUserData(localUserData)
+		} else if (this.state.accountType === AccountType.Local) {
+			const initializationData = await this.db.getInitializationData()
+			if (!initializationData) {
+				throw new Error('No initialization data found for local account')
+			}
+			initializationData.userData = await this.cryptoManager.rootCrypt.encrypt(JSON.stringify(this._userData))
+			await this.db.setInitializationData(initializationData)
+		} else if (this.state.accountType === AccountType.Cloud) {
+			const data = await this.cryptoManager.rootCrypt.encrypt(JSON.stringify(this._userData))
+			await this.api.updateUserData(data)
 		}
-		// TODO this seems like we need to update user data on the server too
 	}
 
 	public async signRequest(request: any): Promise<any> {

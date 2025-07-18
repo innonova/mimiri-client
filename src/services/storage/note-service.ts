@@ -6,12 +6,14 @@ import type { CryptographyManager } from './cryptography-manager'
 import type { MimiriDb } from './mimiri-db'
 import type { MimiriClient } from './mimiri-client'
 import { de } from 'date-fns/locale'
+import type { LocalStateManager } from './local-state-manager'
 
 export class NoteService {
 	constructor(
 		private db: MimiriDb,
 		private api: MimiriClient,
 		private cryptoManager: CryptographyManager,
+		private localStateManager: LocalStateManager,
 		private state: SharedState,
 		private noteUpdatedCallback: (noteId: Guid) => Promise<void>,
 	) {}
@@ -57,6 +59,7 @@ export class NoteService {
 			this.state.userStats.localNoteCountDelta += remoteNote || localNote ? 0 : 1
 			this.state.userStats.localSize += noteData.size - (localNote?.size ?? 0)
 			this.state.userStats.localNoteCount += localNote ? 0 : 1
+			await this.localStateManager.updateLocalSizeData()
 			await this.db.setLocalNote(noteData)
 			await this.noteUpdatedCallback(note.id)
 		})

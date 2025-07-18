@@ -716,7 +716,7 @@ export class NoteManager {
 				await this.client.writeNote(note.note)
 			} catch (err) {
 				if (err instanceof VersionConflictError) {
-					// TODO: Handle version conflict
+					// Handle version conflict
 				}
 				debug.logError('Failed to save note', err)
 				throw err

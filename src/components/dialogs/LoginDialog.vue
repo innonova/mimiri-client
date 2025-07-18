@@ -83,10 +83,12 @@ const show = (initial: boolean = false) => {
 }
 
 const cancel = async () => {
+	loading.value = true
 	if (!noteManager.state.isLoggedIn) {
 		await noteManager.session.openLocal()
 	}
 	showVersion.value = false
+	loading.value = false
 	dialog.value.close()
 }
 

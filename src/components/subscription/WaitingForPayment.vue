@@ -70,7 +70,7 @@ const check = async () => {
 		}
 	}
 	await new Promise(resolve => setTimeout(resolve, 250))
-	if (running && props.invoiceId) {
+	if (running.value && props.invoiceId) {
 		status.value = 'Waiting...'
 		nextCheck()
 	}

@@ -18,6 +18,7 @@ import { UIStateManager } from './ui-state-manager'
 import { NoteTreeManager, type ActionListener } from './note-tree-manager'
 import { NoteOperationsManager } from './note-operations-manager'
 import { SessionManager, type LoginListener } from './session-manager'
+import { LocalStateManager } from './local-state-manager'
 
 export const DEFAULT_PROOF_BITS = 15
 export const DEFAULT_ITERATIONS = 1000000
@@ -29,6 +30,7 @@ export class MimiriStore {
 	public ignoreFirstWALError: boolean = false
 	public state: SharedState
 
+	private localStateManager: LocalStateManager
 	private authManager: AuthenticationManager
 	private cryptoManager: CryptographyManager
 	private syncService: SynchronizationService
@@ -97,37 +99,47 @@ export class MimiriStore {
 		)
 
 		this.db = new MimiriDb()
+		this.localStateManager = new LocalStateManager(this.db, this.state)
 		this.cryptoManager = new CryptographyManager(this.db, this.state)
-		this.api = new MimiriClient(host, serverKeyId, serverKey, this.state, this.cryptoManager, (type, payload) => {
-			switch (type) {
-				case 'connected':
-					void updateManager.check()
-					void blogManager.refreshAll()
-					this.syncService.queueSync(true)
-					break
-				case 'sync':
-					if (!this.syncService.isSyncIdIssued(payload)) {
-						this.syncService.queueSync()
-					}
-					break
-				case 'bundle-update':
-					void updateManager.check()
-					break
-				case 'blog-post':
-					void blogManager.refreshAll()
-					break
-				case 'reconnected':
-					void updateManager.check()
-					void blogManager.refreshAll()
-					this.syncService.queueSync(true)
-					break
-			}
-		})
+		this.api = new MimiriClient(
+			host,
+			serverKeyId,
+			serverKey,
+			this.state,
+			this.cryptoManager,
+			this.localStateManager,
+			(type, payload) => {
+				switch (type) {
+					case 'connected':
+						void updateManager.check()
+						void blogManager.refreshAll()
+						this.syncService.queueSync(true)
+						break
+					case 'sync':
+						if (!this.syncService.isSyncIdIssued(payload)) {
+							this.syncService.queueSync()
+						}
+						break
+					case 'bundle-update':
+						void updateManager.check()
+						break
+					case 'blog-post':
+						void blogManager.refreshAll()
+						break
+					case 'reconnected':
+						void updateManager.check()
+						void blogManager.refreshAll()
+						this.syncService.queueSync(true)
+						break
+				}
+			},
+		)
 
 		this.authManager = new AuthenticationManager(
 			this.db,
 			this.api,
 			this.cryptoManager,
+			this.localStateManager,
 			this.state,
 			async () => {
 				await this.sessionManager.logout()
@@ -136,10 +148,17 @@ export class MimiriStore {
 				await this.sessionManager.login(username, password)
 			},
 		)
-		this.noteService = new NoteService(this.db, this.api, this.cryptoManager, this.state, async (noteId: Guid) => {
-			const note = await this.noteService.readNote(noteId)
-			await noteUpdatedCallback(note)
-		})
+		this.noteService = new NoteService(
+			this.db,
+			this.api,
+			this.cryptoManager,
+			this.localStateManager,
+			this.state,
+			async (noteId: Guid) => {
+				const note = await this.noteService.readNote(noteId)
+				await noteUpdatedCallback(note)
+			},
+		)
 
 		this.uiManager = new UIStateManager(this.state)
 		this.treeManager = new NoteTreeManager(this, this.state, this.noteService, this.authManager)
@@ -148,6 +167,7 @@ export class MimiriStore {
 			this.db,
 			this.api,
 			this.cryptoManager,
+			this.localStateManager,
 			this.state,
 			this.treeManager,
 			async (noteId: Guid) => {
@@ -174,6 +194,7 @@ export class MimiriStore {
 			this.syncService,
 			this.uiManager,
 			this.treeManager,
+			this.localStateManager,
 			this.api,
 			this.db,
 		)
@@ -247,8 +268,6 @@ export class MimiriStore {
 		toggleWorkOffline: () => {
 			this.api.toggleWorkOffline()
 		},
-		setLocalState: (state: LocalState) => this.sessionManager.setLocalState(state),
-		getLocalState: (): Promise<LocalState> => this.sessionManager.getLocalState(),
 	}
 
 	public readonly auth = {

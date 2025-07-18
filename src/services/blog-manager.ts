@@ -49,13 +49,19 @@ export class BlogManager {
 	}
 
 	public async addComment(postId: Guid, username: string, comment: string): Promise<void> {
-		if (settingsManager.disableDevBlog) return
+		if (settingsManager.disableDevBlog) {
+			return
+		}
 		await this.noteManager.feedback.addComment(postId, username, comment)
 	}
 
 	public async initialize(): Promise<boolean> {
-		if (settingsManager.disableDevBlog) return false
-		if (this.state.isInitialized) return false
+		if (settingsManager.disableDevBlog) {
+			return false
+		}
+		if (this.state.isInitialized) {
+			return false
+		}
 
 		await this.updateLatestBlogPost()
 		this.state.isInitialized = true
@@ -95,7 +101,9 @@ export class BlogManager {
 	}
 
 	public async refreshAll(): Promise<void> {
-		if (settingsManager.disableDevBlog) return
+		if (settingsManager.disableDevBlog) {
+			return
+		}
 		if (!(await this.initialize())) {
 			await this.updateLatestBlogPost()
 		}

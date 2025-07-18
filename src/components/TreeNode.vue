@@ -213,7 +213,7 @@ const searchModeActive = computed(() => {
 
 const startDrag = event => {
 	event.stopPropagation()
-	if (noteManager.state.isOnline && !props.node.isSystem) {
+	if (!props.node.isSystem) {
 		event.dataTransfer.dropEffect = 'move'
 		event.dataTransfer.effectAllowed = 'move'
 		dragId.value = props.node.id

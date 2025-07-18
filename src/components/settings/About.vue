@@ -8,10 +8,16 @@
 					Host Version: {{ mimiriPlatform.isWeb ? browserName : updateManager.hostVersion }}
 				</div>
 				<div class="p-1 pl-4 pt-2">Released: {{ formatDate(updateManager.releaseDate) }}</div>
-				<div class="p-1 pl-4 pt-6">Notes: {{ noteCount }} / {{ maxNoteCount }} ({{ notesPercent }})</div>
-				<div class="p-1 pl-4 pt-2">Space Used: {{ usedBytes }} / {{ maxBytes }} ({{ bytesPercent }})</div>
-				<div class="p-1 pl-4 pt-2">Unsynced Notes: {{ localNoteCount }}</div>
-				<div class="p-1 pl-4 pt-2">Unsynced Data: {{ localUsedBytes }}</div>
+				<template v-if="maxNoteCount > 0">
+					<div class="p-1 pl-4 pt-6">Notes: {{ noteCount }} / {{ maxNoteCount }} ({{ notesPercent }})</div>
+					<div class="p-1 pl-4 pt-2">Space Used: {{ usedBytes }} / {{ maxBytes }} ({{ bytesPercent }})</div>
+					<div class="p-1 pl-4 pt-2">Unsynced Notes: {{ localNoteCount }}</div>
+					<div class="p-1 pl-4 pt-2">Unsynced Data: {{ localUsedBytes }}</div>
+				</template>
+				<template v-else>
+					<div class="p-1 pl-4 pt-6">Notes: {{ noteCount }}</div>
+					<div class="p-1 pl-4 pt-2">Space Used: {{ usedBytes }}</div>
+				</template>
 				<div class="p-1 pl-4 pt-6">
 					Account:
 					<span
@@ -178,22 +184,22 @@ onMounted(() => {
 })
 
 let clickCount = 0
-let firstClick = Date.now() - 60000
+let firstClick = Date.now() - 2000
 const boxClicked = () => {
-	if (Date.now() - firstClick > 60000) {
+	if (Date.now() - firstClick > 2000) {
 		clickCount = 0
 		firstClick = Date.now()
 	}
 	if (++clickCount >= 10) {
 		clickCount = 0
-		firstClick = Date.now() - 60000
+		firstClick = Date.now() - 2000
 		showLog.value = true
 	}
 }
 
 const resetBoxClicks = () => {
 	clickCount = 0
-	firstClick = Date.now() - 60000
+	firstClick = Date.now() - 2000
 }
 
 const reload = () => {

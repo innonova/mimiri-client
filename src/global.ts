@@ -60,6 +60,7 @@ export const createNewRootNode = ref(false)
 export const searchInput = ref(null)
 export const appStatus = ref<string | null>('initializing')
 export const inconsistencyDialog = ref(null)
+export const syncStatus = ref('idle')
 
 export const blockUserInput = ref(false)
 

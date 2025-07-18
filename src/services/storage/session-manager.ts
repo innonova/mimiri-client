@@ -13,6 +13,7 @@ import type { UIStateManager } from './ui-state-manager'
 import type { NoteTreeManager } from './note-tree-manager'
 import type { MimiriClient } from './mimiri-client'
 import type { MimiriDb } from './mimiri-db'
+import type { LocalStateManager } from './local-state-manager'
 
 export interface LoginListener {
 	login()
@@ -31,6 +32,7 @@ export class SessionManager {
 		private syncService: SynchronizationService,
 		private uiManager: UIStateManager,
 		private treeManager: NoteTreeManager,
+		private localStateManager: LocalStateManager,
 		private api: MimiriClient,
 		private db: MimiriDb,
 	) {}
@@ -240,13 +242,13 @@ export class SessionManager {
 				await this.treeManager.loadState()
 				updateManager.good()
 				this._listener?.login()
-				const localState = await this.getLocalState()
+				const localState = await this.db.getLocalState()
 				if (localState.firstLogin) {
 					await this.treeManager.controlPanel.expand()
 					await this.treeManager.gettingStarted?.expand()
 					await this.treeManager.gettingStarted?.select()
 					localState.firstLogin = false
-					await this.setLocalState(localState)
+					await this.db.setLocalState(localState)
 				}
 				return true
 			} else {
@@ -293,23 +295,10 @@ export class SessionManager {
 		await this.login(username, password)
 	}
 
-	public async getLocalState(): Promise<LocalState> {
-		let localState = await this.db.getLocalState()
-		if (!localState) {
-			localState = {
-				firstLogin: true,
-			}
-		}
-		return localState
-	}
-
-	public async setLocalState(state: LocalState): Promise<void> {
-		await this.db.setLocalState(state)
-	}
-
 	public async logout(): Promise<void> {
 		await this.authManager.logout()
 		this.api.logout()
+		this.localStateManager.logout()
 		this.cryptoManager.clearKeys()
 		this.state.clientConfig = { features: [] }
 		this.state.userStats = {

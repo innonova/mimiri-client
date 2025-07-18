@@ -24,6 +24,7 @@ import type {
 	ShareParticipantsRequest,
 	SyncPushRequest,
 	SyncRequest,
+	UpdateUserDataRequest,
 	UpdateUserRequest,
 } from '../types/requests'
 import type {
@@ -52,6 +53,8 @@ import { incrementalDelay } from '../helpers'
 import type { AuthenticationManager } from './authentication-manager'
 import { DEFAULT_PASSWORD_ALGORITHM, DEFAULT_SALT_SIZE } from './mimiri-store'
 import { SymmetricCrypt } from '../symmetric-crypt'
+import { toRaw } from 'vue'
+import type { LocalStateManager } from './local-state-manager'
 
 export class VersionConflictError extends Error {
 	constructor(public conflicts: VersionConflict[]) {
@@ -71,6 +74,7 @@ export class MimiriClient extends HttpClientBase {
 		serverKey: string,
 		state: SharedState,
 		private cryptoManager: CryptographyManager,
+		private localStateManager: LocalStateManager,
 		private notificationsCallback: (type: string, payload: any) => void,
 	) {
 		super(host, serverKeyId, state, serverKey)
@@ -220,15 +224,20 @@ export class MimiriClient extends HttpClientBase {
 			requestId: newGuid(),
 			signatures: [],
 		}
+		console.log('Verifying credentials for', this.state.username)
+
 		await this._authManager.signRequest(getDataRequest)
 		try {
 			const response = await this.post<UserDataResponse>(`/user/get-data`, getDataRequest)
+
 			this.state.clientConfig = JSON.parse(response.config ?? '{}') as ClientConfig
-			// this.state.userStats.size = +response.size
-			// this.state.userStats.noteCount = +response.noteCount
+
+			this.state.userStats.size = +response.size
+			this.state.userStats.noteCount = +response.noteCount
 			this.state.userStats.maxTotalBytes = +response.maxTotalBytes
 			this.state.userStats.maxNoteBytes = +response.maxNoteBytes
 			this.state.userStats.maxNoteCount = +response.maxNoteCount
+
 			await this.openWebSocket()
 			return response.data
 		} catch (ex) {
@@ -237,6 +246,18 @@ export class MimiriClient extends HttpClientBase {
 			}
 			throw ex
 		}
+	}
+
+	public async updateUserData(data: string) {
+		const request: UpdateUserDataRequest = {
+			username: this.state.username,
+			data,
+			timestamp: dateTimeNow(),
+			requestId: newGuid(),
+			signatures: [],
+		}
+		await this._authManager.signRequest(request)
+		await this.post<BasicResponse>('/user/update-data', request)
 	}
 
 	public async changeUserNameAndPassword(
@@ -345,8 +366,11 @@ export class MimiriClient extends HttpClientBase {
 			keys: response.keys,
 			notes: response.notes,
 			deletedNotes: response.deletedNotes,
-			noteCount: response.noteCount,
-			size: response.size,
+			noteCount: +response.noteCount,
+			size: +response.size,
+			maxTotalBytes: +response.maxTotalBytes,
+			maxNoteBytes: +response.maxNoteBytes,
+			maxNoteCount: +response.maxNoteCount,
 		}
 	}
 
@@ -639,8 +663,12 @@ export class MimiriClient extends HttpClientBase {
 		await this.closeWebSocket()
 	}
 
-	toggleWorkOffline() {
-		this.state.workOffline = !this.state.workOffline
+	public async toggleWorkOffline() {
+		if (this.state.workOffline) {
+			await this.localStateManager.workOnline()
+		} else {
+			await this.localStateManager.workOffline()
+		}
 		if (this.state.workOffline) {
 			this.closeWebSocket()
 		} else {

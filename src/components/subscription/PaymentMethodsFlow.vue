@@ -16,7 +16,7 @@ import WaitingForPayment from './WaitingForPayment.vue'
 import { onMounted, ref } from 'vue'
 import PaymentMethods from './PaymentMethods.vue'
 
-let pageAfterPay = 'methods'
+const pageAfterPay = 'methods'
 const selectedId = ref('methods')
 const waitingForUser = ref<boolean>(false)
 const payLink = ref('')

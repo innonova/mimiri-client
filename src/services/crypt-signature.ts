@@ -33,7 +33,7 @@ export class CryptSignature {
 		if (algorithm !== 'RSA;3072' && algorithm !== 'RSA;4096') {
 			throw new Error(`Algorithm not supported ${algorithm}`)
 		}
-		let key = await crypto.subtle.generateKey(
+		const key = await crypto.subtle.generateKey(
 			{
 				name: 'RSASSA-PKCS1-v1_5',
 				modulusLength: parseInt(algorithm.split(';')[1]),

@@ -8,7 +8,7 @@
 			'bg-back text-text': mimiriPlatform.isElectron,
 		}"
 	>
-		<div id="title-bar" class="w-full h-[36px] pl-px select-none drag"></div>
+		<div id="title-bar" class="w-full h-[36px] pl-px select-none drag" />
 		<div v-if="secondPassed" class="flex flex-col items-center justify-center h-full pb-10">
 			<img v-if="!mimiriPlatform.isElectron" class="ml-1.5 mr-1 mt-px p-1 w-32 h-32" src="/img/logo-big.png" />
 			<div class="flex text-size-header">
@@ -21,18 +21,21 @@
 		</div>
 	</div>
 	<div v-if="!loading" class="flex flex-col h-full bg-back text-text dark-mode safe-area-padding text-size-base">
-		<TitleBar ref="titleBar"></TitleBar>
-		<ConvertAccount v-if="showConvertAccount"></ConvertAccount>
+		<TitleBar ref="titleBar" />
+		<ConvertAccount v-if="showConvertAccount" />
 		<div v-show="!localAuth.locked" class="flex h-full overflow-hidden" @mouseup="endDragging">
 			<div
 				class="h-full overflow-y-hidden flex flex-col w-full divider-left"
 				:class="{ 'hidden desktop:flex': !showNavigation }"
 			>
-				<MainToolbar ref="mainToolbar"></MainToolbar>
-				<SearchBox v-show="showSearchBox"></SearchBox>
-				<NoteTreeView ref="noteTreeView"></NoteTreeView>
+				<MainToolbar ref="mainToolbar" />
+				<SearchBox v-show="showSearchBox" />
+				<NoteTreeView ref="noteTreeView" />
+				<div class="ml-2 mb-2 mt-1">
+					<span data-testid="sync-status">{{ noteManager.state.isOnline ? syncStatus : 'Offline' }}</span>
+				</div>
 			</div>
-			<div class="w-2.5 min-w-2.5 bg-toolbar cursor-ew-resize hidden desktop:block" @mousedown="startDragging"></div>
+			<div class="w-2.5 min-w-2.5 bg-toolbar cursor-ew-resize hidden desktop:block" @mousedown="startDragging" />
 			<div class="h-full flex flex-col w-full divider-right" :class="{ 'hidden desktop:flex': !showEditor }">
 				<div
 					v-show="
@@ -41,7 +44,7 @@
 					"
 					class="h-full flex flex-col flex-1"
 				>
-					<NoteEditor ref="noteEditor"></NoteEditor>
+					<NoteEditor ref="noteEditor" />
 				</div>
 				<div
 					v-if="
@@ -50,7 +53,7 @@
 					"
 					class="h-full flex flex-col flex-1"
 				>
-					<SystemPage></SystemPage>
+					<SystemPage />
 				</div>
 				<div
 					v-if="
@@ -58,7 +61,7 @@
 					"
 					class="h-full flex flex-col flex-1"
 				>
-					<PropertiesPage></PropertiesPage>
+					<PropertiesPage />
 				</div>
 			</div>
 		</div>
@@ -66,30 +69,30 @@
 			v-if="authenticated && localAuth.locked"
 			class="absolute left-0 top-0 w-full h-full flex bg-back items-center justify-center"
 		>
-			<LockScreen></LockScreen>
+			<LockScreen />
 		</div>
-		<div v-if="blockUserInput" class="absolute left-0 top-0 w-full h-full flex bg-transparent"></div>
-		<ContextMenu ref="contextMenu"></ContextMenu>
-		<NotificationList ref="notificationList"></NotificationList>
-		<DeleteNodeDialog ref="deleteNodeDialog"></DeleteNodeDialog>
-		<DeleteHistoryDialog ref="deleteHistoryDialog"></DeleteHistoryDialog>
-		<DeleteMethodDialog ref="deletePaymentMethodDialog"></DeleteMethodDialog>
-		<EmptyRecycleBinDialog ref="emptyRecycleBinDialog"></EmptyRecycleBinDialog>
-		<PasswordGeneratorDialog ref="passwordGeneratorDialog"></PasswordGeneratorDialog>
-		<ShareDialog ref="shareDialog"></ShareDialog>
-		<AcceptShareDialog ref="acceptShareDialog"></AcceptShareDialog>
-		<SaveEmptyNodeDialog ref="saveEmptyNodeDialog"></SaveEmptyNodeDialog>
-		<LimitDialog ref="limitDialog"></LimitDialog>
-		<PasswordDialog ref="passwordDialog"></PasswordDialog>
-		<LoginDialog ref="loginDialog"></LoginDialog>
-		<InfoDialog ref="infoDialog"></InfoDialog>
-		<InconsistencyDialog ref="inconsistencyDialog"></InconsistencyDialog>
+		<div v-if="blockUserInput" class="absolute left-0 top-0 w-full h-full flex bg-transparent" />
+		<ContextMenu ref="contextMenu" />
+		<NotificationList ref="notificationList" />
+		<DeleteNodeDialog ref="deleteNodeDialog" />
+		<DeleteHistoryDialog ref="deleteHistoryDialog" />
+		<DeleteMethodDialog ref="deletePaymentMethodDialog" />
+		<EmptyRecycleBinDialog ref="emptyRecycleBinDialog" />
+		<PasswordGeneratorDialog ref="passwordGeneratorDialog" />
+		<ShareDialog ref="shareDialog" />
+		<AcceptShareDialog ref="acceptShareDialog" />
+		<SaveEmptyNodeDialog ref="saveEmptyNodeDialog" />
+		<LimitDialog ref="limitDialog" />
+		<PasswordDialog ref="passwordDialog" />
+		<LoginDialog ref="loginDialog" />
+		<InfoDialog ref="infoDialog" />
+		<InconsistencyDialog ref="inconsistencyDialog" />
 		<div
 			v-if="noteManager.state.busy"
 			class="absolute left-0 top-0 w-full h-full flex items-center justify-around text-white"
 			:class="{ 'bg-backdrop': noteManager.state.busyLong }"
 		>
-			<LoadingIcon v-if="noteManager.state.spinner" class="animate-spin w-12 h-12"></LoadingIcon>
+			<LoadingIcon v-if="noteManager.state.spinner" class="animate-spin w-12 h-12" />
 		</div>
 	</div>
 </template>
@@ -144,6 +147,7 @@ import {
 	blockUserInput,
 	appStatus,
 	inconsistencyDialog,
+	syncStatus,
 } from './global'
 import { settingsManager } from './services/settings-manager'
 import LoadingIcon from './icons/loading.vue'
@@ -184,7 +188,7 @@ document.documentElement.setAttribute('data-device-type', noteManager.state.isMo
 const updateTheme = () => {
 	document.documentElement.setAttribute('data-theme', settingsManager.darkMode ? 'dark' : 'light')
 	colorScheme.value = settingsManager.darkMode ? 'only dark' : 'only light'
-	var root = document.querySelector(':root') as HTMLElement
+	const root = document.querySelector(':root') as HTMLElement
 	root.style.setProperty(
 		'--font-editor',
 		`'${settingsManager.editorFontFamily}', 'Consolas', 'Courier New', 'monospace'`,
@@ -245,7 +249,7 @@ const handleShortcut = event => {
 		event.stopPropagation()
 	}
 	if (
-		!authenticated ||
+		!authenticated.value ||
 		localAuth.locked ||
 		showCreateAccount.value ||
 		noteManager.tree.selectedNote()?.id === 'settings-pin'

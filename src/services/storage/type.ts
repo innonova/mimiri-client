@@ -100,12 +100,22 @@ export interface LocalData {
 
 export interface LocalState {
 	firstLogin: boolean
+	workOffline: boolean
+	sizeDelta: number
+	noteCountDelta: number
+	size: number
+	noteCount: number
 }
 
 export interface LocalUserData {
 	rootCrypt: {
 		algorithm: string
 		key: string
+	}
+	userData: {
+		rootNote: Guid
+		rootKey: Guid
+		createComplete: boolean
 	}
 }
 
@@ -179,6 +189,9 @@ export interface SyncInfo {
 	deletedNotes: Guid[]
 	noteCount: number
 	size: number
+	maxTotalBytes: number
+	maxNoteBytes: number
+	maxNoteCount: number
 }
 
 export class MimerError extends Error {
