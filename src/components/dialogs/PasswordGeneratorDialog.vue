@@ -33,50 +33,50 @@
 </template>
 
 <script setup lang="ts">
-	import { onMounted, ref } from 'vue'
-	import PasswordGeneratorComp from '../elements/PasswordGenerator.vue'
-	import ShowPasswordIcon from '../../icons/show-password.vue'
-	import ShowingPasswordIcon from '../../icons/showing-password.vue'
-	import { clipboardManager } from '../../global'
-	import DialogTitle from '../elements/DialogTitle.vue'
-	import RefreshIcon from '../../icons/refresh.vue'
+import { onMounted, ref } from 'vue'
+import PasswordGeneratorComp from '../elements/PasswordGenerator.vue'
+import ShowPasswordIcon from '../../icons/show-password.vue'
+import ShowingPasswordIcon from '../../icons/showing-password.vue'
+import { clipboardManager } from '../../global'
+import DialogTitle from '../elements/DialogTitle.vue'
+import RefreshIcon from '../../icons/refresh.vue'
 
-	const passwordGenerator = ref(null)
-	const password = ref('')
-	const dialog = ref(null)
-	const passwordFieldType = ref('password')
+const passwordGenerator = ref(null)
+const password = ref('')
+const dialog = ref(null)
+const passwordFieldType = ref('password')
 
-	onMounted(() => {})
+onMounted(() => {})
 
-	const onPasswordGenerated = pwd => {
-		password.value = pwd
-	}
+const onPasswordGenerated = pwd => {
+	password.value = pwd
+}
 
-	const copyPassword = () => {
-		clipboardManager.write(password.value)
-	}
+const copyPassword = () => {
+	clipboardManager.write(password.value)
+}
 
-	const regeneratePassword = () => {
-		passwordGenerator.value.regeneratePassword()
-	}
+const regeneratePassword = () => {
+	passwordGenerator.value.regeneratePassword()
+}
 
-	const showPassword = () => {
-		passwordFieldType.value = 'text'
-	}
+const showPassword = () => {
+	passwordFieldType.value = 'text'
+}
 
-	const hidePassword = () => {
-		passwordFieldType.value = 'password'
-	}
+const hidePassword = () => {
+	passwordFieldType.value = 'password'
+}
 
-	const show = () => {
-		dialog.value.showModal()
-	}
+const show = () => {
+	dialog.value.showModal()
+}
 
-	const close = () => {
-		dialog.value.close()
-	}
+const close = () => {
+	dialog.value.close()
+}
 
-	defineExpose({
-		show,
-	})
+defineExpose({
+	show,
+})
 </script>

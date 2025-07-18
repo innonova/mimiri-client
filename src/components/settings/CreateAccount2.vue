@@ -26,78 +26,78 @@
 </template>
 
 <script setup lang="ts">
-	import { computed, onMounted, ref } from 'vue'
-	import { Currency, Period, type Invoice, type SubscriptionProduct } from '../../services/types/subscription'
-	import { blockUserInput, noteManager } from '../../global'
-	import UsernameInput from '../elements/UsernameInput.vue'
-	import PasswordInput from '../elements/PasswordInput.vue'
-	import PasswordRepeatInput from '../elements/PasswordRepeatInput.vue'
-	import PrimaryButton from '../elements/PrimaryButton.vue'
-	import TabBar from '../elements/TabBar.vue'
-	import ItemHeader from '../subscription/ItemHeader.vue'
-	import { DEFAULT_ITERATIONS } from '../../services/storage/mimiri-store'
+import { computed, onMounted, ref } from 'vue'
+import { Currency, Period, type Invoice, type SubscriptionProduct } from '../../services/types/subscription'
+import { blockUserInput, noteManager } from '../../global'
+import UsernameInput from '../elements/UsernameInput.vue'
+import PasswordInput from '../elements/PasswordInput.vue'
+import PasswordRepeatInput from '../elements/PasswordRepeatInput.vue'
+import PrimaryButton from '../elements/PrimaryButton.vue'
+import TabBar from '../elements/TabBar.vue'
+import ItemHeader from '../subscription/ItemHeader.vue'
+import { DEFAULT_ITERATIONS } from '../../services/storage/mimiri-store'
 
-	const period = ref(Period.Year)
-	const products = ref<SubscriptionProduct[]>([])
-	const loading = ref(false)
-	const createMode = ref('cloud')
-	const stage = ref('create-account')
-	const tabBarItems = ref(['Cloud Account', 'Local Account'])
-	const username = ref('')
-	const usernameValid = ref(false)
-	const password = ref('')
-	const passwordMatch = ref(false)
+const period = ref(Period.Year)
+const products = ref<SubscriptionProduct[]>([])
+const loading = ref(false)
+const createMode = ref('cloud')
+const stage = ref('create-account')
+const tabBarItems = ref(['Cloud Account', 'Local Account'])
+const username = ref('')
+const usernameValid = ref(false)
+const password = ref('')
+const passwordMatch = ref(false)
 
-	const invoice = ref<Invoice>({
-		data: {
-			items: [],
-		},
-		currency: Currency.CHF,
-	} as any)
+const invoice = ref<Invoice>({
+	data: {
+		items: [],
+	},
+	currency: Currency.CHF,
+} as any)
 
-	const canCreate = computed(() => {
-		const mode = createMode.value
-		let result = !!password.value
-		result &&= passwordMatch.value
-		result &&= !!username.value
-		result &&= usernameValid.value || mode === 'local'
-		return result
-	})
+const canCreate = computed(() => {
+	const mode = createMode.value
+	let result = !!password.value
+	result &&= passwordMatch.value
+	result &&= !!username.value
+	result &&= usernameValid.value || mode === 'local'
+	return result
+})
 
-	const emit = defineEmits(['choose'])
+const emit = defineEmits(['choose'])
 
-	const createAccount = async () => {
-		loading.value = true
-		blockUserInput.value = true
-		try {
-			if (createMode.value === 'cloud') {
-				await noteManager.session.promoteToCloudAccount(username.value, '', password.value, DEFAULT_ITERATIONS)
-			} else {
-				await noteManager.session.promoteToLocalAccount(username.value, password.value, DEFAULT_ITERATIONS)
-			}
-		} catch (error) {
-			console.error('Error creating account:', error)
-		} finally {
-			blockUserInput.value = false
-			loading.value = false
-		}
-	}
-
-	const populate = async () => {
-		products.value = (await noteManager.payment.getSubscriptionProducts()).filter(
-			prod => prod.data.period === period.value || prod.sku === 'free',
-		)
-	}
-
-	const tabSelected = item => {
-		if (item === 'Cloud Account') {
-			createMode.value = 'cloud'
+const createAccount = async () => {
+	loading.value = true
+	blockUserInput.value = true
+	try {
+		if (createMode.value === 'cloud') {
+			await noteManager.session.promoteToCloudAccount(username.value, '', password.value, DEFAULT_ITERATIONS)
 		} else {
-			createMode.value = 'local'
+			await noteManager.session.promoteToLocalAccount(username.value, password.value, DEFAULT_ITERATIONS)
 		}
+	} catch (error) {
+		console.error('Error creating account:', error)
+	} finally {
+		blockUserInput.value = false
+		loading.value = false
 	}
+}
 
-	onMounted(async () => {
-		await populate()
-	})
+const populate = async () => {
+	products.value = (await noteManager.payment.getSubscriptionProducts()).filter(
+		prod => prod.data.period === period.value || prod.sku === 'free',
+	)
+}
+
+const tabSelected = item => {
+	if (item === 'Cloud Account') {
+		createMode.value = 'cloud'
+	} else {
+		createMode.value = 'local'
+	}
+}
+
+onMounted(async () => {
+	await populate()
+})
 </script>

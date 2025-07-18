@@ -24,47 +24,47 @@
 	/>
 </template>
 <script setup lang="ts">
-	import { ref, watch } from 'vue'
-	import { noteManager } from '../../global'
-	import type { State } from '../../services/types/subscription'
+import { ref, watch } from 'vue'
+import { noteManager } from '../../global'
+import type { State } from '../../services/types/subscription'
 
-	const props = defineProps<{
-		countryCode: string
-		disabled?: boolean
-	}>()
+const props = defineProps<{
+	countryCode: string
+	disabled?: boolean
+}>()
 
-	const selectElement = ref<HTMLSelectElement>(undefined!)
-	const code = defineModel('code')
-	const name = defineModel('name')
-	const mode = defineModel('mode')
+const selectElement = ref<HTMLSelectElement>(undefined!)
+const code = defineModel('code')
+const name = defineModel('name')
+const mode = defineModel('mode')
 
-	const states = ref<State[]>([])
+const states = ref<State[]>([])
 
-	const updateStates = async () => {
-		const countries = await noteManager.payment.getCountries()
-		const country = countries.find(c => c.code === props.countryCode)
-		states.value = country?.states ?? []
-		mode.value = states.value.length > 0 ? 'selector' : 'text'
-		const state = states.value.find(s => s.code === code.value)
-		if (state) {
-			name.value = state?.name
-		} else {
-			code.value = ''
-		}
+const updateStates = async () => {
+	const countries = await noteManager.payment.getCountries()
+	const country = countries.find(c => c.code === props.countryCode)
+	states.value = country?.states ?? []
+	mode.value = states.value.length > 0 ? 'selector' : 'text'
+	const state = states.value.find(s => s.code === code.value)
+	if (state) {
+		name.value = state?.name
+	} else {
+		code.value = ''
 	}
+}
 
-	void updateStates()
+void updateStates()
 
-	watch(props, async () => {
-		await updateStates()
-	})
+watch(props, async () => {
+	await updateStates()
+})
 
-	watch(code, () => {
-		const state = states.value.find(s => s.code === code.value)
-		if (state) {
-			name.value = state?.name
-		} else {
-			name.value = ''
-		}
-	})
+watch(code, () => {
+	const state = states.value.find(s => s.code === code.value)
+	if (state) {
+		name.value = state?.name
+	} else {
+		name.value = ''
+	}
+})
 </script>

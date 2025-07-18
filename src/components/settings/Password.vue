@@ -124,141 +124,141 @@
 </template>
 
 <script setup lang="ts">
-	import zxcvbn from 'zxcvbn'
-	import { computed, ref, watch } from 'vue'
-	import { noteManager, passwordDialog } from '../../global'
-	import ShowPasswordIcon from '../../icons/show-password.vue'
-	import ShowingPasswordIcon from '../../icons/showing-password.vue'
-	import PasswordGenerator from '../elements/PasswordGenerator.vue'
-	import { passwordTimeFactor } from '../../services/password-generator'
-	import RefreshIcon from '../../icons/refresh.vue'
-	import AvailableIcon from '../../icons/available.vue'
-	import UnavailableIcon from '../../icons/unavailable.vue'
-	import FreeAccessIcon from '../../icons/free-access.vue'
-	import CasualOnlyIcon from '../../icons/casual-only.vue'
-	import LightSecurityIcon from '../../icons/light-security.vue'
-	import TabBar from '../elements/TabBar.vue'
+import zxcvbn from 'zxcvbn'
+import { computed, ref, watch } from 'vue'
+import { noteManager, passwordDialog } from '../../global'
+import ShowPasswordIcon from '../../icons/show-password.vue'
+import ShowingPasswordIcon from '../../icons/showing-password.vue'
+import PasswordGenerator from '../elements/PasswordGenerator.vue'
+import { passwordTimeFactor } from '../../services/password-generator'
+import RefreshIcon from '../../icons/refresh.vue'
+import AvailableIcon from '../../icons/available.vue'
+import UnavailableIcon from '../../icons/unavailable.vue'
+import FreeAccessIcon from '../../icons/free-access.vue'
+import CasualOnlyIcon from '../../icons/casual-only.vue'
+import LightSecurityIcon from '../../icons/light-security.vue'
+import TabBar from '../elements/TabBar.vue'
 
-	const emit = defineEmits(['close'])
+const emit = defineEmits(['close'])
 
-	const passwordGenerator = ref(null)
-	const generatedPassword = ref('')
-	const generatedIterations = ref(1000000)
-	const generatedPasswordRepeat = ref('')
-	const generatedPasswordMatch = ref(false)
-	const createdPassword = ref('')
-	const createdPasswordRepeat = ref('')
-	const createdPasswordMatch = ref(false)
-	const passwordFieldType = ref('password')
-	const passwordMode = ref('generate')
-	const passwordQuality = ref('')
-	const iterations = ref(1000000)
-	const passwordIsWeak = ref(false)
-	const capsLockOn = ref(false)
-	const canSave = computed(
-		() =>
-			(passwordMode.value === 'generate' && generatedPasswordMatch.value && generatedPassword.value) ||
-			(passwordMode.value === 'create' && createdPasswordMatch.value && createdPassword.value),
-	)
-	const time1M = computed(() => `~${passwordTimeFactor.time1M}s`)
-	const time2M = computed(() => `~${passwordTimeFactor.time2M}s`)
-	const time10M = computed(() => `~${passwordTimeFactor.time10M}s`)
-	const time20M = computed(() => `~${passwordTimeFactor.time20M}s`)
+const passwordGenerator = ref(null)
+const generatedPassword = ref('')
+const generatedIterations = ref(1000000)
+const generatedPasswordRepeat = ref('')
+const generatedPasswordMatch = ref(false)
+const createdPassword = ref('')
+const createdPasswordRepeat = ref('')
+const createdPasswordMatch = ref(false)
+const passwordFieldType = ref('password')
+const passwordMode = ref('generate')
+const passwordQuality = ref('')
+const iterations = ref(1000000)
+const passwordIsWeak = ref(false)
+const capsLockOn = ref(false)
+const canSave = computed(
+	() =>
+		(passwordMode.value === 'generate' && generatedPasswordMatch.value && generatedPassword.value) ||
+		(passwordMode.value === 'create' && createdPasswordMatch.value && createdPassword.value),
+)
+const time1M = computed(() => `~${passwordTimeFactor.time1M}s`)
+const time2M = computed(() => `~${passwordTimeFactor.time2M}s`)
+const time10M = computed(() => `~${passwordTimeFactor.time10M}s`)
+const time20M = computed(() => `~${passwordTimeFactor.time20M}s`)
 
-	watch(createdPassword, value => {
-		if (value) {
-			const result = zxcvbn(value, [noteManager.state.username])
-			const days = result.crack_times_seconds.offline_slow_hashing_1e4_per_second / 60 / 60 / 24
-			if (days < 0.0001) {
-				passwordQuality.value = 'free-access'
-				passwordIsWeak.value = true
-			} else if (days < 0.1) {
-				passwordQuality.value = 'casual-use-only'
-				passwordIsWeak.value = true
-			} else {
-				passwordQuality.value = 'acceptable-security'
-				passwordIsWeak.value = false
-			}
-			createdPasswordMatch.value = createdPassword.value === createdPasswordRepeat.value
+watch(createdPassword, value => {
+	if (value) {
+		const result = zxcvbn(value, [noteManager.state.username])
+		const days = result.crack_times_seconds.offline_slow_hashing_1e4_per_second / 60 / 60 / 24
+		if (days < 0.0001) {
+			passwordQuality.value = 'free-access'
+			passwordIsWeak.value = true
+		} else if (days < 0.1) {
+			passwordQuality.value = 'casual-use-only'
+			passwordIsWeak.value = true
 		} else {
-			passwordQuality.value = ''
+			passwordQuality.value = 'acceptable-security'
+			passwordIsWeak.value = false
 		}
-	})
-	watch([createdPassword, createdPasswordRepeat], value => {
 		createdPasswordMatch.value = createdPassword.value === createdPasswordRepeat.value
-	})
-
-	watch([generatedPassword, generatedPasswordRepeat], value => {
-		generatedPasswordMatch.value = generatedPassword.value === generatedPasswordRepeat.value
-	})
-
-	const pwKeyDown = event => {
-		capsLockOn.value = event.getModifierState('CapsLock')
+	} else {
+		passwordQuality.value = ''
 	}
+})
+watch([createdPassword, createdPasswordRepeat], value => {
+	createdPasswordMatch.value = createdPassword.value === createdPasswordRepeat.value
+})
 
-	const showPassword = () => {
-		passwordFieldType.value = 'text'
-	}
+watch([generatedPassword, generatedPasswordRepeat], value => {
+	generatedPasswordMatch.value = generatedPassword.value === generatedPasswordRepeat.value
+})
 
-	const hidePassword = () => {
-		passwordFieldType.value = 'password'
-	}
+const pwKeyDown = event => {
+	capsLockOn.value = event.getModifierState('CapsLock')
+}
 
-	const tabGenerateClick = () => {
+const showPassword = () => {
+	passwordFieldType.value = 'text'
+}
+
+const hidePassword = () => {
+	passwordFieldType.value = 'password'
+}
+
+const tabGenerateClick = () => {
+	passwordMode.value = 'generate'
+}
+
+const tabCreateClick = () => {
+	passwordMode.value = 'create'
+}
+
+const tabSelected = item => {
+	if (item === 'Create') {
+		passwordMode.value = 'create'
+	} else {
 		passwordMode.value = 'generate'
 	}
+}
 
-	const tabCreateClick = () => {
-		passwordMode.value = 'create'
-	}
+const regeneratePassword = () => {
+	passwordGenerator.value.regeneratePassword()
+}
 
-	const tabSelected = item => {
-		if (item === 'Create') {
-			passwordMode.value = 'create'
-		} else {
-			passwordMode.value = 'generate'
-		}
-	}
+const onPasswordGenerated = (pwd: string, iterations: number) => {
+	generatedPassword.value = pwd
+	generatedIterations.value = iterations
+}
 
-	const regeneratePassword = () => {
-		passwordGenerator.value.regeneratePassword()
+const save = () => {
+	if (canSave.value) {
+		passwordDialog.value.showAction(async pwd => {
+			try {
+				if (passwordMode.value === 'generate') {
+					await noteManager.auth.changeUserNameAndPassword(
+						noteManager.state.username,
+						pwd,
+						generatedPassword.value,
+						generatedIterations.value,
+					)
+					generatedPasswordRepeat.value = ''
+				} else {
+					await noteManager.auth.changeUserNameAndPassword(
+						noteManager.state.username,
+						pwd,
+						createdPassword.value,
+						iterations.value,
+					)
+					createdPassword.value = ''
+					createdPasswordRepeat.value = ''
+				}
+				return true
+			} catch {}
+			return false
+		})
 	}
+}
 
-	const onPasswordGenerated = (pwd: string, iterations: number) => {
-		generatedPassword.value = pwd
-		generatedIterations.value = iterations
-	}
-
-	const save = () => {
-		if (canSave.value) {
-			passwordDialog.value.showAction(async pwd => {
-				try {
-					if (passwordMode.value === 'generate') {
-						await noteManager.auth.changeUserNameAndPassword(
-							noteManager.state.username,
-							pwd,
-							generatedPassword.value,
-							generatedIterations.value,
-						)
-						generatedPasswordRepeat.value = ''
-					} else {
-						await noteManager.auth.changeUserNameAndPassword(
-							noteManager.state.username,
-							pwd,
-							createdPassword.value,
-							iterations.value,
-						)
-						createdPassword.value = ''
-						createdPasswordRepeat.value = ''
-					}
-					return true
-				} catch {}
-				return false
-			})
-		}
-	}
-
-	const close = () => {
-		emit('close')
-	}
+const close = () => {
+	emit('close')
+}
 </script>

@@ -20,56 +20,56 @@
 </template>
 
 <script setup lang="ts">
-	import { onMounted, ref } from 'vue'
-	import type { PaymentMethod } from '../../services/types/subscription'
-	import PaymentMethodItem from './PaymentMethodItem.vue'
-	import { deletePaymentMethodDialog, noteManager } from '../../global'
-	import { emptyGuid } from '../../services/types/guid'
-	import TabBar from '../elements/TabBar.vue'
+import { onMounted, ref } from 'vue'
+import type { PaymentMethod } from '../../services/types/subscription'
+import PaymentMethodItem from './PaymentMethodItem.vue'
+import { deletePaymentMethodDialog, noteManager } from '../../global'
+import { emptyGuid } from '../../services/types/guid'
+import TabBar from '../elements/TabBar.vue'
 
-	const emit = defineEmits(['pay-in-progress'])
+const emit = defineEmits(['pay-in-progress'])
 
-	const methods = ref<PaymentMethod[]>()
-	const defaultMethod = ref<PaymentMethod>()
-	const showCreate = ref(false)
+const methods = ref<PaymentMethod[]>()
+const defaultMethod = ref<PaymentMethod>()
+const showCreate = ref(false)
 
-	const populate = async () => {
-		try {
-			const customer = await noteManager.payment.getCustomerData()
-			showCreate.value = !!customer
-		} catch {
-			showCreate.value = false
-		}
-
-		const items = await noteManager.payment.getPaymentMethods()
-		methods.value = items
-		let def = items[0]
-		if (items.length > 1) {
-			def = items.reduce((p, n) => (p.priority > n.priority ? p : n), def)
-		}
-		defaultMethod.value = def
+const populate = async () => {
+	try {
+		const customer = await noteManager.payment.getCustomerData()
+		showCreate.value = !!customer
+	} catch {
+		showCreate.value = false
 	}
 
-	onMounted(async () => {
-		await populate()
+	const items = await noteManager.payment.getPaymentMethods()
+	methods.value = items
+	let def = items[0]
+	if (items.length > 1) {
+		def = items.reduce((p, n) => (p.priority > n.priority ? p : n), def)
+	}
+	defaultMethod.value = def
+}
+
+onMounted(async () => {
+	await populate()
+})
+
+const makeDefault = async (method: PaymentMethod) => {
+	await noteManager.payment.makePaymentMethodDefault(method.id)
+	await populate()
+}
+const deleteMethod = async (method: PaymentMethod) => {
+	deletePaymentMethodDialog.value.show(`${method.brand}, ${method.name}`, async confirmed => {
+		if (confirmed) {
+			await noteManager.payment.deletePaymentMethodDefault(method.id)
+			await populate()
+		}
 	})
+}
 
-	const makeDefault = async (method: PaymentMethod) => {
-		await noteManager.payment.makePaymentMethodDefault(method.id)
-		await populate()
-	}
-	const deleteMethod = async (method: PaymentMethod) => {
-		deletePaymentMethodDialog.value.show(`${method.brand}, ${method.name}`, async confirmed => {
-			if (confirmed) {
-				await noteManager.payment.deletePaymentMethodDefault(method.id)
-				await populate()
-			}
-		})
-	}
-
-	const createNew = async () => {
-		const result = await noteManager.payment.createNewPaymentMethod({ clientReference: 'create-method' })
-		emit('pay-in-progress', emptyGuid(), true, result.link, methods.value.length + 1)
-		window.open(result.link, '_blank')
-	}
+const createNew = async () => {
+	const result = await noteManager.payment.createNewPaymentMethod({ clientReference: 'create-method' })
+	emit('pay-in-progress', emptyGuid(), true, result.link, methods.value.length + 1)
+	window.open(result.link, '_blank')
+}
 </script>

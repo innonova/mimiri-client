@@ -11,28 +11,28 @@
 </template>
 
 <script setup lang="ts">
-	import { notificationManager } from '../global'
-	import UpdateIcon from '../icons/update.vue'
-	import AnnouncementIcon from '../icons/announcement.vue'
-	import ShareIcon from '../icons/share.vue'
-	import type { MimiriNotification } from '../services/notification-manager'
-	import { formatNotificationTimestamp } from '../services/helpers'
+import { notificationManager } from '../global'
+import UpdateIcon from '../icons/update.vue'
+import AnnouncementIcon from '../icons/announcement.vue'
+import ShareIcon from '../icons/share.vue'
+import type { MimiriNotification } from '../services/notification-manager'
+import { formatNotificationTimestamp } from '../services/helpers'
 
-	const props = defineProps<{
-		notification: MimiriNotification
-	}>()
+const props = defineProps<{
+	notification: MimiriNotification
+}>()
 
-	const clicked = () => {
-		notificationManager.activateNotification(props.notification.id)
+const clicked = () => {
+	notificationManager.activateNotification(props.notification.id)
+}
+
+const getIcon = () => {
+	if (props.notification.icon === 'update') {
+		return UpdateIcon
 	}
-
-	const getIcon = () => {
-		if (props.notification.icon === 'update') {
-			return UpdateIcon
-		}
-		if (props.notification.icon === 'announcement') {
-			return AnnouncementIcon
-		}
-		return ShareIcon
+	if (props.notification.icon === 'announcement') {
+		return AnnouncementIcon
 	}
+	return ShareIcon
+}
 </script>

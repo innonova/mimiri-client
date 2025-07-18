@@ -20,23 +20,23 @@
 </template>
 
 <script setup lang="ts">
-	import { ref, watch } from 'vue'
-	import AvailableIcon from '../../icons/available.vue'
-	import UnavailableIcon from '../../icons/unavailable.vue'
+import { ref, watch } from 'vue'
+import AvailableIcon from '../../icons/available.vue'
+import UnavailableIcon from '../../icons/unavailable.vue'
 
-	const props = defineProps<{
-		value: string
-	}>()
+const props = defineProps<{
+	value: string
+}>()
 
-	const passwordMatch = defineModel<boolean>('match')
-	const passwordRepeat = ref('')
-	const pwKeyDown = event => {}
+const passwordMatch = defineModel<boolean>('match')
+const passwordRepeat = ref('')
+const pwKeyDown = event => {}
 
-	watch([passwordRepeat, props], value => {
-		checkPasswordMatch()
-	})
+watch([passwordRepeat, props], value => {
+	checkPasswordMatch()
+})
 
-	const checkPasswordMatch = () => {
-		passwordMatch.value = props.value === passwordRepeat.value
-	}
+const checkPasswordMatch = () => {
+	passwordMatch.value = props.value === passwordRepeat.value
+}
 </script>

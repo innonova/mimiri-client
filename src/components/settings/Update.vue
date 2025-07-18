@@ -230,116 +230,116 @@
 </template>
 
 <script setup lang="ts">
-	import { computed, ref } from 'vue'
-	import { updateManager } from '../../global'
-	import { mimiriPlatform } from '../../services/mimiri-platform'
-	import ItemHeader from '../subscription/ItemHeader.vue'
-	import { settingsManager, UpdateMode } from '../../services/settings-manager'
-	import NotificationActiveIcon from '../../icons/notification-active.vue'
-	import CogIcon from '../../icons/cog.vue'
-	import DownloadIcon from '../../icons/download.vue'
-	import TabBar from '../elements/TabBar.vue'
+import { computed, ref } from 'vue'
+import { updateManager } from '../../global'
+import { mimiriPlatform } from '../../services/mimiri-platform'
+import ItemHeader from '../subscription/ItemHeader.vue'
+import { settingsManager, UpdateMode } from '../../services/settings-manager'
+import NotificationActiveIcon from '../../icons/notification-active.vue'
+import CogIcon from '../../icons/cog.vue'
+import DownloadIcon from '../../icons/download.vue'
+import TabBar from '../elements/TabBar.vue'
 
-	const running = ref(false)
-	const stage = ref('')
-	const total = ref(0)
-	const downloaded = ref(0)
-	const progress = ref('0px')
-	const downloadedBytes = ref('')
-	const totalBytes = ref('')
-	const bytesPerSec = ref('')
-	const showNoUpdatesFound = ref(false)
+const running = ref(false)
+const stage = ref('')
+const total = ref(0)
+const downloaded = ref(0)
+const progress = ref('0px')
+const downloadedBytes = ref('')
+const totalBytes = ref('')
+const bytesPerSec = ref('')
+const showNoUpdatesFound = ref(false)
 
-	const isLinux = computed(() => mimiriPlatform.isLinuxApp)
-	const isMacOrWindows = computed(() => mimiriPlatform.isWindowsApp || mimiriPlatform.isMacApp)
-	const isIos = computed(() => mimiriPlatform.isIosApp)
-	const isAndroid = computed(() => mimiriPlatform.isAndroidApp)
+const isLinux = computed(() => mimiriPlatform.isLinuxApp)
+const isMacOrWindows = computed(() => mimiriPlatform.isWindowsApp || mimiriPlatform.isMacApp)
+const isIos = computed(() => mimiriPlatform.isIosApp)
+const isAndroid = computed(() => mimiriPlatform.isAndroidApp)
 
-	let cancelled = false
-	let version = ''
+let cancelled = false
+let version = ''
 
-	const kibi = 1024
-	const mibi = 1024 * 1024
-	const gibi = 1024 * 1024 * 1024
+const kibi = 1024
+const mibi = 1024 * 1024
+const gibi = 1024 * 1024 * 1024
 
-	const bytesToText = (bytes: number) => {
-		if (bytes < kibi) {
-			return `${bytes} B`
-		}
-		if (bytes < mibi) {
-			return `${Math.round((bytes / kibi) * 100) / 100} kB`
-		}
-		if (bytes < gibi) {
-			return `${Math.round((bytes / mibi) * 100) / 100} MB`
-		}
+const bytesToText = (bytes: number) => {
+	if (bytes < kibi) {
+		return `${bytes} B`
 	}
-
-	const checkUpdates = async () => {
-		await updateManager.check()
-		showNoUpdatesFound.value = !updateManager.isUpdateAvailable
+	if (bytes < mibi) {
+		return `${Math.round((bytes / kibi) * 100) / 100} kB`
 	}
+	if (bytes < gibi) {
+		return `${Math.round((bytes / mibi) * 100) / 100} MB`
+	}
+}
 
-	const update = async () => {
-		running.value = true
-		cancelled = false
-		const start = performance.now()
-		version = updateManager.latestVersion
-		await updateManager.download(version, status => {
-			if (cancelled) {
-				return false
-			}
-			if (status.error) {
-				console.log(status)
-				cancelled = true
-				running.value = false
-				downloaded.value = 0
-				progress.value = '0px'
-				return false
-			}
+const checkUpdates = async () => {
+	await updateManager.check()
+	showNoUpdatesFound.value = !updateManager.isUpdateAvailable
+}
 
-			stage.value = status.stage
-
-			const elapsed = performance.now() - start
-
-			total.value = status.total
-			downloaded.value = status.downloaded
-			downloadedBytes.value = bytesToText(status.downloaded)
-			totalBytes.value = bytesToText(status.total)
-			bytesPerSec.value = `${bytesToText((status.downloaded * 1000) / elapsed)}/s`
-
-			let progressAmount = (100 * status.downloaded) / status.total
-			if (progressAmount < 10) {
-				progressAmount = 10
-			}
-			progress.value = `${progressAmount}%`
-			return true
-		})
-		if (!cancelled) {
-			stage.value = 'ready'
+const update = async () => {
+	running.value = true
+	cancelled = false
+	const start = performance.now()
+	version = updateManager.latestVersion
+	await updateManager.download(version, status => {
+		if (cancelled) {
+			return false
 		}
-		// running.value = false
+		if (status.error) {
+			console.log(status)
+			cancelled = true
+			running.value = false
+			downloaded.value = 0
+			progress.value = '0px'
+			return false
+		}
+
+		stage.value = status.stage
+
+		const elapsed = performance.now() - start
+
+		total.value = status.total
+		downloaded.value = status.downloaded
+		downloadedBytes.value = bytesToText(status.downloaded)
+		totalBytes.value = bytesToText(status.total)
+		bytesPerSec.value = `${bytesToText((status.downloaded * 1000) / elapsed)}/s`
+
+		let progressAmount = (100 * status.downloaded) / status.total
+		if (progressAmount < 10) {
+			progressAmount = 10
+		}
+		progress.value = `${progressAmount}%`
+		return true
+	})
+	if (!cancelled) {
+		stage.value = 'ready'
 	}
-	const later = () => {
+	// running.value = false
+}
+const later = () => {
+	// showUpdate.value = false
+}
+
+const restart = async () => {
+	await updateManager.use(version, true)
+}
+
+const cancel = () => {
+	cancelled = true
+	running.value = false
+	downloaded.value = 0
+	progress.value = '0px'
+	if (stage.value === 'ready') {
 		// showUpdate.value = false
 	}
-
-	const restart = async () => {
-		await updateManager.use(version, true)
-	}
-
-	const cancel = () => {
-		cancelled = true
-		running.value = false
-		downloaded.value = 0
-		progress.value = '0px'
-		if (stage.value === 'ready') {
-			// showUpdate.value = false
-		}
-	}
+}
 </script>
 
 <style scoped>
-	.progress {
-		width: v-bind(progress);
-	}
+.progress {
+	width: v-bind(progress);
+}
 </style>

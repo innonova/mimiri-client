@@ -27,50 +27,50 @@
 </template>
 
 <script setup lang="ts">
-	import { ref, watch } from 'vue'
-	import { showSearchBox } from '../global'
-	import { searchManager } from '../services/search-manager'
-	import SearchIcon from '../icons/search.vue'
-	import CloseButton from './elements/CloseButton.vue'
+import { ref, watch } from 'vue'
+import { showSearchBox } from '../global'
+import { searchManager } from '../services/search-manager'
+import SearchIcon from '../icons/search.vue'
+import CloseButton from './elements/CloseButton.vue'
 
-	const searchInput = ref(null)
+const searchInput = ref(null)
 
-	watch(showSearchBox, (newVal, _) => {
-		if (newVal) {
-			setTimeout(() => searchInput.value?.focus())
-		}
-	})
-
-	const close = () => {
-		showSearchBox.value = false
+watch(showSearchBox, (newVal, _) => {
+	if (newVal) {
+		setTimeout(() => searchInput.value?.focus())
 	}
+})
 
-	const keyDown = event => {
-		if (event.key === 'Enter') {
-			event.preventDefault()
-			searchManager.search(event.target.value)
-		} else if (event.key === 'Escape') {
-			event.preventDefault()
-			close()
-		}
+const close = () => {
+	showSearchBox.value = false
+}
+
+const keyDown = event => {
+	if (event.key === 'Enter') {
+		event.preventDefault()
+		searchManager.search(event.target.value)
+	} else if (event.key === 'Escape') {
+		event.preventDefault()
+		close()
 	}
+}
 </script>
 <style scoped>
-	.progress-bar-value {
-		background: linear-gradient(90deg, #bf5116 0%, #ea5d1c 50%, #bf5116 100%);
-		animation: indeterminateAnimation 1.3s infinite linear;
-		transform-origin: 0% 50%;
-	}
+.progress-bar-value {
+	background: linear-gradient(90deg, #bf5116 0%, #ea5d1c 50%, #bf5116 100%);
+	animation: indeterminateAnimation 1.3s infinite linear;
+	transform-origin: 0% 50%;
+}
 
-	@keyframes indeterminateAnimation {
-		0% {
-			transform: translateX(0) scaleX(0);
-		}
-		40% {
-			transform: translateX(0) scaleX(0.4);
-		}
-		100% {
-			transform: translateX(100%) scaleX(0.5);
-		}
+@keyframes indeterminateAnimation {
+	0% {
+		transform: translateX(0) scaleX(0);
 	}
+	40% {
+		transform: translateX(0) scaleX(0.4);
+	}
+	100% {
+		transform: translateX(100%) scaleX(0.5);
+	}
+}
 </style>

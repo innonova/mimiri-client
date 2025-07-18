@@ -12,17 +12,17 @@
 </template>
 
 <script setup lang="ts">
-	import { computed } from 'vue'
-	import { noteManager } from '../global'
-	import ToolbarIcon from './ToolbarIcon.vue'
-	import TextNoteProperties from './properties/TextNoteProperties.vue'
+import { computed } from 'vue'
+import { noteManager } from '../global'
+import ToolbarIcon from './ToolbarIcon.vue'
+import TextNoteProperties from './properties/TextNoteProperties.vue'
 
-	const type = computed(() => {
-		return noteManager.tree.selectedNote()?.type ?? ''
-	})
+const type = computed(() => {
+	return noteManager.tree.selectedNote()?.type ?? ''
+})
 
-	const onBack = () => {
-		window.history.back()
-		noteManager.ui.closeEditorIfMobile()
-	}
+const onBack = () => {
+	window.history.back()
+	noteManager.ui.closeEditorIfMobile()
+}
 </script>

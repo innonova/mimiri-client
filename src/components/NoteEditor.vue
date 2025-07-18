@@ -126,205 +126,205 @@
 </template>
 
 <script setup lang="ts">
-	import { ref, computed, onMounted, watch, type WatchStopHandle } from 'vue'
-	import { infoDialog, limitDialog, mimiriEditor, noteManager, showSearchBox, titleBar } from '../global'
-	import type { NoteViewModel } from '../services/types/mimer-note'
-	import { searchManager } from '../services/search-manager'
-	import ToolbarIcon from './ToolbarIcon.vue'
-	import SelectionControl from './SelectionControl.vue'
-	import { settingsManager } from '../services/settings-manager'
-	import { useEventListener } from '@vueuse/core'
-	import CloseButton from './elements/CloseButton.vue'
-	import SettingIcon from '../icons/cog.vue'
-	import type { Guid } from '../services/types/guid'
+import { ref, computed, onMounted, watch, type WatchStopHandle } from 'vue'
+import { infoDialog, limitDialog, mimiriEditor, noteManager, showSearchBox, titleBar } from '../global'
+import type { NoteViewModel } from '../services/types/mimer-note'
+import { searchManager } from '../services/search-manager'
+import ToolbarIcon from './ToolbarIcon.vue'
+import SelectionControl from './SelectionControl.vue'
+import { settingsManager } from '../services/settings-manager'
+import { useEventListener } from '@vueuse/core'
+import CloseButton from './elements/CloseButton.vue'
+import SettingIcon from '../icons/cog.vue'
+import type { Guid } from '../services/types/guid'
 
-	let activeViewModelStopWatch: WatchStopHandle = undefined
-	let activeViewModel: NoteViewModel = undefined
-	const monacoContainer = ref(null)
-	const simpleContainer = ref(null)
-	const displayContainer = ref(null)
-	const windowFocus = ref(true)
-	const historyVisible = ref(false)
-	const displayMode = ref(true)
-	const selectedHistoryItem = computed(() => mimiriEditor.history.state.selectedHistoryItem)
-	let saveInProgress = false
+let activeViewModelStopWatch: WatchStopHandle = undefined
+let activeViewModel: NoteViewModel = undefined
+const monacoContainer = ref(null)
+const simpleContainer = ref(null)
+const displayContainer = ref(null)
+const windowFocus = ref(true)
+const historyVisible = ref(false)
+const displayMode = ref(true)
+const selectedHistoryItem = computed(() => mimiriEditor.history.state.selectedHistoryItem)
+let saveInProgress = false
 
-	const biCif = value => {
-		if (value < 10) {
-			return `0${value}`
+const biCif = value => {
+	if (value < 10) {
+		return `0${value}`
+	}
+	return `${value}`
+}
+
+const activateEdit = () => {
+	displayMode.value = false
+	mimiriEditor.activateEdit()
+}
+
+const activateSettings = () => {
+	noteManager.tree.openNote('settings-general' as Guid)
+}
+
+const formatDate = (value: string) => {
+	const date = new Date(value)
+	const result = `${date.getFullYear()}.${biCif(date.getMonth() + 1)}.${biCif(date.getDate())} ${biCif(
+		date.getHours(),
+	)}:${biCif(date.getMinutes())}:${biCif(date.getSeconds())}`
+	return result
+}
+
+const loadMoreHistory = async () => {
+	await mimiriEditor.history.loadMoreHistory()
+}
+
+const selectHistoryItem = (index: number) => {
+	mimiriEditor.history.selectHistoryItem(index)
+}
+
+const checkLoadHistory = async () => {
+	await mimiriEditor.history.checkLoadHistory()
+}
+
+const markAsPassword = () => {
+	mimiriEditor.focus()
+	mimiriEditor.toggleSelectionAsPassword()
+}
+
+watch(historyVisible, (newVal, _) => {
+	if (newVal) {
+		checkLoadHistory()
+	}
+})
+
+useEventListener(window, 'focus', () => {
+	windowFocus.value = true
+})
+
+useEventListener(window, 'blur', () => {
+	save()
+	windowFocus.value = false
+})
+
+const setActiveViewModel = viewModel => {
+	if (activeViewModel !== viewModel) {
+		if (activeViewModelStopWatch) {
+			activeViewModelStopWatch()
+			activeViewModelStopWatch = undefined
 		}
-		return `${value}`
+		activeViewModel = viewModel
+		if (activeViewModel) {
+			mimiriEditor.open(noteManager.tree.getNoteById(activeViewModel.id))
+			activeViewModelStopWatch = watch(activeViewModel, () => {
+				if (activeViewModel && activeViewModel.id === mimiriEditor.note?.id) {
+					mimiriEditor.open(noteManager.tree.getNoteById(activeViewModel.id))
+				}
+			})
+		}
 	}
+}
 
-	const activateEdit = () => {
-		displayMode.value = false
-		mimiriEditor.activateEdit()
-	}
+onMounted(() => {
+	mimiriEditor.init(monacoContainer.value, simpleContainer.value, displayContainer.value)
+	mimiriEditor.onSave(() => save())
+	mimiriEditor.onSearchAll(() => titleBar.value?.searchAllNotes())
+	mimiriEditor.onBlur(() => save())
+	setActiveViewModel(noteManager.tree.selectedViewModel())
 
-	const activateSettings = () => {
-		noteManager.tree.openNote('settings-general' as Guid)
-	}
+	watch(settingsManager.state, () => {
+		mimiriEditor.syncSettings()
+	})
 
-	const formatDate = (value: string) => {
-		const date = new Date(value)
-		const result = `${date.getFullYear()}.${biCif(date.getMonth() + 1)}.${biCif(date.getDate())} ${biCif(
-			date.getHours(),
-		)}:${biCif(date.getMinutes())}:${biCif(date.getSeconds())}`
-		return result
-	}
-
-	const loadMoreHistory = async () => {
-		await mimiriEditor.history.loadMoreHistory()
-	}
-
-	const selectHistoryItem = (index: number) => {
-		mimiriEditor.history.selectHistoryItem(index)
-	}
-
-	const checkLoadHistory = async () => {
-		await mimiriEditor.history.checkLoadHistory()
-	}
-
-	const markAsPassword = () => {
-		mimiriEditor.focus()
-		mimiriEditor.toggleSelectionAsPassword()
-	}
+	watch(noteManager.state, (newVal, _) => {
+		if (newVal?.selectedNoteId && newVal?.selectedNoteId !== activeViewModel?.id) {
+			historyVisible.value = false
+			mimiriEditor.clearSearchHighlights()
+			save().then(() => {
+				setActiveViewModel(noteManager.tree.getViewModelById(newVal.selectedNoteId))
+				if (showSearchBox.value) {
+					mimiriEditor.setSearchHighlights(searchManager.state.term)
+				}
+			})
+		}
+	})
 
 	watch(historyVisible, (newVal, _) => {
-		if (newVal) {
-			checkLoadHistory()
-		}
+		mimiriEditor.history.isShowing = newVal
 	})
+})
 
-	useEventListener(window, 'focus', () => {
-		windowFocus.value = true
-	})
-
-	useEventListener(window, 'blur', () => {
-		save()
-		windowFocus.value = false
-	})
-
-	const setActiveViewModel = viewModel => {
-		if (activeViewModel !== viewModel) {
-			if (activeViewModelStopWatch) {
-				activeViewModelStopWatch()
-				activeViewModelStopWatch = undefined
-			}
-			activeViewModel = viewModel
-			if (activeViewModel) {
-				mimiriEditor.open(noteManager.tree.getNoteById(activeViewModel.id))
-				activeViewModelStopWatch = watch(activeViewModel, () => {
-					if (activeViewModel && activeViewModel.id === mimiriEditor.note?.id) {
-						mimiriEditor.open(noteManager.tree.getNoteById(activeViewModel.id))
-					}
-				})
-			}
-		}
+watch(showSearchBox, (newVal, _) => {
+	if (newVal) {
+		mimiriEditor.setSearchHighlights(searchManager.state.term)
+	} else {
+		mimiriEditor.clearSearchHighlights()
 	}
+})
 
-	onMounted(() => {
-		mimiriEditor.init(monacoContainer.value, simpleContainer.value, displayContainer.value)
-		mimiriEditor.onSave(() => save())
-		mimiriEditor.onSearchAll(() => titleBar.value?.searchAllNotes())
-		mimiriEditor.onBlur(() => save())
-		setActiveViewModel(noteManager.tree.selectedViewModel())
-
-		watch(settingsManager.state, () => {
-			mimiriEditor.syncSettings()
-		})
-
-		watch(noteManager.state, (newVal, _) => {
-			if (newVal?.selectedNoteId && newVal?.selectedNoteId !== activeViewModel?.id) {
-				historyVisible.value = false
-				mimiriEditor.clearSearchHighlights()
-				save().then(() => {
-					setActiveViewModel(noteManager.tree.getViewModelById(newVal.selectedNoteId))
-					if (showSearchBox.value) {
-						mimiriEditor.setSearchHighlights(searchManager.state.term)
-					}
-				})
-			}
-		})
-
-		watch(historyVisible, (newVal, _) => {
-			mimiriEditor.history.isShowing = newVal
-		})
-	})
-
-	watch(showSearchBox, (newVal, _) => {
-		if (newVal) {
-			mimiriEditor.setSearchHighlights(searchManager.state.term)
-		} else {
-			mimiriEditor.clearSearchHighlights()
-		}
-	})
-
-	watch(searchManager.state, (newVal, _) => {
-		if (newVal && showSearchBox.value) {
-			mimiriEditor.setSearchHighlights(searchManager.state.term)
-		} else {
-			mimiriEditor.clearSearchHighlights()
-		}
-	})
-
-	const undo = () => {
-		mimiriEditor.undo()
-		mimiriEditor.focus()
+watch(searchManager.state, (newVal, _) => {
+	if (newVal && showSearchBox.value) {
+		mimiriEditor.setSearchHighlights(searchManager.state.term)
+	} else {
+		mimiriEditor.clearSearchHighlights()
 	}
+})
 
-	const redo = () => {
-		mimiriEditor.redo()
-		mimiriEditor.focus()
-	}
+const undo = () => {
+	mimiriEditor.undo()
+	mimiriEditor.focus()
+}
 
-	const find = () => {
-		mimiriEditor.find()
-	}
+const redo = () => {
+	mimiriEditor.redo()
+	mimiriEditor.focus()
+}
 
-	const onBack = () => {
-		save()
-		mimiriEditor.mobileClosing()
-		window.history.back()
-		noteManager.ui.closeEditorIfMobile()
-	}
+const find = () => {
+	mimiriEditor.find()
+}
 
-	const saveClicked = async () => {
-		mimiriEditor.focus()
-		save()
-	}
+const onBack = () => {
+	save()
+	mimiriEditor.mobileClosing()
+	window.history.back()
+	noteManager.ui.closeEditorIfMobile()
+}
 
-	const toggleWordWrap = event => {
-		mimiriEditor.toggleWordWrap()
-		mimiriEditor.focus()
-	}
+const saveClicked = async () => {
+	mimiriEditor.focus()
+	save()
+}
 
-	const showHistory = () => {
-		historyVisible.value = !historyVisible.value
-		mimiriEditor.focus()
-	}
+const toggleWordWrap = event => {
+	mimiriEditor.toggleWordWrap()
+	mimiriEditor.focus()
+}
 
-	const saveEnabled = computed(() => {
-		const winFocus = windowFocus.value // ensure that compute knows to trigger on this even if the first part of the next statement is false - AEK
-		return mimiriEditor.changed && winFocus && !!activeViewModel
-	})
+const showHistory = () => {
+	historyVisible.value = !historyVisible.value
+	mimiriEditor.focus()
+}
 
-	const save = async () => {
-		if (activeViewModel && saveEnabled.value && !saveInProgress) {
-			saveInProgress = true
-			try {
-				const result = await mimiriEditor.save()
+const saveEnabled = computed(() => {
+	const winFocus = windowFocus.value // ensure that compute knows to trigger on this even if the first part of the next statement is false - AEK
+	return mimiriEditor.changed && winFocus && !!activeViewModel
+})
 
-				if (result === 'note-size') {
-					noteManager.tree.select(activeViewModel.id)
-					limitDialog.value.show('save-note-size')
-				} else if (result === 'total-size') {
-					noteManager.tree.select(activeViewModel.id)
-					limitDialog.value.show('save-total-size')
-				} else if (result === 'lost-update') {
-					infoDialog.value.show(
-						'Note was changed',
-						`The note you just saved appears to have been changed outside the editor while you were editing it.
+const save = async () => {
+	if (activeViewModel && saveEnabled.value && !saveInProgress) {
+		saveInProgress = true
+		try {
+			const result = await mimiriEditor.save()
+
+			if (result === 'note-size') {
+				noteManager.tree.select(activeViewModel.id)
+				limitDialog.value.show('save-note-size')
+			} else if (result === 'total-size') {
+				noteManager.tree.select(activeViewModel.id)
+				limitDialog.value.show('save-total-size')
+			} else if (result === 'lost-update') {
+				infoDialog.value.show(
+					'Note was changed',
+					`The note you just saved appears to have been changed outside the editor while you were editing it.
 
 This may happen if you edited the note in another tab or device.
 
@@ -333,17 +333,17 @@ This may also happen if your connection is unstable.
 Or if this is a shared note: another user may have edited it.
 
 You can view all changes in the history.`,
-					)
-				}
-			} finally {
-				saveInProgress = false
+				)
 			}
+		} finally {
+			saveInProgress = false
 		}
 	}
+}
 
-	defineExpose({
-		save,
-		find,
-		showHistory,
-	})
+defineExpose({
+	save,
+	find,
+	showHistory,
+})
 </script>

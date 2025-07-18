@@ -54,83 +54,76 @@
 </template>
 
 <script setup lang="ts">
-	import { onMounted, ref } from 'vue'
-	import CustomerData from './CustomerData.vue'
-	import PaymentMethodSelector from './PaymentMethodSelector.vue'
-	import ItemHeader from './ItemHeader.vue'
-	import Subscription from './SubscriptionItem.vue'
-	import { Currency, RenewalType, type SubscriptionProduct } from '../../services/types/subscription'
-	import { noteManager } from '../../global'
-	import { assertGuid } from '../../services/types/guid'
-	import PaymentSummary from './PaymentSummary.vue'
-	import LoadingIcon from '../../icons/loading.vue'
+import { onMounted, ref } from 'vue'
+import CustomerData from './CustomerData.vue'
+import PaymentMethodSelector from './PaymentMethodSelector.vue'
+import ItemHeader from './ItemHeader.vue'
+import Subscription from './SubscriptionItem.vue'
+import { Currency, RenewalType, type SubscriptionProduct } from '../../services/types/subscription'
+import { noteManager } from '../../global'
+import { assertGuid } from '../../services/types/guid'
+import PaymentSummary from './PaymentSummary.vue'
+import LoadingIcon from '../../icons/loading.vue'
 
-	const props = defineProps<{
-		product: SubscriptionProduct
-		currency: Currency
-	}>()
+const props = defineProps<{
+	product: SubscriptionProduct
+	currency: Currency
+}>()
 
-	const emit = defineEmits(['pay-in-progress', 'change-plan'])
+const emit = defineEmits(['pay-in-progress', 'change-plan'])
 
-	const changed = ref()
-	const valid = ref()
-	const termsAccepted = ref(false)
-	const privacyAccepted = ref(false)
-	const customerElement = ref<typeof CustomerData>()
-	const payInProgress = ref(false)
-	const countryCode = ref('')
+const changed = ref()
+const valid = ref()
+const termsAccepted = ref(false)
+const privacyAccepted = ref(false)
+const customerElement = ref<typeof CustomerData>()
+const payInProgress = ref(false)
+const countryCode = ref('')
 
-	const method = ref('')
+const method = ref('')
 
-	const changePlan = () => {
-		emit('change-plan')
-	}
+const changePlan = () => {
+	emit('change-plan')
+}
 
-	const populate = async () => {
-		payInProgress.value = false
-	}
+const populate = async () => {
+	payInProgress.value = false
+}
 
-	onMounted(async () => {
-		await populate()
-	})
+onMounted(async () => {
+	await populate()
+})
 
-	const submit = async () => {
-		if (
-			customerElement.value &&
-			valid &&
-			termsAccepted.value &&
-			privacyAccepted.value &&
-			props.product &&
-			method.value
-		) {
-			payInProgress.value = true
-			await customerElement.value.save(termsAccepted.value, privacyAccepted.value)
-			await customerElement.value.verifyEmail()
-			const newSubResult = await noteManager.payment.newSubscription({
-				productId: props.product.id!,
-				renewalType: RenewalType.Automatic,
-				currency: props.currency,
+const submit = async () => {
+	if (customerElement.value && valid && termsAccepted.value && privacyAccepted.value && props.product && method.value) {
+		payInProgress.value = true
+		await customerElement.value.save(termsAccepted.value, privacyAccepted.value)
+		await customerElement.value.verifyEmail()
+		const newSubResult = await noteManager.payment.newSubscription({
+			productId: props.product.id!,
+			renewalType: RenewalType.Automatic,
+			currency: props.currency,
+		})
+		if (method.value === 'NEW') {
+			const createPayResult = await noteManager.payment.createPaymentLink({
+				invoiceId: newSubResult.invoiceId,
+				save: true,
+				clientRef: 'upgrade',
 			})
-			if (method.value === 'NEW') {
-				const createPayResult = await noteManager.payment.createPaymentLink({
-					invoiceId: newSubResult.invoiceId,
-					save: true,
-					clientRef: 'upgrade',
-				})
-				window.open(createPayResult.link, '_blank')
-				emit('pay-in-progress', newSubResult.invoiceId, true, createPayResult.link)
-			} else {
-				const methodId = method.value
-				assertGuid(methodId)
-				const payResult = await noteManager.payment.chargeExistingMethod({
-					invoiceId: newSubResult.invoiceId,
-					methodId,
-					purpose: 'Online order',
-				})
-				if (payResult.success) {
-					emit('pay-in-progress', newSubResult.invoiceId, false)
-				}
+			window.open(createPayResult.link, '_blank')
+			emit('pay-in-progress', newSubResult.invoiceId, true, createPayResult.link)
+		} else {
+			const methodId = method.value
+			assertGuid(methodId)
+			const payResult = await noteManager.payment.chargeExistingMethod({
+				invoiceId: newSubResult.invoiceId,
+				methodId,
+				purpose: 'Online order',
+			})
+			if (payResult.success) {
+				emit('pay-in-progress', newSubResult.invoiceId, false)
 			}
 		}
 	}
+}
 </script>

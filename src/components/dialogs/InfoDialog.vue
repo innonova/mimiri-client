@@ -13,23 +13,23 @@
 </template>
 
 <script setup lang="ts">
-	import { ref } from 'vue'
-	import DialogTitle from '../elements/DialogTitle.vue'
-	const dialog = ref(null)
-	const titleText = ref('')
-	const infoText = ref('')
+import { ref } from 'vue'
+import DialogTitle from '../elements/DialogTitle.vue'
+const dialog = ref(null)
+const titleText = ref('')
+const infoText = ref('')
 
-	const show = (title: string, info: string) => {
-		titleText.value = title
-		infoText.value = info
-		dialog.value.showModal()
-	}
+const show = (title: string, info: string) => {
+	titleText.value = title
+	infoText.value = info
+	dialog.value.showModal()
+}
 
-	const close = () => {
-		dialog.value.close()
-	}
+const close = () => {
+	dialog.value.close()
+}
 
-	defineExpose({
-		show,
-	})
+defineExpose({
+	show,
+})
 </script>

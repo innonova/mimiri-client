@@ -26,44 +26,44 @@
 </template>
 
 <script setup lang="ts">
-	import { ref } from 'vue'
-	import { conversionData, showConvertAccount } from '../global'
+import { ref } from 'vue'
+import { conversionData, showConvertAccount } from '../global'
 
-	const convertedNodes = ref(0)
-	const progress = ref('0px')
-	const running = ref(false)
+const convertedNodes = ref(0)
+const progress = ref('0px')
+const running = ref(false)
 
-	const convert = async () => {
-		if (!running.value) {
-			running.value = true
-			try {
-				// await noteManager.importAccount(
-				// 	conversionData.value.username,
-				// 	conversionData.value.password,
-				// 	(converted, completed, total) => {
-				// 		convertedNodes.value = converted
-				// 		let progressAmount = (300 * completed) / total
-				// 		if (progressAmount < 10) {
-				// 			progressAmount = 10
-				// 		}
-				// 		progress.value = `${progressAmount}px`
-				// 	},
-				// )
-				showConvertAccount.value = false
-			} finally {
-				running.value = false
-			}
+const convert = async () => {
+	if (!running.value) {
+		running.value = true
+		try {
+			// await noteManager.importAccount(
+			// 	conversionData.value.username,
+			// 	conversionData.value.password,
+			// 	(converted, completed, total) => {
+			// 		convertedNodes.value = converted
+			// 		let progressAmount = (300 * completed) / total
+			// 		if (progressAmount < 10) {
+			// 			progressAmount = 10
+			// 		}
+			// 		progress.value = `${progressAmount}px`
+			// 	},
+			// )
+			showConvertAccount.value = false
+		} finally {
+			running.value = false
 		}
 	}
+}
 
-	const cancel = () => {
-		conversionData.value = { username: '', password: '' }
-		showConvertAccount.value = false
-	}
+const cancel = () => {
+	conversionData.value = { username: '', password: '' }
+	showConvertAccount.value = false
+}
 </script>
 
 <style scoped>
-	.progress {
-		width: v-bind(progress);
-	}
+.progress {
+	width: v-bind(progress);
+}
 </style>

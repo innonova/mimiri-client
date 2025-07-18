@@ -10,12 +10,12 @@
 </template>
 
 <script setup lang="ts">
-	import LoadingIcon from '../../icons/loading.vue'
+import LoadingIcon from '../../icons/loading.vue'
 
-	const emit = defineEmits(['click'])
+const emit = defineEmits(['click'])
 
-	const props = defineProps<{
-		enabled: boolean
-		loading: boolean
-	}>()
+const props = defineProps<{
+	enabled: boolean
+	loading: boolean
+}>()
 </script>

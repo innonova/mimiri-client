@@ -37,59 +37,59 @@
 	</div>
 </template>
 <script setup lang="ts">
-	import { computed, onMounted, ref } from 'vue'
-	import TabBar from '../elements/TabBar.vue'
-	import ItemHeader from '../subscription/ItemHeader.vue'
-	import UsernameInput from '../elements/UsernameInput.vue'
-	import PasswordInput from '../elements/PasswordInput.vue'
-	import PasswordRepeatInput from '../elements/PasswordRepeatInput.vue'
-	import PrimaryButton from '../elements/PrimaryButton.vue'
-	import { blockUserInput, noteManager } from '../../global'
-	import { DEFAULT_ITERATIONS } from '../../services/storage/mimiri-store'
+import { computed, onMounted, ref } from 'vue'
+import TabBar from '../elements/TabBar.vue'
+import ItemHeader from '../subscription/ItemHeader.vue'
+import UsernameInput from '../elements/UsernameInput.vue'
+import PasswordInput from '../elements/PasswordInput.vue'
+import PasswordRepeatInput from '../elements/PasswordRepeatInput.vue'
+import PrimaryButton from '../elements/PrimaryButton.vue'
+import { blockUserInput, noteManager } from '../../global'
+import { DEFAULT_ITERATIONS } from '../../services/storage/mimiri-store'
 
-	const username = ref('')
-	const usernameValid = ref(false)
-	const currentPassword = ref('')
-	const password = ref('')
-	const passwordMatch = ref(false)
-	const loading = ref(false)
-	const chooseNewPassword = ref(false)
-	const errorMessage = ref('')
+const username = ref('')
+const usernameValid = ref(false)
+const currentPassword = ref('')
+const password = ref('')
+const passwordMatch = ref(false)
+const loading = ref(false)
+const chooseNewPassword = ref(false)
+const errorMessage = ref('')
 
-	const canCreate = computed(() => {
-		let result = !!password.value
-		result &&= passwordMatch.value
-		result ||= !chooseNewPassword.value
-		result &&= !!currentPassword.value
-		result &&= !!username.value
-		result &&= usernameValid.value
-		return result
-	})
+const canCreate = computed(() => {
+	let result = !!password.value
+	result &&= passwordMatch.value
+	result ||= !chooseNewPassword.value
+	result &&= !!currentPassword.value
+	result &&= !!username.value
+	result &&= usernameValid.value
+	return result
+})
 
-	onMounted(() => {
-		username.value = noteManager.state.username
-	})
+onMounted(() => {
+	username.value = noteManager.state.username
+})
 
-	const createAccount = async () => {
-		loading.value = true
-		blockUserInput.value = true
-		try {
-			await noteManager.session.promoteToCloudAccount(
-				username.value,
-				currentPassword.value,
-				password.value || currentPassword.value,
-				DEFAULT_ITERATIONS,
-			)
-		} catch (error) {
-			if (error instanceof Error && error.message === 'Incorrect password') {
-				errorMessage.value = 'Incorrect current password'
-			} else {
-				errorMessage.value = 'Error upgrading account. Please try again later.'
-				console.error('Error upgrading account:', error)
-			}
-		} finally {
-			loading.value = false
-			blockUserInput.value = false
+const createAccount = async () => {
+	loading.value = true
+	blockUserInput.value = true
+	try {
+		await noteManager.session.promoteToCloudAccount(
+			username.value,
+			currentPassword.value,
+			password.value || currentPassword.value,
+			DEFAULT_ITERATIONS,
+		)
+	} catch (error) {
+		if (error instanceof Error && error.message === 'Incorrect password') {
+			errorMessage.value = 'Incorrect current password'
+		} else {
+			errorMessage.value = 'Error upgrading account. Please try again later.'
+			console.error('Error upgrading account:', error)
 		}
+	} finally {
+		loading.value = false
+		blockUserInput.value = false
 	}
+}
 </script>

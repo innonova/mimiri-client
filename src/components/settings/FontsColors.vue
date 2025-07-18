@@ -64,65 +64,65 @@
 </template>
 
 <script setup lang="ts">
-	import { computed, onMounted, ref, watch } from 'vue'
-	import { settingsManager } from '../../services/settings-manager'
-	import TabBar from '../elements/TabBar.vue'
-	import { fontManager } from '../../global'
+import { computed, onMounted, ref, watch } from 'vue'
+import { settingsManager } from '../../services/settings-manager'
+import TabBar from '../elements/TabBar.vue'
+import { fontManager } from '../../global'
 
-	const emit = defineEmits(['close'])
+const emit = defineEmits(['close'])
 
-	const editorFontFamily = ref('')
-	const customFontFamily = ref('')
-	const editorFontSize = ref(14)
-	const canSave = computed(
-		() =>
-			currentFontFamily.value !== settingsManager.editorFontFamily ||
-			editorFontSize.value !== settingsManager.editorFontSize,
-	)
+const editorFontFamily = ref('')
+const customFontFamily = ref('')
+const editorFontSize = ref(14)
+const canSave = computed(
+	() =>
+		currentFontFamily.value !== settingsManager.editorFontFamily ||
+		editorFontSize.value !== settingsManager.editorFontSize,
+)
 
-	const currentFontFamily = computed(() =>
-		editorFontFamily.value !== 'CUSTOM' ? editorFontFamily.value : customFontFamily.value,
-	)
+const currentFontFamily = computed(() =>
+	editorFontFamily.value !== 'CUSTOM' ? editorFontFamily.value : customFontFamily.value,
+)
 
-	watch([editorFontFamily], () => {
-		if (editorFontFamily.value !== 'CUSTOM') {
-			fontManager.load(editorFontFamily.value)
-		}
-	})
-
-	onMounted(async () => {
-		if (fontManager.exists(settingsManager.editorFontFamily)) {
-			editorFontFamily.value = settingsManager.editorFontFamily
-		} else {
-			editorFontFamily.value = 'CUSTOM'
-			customFontFamily.value = settingsManager.editorFontFamily
-		}
-		editorFontSize.value = settingsManager.editorFontSize
-	})
-
-	const reset = async () => {
-		document.body.style.fontSize = '16px'
-		editorFontFamily.value = 'Consolas'
-		editorFontSize.value = 14
-		await save()
+watch([editorFontFamily], () => {
+	if (editorFontFamily.value !== 'CUSTOM') {
+		fontManager.load(editorFontFamily.value)
 	}
+})
 
-	const save = async () => {
-		if (editorFontFamily.value !== 'CUSTOM') {
-			settingsManager.editorFontFamily = editorFontFamily.value
-		} else {
-			settingsManager.editorFontFamily = customFontFamily.value
-		}
-		settingsManager.editorFontSize = editorFontSize.value
-		const root = document.querySelector(':root') as HTMLElement
-		root.style.setProperty(
-			'--font-editor',
-			`'${editorFontFamily.value}', 'Consolas', 'Menlo', 'Droid Sans Mono', 'monospace', 'Courier New'`,
-		)
-		root.style.setProperty('--text-size-editor', `${editorFontSize.value}px`)
+onMounted(async () => {
+	if (fontManager.exists(settingsManager.editorFontFamily)) {
+		editorFontFamily.value = settingsManager.editorFontFamily
+	} else {
+		editorFontFamily.value = 'CUSTOM'
+		customFontFamily.value = settingsManager.editorFontFamily
 	}
+	editorFontSize.value = settingsManager.editorFontSize
+})
 
-	const sampleText = `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent elit augue,
+const reset = async () => {
+	document.body.style.fontSize = '16px'
+	editorFontFamily.value = 'Consolas'
+	editorFontSize.value = 14
+	await save()
+}
+
+const save = async () => {
+	if (editorFontFamily.value !== 'CUSTOM') {
+		settingsManager.editorFontFamily = editorFontFamily.value
+	} else {
+		settingsManager.editorFontFamily = customFontFamily.value
+	}
+	settingsManager.editorFontSize = editorFontSize.value
+	const root = document.querySelector(':root') as HTMLElement
+	root.style.setProperty(
+		'--font-editor',
+		`'${editorFontFamily.value}', 'Consolas', 'Menlo', 'Droid Sans Mono', 'monospace', 'Courier New'`,
+	)
+	root.style.setProperty('--text-size-editor', `${editorFontSize.value}px`)
+}
+
+const sampleText = `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent elit augue,
 
 auctor eu vulputate ac, fringilla non lacus. Nam ornare viverra ex id molestie. Duis tempus, neque vel posuere porta, dui odio venenatis ex, id vestibulum diam ipsum sit amet nisl.
 

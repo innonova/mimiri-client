@@ -33,53 +33,53 @@
 </template>
 
 <script setup lang="ts">
-	import { ref } from 'vue'
-	import { noteManager } from '../../global'
-	import DialogTitle from '../elements/DialogTitle.vue'
-	import type { MimerNote } from '../../services/types/mimer-note'
-	import LoadingIcon from '../../icons/loading.vue'
-	const dialog = ref(null)
-	const code = ref('')
-	const codeInput = ref(null)
-	const loading = ref(null)
+import { ref } from 'vue'
+import { noteManager } from '../../global'
+import DialogTitle from '../elements/DialogTitle.vue'
+import type { MimerNote } from '../../services/types/mimer-note'
+import LoadingIcon from '../../icons/loading.vue'
+const dialog = ref(null)
+const code = ref('')
+const codeInput = ref(null)
+const loading = ref(null)
 
-	const invalid = ref(false)
-	let parent: MimerNote
+const invalid = ref(false)
+let parent: MimerNote
 
-	const show = (note?: MimerNote) => {
-		parent = note
-		code.value = ''
-		invalid.value = false
-		loading.value = false
-		dialog.value.showModal()
+const show = (note?: MimerNote) => {
+	parent = note
+	code.value = ''
+	invalid.value = false
+	loading.value = false
+	dialog.value.showModal()
+}
+
+const close = () => {
+	dialog.value.close()
+}
+
+const submitDialog = async () => {
+	invalid.value = false
+	if (!code.value.trim()) {
+		invalid.value = true
+		codeInput.value.focus()
+		return
 	}
-
-	const close = () => {
-		dialog.value.close()
-	}
-
-	const submitDialog = async () => {
-		invalid.value = false
-		if (!code.value.trim()) {
+	try {
+		loading.value = true
+		const offer = await noteManager.note.getShareOffer(code.value.trim())
+		if (offer) {
+			await noteManager.note.acceptShare(offer, parent)
+			close()
+		} else {
 			invalid.value = true
-			codeInput.value.focus()
-			return
 		}
-		try {
-			loading.value = true
-			const offer = await noteManager.note.getShareOffer(code.value.trim())
-			if (offer) {
-				await noteManager.note.acceptShare(offer, parent)
-				close()
-			} else {
-				invalid.value = true
-			}
-		} finally {
-			loading.value = false
-		}
+	} finally {
+		loading.value = false
 	}
+}
 
-	defineExpose({
-		show,
-	})
+defineExpose({
+	show,
+})
 </script>

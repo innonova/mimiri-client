@@ -101,54 +101,54 @@
 </template>
 
 <script setup lang="ts">
-	import { ref } from 'vue'
-	import { env, noteManager } from '../../global'
-	import LoadingIcon from '../../icons/loading.vue'
-	import { mimiriPlatform } from '../../services/mimiri-platform'
-	import { settingsManager } from '../../services/settings-manager'
-	import { deObfuscate } from '../../services/helpers'
-	import TabBar from '../elements/TabBar.vue'
-	import { AccountType } from '../../services/storage/type'
+import { ref } from 'vue'
+import { env, noteManager } from '../../global'
+import LoadingIcon from '../../icons/loading.vue'
+import { mimiriPlatform } from '../../services/mimiri-platform'
+import { settingsManager } from '../../services/settings-manager'
+import { deObfuscate } from '../../services/helpers'
+import TabBar from '../elements/TabBar.vue'
+import { AccountType } from '../../services/storage/type'
 
-	const understandDeleteAccount = ref(false)
-	const understandDeleteData = ref(false)
-	const understandRoRecovery = ref(false)
-	const deleteLocal = ref(false)
-	const capsLockOn = ref(false)
-	const error = ref('')
+const understandDeleteAccount = ref(false)
+const understandDeleteData = ref(false)
+const understandRoRecovery = ref(false)
+const deleteLocal = ref(false)
+const capsLockOn = ref(false)
+const error = ref('')
 
-	const loading = ref(false)
-	const password = ref('')
+const loading = ref(false)
+const password = ref('')
 
-	const pwKeyDown = event => {
-		capsLockOn.value = event.getModifierState('CapsLock')
-	}
+const pwKeyDown = event => {
+	capsLockOn.value = event.getModifierState('CapsLock')
+}
 
-	const deleteAccount = async () => {
-		loading.value = true
-		error.value = ''
-		if (password.value || noteManager.state.isAnonymous) {
-			try {
-				if (noteManager.state.isAnonymous) {
-					await noteManager.auth.deleteAccount(await deObfuscate(settingsManager.anonymousPassword), true)
-					settingsManager.anonymousUsername = undefined
-					settingsManager.anonymousPassword = undefined
-					settingsManager.showCreateOverCancel = true
-				} else {
-					await noteManager.auth.deleteAccount(password.value, deleteLocal.value)
-				}
-				loading.value = false
-				if (deleteLocal.value || noteManager.state.isAnonymous) {
-					await noteManager.session.logout()
-					location.reload()
-				}
-			} catch {
-				loading.value = false
-				error.value = 'Invalid password'
+const deleteAccount = async () => {
+	loading.value = true
+	error.value = ''
+	if (password.value || noteManager.state.isAnonymous) {
+		try {
+			if (noteManager.state.isAnonymous) {
+				await noteManager.auth.deleteAccount(await deObfuscate(settingsManager.anonymousPassword), true)
+				settingsManager.anonymousUsername = undefined
+				settingsManager.anonymousPassword = undefined
+				settingsManager.showCreateOverCancel = true
+			} else {
+				await noteManager.auth.deleteAccount(password.value, deleteLocal.value)
 			}
-		} else {
 			loading.value = false
-			error.value = 'Password required'
+			if (deleteLocal.value || noteManager.state.isAnonymous) {
+				await noteManager.session.logout()
+				location.reload()
+			}
+		} catch {
+			loading.value = false
+			error.value = 'Invalid password'
 		}
+	} else {
+		loading.value = false
+		error.value = 'Password required'
 	}
+}
 </script>

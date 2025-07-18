@@ -58,61 +58,61 @@
 </template>
 
 <script setup lang="ts">
-	import { computed, ref } from 'vue'
-	import DialogTitle from '../elements/DialogTitle.vue'
-	import LoadingIcon from '../../icons/loading.vue'
-	import { noteManager, updateManager } from '../../global'
+import { computed, ref } from 'vue'
+import DialogTitle from '../elements/DialogTitle.vue'
+import LoadingIcon from '../../icons/loading.vue'
+import { noteManager, updateManager } from '../../global'
 
-	const dialog = ref(null)
-	const username = ref('')
-	const password = ref('')
-	const loading = ref(false)
-	const error = ref(false)
-	const timeElapsed = ref('')
-	const longTime = ref(false)
-	const isInitial = ref(false)
-	const showVersion = ref(false)
-	const capsLockOn = ref(false)
+const dialog = ref(null)
+const username = ref('')
+const password = ref('')
+const loading = ref(false)
+const error = ref(false)
+const timeElapsed = ref('')
+const longTime = ref(false)
+const isInitial = ref(false)
+const showVersion = ref(false)
+const capsLockOn = ref(false)
 
-	const canLogin = computed(() => !!username.value && !!password.value)
+const canLogin = computed(() => !!username.value && !!password.value)
 
-	const show = (initial: boolean = false) => {
-		isInitial.value = initial
-		dialog.value.showModal()
-		showVersion.value = true
+const show = (initial: boolean = false) => {
+	isInitial.value = initial
+	dialog.value.showModal()
+	showVersion.value = true
+}
+
+const cancel = async () => {
+	loading.value = true
+	if (!noteManager.state.isLoggedIn) {
+		await noteManager.session.openLocal()
 	}
+	showVersion.value = false
+	loading.value = false
+	dialog.value.close()
+}
 
-	const cancel = async () => {
-		loading.value = true
-		if (!noteManager.state.isLoggedIn) {
-			await noteManager.session.openLocal()
-		}
+const login = async () => {
+	loading.value = true
+	error.value = false
+	await noteManager.session.logout()
+
+	if (await noteManager.session.login(username.value, password.value)) {
+		loading.value = false
+		await noteManager.tree.loadState()
 		showVersion.value = false
-		loading.value = false
 		dialog.value.close()
+	} else {
+		error.value = true
 	}
+	loading.value = false
+}
 
-	const login = async () => {
-		loading.value = true
-		error.value = false
-		await noteManager.session.logout()
+const pwKeyDown = event => {
+	capsLockOn.value = event.getModifierState('CapsLock')
+}
 
-		if (await noteManager.session.login(username.value, password.value)) {
-			loading.value = false
-			await noteManager.tree.loadState()
-			showVersion.value = false
-			dialog.value.close()
-		} else {
-			error.value = true
-		}
-		loading.value = false
-	}
-
-	const pwKeyDown = event => {
-		capsLockOn.value = event.getModifierState('CapsLock')
-	}
-
-	defineExpose({
-		show,
-	})
+defineExpose({
+	show,
+})
 </script>

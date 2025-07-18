@@ -35,78 +35,78 @@
 </template>
 
 <script setup lang="ts">
-	import { computed, onMounted, ref, watch } from 'vue'
-	import { useEventListener } from '@vueuse/core'
-	import { localAuth } from '../../services/local-auth'
-	import { passwordDialog } from '../../global'
-	import TabBar from '../elements/TabBar.vue'
+import { computed, onMounted, ref, watch } from 'vue'
+import { useEventListener } from '@vueuse/core'
+import { localAuth } from '../../services/local-auth'
+import { passwordDialog } from '../../global'
+import TabBar from '../elements/TabBar.vue'
 
-	let inputEnabled = false
+let inputEnabled = false
 
-	const pin = ref('')
-	const enabled = ref(false)
-	const changed = ref(false)
-	const canSave = computed(() => {
-		if (pin.value.length === 4) {
-			return changed.value
-		} else if (pin.value.length === 0 && !enabled.value) {
-			return enabled.value !== localAuth.pinEnabled
-		}
-		return false
-	})
-
-	onMounted(() => {
-		pin.value = localAuth.pin ?? ''
-		enabled.value = localAuth.pinEnabled
-		changed.value = false
-		inputEnabled = true
-	})
-
-	watch(pin, () => {
-		if (pin.value !== localAuth.pin) {
-			// latch to prevent using this screen from being used for figuring out the pin
-			changed.value = true
-		}
-		if (pin.value.length < 4) {
-			enabled.value = false
-		} else if (pin.value.length === 4) {
-			enabled.value = true
-		}
-	})
-
-	useEventListener(document, 'keydown', e => {
-		if (inputEnabled) {
-			if (e.key === 'Backspace') {
-				if (pin.value.length > 1) {
-					pin.value = pin.value.substring(0, pin.value.length - 1)
-				} else {
-					pin.value = ''
-				}
-			}
-		}
-	})
-
-	useEventListener(document, 'keypress', e => {
-		if (inputEnabled) {
-			if (e.key.charCodeAt(0) >= '0'.charCodeAt(0) && e.key.charCodeAt(0) <= '9'.charCodeAt(0)) {
-				if (pin.value.length < 4) {
-					pin.value += e.key
-				}
-			}
-		}
-	})
-
-	const save = () => {
-		inputEnabled = false
-		passwordDialog.value.show(
-			() => {
-				localAuth.setPin(pin.value)
-				inputEnabled = true
-				changed.value = false
-			},
-			() => {
-				inputEnabled = true
-			},
-		)
+const pin = ref('')
+const enabled = ref(false)
+const changed = ref(false)
+const canSave = computed(() => {
+	if (pin.value.length === 4) {
+		return changed.value
+	} else if (pin.value.length === 0 && !enabled.value) {
+		return enabled.value !== localAuth.pinEnabled
 	}
+	return false
+})
+
+onMounted(() => {
+	pin.value = localAuth.pin ?? ''
+	enabled.value = localAuth.pinEnabled
+	changed.value = false
+	inputEnabled = true
+})
+
+watch(pin, () => {
+	if (pin.value !== localAuth.pin) {
+		// latch to prevent using this screen from being used for figuring out the pin
+		changed.value = true
+	}
+	if (pin.value.length < 4) {
+		enabled.value = false
+	} else if (pin.value.length === 4) {
+		enabled.value = true
+	}
+})
+
+useEventListener(document, 'keydown', e => {
+	if (inputEnabled) {
+		if (e.key === 'Backspace') {
+			if (pin.value.length > 1) {
+				pin.value = pin.value.substring(0, pin.value.length - 1)
+			} else {
+				pin.value = ''
+			}
+		}
+	}
+})
+
+useEventListener(document, 'keypress', e => {
+	if (inputEnabled) {
+		if (e.key.charCodeAt(0) >= '0'.charCodeAt(0) && e.key.charCodeAt(0) <= '9'.charCodeAt(0)) {
+			if (pin.value.length < 4) {
+				pin.value += e.key
+			}
+		}
+	}
+})
+
+const save = () => {
+	inputEnabled = false
+	passwordDialog.value.show(
+		() => {
+			localAuth.setPin(pin.value)
+			inputEnabled = true
+			changed.value = false
+		},
+		() => {
+			inputEnabled = true
+		},
+	)
+}
 </script>

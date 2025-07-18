@@ -46,104 +46,104 @@
 </template>
 
 <script setup lang="ts">
-	import { ref, toRaw } from 'vue'
-	import type { ContextMenu, ContextMenuItem, ContextMenuPosition } from '../services/types/context-menu'
-	import ToolbarIcon from './ToolbarIcon.vue'
-	import { debug } from '../global'
+import { ref, toRaw } from 'vue'
+import type { ContextMenu, ContextMenuItem, ContextMenuPosition } from '../services/types/context-menu'
+import ToolbarIcon from './ToolbarIcon.vue'
+import { debug } from '../global'
 
-	const visible = ref(false)
-	const top = ref('0px')
-	const left = ref('0px')
-	const backdropTop = ref('0px')
-	const config = ref<ContextMenu>({ items: [] })
-	let activationCallback: (item?: ContextMenuItem) => void = undefined
-	const contextMenu = ref(null)
-	let showTime = Date.now()
+const visible = ref(false)
+const top = ref('0px')
+const left = ref('0px')
+const backdropTop = ref('0px')
+const config = ref<ContextMenu>({ items: [] })
+let activationCallback: (item?: ContextMenuItem) => void = undefined
+const contextMenu = ref(null)
+let showTime = Date.now()
 
-	const close = e => {
-		if (Date.now() - showTime < 1000 && e?.button === 2) {
-			return // ignore right mouse up after context menu on some platforms
-		}
-		visible.value = false
-		try {
-			activationCallback?.()
-		} catch (ex) {
-			debug.logError('Error closing context menu', ex)
-		}
-		activationCallback = undefined
+const close = e => {
+	if (Date.now() - showTime < 1000 && e?.button === 2) {
+		return // ignore right mouse up after context menu on some platforms
 	}
-
-	const isVisibleAfter = (item: ContextMenuItem) => {
-		const items = config.value.items
-		const index = items.indexOf(item)
-		for (let i = index + 1; i < items.length; i++) {
-			if (items[i].visible !== false) {
-				return true
-			}
-		}
-		return false
+	visible.value = false
+	try {
+		activationCallback?.()
+	} catch (ex) {
+		debug.logError('Error closing context menu', ex)
 	}
+	activationCallback = undefined
+}
 
-	const adjustPosition = (position: ContextMenuPosition, windowWidth: number, windowHeight: number) => {
+const isVisibleAfter = (item: ContextMenuItem) => {
+	const items = config.value.items
+	const index = items.indexOf(item)
+	for (let i = index + 1; i < items.length; i++) {
+		if (items[i].visible !== false) {
+			return true
+		}
+	}
+	return false
+}
+
+const adjustPosition = (position: ContextMenuPosition, windowWidth: number, windowHeight: number) => {
+	const rect = contextMenu.value.getBoundingClientRect()
+	const deltaTop = rect.bottom - windowHeight
+	const deltaLeft = rect.right - windowWidth
+	if (deltaTop > 0) {
+		top.value = `${position.y - deltaTop}px`
+	}
+	if (position.alignRight) {
+		left.value = `${position.x - rect.width}px`
+	} else if (deltaLeft > 0) {
+		left.value = `${position.x - deltaLeft}px`
+	}
+	visible.value = true
+}
+
+const show = (position: ContextMenuPosition, conf: ContextMenu, callback: (item: ContextMenuItem) => void) => {
+	const windowHeight = window.innerHeight - 10
+	const windowWidth = window.innerWidth - 10
+	activationCallback = callback
+	top.value = `${position.y}px`
+	left.value = `${position.x}px`
+	if (position.alignRight) {
 		const rect = contextMenu.value.getBoundingClientRect()
-		const deltaTop = rect.bottom - windowHeight
-		const deltaLeft = rect.right - windowWidth
-		if (deltaTop > 0) {
-			top.value = `${position.y - deltaTop}px`
-		}
-		if (position.alignRight) {
-			left.value = `${position.x - rect.width}px`
-		} else if (deltaLeft > 0) {
-			left.value = `${position.x - deltaLeft}px`
-		}
-		visible.value = true
+		left.value = `${position.x - rect.width}px`
 	}
+	backdropTop.value = `${position.backdropTop ?? 0}px`
+	config.value = conf
+	setTimeout(() => adjustPosition(position, windowWidth, windowHeight))
+	showTime = Date.now()
+}
 
-	const show = (position: ContextMenuPosition, conf: ContextMenu, callback: (item: ContextMenuItem) => void) => {
-		const windowHeight = window.innerHeight - 10
-		const windowWidth = window.innerWidth - 10
-		activationCallback = callback
-		top.value = `${position.y}px`
-		left.value = `${position.x}px`
-		if (position.alignRight) {
-			const rect = contextMenu.value.getBoundingClientRect()
-			left.value = `${position.x - rect.width}px`
-		}
-		backdropTop.value = `${position.backdropTop ?? 0}px`
-		config.value = conf
-		setTimeout(() => adjustPosition(position, windowWidth, windowHeight))
-		showTime = Date.now()
+const activateItem = (item: ContextMenuItem) => {
+	try {
+		activationCallback?.(toRaw(item))
+	} catch (ex) {
+		debug.logError('Error activating context menu item', ex)
 	}
+	activationCallback = undefined
+}
 
-	const activateItem = (item: ContextMenuItem) => {
-		try {
-			activationCallback?.(toRaw(item))
-		} catch (ex) {
-			debug.logError('Error activating context menu item', ex)
-		}
-		activationCallback = undefined
-	}
-
-	defineExpose({
-		show,
-		close,
-	})
+defineExpose({
+	show,
+	close,
+})
 </script>
 
 <style scoped>
-	.top-back-drop {
-		top: v-bind(backdropTop);
-	}
+.top-back-drop {
+	top: v-bind(backdropTop);
+}
 
-	.left-menu {
-		left: v-bind(left);
-	}
+.left-menu {
+	left: v-bind(left);
+}
 
-	.top-menu {
-		top: v-bind(top);
-	}
+.top-menu {
+	top: v-bind(top);
+}
 
-	.no-drag {
-		-webkit-app-region: no-drag;
-	}
+.no-drag {
+	-webkit-app-region: no-drag;
+}
 </style>

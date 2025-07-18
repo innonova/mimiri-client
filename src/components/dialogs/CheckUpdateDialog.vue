@@ -17,24 +17,24 @@
 </template>
 
 <script setup lang="ts">
-	import { ref } from 'vue'
-	import { updateManager } from '../../global'
-	import DialogTitle from '../elements/DialogTitle.vue'
-	const dialog = ref(null)
+import { ref } from 'vue'
+import { updateManager } from '../../global'
+import DialogTitle from '../elements/DialogTitle.vue'
+const dialog = ref(null)
 
-	const show = () => {
-		dialog.value.showModal()
-	}
+const show = () => {
+	dialog.value.showModal()
+}
 
-	const update = () => {
-		dialog.value.close()
-	}
+const update = () => {
+	dialog.value.close()
+}
 
-	const close = () => {
-		dialog.value.close()
-	}
+const close = () => {
+	dialog.value.close()
+}
 
-	defineExpose({
-		show,
-	})
+defineExpose({
+	show,
+})
 </script>

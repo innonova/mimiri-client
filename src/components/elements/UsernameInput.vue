@@ -27,123 +27,123 @@
 </template>
 
 <script setup lang="ts">
-	import { onMounted, ref, watch } from 'vue'
-	import { noteManager } from '../../global'
-	import { Debounce } from '../../services/helpers'
-	import LoadingIcon from '../../icons/loading.vue'
-	import AvailableIcon from '../../icons/available.vue'
-	import UnavailableIcon from '../../icons/unavailable.vue'
-	import { AccountType } from '../../services/storage/type'
+import { onMounted, ref, watch } from 'vue'
+import { noteManager } from '../../global'
+import { Debounce } from '../../services/helpers'
+import LoadingIcon from '../../icons/loading.vue'
+import AvailableIcon from '../../icons/available.vue'
+import UnavailableIcon from '../../icons/unavailable.vue'
+import { AccountType } from '../../services/storage/type'
 
-	const disallowString = '!"#$:%&@\'()*/=?[]{}~^`'
-	const disallowRegex = /[!"#$:%&@'()*/=?[\]{}~\^\\`\s]/
+const disallowString = '!"#$:%&@\'()*/=?[]{}~^`'
+const disallowRegex = /[!"#$:%&@'()*/=?[\]{}~\^\\`\s]/
 
-	const props = defineProps<{
-		displayCurrent: boolean
-		checkUsername: boolean
-	}>()
+const props = defineProps<{
+	displayCurrent: boolean
+	checkUsername: boolean
+}>()
 
-	const username = defineModel<string>('value')
-	const valid = defineModel<boolean>('valid')
+const username = defineModel<string>('value')
+const valid = defineModel<boolean>('valid')
 
-	const emit = defineEmits(['changed'])
+const emit = defineEmits(['changed'])
 
-	const canSave = ref(false)
-	const usernameCurrent = ref(false)
-	const usernameInvalid = ref(false)
-	const usernameAvailable = ref(false)
-	const usernameUnavailable = ref(false)
-	const usernameInProgress = ref(false)
+const canSave = ref(false)
+const usernameCurrent = ref(false)
+const usernameInvalid = ref(false)
+const usernameAvailable = ref(false)
+const usernameUnavailable = ref(false)
+const usernameInProgress = ref(false)
 
-	let lastUsernameChecked = ''
+let lastUsernameChecked = ''
 
-	const checkUsernameDebounce = new Debounce(async () => {
-		if (lastUsernameChecked === username.value) {
-			return
-		}
-		lastUsernameChecked = username.value
-		try {
-			if (noteManager.state.isOnline && username.value === noteManager.state.username) {
-				usernameCurrent.value = true
-				usernameInvalid.value = false
-				usernameInProgress.value = false
-				usernameAvailable.value = false
-				usernameUnavailable.value = false
-				return
-			}
-			usernameCurrent.value = false
-			if (username.value.trim().length === 0) {
-				usernameInvalid.value = false
-				usernameInProgress.value = false
-				usernameAvailable.value = false
-				usernameUnavailable.value = false
-				return
-			}
-			if (disallowRegex.test(username.value) || username.value === 'local') {
-				usernameInvalid.value = true
-				usernameInProgress.value = false
-				usernameAvailable.value = false
-				usernameUnavailable.value = false
-				return
-			}
-			if (username.value?.toLowerCase().startsWith('mimiri')) {
-				usernameInvalid.value = true
-				usernameInProgress.value = false
-				usernameAvailable.value = false
-				usernameUnavailable.value = false
-				return
-			}
+const checkUsernameDebounce = new Debounce(async () => {
+	if (lastUsernameChecked === username.value) {
+		return
+	}
+	lastUsernameChecked = username.value
+	try {
+		if (noteManager.state.isOnline && username.value === noteManager.state.username) {
+			usernameCurrent.value = true
 			usernameInvalid.value = false
-			usernameInProgress.value = true
+			usernameInProgress.value = false
 			usernameAvailable.value = false
 			usernameUnavailable.value = false
-			const value = username.value
-
-			let available = true
-			if (props.checkUsername === undefined || props.checkUsername === true) {
-				available = await noteManager.auth.checkUsername(value)
-			}
-			if (value === username.value) {
-				usernameAvailable.value = available
-				usernameUnavailable.value = !available
-				usernameInProgress.value = false
-			}
-		} finally {
-			canSave.value =
-				usernameAvailable.value && !usernameInvalid.value && !usernameCurrent.value && !usernameUnavailable.value
-
-			valid.value = canSave.value
-			emit('changed', canSave.value, username.value)
+			return
 		}
-	}, 500)
-
-	watch([username, props], () => {
-		checkUsernameDebounce.activate()
-	})
-
-	onMounted(() => {
-		const shouldCheck = props.checkUsername === undefined || props.checkUsername === true
-		usernameCurrent.value = true
+		usernameCurrent.value = false
+		if (username.value.trim().length === 0) {
+			usernameInvalid.value = false
+			usernameInProgress.value = false
+			usernameAvailable.value = false
+			usernameUnavailable.value = false
+			return
+		}
+		if (disallowRegex.test(username.value) || username.value === 'local') {
+			usernameInvalid.value = true
+			usernameInProgress.value = false
+			usernameAvailable.value = false
+			usernameUnavailable.value = false
+			return
+		}
+		if (username.value?.toLowerCase().startsWith('mimiri')) {
+			usernameInvalid.value = true
+			usernameInProgress.value = false
+			usernameAvailable.value = false
+			usernameUnavailable.value = false
+			return
+		}
 		usernameInvalid.value = false
-		usernameInProgress.value = false
+		usernameInProgress.value = true
 		usernameAvailable.value = false
 		usernameUnavailable.value = false
-		if (props.displayCurrent) {
-			username.value = noteManager.state.username
-		}
-		if (noteManager.state.accountType === AccountType.Local && shouldCheck) {
-			usernameCurrent.value = false
-			usernameInProgress.value = true
-		}
-		canSave.value = !shouldCheck
-		emit('changed', canSave.value)
-	})
+		const value = username.value
 
-	const refresh = () => {
-		checkUsernameDebounce.activate()
+		let available = true
+		if (props.checkUsername === undefined || props.checkUsername === true) {
+			available = await noteManager.auth.checkUsername(value)
+		}
+		if (value === username.value) {
+			usernameAvailable.value = available
+			usernameUnavailable.value = !available
+			usernameInProgress.value = false
+		}
+	} finally {
+		canSave.value =
+			usernameAvailable.value && !usernameInvalid.value && !usernameCurrent.value && !usernameUnavailable.value
+
+		valid.value = canSave.value
+		emit('changed', canSave.value, username.value)
 	}
+}, 500)
 
-	defineExpose({
-		refresh,
-	})
+watch([username, props], () => {
+	checkUsernameDebounce.activate()
+})
+
+onMounted(() => {
+	const shouldCheck = props.checkUsername === undefined || props.checkUsername === true
+	usernameCurrent.value = true
+	usernameInvalid.value = false
+	usernameInProgress.value = false
+	usernameAvailable.value = false
+	usernameUnavailable.value = false
+	if (props.displayCurrent) {
+		username.value = noteManager.state.username
+	}
+	if (noteManager.state.accountType === AccountType.Local && shouldCheck) {
+		usernameCurrent.value = false
+		usernameInProgress.value = true
+	}
+	canSave.value = !shouldCheck
+	emit('changed', canSave.value)
+})
+
+const refresh = () => {
+	checkUsernameDebounce.activate()
+}
+
+defineExpose({
+	refresh,
+})
 </script>

@@ -150,133 +150,133 @@
 </template>
 
 <script setup lang="ts">
-	import { ref } from 'vue'
-	import { noteManager, searchInput, showSearchBox, ipcClient, notificationManager } from '../global'
-	import ScreenShareEnabledIcon from '../icons/screen-sharing-enabled.vue'
-	import ScreenShareDisabledIcon from '../icons/screen-sharing-disabled.vue'
-	import AccountIcon from '../icons/account.vue'
-	import NotificationIcon from '../icons/notification.vue'
-	import NotificationActiveIcon from '../icons/notification-active.vue'
-	import { searchManager } from '../services/search-manager'
-	import { MenuItems, menuManager } from '../services/menu-manager'
-	import { settingsManager } from '../services/settings-manager'
-	import { mimiriPlatform } from '../services/mimiri-platform'
-	import { useEventListener } from '@vueuse/core'
-	import { AccountType } from '../services/storage/type'
+import { ref } from 'vue'
+import { noteManager, searchInput, showSearchBox, ipcClient, notificationManager } from '../global'
+import ScreenShareEnabledIcon from '../icons/screen-sharing-enabled.vue'
+import ScreenShareDisabledIcon from '../icons/screen-sharing-disabled.vue'
+import AccountIcon from '../icons/account.vue'
+import NotificationIcon from '../icons/notification.vue'
+import NotificationActiveIcon from '../icons/notification-active.vue'
+import { searchManager } from '../services/search-manager'
+import { MenuItems, menuManager } from '../services/menu-manager'
+import { settingsManager } from '../services/settings-manager'
+import { mimiriPlatform } from '../services/mimiri-platform'
+import { useEventListener } from '@vueuse/core'
+import { AccountType } from '../services/storage/type'
 
-	const hasFocus = ref(true)
+const hasFocus = ref(true)
 
-	const updateTitleBar = () => {
-		hasFocus.value = document.hasFocus()
-		if (!document.hasFocus() && menuManager.state.menuShowing) {
-			menuManager.close()
-		}
+const updateTitleBar = () => {
+	hasFocus.value = document.hasFocus()
+	if (!document.hasFocus() && menuManager.state.menuShowing) {
+		menuManager.close()
 	}
+}
 
-	updateTitleBar()
+updateTitleBar()
 
-	useEventListener(window, 'blur-sm', () => updateTitleBar())
-	useEventListener(window, 'focus', () => updateTitleBar())
+useEventListener(window, 'blur-sm', () => updateTitleBar())
+useEventListener(window, 'focus', () => updateTitleBar())
 
-	const toggleScreenSharing = () => {
-		settingsManager.allowScreenSharing = !settingsManager.allowScreenSharing
+const toggleScreenSharing = () => {
+	settingsManager.allowScreenSharing = !settingsManager.allowScreenSharing
+}
+
+const searchAllNotes = () => {
+	searchInput.value.focus()
+}
+
+const checkSearch = e => {
+	e.stopPropagation()
+	if (e.key === 'Escape') {
+		searchInput.value.blur()
 	}
-
-	const searchAllNotes = () => {
-		searchInput.value.focus()
+	if (e.key === 'Enter') {
+		showSearchBox.value = true
+		searchManager.search(searchInput.value.value)
 	}
+}
 
-	const checkSearch = e => {
-		e.stopPropagation()
-		if (e.key === 'Escape') {
-			searchInput.value.blur()
-		}
-		if (e.key === 'Enter') {
-			showSearchBox.value = true
-			searchManager.search(searchInput.value.value)
-		}
+const endEdit = e => {
+	searchManager.updateTerm(searchInput.value.value)
+}
+
+const notificationsClick = () => {
+	if (notificationManager.count > 0) {
+		menuManager.close()
+		notificationManager.show()
 	}
+}
 
-	const endEdit = e => {
-		searchManager.updateTerm(searchInput.value.value)
+const menuHover = (event, menu: string) => {
+	if (menuManager.state.menuShowing) {
+		event.stopPropagation()
+		event.preventDefault()
+		const rect = event.target.getBoundingClientRect()
+		showMenu(rect, menu)
 	}
+}
 
-	const notificationsClick = () => {
-		if (notificationManager.count > 0) {
-			menuManager.close()
-			notificationManager.show()
-		}
+const menuClick = (event, menu: string) => {
+	if (!menuManager.state.menuShowing) {
+		event.stopPropagation()
+		event.preventDefault()
+		const rect = event.target.getBoundingClientRect()
+		showMenu(rect, menu)
+	} else {
+		menuManager.close()
 	}
+}
 
-	const menuHover = (event, menu: string) => {
-		if (menuManager.state.menuShowing) {
-			event.stopPropagation()
-			event.preventDefault()
-			const rect = event.target.getBoundingClientRect()
-			showMenu(rect, menu)
-		}
+const titleBarClick = () => {
+	if (menuManager.state.menuShowing) {
+		menuManager.close()
 	}
+}
 
-	const menuClick = (event, menu: string) => {
-		if (!menuManager.state.menuShowing) {
-			event.stopPropagation()
-			event.preventDefault()
-			const rect = event.target.getBoundingClientRect()
-			showMenu(rect, menu)
-		} else {
-			menuManager.close()
-		}
+const showMenu = (rect, menu) => {
+	if (menu === 'file') {
+		menuManager.showMenu({ x: rect.left, y: rect.bottom - 30, backdropTop: 32 }, menuManager.fileMenu)
 	}
-
-	const titleBarClick = () => {
-		if (menuManager.state.menuShowing) {
-			menuManager.close()
-		}
+	if (menu === 'edit') {
+		menuManager.showMenu({ x: rect.left, y: rect.bottom - 30, backdropTop: 32 }, menuManager.editMenu)
 	}
-
-	const showMenu = (rect, menu) => {
-		if (menu === 'file') {
-			menuManager.showMenu({ x: rect.left, y: rect.bottom - 30, backdropTop: 32 }, menuManager.fileMenu)
-		}
-		if (menu === 'edit') {
-			menuManager.showMenu({ x: rect.left, y: rect.bottom - 30, backdropTop: 32 }, menuManager.editMenu)
-		}
-		if (menu === 'view') {
-			menuManager.showMenu({ x: rect.left, y: rect.bottom - 30, backdropTop: 32 }, menuManager.viewMenu)
-		}
-		if (menu === 'tools') {
-			menuManager.showMenu({ x: rect.left, y: rect.bottom - 30, backdropTop: 32 }, menuManager.toolsMenu)
-		}
-		if (menu === 'help') {
-			menuManager.showMenu({ x: rect.left, y: rect.bottom - 30, backdropTop: 32 }, menuManager.helpMenu)
-		}
-		if (menu === 'account') {
-			if (noteManager.state.accountType === AccountType.None) {
-				menuManager.showMenu({ x: rect.right, y: rect.bottom - 30, backdropTop: 32, alignRight: true }, [
-					MenuItems.CreateAccount,
-					MenuItems.Separator,
-					MenuItems.Login,
-				])
-				return
-			}
+	if (menu === 'view') {
+		menuManager.showMenu({ x: rect.left, y: rect.bottom - 30, backdropTop: 32 }, menuManager.viewMenu)
+	}
+	if (menu === 'tools') {
+		menuManager.showMenu({ x: rect.left, y: rect.bottom - 30, backdropTop: 32 }, menuManager.toolsMenu)
+	}
+	if (menu === 'help') {
+		menuManager.showMenu({ x: rect.left, y: rect.bottom - 30, backdropTop: 32 }, menuManager.helpMenu)
+	}
+	if (menu === 'account') {
+		if (noteManager.state.accountType === AccountType.None) {
 			menuManager.showMenu({ x: rect.right, y: rect.bottom - 30, backdropTop: 32, alignRight: true }, [
-				...(noteManager.state.isAnonymous
-					? [MenuItems.CreatePassword, MenuItems.DeleteAccount]
-					: [
-							MenuItems.ChangeUsername,
-							MenuItems.ChangePassword,
-							...(mimiriPlatform.isElectron ? [MenuItems.SetPin] : []),
-						]),
-				...(mimiriPlatform.isDesktop ? [MenuItems.Separator, MenuItems.ManageSubscription] : []),
-				...(!noteManager.state.isAnonymous && ipcClient.isAvailable ? [MenuItems.Separator] : []),
-				...(noteManager.state.isAnonymous ? [MenuItems.Login] : [MenuItems.Logout]),
+				MenuItems.CreateAccount,
 				MenuItems.Separator,
-				MenuItems.WorkOffline,
+				MenuItems.Login,
 			])
+			return
 		}
+		menuManager.showMenu({ x: rect.right, y: rect.bottom - 30, backdropTop: 32, alignRight: true }, [
+			...(noteManager.state.isAnonymous
+				? [MenuItems.CreatePassword, MenuItems.DeleteAccount]
+				: [
+						MenuItems.ChangeUsername,
+						MenuItems.ChangePassword,
+						...(mimiriPlatform.isElectron ? [MenuItems.SetPin] : []),
+					]),
+			...(mimiriPlatform.isDesktop ? [MenuItems.Separator, MenuItems.ManageSubscription] : []),
+			...(!noteManager.state.isAnonymous && ipcClient.isAvailable ? [MenuItems.Separator] : []),
+			...(noteManager.state.isAnonymous ? [MenuItems.Login] : [MenuItems.Logout]),
+			MenuItems.Separator,
+			MenuItems.WorkOffline,
+		])
 	}
+}
 
-	defineExpose({
-		searchAllNotes,
-	})
+defineExpose({
+	searchAllNotes,
+})
 </script>

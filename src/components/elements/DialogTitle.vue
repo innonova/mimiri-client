@@ -14,95 +14,95 @@
 </template>
 
 <script setup lang="ts">
-	import { ref } from 'vue'
-	import CloseButton from '../elements/CloseButton.vue'
-	import { noteManager } from '../../global'
+import { ref } from 'vue'
+import CloseButton from '../elements/CloseButton.vue'
+import { noteManager } from '../../global'
 
-	const titleBar = ref(null)
+const titleBar = ref(null)
 
-	const props = defineProps<{
-		disabled?: boolean
-	}>()
+const props = defineProps<{
+	disabled?: boolean
+}>()
 
-	let dialog
-	let captured = false
-	let startX = 0
-	let startY = 0
-	let lastX = 0
-	let lastY = 0
-	let offsetY = 0
-	let offsetX = 0
-	let offsetHeight = 0
+let dialog
+let captured = false
+let startX = 0
+let startY = 0
+let lastX = 0
+let lastY = 0
+let offsetY = 0
+let offsetX = 0
+let offsetHeight = 0
 
-	const findDialog = (elm: HTMLElement) => {
-		if (elm.tagName === 'DIALOG') {
-			return elm
-		}
-		if (elm.parentElement) {
-			return findDialog(elm.parentElement)
-		}
-		return undefined
+const findDialog = (elm: HTMLElement) => {
+	if (elm.tagName === 'DIALOG') {
+		return elm
 	}
-
-	const emit = defineEmits(['close'])
-
-	const down = (e: PointerEvent) => {
-		if (noteManager.state.isMobile) {
-			return
-		}
-		offsetY = e.offsetY
-		offsetX = e.offsetX
-		offsetHeight = titleBar.value.offsetHeight
-		startX = e.clientX - lastX
-		startY = e.clientY - lastY
-		captured = true
-		titleBar.value.setPointerCapture(e.pointerId)
+	if (elm.parentElement) {
+		return findDialog(elm.parentElement)
 	}
+	return undefined
+}
 
-	const up = (e: PointerEvent) => {
-		if (noteManager.state.isMobile) {
-			return
-		}
-		captured = false
-		titleBar.value.releasePointerCapture(e.pointerId)
+const emit = defineEmits(['close'])
+
+const down = (e: PointerEvent) => {
+	if (noteManager.state.isMobile) {
+		return
 	}
+	offsetY = e.offsetY
+	offsetX = e.offsetX
+	offsetHeight = titleBar.value.offsetHeight
+	startX = e.clientX - lastX
+	startY = e.clientY - lastY
+	captured = true
+	titleBar.value.setPointerCapture(e.pointerId)
+}
 
-	const move = (e: PointerEvent) => {
-		if (noteManager.state.isMobile) {
-			return
+const up = (e: PointerEvent) => {
+	if (noteManager.state.isMobile) {
+		return
+	}
+	captured = false
+	titleBar.value.releasePointerCapture(e.pointerId)
+}
+
+const move = (e: PointerEvent) => {
+	if (noteManager.state.isMobile) {
+		return
+	}
+	if (captured) {
+		let clientX = e.clientX
+		let clientY = e.clientY
+		if (clientX < offsetHeight) {
+			clientX = offsetHeight
 		}
-		if (captured) {
-			let clientX = e.clientX
-			let clientY = e.clientY
-			if (clientX < offsetHeight) {
-				clientX = offsetHeight
-			}
-			if (clientY < offsetY) {
-				clientY = offsetY
-			}
-			if (clientX > window.innerWidth - offsetHeight + offsetX) {
-				clientX = window.innerWidth - offsetHeight + offsetX
-			}
-			if (clientY > window.innerHeight - offsetHeight + offsetY) {
-				clientY = window.innerHeight - offsetHeight + offsetY
-			}
+		if (clientY < offsetY) {
+			clientY = offsetY
+		}
+		if (clientX > window.innerWidth - offsetHeight + offsetX) {
+			clientX = window.innerWidth - offsetHeight + offsetX
+		}
+		if (clientY > window.innerHeight - offsetHeight + offsetY) {
+			clientY = window.innerHeight - offsetHeight + offsetY
+		}
 
-			const x = Math.round(clientX - startX)
-			const y = Math.round(clientY - startY)
-			if (Math.abs(lastX - x) > 1 || Math.abs(lastY - y) > 1) {
-				if (!dialog) {
-					dialog = findDialog(titleBar.value)
-				}
-				lastX = x
-				lastY = y
-				if (dialog) {
-					dialog.style.transform = `translate(${x}px,${y}px)`
-				}
+		const x = Math.round(clientX - startX)
+		const y = Math.round(clientY - startY)
+		if (Math.abs(lastX - x) > 1 || Math.abs(lastY - y) > 1) {
+			if (!dialog) {
+				dialog = findDialog(titleBar.value)
+			}
+			lastX = x
+			lastY = y
+			if (dialog) {
+				dialog.style.transform = `translate(${x}px,${y}px)`
 			}
 		}
 	}
+}
 
-	const close = event => {
-		emit('close', event)
-	}
+const close = event => {
+	emit('close', event)
+}
 </script>

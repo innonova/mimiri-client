@@ -24,44 +24,44 @@
 </template>
 
 <script setup lang="ts">
-	import { ref } from 'vue'
-	import Notification from './Notification.vue'
-	import { notificationManager } from '../global'
+import { ref } from 'vue'
+import Notification from './Notification.vue'
+import { notificationManager } from '../global'
 
-	const visible = ref(false)
-	const top = ref('36px')
+const visible = ref(false)
+const top = ref('36px')
 
-	const stopPropagation = e => {
-		e.stopPropagation()
-	}
+const stopPropagation = e => {
+	e.stopPropagation()
+}
 
-	const markAllRead = e => {
-		e.stopPropagation()
-		notificationManager.markAllAsRead()
-	}
+const markAllRead = e => {
+	e.stopPropagation()
+	notificationManager.markAllAsRead()
+}
 
-	const close = () => {
-		visible.value = false
-	}
+const close = () => {
+	visible.value = false
+}
 
-	const show = (topOffset: number) => {
-		visible.value = true
-		top.value = `${topOffset}px`
-	}
+const show = (topOffset: number) => {
+	visible.value = true
+	top.value = `${topOffset}px`
+}
 
-	const isShowing = () => {
-		return visible.value
-	}
+const isShowing = () => {
+	return visible.value
+}
 
-	defineExpose({
-		show,
-		close,
-		isShowing,
-	})
+defineExpose({
+	show,
+	close,
+	isShowing,
+})
 </script>
 
 <style scoped>
-	.top-menu {
-		top: v-bind(top);
-	}
+.top-menu {
+	top: v-bind(top);
+}
 </style>

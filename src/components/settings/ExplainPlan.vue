@@ -8,5 +8,5 @@
 </template>
 
 <script setup lang="ts">
-	import TabBar from '../elements/TabBar.vue'
+import TabBar from '../elements/TabBar.vue'
 </script>

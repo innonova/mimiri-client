@@ -19,6 +19,6 @@
 	</div>
 </template>
 <script setup lang="ts">
-	import { Period } from '../../services/types/subscription'
-	const model = defineModel<Period>()
+import { Period } from '../../services/types/subscription'
+const model = defineModel<Period>()
 </script>

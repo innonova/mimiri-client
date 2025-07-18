@@ -98,444 +98,444 @@
 </template>
 
 <script setup lang="ts">
-	import { computed, onMounted, ref, watch } from 'vue'
-	import NoteTreeView from './components/NoteTreeView.vue'
-	import NoteEditor from './components/NoteEditor.vue'
-	import MainToolbar from './components/MainToolbar.vue'
-	import TitleBar from './components/TitleBar.vue'
-	import ContextMenu from './components/ContextMenu.vue'
-	import NotificationList from './components/NotificationList.vue'
-	import DeleteNodeDialog from './components/dialogs/DeleteNodeDialog.vue'
-	import DeleteMethodDialog from './components/dialogs/DeleteMethodDialog.vue'
-	import ShareDialog from './components/dialogs/ShareDialog.vue'
-	import AcceptShareDialog from './components/dialogs/AcceptShareDialog.vue'
-	import SaveEmptyNodeDialog from './components/dialogs/SaveEmptyNodeDialog.vue'
-	import LimitDialog from './components/dialogs/LimitDialog.vue'
-	import PasswordDialog from './components/dialogs/PasswordDialog.vue'
-	import LoginDialog from './components/dialogs/LoginDialog.vue'
-	import ConvertAccount from './components/ConvertAccount.vue'
-	import SearchBox from './components/SearchBox.vue'
-	import EmptyRecycleBinDialog from './components/dialogs/EmptyRecycleBinDialog.vue'
-	import PasswordGeneratorDialog from './components/dialogs/PasswordGeneratorDialog.vue'
-	import {
-		noteManager,
-		contextMenu,
-		shareDialog,
-		acceptShareDialog,
-		showSearchBox,
-		deleteNodeDialog,
-		emptyRecycleBinDialog,
-		passwordGeneratorDialog,
-		showCreateAccount,
-		showConvertAccount,
-		mainToolbar,
-		noteEditor,
-		noteTreeView,
-		notificationList,
-		titleBar,
-		ipcClient,
-		mimiriEditor,
-		saveEmptyNodeDialog,
-		passwordDialog,
-		loginDialog,
-		limitDialog,
-		updateManager,
-		deletePaymentMethodDialog,
-		deleteHistoryDialog,
-		infoDialog,
-		debug,
-		blockUserInput,
-		appStatus,
-		inconsistencyDialog,
-		syncStatus,
-	} from './global'
-	import { settingsManager } from './services/settings-manager'
-	import LoadingIcon from './icons/loading.vue'
-	import { mimiriPlatform } from './services/mimiri-platform'
-	import { menuManager } from './services/menu-manager'
-	import { Debounce, deObfuscate } from './services/helpers'
-	import { localAuth } from './services/local-auth'
-	import LockScreen from './components/LockScreen.vue'
-	import { useEventListener } from '@vueuse/core'
-	import SystemPage from './components/SystemPage.vue'
-	import { ViewMode } from './services/storage/type'
-	import PropertiesPage from './components/PropertiesPage.vue'
-	import DeleteHistoryDialog from './components/dialogs/DeleteHistoryDialog.vue'
-	import InfoDialog from './components/dialogs/InfoDialog.vue'
-	import InconsistencyDialog from './components/dialogs/InconsistencyDialog.vue'
+import { computed, onMounted, ref, watch } from 'vue'
+import NoteTreeView from './components/NoteTreeView.vue'
+import NoteEditor from './components/NoteEditor.vue'
+import MainToolbar from './components/MainToolbar.vue'
+import TitleBar from './components/TitleBar.vue'
+import ContextMenu from './components/ContextMenu.vue'
+import NotificationList from './components/NotificationList.vue'
+import DeleteNodeDialog from './components/dialogs/DeleteNodeDialog.vue'
+import DeleteMethodDialog from './components/dialogs/DeleteMethodDialog.vue'
+import ShareDialog from './components/dialogs/ShareDialog.vue'
+import AcceptShareDialog from './components/dialogs/AcceptShareDialog.vue'
+import SaveEmptyNodeDialog from './components/dialogs/SaveEmptyNodeDialog.vue'
+import LimitDialog from './components/dialogs/LimitDialog.vue'
+import PasswordDialog from './components/dialogs/PasswordDialog.vue'
+import LoginDialog from './components/dialogs/LoginDialog.vue'
+import ConvertAccount from './components/ConvertAccount.vue'
+import SearchBox from './components/SearchBox.vue'
+import EmptyRecycleBinDialog from './components/dialogs/EmptyRecycleBinDialog.vue'
+import PasswordGeneratorDialog from './components/dialogs/PasswordGeneratorDialog.vue'
+import {
+	noteManager,
+	contextMenu,
+	shareDialog,
+	acceptShareDialog,
+	showSearchBox,
+	deleteNodeDialog,
+	emptyRecycleBinDialog,
+	passwordGeneratorDialog,
+	showCreateAccount,
+	showConvertAccount,
+	mainToolbar,
+	noteEditor,
+	noteTreeView,
+	notificationList,
+	titleBar,
+	ipcClient,
+	mimiriEditor,
+	saveEmptyNodeDialog,
+	passwordDialog,
+	loginDialog,
+	limitDialog,
+	updateManager,
+	deletePaymentMethodDialog,
+	deleteHistoryDialog,
+	infoDialog,
+	debug,
+	blockUserInput,
+	appStatus,
+	inconsistencyDialog,
+	syncStatus,
+} from './global'
+import { settingsManager } from './services/settings-manager'
+import LoadingIcon from './icons/loading.vue'
+import { mimiriPlatform } from './services/mimiri-platform'
+import { menuManager } from './services/menu-manager'
+import { Debounce, deObfuscate } from './services/helpers'
+import { localAuth } from './services/local-auth'
+import LockScreen from './components/LockScreen.vue'
+import { useEventListener } from '@vueuse/core'
+import SystemPage from './components/SystemPage.vue'
+import { ViewMode } from './services/storage/type'
+import PropertiesPage from './components/PropertiesPage.vue'
+import DeleteHistoryDialog from './components/dialogs/DeleteHistoryDialog.vue'
+import InfoDialog from './components/dialogs/InfoDialog.vue'
+import InconsistencyDialog from './components/dialogs/InconsistencyDialog.vue'
 
-	const colorScheme = ref('only light')
-	const loading = ref(true)
-	const secondPassed = ref(false)
-	const activity = ref('')
+const colorScheme = ref('only light')
+const loading = ref(true)
+const secondPassed = ref(false)
+const activity = ref('')
 
-	const authenticated = computed(() => noteManager.state.isLoggedIn)
+const authenticated = computed(() => noteManager.state.isLoggedIn)
 
-	const showNavigation = computed(() => !noteManager.state.noteOpen)
-	const showEditor = computed(() => noteManager.state.noteOpen)
+const showNavigation = computed(() => !noteManager.state.noteOpen)
+const showEditor = computed(() => noteManager.state.noteOpen)
 
-	let splitterPos = 300
-	const dividerPosition = ref(`${splitterPos}px`)
-	const editorWidth = ref(`${window.innerWidth - splitterPos - 10}px`)
+let splitterPos = 300
+const dividerPosition = ref(`${splitterPos}px`)
+const editorWidth = ref(`${window.innerWidth - splitterPos - 10}px`)
 
-	const onResize = () => {
-		dividerPosition.value = `${splitterPos}px`
-		editorWidth.value = `${window.innerWidth - splitterPos - 10}px`
+const onResize = () => {
+	dividerPosition.value = `${splitterPos}px`
+	editorWidth.value = `${window.innerWidth - splitterPos - 10}px`
+}
+
+document.documentElement.setAttribute('data-device-type', noteManager.state.isMobile ? 'mobile' : 'desktop')
+
+const updateTheme = () => {
+	document.documentElement.setAttribute('data-theme', settingsManager.darkMode ? 'dark' : 'light')
+	colorScheme.value = settingsManager.darkMode ? 'only dark' : 'only light'
+	const root = document.querySelector(':root') as HTMLElement
+	root.style.setProperty(
+		'--font-editor',
+		`'${settingsManager.editorFontFamily}', 'Consolas', 'Courier New', 'monospace'`,
+	)
+	root.style.setProperty('--text-size-editor', `${settingsManager.editorFontSize}px`)
+}
+
+updateTheme()
+
+const progressActivity = () => {
+	if (loading.value) {
+		activity.value += '.'
+		if (activity.value.length > 3) {
+			activity.value = ''
+		}
+		setTimeout(progressActivity, 500)
 	}
+}
 
-	document.documentElement.setAttribute('data-device-type', noteManager.state.isMobile ? 'mobile' : 'desktop')
-
-	const updateTheme = () => {
-		document.documentElement.setAttribute('data-theme', settingsManager.darkMode ? 'dark' : 'light')
-		colorScheme.value = settingsManager.darkMode ? 'only dark' : 'only light'
-		const root = document.querySelector(':root') as HTMLElement
-		root.style.setProperty(
-			'--font-editor',
-			`'${settingsManager.editorFontFamily}', 'Consolas', 'Courier New', 'monospace'`,
-		)
-		root.style.setProperty('--text-size-editor', `${settingsManager.editorFontSize}px`)
+if (!mimiriPlatform.isElectron) {
+	if (!mimiriPlatform.isWeb && mimiriPlatform.isIosApp) {
+		document.documentElement.setAttribute('data-env-support', 'true')
+	} else if (!mimiriPlatform.isWeb) {
+		const saSupport = getComputedStyle(document.documentElement).getPropertyValue('--sa-support')
+		document.documentElement.setAttribute('data-env-support', saSupport !== '0px' ? 'true' : 'false')
+	} else {
+		document.documentElement.setAttribute('data-env-support', 'off')
 	}
+}
 
+if (mimiriPlatform.isElectron && mimiriPlatform.isLinuxApp) {
+	document.body.classList.add('rounded-lg')
+}
+
+watch(settingsManager.state, () => {
 	updateTheme()
+	menuManager.updateAppMenu()
+})
 
-	const progressActivity = () => {
-		if (loading.value) {
-			activity.value += '.'
-			if (activity.value.length > 3) {
-				activity.value = ''
-			}
-			setTimeout(progressActivity, 500)
-		}
+watch(noteManager.state, () => {
+	menuManager.updateAppMenu()
+})
+useEventListener(window, 'resize', onResize)
+
+useEventListener(document, 'contextmenu', e => e.preventDefault(), false)
+
+if (ipcClient.isAvailable) {
+	// noteManager.setCacheManager(ipcClient.cache)
+	menuManager.updateTrayMenu()
+	menuManager.updateAppMenu()
+}
+
+const handleShortcut = event => {
+	const ctrlActive = (event.ctrlKey && !mimiriPlatform.isMacApp) || (event.metaKey && mimiriPlatform.isMacApp)
+
+	if (event.key === 'r' && ctrlActive) {
+		event.preventDefault()
+		event.stopPropagation()
+	}
+	if (
+		!authenticated.value ||
+		localAuth.locked ||
+		showCreateAccount.value ||
+		noteManager.tree.selectedNote()?.id === 'settings-pin'
+	) {
+		return
 	}
 
-	if (!mimiriPlatform.isElectron) {
-		if (!mimiriPlatform.isWeb && mimiriPlatform.isIosApp) {
-			document.documentElement.setAttribute('data-env-support', 'true')
-		} else if (!mimiriPlatform.isWeb) {
-			const saSupport = getComputedStyle(document.documentElement).getPropertyValue('--sa-support')
-			document.documentElement.setAttribute('data-env-support', saSupport !== '0px' ? 'true' : 'false')
-		} else {
-			document.documentElement.setAttribute('data-env-support', 'off')
-		}
-	}
+	const treeViewShortCutsActive =
+		(document.activeElement.tagName === 'BODY' || !noteEditor.value?.$el.contains(document.activeElement)) &&
+		event.target.tagName === 'BODY'
+	const isSystemNote = noteManager.tree.selectedNote()?.isSystem
 
-	if (mimiriPlatform.isElectron && mimiriPlatform.isLinuxApp) {
-		document.body.classList.add('rounded-lg')
-	}
-
-	watch(settingsManager.state, () => {
-		updateTheme()
-		menuManager.updateAppMenu()
-	})
-
-	watch(noteManager.state, () => {
-		menuManager.updateAppMenu()
-	})
-	useEventListener(window, 'resize', onResize)
-
-	useEventListener(document, 'contextmenu', e => e.preventDefault(), false)
-
-	if (ipcClient.isAvailable) {
-		// noteManager.setCacheManager(ipcClient.cache)
-		menuManager.updateTrayMenu()
-		menuManager.updateAppMenu()
-	}
-
-	const handleShortcut = event => {
-		const ctrlActive = (event.ctrlKey && !mimiriPlatform.isMacApp) || (event.metaKey && mimiriPlatform.isMacApp)
-
-		if (event.key === 'r' && ctrlActive) {
-			event.preventDefault()
-			event.stopPropagation()
-		}
-		if (
-			!authenticated.value ||
-			localAuth.locked ||
-			showCreateAccount.value ||
-			noteManager.tree.selectedNote()?.id === 'settings-pin'
-		) {
+	if (event.key === 'd' && ctrlActive) {
+		if (isSystemNote) {
 			return
 		}
-
-		const treeViewShortCutsActive =
-			(document.activeElement.tagName === 'BODY' || !noteEditor.value?.$el.contains(document.activeElement)) &&
-			event.target.tagName === 'BODY'
-		const isSystemNote = noteManager.tree.selectedNote()?.isSystem
-
-		if (event.key === 'd' && ctrlActive) {
-			if (isSystemNote) {
-				return
-			}
-			if (treeViewShortCutsActive) {
-				event.preventDefault()
-				event.stopPropagation()
-				if (noteTreeView.value) {
-					noteTreeView.value.duplicateActiveNote()
-				}
-			}
-		}
-		if (event.key === 'x' && ctrlActive) {
-			if (isSystemNote) {
-				return
-			}
-			if (treeViewShortCutsActive) {
-				event.preventDefault()
-				event.stopPropagation()
-				if (noteTreeView.value) {
-					noteTreeView.value.cutActiveNote()
-				}
-			}
-		}
-		if (event.key === 'c' && ctrlActive) {
-			if (isSystemNote) {
-				return
-			}
-			if (treeViewShortCutsActive) {
-				event.preventDefault()
-				event.stopPropagation()
-				if (noteTreeView.value) {
-					noteTreeView.value.copyActiveNote()
-				}
-			}
-		}
-		if (event.key === 'v' && ctrlActive) {
-			if (isSystemNote) {
-				return
-			}
-			if (treeViewShortCutsActive) {
-				event.preventDefault()
-				event.stopPropagation()
-				if (noteTreeView.value) {
-					noteTreeView.value.pasteIntoActiveNote()
-				}
-			}
-		}
-		if (event.key === 'Delete') {
-			if (isSystemNote) {
-				return
-			}
-			if (treeViewShortCutsActive) {
-				event.preventDefault()
-				event.stopPropagation()
-				if (noteTreeView.value) {
-					if (
-						event.shiftKey ||
-						!!noteManager.tree.selectedNote()?.isInRecycleBin ||
-						noteManager.tree.selectedNote().isShared
-					) {
-						noteTreeView.value.deleteActiveNote()
-					} else {
-						noteTreeView.value.recycleActiveNote()
-					}
-				}
-			}
-		}
-		if (event.key === 'F2') {
-			if (isSystemNote) {
-				return
-			}
-			if (treeViewShortCutsActive) {
-				event.preventDefault()
-				event.stopPropagation()
-				if (noteTreeView.value) {
-					noteTreeView.value.renameActiveNote()
-				}
-			}
-		}
-		if (event.key === 'ArrowUp') {
-			if (treeViewShortCutsActive) {
-				event.preventDefault()
-				event.stopPropagation()
-				if (noteTreeView.value) {
-					noteTreeView.value.moveSelectionUp()
-				}
-			}
-		}
-		if (event.key === 'ArrowDown') {
-			if (treeViewShortCutsActive) {
-				event.preventDefault()
-				event.stopPropagation()
-				if (noteTreeView.value) {
-					noteTreeView.value.moveSelectionDown()
-				}
-			}
-		}
-		if (event.key === 'ArrowLeft') {
-			if (treeViewShortCutsActive) {
-				event.preventDefault()
-				event.stopPropagation()
-				if (noteTreeView.value) {
-					noteTreeView.value.moveSelectionLeft()
-				}
-			}
-		}
-		if (event.key === 'ArrowRight') {
-			if (treeViewShortCutsActive) {
-				event.preventDefault()
-				event.stopPropagation()
-				if (noteTreeView.value) {
-					noteTreeView.value.moveSelectionRight()
-				}
-			}
-		}
-		if (event.key === 's' && ctrlActive) {
-			if (isSystemNote) {
-				return
-			}
+		if (treeViewShortCutsActive) {
 			event.preventDefault()
-			noteEditor.value.save()
-		}
-		if (event.key === 'C' && ctrlActive) {
-			if (isSystemNote) {
-				return
-			}
-			event.preventDefault()
-			mimiriEditor.toggleSelectionAsPassword()
-		}
-		if (event.key === 'n' && ctrlActive) {
-			if (isSystemNote) {
-				return
-			}
-			if (treeViewShortCutsActive) {
-				event.preventDefault()
-				event.stopPropagation()
-				noteManager.ui.newNote()
-			}
-		}
-		if (event.key === 'F3' || (event.key === 'F' && ctrlActive)) {
-			event.preventDefault()
-			if (titleBar.value) {
-				titleBar.value.searchAllNotes()
-			}
-		}
-		if (event.key === 'Escape') {
-			if (showSearchBox.value) {
-				showSearchBox.value = false
-			}
-		}
-
-		if (!ctrlActive && !event.altKey) {
-			if (event.key.length === 1 && event.key === event.key.toLowerCase() && noteTreeView.value?.hasFocus()) {
-				noteManager.ui.findNextNoteStartingWith(event.key)
+			event.stopPropagation()
+			if (noteTreeView.value) {
+				noteTreeView.value.duplicateActiveNote()
 			}
 		}
 	}
-	useEventListener(document, 'keydown', handleShortcut, false)
-
-	const resizeDebounce = new Debounce(async () => {
-		if (ipcClient.isAvailable) {
-			const size = await ipcClient.window.getMainWindowSize()
-			settingsManager.mainWindowSize = size
+	if (event.key === 'x' && ctrlActive) {
+		if (isSystemNote) {
+			return
 		}
-	}, 250)
-
-	useEventListener(window, 'resize', async () => {
-		resizeDebounce.activate()
-	})
-
-	appStatus.value = 'loading'
-	onMounted(async () => {
-		try {
-			appStatus.value = 'loading'
-			setTimeout(() => (secondPassed.value = true), 1000)
-			progressActivity()
-
-			await settingsManager.load()
-			debug.init()
-			debug.log(`App Loading ${settingsManager.channel} ${updateManager.currentVersion}`)
-			if (settingsManager.mainWindowSize.width > 100 && settingsManager.mainWindowSize.height > 100) {
-				await ipcClient.window.setMainWindowSize(settingsManager.mainWindowSize)
+		if (treeViewShortCutsActive) {
+			event.preventDefault()
+			event.stopPropagation()
+			if (noteTreeView.value) {
+				noteTreeView.value.cutActiveNote()
 			}
-
-			updateTheme()
-			if (await updateManager.checkUpdateInitial()) {
-				appStatus.value = 'update'
-				return
+		}
+	}
+	if (event.key === 'c' && ctrlActive) {
+		if (isSystemNote) {
+			return
+		}
+		if (treeViewShortCutsActive) {
+			event.preventDefault()
+			event.stopPropagation()
+			if (noteTreeView.value) {
+				noteTreeView.value.copyActiveNote()
 			}
-			try {
-				if (!noteManager.state.isLoggedIn && settingsManager.autoLogin && settingsManager.autoLoginData) {
-					await noteManager.auth.setLoginData(await deObfuscate(settingsManager.autoLoginData))
-					if (noteManager.state.isLoggedIn) {
-						await noteManager.tree.loadState()
-					}
-				}
-			} catch (ex) {
-				debug.logError('Error setting login data', ex)
+		}
+	}
+	if (event.key === 'v' && ctrlActive) {
+		if (isSystemNote) {
+			return
+		}
+		if (treeViewShortCutsActive) {
+			event.preventDefault()
+			event.stopPropagation()
+			if (noteTreeView.value) {
+				noteTreeView.value.pasteIntoActiveNote()
 			}
-			if (!noteManager.state.isLoggedIn) {
-				try {
-					await noteManager.session.recoverLogin()
-				} catch (ex) {
-					debug.logError('Error recovering login', ex)
-				}
-			}
-
-			let showLogin = !noteManager.state.isLoggedIn
-
-			if (!noteManager.state.isLoggedIn) {
-				if (!(await noteManager.auth.hasOneOrMoreAccounts())) {
-					await noteManager.session.openLocal()
-					if (noteManager.state.isLoggedIn) {
-						showLogin = false
-					}
+		}
+	}
+	if (event.key === 'Delete') {
+		if (isSystemNote) {
+			return
+		}
+		if (treeViewShortCutsActive) {
+			event.preventDefault()
+			event.stopPropagation()
+			if (noteTreeView.value) {
+				if (
+					event.shiftKey ||
+					!!noteManager.tree.selectedNote()?.isInRecycleBin ||
+					noteManager.tree.selectedNote().isShared
+				) {
+					noteTreeView.value.deleteActiveNote()
 				} else {
-					showLogin = true
+					noteTreeView.value.recycleActiveNote()
 				}
 			}
-
-			loading.value = false
-			await settingsManager.save()
-			if (showLogin) {
-				loginDialog.value.show(true)
+		}
+	}
+	if (event.key === 'F2') {
+		if (isSystemNote) {
+			return
+		}
+		if (treeViewShortCutsActive) {
+			event.preventDefault()
+			event.stopPropagation()
+			if (noteTreeView.value) {
+				noteTreeView.value.renameActiveNote()
 			}
+		}
+	}
+	if (event.key === 'ArrowUp') {
+		if (treeViewShortCutsActive) {
+			event.preventDefault()
+			event.stopPropagation()
+			if (noteTreeView.value) {
+				noteTreeView.value.moveSelectionUp()
+			}
+		}
+	}
+	if (event.key === 'ArrowDown') {
+		if (treeViewShortCutsActive) {
+			event.preventDefault()
+			event.stopPropagation()
+			if (noteTreeView.value) {
+				noteTreeView.value.moveSelectionDown()
+			}
+		}
+	}
+	if (event.key === 'ArrowLeft') {
+		if (treeViewShortCutsActive) {
+			event.preventDefault()
+			event.stopPropagation()
+			if (noteTreeView.value) {
+				noteTreeView.value.moveSelectionLeft()
+			}
+		}
+	}
+	if (event.key === 'ArrowRight') {
+		if (treeViewShortCutsActive) {
+			event.preventDefault()
+			event.stopPropagation()
+			if (noteTreeView.value) {
+				noteTreeView.value.moveSelectionRight()
+			}
+		}
+	}
+	if (event.key === 's' && ctrlActive) {
+		if (isSystemNote) {
+			return
+		}
+		event.preventDefault()
+		noteEditor.value.save()
+	}
+	if (event.key === 'C' && ctrlActive) {
+		if (isSystemNote) {
+			return
+		}
+		event.preventDefault()
+		mimiriEditor.toggleSelectionAsPassword()
+	}
+	if (event.key === 'n' && ctrlActive) {
+		if (isSystemNote) {
+			return
+		}
+		if (treeViewShortCutsActive) {
+			event.preventDefault()
+			event.stopPropagation()
+			noteManager.ui.newNote()
+		}
+	}
+	if (event.key === 'F3' || (event.key === 'F' && ctrlActive)) {
+		event.preventDefault()
+		if (titleBar.value) {
+			titleBar.value.searchAllNotes()
+		}
+	}
+	if (event.key === 'Escape') {
+		if (showSearchBox.value) {
+			showSearchBox.value = false
+		}
+	}
 
-			appStatus.value = 'ready'
+	if (!ctrlActive && !event.altKey) {
+		if (event.key.length === 1 && event.key === event.key.toLowerCase() && noteTreeView.value?.hasFocus()) {
+			noteManager.ui.findNextNoteStartingWith(event.key)
+		}
+	}
+}
+useEventListener(document, 'keydown', handleShortcut, false)
+
+const resizeDebounce = new Debounce(async () => {
+	if (ipcClient.isAvailable) {
+		const size = await ipcClient.window.getMainWindowSize()
+		settingsManager.mainWindowSize = size
+	}
+}, 250)
+
+useEventListener(window, 'resize', async () => {
+	resizeDebounce.activate()
+})
+
+appStatus.value = 'loading'
+onMounted(async () => {
+	try {
+		appStatus.value = 'loading'
+		setTimeout(() => (secondPassed.value = true), 1000)
+		progressActivity()
+
+		await settingsManager.load()
+		debug.init()
+		debug.log(`App Loading ${settingsManager.channel} ${updateManager.currentVersion}`)
+		if (settingsManager.mainWindowSize.width > 100 && settingsManager.mainWindowSize.height > 100) {
+			await ipcClient.window.setMainWindowSize(settingsManager.mainWindowSize)
+		}
+
+		updateTheme()
+		if (await updateManager.checkUpdateInitial()) {
+			appStatus.value = 'update'
+			return
+		}
+		try {
+			if (!noteManager.state.isLoggedIn && settingsManager.autoLogin && settingsManager.autoLoginData) {
+				await noteManager.auth.setLoginData(await deObfuscate(settingsManager.autoLoginData))
+				if (noteManager.state.isLoggedIn) {
+					await noteManager.tree.loadState()
+				}
+			}
 		} catch (ex) {
-			appStatus.value = 'error'
-			debug.logError('Error during app initialization', ex)
-			// setTimeout(() => location.reload(), 1000)
+			debug.logError('Error setting login data', ex)
 		}
-	})
-
-	const handleDragging = e => {
-		let pos = e.pageX
-		if (pos < 200) {
-			pos = 200
-		}
-		const maxWidth = window.innerWidth - 100
-		if (pos > maxWidth) {
-			pos = maxWidth
+		if (!noteManager.state.isLoggedIn) {
+			try {
+				await noteManager.session.recoverLogin()
+			} catch (ex) {
+				debug.logError('Error recovering login', ex)
+			}
 		}
 
-		splitterPos = pos
-		dividerPosition.value = `${splitterPos}px`
-		editorWidth.value = `${window.innerWidth - splitterPos - 10}px`
-	}
-	const startDragging = e => {
-		if (e.button === 0) {
-			document.addEventListener('mousemove', handleDragging)
+		let showLogin = !noteManager.state.isLoggedIn
+
+		if (!noteManager.state.isLoggedIn) {
+			if (!(await noteManager.auth.hasOneOrMoreAccounts())) {
+				await noteManager.session.openLocal()
+				if (noteManager.state.isLoggedIn) {
+					showLogin = false
+				}
+			} else {
+				showLogin = true
+			}
 		}
+
+		loading.value = false
+		await settingsManager.save()
+		if (showLogin) {
+			loginDialog.value.show(true)
+		}
+
+		appStatus.value = 'ready'
+	} catch (ex) {
+		appStatus.value = 'error'
+		debug.logError('Error during app initialization', ex)
+		// setTimeout(() => location.reload(), 1000)
 	}
-	const endDragging = () => {
-		document.removeEventListener('mousemove', handleDragging)
+})
+
+const handleDragging = e => {
+	let pos = e.pageX
+	if (pos < 200) {
+		pos = 200
 	}
+	const maxWidth = window.innerWidth - 100
+	if (pos > maxWidth) {
+		pos = maxWidth
+	}
+
+	splitterPos = pos
+	dividerPosition.value = `${splitterPos}px`
+	editorWidth.value = `${window.innerWidth - splitterPos - 10}px`
+}
+const startDragging = e => {
+	if (e.button === 0) {
+		document.addEventListener('mousemove', handleDragging)
+	}
+}
+const endDragging = () => {
+	document.removeEventListener('mousemove', handleDragging)
+}
 </script>
 
 <style scoped>
-	.safe-area-padding {
-		padding-top: var(--safe-area-top);
-	}
+.safe-area-padding {
+	padding-top: var(--safe-area-top);
+}
 
-	.divider-left:where([data-device-type='desktop'] *) {
-		min-width: v-bind(dividerPosition);
-		width: v-bind(dividerPosition);
-	}
+.divider-left:where([data-device-type='desktop'] *) {
+	min-width: v-bind(dividerPosition);
+	width: v-bind(dividerPosition);
+}
 
-	.divider-right:where([data-device-type='desktop'] *) {
-		width: v-bind(editorWidth);
-	}
+.divider-right:where([data-device-type='desktop'] *) {
+	width: v-bind(editorWidth);
+}
 
-	.dark-mode {
-		color-scheme: v-bind(colorScheme);
-	}
+.dark-mode {
+	color-scheme: v-bind(colorScheme);
+}
 </style>

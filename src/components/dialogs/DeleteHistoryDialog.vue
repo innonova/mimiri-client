@@ -29,42 +29,42 @@
 </template>
 
 <script setup lang="ts">
-	import { ref } from 'vue'
-	import { noteManager } from '../../global'
-	import DialogTitle from '../elements/DialogTitle.vue'
-	const dialog = ref(null)
-	const deleteAllHistory = ref(false)
-	const shareParticipants = ref([])
-	let callback: () => void
+import { ref } from 'vue'
+import { noteManager } from '../../global'
+import DialogTitle from '../elements/DialogTitle.vue'
+const dialog = ref(null)
+const deleteAllHistory = ref(false)
+const shareParticipants = ref([])
+let callback: () => void
 
-	const show = async (all: boolean, cb: () => void) => {
-		deleteAllHistory.value = !!all
-		callback = cb
-		if (noteManager.tree.selectedNote()?.isShared) {
-			shareParticipants.value = (
-				await noteManager.note.getShareParticipants(noteManager.tree.selectedNote().id)
-			).filter(item => item.username !== noteManager.state.username)
-		} else {
-			shareParticipants.value = []
-		}
-		dialog.value.showModal()
+const show = async (all: boolean, cb: () => void) => {
+	deleteAllHistory.value = !!all
+	callback = cb
+	if (noteManager.tree.selectedNote()?.isShared) {
+		shareParticipants.value = (await noteManager.note.getShareParticipants(noteManager.tree.selectedNote().id)).filter(
+			item => item.username !== noteManager.state.username,
+		)
+	} else {
+		shareParticipants.value = []
 	}
+	dialog.value.showModal()
+}
 
-	const close = () => {
-		dialog.value.close()
+const close = () => {
+	dialog.value.close()
+}
+
+const submitDialog = async () => {
+	if (deleteAllHistory.value) {
+		await noteManager.tree.selectedNote().deleteHistory()
+	} else {
+		await noteManager.tree.selectedNote().deleteArchivedHistory()
 	}
+	callback()
+	close()
+}
 
-	const submitDialog = async () => {
-		if (deleteAllHistory.value) {
-			await noteManager.tree.selectedNote().deleteHistory()
-		} else {
-			await noteManager.tree.selectedNote().deleteArchivedHistory()
-		}
-		callback()
-		close()
-	}
-
-	defineExpose({
-		show,
-	})
+defineExpose({
+	show,
+})
 </script>

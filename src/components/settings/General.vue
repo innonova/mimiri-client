@@ -72,63 +72,63 @@
 </template>
 
 <script setup lang="ts">
-	import { computed, onMounted, ref } from 'vue'
-	import { settingsManager } from '../../services/settings-manager'
-	import { mimiriPlatform } from '../../services/mimiri-platform'
-	import TabBar from '../elements/TabBar.vue'
-	import { env } from '../../global'
+import { computed, onMounted, ref } from 'vue'
+import { settingsManager } from '../../services/settings-manager'
+import { mimiriPlatform } from '../../services/mimiri-platform'
+import TabBar from '../elements/TabBar.vue'
+import { env } from '../../global'
 
-	const emit = defineEmits(['close'])
+const emit = defineEmits(['close'])
 
-	const darkMode = ref(false)
-	const openAtLogin = ref(false)
-	const showInTaskBar = ref(false)
-	const keepTrayIconVisible = ref(false)
-	const closeOnX = ref(false)
-	const trayIcon = ref('system')
-	const disableDevBlog = ref(false)
+const darkMode = ref(false)
+const openAtLogin = ref(false)
+const showInTaskBar = ref(false)
+const keepTrayIconVisible = ref(false)
+const closeOnX = ref(false)
+const trayIcon = ref('system')
+const disableDevBlog = ref(false)
 
-	const alwaysEdit = ref(true)
-	const simpleEditor = ref(false)
+const alwaysEdit = ref(true)
+const simpleEditor = ref(false)
 
-	const canSave = computed(
-		() =>
-			darkMode.value !== settingsManager.darkMode ||
-			keepTrayIconVisible.value !== settingsManager.keepTrayIconVisible ||
-			showInTaskBar.value !== settingsManager.showInTaskBar ||
-			openAtLogin.value !== settingsManager.openAtLogin ||
-			closeOnX.value !== settingsManager.closeOnX ||
-			trayIcon.value !== settingsManager.trayIcon ||
-			alwaysEdit.value !== settingsManager.alwaysEdit ||
-			simpleEditor.value !== settingsManager.simpleEditor ||
-			disableDevBlog.value !== settingsManager.disableDevBlog,
-	)
+const canSave = computed(
+	() =>
+		darkMode.value !== settingsManager.darkMode ||
+		keepTrayIconVisible.value !== settingsManager.keepTrayIconVisible ||
+		showInTaskBar.value !== settingsManager.showInTaskBar ||
+		openAtLogin.value !== settingsManager.openAtLogin ||
+		closeOnX.value !== settingsManager.closeOnX ||
+		trayIcon.value !== settingsManager.trayIcon ||
+		alwaysEdit.value !== settingsManager.alwaysEdit ||
+		simpleEditor.value !== settingsManager.simpleEditor ||
+		disableDevBlog.value !== settingsManager.disableDevBlog,
+)
 
-	onMounted(() => {
-		darkMode.value = settingsManager.darkMode
-		keepTrayIconVisible.value = settingsManager.keepTrayIconVisible
-		showInTaskBar.value = settingsManager.showInTaskBar
-		openAtLogin.value = settingsManager.openAtLogin
-		closeOnX.value = settingsManager.closeOnX
-		trayIcon.value = settingsManager.trayIcon
-		alwaysEdit.value = settingsManager.alwaysEdit
-		simpleEditor.value = settingsManager.simpleEditor
-		disableDevBlog.value = settingsManager.disableDevBlog
-	})
+onMounted(() => {
+	darkMode.value = settingsManager.darkMode
+	keepTrayIconVisible.value = settingsManager.keepTrayIconVisible
+	showInTaskBar.value = settingsManager.showInTaskBar
+	openAtLogin.value = settingsManager.openAtLogin
+	closeOnX.value = settingsManager.closeOnX
+	trayIcon.value = settingsManager.trayIcon
+	alwaysEdit.value = settingsManager.alwaysEdit
+	simpleEditor.value = settingsManager.simpleEditor
+	disableDevBlog.value = settingsManager.disableDevBlog
+})
 
-	const save = async () => {
-		settingsManager.darkMode = darkMode.value
-		settingsManager.keepTrayIconVisible = keepTrayIconVisible.value
-		settingsManager.showInTaskBar = showInTaskBar.value
-		settingsManager.openAtLogin = openAtLogin.value
-		settingsManager.closeOnX = closeOnX.value
-		settingsManager.trayIcon = trayIcon.value
-		settingsManager.alwaysEdit = alwaysEdit.value
-		settingsManager.simpleEditor = simpleEditor.value
-		const reload = settingsManager.disableDevBlog !== disableDevBlog.value
-		settingsManager.disableDevBlog = disableDevBlog.value
-		if (reload) {
-			window.location.reload()
-		}
+const save = async () => {
+	settingsManager.darkMode = darkMode.value
+	settingsManager.keepTrayIconVisible = keepTrayIconVisible.value
+	settingsManager.showInTaskBar = showInTaskBar.value
+	settingsManager.openAtLogin = openAtLogin.value
+	settingsManager.closeOnX = closeOnX.value
+	settingsManager.trayIcon = trayIcon.value
+	settingsManager.alwaysEdit = alwaysEdit.value
+	settingsManager.simpleEditor = simpleEditor.value
+	const reload = settingsManager.disableDevBlog !== disableDevBlog.value
+	settingsManager.disableDevBlog = disableDevBlog.value
+	if (reload) {
+		window.location.reload()
 	}
+}
 </script>

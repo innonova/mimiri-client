@@ -138,271 +138,271 @@
 </template>
 
 <script setup lang="ts">
-	import { computed, ref, watch } from 'vue'
-	import { noteManager, dragId, showSearchBox, createNewNode, createNewRootNode, features, debug } from '../global'
-	import type { NoteViewModel } from '../services/types/mimer-note'
-	import { searchManager } from '../services/search-manager'
-	import NewTreeNode from './NewTreeNode.vue'
-	import NoteIcon from '../icons/note.vue'
-	import RecycleBinIcon from '../icons/recycle-bin.vue'
-	import RecycleBinEmptyIcon from '../icons/recycle-bin-empty.vue'
-	import PlusIcon from '../icons/plus.vue'
-	import MinusIcon from '../icons/minus.vue'
-	import OpenIcon from '../icons/open.vue'
-	import { MenuItems, menuManager } from '../services/menu-manager'
-	import CogIcon from '../icons/cog.vue'
-	import FontIcon from '../icons/font.vue'
-	import AccountIcon from '../icons/account.vue'
-	import CoinsIcon from '../icons/coins.vue'
-	import InfoIcon from '../icons/info.vue'
-	import DownloadIcon from '../icons/download.vue'
-	import LockIcon from '../icons/lock.vue'
-	import AnnouncementIcon from '../icons/announcement.vue'
-	import BulbIcon from '../icons/bulb.vue'
+import { computed, ref, watch } from 'vue'
+import { noteManager, dragId, showSearchBox, createNewNode, createNewRootNode, features, debug } from '../global'
+import type { NoteViewModel } from '../services/types/mimer-note'
+import { searchManager } from '../services/search-manager'
+import NewTreeNode from './NewTreeNode.vue'
+import NoteIcon from '../icons/note.vue'
+import RecycleBinIcon from '../icons/recycle-bin.vue'
+import RecycleBinEmptyIcon from '../icons/recycle-bin-empty.vue'
+import PlusIcon from '../icons/plus.vue'
+import MinusIcon from '../icons/minus.vue'
+import OpenIcon from '../icons/open.vue'
+import { MenuItems, menuManager } from '../services/menu-manager'
+import CogIcon from '../icons/cog.vue'
+import FontIcon from '../icons/font.vue'
+import AccountIcon from '../icons/account.vue'
+import CoinsIcon from '../icons/coins.vue'
+import InfoIcon from '../icons/info.vue'
+import DownloadIcon from '../icons/download.vue'
+import LockIcon from '../icons/lock.vue'
+import AnnouncementIcon from '../icons/announcement.vue'
+import BulbIcon from '../icons/bulb.vue'
 
-	const visualElement = ref(null)
-	const renameInput = ref(null)
-	const indicatorTop = ref('0px')
-	const indicatorVisible = ref(false)
-	let dragOver = 0
-	let target = 0
+const visualElement = ref(null)
+const renameInput = ref(null)
+const indicatorTop = ref('0px')
+const indicatorVisible = ref(false)
+let dragOver = 0
+let target = 0
 
-	const dataTestId = computed(() => {
-		if (props.node.isControlPanel) {
-			return `node-control-panel`
-		}
-		if (props.node.isRecycleBin) {
-			return `node-recycle-bin`
-		}
-		return `node-${props.node.id}`
-	})
+const dataTestId = computed(() => {
+	if (props.node.isControlPanel) {
+		return `node-control-panel`
+	}
+	if (props.node.isRecycleBin) {
+		return `node-recycle-bin`
+	}
+	return `node-${props.node.id}`
+})
 
-	const props = defineProps<{
-		node: NoteViewModel
-	}>()
+const props = defineProps<{
+	node: NoteViewModel
+}>()
 
-	const editName = computed(() => !!props.node?.renaming)
+const editName = computed(() => !!props.node?.renaming)
 
-	watch(editName, (newVal, _) => {
-		if (newVal) {
-			setTimeout(() => {
-				if (renameInput.value) {
-					renameInput.value.focus()
-					renameInput.value.select()
-				}
-			})
-		}
-	})
+watch(editName, (newVal, _) => {
+	if (newVal) {
+		setTimeout(() => {
+			if (renameInput.value) {
+				renameInput.value.focus()
+				renameInput.value.select()
+			}
+		})
+	}
+})
 
-	const hasChildren = computed(() => props.node.children.length > 0)
-	const isSelected = computed(() => props.node.id === noteManager.state.selectedNoteId)
-	const shouldShow = computed(() => {
-		const searchBoxShowing = showSearchBox.value
-		return searchManager.isNoteFound(props.node.id) || searchManager.isChildFound(props.node.id) || !searchBoxShowing
-	})
-	const isOnlyParent = computed(() => {
-		const searchBoxShowing = showSearchBox.value
-		return !searchManager.isNoteFound(props.node.id) && searchBoxShowing
-	})
-	const searchModeActive = computed(() => {
-		const searchBoxShowing = showSearchBox.value
-		return searchManager.state.searchActive && searchBoxShowing
-	})
+const hasChildren = computed(() => props.node.children.length > 0)
+const isSelected = computed(() => props.node.id === noteManager.state.selectedNoteId)
+const shouldShow = computed(() => {
+	const searchBoxShowing = showSearchBox.value
+	return searchManager.isNoteFound(props.node.id) || searchManager.isChildFound(props.node.id) || !searchBoxShowing
+})
+const isOnlyParent = computed(() => {
+	const searchBoxShowing = showSearchBox.value
+	return !searchManager.isNoteFound(props.node.id) && searchBoxShowing
+})
+const searchModeActive = computed(() => {
+	const searchBoxShowing = showSearchBox.value
+	return searchManager.state.searchActive && searchBoxShowing
+})
 
-	const startDrag = event => {
+const startDrag = event => {
+	event.stopPropagation()
+	if (!props.node.isSystem) {
+		event.dataTransfer.dropEffect = 'move'
+		event.dataTransfer.effectAllowed = 'move'
+		dragId.value = props.node.id
+	} else {
+		event.preventDefault()
+	}
+}
+
+const onDrop = async event => {
+	try {
 		event.stopPropagation()
-		if (!props.node.isSystem) {
-			event.dataTransfer.dropEffect = 'move'
-			event.dataTransfer.effectAllowed = 'move'
-			dragId.value = props.node.id
+		dragOver = 0
+		indicatorVisible.value = false
+		const note = noteManager.tree.getNoteById(dragId.value)
+		const dropNote = noteManager.tree.getNoteById(props.node.id)
+		if (target < 0) {
+			await note.move(dropNote.parent, dropNote.index)
+		} else if (target === 0) {
+			dropNote.expand()
+			await note.move(dropNote)
 		} else {
+			await note.move(dropNote.parent, dropNote.index + 1)
+		}
+	} catch (ex) {
+		debug.logError('Error dropping note', ex)
+	}
+}
+
+const onDragOver = event => {
+	try {
+		event.stopPropagation()
+		const id = dragId.value
+		if (id !== props.node.id) {
 			event.preventDefault()
-		}
-	}
+			const height = visualElement.value.offsetHeight
+			const top = height / 3
+			const bottom = (2 * height) / 3
 
-	const onDrop = async event => {
-		try {
-			event.stopPropagation()
-			dragOver = 0
-			indicatorVisible.value = false
-			const note = noteManager.tree.getNoteById(dragId.value)
-			const dropNote = noteManager.tree.getNoteById(props.node.id)
-			if (target < 0) {
-				await note.move(dropNote.parent, dropNote.index)
-			} else if (target === 0) {
-				dropNote.expand()
-				await note.move(dropNote)
+			if (event.offsetY < top && !props.node.isSystem) {
+				indicatorTop.value = '0px'
+				target = -1
+			} else if (event.offsetY > bottom) {
+				indicatorTop.value = `${height}px`
+				target = 1
 			} else {
-				await note.move(dropNote.parent, dropNote.index + 1)
-			}
-		} catch (ex) {
-			debug.logError('Error dropping note', ex)
-		}
-	}
-
-	const onDragOver = event => {
-		try {
-			event.stopPropagation()
-			const id = dragId.value
-			if (id !== props.node.id) {
-				event.preventDefault()
-				const height = visualElement.value.offsetHeight
-				const top = height / 3
-				const bottom = (2 * height) / 3
-
-				if (event.offsetY < top && !props.node.isSystem) {
-					indicatorTop.value = '0px'
-					target = -1
-				} else if (event.offsetY > bottom) {
-					indicatorTop.value = `${height}px`
-					target = 1
-				} else {
-					indicatorTop.value = `${height / 2}px`
-					target = 0
-				}
-			}
-		} catch (ex) {
-			debug.logError('Error during drag over', ex)
-		}
-	}
-
-	const onDragEnter = event => {
-		try {
-			event.stopPropagation()
-			const id = dragId.value
-			if (id !== props.node.id) {
-				event.preventDefault()
-				if (++dragOver > 0) {
-					indicatorVisible.value = true
-				}
-			}
-		} catch (ex) {
-			debug.logError('Error during drag enter', ex)
-		}
-	}
-
-	const onDragLeave = event => {
-		try {
-			event.stopPropagation()
-			const id = dragId.value
-			if (id !== props.node.id) {
-				if (--dragOver <= 0) {
-					indicatorVisible.value = false
-				}
-			}
-		} catch (ex) {
-			debug.logError('Error during drag leave', ex)
-		}
-	}
-
-	const toggleNode = async e => {
-		e.stopPropagation()
-		if (hasChildren.value && !searchModeActive.value) {
-			if (!props.node.expanded) {
-				const note = noteManager.tree.getNoteById(props.node.id)
-				note.expand()
-			} else {
-				const note = noteManager.tree.getNoteById(props.node.id)
-				note.collapse()
+				indicatorTop.value = `${height / 2}px`
+				target = 0
 			}
 		}
+	} catch (ex) {
+		debug.logError('Error during drag over', ex)
 	}
+}
 
-	const selectNode = async (mobileSwitch: boolean) => {
-		noteManager.tree.openNote(props.node.id, mobileSwitch)
-	}
-
-	const checkCancelEdit = e => {
-		e.stopPropagation()
-		if (e.key === 'Escape') {
-			// eslint-disable-next-line vue/no-mutating-props
-			props.node.renaming = false
-			renameInput.value.value = props.node.title
-			renameInput.value.blur()
-		}
-		if (e.key === 'Enter') {
-			renameInput.value.blur()
-		}
-	}
-
-	const endEdit = async e => {
-		if (props.node.renaming) {
-			// eslint-disable-next-line vue/no-mutating-props
-			props.node.renaming = false
-			const inputElement = e.target as HTMLInputElement
-			if (inputElement) {
-				const newName = inputElement.value
-				const note = noteManager.tree.getNoteById(props.node.id)
-				if (note.title !== newName) {
-					// eslint-disable-next-line vue/no-mutating-props
-					props.node.title = newName
-					note.title = newName
-					await note.save()
-				}
+const onDragEnter = event => {
+	try {
+		event.stopPropagation()
+		const id = dragId.value
+		if (id !== props.node.id) {
+			event.preventDefault()
+			if (++dragOver > 0) {
+				indicatorVisible.value = true
 			}
 		}
+	} catch (ex) {
+		debug.logError('Error during drag enter', ex)
 	}
+}
 
-	const showContextMenu = async e => {
-		e.stopPropagation()
-		e.preventDefault()
-		await selectNode(false)
-
-		if (props.node.isSystem) {
-			menuManager.showMenu({ x: e.x, y: e.y }, [
-				...(props.node.children.length > 0 && props.node.isRecycleBin ? [MenuItems.EmptyRecycleBin] : []),
-				MenuItems.Refresh,
-			])
-		} else {
-			let showShare = true
-			let showAcceptShare = features.includes('share-code')
-			if (props.node.shared) {
-				const note = noteManager.tree.getNoteById(props.node.id)
-				showShare = note.isShareRoot
-				showAcceptShare = false
+const onDragLeave = event => {
+	try {
+		event.stopPropagation()
+		const id = dragId.value
+		if (id !== props.node.id) {
+			if (--dragOver <= 0) {
+				indicatorVisible.value = false
 			}
-			if (!noteManager.state.isOnline) {
-				showShare = false
-				showAcceptShare = false
-			}
+		}
+	} catch (ex) {
+		debug.logError('Error during drag leave', ex)
+	}
+}
 
+const toggleNode = async e => {
+	e.stopPropagation()
+	if (hasChildren.value && !searchModeActive.value) {
+		if (!props.node.expanded) {
 			const note = noteManager.tree.getNoteById(props.node.id)
-			const isInRecycleBin = note.isInRecycleBin
-
-			menuManager.showMenu({ x: e.x, y: e.y }, [
-				...(isInRecycleBin ? [] : [MenuItems.NewNote, MenuItems.Separator, MenuItems.Duplicate]),
-				MenuItems.Cut,
-				MenuItems.Copy,
-				...(isInRecycleBin ? [] : [MenuItems.Paste, MenuItems.CopyPath]),
-
-				MenuItems.Separator,
-				...(showShare && !isInRecycleBin ? [MenuItems.Share] : []),
-				...(showAcceptShare && !isInRecycleBin ? [MenuItems.ReceiveShareUnder] : []),
-				MenuItems.Refresh,
-				MenuItems.Separator,
-				...(isInRecycleBin ? [] : [MenuItems.Rename]),
-				e.shiftKey || isInRecycleBin || props.node.shared ? MenuItems.Delete : MenuItems.Recycle,
-				MenuItems.Separator,
-				MenuItems.Properties,
-			])
+			note.expand()
+		} else {
+			const note = noteManager.tree.getNoteById(props.node.id)
+			note.collapse()
 		}
 	}
+}
+
+const selectNode = async (mobileSwitch: boolean) => {
+	noteManager.tree.openNote(props.node.id, mobileSwitch)
+}
+
+const checkCancelEdit = e => {
+	e.stopPropagation()
+	if (e.key === 'Escape') {
+		// eslint-disable-next-line vue/no-mutating-props
+		props.node.renaming = false
+		renameInput.value.value = props.node.title
+		renameInput.value.blur()
+	}
+	if (e.key === 'Enter') {
+		renameInput.value.blur()
+	}
+}
+
+const endEdit = async e => {
+	if (props.node.renaming) {
+		// eslint-disable-next-line vue/no-mutating-props
+		props.node.renaming = false
+		const inputElement = e.target as HTMLInputElement
+		if (inputElement) {
+			const newName = inputElement.value
+			const note = noteManager.tree.getNoteById(props.node.id)
+			if (note.title !== newName) {
+				// eslint-disable-next-line vue/no-mutating-props
+				props.node.title = newName
+				note.title = newName
+				await note.save()
+			}
+		}
+	}
+}
+
+const showContextMenu = async e => {
+	e.stopPropagation()
+	e.preventDefault()
+	await selectNode(false)
+
+	if (props.node.isSystem) {
+		menuManager.showMenu({ x: e.x, y: e.y }, [
+			...(props.node.children.length > 0 && props.node.isRecycleBin ? [MenuItems.EmptyRecycleBin] : []),
+			MenuItems.Refresh,
+		])
+	} else {
+		let showShare = true
+		let showAcceptShare = features.includes('share-code')
+		if (props.node.shared) {
+			const note = noteManager.tree.getNoteById(props.node.id)
+			showShare = note.isShareRoot
+			showAcceptShare = false
+		}
+		if (!noteManager.state.isOnline) {
+			showShare = false
+			showAcceptShare = false
+		}
+
+		const note = noteManager.tree.getNoteById(props.node.id)
+		const isInRecycleBin = note.isInRecycleBin
+
+		menuManager.showMenu({ x: e.x, y: e.y }, [
+			...(isInRecycleBin ? [] : [MenuItems.NewNote, MenuItems.Separator, MenuItems.Duplicate]),
+			MenuItems.Cut,
+			MenuItems.Copy,
+			...(isInRecycleBin ? [] : [MenuItems.Paste, MenuItems.CopyPath]),
+
+			MenuItems.Separator,
+			...(showShare && !isInRecycleBin ? [MenuItems.Share] : []),
+			...(showAcceptShare && !isInRecycleBin ? [MenuItems.ReceiveShareUnder] : []),
+			MenuItems.Refresh,
+			MenuItems.Separator,
+			...(isInRecycleBin ? [] : [MenuItems.Rename]),
+			e.shiftKey || isInRecycleBin || props.node.shared ? MenuItems.Delete : MenuItems.Recycle,
+			MenuItems.Separator,
+			MenuItems.Properties,
+		])
+	}
+}
 </script>
 
 <style scoped>
-	.tree-indent .tree-indent {
-		margin-left: 25px;
-	}
+.tree-indent .tree-indent {
+	margin-left: 25px;
+}
 
-	.indicator-top {
-		top: v-bind(indicatorTop);
-	}
+.indicator-top {
+	top: v-bind(indicatorTop);
+}
 
-	.expand-icon-vertical-adjust {
-		vertical-align: 2px;
-	}
+.expand-icon-vertical-adjust {
+	vertical-align: 2px;
+}
 
-	.title-vertical-adjust {
-		vertical-align: 3px;
-	}
+.title-vertical-adjust {
+	vertical-align: 3px;
+}
 </style>

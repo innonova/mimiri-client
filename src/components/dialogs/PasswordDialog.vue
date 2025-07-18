@@ -45,82 +45,82 @@
 </template>
 
 <script setup lang="ts">
-	import { ref } from 'vue'
-	import DialogTitle from '../elements/DialogTitle.vue'
-	import { noteManager } from '../../global'
-	import LoadingIcon from '../../icons/loading.vue'
-	const input = ref(null)
-	const dialog = ref(null)
-	const password = ref('')
-	const busy = ref(false)
-	const error = ref(false)
-	const capsLockOn = ref(false)
+import { ref } from 'vue'
+import DialogTitle from '../elements/DialogTitle.vue'
+import { noteManager } from '../../global'
+import LoadingIcon from '../../icons/loading.vue'
+const input = ref(null)
+const dialog = ref(null)
+const password = ref('')
+const busy = ref(false)
+const error = ref(false)
+const capsLockOn = ref(false)
 
-	let actionCallback: (value: string) => Promise<boolean>
-	let okCallback: () => void
-	let cancelCallback: () => void
+let actionCallback: (value: string) => Promise<boolean>
+let okCallback: () => void
+let cancelCallback: () => void
 
-	const pwKeyDown = event => {
-		capsLockOn.value = event.getModifierState('CapsLock')
-	}
+const pwKeyDown = event => {
+	capsLockOn.value = event.getModifierState('CapsLock')
+}
 
-	const show = (ok: () => void, cancel: () => void) => {
-		error.value = false
-		busy.value = false
-		password.value = ''
-		actionCallback = undefined
-		okCallback = ok
-		cancelCallback = cancel
-		dialog.value.showModal()
-	}
+const show = (ok: () => void, cancel: () => void) => {
+	error.value = false
+	busy.value = false
+	password.value = ''
+	actionCallback = undefined
+	okCallback = ok
+	cancelCallback = cancel
+	dialog.value.showModal()
+}
 
-	const showAction = (action: (value: string) => Promise<boolean>) => {
-		error.value = false
-		busy.value = false
-		password.value = ''
-		actionCallback = action
-		okCallback = undefined
-		cancelCallback = undefined
-		dialog.value.showModal()
-	}
+const showAction = (action: (value: string) => Promise<boolean>) => {
+	error.value = false
+	busy.value = false
+	password.value = ''
+	actionCallback = action
+	okCallback = undefined
+	cancelCallback = undefined
+	dialog.value.showModal()
+}
 
-	const close = () => {
-		password.value = ''
-		cancelCallback?.()
-		dialog.value.close()
-	}
+const close = () => {
+	password.value = ''
+	cancelCallback?.()
+	dialog.value.close()
+}
 
-	const submitDialog = async () => {
-		error.value = false
-		busy.value = true
-		if (actionCallback) {
-			if (await actionCallback(password.value)) {
-				password.value = ''
-				dialog.value.close()
-			} else {
-				password.value = ''
-				error.value = true
-				busy.value = false
-			}
-			return
-		}
-		if (await noteManager.auth.verifyPassword(password.value)) {
-			busy.value = false
+const submitDialog = async () => {
+	error.value = false
+	busy.value = true
+	if (actionCallback) {
+		if (await actionCallback(password.value)) {
 			password.value = ''
-			okCallback()
 			dialog.value.close()
 		} else {
+			password.value = ''
 			error.value = true
 			busy.value = false
-			password.value = ''
-			setTimeout(() => {
-				input.value.focus()
-			})
 		}
+		return
 	}
+	if (await noteManager.auth.verifyPassword(password.value)) {
+		busy.value = false
+		password.value = ''
+		okCallback()
+		dialog.value.close()
+	} else {
+		error.value = true
+		busy.value = false
+		password.value = ''
+		setTimeout(() => {
+			input.value.focus()
+		})
+	}
+}
 
-	defineExpose({
-		show,
-		showAction,
-	})
+defineExpose({
+	show,
+	showAction,
+})
 </script>

@@ -22,77 +22,77 @@
 </template>
 
 <script setup lang="ts">
-	import { onMounted, onUnmounted, ref } from 'vue'
-	import { noteManager } from '../../global'
-	import LoadingIcon from '../../icons/loading.vue'
-	import type { Guid } from '../../services/types/guid'
+import { onMounted, onUnmounted, ref } from 'vue'
+import { noteManager } from '../../global'
+import LoadingIcon from '../../icons/loading.vue'
+import type { Guid } from '../../services/types/guid'
 
-	const props = defineProps<{
-		invoiceId?: Guid
-		waitingForUser: boolean
-		link: string
-		expectedMethodCount?: number
-	}>()
+const props = defineProps<{
+	invoiceId?: Guid
+	waitingForUser: boolean
+	link: string
+	expectedMethodCount?: number
+}>()
 
-	const emit = defineEmits(['close'])
-	const status = ref('Waiting...')
-	const running = ref(false)
+const emit = defineEmits(['close'])
+const status = ref('Waiting...')
+const running = ref(false)
 
-	let timerActive = false
+let timerActive = false
 
-	const check = async () => {
-		status.value = 'Checking...'
-		if (props.invoiceId) {
-			const inv = await noteManager.payment.getInvoicePaymentStatus(props.invoiceId)
-			if (inv.status === 'confirmed') {
-				running.value = false
-				status.value = 'Success'
-				await new Promise(resolve => setTimeout(resolve, 1000))
-				await noteManager.session.updateUserStats()
-				emit('close')
-				return
-			} else if (inv.status !== 'pending') {
-				running.value = false
-				status.value = 'Failure'
-				await new Promise(resolve => setTimeout(resolve, 1000))
-				emit('close')
-				return
-			}
-		} else if (props.expectedMethodCount) {
-			const methods = await noteManager.payment.getPaymentMethods()
-			if (methods.length === props.expectedMethodCount) {
-				running.value = false
-				status.value = 'Success'
-				await new Promise(resolve => setTimeout(resolve, 1000))
-				await noteManager.session.updateUserStats()
-				emit('close')
-				return
-			}
+const check = async () => {
+	status.value = 'Checking...'
+	if (props.invoiceId) {
+		const inv = await noteManager.payment.getInvoicePaymentStatus(props.invoiceId)
+		if (inv.status === 'confirmed') {
+			running.value = false
+			status.value = 'Success'
+			await new Promise(resolve => setTimeout(resolve, 1000))
+			await noteManager.session.updateUserStats()
+			emit('close')
+			return
+		} else if (inv.status !== 'pending') {
+			running.value = false
+			status.value = 'Failure'
+			await new Promise(resolve => setTimeout(resolve, 1000))
+			emit('close')
+			return
 		}
-		await new Promise(resolve => setTimeout(resolve, 250))
-		if (running.value && props.invoiceId) {
-			status.value = 'Waiting...'
-			nextCheck()
+	} else if (props.expectedMethodCount) {
+		const methods = await noteManager.payment.getPaymentMethods()
+		if (methods.length === props.expectedMethodCount) {
+			running.value = false
+			status.value = 'Success'
+			await new Promise(resolve => setTimeout(resolve, 1000))
+			await noteManager.session.updateUserStats()
+			emit('close')
+			return
 		}
 	}
-
-	const nextCheck = () => {
-		if (!timerActive) {
-			timerActive = true
-			setTimeout(() => {
-				timerActive = false
-				void check()
-			}, 1000)
-		}
-	}
-
-	onUnmounted(() => {
-		running.value = false
-	})
-
-	onMounted(async () => {
+	await new Promise(resolve => setTimeout(resolve, 250))
+	if (running.value && props.invoiceId) {
 		status.value = 'Waiting...'
-		running.value = true
 		nextCheck()
-	})
+	}
+}
+
+const nextCheck = () => {
+	if (!timerActive) {
+		timerActive = true
+		setTimeout(() => {
+			timerActive = false
+			void check()
+		}, 1000)
+	}
+}
+
+onUnmounted(() => {
+	running.value = false
+})
+
+onMounted(async () => {
+	status.value = 'Waiting...'
+	running.value = true
+	nextCheck()
+})
 </script>

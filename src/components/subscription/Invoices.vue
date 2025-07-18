@@ -14,25 +14,25 @@
 </template>
 
 <script setup lang="ts">
-	import { onMounted, ref } from 'vue'
-	import type { Invoice } from '../../services/types/subscription'
-	import { noteManager } from '../../global'
-	import InvoiceItem from './InvoiceItem.vue'
-	import TabBar from '../elements/TabBar.vue'
+import { onMounted, ref } from 'vue'
+import type { Invoice } from '../../services/types/subscription'
+import { noteManager } from '../../global'
+import InvoiceItem from './InvoiceItem.vue'
+import TabBar from '../elements/TabBar.vue'
 
-	const emit = defineEmits(['pay-invoice'])
+const emit = defineEmits(['pay-invoice'])
 
-	const invoices = ref<Invoice[]>([])
+const invoices = ref<Invoice[]>([])
 
-	const populate = async () => {
-		invoices.value = await noteManager.payment.getInvoices()
-	}
+const populate = async () => {
+	invoices.value = await noteManager.payment.getInvoices()
+}
 
-	const payInvoice = (invoice: Invoice) => {
-		emit('pay-invoice', invoice)
-	}
+const payInvoice = (invoice: Invoice) => {
+	emit('pay-invoice', invoice)
+}
 
-	onMounted(async () => {
-		await populate()
-	})
+onMounted(async () => {
+	await populate()
+})
 </script>

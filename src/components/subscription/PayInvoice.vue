@@ -65,55 +65,55 @@
 </template>
 
 <script setup lang="ts">
-	import { ref } from 'vue'
-	import CustomerData from './CustomerData.vue'
-	import PaymentMethodSelector from './PaymentMethodSelector.vue'
-	import { type Invoice } from '../../services/types/subscription'
-	import { noteManager } from '../../global'
-	import { assertGuid } from '../../services/types/guid'
-	import ItemHeader from './ItemHeader.vue'
-	import PaymentSummary from './PaymentSummary.vue'
+import { ref } from 'vue'
+import CustomerData from './CustomerData.vue'
+import PaymentMethodSelector from './PaymentMethodSelector.vue'
+import { type Invoice } from '../../services/types/subscription'
+import { noteManager } from '../../global'
+import { assertGuid } from '../../services/types/guid'
+import ItemHeader from './ItemHeader.vue'
+import PaymentSummary from './PaymentSummary.vue'
 
-	const props = defineProps<{
-		invoice: Invoice
-	}>()
+const props = defineProps<{
+	invoice: Invoice
+}>()
 
-	const emit = defineEmits(['pay-in-progress'])
+const emit = defineEmits(['pay-in-progress'])
 
-	const changed = ref()
-	const valid = ref()
-	const termsAccepted = ref(false)
-	const privacyAccepted = ref(false)
-	const customerElement = ref<typeof CustomerData>()
-	const countryCode = ref()
+const changed = ref()
+const valid = ref()
+const termsAccepted = ref(false)
+const privacyAccepted = ref(false)
+const customerElement = ref<typeof CustomerData>()
+const countryCode = ref()
 
-	const method = ref('')
+const method = ref('')
 
-	const submit = async () => {
-		if (customerElement.value && valid && termsAccepted.value && privacyAccepted.value && props.invoice) {
-			await customerElement.value.save(termsAccepted.value, privacyAccepted.value)
-			await customerElement.value.verifyEmail()
+const submit = async () => {
+	if (customerElement.value && valid && termsAccepted.value && privacyAccepted.value && props.invoice) {
+		await customerElement.value.save(termsAccepted.value, privacyAccepted.value)
+		await customerElement.value.verifyEmail()
 
-			if (method.value === 'NEW') {
-				const createPayResult = await noteManager.payment.createPaymentLink({
-					invoiceId: props.invoice.id,
-					save: true,
-					clientRef: 'pay-invoice',
-				})
-				window.open(createPayResult.link, '_blank')
-				emit('pay-in-progress', props.invoice.id, true, createPayResult.link)
-			} else {
-				const methodId = method.value
-				assertGuid(methodId)
-				const payResult = await noteManager.payment.chargeExistingMethod({
-					invoiceId: props.invoice.id,
-					methodId,
-					purpose: 'Online order',
-				})
-				if (payResult.success) {
-					emit('pay-in-progress', props.invoice.id, false)
-				}
+		if (method.value === 'NEW') {
+			const createPayResult = await noteManager.payment.createPaymentLink({
+				invoiceId: props.invoice.id,
+				save: true,
+				clientRef: 'pay-invoice',
+			})
+			window.open(createPayResult.link, '_blank')
+			emit('pay-in-progress', props.invoice.id, true, createPayResult.link)
+		} else {
+			const methodId = method.value
+			assertGuid(methodId)
+			const payResult = await noteManager.payment.chargeExistingMethod({
+				invoiceId: props.invoice.id,
+				methodId,
+				purpose: 'Online order',
+			})
+			if (payResult.success) {
+				emit('pay-in-progress', props.invoice.id, false)
 			}
 		}
 	}
+}
 </script>

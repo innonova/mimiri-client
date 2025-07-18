@@ -20,10 +20,10 @@
 </template>
 
 <script setup lang="ts">
-	import { emptyRecycleBinDialog, noteManager } from '../../global'
-	import TabBar from '../elements/TabBar.vue'
+import { emptyRecycleBinDialog, noteManager } from '../../global'
+import TabBar from '../elements/TabBar.vue'
 
-	const empty = () => {
-		emptyRecycleBinDialog.value.show()
-	}
+const empty = () => {
+	emptyRecycleBinDialog.value.show()
+}
 </script>

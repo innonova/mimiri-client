@@ -80,37 +80,37 @@
 </template>
 
 <script setup lang="ts">
-	import { ref } from 'vue'
-	import { noteManager } from '../../global'
-	import DialogTitle from '../elements/DialogTitle.vue'
-	const dialog = ref(null)
-	const shareParticipants = ref([])
+import { ref } from 'vue'
+import { noteManager } from '../../global'
+import DialogTitle from '../elements/DialogTitle.vue'
+const dialog = ref(null)
+const shareParticipants = ref([])
 
-	const show = async () => {
-		if (noteManager.tree.selectedNote()?.isShared) {
-			shareParticipants.value = (
-				await noteManager.note.getShareParticipants(noteManager.tree.selectedNote().id)
-			).filter(item => item.username !== noteManager.state.username)
-		} else {
-			shareParticipants.value = []
-		}
-		dialog.value.showModal()
+const show = async () => {
+	if (noteManager.tree.selectedNote()?.isShared) {
+		shareParticipants.value = (await noteManager.note.getShareParticipants(noteManager.tree.selectedNote().id)).filter(
+			item => item.username !== noteManager.state.username,
+		)
+	} else {
+		shareParticipants.value = []
 	}
+	dialog.value.showModal()
+}
 
-	const close = () => {
-		dialog.value.close()
+const close = () => {
+	dialog.value.close()
+}
+
+const submitDialog = async () => {
+	if (noteManager.tree.selectedNote().isShareRoot) {
+		await noteManager.tree.selectedNote().deleteReference()
+	} else {
+		await noteManager.tree.selectedNote().delete()
 	}
+	close()
+}
 
-	const submitDialog = async () => {
-		if (noteManager.tree.selectedNote().isShareRoot) {
-			await noteManager.tree.selectedNote().deleteReference()
-		} else {
-			await noteManager.tree.selectedNote().delete()
-		}
-		close()
-	}
-
-	defineExpose({
-		show,
-	})
+defineExpose({
+	show,
+})
 </script>

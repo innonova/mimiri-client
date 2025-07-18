@@ -166,55 +166,55 @@
 </template>
 
 <script setup lang="ts">
-	import { computed, ref } from 'vue'
-	import { currentTime, formatCurrency, formatExpirationDate } from '../../services/helpers'
-	import {
-		Currency,
-		Period,
-		RenewalType,
-		type Subscription,
-		type SubscriptionProduct,
-	} from '../../services/types/subscription'
-	import { isAfter } from 'date-fns'
-	import { noteManager } from '../../global'
+import { computed, ref } from 'vue'
+import { currentTime, formatCurrency, formatExpirationDate } from '../../services/helpers'
+import {
+	Currency,
+	Period,
+	RenewalType,
+	type Subscription,
+	type SubscriptionProduct,
+} from '../../services/types/subscription'
+import { isAfter } from 'date-fns'
+import { noteManager } from '../../global'
 
-	const props = defineProps<{
-		product: SubscriptionProduct
-		subscription?: Subscription
-		showBuy?: boolean
-		showChoose?: boolean
-		showFeatures?: boolean
-		showResume?: boolean
-		showUpgrade?: boolean
-		showCancel?: boolean
-		showChange?: boolean
-		showChangeTo?: boolean
-		showCurrent?: boolean
-		compact?: boolean
-		showStatus?: boolean
-		currency?: Currency
-		disabled?: boolean
-	}>()
+const props = defineProps<{
+	product: SubscriptionProduct
+	subscription?: Subscription
+	showBuy?: boolean
+	showChoose?: boolean
+	showFeatures?: boolean
+	showResume?: boolean
+	showUpgrade?: boolean
+	showCancel?: boolean
+	showChange?: boolean
+	showChangeTo?: boolean
+	showCurrent?: boolean
+	compact?: boolean
+	showStatus?: boolean
+	currency?: Currency
+	disabled?: boolean
+}>()
 
-	const emit = defineEmits(['buy', 'choose', 'change', 'cancel', 'resume', 'pay-invoice'])
+const emit = defineEmits(['buy', 'choose', 'change', 'cancel', 'resume', 'pay-invoice'])
 
-	const now = ref<Date>(currentTime())
-	const overdue = computed(
-		() =>
-			isAfter(now.value, props.subscription?.paidUntil ?? now.value) &&
-			props.subscription?.renewalType !== RenewalType.None,
-	)
-	const ended = computed(
-		() =>
-			isAfter(now.value, props.subscription?.paidUntil ?? now.value) &&
-			props.subscription?.renewalType === RenewalType.None,
-	)
+const now = ref<Date>(currentTime())
+const overdue = computed(
+	() =>
+		isAfter(now.value, props.subscription?.paidUntil ?? now.value) &&
+		props.subscription?.renewalType !== RenewalType.None,
+)
+const ended = computed(
+	() =>
+		isAfter(now.value, props.subscription?.paidUntil ?? now.value) &&
+		props.subscription?.renewalType === RenewalType.None,
+)
 
-	const payNow = async () => {
-		const invoices = await noteManager.payment.getOpenInvoices()
-		const overdue = invoices.filter(inv => inv.due && isAfter(now.value, inv.due))
-		if (overdue.length > 0) {
-			emit('pay-invoice', overdue[0])
-		}
+const payNow = async () => {
+	const invoices = await noteManager.payment.getOpenInvoices()
+	const overdue = invoices.filter(inv => inv.due && isAfter(now.value, inv.due))
+	if (overdue.length > 0) {
+		emit('pay-invoice', overdue[0])
 	}
+}
 </script>

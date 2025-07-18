@@ -11,44 +11,44 @@
 </template>
 
 <script setup lang="ts">
-	import { type Invoice } from '../../services/types/subscription'
-	import type { Guid } from '../../services/types/guid'
-	import { noteManager } from '../../global'
-	import Invoices from './Invoices.vue'
-	import PayInvoice from './PayInvoice.vue'
-	import WaitingForPayment from './WaitingForPayment.vue'
-	import { onMounted, ref } from 'vue'
+import { type Invoice } from '../../services/types/subscription'
+import type { Guid } from '../../services/types/guid'
+import { noteManager } from '../../global'
+import Invoices from './Invoices.vue'
+import PayInvoice from './PayInvoice.vue'
+import WaitingForPayment from './WaitingForPayment.vue'
+import { onMounted, ref } from 'vue'
 
-	let pageAfterPay = 'invoices'
-	const selectedId = ref('invoices')
-	const invoiceId = ref<Guid>()
-	const waitingForUser = ref<boolean>(false)
-	const activeInvoice = ref<Invoice>()
-	const payLink = ref('')
+let pageAfterPay = 'invoices'
+const selectedId = ref('invoices')
+const invoiceId = ref<Guid>()
+const waitingForUser = ref<boolean>(false)
+const activeInvoice = ref<Invoice>()
+const payLink = ref('')
 
-	onMounted(() => {
-		noteManager.tree.registerActionListener({
-			select: (id: Guid) => {
-				if (id === 'settings-invoices') {
-					selectedId.value = 'invoices'
-				}
-			},
-		})
+onMounted(() => {
+	noteManager.tree.registerActionListener({
+		select: (id: Guid) => {
+			if (id === 'settings-invoices') {
+				selectedId.value = 'invoices'
+			}
+		},
 	})
+})
 
-	const closeWaiting = () => {
-		selectedId.value = pageAfterPay
-	}
-	const payInProgress = async (id: Guid, waiting: boolean, link: string) => {
-		selectedId.value = 'pay-in-progress'
-		invoiceId.value = id
-		waitingForUser.value = waiting
-		payLink.value = link
-	}
+const closeWaiting = () => {
+	selectedId.value = pageAfterPay
+}
+const payInProgress = async (id: Guid, waiting: boolean, link: string) => {
+	selectedId.value = 'pay-in-progress'
+	invoiceId.value = id
+	waitingForUser.value = waiting
+	payLink.value = link
+}
 
-	const payInvoice = async (invoice: Invoice) => {
-		activeInvoice.value = invoice
-		selectedId.value = 'pay-invoice'
-		pageAfterPay = 'invoices'
-	}
+const payInvoice = async (invoice: Invoice) => {
+	activeInvoice.value = invoice
+	selectedId.value = 'pay-invoice'
+	pageAfterPay = 'invoices'
+}
 </script>

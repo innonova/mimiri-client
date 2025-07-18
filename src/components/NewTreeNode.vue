@@ -21,55 +21,55 @@
 </template>
 
 <script setup lang="ts">
-	import { onMounted, ref } from 'vue'
-	import NoteIcon from '../icons/note.vue'
-	import { createNewNode, createNewRootNode, mimiriEditor, noteManager } from '../global'
+import { onMounted, ref } from 'vue'
+import NoteIcon from '../icons/note.vue'
+import { createNewNode, createNewRootNode, mimiriEditor, noteManager } from '../global'
 
-	const nameInput = ref(null)
+const nameInput = ref(null)
 
-	onMounted(() => {
-		nameInput.value.focus()
-	})
+onMounted(() => {
+	nameInput.value.focus()
+})
 
-	const checkCancelEdit = e => {
-		e.stopPropagation()
-		if (e.key === 'Escape') {
-			nameInput.value.blur()
-			createNewNode.value = false
-			createNewRootNode.value = false
-			// props.node.renaming = false
-			// renameInput.value.value = props.node.title
-			// renameInput.value.blur()
-		}
-		if (e.key === 'Enter') {
-			nameInput.value.blur()
-		}
-	}
-
-	const endEdit = async e => {
-		const name = nameInput.value?.value.trim()
-		if (name) {
-			if (createNewNode.value && noteManager.tree.selectedNote()) {
-				await noteManager.tree.selectedNote().addChild(name)
-			} else if (createNewRootNode.value) {
-				await noteManager.tree.root().addChild(name)
-			}
-			mimiriEditor.focus()
-		}
+const checkCancelEdit = e => {
+	e.stopPropagation()
+	if (e.key === 'Escape') {
+		nameInput.value.blur()
 		createNewNode.value = false
 		createNewRootNode.value = false
-		// const newName = (e.target as HTMLInputElement).value
-		// const note = noteManager.getNoteById(props.node.id)
-		// if (note.title !== newName) {
-		// 	props.node.title = newName
-		// 	note.title = newName
-		// 	note.save()
-		// }
+		// props.node.renaming = false
+		// renameInput.value.value = props.node.title
+		// renameInput.value.blur()
 	}
+	if (e.key === 'Enter') {
+		nameInput.value.blur()
+	}
+}
+
+const endEdit = async e => {
+	const name = nameInput.value?.value.trim()
+	if (name) {
+		if (createNewNode.value && noteManager.tree.selectedNote()) {
+			await noteManager.tree.selectedNote().addChild(name)
+		} else if (createNewRootNode.value) {
+			await noteManager.tree.root().addChild(name)
+		}
+		mimiriEditor.focus()
+	}
+	createNewNode.value = false
+	createNewRootNode.value = false
+	// const newName = (e.target as HTMLInputElement).value
+	// const note = noteManager.getNoteById(props.node.id)
+	// if (note.title !== newName) {
+	// 	props.node.title = newName
+	// 	note.title = newName
+	// 	note.save()
+	// }
+}
 </script>
 
 <style scoped>
-	.tree-indent .tree-indent {
-		margin-left: 25px;
-	}
+.tree-indent .tree-indent {
+	margin-left: 25px;
+}
 </style>

@@ -88,98 +88,98 @@
 </template>
 
 <script setup lang="ts">
-	import { onMounted, ref } from 'vue'
-	import TabBar from '../elements/TabBar.vue'
-	import { settingsManager } from '../../services/settings-manager'
-	import { debug } from '../../global'
-	import { formatDateTime } from '../../services/helpers'
-	import { emptyGuid } from '../../services/types/guid'
+import { onMounted, ref } from 'vue'
+import TabBar from '../elements/TabBar.vue'
+import { settingsManager } from '../../services/settings-manager'
+import { debug } from '../../global'
+import { formatDateTime } from '../../services/helpers'
+import { emptyGuid } from '../../services/types/guid'
 
-	const selectedTab = ref('Settings')
-	const errorLog = ref([])
-	const latencyLog = ref([])
-	const messageLog = ref([])
-	const stackIdShowing = ref(emptyGuid())
+const selectedTab = ref('Settings')
+const errorLog = ref([])
+const latencyLog = ref([])
+const messageLog = ref([])
+const stackIdShowing = ref(emptyGuid())
 
-	const preCallLatency = ref(1000)
-	const preCallLatencyEnabled = ref(false)
-	const preCallLatencyRandom = ref(false)
-	const postCallLatency = ref(1000)
-	const postCallLatencyEnabled = ref(false)
-	const postCallLatencyRandom = ref(false)
-	const callErrorFrequency = ref(10)
-	const callErrorFrequencyEnabled = ref(false)
-	const callErrorDelay = ref(0)
-	const latencyThreshold = ref(1000)
+const preCallLatency = ref(1000)
+const preCallLatencyEnabled = ref(false)
+const preCallLatencyRandom = ref(false)
+const postCallLatency = ref(1000)
+const postCallLatencyEnabled = ref(false)
+const postCallLatencyRandom = ref(false)
+const callErrorFrequency = ref(10)
+const callErrorFrequencyEnabled = ref(false)
+const callErrorDelay = ref(0)
+const latencyThreshold = ref(1000)
 
-	onMounted(() => {
-		preCallLatency.value = debug.settings.preCallLatency
-		preCallLatencyEnabled.value = debug.settings.preCallLatencyEnabled
-		preCallLatencyRandom.value = debug.settings.preCallLatencyRandom
-		postCallLatency.value = debug.settings.postCallLatency
-		postCallLatencyEnabled.value = debug.settings.postCallLatencyEnabled
-		postCallLatencyRandom.value = debug.settings.postCallLatencyRandom
-		callErrorFrequency.value = debug.settings.callErrorFrequency
-		callErrorFrequencyEnabled.value = debug.settings.callErrorFrequencyEnabled
-		callErrorDelay.value = debug.settings.callErrorDelay
-		latencyThreshold.value = debug.settings.latencyThreshold
+onMounted(() => {
+	preCallLatency.value = debug.settings.preCallLatency
+	preCallLatencyEnabled.value = debug.settings.preCallLatencyEnabled
+	preCallLatencyRandom.value = debug.settings.preCallLatencyRandom
+	postCallLatency.value = debug.settings.postCallLatency
+	postCallLatencyEnabled.value = debug.settings.postCallLatencyEnabled
+	postCallLatencyRandom.value = debug.settings.postCallLatencyRandom
+	callErrorFrequency.value = debug.settings.callErrorFrequency
+	callErrorFrequencyEnabled.value = debug.settings.callErrorFrequencyEnabled
+	callErrorDelay.value = debug.settings.callErrorDelay
+	latencyThreshold.value = debug.settings.latencyThreshold
+	errorLog.value = debug.errorLog
+	messageLog.value = debug.messageLog
+	latencyLog.value = debug.latencyLog
+})
+
+const showStackId = id => {
+	if (stackIdShowing.value === id) {
+		stackIdShowing.value = emptyGuid()
+	} else {
+		stackIdShowing.value = id
+	}
+}
+
+const tabSelected = item => {
+	if (item === 'Settings') {
+		selectedTab.value = 'Settings'
+	} else if (item === 'Errors') {
+		selectedTab.value = 'Errors'
 		errorLog.value = debug.errorLog
+	} else if (item === 'Messages') {
+		selectedTab.value = 'Messages'
 		messageLog.value = debug.messageLog
+	} else if (item === 'Latency') {
+		selectedTab.value = 'Latency'
 		latencyLog.value = debug.latencyLog
+	} else {
+		selectedTab.value = ''
+	}
+}
+const save = () => {
+	debug.saveSettings({
+		preCallLatency: preCallLatency.value,
+		preCallLatencyEnabled: preCallLatencyEnabled.value,
+		preCallLatencyRandom: preCallLatencyRandom.value,
+		postCallLatency: postCallLatency.value,
+		postCallLatencyEnabled: postCallLatencyEnabled.value,
+		postCallLatencyRandom: postCallLatencyRandom.value,
+		callErrorFrequency: callErrorFrequency.value,
+		callErrorFrequencyEnabled: callErrorFrequencyEnabled.value,
+		callErrorDelay: callErrorDelay.value,
+		latencyThreshold: latencyThreshold.value,
 	})
+}
 
-	const showStackId = id => {
-		if (stackIdShowing.value === id) {
-			stackIdShowing.value = emptyGuid()
-		} else {
-			stackIdShowing.value = id
-		}
-	}
+const testError = () => {
+	throw new Error('This is a test error')
+}
 
-	const tabSelected = item => {
-		if (item === 'Settings') {
-			selectedTab.value = 'Settings'
-		} else if (item === 'Errors') {
-			selectedTab.value = 'Errors'
-			errorLog.value = debug.errorLog
-		} else if (item === 'Messages') {
-			selectedTab.value = 'Messages'
-			messageLog.value = debug.messageLog
-		} else if (item === 'Latency') {
-			selectedTab.value = 'Latency'
-			latencyLog.value = debug.latencyLog
-		} else {
-			selectedTab.value = ''
-		}
-	}
-	const save = () => {
-		debug.saveSettings({
-			preCallLatency: preCallLatency.value,
-			preCallLatencyEnabled: preCallLatencyEnabled.value,
-			preCallLatencyRandom: preCallLatencyRandom.value,
-			postCallLatency: postCallLatency.value,
-			postCallLatencyEnabled: postCallLatencyEnabled.value,
-			postCallLatencyRandom: postCallLatencyRandom.value,
-			callErrorFrequency: callErrorFrequency.value,
-			callErrorFrequencyEnabled: callErrorFrequencyEnabled.value,
-			callErrorDelay: callErrorDelay.value,
-			latencyThreshold: latencyThreshold.value,
-		})
-	}
+const clearErrors = () => {
+	debug.clearErrorLog()
+}
 
-	const testError = () => {
-		throw new Error('This is a test error')
-	}
+const clearMessages = () => {
+	debug.clearMessageLog()
+}
 
-	const clearErrors = () => {
-		debug.clearErrorLog()
-	}
-
-	const clearMessages = () => {
-		debug.clearMessageLog()
-	}
-
-	const clearLatency = () => {
-		debug.clearLatencyLog()
-	}
+const clearLatency = () => {
+	debug.clearLatencyLog()
+}
 </script>

@@ -43,28 +43,28 @@
 	<input type="hidden" data-testid="payment-methods-loaded" :value="loaded" />
 </template>
 <script setup lang="ts">
-	import { onMounted, ref } from 'vue'
-	import type { PaymentMethod } from '../../services/types/subscription'
-	import { noteManager } from '../../global'
-	import ItemHeader from './ItemHeader.vue'
-	import PaymentMethodItem from './PaymentMethodItem.vue'
+import { onMounted, ref } from 'vue'
+import type { PaymentMethod } from '../../services/types/subscription'
+import { noteManager } from '../../global'
+import ItemHeader from './ItemHeader.vue'
+import PaymentMethodItem from './PaymentMethodItem.vue'
 
-	defineProps<{
-		disabled?: boolean
-	}>()
+defineProps<{
+	disabled?: boolean
+}>()
 
-	const model = defineModel()
-	const methods = ref<PaymentMethod[]>()
-	const loaded = ref(false)
+const model = defineModel()
+const methods = ref<PaymentMethod[]>()
+const loaded = ref(false)
 
-	onMounted(async () => {
-		const items = await noteManager.payment.getPaymentMethods()
-		methods.value = items
-		if (methods.value.length > 0) {
-			model.value = undefined
-		} else {
-			model.value = 'NEW'
-		}
-		loaded.value = true
-	})
+onMounted(async () => {
+	const items = await noteManager.payment.getPaymentMethods()
+	methods.value = items
+	if (methods.value.length > 0) {
+		model.value = undefined
+	} else {
+		model.value = 'NEW'
+	}
+	loaded.value = true
+})
 </script>

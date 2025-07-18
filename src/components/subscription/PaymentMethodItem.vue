@@ -37,15 +37,15 @@
 </template>
 
 <script setup lang="ts">
-	import type { PaymentMethod } from '../../services/types/subscription'
-	import { noteManager } from '../../global'
+import type { PaymentMethod } from '../../services/types/subscription'
+import { noteManager } from '../../global'
 
-	const props = defineProps<{
-		method: PaymentMethod
-		isDefault: boolean
-		showActions: boolean
-		disabled?: boolean
-	}>()
+defineProps<{
+	method: PaymentMethod
+	isDefault: boolean
+	showActions: boolean
+	disabled?: boolean
+}>()
 
-	const emit = defineEmits(['make-default', 'delete'])
+const emit = defineEmits(['make-default', 'delete'])
 </script>
