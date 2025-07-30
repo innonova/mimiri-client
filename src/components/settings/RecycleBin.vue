@@ -5,7 +5,8 @@
 			<div class="p-1">Permanently delete all items in the Recycle Bin</div>
 			<div class="mt-5 max-w-110 mr-2">
 				<hr />
-				<div class="w-full flex justify-end mt-2 gap-2">
+				<div class="w-full flex justify-between mt-2 gap-2">
+					<button @click="scanForInconsistencies" class="primary">Scan for inconsistencies</button>
 					<button
 						:disabled="noteManager.tree.selectedNote()?.viewModel?.children.length === 0"
 						@click="empty"
@@ -20,10 +21,16 @@
 </template>
 
 <script setup lang="ts">
-import { emptyRecycleBinDialog, noteManager } from '../../global'
+import { emptyRecycleBinDialog, inconsistencyDialog, noteManager } from '../../global'
 import TabBar from '../elements/TabBar.vue'
 
 const empty = () => {
 	emptyRecycleBinDialog.value.show()
+}
+
+const scanForInconsistencies = async () => {
+	if (await noteManager.checkForConsistency()) {
+		inconsistencyDialog.value.show()
+	}
 }
 </script>

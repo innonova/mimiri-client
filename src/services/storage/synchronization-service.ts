@@ -25,6 +25,7 @@ export class SynchronizationService {
 	private _waitingForSync: ((success: boolean) => void)[] = []
 	private _initializing: boolean = false
 	private _initialized: boolean = false
+	private _ready: boolean = false
 	private _issuedSyncIds: string[] = []
 
 	constructor(
@@ -55,6 +56,7 @@ export class SynchronizationService {
 		} else {
 			console.log('SynchronizationService.initialSync() skipped due to work offline or local account type')
 		}
+		this._ready = true
 	}
 
 	public async sync(shouldCheckConsistency: boolean = false) {
@@ -116,7 +118,7 @@ export class SynchronizationService {
 
 	public queueSync(shouldCheckConsistency: boolean = false): void {
 		console.log('SynchronizationService.queueSync() called', this._initialized, this.canSync)
-		if (!this._initialized && this.canSync) {
+		if (!this._initialized && this.canSync && this._ready) {
 			void this.initialSync().then(() => {
 				void this.sync(shouldCheckConsistency)
 			})
@@ -260,7 +262,6 @@ export class SynchronizationService {
 			await this.db.setLastSync(nextNoteSync, nextKeySync)
 			changes = await this.api.getChangesSince(nextNoteSync, nextKeySync)
 		}
-
 		if (pushUpdates) {
 			for (const noteId of updatedNoteIds) {
 				console.log(`Note ${noteId} updated during sync pull`)
@@ -380,6 +381,14 @@ export class SynchronizationService {
 		return this.cryptoManager.tryDecryptNoteItemText(item, keySet.symmetric)
 	}
 
+	private async decryptNoteItemObject(keyName: Guid, item: NoteItem) {
+		const keySet = this.cryptoManager.getKeyByName(keyName)
+		if (!keySet) {
+			throw new Error(`Key not found: ${keyName}`)
+		}
+		return this.cryptoManager.tryDecryptNoteItemObject(item, keySet.symmetric)
+	}
+
 	private async decryptLocalNoteItemData(item: NoteItem) {
 		return this.cryptoManager.tryDecryptNoteItemText(item, this.cryptoManager.localCrypt)
 	}
@@ -403,7 +412,6 @@ export class SynchronizationService {
 	}
 
 	private async syncPush(): Promise<boolean> {
-		console.log('SynchronizationService.syncPush() called')
 		syncStatus.value = 'sending-changes'
 		if (!this.isSizeAllowedOnServer()) {
 			syncStatus.value = 'total-size-limit-exceeded'
@@ -554,7 +562,7 @@ export class SynchronizationService {
 				})
 			}
 
-			console.log('Note actions:', noteActions)
+			// console.log('Note actions:', noteActions)
 
 			if (noteActions.length === 0 && keyActions.length === 0) {
 				return false
@@ -647,13 +655,17 @@ export class SynchronizationService {
 			}
 			const metadata = note.items.find(item => item.type === 'metadata')
 			if (metadata) {
-				const data = JSON.parse(await this.decryptNoteItemData(note.keyName, metadata)) as { notes: Guid[] }
-				for (const childId of data.notes) {
-					if (parents[childId]) {
-						parents[childId].push({ id: note.id, modified: metadata.modified })
-					} else {
-						parents[childId] = [{ id: note.id, modified: metadata.modified }]
+				try {
+					const data = await this.decryptNoteItemObject(note.keyName, metadata)
+					for (const childId of data.notes) {
+						if (parents[childId]) {
+							parents[childId].push({ id: note.id, modified: metadata.modified })
+						} else {
+							parents[childId] = [{ id: note.id, modified: metadata.modified }]
+						}
 					}
+				} catch (error) {
+					console.log(`Error parsing metadata for note ${note.id}:`, error)
 				}
 			}
 		}
@@ -739,23 +751,27 @@ export class SynchronizationService {
 			if (this.treeManager.recycleBin) {
 				let addedItems = false
 				for (const id of idsWithoutParent) {
-					if (id === this.treeManager.root?.id) {
-						continue
-					}
-					console.log(`Note ${id} has no parent, adding to recycle bin`)
-					const item = await this.db.getNote(id)
-					const data = JSON.parse(await this.decryptNoteItemData(item.keyName, item.items[0]))
-					if (data.isRecycleBin) {
-						if (data.id !== this.treeManager.recycleBin.id) {
-							await this.db.deleteRemoteNote(id)
+					try {
+						if (id === this.treeManager.root?.id) {
+							continue
 						}
-					} else if (data.isControlPanel) {
-						if (data.id !== this.treeManager.controlPanelId) {
-							await this.db.deleteRemoteNote(id)
+						console.log(`Note ${id} has no parent, adding to recycle bin`)
+						const item = await this.db.getNote(id)
+						const data = await this.decryptNoteItemObject(item.keyName, item.items[0])
+						if (data.isRecycleBin) {
+							if (data.id !== this.treeManager.recycleBin.id) {
+								await this.db.deleteRemoteNote(id)
+							}
+						} else if (data.isControlPanel) {
+							if (data.id !== this.treeManager.controlPanelId) {
+								await this.db.deleteRemoteNote(id)
+							}
+						} else {
+							this.treeManager.recycleBin.note.changeItem('metadata').notes.push(id)
+							addedItems = true
 						}
-					} else {
-						this.treeManager.recycleBin.note.changeItem('metadata').notes.push(id)
-						addedItems = true
+					} catch (error) {
+						console.log(`Error processing note ${id}:`, error)
 					}
 				}
 				if (addedItems) {

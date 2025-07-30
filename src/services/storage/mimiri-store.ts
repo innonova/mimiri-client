@@ -296,6 +296,10 @@ export class MimiriStore {
 		},
 	}
 
+	public async checkForConsistency(): Promise<boolean> {
+		return this.syncService.checkForConsistency()
+	}
+
 	public get payment() {
 		return this.paymentClient
 	}

@@ -79,6 +79,7 @@ export class SessionManager {
 			}
 			await this.ensureControlPanel()
 			await this.ensureRecycleBin()
+			await this.ensureSystemFolderOrder()
 		} catch (ex) {
 			debug.logError('Failed to ensure notes structure', ex)
 		}
@@ -112,6 +113,24 @@ export class SessionManager {
 			root.changeItem('metadata').controlPanel = controlPanel.id
 			const rootChildren = root.changeItem('metadata').notes
 			root.changeItem('metadata').notes = [controlPanel.id, ...rootChildren]
+			await this.operationsManager.writeNote(root)
+		}
+	}
+
+	private async ensureSystemFolderOrder() {
+		const root = await this.noteService.readNote(this.authManager.userData.rootNote)
+		const controlPanelId = root.getItem('metadata').controlPanel
+		const recycleBinId = root.getItem('metadata').recycleBin
+		if (root.getItem('metadata').notes[0] !== controlPanelId || root.getItem('metadata').notes[1] !== recycleBinId) {
+			const controlPanelIndex = root.getItem('metadata').notes.indexOf(controlPanelId)
+			if (controlPanelIndex > -1) {
+				root.changeItem('metadata').notes.splice(controlPanelIndex, 1)
+			}
+			const recycleBinIndex = root.getItem('metadata').notes.indexOf(recycleBinId)
+			if (recycleBinIndex > -1) {
+				root.changeItem('metadata').notes.splice(recycleBinIndex, 1)
+			}
+			root.changeItem('metadata').notes.unshift(controlPanelId, recycleBinId)
 			await this.operationsManager.writeNote(root)
 		}
 	}
