@@ -179,18 +179,30 @@ export function formatBytes(bytes: number): string {
 	}
 	const kb = bytes / 1024
 	if (kb < 1024) {
-		return `${kb.toFixed(2)} kB`
+		if (kb < 10) {
+			return `${kb.toFixed(2)} kB`
+		}
+		return `${kb.toFixed(0)} kB`
 	}
 	const mb = kb / 1024
 	if (mb < 1024) {
-		return `${mb.toFixed(2)} MB`
+		if (mb < 10) {
+			return `${mb.toFixed(2)} MB`
+		}
+		return `${mb.toFixed(0)} MB`
 	}
 	const gb = mb / 1024
 	if (gb < 1024) {
-		return `${gb.toFixed(2)} GB`
+		if (gb < 10) {
+			return `${gb.toFixed(2)} GB`
+		}
+		return `${gb.toFixed(0)} GB`
 	}
 	const tb = gb / 1024
-	return `${tb.toFixed(2)} TB`
+	if (tb < 10) {
+		return `${tb.toFixed(2)} TB`
+	}
+	return `${tb.toFixed(0)} TB`
 }
 
 export const incrementalDelay = async (attempt: number, baseDelay = 1000, maxDelay = 30000, multiplier = 2) => {

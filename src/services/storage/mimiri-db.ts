@@ -19,12 +19,15 @@ export class MimiriDb {
 		})
 	}
 
-	private async getDbName(logicalName: string): Promise<string> {
+	private async getDbName(logicalName: string, create: boolean): Promise<string | undefined> {
 		const mappingDb = await this.openMappingDb()
 		try {
 			const mapping = await mappingDb.get('name-mappings', logicalName)
 			if (mapping) {
 				return mapping.actualName
+			}
+			if (!create) {
+				return undefined
 			}
 			const actualName = `mimiri-${newGuid()}`
 			await mappingDb.put('name-mappings', { actualName }, logicalName)
@@ -35,13 +38,13 @@ export class MimiriDb {
 	}
 
 	public async exists(username: string) {
-		const actualDbName = await this.getDbName(username)
+		const actualDbName = await this.getDbName(username, false)
 		return actualDbName !== undefined
 	}
 
 	public async open(username: string) {
 		this.logicalName = username
-		const actualDbName = await this.getDbName(this.logicalName)
+		const actualDbName = await this.getDbName(this.logicalName, true)
 		this.db = await openDB(actualDbName, 4, {
 			upgrade(db) {
 				if (!db.objectStoreNames.contains('note-store')) {

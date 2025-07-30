@@ -31,9 +31,7 @@
 				<MainToolbar ref="mainToolbar" />
 				<SearchBox v-show="showSearchBox" />
 				<NoteTreeView ref="noteTreeView" />
-				<div class="ml-2 mb-2 mt-1">
-					<span data-testid="sync-status">{{ noteManager.state.isOnline ? syncStatus : 'Offline' }}</span>
-				</div>
+				<StatusBar />
 			</div>
 			<div class="w-2.5 min-w-2.5 bg-toolbar cursor-ew-resize hidden desktop:block" @mousedown="startDragging" />
 			<div class="h-full flex flex-col w-full divider-right" :class="{ 'hidden desktop:flex': !showEditor }">
@@ -163,6 +161,7 @@ import PropertiesPage from './components/PropertiesPage.vue'
 import DeleteHistoryDialog from './components/dialogs/DeleteHistoryDialog.vue'
 import InfoDialog from './components/dialogs/InfoDialog.vue'
 import InconsistencyDialog from './components/dialogs/InconsistencyDialog.vue'
+import StatusBar from './components/elements/StatusBar.vue'
 
 const colorScheme = ref('only light')
 const loading = ref(true)

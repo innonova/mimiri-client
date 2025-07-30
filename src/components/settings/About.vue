@@ -94,7 +94,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue'
+import { ref, watch } from 'vue'
 import { noteManager, updateManager } from '../../global'
 import { settingsManager } from '../../services/settings-manager'
 import { iconAttributions } from '../../icons/attributions'
@@ -142,36 +142,40 @@ const toPercent = (used, max) => {
 	return `${Math.round(10 * percent) / 10} %`
 }
 
-onMounted(() => {
-	if (noteManager.state.isLoggedIn) {
-		usedBytes.value = formatBytes(noteManager.state.userStats.size + noteManager.state.userStats.localSizeDelta)
-		maxBytes.value = formatBytes(noteManager.state.userStats.maxTotalBytes)
-		localUsedBytes.value = formatBytes(noteManager.state.userStats.localSize)
-		bytesPercent.value = toPercent(
-			noteManager.state.userStats.size + noteManager.state.userStats.localSizeDelta,
-			noteManager.state.userStats.maxTotalBytes,
-		)
-		noteCount.value =
-			noteManager.state.userStats.noteCount + noteManager.state.userStats.localNoteCountDelta - SYSTEM_NOTE_COUNT
-		maxNoteCount.value = noteManager.state.userStats.maxNoteCount
-		localNoteCount.value = noteManager.state.userStats.localNoteCount
-		notesPercent.value = toPercent(
-			noteManager.state.userStats.noteCount + noteManager.state.userStats.localNoteCountDelta,
-			noteManager.state.userStats.maxNoteCount,
-		)
-		maxNoteSize.value = formatBytes(noteManager.state.userStats.maxNoteBytes)
-		if (noteManager.tree.selectedNote()) {
-			currentNoteSize.value = formatBytes(noteManager.tree.selectedNote().size)
-			currentNotePercent.value = toPercent(
-				noteManager.tree.selectedNote().size,
-				noteManager.state.userStats.maxNoteBytes,
+watch(
+	noteManager.state,
+	() => {
+		if (noteManager.state.isLoggedIn) {
+			usedBytes.value = formatBytes(noteManager.state.userStats.size + noteManager.state.userStats.localSizeDelta)
+			maxBytes.value = formatBytes(noteManager.state.userStats.maxTotalBytes)
+			localUsedBytes.value = formatBytes(noteManager.state.userStats.localSize)
+			bytesPercent.value = toPercent(
+				noteManager.state.userStats.size + noteManager.state.userStats.localSizeDelta,
+				noteManager.state.userStats.maxTotalBytes,
 			)
-		} else {
-			currentNoteSize.value = '0 MB'
-			currentNotePercent.value = '0 %'
+			noteCount.value =
+				noteManager.state.userStats.noteCount + noteManager.state.userStats.localNoteCountDelta - SYSTEM_NOTE_COUNT
+			maxNoteCount.value = noteManager.state.userStats.maxNoteCount
+			localNoteCount.value = noteManager.state.userStats.localNoteCount
+			notesPercent.value = toPercent(
+				noteManager.state.userStats.noteCount + noteManager.state.userStats.localNoteCountDelta,
+				noteManager.state.userStats.maxNoteCount,
+			)
+			maxNoteSize.value = formatBytes(noteManager.state.userStats.maxNoteBytes)
+			if (noteManager.tree.selectedNote()) {
+				currentNoteSize.value = formatBytes(noteManager.tree.selectedNote().size)
+				currentNotePercent.value = toPercent(
+					noteManager.tree.selectedNote().size,
+					noteManager.state.userStats.maxNoteBytes,
+				)
+			} else {
+				currentNoteSize.value = '0 MB'
+				currentNotePercent.value = '0 %'
+			}
 		}
-	}
-})
+	},
+	{ immediate: true },
+)
 
 let clickCount = 0
 let firstClick = Date.now() - 2000
