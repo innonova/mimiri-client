@@ -9,10 +9,20 @@
 				</div>
 				<div class="p-1 pl-4 pt-2">Released: {{ formatDate(updateManager.releaseDate) }}</div>
 				<template v-if="maxNoteCount > 0">
-					<div class="p-1 pl-4 pt-6">Notes: {{ noteCount }} / {{ maxNoteCount }} ({{ notesPercent }})</div>
-					<div class="p-1 pl-4 pt-2">Space Used: {{ usedBytes }} / {{ maxBytes }} ({{ bytesPercent }})</div>
-					<div class="p-1 pl-4 pt-2">Unsynced Notes: {{ localNoteCount }}</div>
-					<div class="p-1 pl-4 pt-2">Unsynced Data: {{ localUsedBytes }}</div>
+					<div class="p-1 pl-4 pt-6">
+						Notes: <span data-testid="about-note-count">{{ noteCount }}</span> /
+						<span data-testid="about-max-note-count">{{ maxNoteCount }}</span> ({{ notesPercent }})
+					</div>
+					<div class="p-1 pl-4 pt-2">
+						Space Used: <span data-testid="about-space-used">{{ usedBytes }}</span> /
+						<span data-testid="about-max-space">{{ maxBytes }}</span> ({{ bytesPercent }})
+					</div>
+					<div class="p-1 pl-4 pt-2">
+						Unsynced Notes: <span data-testid="about-unsynced-notes">{{ localNoteCount }}</span>
+					</div>
+					<div class="p-1 pl-4 pt-2">
+						Unsynced Data: <span data-testid="about-unsynced-data">{{ localUsedBytes }}</span>
+					</div>
 				</template>
 				<template v-else>
 					<div class="p-1 pl-4 pt-6">Notes: {{ noteCount }}</div>
@@ -102,8 +112,7 @@ import { mimiriPlatform } from '../../services/mimiri-platform'
 import TabBar from '../elements/TabBar.vue'
 import { fontManager } from '../../global'
 import { formatBytes } from '../../services/helpers'
-
-const SYSTEM_NOTE_COUNT = 3
+import { SYSTEM_NOTE_COUNT } from '../../services/storage/synchronization-service'
 
 const usedBytes = ref('0 MB')
 const maxBytes = ref('10 MB')

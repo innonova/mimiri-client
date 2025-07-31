@@ -181,7 +181,7 @@ test.describe('conflict tests', () => {
 			await settingNodes.recycleBin().click({ button: 'right' })
 			await menu.emptyRecycleBin().click()
 
-			expect(emptyRecycleBinDialog.container()).toBeVisible()
+			await expect(emptyRecycleBinDialog.container()).toBeVisible()
 			await emptyRecycleBinDialog.okButton().click()
 			await expect(note.item('Technical Specifications')).not.toBeVisible()
 
@@ -192,7 +192,7 @@ test.describe('conflict tests', () => {
 
 			await expect(inconsistencyDialog.container()).toBeVisible()
 			await inconsistencyDialog.reloadButton().click()
-			expect(inconsistencyDialog.container()).not.toBeVisible()
+			await expect(inconsistencyDialog.container()).not.toBeVisible()
 			await expect(note.item('Technical Specifications')).not.toBeVisible()
 			await settingNodes.recycleBinClosed().click()
 			await expect(note.item('Technical Specifications')).toBeVisible()

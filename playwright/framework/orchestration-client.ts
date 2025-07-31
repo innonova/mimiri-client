@@ -42,7 +42,11 @@ export class OrchestrationClient {
 	constructor() {}
 
 	public async cleanUp(username: string) {
-		const text = await fetch(`${this._host}/clean-up/${username}`).then(res => res.text())
+		await fetch(`${this._host}/clean-up/${username}`).then(res => res.text())
+	}
+
+	public async setUserType(username: string, userType: number) {
+		await fetch(`${this._host}/set-user-type/${username}/${userType}`).then(res => res.text())
 	}
 
 	public async resetDatabaseSoft(username: string) {
@@ -69,7 +73,7 @@ export class OrchestrationClient {
 	}
 
 	public async nextRenewalDate(username: string): Promise<{ action: string; time: Date }> {
-		const data = await fetch(`${this._host}/next-renewal-action/${username}`).then(res => res.json())
+		const data = await fetch(`${this._host}/next-renewal-action/${username}`).then(res => res.json() as any)
 		return {
 			action: data.action,
 			time: new Date(data.time),

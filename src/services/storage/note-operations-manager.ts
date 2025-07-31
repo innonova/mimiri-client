@@ -128,6 +128,8 @@ export class NoteOperationsManager {
 				await this.recursiveDelete(multiAction, mimerNote.id)
 			}
 			await multiAction.commit()
+			this.syncService.queueSync()
+			await this.syncService.waitForSync(15000)
 			await (await this.treeManager.getNoteById(parent.id))?.select()
 		} finally {
 			this.uiManager.endAction()
@@ -149,6 +151,8 @@ export class NoteOperationsManager {
 				await multiAction.updateNote(target)
 			}
 			await multiAction.commit()
+			this.syncService.queueSync()
+			await this.syncService.waitForSync(15000)
 
 			const targetMimerNote = await this.treeManager.getNoteById(targetId)
 			await targetMimerNote.expand()
@@ -213,6 +217,8 @@ export class NoteOperationsManager {
 				}
 			}
 			await multiAction.commit()
+			this.syncService.queueSync()
+			await this.syncService.waitForSync(15000)
 			const targetMimerNote = await this.treeManager.getNoteById(targetId)
 			await targetMimerNote.expand()
 			if (select) {
@@ -287,6 +293,8 @@ export class NoteOperationsManager {
 				}
 			}
 			await multiAction.commit()
+			this.syncService.queueSync()
+			await this.syncService.waitForSync(15000)
 			const response = await this.api.shareNote(recipient, sharedKey.name, mimerNote.id, mimerNote.title, pow)
 			return response
 		} finally {

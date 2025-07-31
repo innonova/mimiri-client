@@ -85,6 +85,7 @@
 		<LoginDialog ref="loginDialog" />
 		<InfoDialog ref="infoDialog" />
 		<InconsistencyDialog ref="inconsistencyDialog" />
+		<SyncErrorDialog ref="syncErrorDialog" />
 		<div
 			v-if="noteManager.state.busy"
 			class="absolute left-0 top-0 w-full h-full flex items-center justify-around text-white"
@@ -137,6 +138,7 @@ import {
 	passwordDialog,
 	loginDialog,
 	limitDialog,
+	syncErrorDialog,
 	updateManager,
 	deletePaymentMethodDialog,
 	deleteHistoryDialog,
@@ -145,7 +147,6 @@ import {
 	blockUserInput,
 	appStatus,
 	inconsistencyDialog,
-	syncStatus,
 } from './global'
 import { settingsManager } from './services/settings-manager'
 import LoadingIcon from './icons/loading.vue'
@@ -162,6 +163,7 @@ import DeleteHistoryDialog from './components/dialogs/DeleteHistoryDialog.vue'
 import InfoDialog from './components/dialogs/InfoDialog.vue'
 import InconsistencyDialog from './components/dialogs/InconsistencyDialog.vue'
 import StatusBar from './components/elements/StatusBar.vue'
+import SyncErrorDialog from './components/dialogs/SyncErrorDialog.vue'
 
 const colorScheme = ref('only light')
 const loading = ref(true)

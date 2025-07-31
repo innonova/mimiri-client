@@ -186,9 +186,11 @@ export class NoteService {
 	}
 
 	public async multiAction(actions: NoteAction[]): Promise<Guid[]> {
-		let deltaSize = 0
-		let deltaNoteCount = 0
 		return this.db.syncLock.withLock('multiAction', async () => {
+			let deltaSize = 0
+			let deltaNoteCount = 0
+			let localSize = 0
+			let localNoteCount = 0
 			const transaction = await this.db.beginTransaction()
 			try {
 				const updatedNoteIds: Guid[] = []
@@ -220,6 +222,8 @@ export class NoteService {
 						note.size = note.items.reduce((sum, item) => sum + item.size, 0)
 						deltaSize += note.size
 						deltaNoteCount += 1
+						localSize += note.size
+						localNoteCount += 1
 						await transaction.setLocalNote(note)
 					} else if (action.type === NoteActionType.Update) {
 						let note = await transaction.getLocalNote(action.id)
@@ -266,13 +270,27 @@ export class NoteService {
 							note.base = await transaction.getNote(note.id)
 						}
 						deltaSize += note.size - sizeBefore
+						localSize += note.size - sizeBefore
 						await transaction.setLocalNote(note)
 						updatedNoteIds.push(note.id)
 					} else if (action.type === NoteActionType.Delete) {
-						if (await transaction.getLocalNote(action.id)) {
+						let note = await transaction.getLocalNote(action.id)
+						let hadLocal = false
+						if (note) {
+							hadLocal = true
+							deltaSize -= note.size
+							deltaNoteCount -= 1
+							localSize -= note.size
+							localNoteCount -= 1
 							await transaction.deleteLocalNote(action.id)
 						}
-						if (await transaction.getNote(action.id)) {
+						note = await transaction.getNote(action.id)
+						if (note) {
+							if (!hadLocal) {
+								deltaSize -= note.size
+								localSize -= note.size
+								deltaNoteCount -= 1
+							}
 							await transaction.deleteRemoteNote(action.id)
 						}
 					}
@@ -281,6 +299,9 @@ export class NoteService {
 				// TODO does this size logic work?
 				this.state.userStats.localSizeDelta += deltaSize
 				this.state.userStats.localNoteCountDelta += deltaNoteCount
+				this.state.userStats.localSize += localSize
+				this.state.userStats.localNoteCount += localNoteCount
+
 				for (const noteId of updatedNoteIds) {
 					await this.noteUpdatedCallback(noteId)
 				}

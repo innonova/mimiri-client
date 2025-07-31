@@ -13,8 +13,8 @@ const createId = () => {
 export class MimiriState {
 	private static _defaultBrowser: Browser | undefined
 	private _browser: Browser | undefined
-	private _context: BrowserContext
-	private _mainPage: Page
+	private _context!: BrowserContext
+	private _mainPage!: Page
 	private _pageStack: Page[] = []
 	private _expectedPage: Promise<Page> | undefined
 	private _start = 0
@@ -93,8 +93,8 @@ export class MimiriState {
 		await this._orchestrationClient.cleanUp(this._config.username)
 		await new Promise(resolve => setTimeout(resolve, 250))
 		await this._mailClient.cleanUp()
-		this._mainPage.close()
-		this._context.close()
+		await this._mainPage.close()
+		await this._context.close()
 	}
 
 	public get page() {
@@ -106,7 +106,7 @@ export class MimiriState {
 	}
 
 	public async getClipboardText() {
-		return this.page.evaluate(() => navigator.clipboard.readText())
+		return this.page.evaluate(() => (globalThis as any).navigator.clipboard.readText())
 	}
 
 	public printElapsed() {
@@ -228,6 +228,14 @@ export class MimiriState {
 
 	public async associatedObjects(customerId: Guid) {
 		return this._orchestrationClient.associatedObjects(customerId)
+	}
+
+	public async setUserTypeCountTest() {
+		await this._orchestrationClient.setUserType(this._config.username, 1002)
+	}
+
+	public async setUserTypeSizeTest() {
+		await this._orchestrationClient.setUserType(this._config.username, 1001)
 	}
 
 	public async waitForMailQueue() {

@@ -13,7 +13,7 @@ import {
 
 export const replaceTextInEditor = async (text: string) => {
 	await mimiri().page.evaluate(text => {
-		navigator.clipboard.writeText(text)
+		;(globalThis as any).navigator.clipboard.writeText(text)
 	}, text)
 
 	await editor.monaco().click({ timeout: 2000 })
@@ -28,10 +28,10 @@ export const getTextFromEditor = async () => {
 	await mimiri().page.keyboard.press('Control+a')
 	await mimiri().waitForTimeout(250)
 	await mimiri().page.keyboard.press('Control+c')
-	return await mimiri().page.evaluate(() => navigator.clipboard.readText())
+	return await mimiri().page.evaluate(() => (globalThis as any).navigator.clipboard.readText())
 }
 
-export const createRootNote = async (name: string, text?: string) => {
+export const createRootNote = async (name: string, text?: string, noVerify?: boolean) => {
 	await mainToolbar.container().click({ timeout: 2000 })
 	await mainToolbar.createMenu().click({ timeout: 2000 })
 	await menu.newRootNote().click({ timeout: 2000 })
@@ -45,11 +45,13 @@ export const createRootNote = async (name: string, text?: string) => {
 		await mimiri().page.keyboard.press('Enter')
 		await note.item('System').click({ timeout: 4000 })
 		await note.item(name).click({ timeout: 4000 })
-		await expect(editor.monaco()).toHaveText(text.replaceAll('\n', ''), { timeout: 2000 })
+		if (noVerify !== true) {
+			await expect(editor.monaco()).toHaveText(text.replaceAll('\n', ''), { timeout: 2000 })
+		}
 	}
 }
 
-export const createChildNote = async (name: string, text?: string) => {
+export const createChildNote = async (name: string, text?: string, noVerify?: boolean) => {
 	await mainToolbar.container().click({ timeout: 2000 })
 	await mainToolbar.createMenu().click({ timeout: 2000 })
 	await menu.newChildNote().click({ timeout: 2000 })
@@ -63,11 +65,13 @@ export const createChildNote = async (name: string, text?: string) => {
 		await mimiri().page.keyboard.press('Enter')
 		await note.item('System').click({ timeout: 4000 })
 		await note.item(name).click({ timeout: 4000 })
-		await expect(editor.monaco()).toHaveText(text.replaceAll('\n', ''), { timeout: 2000 })
+		if (noVerify !== true) {
+			await expect(editor.monaco()).toHaveText(text.replaceAll('\n', ''), { timeout: 2000 })
+		}
 	}
 }
 
-export const createSiblingNote = async (name: string, text?: string) => {
+export const createSiblingNote = async (name: string, text?: string, noVerify?: boolean) => {
 	await mainToolbar.container().click({ timeout: 2000 })
 	await mainToolbar.createMenu().click({ timeout: 2000 })
 	await menu.newSiblingNote().click({ timeout: 2000 })
@@ -81,22 +85,24 @@ export const createSiblingNote = async (name: string, text?: string) => {
 		await mimiri().page.keyboard.press('Enter')
 		await note.item('System').click({ timeout: 4000 })
 		await note.item(name).click({ timeout: 4000 })
-		await expect(editor.monaco()).toHaveText(text.replaceAll('\n', ''), { timeout: 2000 })
+		if (noVerify !== true) {
+			await expect(editor.monaco()).toHaveText(text.replaceAll('\n', ''), { timeout: 2000 })
+		}
 	}
 }
 
-export const createTestTree = async (tree: StandardTreeNode[]) => {
+export const createTestTree = async (tree: StandardTreeNode[], noVerify?: boolean) => {
 	for (const root of tree) {
-		await createRootNote(root.title, root.text)
+		await createRootNote(root.title, root.text, noVerify)
 		if (root.children) {
 			const createChildren = async (parent: StandardTreeNode, children: StandardTreeNode[]) => {
 				let first = true
 				for (const child of children) {
 					if (first) {
 						first = false
-						await createChildNote(child.title, child.text)
+						await createChildNote(child.title, child.text, noVerify)
 					} else {
-						await createSiblingNote(child.title, child.text)
+						await createSiblingNote(child.title, child.text, noVerify)
 					}
 					if (child.children) {
 						await createChildren(child, child.children)

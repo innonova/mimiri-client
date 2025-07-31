@@ -35,6 +35,12 @@ export const titleBar = {
 	help: () => tid('title-menu-help'),
 }
 
+export const statusBar = {
+	container: () => tid('status-bar'),
+	syncStatus: () => tid('sync-status'),
+	syncStatusCode: () => tid('sync-status-code'),
+}
+
 export const menu = {
 	backdrop: () => tid('context-menu-backdrop'),
 	manageSubscription: () => tid('menu-manage-subscription'),
@@ -365,6 +371,12 @@ export const aboutView = {
 	container: () => tid(`settings-view-about`),
 	username: () => tid(`about-username`),
 	accountType: () => tid(`about-account-type`),
+	noteCount: () => tid(`about-note-count`),
+	maxNoteCount: () => tid(`about-max-note-count`),
+	usedBytes: () => tid(`about-space-used`),
+	maxBytes: () => tid(`about-max-space`),
+	unsyncedNoteCount: () => tid(`about-unsynced-notes`),
+	unsyncedUsedBytes: () => tid(`about-unsynced-data`),
 }
 
 export const shareDialog = {
@@ -425,4 +437,10 @@ export const inconsistencyDialog = {
 	container: () => tid(`inconsistency-dialog`),
 	reloadButton: () => tid(`inconsistency-dialog`).getByTestId(`inconsistency-dialog-reload`),
 	cancelButton: () => tid(`inconsistency-dialog`).getByTestId(`inconsistency-dialog-cancel`),
+}
+
+export const syncErrorDialog = {
+	container: () => tid(`sync-error-dialog`),
+	okButton: () => tid(`sync-error-dialog`).getByTestId(`sync-error-dialog-ok`),
+	title: () => tid(`sync-error-dialog`).getByTestId(`sync-error-dialog-title`),
 }

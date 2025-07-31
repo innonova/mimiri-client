@@ -1,4 +1,4 @@
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { MimiriStore } from './services/storage/mimiri-store'
 import type { ContextMenuControl } from './services/types/context-menu'
 import type { MimerNote } from './services/types/mimer-note'
@@ -46,6 +46,7 @@ export const emptyRecycleBinDialog = ref(null)
 export const passwordGeneratorDialog = ref(null)
 export const saveEmptyNodeDialog = ref(null)
 export const limitDialog = ref(null)
+export const syncErrorDialog = ref(null)
 export const shareDialog = ref(null)
 export const acceptShareDialog = ref(null)
 export const passwordDialog = ref(null)
@@ -84,3 +85,7 @@ export const updateKeys = [
 		current: true,
 	},
 ]
+
+watch(syncStatus, newStatus => {
+	console.log('Synchronization status changed:', newStatus)
+})

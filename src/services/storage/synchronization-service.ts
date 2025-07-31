@@ -16,6 +16,8 @@ import type { NoteTreeManager } from './note-tree-manager'
 import { inconsistencyDialog, syncStatus } from '../../global'
 import type { LocalStateManager } from './local-state-manager'
 
+export const SYSTEM_NOTE_COUNT = 3
+
 export class SynchronizationService {
 	private _conflictResolver: ConflictResolver = new ConflictResolver()
 	private _syncInProgress = false
@@ -95,6 +97,7 @@ export class SynchronizationService {
 						}
 						if (shouldCheckConsistency && (noteChanges || didPush)) {
 							if (await this.checkForConsistency()) {
+								await this.syncPush()
 								inconsistencyDialog.value.show()
 							}
 						}
@@ -407,7 +410,8 @@ export class SynchronizationService {
 
 	private isCountAllowedOnServer(): boolean {
 		return (
-			this.state.userStats.noteCount + this.state.userStats.localNoteCountDelta <= this.state.userStats.maxNoteCount
+			this.state.userStats.noteCount + this.state.userStats.localNoteCountDelta - SYSTEM_NOTE_COUNT <=
+			this.state.userStats.maxNoteCount
 		)
 	}
 
@@ -562,11 +566,7 @@ export class SynchronizationService {
 				})
 			}
 
-			// console.log('Note actions:', noteActions)
-
-			if (noteActions.length === 0 && keyActions.length === 0) {
-				return false
-			}
+			// console.log('Note actions:', noteActions.length, noteActions)
 
 			localSizeDelta = this.state.userStats.localSizeDelta
 			localNoteCountDelta = this.state.userStats.localNoteCountDelta
@@ -574,18 +574,24 @@ export class SynchronizationService {
 			localNoteCount = this.state.userStats.localNoteCount
 		})
 
+		if (noteActions.length === 0 && keyActions.length === 0) {
+			this.state.userStats.localSizeDelta -= localSizeDelta
+			this.state.userStats.localNoteCountDelta -= localNoteCountDelta
+			this.state.userStats.localSize -= localSize
+			this.state.userStats.localNoteCount -= localNoteCount
+			syncStatus.value = 'idle'
+			return true
+		}
+
 		const syncId = newGuid()
 		this._issuedSyncIds.push(syncId)
 		if (this._issuedSyncIds.length > 25) {
 			this._issuedSyncIds.shift()
 		}
 
-		if (noteActions.length === 0 && keyActions.length === 0) {
-			syncStatus.value = 'idle'
-			return true
-		}
-
 		const status = await this.api.syncPushChanges(noteActions, keyActions, syncId)
+
+		console.log('SynchronizationService.syncPush()', status, noteActions.length, keyActions.length)
 
 		if (status !== 'success') {
 			syncStatus.value = 'error'
@@ -678,7 +684,6 @@ export class SynchronizationService {
 
 	public async checkForConsistency(): Promise<boolean> {
 		if (await this.scanForConsistency()) {
-			await this.syncPush()
 			return true
 		}
 		return false

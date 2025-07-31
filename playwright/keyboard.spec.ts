@@ -11,7 +11,7 @@ import {
 	keyboardTestTreeAfterDuplicate,
 } from './notes/data'
 
-test.describe.configure({ mode: 'serial' })
+// test.describe.configure({ mode: 'serial' })
 
 test.describe('keyboard shortcuts', () => {
 	test('verify cut and paste with keyboard shortcuts', async () => {

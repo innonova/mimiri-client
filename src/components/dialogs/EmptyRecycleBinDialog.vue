@@ -33,6 +33,9 @@ const close = () => {
 
 const submitDialog = async () => {
 	await noteManager.tree.recycleBin().deleteChildren()
+	setTimeout(() => {
+		noteManager.session.queueSync()
+	}, 1000)
 	close()
 }
 
