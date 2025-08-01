@@ -17,7 +17,7 @@ import { quotaSizeTestTree, quotaTestTree } from './notes/data.quotas'
 
 // test.describe.configure({ mode: 'serial' })
 
-test.describe.only('quotas', () => {
+test.describe('quotas', () => {
 	test('verify max count limit', async () => {
 		await withMimiriContext(async () => {
 			await mimiri().home()
@@ -65,7 +65,7 @@ test.describe.only('quotas', () => {
 			await expect(titleBar.accountButton()).toBeVisible()
 			await createCloudAccount()
 			await mimiri().setUserTypeSizeTest()
-			await createTestTree(quotaSizeTestTree, true)
+			await createTestTree(quotaSizeTestTree, { verify: false, typeText: false })
 			await expect(statusBar.container()).not.toBeVisible()
 
 			await settingNodes.controlPanel().click()
@@ -92,9 +92,35 @@ test.describe.only('quotas', () => {
 			await expect(deleteNoteDialog.container()).toBeVisible()
 			await deleteNoteDialog.confirmButton().click()
 			await settingNodes.controlPanel().click()
-			await mimiri().pause()
 			await expect(aboutView.usedBytes()).toHaveText('38 kB')
 			await expect(statusBar.container()).not.toBeVisible()
+		})
+	})
+
+	test('verify size unchanged when moving notes', async () => {
+		await withMimiriContext(async () => {
+			await mimiri().home()
+			await expect(titleBar.accountButton()).toBeVisible()
+			await createCloudAccount()
+			await createTestTree(quotaSizeTestTree, { verify: false, typeText: false })
+			await expect(statusBar.container()).not.toBeVisible()
+
+			await settingNodes.controlPanel().click()
+			const initialSize = Math.floor(+((await aboutView.usedBytes().getAttribute('title')) ?? 0) / 10)
+			await expect(initialSize).toBe(2360)
+			await expect(aboutView.usedBytes()).toHaveText('23 kB')
+
+			await note.item('Technical Documentation').click({ button: 'right' })
+			await menu.cut().click()
+			await note.item('Configuration Files').click({ button: 'right' })
+			await menu.paste().click()
+
+			await settingNodes.controlPanel().click()
+
+			const afterSize = Math.floor(+((await aboutView.usedBytes().getAttribute('title')) ?? 0) / 10)
+			await expect(afterSize).toBe(initialSize!)
+			await expect(statusBar.container()).not.toBeVisible()
+			await mimiri().pause()
 		})
 	})
 })

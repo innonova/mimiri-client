@@ -260,13 +260,11 @@ export class SessionManager {
 				await this.treeManager.loadState()
 				await updateManager.good()
 				this._listener?.login()
-				const localState = await this.db.getLocalState()
-				if (localState.firstLogin) {
+				if (this.localStateManager.firstLogin) {
 					await this.treeManager.controlPanel.expand()
 					await this.treeManager.gettingStarted?.expand()
 					await this.treeManager.gettingStarted?.select()
-					localState.firstLogin = false
-					await this.db.setLocalState(localState)
+					await this.localStateManager.clearFirstLogin()
 				}
 				return true
 			} else {

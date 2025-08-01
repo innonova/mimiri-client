@@ -14,7 +14,7 @@
 						<span data-testid="about-max-note-count">{{ maxNoteCount }}</span> ({{ notesPercent }})
 					</div>
 					<div class="p-1 pl-4 pt-2">
-						Space Used: <span data-testid="about-space-used">{{ usedBytes }}</span> /
+						Space Used: <span data-testid="about-space-used" :title="`${usedBytesRaw}`">{{ usedBytes }}</span> /
 						<span data-testid="about-max-space">{{ maxBytes }}</span> ({{ bytesPercent }})
 					</div>
 					<div class="p-1 pl-4 pt-2">
@@ -114,6 +114,7 @@ import { fontManager } from '../../global'
 import { formatBytes } from '../../services/helpers'
 import { SYSTEM_NOTE_COUNT } from '../../services/storage/synchronization-service'
 
+const usedBytesRaw = ref(0)
 const usedBytes = ref('0 MB')
 const maxBytes = ref('10 MB')
 const localUsedBytes = ref('0 MB')
@@ -155,7 +156,8 @@ watch(
 	noteManager.state,
 	() => {
 		if (noteManager.state.isLoggedIn) {
-			usedBytes.value = formatBytes(noteManager.state.userStats.size + noteManager.state.userStats.localSizeDelta)
+			usedBytesRaw.value = noteManager.state.userStats.size + noteManager.state.userStats.localSizeDelta
+			usedBytes.value = formatBytes(usedBytesRaw.value)
 			maxBytes.value = formatBytes(noteManager.state.userStats.maxTotalBytes)
 			localUsedBytes.value = formatBytes(noteManager.state.userStats.localSize)
 			bytesPercent.value = toPercent(

@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test'
 import { mimiri, mimiriCreate, withMimiriContext } from './framework/mimiri-context'
 import { menu, note, titleBar, editor, shareDialog, acceptShareDialog, deleteNoteDialog } from './selectors'
-import { createChildNote, createRootNote, createTestTree, verifyTestTree } from './notes/actions'
+import { createChildNote, createTestTree, verifyTestTree } from './notes/actions'
 import { createCloudAccount } from './core/actions'
 import { sharedBaseTree, collaborationHubTree, afterNoteCreation, afterEdit } from './notes/data.shared'
 

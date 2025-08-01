@@ -11,6 +11,11 @@ import {
 	testTreeAfterMove,
 } from './data'
 
+export interface CreateTreeOptions {
+	verify?: boolean
+	typeText?: boolean
+}
+
 export const replaceTextInEditor = async (text: string) => {
 	await mimiri().page.evaluate(text => {
 		;(globalThis as any).navigator.clipboard.writeText(text)
@@ -31,7 +36,7 @@ export const getTextFromEditor = async () => {
 	return await mimiri().page.evaluate(() => (globalThis as any).navigator.clipboard.readText())
 }
 
-export const createRootNote = async (name: string, text?: string, noVerify?: boolean) => {
+export const createRootNote = async (name: string, text?: string, options: CreateTreeOptions = {}) => {
 	await mainToolbar.container().click({ timeout: 2000 })
 	await mainToolbar.createMenu().click({ timeout: 2000 })
 	await menu.newRootNote().click({ timeout: 2000 })
@@ -41,17 +46,21 @@ export const createRootNote = async (name: string, text?: string, noVerify?: boo
 	if (text) {
 		await editor.monaco().click({ timeout: 2000 })
 		await expect(editor.monaco()).toHaveClass(/\bfocused\b/, { timeout: 2000 })
-		await mimiri().page.keyboard.type(text)
+		if (options.typeText) {
+			await mimiri().page.keyboard.type(text)
+		} else {
+			await mimiri().page.keyboard.insertText(text)
+		}
 		await mimiri().page.keyboard.press('Enter')
 		await note.item('System').click({ timeout: 4000 })
 		await note.item(name).click({ timeout: 4000 })
-		if (noVerify !== true) {
+		if (options.verify !== false) {
 			await expect(editor.monaco()).toHaveText(text.replaceAll('\n', ''), { timeout: 2000 })
 		}
 	}
 }
 
-export const createChildNote = async (name: string, text?: string, noVerify?: boolean) => {
+export const createChildNote = async (name: string, text?: string, options: CreateTreeOptions = {}) => {
 	await mainToolbar.container().click({ timeout: 2000 })
 	await mainToolbar.createMenu().click({ timeout: 2000 })
 	await menu.newChildNote().click({ timeout: 2000 })
@@ -61,17 +70,21 @@ export const createChildNote = async (name: string, text?: string, noVerify?: bo
 	if (text) {
 		await editor.monaco().click({ timeout: 2000 })
 		await expect(editor.monaco()).toHaveClass(/\bfocused\b/, { timeout: 2000 })
-		await mimiri().page.keyboard.type(text)
+		if (options.typeText) {
+			await mimiri().page.keyboard.type(text)
+		} else {
+			await mimiri().page.keyboard.insertText(text)
+		}
 		await mimiri().page.keyboard.press('Enter')
 		await note.item('System').click({ timeout: 4000 })
 		await note.item(name).click({ timeout: 4000 })
-		if (noVerify !== true) {
+		if (options.verify !== false) {
 			await expect(editor.monaco()).toHaveText(text.replaceAll('\n', ''), { timeout: 2000 })
 		}
 	}
 }
 
-export const createSiblingNote = async (name: string, text?: string, noVerify?: boolean) => {
+export const createSiblingNote = async (name: string, text?: string, options: CreateTreeOptions = {}) => {
 	await mainToolbar.container().click({ timeout: 2000 })
 	await mainToolbar.createMenu().click({ timeout: 2000 })
 	await menu.newSiblingNote().click({ timeout: 2000 })
@@ -81,28 +94,32 @@ export const createSiblingNote = async (name: string, text?: string, noVerify?: 
 	if (text) {
 		await editor.monaco().click({ timeout: 2000 })
 		await expect(editor.monaco()).toHaveClass(/\bfocused\b/, { timeout: 2000 })
-		await mimiri().page.keyboard.type(text)
+		if (options.typeText) {
+			await mimiri().page.keyboard.type(text)
+		} else {
+			await mimiri().page.keyboard.insertText(text)
+		}
 		await mimiri().page.keyboard.press('Enter')
 		await note.item('System').click({ timeout: 4000 })
 		await note.item(name).click({ timeout: 4000 })
-		if (noVerify !== true) {
+		if (options.verify !== false) {
 			await expect(editor.monaco()).toHaveText(text.replaceAll('\n', ''), { timeout: 2000 })
 		}
 	}
 }
 
-export const createTestTree = async (tree: StandardTreeNode[], noVerify?: boolean) => {
+export const createTestTree = async (tree: StandardTreeNode[], options: CreateTreeOptions = {}) => {
 	for (const root of tree) {
-		await createRootNote(root.title, root.text, noVerify)
+		await createRootNote(root.title, root.text, options)
 		if (root.children) {
 			const createChildren = async (parent: StandardTreeNode, children: StandardTreeNode[]) => {
 				let first = true
 				for (const child of children) {
 					if (first) {
 						first = false
-						await createChildNote(child.title, child.text, noVerify)
+						await createChildNote(child.title, child.text, options)
 					} else {
-						await createSiblingNote(child.title, child.text, noVerify)
+						await createSiblingNote(child.title, child.text, options)
 					}
 					if (child.children) {
 						await createChildren(child, child.children)

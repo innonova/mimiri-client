@@ -1,16 +1,6 @@
 import { expect, test } from '@playwright/test'
 import { mimiri, mimiriCreate, withMimiriContext } from './framework/mimiri-context'
-import {
-	aboutView,
-	acceptShareDialog,
-	editor,
-	loginCtrl,
-	menu,
-	note,
-	settingNodes,
-	shareDialog,
-	titleBar,
-} from './selectors'
+import { acceptShareDialog, editor, menu, note, settingNodes, shareDialog, titleBar } from './selectors'
 import {
 	createChildNote,
 	createRootNote,
@@ -33,7 +23,6 @@ import {
 	standardTree,
 } from './notes/data'
 import { createCloudAccount, login, logout } from './core/actions'
-import { log } from 'console'
 
 // test.describe.configure({ mode: 'serial' })
 
@@ -58,11 +47,11 @@ test.describe('cloud account', () => {
 			let blogCallCount = 0
 			await mimiri().page.route('https://dev-api.mimiri.io/api/**', route => {
 				apiCallCount++
-				route.continue()
+				void route.continue()
 			})
 			await mimiri().page.route('https://dev-mimiri-api.mimiri.io/blog/**', route => {
 				blogCallCount++
-				route.continue()
+				void route.continue()
 			})
 			await mimiri().home()
 			await createCloudAccount()
@@ -235,7 +224,7 @@ test.describe('cloud account', () => {
 			mimiri(1, true)
 			await note.item('Collaboration Hub').click({ button: 'right' })
 			await menu.receiveShareUnder().click()
-			acceptShareDialog.code().fill(shareCode)
+			await acceptShareDialog.code().fill(shareCode)
 			await acceptShareDialog.okButton().click()
 			await expect(acceptShareDialog.container()).not.toBeVisible()
 			await verifyTestTree(receiveShareTestTreeAfterSingleNote)
@@ -268,7 +257,7 @@ test.describe('cloud account', () => {
 			mimiri(1, true)
 			await note.item('Shared Projects').click({ button: 'right' })
 			await menu.receiveShareUnder().click()
-			acceptShareDialog.code().fill(shareCode)
+			await acceptShareDialog.code().fill(shareCode)
 			await acceptShareDialog.okButton().click()
 			await expect(acceptShareDialog.container()).not.toBeVisible()
 			await verifyTestTree(receiveShareTestTreeAfterFolder)
@@ -313,13 +302,13 @@ test.describe('cloud account', () => {
 			mimiri(1, true)
 			await note.item('Collaboration Hub').click({ button: 'right' })
 			await menu.receiveShareUnder().click()
-			acceptShareDialog.code().fill(apiDocShareCode)
+			await acceptShareDialog.code().fill(apiDocShareCode)
 			await acceptShareDialog.okButton().click()
 			await expect(acceptShareDialog.container()).not.toBeVisible()
 
 			await note.item('Archive').click({ button: 'right' })
 			await menu.receiveShareUnder().click()
-			acceptShareDialog.code().fill(marketAnalysisShareCode)
+			await acceptShareDialog.code().fill(marketAnalysisShareCode)
 			await acceptShareDialog.okButton().click()
 			await expect(acceptShareDialog.container()).not.toBeVisible()
 
@@ -386,26 +375,26 @@ test.describe('cloud account', () => {
 			// Receive into Shared Projects
 			await note.item('Shared Projects').click({ button: 'right' })
 			await menu.receiveShareUnder().click()
-			acceptShareDialog.code().fill(proposalShareCode)
+			await acceptShareDialog.code().fill(proposalShareCode)
 			await acceptShareDialog.okButton().click()
 			await expect(acceptShareDialog.container()).not.toBeVisible()
 
 			await note.item('Shared Projects').click({ button: 'right' })
 			await menu.receiveShareUnder().click()
-			acceptShareDialog.code().fill(devGuidelinesShareCode)
+			await acceptShareDialog.code().fill(devGuidelinesShareCode)
 			await acceptShareDialog.okButton().click()
 			await expect(acceptShareDialog.container()).not.toBeVisible()
 
 			// Receive into Collaboration Hub
 			await note.item('Collaboration Hub').click({ button: 'right' })
 			await menu.receiveShareUnder().click()
-			acceptShareDialog.code().fill(supportShareCode)
+			await acceptShareDialog.code().fill(supportShareCode)
 			await acceptShareDialog.okButton().click()
 			await expect(acceptShareDialog.container()).not.toBeVisible()
 
 			await note.item('Collaboration Hub').click({ button: 'right' })
 			await menu.receiveShareUnder().click()
-			acceptShareDialog.code().fill(trendsShareCode)
+			await acceptShareDialog.code().fill(trendsShareCode)
 			await acceptShareDialog.okButton().click()
 			await expect(acceptShareDialog.container()).not.toBeVisible()
 

@@ -137,7 +137,7 @@ export class OrchestrationClient {
 	}
 
 	public async associatedObjects(customerId: Guid) {
-		return await fetch(`${this._host}/customer/associated-objects/${customerId}`).then(res => res.json())
+		return await fetch(`${this._host}/customer/associated-objects/${customerId}`).then(res => res.json() as any)
 	}
 
 	public async getCustomerId(username: string) {

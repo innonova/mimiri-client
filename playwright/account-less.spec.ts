@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test'
-import { mimiri, mimiriClone, mimiriCreate, withMimiriContext } from './framework/mimiri-context'
-import { aboutView, editor, loginCtrl, menu, note, settingNodes, settingView, titleBar } from './selectors'
+import { mimiri, mimiriClone, withMimiriContext } from './framework/mimiri-context'
+import { editor, menu, note, settingNodes, settingView, titleBar } from './selectors'
 import {
 	createChildNote,
 	createRootNote,
@@ -38,11 +38,11 @@ test.describe('account-less', () => {
 			let blogCallCount = 0
 			await mimiri().page.route('https://dev-api.mimiri.io/api/**', route => {
 				apiCallCount++
-				route.continue()
+				void route.continue()
 			})
 			await mimiri().page.route('https://dev-mimiri-api.mimiri.io/blog/**', route => {
 				blogCallCount++
-				route.continue()
+				void route.continue()
 			})
 			await mimiri().home()
 			await titleBar.accountButton().click()
