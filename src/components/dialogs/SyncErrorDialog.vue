@@ -9,7 +9,13 @@
 			<main class="px-2 leading-5">
 				<div class="whitespace-pre-line">{{ text }}</div>
 			</main>
-			<footer class="flex justify-end mobile:justify-center gap-2 pr-2 pb-2">
+			<footer class="flex justify-between mobile:justify-center gap-2 pr-2 pb-2 pl-2">
+				<button v-if="showShow" class="secondary" @click="showNote" data-testid="sync-error-dialog-show-note">
+					Show
+				</button>
+				<button v-if="!showShow" class="secondary" @click="upgrade" data-testid="sync-error-dialog-upgrade">
+					Upgrade
+				</button>
 				<button class="primary" @click="close" data-testid="sync-error-dialog-ok">OK</button>
 			</footer>
 		</div>
@@ -18,15 +24,18 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { noteManager, syncStatus } from '../../global'
+import { noteManager, syncOverSizeNote, syncStatus } from '../../global'
 import DialogTitle from '../elements/DialogTitle.vue'
 import { SYSTEM_NOTE_COUNT } from '../../services/storage/synchronization-service'
 import { formatBytes } from '../../services/helpers'
+import type { Guid } from '../../services/types/guid'
 const dialog = ref(null)
 const title = ref('')
 const text = ref('')
+const showShow = ref(false)
 
-const show = () => {
+const show = async () => {
+	showShow.value = false
 	if (syncStatus.value === 'count-limit-exceeded') {
 		title.value = 'Note Limit Reached'
 		const totalCount =
@@ -39,14 +48,36 @@ const show = () => {
 		title.value = 'Data Limit Reached'
 		const totalSize = noteManager.state.userStats.size + noteManager.state.userStats.localSizeDelta
 		const maxSize = noteManager.state.userStats.maxTotalBytes
-		text.value = `You have created ${formatBytes(totalSize)} of your ${formatBytes(
-			maxSize,
-		)} data\nYou can either delete some data or upgrade your account to increase the limit.`
+		text.value = `You have created ${formatBytes(totalSize)} of your ${formatBytes(maxSize)} data
+
+		You can either delete some data or upgrade your account to increase the limit.`
+	}
+	if (syncStatus.value === 'note-size-limit-exceeded') {
+		showShow.value = true
+		const note = await noteManager.tree.getNoteById(syncOverSizeNote.value)
+		title.value = 'Note Size Limit Reached'
+		const maxSize = noteManager.state.userStats.maxNoteBytes
+		text.value = `The Note '${note.title}' (${formatBytes(note.size)})
+		exceeds the size limit (${formatBytes(maxSize)})
+
+		You can either split the note into smaller notes or upgrade your account to increase the limit.
+
+		You can also try deleting note history to reduce the size of the note. (This can be done in the note properties)`
 	}
 	dialog.value.showModal()
 }
 
 const close = () => {
+	dialog.value.close()
+}
+const showNote = async () => {
+	const note = await noteManager.tree.getNoteById(syncOverSizeNote.value)
+	await note.select()
+	dialog.value.close()
+}
+
+const upgrade = async () => {
+	noteManager.tree.openNote('settings-plan' as Guid)
 	dialog.value.close()
 }
 

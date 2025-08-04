@@ -444,3 +444,12 @@ export const syncErrorDialog = {
 	okButton: () => tid(`sync-error-dialog`).getByTestId(`sync-error-dialog-ok`),
 	title: () => tid(`sync-error-dialog`).getByTestId(`sync-error-dialog-title`),
 }
+
+export const textNoteProperties = {
+	container: () => tid(`text-note-properties`),
+	dataSize: () => tid(`text-note-properties`).getByTestId(`note-data-size`),
+	historySize: () => tid(`text-note-properties`).getByTestId(`note-history-size`),
+	totalSize: () => tid(`text-note-properties`).getByTestId(`note-total-size`),
+	created: () => tid(`text-note-properties`).getByTestId(`note-created`),
+	updated: () => tid(`text-note-properties`).getByTestId(`note-updated`),
+}

@@ -1,5 +1,14 @@
 import { StandardTreeNode } from './data'
 
+export const longRandomLine = () => {
+	const randomChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+	let result = ''
+	for (let i = 0; i < 1000; i++) {
+		result += randomChars.charAt(Math.floor(Math.random() * randomChars.length))
+	}
+	return result + '\n'
+}
+
 export const quotaTestTree: StandardTreeNode[] = [
 	{
 		title: 'Quota Test Root',

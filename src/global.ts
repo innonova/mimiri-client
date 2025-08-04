@@ -2,7 +2,7 @@ import { ref, watch } from 'vue'
 import { MimiriStore } from './services/storage/mimiri-store'
 import type { ContextMenuControl } from './services/types/context-menu'
 import type { MimerNote } from './services/types/mimer-note'
-import type { Guid } from './services/types/guid'
+import { emptyGuid, type Guid } from './services/types/guid'
 import { IpcClient } from './services/ipc-client'
 import { BrowserHistory } from './services/browser-history'
 import { UpdateManager } from './services/update-manager'
@@ -62,6 +62,7 @@ export const searchInput = ref(null)
 export const appStatus = ref<string | null>('initializing')
 export const inconsistencyDialog = ref(null)
 export const syncStatus = ref('idle')
+export const syncOverSizeNote = ref(emptyGuid())
 
 export const blockUserInput = ref(false)
 

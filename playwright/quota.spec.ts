@@ -3,17 +3,19 @@ import { mimiri, withMimiriContext } from './framework/mimiri-context'
 import {
 	aboutView,
 	deleteNoteDialog,
+	editor,
 	emptyRecycleBinDialog,
 	menu,
 	note,
 	settingNodes,
 	statusBar,
 	syncErrorDialog,
+	textNoteProperties,
 	titleBar,
 } from './selectors'
 import { createCloudAccount } from './core/actions'
-import { createRootNote, createTestTree } from './notes/actions'
-import { quotaSizeTestTree, quotaTestTree } from './notes/data.quotas'
+import { createChildNote, createRootNote, createTestTree } from './notes/actions'
+import { longRandomLine, quotaSizeTestTree, quotaTestTree } from './notes/data.quotas'
 
 // test.describe.configure({ mode: 'serial' })
 
@@ -120,6 +122,45 @@ test.describe('quotas', () => {
 			const afterSize = Math.floor(+((await aboutView.usedBytes().getAttribute('title')) ?? 0) / 10)
 			await expect(afterSize).toBe(initialSize!)
 			await expect(statusBar.container()).not.toBeVisible()
+		})
+	})
+
+	test('verify max note size limit', async () => {
+		await withMimiriContext(async () => {
+			await mimiri().home()
+			await expect(titleBar.accountButton()).toBeVisible()
+			await createCloudAccount()
+			await mimiri().setUserTypeSizeTest()
+			await createTestTree(quotaTestTree)
+			await expect(statusBar.container()).not.toBeVisible()
+			await note.item('Group B').click()
+			await createChildNote('Max Note Size Test', 'This note should not be synced due to size limit')
+			await settingNodes.controlPanel().click()
+			await expect(statusBar.container()).not.toBeVisible()
+			await expect(aboutView.unsyncedNoteCount()).toHaveText('0')
+			await expect(aboutView.unsyncedUsedBytes()).toHaveText('0 B')
+
+			await note.item('Max Note Size Test').click({ button: 'right' })
+			await menu.properties().click()
+			await expect(textNoteProperties.totalSize()).toHaveText(/50\d B/)
+
+			await note.item('Max Note Size Test').click()
+			await editor.monaco().click({ timeout: 2000 })
+			await expect(editor.monaco()).toHaveClass(/\bfocused\b/, { timeout: 2000 })
+			await mimiri().page.keyboard.insertText(longRandomLine())
+			await editor.save().click()
+
+			await note.item('Max Note Size Test').click({ button: 'right' })
+			await menu.properties().click()
+			await expect(textNoteProperties.totalSize()).toHaveText(/2.\d\d kB/)
+
+			await note.item('Max Note Size Test').click()
+			await editor.monaco().click({ timeout: 2000 })
+			await expect(editor.monaco()).toHaveClass(/\bfocused\b/, { timeout: 2000 })
+			for (let i = 0; i < 10; i++) {
+				await mimiri().page.keyboard.insertText(longRandomLine())
+			}
+
 			await mimiri().pause()
 		})
 	})

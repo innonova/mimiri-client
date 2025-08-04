@@ -1,18 +1,18 @@
 <template>
-	<div class="flex flex-col h-full">
+	<div class="flex flex-col h-full" data-testid="text-note-properties">
 		<TabBar :items="['Properties']" />
 		<div class="flex flex-col overflow-y-auto h-full">
 			<div class="grid grid-cols-[7rem_15rem] gap-3 items-baseline px-1 mt-2 mb-10">
 				<div>Data:</div>
-				<div>{{ formatBytes(note.dataSize) }}</div>
+				<div data-testid="note-data-size">{{ formatBytes(note.dataSize) }}</div>
 				<div>History:</div>
-				<div>{{ formatBytes(note.historySize) }}</div>
+				<div data-testid="note-history-size">{{ formatBytes(note.historySize) }}</div>
 				<div>Total:</div>
-				<div>{{ formatBytes(note.size) }}</div>
+				<div data-testid="note-total-size">{{ formatBytes(note.size) }}</div>
 				<div>Created:</div>
-				<div>{{ formatDateTime(note.created) }}</div>
+				<div data-testid="note-created">{{ formatDateTime(note.created) }}</div>
 				<div>Last Modified:</div>
-				<div>{{ formatDateTime(note.updated) }}</div>
+				<div data-testid="note-updated">{{ formatDateTime(note.updated) }}</div>
 				<div class="col-span-2 flex gap-2">
 					<button v-if="showDeleteOldHistory" class="primary" @click="deleteOldHistory">Delete old history</button>
 					<button v-if="showDeleteAllHistory" class="primary" @click="deleteAllHistory">Delete all history</button>

@@ -13,7 +13,7 @@ import {
 	type MergeableTextItem,
 } from './conflict-resolver'
 import type { NoteTreeManager } from './note-tree-manager'
-import { inconsistencyDialog, syncStatus } from '../../global'
+import { inconsistencyDialog, syncOverSizeNote, syncStatus } from '../../global'
 import type { LocalStateManager } from './local-state-manager'
 
 export const SYSTEM_NOTE_COUNT = 3
@@ -440,6 +440,8 @@ export class SynchronizationService {
 		let deletedNotes: Guid[]
 		let deletedKeys: Guid[]
 
+		let error = false
+
 		await this.db.syncLock.withLock('syncPush', async () => {
 			localNotes = await this.db.getAllLocalNotes()
 			for (const localNote of localNotes) {
@@ -476,7 +478,9 @@ export class SynchronizationService {
 							const data = await this.encryptData(targetKeyName, localItemData)
 							if (data.length > this.state.userStats.maxNoteBytes) {
 								syncStatus.value = 'note-size-limit-exceeded'
-								return false
+								syncOverSizeNote.value = mergedNote.id
+								error = true
+								return
 							}
 							action.items.push({
 								version: mergedItem.version,
@@ -505,7 +509,9 @@ export class SynchronizationService {
 						const data = await this.cryptoManager.tryReencryptNoteItemDataFromLocal(item, localNote.keyName)
 						if (data.length > this.state.userStats.maxNoteBytes) {
 							syncStatus.value = 'note-size-limit-exceeded'
-							return false
+							syncOverSizeNote.value = localNote.id
+							error = true
+							return
 						}
 						action.items.push({
 							version: 0,
@@ -573,6 +579,12 @@ export class SynchronizationService {
 			localSize = this.state.userStats.localSize
 			localNoteCount = this.state.userStats.localNoteCount
 		})
+
+		console.log('SynchronizationService.syncPush() - local notes:', error, syncStatus.value)
+
+		if (error) {
+			return false
+		}
 
 		if (noteActions.length === 0 && keyActions.length === 0) {
 			this.state.userStats.localSizeDelta -= localSizeDelta

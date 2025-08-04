@@ -20,6 +20,8 @@ const status = ref('')
 const error = ref(false)
 
 const calculateStatus = () => {
+	console.log('SynchronizationService.calculateStatus() - syncStatus:', syncStatus.value)
+
 	let result = ''
 	error.value = false
 	if (!noteManager.state.isOnline) {
@@ -42,6 +44,11 @@ const calculateStatus = () => {
 		error.value = true
 		result = 'Sync Error: Limit exceeded (see details)'
 	}
+	if (syncStatus.value === 'note-size-limit-exceeded') {
+		error.value = true
+		result = 'Sync Error: Note size exceeded (see details)'
+	}
+
 	return result
 }
 
@@ -51,14 +58,18 @@ const showDetails = () => {
 	}
 }
 
-watch([noteManager.state, syncStatus], () => {
-	const value = calculateStatus()
-	if (value === '') {
-		setTimeout(() => {
-			status.value = calculateStatus()
-		}, 500)
-	} else {
-		status.value = value
-	}
-})
+watch(
+	[noteManager.state, syncStatus],
+	() => {
+		const value = calculateStatus()
+		if (value === '') {
+			setTimeout(() => {
+				status.value = calculateStatus()
+			}, 500)
+		} else {
+			status.value = value
+		}
+	},
+	{ immediate: true },
+)
 </script>
