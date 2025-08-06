@@ -2,7 +2,7 @@
 	<dialog class="min-w-72 bg-dialog text-text desktop:border border-solid border-dialog-border" ref="dialog">
 		<div class="grid grid-rows-[auto_1fr_auto] gap-6">
 			<DialogTitle @close="close">{{ titleText }}</DialogTitle>
-			<main class="px-2">
+			<main class="pl-3 pr-4">
 				<div class="leading-5 max-w-86 whitespace-pre-wrap">{{ infoText }}</div>
 			</main>
 			<footer class="flex justify-end mobile:justify-center gap-2 pr-2 pb-2">

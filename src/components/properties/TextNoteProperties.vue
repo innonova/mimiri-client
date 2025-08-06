@@ -21,13 +21,21 @@
 					This note is shared with:
 				</div>
 				<template v-for="participant in shareParticipants" :key="participant.username">
-					<div class="whitespace-nowrap">{{ participant.username }}</div>
-					<div class="flex">
-						<div>{{ formatDateTime(new Date(participant.since)) }}</div>
+					<div class="col-span-2 flex gap-3">
+						<div class="whitespace-nowrap min-w-[7rem]" data-testid="share-participant-username">
+							{{ participant.username }}
+						</div>
+						<div class="flex">
+							<div>{{ formatDateTime(new Date(participant.since)) }}</div>
+						</div>
 					</div>
 				</template>
-				<div v-if="note.isShared && shareParticipants.length === 0" class="col-span-2 mt-4 leading-5">
-					You have shared this not but no one has accepted
+				<div
+					v-if="note.isShared && shareParticipantsLoaded && shareParticipants.length === 0"
+					class="col-span-2 mt-4 leading-5"
+					data-testid="no-share-participants"
+				>
+					You have shared this note but no one has accepted
 				</div>
 			</div>
 		</div>
@@ -40,6 +48,7 @@ import { formatBytes, formatDateTime } from '../../services/helpers'
 import TabBar from '../elements/TabBar.vue'
 
 const shareParticipants = ref([])
+const shareParticipantsLoaded = ref(false)
 const showDeleteOldHistory = ref(false)
 const showDeleteAllHistory = ref(false)
 
@@ -53,6 +62,7 @@ const update = async () => {
 	} else {
 		shareParticipants.value = []
 	}
+	shareParticipantsLoaded.value = true
 	if (note.value.historyItems.length === 0) {
 		await note.value.loadHistory()
 	}

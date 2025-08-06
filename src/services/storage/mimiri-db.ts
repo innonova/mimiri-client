@@ -1,6 +1,6 @@
 import { deleteDB, openDB, type IDBPDatabase, type IDBPTransaction } from 'idb'
 import { newGuid, type Guid } from '../types/guid'
-import type { InitializationData, KeyData, LocalData, LocalState, LocalUserData, NoteData } from './type'
+import type { InitializationData, KeyData, LocalData, LocalState, LocalUserData, NoteData, UserStats } from './type'
 import { SyncLock } from './sync-lock'
 
 export class MimiriDb {
@@ -169,6 +169,14 @@ export class MimiriDb {
 		return this.db.get('user-store', 'local-state')
 	}
 
+	public async setUserStats(data: UserStats): Promise<void> {
+		await this.db.put('user-store', data, 'user-stats')
+	}
+
+	public async getUserStats(): Promise<UserStats | undefined> {
+		return this.db.get('user-store', 'user-stats')
+	}
+
 	public async setInitializationData(data: InitializationData): Promise<void> {
 		await this.db.put('user-store', data, 'initialization-data')
 	}
@@ -253,7 +261,6 @@ export class MimiriDb {
 		return this.db.put('note-deleted-store', id, `note-${id}`)
 	}
 
-	// Never actually happens
 	public async deleteRemoteKey(id: Guid): Promise<void> {
 		await this.db.put('key-deleted-store', id, `key-${id}`)
 	}

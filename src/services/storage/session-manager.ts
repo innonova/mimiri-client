@@ -311,6 +311,10 @@ export class SessionManager {
 		await this.login(username, password)
 	}
 
+	public async toggleWorkOffline() {
+		return this.authManager.toggleWorkOffline()
+	}
+
 	public async logout(): Promise<void> {
 		await this.authManager.logout()
 		await this.api.logout()

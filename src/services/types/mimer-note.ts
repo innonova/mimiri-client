@@ -346,12 +346,27 @@ export class MimerNote {
 		await this.owner.operations.createMimerNote(this, name)
 	}
 
+	public async leaveShare() {
+		if (this.isSystem || !this.isShareRoot) {
+			return
+		}
+		if (this.parent) {
+			await this.owner.operations.delete(this, false)
+			await this.owner.operations.deleteKey(this.keyName)
+		} else {
+			throw new Error('Cannot delete root')
+		}
+	}
+
 	public async delete() {
 		if (this.isSystem) {
 			return
 		}
 		if (this.parent) {
 			await this.owner.operations.delete(this, true)
+			if (this.isShareRoot) {
+				await this.owner.operations.deleteKey(this.keyName)
+			}
 		} else {
 			throw new Error('Cannot delete root')
 		}

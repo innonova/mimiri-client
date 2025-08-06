@@ -186,7 +186,7 @@ export class MimiriClient extends HttpClientBase {
 			return result
 		} catch (ex) {
 			debug.logError('Failed to login', ex)
-			return undefined
+			throw ex
 		}
 	}
 
@@ -223,8 +223,6 @@ export class MimiriClient extends HttpClientBase {
 			requestId: newGuid(),
 			signatures: [],
 		}
-		console.log('Verifying credentials for', this.state.username)
-
 		await this._authManager.signRequest(getDataRequest)
 		try {
 			const response = await this.post<UserDataResponse>(`/user/get-data`, getDataRequest)
@@ -645,7 +643,7 @@ export class MimiriClient extends HttpClientBase {
 		}
 	}
 
-	private async closeWebSocket() {
+	public async closeWebSocket() {
 		this._websocketRequested = false
 		if (this._signalRConnection) {
 			try {
@@ -660,18 +658,5 @@ export class MimiriClient extends HttpClientBase {
 
 	public async logout(): Promise<void> {
 		await this.closeWebSocket()
-	}
-
-	public async toggleWorkOffline() {
-		if (this.state.workOffline) {
-			await this.localStateManager.workOnline()
-		} else {
-			await this.localStateManager.workOffline()
-		}
-		if (this.state.workOffline) {
-			await this.closeWebSocket()
-		} else {
-			await this.openWebSocket()
-		}
 	}
 }

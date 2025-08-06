@@ -301,6 +301,7 @@ export class NoteService {
 				this.state.userStats.localNoteCountDelta += deltaNoteCount
 				this.state.userStats.localSize += localSize
 				this.state.userStats.localNoteCount += localNoteCount
+				await this.localStateManager.updateLocalSizeData()
 
 				for (const noteId of updatedNoteIds) {
 					await this.noteUpdatedCallback(noteId)

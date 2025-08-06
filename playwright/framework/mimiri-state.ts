@@ -238,6 +238,10 @@ export class MimiriState {
 		await this._orchestrationClient.setUserType(this._config.username, 1001)
 	}
 
+	public async setUserTypeFree() {
+		await this._orchestrationClient.setUserType(this._config.username, 1)
+	}
+
 	public async waitForMailQueue() {
 		const result = await this._orchestrationClient.waitForMailQueue(this._config.testId)
 		if (result !== 'OK') {

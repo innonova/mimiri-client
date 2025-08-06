@@ -46,6 +46,7 @@
 	--color-error: red;
 	--color-online: green;
 	--color-offline: red;
+	--color-connecting: #ffa500;
 	--color-warning: #f6ba00;
 	--color-button-primary: #4381c1;
 	--color-button-primary-text: #fff;
@@ -100,6 +101,7 @@
 		--color-error: red;
 		--color-online: green;
 		--color-offline: red;
+		--color-connecting: #ffa500;
 		--color-warning: #f6ba00;
 		--color-button-primary: #777;
 		--color-button-primary-text: #fff;

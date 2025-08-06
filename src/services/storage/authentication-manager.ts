@@ -12,6 +12,7 @@ import { deObfuscate, incrementalDelay, obfuscate } from '../helpers'
 import { DEFAULT_ITERATIONS, DEFAULT_PASSWORD_ALGORITHM, DEFAULT_PROOF_BITS, DEFAULT_SALT_SIZE } from './mimiri-store'
 import { ProofOfWork } from '../proof-of-work'
 import type { LocalStateManager } from './local-state-manager'
+import { toRaw } from 'vue'
 
 export class AuthenticationManager {
 	private _userData: any
@@ -186,13 +187,29 @@ export class AuthenticationManager {
 					this.state.accountType = AccountType.Cloud
 				}
 
-				if (this.state.accountType === AccountType.Cloud && !this.state.workOffline && !(await this.goOnline())) {
+				if (this.state.accountType === AccountType.Cloud && !(await this.goOnline())) {
 					const data = JSON.parse(await this.cryptoManager.rootCrypt.decrypt(loginData.data))
+					const userStats = await this.db.getUserStats()
+					if (userStats) {
+						this.state.userStats.maxNoteBytes = userStats.maxNoteBytes
+						this.state.userStats.maxNoteCount = userStats.maxNoteCount
+						this.state.userStats.maxTotalBytes = userStats.maxTotalBytes
+						this.state.userStats.noteCount = userStats.noteCount
+						this.state.userStats.size = userStats.size
+					}
 					this.state.clientConfig = data.clientConfig
-					this.state.userStats = data.userStats
+					this.state.workOffline = true
 					this._userData = data.userData
 				} else {
 					this._userData = JSON.parse(await this.cryptoManager.rootCrypt.decrypt(initializationData.userData))
+					const userStats = await this.db.getUserStats()
+					if (userStats) {
+						this.state.userStats.maxNoteBytes = userStats.maxNoteBytes
+						this.state.userStats.maxNoteCount = userStats.maxNoteCount
+						this.state.userStats.maxTotalBytes = userStats.maxTotalBytes
+						this.state.userStats.noteCount = userStats.noteCount
+						this.state.userStats.size = userStats.size
+					}
 					// TODO user stats and client config
 				}
 
@@ -351,9 +368,13 @@ export class AuthenticationManager {
 		let localInitializationData = true
 		let initializationData = await this.db.getInitializationData()
 		if (!initializationData?.local) {
-			localInitializationData = false
 			// TODO compare with local data after going online
-			initializationData = await this.api.authenticate(username, password)
+			try {
+				initializationData = await this.api.authenticate(username, password)
+				localInitializationData = false
+			} catch (ex) {
+				console.error('Unable to authenticate with server', ex)
+			}
 		}
 		if (!initializationData) {
 			return false
@@ -381,6 +402,14 @@ export class AuthenticationManager {
 					await userCrypt.decrypt(initializationData.rootSignature.privateKey),
 				)
 				this._userData = JSON.parse(await this.cryptoManager.rootCrypt.decrypt(initializationData.userData))
+				const userStats = await this.db.getUserStats()
+				if (userStats) {
+					this.state.userStats.maxNoteBytes = userStats.maxNoteBytes
+					this.state.userStats.maxNoteCount = userStats.maxNoteCount
+					this.state.userStats.maxTotalBytes = userStats.maxTotalBytes
+					this.state.userStats.noteCount = userStats.noteCount
+					this.state.userStats.size = userStats.size
+				}
 				this.state.username = username
 				if (this.state.username?.startsWith('mimiri_a_')) {
 					this.state.accountType = AccountType.Cloud
@@ -403,7 +432,14 @@ export class AuthenticationManager {
 		}
 
 		if (!initializationData.local) {
-			await this.api.openWebSocket()
+			if (!localInitializationData) {
+				this.state.serverAuthenticated = true
+				await this.api.openWebSocket()
+			} else {
+				this.state.isOnline = false
+				this.state.serverAuthenticated = false
+				this.state.workOffline = true
+			}
 		} else {
 			this.state.accountType = AccountType.Local
 		}
@@ -447,18 +483,27 @@ export class AuthenticationManager {
 	}
 
 	public async goOnline(attempt: number = 0): Promise<boolean> {
-		if (this.state.accountType === AccountType.Local || this.state.accountType === AccountType.None) {
+		if (
+			this.state.accountType === AccountType.Local ||
+			this.state.accountType === AccountType.None ||
+			this.state.workOffline
+		) {
 			return false
 		}
 		try {
+			console.log('AuthenticationManager.goOnline() - verifying credentials for', this.state.username)
 			const data = await this.api.verifyCredentials()
 			if (data === 'REJECTED') {
 				console.log('AuthenticationManager.goOnline() - credentials rejected')
 				// TODO prompt user that password is changed on server and to re-enter password
 				return false
 			}
+
 			if (data) {
+				this.state.serverAuthenticated = true
 				this._userData = JSON.parse(await this.cryptoManager.rootCrypt.decrypt(data))
+				await this.db.setUserStats(toRaw(this.state.userStats))
+				await this.api.openWebSocket()
 				return true
 			}
 		} catch (ex) {
@@ -613,6 +658,20 @@ export class AuthenticationManager {
 		return this.db.hasOneOrMoreAccounts()
 	}
 
+	public async toggleWorkOffline() {
+		if (this.state.workOffline) {
+			await this.localStateManager.workOnline()
+		} else {
+			await this.localStateManager.workOffline()
+		}
+		if (this.state.workOffline) {
+			await this.api.closeWebSocket()
+		} else {
+			await this.goOnline()
+		}
+		return true
+	}
+
 	public async logout(): Promise<void> {
 		await this.clearLoginData()
 		this._userData = undefined
@@ -620,6 +679,7 @@ export class AuthenticationManager {
 		this.state.username = undefined
 		this.state.accountType = AccountType.None
 		this.state.isAnonymous = false
+		this.state.serverAuthenticated = false
 
 		this.cryptoManager.rootCrypt = null
 		this.state.userId = null

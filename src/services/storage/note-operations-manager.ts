@@ -365,4 +365,9 @@ export class NoteOperationsManager {
 			this.uiManager.endAction()
 		}
 	}
+
+	public async deleteKey(name: Guid): Promise<void> {
+		await this.cryptoManager.deleteKey(name)
+		this.syncService.queueSync()
+	}
 }

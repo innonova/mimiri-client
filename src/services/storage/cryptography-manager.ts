@@ -235,6 +235,16 @@ export class CryptographyManager {
 		})
 	}
 
+	public async deleteKey(name: Guid): Promise<void> {
+		return this.db.syncLock.withLock('deleteKey', async () => {
+			const key = this.getKeyByName(name)
+			if (key) {
+				await this.db.deleteRemoteKey(key.id)
+				this._keys = this._keys.filter(k => k !== key)
+			}
+		})
+	}
+
 	public getKeyByName(name: Guid): KeySet {
 		return this._keys.find(key => key.name === name) || undefined
 	}

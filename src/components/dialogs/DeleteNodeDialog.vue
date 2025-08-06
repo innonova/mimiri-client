@@ -15,7 +15,11 @@
 				<div class="mt-3 ml-3 mb-1 italic">
 					{{ noteManager.tree.selectedViewModelRef().value?.title }}
 				</div>
-				<div v-if="noteManager.tree.selectedNoteRef().value?.isShared" class="mt-5">
+				<div
+					v-if="noteManager.tree.selectedNoteRef().value?.isShared"
+					class="mt-5"
+					data-testid="delete-share-with-no-participants"
+				>
 					No other users have access to this note
 				</div>
 			</main>
@@ -103,7 +107,11 @@ const close = () => {
 
 const submitDialog = async () => {
 	if (noteManager.tree.selectedNote().isShareRoot) {
-		await noteManager.tree.selectedNote().deleteReference()
+		if (shareParticipants.value.length > 0) {
+			await noteManager.tree.selectedNote().leaveShare()
+		} else {
+			await noteManager.tree.selectedNote().delete()
+		}
 	} else {
 		await noteManager.tree.selectedNote().delete()
 	}

@@ -133,7 +133,7 @@
 				'w-16': !mimiriPlatform.isDesktop,
 			}"
 			data-testid="account-button"
-			:title="noteManager.state.isOnline ? 'Account (Online)' : 'Account (Offline)'"
+			:title="title"
 			@click="menuClick($event, 'account')"
 			@mouseenter="menuHover($event, 'account')"
 		>
@@ -141,8 +141,9 @@
 				class="w-9 h-6 p-0.5 px-1 no-drag pointer-events-none"
 				:class="{
 					'text-title-text-blur': !noteManager.state.isLoggedIn,
-					'p-px text-online active:p-px': noteManager.state.isOnline && noteManager.state.isLoggedIn,
-					'p-px text-offline active:p-px': !noteManager.state.isOnline && noteManager.state.isLoggedIn,
+					'p-px text-online active:p-px': status === 'online',
+					'p-px text-connecting active:p-px': status === 'connecting',
+					'p-px text-offline active:p-px': status === 'offline',
 				}"
 			/>
 		</div>
@@ -150,7 +151,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { noteManager, searchInput, showSearchBox, ipcClient, notificationManager } from '../global'
 import ScreenShareEnabledIcon from '../icons/screen-sharing-enabled.vue'
 import ScreenShareDisabledIcon from '../icons/screen-sharing-disabled.vue'
@@ -165,6 +166,55 @@ import { useEventListener } from '@vueuse/core'
 import { AccountType } from '../services/storage/type'
 
 const hasFocus = ref(true)
+
+const status = computed(() => {
+	const isLoggedIn = noteManager.state.isLoggedIn
+	const isOnline = noteManager.state.isOnline
+	const workOffline = noteManager.state.workOffline
+	const accountType = noteManager.state.accountType
+
+	if (!isLoggedIn) {
+		return 'not-logged-in'
+	}
+
+	if (accountType !== AccountType.Cloud) {
+		return 'offline'
+	}
+
+	if (isOnline) {
+		return 'online'
+	}
+
+	if (workOffline) {
+		return 'offline'
+	}
+
+	return 'connecting'
+})
+
+const title = computed(() => {
+	const isLoggedIn = noteManager.state.isLoggedIn
+	const isOnline = noteManager.state.isOnline
+	const workOffline = noteManager.state.workOffline
+	const accountType = noteManager.state.accountType
+
+	if (!isLoggedIn) {
+		return 'Account (Offline)'
+	}
+
+	if (accountType !== AccountType.Cloud) {
+		return 'Account (Offline)'
+	}
+
+	if (isOnline) {
+		return 'Account (Online)'
+	}
+
+	if (workOffline) {
+		return 'Account (Offline)'
+	}
+	return 'Account (Connecting)'
+})
 
 const updateTitleBar = () => {
 	hasFocus.value = document.hasFocus()

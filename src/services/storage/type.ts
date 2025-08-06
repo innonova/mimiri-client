@@ -49,6 +49,7 @@ export interface SharedState {
 	accountType: AccountType
 	isAnonymous: boolean
 	workOffline: boolean
+	serverAuthenticated: boolean
 	clientConfig: ClientConfig
 	userStats: UserStats
 

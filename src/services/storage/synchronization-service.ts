@@ -15,6 +15,7 @@ import {
 import type { NoteTreeManager } from './note-tree-manager'
 import { inconsistencyDialog, syncOverSizeNote, syncStatus } from '../../global'
 import type { LocalStateManager } from './local-state-manager'
+import { toRaw } from 'vue'
 
 export const SYSTEM_NOTE_COUNT = 3
 
@@ -103,6 +104,7 @@ export class SynchronizationService {
 						}
 					} catch (error) {
 						syncFailed = true
+						syncStatus.value = 'synchronization-error'
 						console.error('Synchronization error:', error)
 					}
 				} while ((this._syncRequestedWhileInProgress || syncFailed) && !this.state.workOffline)
@@ -197,6 +199,7 @@ export class SynchronizationService {
 		this.state.userStats.maxTotalBytes = +changes.maxTotalBytes
 		this.state.userStats.maxNoteBytes = +changes.maxNoteBytes
 		this.state.userStats.maxNoteCount = +changes.maxNoteCount
+		await this.db.setUserStats(toRaw(this.state.userStats))
 
 		const updatedNoteIds: Guid[] = []
 
@@ -591,6 +594,7 @@ export class SynchronizationService {
 			this.state.userStats.localNoteCountDelta -= localNoteCountDelta
 			this.state.userStats.localSize -= localSize
 			this.state.userStats.localNoteCount -= localNoteCount
+			await this.localStateManager.updateLocalSizeData()
 			syncStatus.value = 'idle'
 			return true
 		}

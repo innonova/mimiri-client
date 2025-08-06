@@ -64,6 +64,7 @@ export class MimiriStore {
 			accountType: AccountType.None,
 			isAnonymous: false,
 			workOffline: false,
+			serverAuthenticated: false,
 			clientConfig: { features: [] },
 			userStats: {
 				size: 0,
@@ -249,6 +250,7 @@ export class MimiriStore {
 			this.operationsManager.copy(targetId, mimerNote, index),
 		move: (sourceId: Guid, targetId: Guid, mimerNote: MimerNote, index: number, keepKey: boolean, select: boolean) =>
 			this.operationsManager.move(sourceId, targetId, mimerNote, index, keepKey, select, this.treeManager.root.id),
+		deleteKey: (keyName: Guid) => this.operationsManager.deleteKey(keyName),
 	}
 
 	public readonly session = {
@@ -265,9 +267,7 @@ export class MimiriStore {
 			this.sessionManager.promoteToLocalAccount(username, password, iterations),
 		registerListener: (listener: LoginListener) => this.sessionManager.registerListener(listener),
 		queueSync: () => this.syncService.queueSync(),
-		toggleWorkOffline: async () => {
-			await this.api.toggleWorkOffline()
-		},
+		toggleWorkOffline: async () => this.sessionManager.toggleWorkOffline(),
 	}
 
 	public readonly auth = {

@@ -20,8 +20,6 @@ const status = ref('')
 const error = ref(false)
 
 const calculateStatus = () => {
-	console.log('SynchronizationService.calculateStatus() - syncStatus:', syncStatus.value)
-
 	let result = ''
 	error.value = false
 	if (!noteManager.state.isOnline) {
@@ -35,6 +33,10 @@ const calculateStatus = () => {
 	}
 	if (syncStatus.value === 'sending-changes') {
 		result = 'Synchronizing...'
+	}
+	if (syncStatus.value === 'synchronization-error') {
+		error.value = true
+		result = 'Synchronization Error (see details)'
 	}
 	if (syncStatus.value === 'count-limit-exceeded') {
 		error.value = true

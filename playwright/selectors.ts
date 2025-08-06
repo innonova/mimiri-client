@@ -431,6 +431,9 @@ export const deleteNoteDialog = {
 	deleteNote: () => tid(`delete-note-dialog`).getByTestId(`delete-note`),
 	deleteShare: () => tid(`delete-note-dialog`).getByTestId(`delete-share`),
 	leaveShare: () => tid(`delete-note-dialog`).getByTestId(`leave-share`),
+	confirmLeaveButton: () => tid(`delete-note-dialog`).getByTestId(`leave-dialog-confirm`),
+	cancelLeaveButton: () => tid(`delete-note-dialog`).getByTestId(`leave-dialog-cancel`),
+	deleteShareWithNoParticipants: () => tid(`delete-note-dialog`).getByTestId(`delete-share-with-no-participants`),
 }
 
 export const inconsistencyDialog = {
@@ -452,4 +455,6 @@ export const textNoteProperties = {
 	totalSize: () => tid(`text-note-properties`).getByTestId(`note-total-size`),
 	created: () => tid(`text-note-properties`).getByTestId(`note-created`),
 	updated: () => tid(`text-note-properties`).getByTestId(`note-updated`),
+	shareParticipantUsername: () => tid(`text-note-properties`).getByTestId(`share-participant-username`),
+	noShareParticipants: () => tid(`text-note-properties`).getByTestId(`no-share-participants`),
 }
