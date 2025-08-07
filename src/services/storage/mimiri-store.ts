@@ -244,8 +244,8 @@ export class MimiriStore {
 		createMimerNote: (parentNote: MimerNote, title: string) =>
 			this.operationsManager.createMimerNote(parentNote, title),
 		saveNote: (note: MimerNote) => this.operationsManager.saveNote(note),
-		delete: (mimerNote: MimerNote, physicallyDelete: boolean) =>
-			this.operationsManager.delete(mimerNote, physicallyDelete),
+		delete: (mimerNote: MimerNote, physicallyDelete: boolean, unregister: boolean) =>
+			this.operationsManager.delete(mimerNote, physicallyDelete, unregister),
 		copy: (targetId: Guid, mimerNote: MimerNote, index: number) =>
 			this.operationsManager.copy(targetId, mimerNote, index),
 		move: (sourceId: Guid, targetId: Guid, mimerNote: MimerNote, index: number, keepKey: boolean, select: boolean) =>
@@ -282,7 +282,7 @@ export class MimiriStore {
 
 	public readonly note = {
 		getNote: (id: Guid) => this.noteService.readNote(id),
-		isShared: (note: Note) => !!this.cryptoManager.getKeyByName(note.keyName).metadata.shared,
+		isShared: (note: Note) => !!this.cryptoManager.getKeyByName(note?.keyName)?.metadata?.shared,
 		shareMimerNote: (mimerNote: MimerNote, recipient: string) =>
 			this.operationsManager.shareMimerNote(mimerNote, recipient),
 		getShareOffer: (code: string) => this.api.getShareOffer(code),

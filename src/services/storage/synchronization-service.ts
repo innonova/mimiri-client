@@ -230,6 +230,13 @@ export class SynchronizationService {
 						})
 						keyChanges = true
 					}
+					if (changes.keys.length > 0) {
+						try {
+							await this.cryptoManager.loadAllKeysNoLock()
+						} catch (ex) {
+							console.error('Error loading keys:', ex)
+						}
+					}
 
 					for (const noteId of changes.deletedNotes) {
 						await this.db.deleteNote(noteId)
@@ -610,7 +617,7 @@ export class SynchronizationService {
 		console.log('SynchronizationService.syncPush()', status, noteActions.length, keyActions.length)
 
 		if (status !== 'success') {
-			syncStatus.value = 'error'
+			syncStatus.value = 'server-rejection'
 			return false
 		}
 

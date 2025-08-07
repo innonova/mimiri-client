@@ -125,6 +125,16 @@ export class NoteService {
 		return action
 	}
 
+	public async createUnregisterAction(note: Note): Promise<NoteAction> {
+		const action: NoteAction = {
+			type: NoteActionType.Unregister,
+			id: note.id,
+			keyName: note.keyName,
+			items: [],
+		}
+		return action
+	}
+
 	public async createUpdateAction(note: Note): Promise<NoteAction> {
 		const action: NoteAction = {
 			type: NoteActionType.Update,
@@ -292,6 +302,26 @@ export class NoteService {
 								deltaNoteCount -= 1
 							}
 							await transaction.deleteRemoteNote(action.id)
+						}
+					} else if (action.type === NoteActionType.Unregister) {
+						let note = await transaction.getLocalNote(action.id)
+						let hadLocal = false
+						if (note) {
+							hadLocal = true
+							deltaSize -= note.size
+							deltaNoteCount -= 1
+							localSize -= note.size
+							localNoteCount -= 1
+							await transaction.deleteLocalNote(action.id)
+						}
+						note = await transaction.getNote(action.id)
+						if (note) {
+							if (!hadLocal) {
+								deltaSize -= note.size
+								localSize -= note.size
+								deltaNoteCount -= 1
+							}
+							await transaction.locallyDeleteRemoteNote(action.id)
 						}
 					}
 				}

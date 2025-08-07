@@ -31,6 +31,10 @@ export class MultiAction {
 		this.actions.push(await this.noteService.createDeleteAction(note))
 	}
 
+	async unregisterNote(note: Note): Promise<void> {
+		this.actions.push(await this.noteService.createUnregisterAction(note))
+	}
+
 	async changeNoteKey(noteId: Guid, newKeyName: Guid): Promise<void> {
 		this.actions.push(await this.noteService.createChangeKeyAction(noteId, newKeyName))
 	}

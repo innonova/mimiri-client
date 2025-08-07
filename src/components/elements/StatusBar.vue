@@ -50,6 +50,10 @@ const calculateStatus = () => {
 		error.value = true
 		result = 'Sync Error: Note size exceeded (see details)'
 	}
+	if (syncStatus.value === 'server-rejection') {
+		error.value = true
+		result = 'Sync Error: Server rejection (see details)'
+	}
 
 	return result
 }

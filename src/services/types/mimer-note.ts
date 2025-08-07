@@ -351,7 +351,7 @@ export class MimerNote {
 			return
 		}
 		if (this.parent) {
-			await this.owner.operations.delete(this, false)
+			await this.owner.operations.delete(this, false, true)
 			await this.owner.operations.deleteKey(this.keyName)
 		} else {
 			throw new Error('Cannot delete root')
@@ -363,7 +363,7 @@ export class MimerNote {
 			return
 		}
 		if (this.parent) {
-			await this.owner.operations.delete(this, true)
+			await this.owner.operations.delete(this, true, false)
 			if (this.isShareRoot) {
 				await this.owner.operations.deleteKey(this.keyName)
 			}
@@ -411,22 +411,6 @@ export class MimerNote {
 			)
 		} else {
 			throw new Error('Cannot recycle root')
-		}
-	}
-
-	public async deleteReference(force: boolean = false) {
-		if (this.isSystem) {
-			return
-		}
-		if (this.parent != null) {
-			if (!this.isShareRoot && !force) {
-				throw new Error(
-					'Deleting the reference of this note will leave it without any references, use Delete to delete the note, use force = true to override this check',
-				)
-			}
-			await this.owner.operations.delete(this, false)
-		} else {
-			throw new Error('Cannot delete root')
 		}
 	}
 

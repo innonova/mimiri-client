@@ -75,6 +75,10 @@ const show = async () => {
 		title.value = 'Synchronization Error'
 		text.value = `An unexpected error occurred while attempting to synchronize.\n\nCheck your internet connection or try again later.`
 	}
+	if (syncStatus.value === 'server-rejection') {
+		title.value = 'Synchronization Error'
+		text.value = `The server rejected the synchronization request.\n\nThis is likely a result of a temporary issue, if it persists please contact support.`
+	}
 	dialog.value.showModal()
 }
 

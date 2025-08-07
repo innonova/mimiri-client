@@ -315,6 +315,13 @@ export class MimiriTransaction {
 		return Promise.resolve()
 	}
 
+	public async locallyDeleteRemoteNote(id: Guid): Promise<void> {
+		this.actions.push(tx => {
+			void tx.objectStore('note-store').delete(`note-${id}`)
+		})
+		return Promise.resolve()
+	}
+
 	public async rollback() {
 		return Promise.resolve()
 	}

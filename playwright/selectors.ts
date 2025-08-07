@@ -76,13 +76,14 @@ export const menu = {
 export const note = {
 	newInput: () => tid('new-tree-node-input'),
 	renameInput: () => tid('rename-input'),
-	container: (title: string, parent?: Locator) => (parent || tid(`note-tree`)).getByTitle(title),
-	item: (title: string, parent?: Locator) => (parent || tid(`note-tree`)).getByTitle(title).locator('div').nth(0),
-	items: (title: string, parent?: Locator) => (parent || tid(`note-tree`)).getByTitle(title),
+	container: (title: string, parent?: Locator) => (parent || tid(`note-tree`)).getByTitle(title, { exact: true }),
+	item: (title: string, parent?: Locator) =>
+		(parent || tid(`note-tree`)).getByTitle(title, { exact: true }).locator('div').nth(0),
+	items: (title: string, parent?: Locator) => (parent || tid(`note-tree`)).getByTitle(title, { exact: true }),
 	expand: (title: string, parent?: Locator) =>
-		(parent || tid(`note-tree`)).getByTitle(title).locator('div').nth(0).getByTitle('Expand'),
+		(parent || tid(`note-tree`)).getByTitle(title, { exact: true }).locator('div').nth(0).getByTitle('Expand'),
 	collapse: (title: string, parent?: Locator) =>
-		(parent || tid(`note-tree`)).getByTitle(title).locator('div').nth(0).getByTitle('Collapse'),
+		(parent || tid(`note-tree`)).getByTitle(title, { exact: true }).locator('div').nth(0).getByTitle('Collapse'),
 }
 
 export const editor = {
@@ -393,6 +394,7 @@ export const acceptShareDialog = {
 	code: () => tid(`accept-share-dialog`).getByTestId(`share-code-input`),
 	okButton: () => tid(`accept-share-dialog`).getByTestId(`share-ok-button`),
 	cancelButton: () => tid(`accept-share-dialog`).getByTestId(`share-cancel-button`),
+	limitsExceeded: () => tid(`accept-share-dialog`).getByTestId(`share-limits-exceeded`),
 }
 
 export const emptyRecycleBinDialog = {

@@ -9,6 +9,7 @@ import type {
 	AddCommentRequest,
 	BasicRequest,
 	CheckUsernameRequest,
+	CreateKeyRequest,
 	CreateUserRequest,
 	DeleteAccountRequest,
 	DeleteShareRequest,
@@ -31,6 +32,7 @@ import type {
 	BasicResponse,
 	CheckUsernameResponse,
 	ClientConfig,
+	CreateKeyResponse,
 	LoginResponse,
 	NotificationUrlResponse,
 	PreLoginResponse,
@@ -369,6 +371,27 @@ export class MimiriClient extends HttpClientBase {
 			maxNoteBytes: +response.maxNoteBytes,
 			maxNoteCount: +response.maxNoteCount,
 		}
+	}
+
+	public async createKeyFromNoteShare(id: Guid, share: NoteShareInfo, metadata: any): Promise<CreateKeyResponse> {
+		const { keyData, signer } = await this.cryptoManager.createKeyFromNoteShare(id, share, metadata)
+		const request: CreateKeyRequest = {
+			username: this.state.username,
+			id: keyData.id,
+			name: keyData.name,
+			algorithm: keyData.algorithm,
+			asymmetricAlgorithm: keyData.asymmetricAlgorithm,
+			keyData: keyData.keyData,
+			publicKey: keyData.publicKey,
+			privateKey: keyData.privateKey,
+			metadata: keyData.metadata,
+			timestamp: dateTimeNow(),
+			requestId: newGuid(),
+			signatures: [],
+		}
+		await this._authManager.signRequest(request)
+		await signer.sign('key', request)
+		return await this.post<CreateKeyResponse>('/key/create', request)
 	}
 
 	public async multiAction(actions: NoteAction[]): Promise<Guid[]> {

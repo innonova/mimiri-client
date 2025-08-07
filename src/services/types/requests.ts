@@ -127,6 +127,7 @@ export enum NoteActionType {
 	Create = 'create',
 	Delete = 'delete',
 	Update = 'update',
+	Unregister = 'unregister',
 }
 
 export interface NoteAction {

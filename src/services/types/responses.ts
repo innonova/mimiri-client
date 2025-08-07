@@ -136,6 +136,14 @@ export interface SyncResponse {
 	maxNoteCount: string
 }
 
+export interface CreateKeyResponse {
+	success: boolean
+	maxCount: number
+	maxSize: number
+	count: number
+	size: number
+}
+
 export interface SyncPushResponse {
 	status: 'success' | 'conflict' | 'no-data' | 'error'
 }

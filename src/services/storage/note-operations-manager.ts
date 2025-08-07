@@ -11,7 +11,7 @@ import type { SynchronizationService } from './synchronization-service'
 import type { MimiriClient } from './mimiri-client'
 import type { UIStateManager } from './ui-state-manager'
 import type { NoteTreeManager } from './note-tree-manager'
-import { MimerError, type SharedState } from './type'
+import { LimitError, MimerError, type SharedState } from './type'
 import { ProofOfWork } from '../proof-of-work'
 import type { CryptographyManager } from './cryptography-manager'
 import type { NoteShareInfo } from '../types/note-share-info'
@@ -112,7 +112,7 @@ export class NoteOperationsManager {
 		}
 	}
 
-	public async delete(mimerNote: MimerNote, physicallyDelete: boolean) {
+	public async delete(mimerNote: MimerNote, physicallyDelete: boolean, unregister: boolean) {
 		this.uiManager.beginAction()
 		try {
 			const multiAction = this.beginMultiAction()
@@ -127,12 +127,35 @@ export class NoteOperationsManager {
 			if (physicallyDelete) {
 				await this.recursiveDelete(multiAction, mimerNote.id)
 			}
+			if (unregister) {
+				await this.recursiveUnregister(multiAction, mimerNote.id)
+			}
 			await multiAction.commit()
 			this.syncService.queueSync()
 			await this.syncService.waitForSync(15000)
 			await (await this.treeManager.getNoteById(parent.id))?.select()
 		} finally {
 			this.uiManager.endAction()
+		}
+	}
+
+	private async recursiveDelete(multiAction: MultiAction, id: Guid) {
+		const note = await this.noteService.readNote(id)
+		if (note) {
+			for (const childId of note.getItem('metadata').notes) {
+				await this.recursiveDelete(multiAction, childId)
+			}
+			await multiAction.deleteNote(note)
+		}
+	}
+
+	private async recursiveUnregister(multiAction: MultiAction, id: Guid) {
+		const note = await this.noteService.readNote(id)
+		if (note) {
+			for (const childId of note.getItem('metadata').notes) {
+				await this.recursiveUnregister(multiAction, childId)
+			}
+			await multiAction.unregisterNote(note)
 		}
 	}
 
@@ -233,16 +256,6 @@ export class NoteOperationsManager {
 		return new MultiAction(this.noteService, this.syncService, this.api)
 	}
 
-	private async recursiveDelete(multiAction: MultiAction, id: Guid) {
-		const note = await this.noteService.readNote(id)
-		if (note) {
-			for (const childId of note.getItem('metadata').notes) {
-				await this.recursiveDelete(multiAction, childId)
-			}
-			await multiAction.deleteNote(note)
-		}
-	}
-
 	private async copyTree(multiAction: MultiAction, id: Guid, keyName: Guid) {
 		const note = await this.noteService.readNote(id)
 		if (note) {
@@ -336,22 +349,26 @@ export class NoteOperationsManager {
 		this.uiManager.beginAction()
 		try {
 			if (share) {
-				const multiAction = this.beginMultiAction()
-				multiAction.onlineOnly()
 				if (!this.cryptoManager.getKeyByName(share.keyName)) {
-					await this.cryptoManager.createKeyFromNoteShare(newGuid(), share, { shared: true })
-					this.syncService.queueSync()
-					if (!(await this.syncService.waitForSync(15000))) {
-						return
+					const response = await this.api.createKeyFromNoteShare(newGuid(), share, { shared: true })
+					if (!response.success) {
+						throw new LimitError('Limit Reached', {
+							maxTotalBytes: response.maxSize,
+							maxNoteBytes: 0,
+							maxNoteCount: response.maxCount,
+							noteSize: 0,
+							noteCount: response.count,
+							size: response.size,
+						})
 					}
+					this.syncService.queueSync()
+					await this.syncService.waitForSync(15000)
 				}
-				const shareParent = parent?.note ?? (await this.noteService.readNote(this.treeManager.root.id))
-				if (!shareParent.getItem('metadata').notes.includes(share.noteId)) {
-					shareParent.changeItem('metadata').notes.push(share.noteId)
+
+				if (!parent.note.getItem('metadata').notes.includes(share.noteId)) {
+					parent.note.changeItem('metadata').notes.push(share.noteId)
 				}
-				await multiAction.updateNote(shareParent)
-				await multiAction.commit()
-				await this.api.deleteShareOffer(share.id)
+				await parent.save()
 				this.syncService.queueSync()
 				await this.syncService.waitForSync(15000)
 				await parent?.expand()

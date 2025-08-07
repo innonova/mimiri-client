@@ -414,8 +414,96 @@ test.describe('quotas', () => {
 			mimiri(0, true)
 			await settingNodes.controlPanel().click()
 			await expect(aboutView.noteCount()).toHaveText('7')
+		})
+	})
 
-			await mimiri().pause()
+	test('when share causes recipient to exceed limits', async () => {
+		await withMimiriContext(async () => {
+			await mimiri().home()
+			await expect(titleBar.accountButton()).toBeVisible()
+			await createCloudAccount()
+			await createTestTree(quotaTestTree)
+			await expect(statusBar.container()).not.toBeVisible()
+
+			await mimiriCreate(true)
+			await mimiri().home()
+			await expect(titleBar.accountButton()).toBeVisible()
+			await createCloudAccount()
+			await mimiri().setUserTypeCountTest()
+			await expect(statusBar.container()).not.toBeVisible()
+			await createTestTree(quotaSizeTestTree, { verify: false, typeText: false })
+			const targetUsername = mimiri().username
+
+			mimiri(0, true)
+			await note.item('Quota Test Root').click({ button: 'right' })
+			await menu.share().click()
+			await shareDialog.username().fill(targetUsername)
+			await shareDialog.okButton().click()
+			await expect(shareDialog.code()).toBeVisible()
+			const shareCode = (await shareDialog.code().textContent()) ?? ''
+			await shareDialog.closeButton().click()
+
+			mimiri(1, true)
+			await note.item('Configuration Files').click({ button: 'right' })
+			await menu.receiveShareUnder().click()
+			await acceptShareDialog.code().fill(shareCode)
+			await acceptShareDialog.okButton().click()
+			await expect(acceptShareDialog.limitsExceeded()).toBeVisible()
+			await expect(acceptShareDialog.limitsExceeded()).toHaveText(
+				/Cannot accept share!\s+New note count \(\d+\) would exceed current maximum \(\d+\)/,
+			)
+		})
+	})
+
+	test('return to under limit by leaving share', async () => {
+		await withMimiriContext(async () => {
+			await mimiri().home()
+			await expect(titleBar.accountButton()).toBeVisible()
+			await createCloudAccount()
+			await createTestTree(quotaTestTree)
+			await expect(statusBar.container()).not.toBeVisible()
+
+			await mimiriCreate(true)
+			await mimiri().home()
+			await expect(titleBar.accountButton()).toBeVisible()
+			await createCloudAccount()
+			await expect(statusBar.container()).not.toBeVisible()
+			await createTestTree(quotaSizeTestTree, { verify: false, typeText: false })
+			const targetUsername = mimiri().username
+
+			mimiri(0, true)
+			await note.item('Quota Test Root').click({ button: 'right' })
+			await menu.share().click()
+			await shareDialog.username().fill(targetUsername)
+			await shareDialog.okButton().click()
+			await expect(shareDialog.code()).toBeVisible()
+			const shareCode = (await shareDialog.code().textContent()) ?? ''
+			await shareDialog.closeButton().click()
+
+			mimiri(1, true)
+			await note.item('Configuration Files').click({ button: 'right' })
+			await menu.receiveShareUnder().click()
+			await acceptShareDialog.code().fill(shareCode)
+			await acceptShareDialog.okButton().click()
+			await expect(acceptShareDialog.container()).not.toBeVisible()
+			await mimiri().setUserTypeCountTest()
+			await mimiri().reload()
+			await expect(statusBar.container()).toBeVisible()
+			await expect(statusBar.syncStatusCode()).toHaveValue('count-limit-exceeded')
+			await statusBar.container().click()
+			await expect(syncErrorDialog.container()).toBeVisible()
+			await expect(syncErrorDialog.title()).toHaveText('Note Limit Reached')
+			await syncErrorDialog.okButton().click()
+			await settingNodes.controlPanel().click()
+			await expect(aboutView.noteCount()).toHaveText('30')
+			await expect(aboutView.maxNoteCount()).toHaveText('20')
+
+			await note.item('Quota Test Root').click({ button: 'right' })
+			await menu.delete().click()
+
+			await expect(deleteNoteDialog.container()).toBeVisible()
+			await deleteNoteDialog.confirmLeaveButton().click()
+			await expect(statusBar.container()).not.toBeVisible()
 		})
 	})
 })

@@ -203,3 +203,21 @@ export class MimerError extends Error {
 		super(msg)
 	}
 }
+
+export interface Limits {
+	maxTotalBytes: number
+	maxNoteBytes: number
+	maxNoteCount: number
+	noteSize: number
+	noteCount: number
+	size: number
+}
+
+export class LimitError extends Error {
+	constructor(
+		msg: string,
+		public limits: Limits,
+	) {
+		super(msg)
+	}
+}
