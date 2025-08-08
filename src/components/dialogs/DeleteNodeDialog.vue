@@ -1,14 +1,10 @@
 <template>
 	<dialog
-		class="w-72 bg-dialog text-text desktop:border border-solid border-dialog-border"
+		class="min-w-72 bg-dialog text-text desktop:border border-solid border-dialog-border"
 		ref="dialog"
 		data-testid="delete-note-dialog"
 	>
-		<div
-			v-if="!noteManager.tree.selectedNoteRef().value?.isShared || shareParticipants.length == 0"
-			class="grid grid-rows-[auto_1fr_auto] gap-6"
-			data-testid="delete-note"
-		>
+		<div v-if="mode === 'delete'" class="grid grid-rows-[auto_1fr_auto] gap-6" data-testid="delete-note">
 			<DialogTitle @close="close">Delete Note</DialogTitle>
 			<main class="px-2 mobile:text-center">
 				<div>Are you sure you want to delete:</div>
@@ -28,11 +24,7 @@
 				<button class="secondary" @click="close" data-testid="delete-dialog-cancel">Cancel</button>
 			</footer>
 		</div>
-		<div
-			v-if="noteManager.tree.selectedNoteRef().value?.isShareRoot && shareParticipants.length > 0"
-			class="grid grid-rows-[auto_1fr_auto] gap-6"
-			data-testid="leave-share"
-		>
+		<div v-if="mode === 'leave-share'" class="grid grid-rows-[auto_1fr_auto] gap-6" data-testid="leave-share">
 			<DialogTitle @close="close">Leave Share</DialogTitle>
 			<main class="px-2 mobile:text-center">
 				<div>Are you sure you want to leave this share:</div>
@@ -54,11 +46,7 @@
 				<button class="secondary" @click="close" data-testid="leave-dialog-cancel">Cancel</button>
 			</footer>
 		</div>
-		<div
-			v-if="!noteManager.tree.selectedNoteRef().value?.isShareRoot && shareParticipants.length > 0"
-			class="grid grid-rows-[auto_1fr_auto] gap-6"
-			data-testid="delete-share"
-		>
+		<div v-if="mode === 'delete-share'" class="grid grid-rows-[auto_1fr_auto] gap-6" data-testid="delete-share">
 			<DialogTitle @close="close">Delete Note</DialogTitle>
 			<main class="px-2 mobile:text-center">
 				<div>Are you sure you want to delete:</div>
@@ -80,6 +68,19 @@
 				<button class="secondary" @click="close" data-testid="delete-dialog-cancel">Cancel</button>
 			</footer>
 		</div>
+		<div v-if="mode === 'cannot-delete'" class="grid grid-rows-[auto_1fr_auto] gap-6" data-testid="delete-share">
+			<DialogTitle @close="close">Cannot Delete</DialogTitle>
+			<main class="px-2 mobile:text-center">
+				<div class="leading-5">
+					Cannot delete note containing shared notes. <br />
+					Please remove shared notes before deleting.
+				</div>
+				<div></div>
+			</main>
+			<footer class="flex justify-end mobile:justify-center gap-2 pr-2 pb-2 mobile:mt-5">
+				<button class="primary" @click="close" data-testid="delete-dialog-cancel">Ok</button>
+			</footer>
+		</div>
 	</dialog>
 </template>
 
@@ -89,14 +90,25 @@ import { noteManager } from '../../global'
 import DialogTitle from '../elements/DialogTitle.vue'
 const dialog = ref(null)
 const shareParticipants = ref([])
+const mode = ref('none')
 
 const show = async () => {
 	if (noteManager.tree.selectedNote()?.isShared) {
 		shareParticipants.value = (await noteManager.note.getShareParticipants(noteManager.tree.selectedNote().id)).filter(
 			item => item.username !== noteManager.state.username,
 		)
+		if (shareParticipants.value.length === 0) {
+			mode.value = 'delete'
+		} else if (noteManager.tree.selectedNote().isShareRoot) {
+			mode.value = 'leave-share'
+		} else {
+			mode.value = 'delete-share'
+		}
+	} else if (await noteManager.tree.selectedNote().hasSharedDescendant()) {
+		mode.value = 'cannot-delete'
 	} else {
 		shareParticipants.value = []
+		mode.value = 'delete'
 	}
 	dialog.value.showModal()
 }

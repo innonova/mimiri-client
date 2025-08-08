@@ -6,6 +6,7 @@ import {
 	deleteNodeDialog,
 	emptyRecycleBinDialog,
 	env,
+	infoDialog,
 	ipcClient,
 	isCut,
 	loginDialog,
@@ -22,6 +23,7 @@ import { settingsManager } from './settings-manager'
 import { mimiriPlatform } from './mimiri-platform'
 import type { Guid } from './types/guid'
 import { AccountType } from './storage/type'
+import { MimiriException, MimiriExceptionType } from './types/exceptions'
 
 export enum MenuItems {
 	Separator = 'separator',
@@ -210,7 +212,16 @@ class MenuManager {
 				if (noteManager.tree.selectedNote().isShareRoot) {
 					deleteNodeDialog.value.show()
 				} else {
-					await noteManager.tree.selectedNote().moveToRecycleBin()
+					try {
+						await noteManager.tree.selectedNote().moveToRecycleBin()
+					} catch (error) {
+						if (
+							error instanceof MimiriException &&
+							error.type === MimiriExceptionType.CannotDeleteWithSharedDescendant
+						) {
+							infoDialog.value.show(error.title, error.message)
+						}
+					}
 				}
 			}
 		} else if (itemId === 'copy') {

@@ -19,7 +19,7 @@
 		"build-dev": "NODE_ENV=development vite build",
 		"type-check": "vue-tsc --build --force",
 		"test": "jest",
-		"e2e": "playwright test",
+		"e2e": "playwright test --retries=0",
 		"e2e-ss-update": "playwright test --update-snapshots",
 		"icons-import": "node ./scripts/icons",
 		"icons-list": "node ./scripts/create-icon-list.js",

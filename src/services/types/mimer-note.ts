@@ -7,6 +7,7 @@ import { fromBase64, toBase64 } from '../hex-base64'
 import { persistedState } from '../persisted-state'
 import { blogManager, debug, updateManager } from '../../global'
 import { settingsManager, UpdateMode } from '../settings-manager'
+import { MimiriException, MimiriExceptionType } from './exceptions'
 
 const zip = async (text: string) => {
 	return toBase64(
@@ -358,11 +359,34 @@ export class MimerNote {
 		}
 	}
 
+	public async hasSharedDescendant(): Promise<boolean> {
+		if (this.isSystem) {
+			return false
+		}
+		await this.ensureChildren()
+		for (const child of this.children) {
+			if (child.isShared) {
+				return true
+			}
+			if (await child.hasSharedDescendant()) {
+				return true
+			}
+		}
+		return false
+	}
+
 	public async delete() {
 		if (this.isSystem) {
 			return
 		}
 		if (this.parent) {
+			if (!this.isShared && (await this.hasSharedDescendant())) {
+				throw new MimiriException(
+					MimiriExceptionType.CannotDeleteWithSharedDescendant,
+					'Cannot Delete',
+					'Cannot delete note containing shared notes.\nPlease remove shared notes before deleting.',
+				)
+			}
 			await this.owner.operations.delete(this, true, false)
 			if (this.isShareRoot) {
 				await this.owner.operations.deleteKey(this.keyName)
@@ -391,6 +415,13 @@ export class MimerNote {
 			return
 		}
 		if (this.parent) {
+			if (!this.isShared && (await this.hasSharedDescendant())) {
+				throw new MimiriException(
+					MimiriExceptionType.CannotDeleteWithSharedDescendant,
+					'Cannot Delete',
+					'Cannot delete note containing shared notes.\nPlease remove shared notes before deleting.',
+				)
+			}
 			if (this.prevSibling) {
 				await this.prevSibling.select()
 			} else if (this.nextSibling) {
@@ -581,6 +612,10 @@ export class MimerNote {
 
 	public get keyName() {
 		return this.note.keyName
+	}
+
+	public get keyFriendlyName() {
+		return this.note.keyName.split('-')[4]
 	}
 
 	public get isRoot() {

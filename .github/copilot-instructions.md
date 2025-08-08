@@ -15,6 +15,7 @@
 - I find it easier to read code that is light on comments, reading code is faster than reading comments for me
 - prefer awaiting promises over using `.then()`
 - prefer undefined over null
+- use minimal comments to explain why something is done, not what is done and only when necessary
 
 # Test Code Organization
 

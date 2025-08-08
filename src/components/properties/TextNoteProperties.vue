@@ -13,6 +13,8 @@
 				<div data-testid="note-created">{{ formatDateTime(note.created) }}</div>
 				<div>Last Modified:</div>
 				<div data-testid="note-updated">{{ formatDateTime(note.updated) }}</div>
+				<div>Key:</div>
+				<div data-testid="note-key">{{ note.keyFriendlyName }}</div>
 				<div class="col-span-2 flex gap-2">
 					<button v-if="showDeleteOldHistory" class="primary" @click="deleteOldHistory">Delete old history</button>
 					<button v-if="showDeleteAllHistory" class="primary" @click="deleteAllHistory">Delete all history</button>

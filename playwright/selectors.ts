@@ -457,6 +457,13 @@ export const textNoteProperties = {
 	totalSize: () => tid(`text-note-properties`).getByTestId(`note-total-size`),
 	created: () => tid(`text-note-properties`).getByTestId(`note-created`),
 	updated: () => tid(`text-note-properties`).getByTestId(`note-updated`),
+	key: () => tid(`text-note-properties`).getByTestId(`note-key`),
 	shareParticipantUsername: () => tid(`text-note-properties`).getByTestId(`share-participant-username`),
 	noShareParticipants: () => tid(`text-note-properties`).getByTestId(`no-share-participants`),
+}
+
+export const infoDialog = {
+	container: () => tid(`info-dialog`),
+	okButton: () => tid(`info-dialog`).getByTestId(`info-dialog-ok`),
+	title: () => tid(`info-dialog`).getByTestId(`info-dialog-title`),
 }
