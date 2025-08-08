@@ -6,6 +6,7 @@ import {
 	deleteNodeDialog,
 	emptyRecycleBinDialog,
 	env,
+	features,
 	infoDialog,
 	ipcClient,
 	isCut,
@@ -285,6 +286,18 @@ class MenuManager {
 	}
 
 	private toItems(items: MenuItems[], separatorAsItem = true) {
+		let showShare = true
+		let showAcceptShare = features.includes('share-code')
+		if (noteManager.tree.selectedNote()?.isShared) {
+			const note = noteManager.tree.getNoteById(noteManager.tree.selectedNote().id)
+			showShare = note.isShareRoot
+			showAcceptShare = false
+		}
+		if (!noteManager.state.isOnline || noteManager.tree.selectedNote()?.isSystem) {
+			showShare = false
+			showAcceptShare = false
+		}
+
 		const result: ContextMenuItem[] = []
 		for (const item of items) {
 			switch (item) {
@@ -409,8 +422,10 @@ class MenuManager {
 						id: 'share',
 						title: 'Share',
 						icon: 'note-shared',
+						visible: showShare,
 						enabled:
 							noteManager.state.isLoggedIn &&
+							showShare &&
 							!!noteManager.tree.selectedNote() &&
 							!noteManager.tree.selectedNote().isSystem &&
 							!noteManager.tree.selectedNote().isInRecycleBin,
@@ -421,7 +436,8 @@ class MenuManager {
 						id: 'receive-share',
 						title: 'Accept Share',
 						icon: 'note-shared',
-						enabled: noteManager.state.isLoggedIn,
+						visible: showAcceptShare,
+						enabled: noteManager.state.isLoggedIn && showAcceptShare,
 					})
 					break
 				case MenuItems.ReceiveShareUnder:
@@ -429,7 +445,8 @@ class MenuManager {
 						id: 'receive-share-under',
 						title: 'Accept Share Here',
 						icon: 'note-shared',
-						enabled: noteManager.state.isLoggedIn,
+						visible: showAcceptShare,
+						enabled: noteManager.state.isLoggedIn && showAcceptShare,
 					})
 					break
 				case MenuItems.Refresh:
@@ -802,7 +819,7 @@ class MenuManager {
 			MenuItems.Copy,
 			MenuItems.Paste,
 			MenuItems.Separator,
-			...(noteManager.state.isOnline ? [MenuItems.Share] : []),
+			MenuItems.Share,
 			MenuItems.Rename,
 			noteManager.tree.selectedNote()?.isInRecycleBin ? MenuItems.Delete : MenuItems.Recycle,
 			MenuItems.Separator,

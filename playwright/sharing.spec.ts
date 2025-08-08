@@ -911,4 +911,206 @@ test.describe('sharing', () => {
 			await expect(copiedKey).toBe(originalKey)
 		})
 	})
+
+	test('moving shared note from one share to another changes key', async () => {
+		await withMimiriContext(async () => {
+			await mimiri().home()
+			await expect(titleBar.accountButton()).toBeVisible()
+			await createCloudAccount()
+			await createTestTree(shareTestTree)
+			await verifyTestTree(shareTestTree)
+
+			await mimiriCreate(true)
+			await mimiri().home()
+			await expect(titleBar.accountButton()).toBeVisible()
+			await createCloudAccount()
+			await createTestTree(receiveShareTestTree)
+			await verifyTestTree(receiveShareTestTree)
+			const targetUsername = mimiri().username
+
+			mimiri(0, true)
+			await verifyTestTree(shareTestTree)
+			await note.item('Shareable Research').click({ button: 'right' })
+			await menu.share().click()
+			await shareDialog.username().fill(targetUsername)
+			await shareDialog.okButton().click()
+			await expect(shareDialog.code()).toBeVisible()
+			const shareCode = (await shareDialog.code().textContent()) ?? ''
+			await shareDialog.closeButton().click()
+
+			mimiri(1, true)
+			await note.item('Collaboration Hub').click({ button: 'right' })
+			await menu.receiveShareUnder().click()
+			await acceptShareDialog.code().fill(shareCode)
+			await acceptShareDialog.okButton().click()
+			await expect(acceptShareDialog.container()).not.toBeVisible()
+
+			mimiri(0, true)
+			await verifyTestTree(shareTestTree)
+			await note.item('Single Shareable Note').click({ button: 'right' })
+			await menu.share().click()
+			await shareDialog.username().fill(targetUsername)
+			await shareDialog.okButton().click()
+			await expect(shareDialog.code()).toBeVisible()
+			const shareCode2 = (await shareDialog.code().textContent()) ?? ''
+			await shareDialog.closeButton().click()
+
+			mimiri(1, true)
+			await note.item('Collaboration Hub').click({ button: 'right' })
+			await menu.receiveShareUnder().click()
+			await acceptShareDialog.code().fill(shareCode2)
+			await acceptShareDialog.okButton().click()
+			await expect(acceptShareDialog.container()).not.toBeVisible()
+
+			await note.expand('Shareable Research').click()
+			await note.item('Market Analysis').click({ button: 'right' })
+			await menu.properties().click()
+			const originalKey = (await textNoteProperties.key().textContent()) ?? ''
+
+			await note.item('Single Shareable Note').click({ button: 'right' })
+			await menu.properties().click()
+			const targetKey = (await textNoteProperties.key().textContent()) ?? ''
+			await note.item('Market Analysis').click({ button: 'right' })
+			await menu.cut().click()
+			await note.item('Single Shareable Note').click({ button: 'right' })
+			await menu.paste().click()
+
+			await note.item('Market Analysis').click({ button: 'right' })
+			await menu.properties().click()
+			const copiedKey = (await textNoteProperties.key().textContent()) ?? ''
+			await expect(copiedKey).not.toBe(originalKey)
+			await expect(copiedKey).toBe(targetKey)
+		})
+	})
+
+	test('copying shared note from one share to another changes key', async () => {
+		await withMimiriContext(async () => {
+			await mimiri().home()
+			await expect(titleBar.accountButton()).toBeVisible()
+			await createCloudAccount()
+			await createTestTree(shareTestTree)
+			await verifyTestTree(shareTestTree)
+
+			await mimiriCreate(true)
+			await mimiri().home()
+			await expect(titleBar.accountButton()).toBeVisible()
+			await createCloudAccount()
+			await createTestTree(receiveShareTestTree)
+			await verifyTestTree(receiveShareTestTree)
+			const targetUsername = mimiri().username
+
+			mimiri(0, true)
+			await verifyTestTree(shareTestTree)
+			await note.item('Shareable Research').click({ button: 'right' })
+			await menu.share().click()
+			await shareDialog.username().fill(targetUsername)
+			await shareDialog.okButton().click()
+			await expect(shareDialog.code()).toBeVisible()
+			const shareCode = (await shareDialog.code().textContent()) ?? ''
+			await shareDialog.closeButton().click()
+
+			mimiri(1, true)
+			await note.item('Collaboration Hub').click({ button: 'right' })
+			await menu.receiveShareUnder().click()
+			await acceptShareDialog.code().fill(shareCode)
+			await acceptShareDialog.okButton().click()
+			await expect(acceptShareDialog.container()).not.toBeVisible()
+
+			mimiri(0, true)
+			await verifyTestTree(shareTestTree)
+			await note.item('Single Shareable Note').click({ button: 'right' })
+			await menu.share().click()
+			await shareDialog.username().fill(targetUsername)
+			await shareDialog.okButton().click()
+			await expect(shareDialog.code()).toBeVisible()
+			const shareCode2 = (await shareDialog.code().textContent()) ?? ''
+			await shareDialog.closeButton().click()
+
+			mimiri(1, true)
+			await note.item('Collaboration Hub').click({ button: 'right' })
+			await menu.receiveShareUnder().click()
+			await acceptShareDialog.code().fill(shareCode2)
+			await acceptShareDialog.okButton().click()
+			await expect(acceptShareDialog.container()).not.toBeVisible()
+
+			await note.expand('Shareable Research').click()
+			await note.item('Market Analysis').click({ button: 'right' })
+			await menu.properties().click()
+			const originalKey = (await textNoteProperties.key().textContent()) ?? ''
+
+			await note.item('Single Shareable Note').click({ button: 'right' })
+			await menu.properties().click()
+			const targetKey = (await textNoteProperties.key().textContent()) ?? ''
+			await note.item('Market Analysis').click({ button: 'right' })
+			await menu.copy().click()
+			await note.item('Single Shareable Note').click({ button: 'right' })
+			await menu.paste().click()
+
+			await note.items('Market Analysis').nth(1).click({ button: 'right' })
+			await menu.properties().click()
+			const copiedKey = (await textNoteProperties.key().textContent()) ?? ''
+			await expect(copiedKey).not.toBe(originalKey)
+			await expect(copiedKey).toBe(targetKey)
+		})
+	})
+
+	test('Can only share already shared notes from the root', async () => {
+		await withMimiriContext(async () => {
+			await mimiri().home()
+			await expect(titleBar.accountButton()).toBeVisible()
+			await createCloudAccount()
+			await createTestTree(shareTestTree)
+			await verifyTestTree(shareTestTree)
+
+			await mimiriCreate(true)
+			await mimiri().home()
+			await expect(titleBar.accountButton()).toBeVisible()
+			await createCloudAccount()
+			await createTestTree(receiveShareTestTree)
+			await verifyTestTree(receiveShareTestTree)
+			const targetUsername = mimiri().username
+
+			mimiri(0, true)
+			await verifyTestTree(shareTestTree)
+			await note.item('Shareable Research').click({ button: 'right' })
+			await menu.share().click()
+			await shareDialog.username().fill(targetUsername)
+			await shareDialog.okButton().click()
+			await expect(shareDialog.code()).toBeVisible()
+			const shareCode = (await shareDialog.code().textContent()) ?? ''
+			await shareDialog.closeButton().click()
+
+			mimiri(1, true)
+			await note.item('Collaboration Hub').click({ button: 'right' })
+			await menu.receiveShareUnder().click()
+			await acceptShareDialog.code().fill(shareCode)
+			await acceptShareDialog.okButton().click()
+			await expect(acceptShareDialog.container()).not.toBeVisible()
+
+			await note.expand('Shareable Research').click()
+			await note.item('Shareable Research').click({ button: 'right' })
+			await expect(menu.share()).toBeVisible()
+			await expect(menu.receiveShareUnder()).not.toBeVisible()
+			await menu.properties().click()
+			await note.item('Market Analysis').click({ button: 'right' })
+			await expect(menu.share()).not.toBeVisible()
+			await expect(menu.receiveShareUnder()).not.toBeVisible()
+			await menu.properties().click()
+
+			await note.item('Shareable Research').click()
+			await titleBar.edit().click()
+			await expect(menu.settings()).toBeVisible()
+			await expect(menu.share()).toBeVisible()
+			await expect(menu.receiveShareUnder()).not.toBeVisible()
+			await titleBar.edit().click()
+			await note.item('Market Analysis').click()
+			await titleBar.edit().click()
+			await expect(menu.settings()).toBeVisible()
+			await expect(menu.share()).not.toBeVisible()
+			await expect(menu.receiveShareUnder()).not.toBeVisible()
+			await titleBar.edit().click()
+
+			await mimiri().pause()
+		})
+	})
 })

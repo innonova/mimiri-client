@@ -74,7 +74,7 @@ const isInitial = ref(false)
 const showVersion = ref(false)
 const capsLockOn = ref(false)
 
-const canLogin = computed(() => !!username.value && !!password.value)
+const canLogin = computed(() => !!username.value?.trim() && !!password.value)
 
 const show = (initial: boolean = false) => {
 	isInitial.value = initial
@@ -97,7 +97,7 @@ const login = async () => {
 	error.value = false
 	await noteManager.session.logout()
 
-	if (await noteManager.session.login(username.value, password.value)) {
+	if (await noteManager.session.login(username.value?.trim(), password.value)) {
 		loading.value = false
 		await noteManager.tree.loadState()
 		showVersion.value = false

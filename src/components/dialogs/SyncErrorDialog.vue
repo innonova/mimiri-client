@@ -42,7 +42,7 @@ const show = async () => {
 	showShow.value = false
 	showUpgrade.value = false
 	if (syncStatus.value === 'count-limit-exceeded') {
-		showUpgrade.value = true
+		showUpgrade.value = true && !noteManager.state.isMobile
 		title.value = 'Note Limit Reached'
 		const totalCount =
 			noteManager.state.userStats.noteCount + noteManager.state.userStats.localNoteCountDelta - SYSTEM_NOTE_COUNT
@@ -51,7 +51,7 @@ const show = async () => {
 		text.value = `You have created ${totalCount} of your ${maxCount} notes\nYou can either delete some notes or upgrade your account to increase the limit.`
 	}
 	if (syncStatus.value === 'total-size-limit-exceeded') {
-		showUpgrade.value = true
+		showUpgrade.value = true && !noteManager.state.isMobile
 		title.value = 'Data Limit Reached'
 		const totalSize = noteManager.state.userStats.size + noteManager.state.userStats.localSizeDelta
 		const maxSize = noteManager.state.userStats.maxTotalBytes
@@ -60,7 +60,7 @@ const show = async () => {
 		You can either delete some data or upgrade your account to increase the limit.`
 	}
 	if (syncStatus.value === 'note-size-limit-exceeded') {
-		showShow.value = true
+		showShow.value = true && !noteManager.state.isMobile
 		const note = await noteManager.tree.getNoteById(syncOverSizeNote.value)
 		title.value = 'Note Size Limit Reached'
 		const maxSize = noteManager.state.userStats.maxNoteBytes
