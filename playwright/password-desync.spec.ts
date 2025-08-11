@@ -229,7 +229,7 @@ test.describe('password out of sync', () => {
 		})
 	})
 
-	test.only('verify direct login with new password ', async () => {
+	test('verify direct login with new password ', async () => {
 		await withMimiriContext(async () => {
 			await mimiri().home()
 			await expect(titleBar.accountButton()).toBeVisible()
