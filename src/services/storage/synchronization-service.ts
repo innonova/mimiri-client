@@ -653,8 +653,6 @@ export class SynchronizationService {
 			}
 		})
 
-		// TODO need to refresh all changed notes in the tree manager
-
 		this.state.userStats.localSizeDelta -= localSizeDelta
 		this.state.userStats.localNoteCountDelta -= localNoteCountDelta
 		this.state.userStats.localSize -= localSize

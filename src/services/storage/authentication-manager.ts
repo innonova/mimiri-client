@@ -210,7 +210,6 @@ export class AuthenticationManager {
 						this.state.userStats.noteCount = userStats.noteCount
 						this.state.userStats.size = userStats.size
 					}
-					// TODO user stats and client config
 				}
 
 				return true

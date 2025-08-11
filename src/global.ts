@@ -76,7 +76,7 @@ export const mimiriEditor = new MimiriEditor()
 
 export const clipboardManager = new ClipboardManager()
 
-export const features = ['share-code']
+export const features = []
 
 export const updateKeys = [
 	{

@@ -88,8 +88,6 @@ const shareFailed = ref(false)
 const copied = ref(false)
 const loading = ref(false)
 
-const codeEnabled = features.includes('share-code')
-
 // const hasSelectedNode = computed(() => !!noteManager.state.selectedNoteId)
 // const parentName = computed(() => noteManager.tree.selectedViewModel()?.title)
 
@@ -132,12 +130,7 @@ const submitDialog = async () => {
 	try {
 		loading.value = true
 		const response = await noteManager.tree.selectedNote().shareWith(trimmedName.value)
-		if (codeEnabled) {
-			code.value = response.code
-		} else {
-			close()
-			name.value = ''
-		}
+		code.value = response.code
 	} catch (ex) {
 		console.error('Error sharing note:', ex)
 		shareFailed.value = true

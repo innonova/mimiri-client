@@ -194,12 +194,10 @@ class MenuManager {
 			acceptShareDialog.value.show(noteManager.tree.selectedNote())
 		} else if (itemId === 'refresh') {
 			if (noteManager.tree.selectedNote()) {
-				// TODO handle
-				// await noteManager.tree.selectedNote().refresh()
+				noteManager.session.queueSync()
 			}
 		} else if (itemId === 'refresh-root') {
-			// TODO handle
-			// await noteManager.tree.root().refresh()
+			noteManager.session.queueSync()
 		} else if (itemId === 'rename') {
 			if (noteManager.tree.selectedNote()) {
 				noteManager.tree.selectedNote().viewModel.renaming = true
@@ -287,7 +285,7 @@ class MenuManager {
 
 	private toItems(items: MenuItems[], separatorAsItem = true) {
 		let showShare = true
-		let showAcceptShare = features.includes('share-code')
+		let showAcceptShare = true
 		if (noteManager.tree.selectedNote()?.isShared) {
 			const note = noteManager.tree.getNoteById(noteManager.tree.selectedNote().id)
 			showShare = note.isShareRoot

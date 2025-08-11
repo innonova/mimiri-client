@@ -26,7 +26,6 @@ export class NoteService {
 			throw new Error('Not Logged in')
 		}
 		return this.db.syncLock.withLock('writeNote', async () => {
-			// TODO use changed
 			const remoteNote = await this.db.getNote(note.id)
 			const localNote = await this.db.getLocalNote(note.id)
 			const noteData: NoteData = {
@@ -326,7 +325,6 @@ export class NoteService {
 					}
 				}
 				await transaction.commit()
-				// TODO does this size logic work?
 				this.state.userStats.localSizeDelta += deltaSize
 				this.state.userStats.localNoteCountDelta += deltaNoteCount
 				this.state.userStats.localSize += localSize

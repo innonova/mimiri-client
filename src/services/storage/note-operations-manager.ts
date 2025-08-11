@@ -98,15 +98,7 @@ export class NoteOperationsManager {
 				}
 				note.note.changeItem('created').delete = dateTimeNow()
 			}
-			try {
-				await this.writeNote(note.note)
-			} catch (err) {
-				if (err instanceof VersionConflictError) {
-					// TODO: Handle version conflict
-				}
-				debug.logError('Failed to save note', err)
-				throw err
-			}
+			await this.writeNote(note.note)
 		} finally {
 			this.uiManager.endAction()
 		}

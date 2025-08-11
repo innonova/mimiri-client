@@ -75,7 +75,6 @@ class MimiriPlatform {
 			}
 			this._isWeb = true
 		}
-		// TODO consider a global async init
 		void this.init()
 	}
 

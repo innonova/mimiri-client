@@ -491,8 +491,6 @@ export class MimiriClient extends HttpClientBase {
 	public async readNote(id: Guid): Promise<any | undefined> {
 		try {
 			let response: ReadNoteResponse = undefined
-
-			// TODO return sync, created and modified from server
 			const request: ReadNoteRequest = {
 				username: this.state.username,
 				id,

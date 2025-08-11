@@ -355,7 +355,7 @@ const showContextMenu = async e => {
 		])
 	} else {
 		let showShare = true
-		let showAcceptShare = features.includes('share-code')
+		let showAcceptShare = true
 		if (props.node.shared) {
 			const note = noteManager.tree.getNoteById(props.node.id)
 			showShare = note.isShareRoot
