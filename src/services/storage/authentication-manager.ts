@@ -187,7 +187,9 @@ export class AuthenticationManager {
 				} else {
 					this.state.accountType = AccountType.Cloud
 				}
-				this._token = await this.cryptoManager.rootCrypt.decrypt(initializationData.token)
+				if (initializationData.token && initializationData.token !== 'LOCAL') {
+					this._token = await this.cryptoManager.rootCrypt.decrypt(initializationData.token)
+				}
 
 				if (this.state.accountType === AccountType.Cloud && !(await this.goOnline())) {
 					const data = JSON.parse(await this.cryptoManager.rootCrypt.decrypt(loginData.data))
@@ -376,10 +378,14 @@ export class AuthenticationManager {
 				if (this.state.workOffline) {
 					await this.localStateManager.workOnline()
 				}
-				initializationData = await this.api.authenticate(username, password)
-				localInitializationData = false
+				const response = await this.api.authenticate(username, password)
+				if (response === 'REJECTED') {
+					loginRequiredToGoOnline.value = true
+				} else {
+					initializationData = response
+					localInitializationData = false
+				}
 			} catch (ex) {
-				loginRequiredToGoOnline.value = true
 				console.error('Unable to authenticate with server', ex)
 			}
 		}
@@ -430,8 +436,13 @@ export class AuthenticationManager {
 			} catch (ex) {
 				if (localInitializationData) {
 					console.error('Failed to login locally trying online', ex)
-					localInitializationData = false
-					initializationData = await this.api.authenticate(username, password)
+					const response = await this.api.authenticate(username, password)
+					if (response === 'REJECTED') {
+						throw new Error('Login failed')
+					} else {
+						initializationData = response
+						localInitializationData = false
+					}
 					continue
 				}
 				return false
@@ -455,7 +466,11 @@ export class AuthenticationManager {
 			this._token = initializationData.token
 			initializationData.token = await this.cryptoManager.rootCrypt.encrypt(initializationData.token)
 		} else {
-			this._token = await this.cryptoManager.rootCrypt.decrypt(initializationData.token)
+			if (initializationData.token && initializationData.token !== 'LOCAL') {
+				this._token = await this.cryptoManager.rootCrypt.decrypt(initializationData.token)
+			} else {
+				this._token = 'NO_TOKEN'
+			}
 		}
 		await this.db.setInitializationData(initializationData)
 
@@ -689,7 +704,9 @@ export class AuthenticationManager {
 			await this.api.closeWebSocket()
 		} else {
 			if (!(await this.goOnline())) {
-				await this.localStateManager.workOffline()
+				if (loginRequiredToGoOnline.value) {
+					await this.localStateManager.workOffline()
+				}
 			}
 		}
 		return true

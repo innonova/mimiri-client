@@ -131,7 +131,7 @@ export class MimiriClient extends HttpClientBase {
 		}
 	}
 
-	public async authenticate(username: string, password: string): Promise<InitializationData | undefined> {
+	public async authenticate(username: string, password: string): Promise<InitializationData | 'REJECTED'> {
 		let loginResponse: LoginResponse = undefined
 		let preLoginResponse: PreLoginResponse = undefined
 		let passwordHash: string = undefined
@@ -189,6 +189,9 @@ export class MimiriClient extends HttpClientBase {
 			}
 			return result
 		} catch (ex) {
+			if (ex.statusCode === 404) {
+				return 'REJECTED'
+			}
 			debug.logError('Failed to login', ex)
 			throw ex
 		}

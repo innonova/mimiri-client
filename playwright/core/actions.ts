@@ -69,7 +69,7 @@ export const createCloudAccount = async () => {
 export const logout = async () => {
 	await titleBar.accountButton().click()
 	await menu.logout().click()
-	expect(loginCtrl.container()).toBeVisible()
+	await expect(loginCtrl.container()).toBeVisible()
 	// await settingNodes.controlPanel().click()
 	// await expect(aboutView.username()).toHaveText('local')
 }
