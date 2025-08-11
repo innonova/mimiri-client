@@ -160,8 +160,10 @@ export const loginCtrl = {
 	username: () => tid('login-dialog').getByTestId('username-input'),
 	password: () => tid('login-dialog').getByTestId('password-input'),
 	button: () => tid('login-dialog').getByTestId('login-button'),
+	cancelButton: () => tid('login-dialog').getByTestId('cancel-button'),
 	createAccountLink: () => tid('login-dialog').getByTestId('create-account-link'),
 	loginError: () => tid('login-dialog').getByTestId('login-error'),
+	serverIndicator: () => tid('login-dialog').getByTestId('server-indicator'),
 }
 
 export const promoteAccount = {

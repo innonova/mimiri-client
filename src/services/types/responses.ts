@@ -30,6 +30,7 @@ export interface LoginResponse {
 	salt: string
 	iterations: number
 	algorithm: string
+	token: string
 	symmetricAlgorithm: string
 	symmetricKey: string
 	data: string

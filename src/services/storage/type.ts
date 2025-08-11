@@ -89,6 +89,7 @@ export interface InitializationData {
 	}
 	userId: Guid
 	userData: string
+	token: string
 	local?: boolean
 }
 

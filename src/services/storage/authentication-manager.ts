@@ -1,4 +1,4 @@
-import { blogManager, debug, env, ipcClient } from '../../global'
+import { blogManager, debug, env, ipcClient, loginRequiredToGoOnline } from '../../global'
 import { CryptSignature } from '../crypt-signature'
 import { fromBase64, toBase64, toHex } from '../hex-base64'
 import { mimiriPlatform } from '../mimiri-platform'
@@ -19,6 +19,7 @@ export class AuthenticationManager {
 	private _userCryptAlgorithm: string = SymmetricCrypt.DEFAULT_SYMMETRIC_ALGORITHM
 	private _rootSignature: CryptSignature
 	private _proofBits = DEFAULT_PROOF_BITS
+	private _token = 'NO_TOKEN'
 
 	constructor(
 		private db: MimiriDb,
@@ -186,6 +187,7 @@ export class AuthenticationManager {
 				} else {
 					this.state.accountType = AccountType.Cloud
 				}
+				this._token = await this.cryptoManager.rootCrypt.decrypt(initializationData.token)
 
 				if (this.state.accountType === AccountType.Cloud && !(await this.goOnline())) {
 					const data = JSON.parse(await this.cryptoManager.rootCrypt.decrypt(loginData.data))
@@ -285,6 +287,7 @@ export class AuthenticationManager {
 				},
 				userId: emptyGuid(),
 				userData: '',
+				token: newGuid(),
 			}
 
 			this._userCryptAlgorithm = initializationData.userCrypt.algorithm
@@ -335,6 +338,7 @@ export class AuthenticationManager {
 			},
 			userId: emptyGuid(),
 			userData: '',
+			token: 'LOCAL',
 			local: true,
 		}
 
@@ -369,9 +373,13 @@ export class AuthenticationManager {
 		if (!initializationData?.local) {
 			// TODO compare with local data after going online
 			try {
+				if (this.state.workOffline) {
+					await this.localStateManager.workOnline()
+				}
 				initializationData = await this.api.authenticate(username, password)
 				localInitializationData = false
 			} catch (ex) {
+				loginRequiredToGoOnline.value = true
 				console.error('Unable to authenticate with server', ex)
 			}
 		}
@@ -443,6 +451,12 @@ export class AuthenticationManager {
 			this.state.accountType = AccountType.Local
 		}
 
+		if (!localInitializationData) {
+			this._token = initializationData.token
+			initializationData.token = await this.cryptoManager.rootCrypt.encrypt(initializationData.token)
+		} else {
+			this._token = await this.cryptoManager.rootCrypt.decrypt(initializationData.token)
+		}
 		await this.db.setInitializationData(initializationData)
 
 		await this.persistLogin()
@@ -494,7 +508,7 @@ export class AuthenticationManager {
 			const data = await this.api.verifyCredentials()
 			if (data === 'REJECTED') {
 				console.log('AuthenticationManager.goOnline() - credentials rejected')
-				// TODO prompt user that password is changed on server and to re-enter password
+				loginRequiredToGoOnline.value = true
 				return false
 			}
 
@@ -534,6 +548,13 @@ export class AuthenticationManager {
 	}
 
 	public async signRequest(request: any): Promise<any> {
+		if (!request.signatures) {
+			request.signatures = []
+		}
+		request.signatures.push({
+			name: 'TOKEN',
+			signature: this._token,
+		})
 		await this._rootSignature.sign('user', request)
 	}
 
@@ -584,6 +605,7 @@ export class AuthenticationManager {
 				initializationData.rootSignature.privateKey = await newUserCrypt.encrypt(await rootSignature.privateKeyPem())
 
 				initializationData.userData = await rootCrypt.encrypt(JSON.stringify(this.userData))
+				initializationData.token = 'LOCAL'
 				await this.db.setInitializationData(initializationData)
 			}
 			await this.persistLogin()
@@ -666,7 +688,9 @@ export class AuthenticationManager {
 		if (this.state.workOffline) {
 			await this.api.closeWebSocket()
 		} else {
-			await this.goOnline()
+			if (!(await this.goOnline())) {
+				await this.localStateManager.workOffline()
+			}
 		}
 		return true
 	}
@@ -675,6 +699,7 @@ export class AuthenticationManager {
 		await this.clearLoginData()
 		this._userData = undefined
 		this._rootSignature = undefined
+		this._token = 'NO_TOKEN'
 		this.state.username = undefined
 		this.state.accountType = AccountType.None
 		this.state.isAnonymous = false

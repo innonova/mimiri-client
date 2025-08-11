@@ -147,6 +147,7 @@ import {
 	blockUserInput,
 	appStatus,
 	inconsistencyDialog,
+	loginRequiredToGoOnline,
 } from './global'
 import { settingsManager } from './services/settings-manager'
 import LoadingIcon from './icons/loading.vue'
@@ -487,6 +488,10 @@ onMounted(async () => {
 		loading.value = false
 		await settingsManager.save()
 		if (showLogin) {
+			loginDialog.value.show()
+		}
+		if (loginRequiredToGoOnline.value) {
+			loginRequiredToGoOnline.value = false
 			loginDialog.value.show(true)
 		}
 

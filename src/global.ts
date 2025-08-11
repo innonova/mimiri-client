@@ -63,6 +63,7 @@ export const appStatus = ref<string | null>('initializing')
 export const inconsistencyDialog = ref(null)
 export const syncStatus = ref('idle')
 export const syncOverSizeNote = ref(emptyGuid())
+export const loginRequiredToGoOnline = ref(false)
 
 export const blockUserInput = ref(false)
 

@@ -35,6 +35,7 @@ export interface CreateUserRequest extends BasicRequest {
 		hash: string
 		iterations: number
 		algorithm: string
+		token: string
 	}
 	symmetricAlgorithm: string
 	symmetricKey: string
@@ -105,6 +106,7 @@ export interface UpdateUserRequest extends BasicRequest {
 		hash: string
 		iterations: number
 		algorithm: string
+		token: string
 	}
 	symmetricAlgorithm: string
 	symmetricKey: string

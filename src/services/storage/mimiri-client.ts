@@ -112,6 +112,7 @@ export class MimiriClient extends HttpClientBase {
 					iterations: initializationData.password.iterations,
 					salt: initializationData.password.salt,
 					hash,
+					token: initializationData.token,
 				},
 				symmetricAlgorithm: initializationData.rootCrypt.algorithm,
 				symmetricKey: initializationData.rootCrypt.key,
@@ -184,6 +185,7 @@ export class MimiriClient extends HttpClientBase {
 				},
 				userId: loginResponse.userId,
 				userData: loginResponse.data,
+				token: loginResponse.token,
 			}
 			return result
 		} catch (ex) {
@@ -313,6 +315,7 @@ export class MimiriClient extends HttpClientBase {
 				iterations: passwordIterations,
 				salt: passwordSalt,
 				hash: passwordHash,
+				token: newGuid(),
 			},
 			symmetricAlgorithm: this.cryptoManager.rootCrypt.algorithm,
 			symmetricKey: await userCrypt.encryptBytes(await this.cryptoManager.rootCrypt.getKey()),

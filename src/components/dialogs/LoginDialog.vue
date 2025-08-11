@@ -5,8 +5,16 @@
 		data-testid="login-dialog"
 	>
 		<div class="grid grid-rows-[auto_1fr_auto] gap-3 content-between">
-			<DialogTitle @close="cancel" :disabled="loading">Login</DialogTitle>
+			<DialogTitle @close="cancel" :disabled="loading"
+				>Login <span v-if="neededForServer" data-testid="server-indicator">&nbsp;(Server)</span></DialogTitle
+			>
 			<form @submit.prevent="login" class="mx-2 mobile:mx-8">
+				<div v-if="neededForServer" class="mx-1 mb-2 max-w-72">
+					You appear to have changed your password since last you logged into this device.
+				</div>
+				<div v-if="neededForServer" class="mx-1 mb-4 max-w-72">
+					You will need to enter your new password to reconnect with the server.
+				</div>
 				<div class="grid grid-cols-[4rem_10rem] mobile:grid-cols-[4rem_auto] items-center gap-2 mx-2 mb-2">
 					<div>Username:</div>
 					<input
@@ -49,7 +57,16 @@
 					>
 						Login
 					</button>
-					<button :disabled="loading" class="secondary" type="button" @click="cancel">Cancel</button>
+					<button :disabled="loading" class="secondary" type="button" data-testid="cancel-button" @click="cancel">
+						Cancel
+					</button>
+				</div>
+				<div v-if="neededForServer" class="mx-1 mt-4 mb-2 max-w-72">
+					If you click cancel you will be logged in with your local account, but you will not be able to access the
+					server, until you log in with your new password.
+				</div>
+				<div v-if="neededForServer" class="mx-1 mt-4 mb-2 max-w-72">
+					If you did not change your password, the server may be experiencing issues. Please try again later.
 				</div>
 			</form>
 		</div>
@@ -61,7 +78,7 @@
 import { computed, ref } from 'vue'
 import DialogTitle from '../elements/DialogTitle.vue'
 import LoadingIcon from '../../icons/loading.vue'
-import { noteManager, updateManager } from '../../global'
+import { loginRequiredToGoOnline, noteManager, updateManager } from '../../global'
 
 const dialog = ref(null)
 const username = ref('')
@@ -70,14 +87,17 @@ const loading = ref(false)
 const error = ref(false)
 const timeElapsed = ref('')
 const longTime = ref(false)
-const isInitial = ref(false)
 const showVersion = ref(false)
 const capsLockOn = ref(false)
+const neededForServer = ref(false)
 
 const canLogin = computed(() => !!username.value?.trim() && !!password.value)
 
-const show = (initial: boolean = false) => {
-	isInitial.value = initial
+const show = (neededForServerOnly: boolean = false) => {
+	neededForServer.value = neededForServerOnly
+	if (neededForServerOnly) {
+		username.value = noteManager.state.username
+	}
 	dialog.value.showModal()
 	showVersion.value = true
 }
@@ -101,7 +121,13 @@ const login = async () => {
 		loading.value = false
 		await noteManager.tree.loadState()
 		showVersion.value = false
-		dialog.value.close()
+		if (loginRequiredToGoOnline.value) {
+			loginRequiredToGoOnline.value = false
+			neededForServer.value = true
+			password.value = ''
+		} else {
+			dialog.value.close()
+		}
 	} else {
 		error.value = true
 	}

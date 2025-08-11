@@ -125,7 +125,7 @@ export class CryptSignature {
 	}
 
 	async verifyRaw(signature: string, data: Uint8Array) {
-		return await crypto.subtle.verify('RSASSA-PKCS1-v1_5', this.publicKey, fromBase64(signature), data)
+		return await crypto.subtle.verify('RSASSA-PKCS1-v1_5', this.publicKey, fromBase64(signature), data as any)
 	}
 
 	async encrypt(data: string) {

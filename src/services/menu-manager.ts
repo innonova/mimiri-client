@@ -6,11 +6,11 @@ import {
 	deleteNodeDialog,
 	emptyRecycleBinDialog,
 	env,
-	features,
 	infoDialog,
 	ipcClient,
 	isCut,
 	loginDialog,
+	loginRequiredToGoOnline,
 	noteEditor,
 	noteManager,
 	notificationManager,
@@ -268,6 +268,10 @@ class MenuManager {
 			noteManager.tree.openProperties()
 		} else if (itemId === 'work-offline') {
 			await noteManager.session.toggleWorkOffline()
+			if (loginRequiredToGoOnline.value) {
+				loginRequiredToGoOnline.value = false
+				loginDialog.value.show(true)
+			}
 		}
 	}
 
