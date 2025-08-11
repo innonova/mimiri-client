@@ -47,6 +47,8 @@ export class EditorDisplay implements TextEditor {
 			this._wordWrap = true
 			this._element.style.whiteSpace = 'pre-wrap'
 			this._history.style.whiteSpace = 'pre-wrap'
+			this._element.style.wordBreak = 'break-word'
+			this._history.style.wordBreak = 'break-word'
 			this._element.style.overflowX = 'hidden'
 			this._history.style.overflowX = 'hidden'
 		} else {
@@ -272,6 +274,8 @@ export class EditorDisplay implements TextEditor {
 			if (settingsManager.wordwrap) {
 				this._element.style.whiteSpace = 'pre-wrap'
 				this._history.style.whiteSpace = 'pre-wrap'
+				this._element.style.wordBreak = 'break-word'
+				this._history.style.wordBreak = 'break-word'
 				this._element.style.overflowX = 'hidden'
 				this._history.style.overflowX = 'hidden'
 				this._wordWrap = true

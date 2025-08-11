@@ -84,6 +84,77 @@ export const quotaTestTree: StandardTreeNode[] = [
 	},
 ]
 
+export const boundaryTestTree: StandardTreeNode[] = [
+	{
+		title: 'Quota Test Root',
+		text: 'Root node for testing note count quotas (16 items total)',
+		children: [
+			{
+				title: 'Group A',
+				text: 'First group of test items',
+				children: [
+					{
+						title: 'Item 1',
+						text: 'First test item for quota validation',
+					},
+					{
+						title: 'Item 2',
+						text: 'Second test item for quota validation',
+					},
+					{
+						title: 'Item 3',
+						text: 'Third test item for quota validation',
+					},
+				],
+			},
+			{
+				title: 'Group B',
+				text: 'Second group of test items',
+				children: [
+					{
+						title: 'Item 4',
+						text: 'Fourth test item for quota validation',
+					},
+					{
+						title: 'Item 5',
+						text: 'Fifth test item for quota validation',
+					},
+					{
+						title: 'Item 6',
+						text: 'Sixth test item for quota validation',
+					},
+				],
+			},
+			{
+				title: 'Group C',
+				text: 'Third group of test items',
+				children: [
+					{
+						title: 'Item 7',
+						text: 'Seventh test item for quota validation',
+					},
+					{
+						title: 'Item 8',
+						text: 'Eighth test item for quota validation',
+					},
+				],
+			},
+			{
+				title: 'Item 9',
+				text: 'Standalone test item for quota validation',
+			},
+			{
+				title: 'Item 10',
+				text: 'Another standalone test item for quota validation',
+			},
+			{
+				title: 'Item 11',
+				text: 'Final standalone test item for quota validation',
+			},
+		],
+	},
+]
+
 export const quotaSizeTestTree: StandardTreeNode[] = [
 	{
 		title: 'Size Quota Test Root',

@@ -47,6 +47,8 @@ import type { MimerNote } from '../../services/types/mimer-note'
 import LoadingIcon from '../../icons/loading.vue'
 import { LimitError } from '../../services/storage/type'
 import { formatBytes } from '../../services/helpers'
+import { SYSTEM_NOTE_COUNT } from '../../services/storage/synchronization-service'
+
 const dialog = ref(null)
 const code = ref('')
 const codeInput = ref(null)
@@ -87,8 +89,10 @@ const submitDialog = async () => {
 	} catch (error) {
 		if (error instanceof LimitError) {
 			console.error('Error accepting share:', error.limits)
-			if (error.limits.noteCount > error.limits.maxNoteCount) {
-				limitsExceeded.value = `Cannot accept share!\nNew note count (${error.limits.noteCount}) would exceed current maximum (${error.limits.maxNoteCount})`
+			if (error.limits.noteCount - SYSTEM_NOTE_COUNT > error.limits.maxNoteCount) {
+				limitsExceeded.value = `Cannot accept share!\nNew note count (${
+					error.limits.noteCount - SYSTEM_NOTE_COUNT
+				}) would exceed current maximum (${error.limits.maxNoteCount})`
 			} else if (error.limits.size > error.limits.maxTotalBytes) {
 				limitsExceeded.value = `Cannot accept share!\nNew data usage (${formatBytes(
 					error.limits.size,

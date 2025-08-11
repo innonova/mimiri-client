@@ -187,6 +187,7 @@ export const connectCloudView = {
 	container: () => tid('connect-cloud-view'),
 	username: () => tid('connect-cloud-view').getByTestId('username-input'),
 	currentPassword: () => tid('connect-cloud-view').getByTestId('current-password-input'),
+	chooseNewPassword: () => tid('connect-cloud-view').getByTestId('choose-new-password-checkbox'),
 	newPassword: () => tid('connect-cloud-view').getByTestId('password-input'),
 	repeat: () => tid('connect-cloud-view').getByTestId('repeat-input'),
 	button: () => tid('connect-cloud-view').getByTestId('create-button').locator('button'),

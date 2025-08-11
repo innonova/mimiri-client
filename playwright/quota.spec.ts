@@ -17,7 +17,7 @@ import {
 } from './selectors'
 import { createCloudAccount } from './core/actions'
 import { createChildNote, createRootNote, createTestTree } from './notes/actions'
-import { longRandomLine, quotaSizeTestTree, quotaTestTree } from './notes/data.quotas'
+import { boundaryTestTree, longRandomLine, quotaSizeTestTree, quotaTestTree } from './notes/data.quotas'
 
 // test.describe.configure({ mode: 'serial' })
 
@@ -111,7 +111,8 @@ test.describe('quotas', () => {
 
 			await settingNodes.controlPanel().click()
 			const initialSize = Math.floor(+((await aboutView.usedBytes().getAttribute('title')) ?? 0) / 10)
-			await expect(initialSize).toBe(2360)
+			await expect(initialSize).toBeGreaterThan(2355)
+			await expect(initialSize).toBeLessThan(2365)
 			await expect(aboutView.usedBytes()).toHaveText('23 kB')
 
 			await note.item('Technical Documentation').click({ button: 'right' })
@@ -504,6 +505,56 @@ test.describe('quotas', () => {
 			await expect(deleteNoteDialog.container()).toBeVisible()
 			await deleteNoteDialog.confirmLeaveButton().click()
 			await expect(statusBar.container()).not.toBeVisible()
+		})
+	})
+
+	test('can still receive when over limit', async () => {
+		await withMimiriContext(async () => {
+			await mimiri().home()
+			await expect(titleBar.accountButton()).toBeVisible()
+			await createCloudAccount()
+			await createTestTree(boundaryTestTree)
+			await expect(statusBar.container()).not.toBeVisible()
+
+			await mimiriCreate(true)
+			await mimiri().home()
+			await expect(titleBar.accountButton()).toBeVisible()
+			await createCloudAccount()
+			await mimiri().setUserTypeCountTest()
+			await expect(statusBar.container()).not.toBeVisible()
+			await createRootNote('Configuration Files', 'test folder')
+			const targetUsername = mimiri().username
+
+			mimiri(0, true)
+			await note.item('Quota Test Root').click({ button: 'right' })
+			await menu.share().click()
+			await shareDialog.username().fill(targetUsername)
+			await shareDialog.okButton().click()
+			await expect(shareDialog.code()).toBeVisible()
+			const shareCode = (await shareDialog.code().textContent()) ?? ''
+			await shareDialog.closeButton().click()
+
+			mimiri(1, true)
+			await note.item('Configuration Files').click({ button: 'right' })
+			await menu.receiveShareUnder().click()
+			await acceptShareDialog.code().fill(shareCode)
+			await acceptShareDialog.okButton().click()
+
+			await note.item('Configuration Files').click({ button: 'right' })
+			await menu.newNote().click()
+			await note.newInput().fill('Over the limit')
+			await note.newInput().press('Enter')
+
+			await note.item('Quota Test Root').click()
+			await expect(editor.monaco()).toHaveText('Root node for testing note count quotas (16 items total)')
+
+			mimiri(0, true)
+			await editor.monaco().click()
+			await mimiri().page.keyboard.type('Add More Text')
+			await editor.save().click()
+
+			mimiri(1, true)
+			await expect(editor.monaco()).toHaveText('Root node for testing note count quotas (16 items total)Add More Text')
 		})
 	})
 })

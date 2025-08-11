@@ -5,10 +5,12 @@ import {
 	changePasswordView,
 	changeUsernameView,
 	connectCloudView,
+	createAccountView,
 	deleteView,
 	passwordDialog,
 	settingNodes,
 	titleBar,
+	usernameInput,
 } from './selectors'
 import { createTestTree, verifyTestTree } from './notes/actions'
 import { miniTestTree } from './notes/data'
@@ -354,6 +356,93 @@ test.describe('account-mutations', () => {
 			await expect(aboutView.username()).toHaveText(mimiri().config.username)
 			await expect(aboutView.accountType()).toHaveText('cloud')
 			await verifyTestTree(miniTestTree)
+		})
+	})
+
+	test('local to cloud with change name', async () => {
+		await withMimiriContext(async () => {
+			await mimiri().home()
+			await expect(titleBar.accountButton()).toBeVisible()
+			await createTestTree(miniTestTree)
+			await verifyTestTree(miniTestTree)
+			await createLocalAccount()
+			await verifyTestTree(miniTestTree)
+			await settingNodes.controlPanel().click()
+			await expect(aboutView.accountType()).toHaveText('local')
+			await settingNodes.account().dblclick()
+			mimiri().config.username += 'B'
+			await connectCloudView.username().fill(mimiri().config.username)
+			await connectCloudView.currentPassword().fill(mimiri().config.password)
+			await expect(usernameInput.available()).toBeVisible()
+			await connectCloudView.button().click()
+			await settingNodes.controlPanel().click()
+			await expect(aboutView.accountType()).toHaveText('cloud')
+			await logout()
+			await login()
+			await settingNodes.controlPanel().click()
+			await expect(aboutView.accountType()).toHaveText('cloud')
+			await expect(aboutView.username()).toHaveText(mimiri().config.username)
+			await mimiri().pause()
+		})
+	})
+
+	test('local to cloud with change password', async () => {
+		await withMimiriContext(async () => {
+			await mimiri().home()
+			await expect(titleBar.accountButton()).toBeVisible()
+			await createTestTree(miniTestTree)
+			await verifyTestTree(miniTestTree)
+			await createLocalAccount()
+			await verifyTestTree(miniTestTree)
+			await settingNodes.controlPanel().click()
+			await expect(aboutView.accountType()).toHaveText('local')
+			await settingNodes.account().dblclick()
+			const newPassword = 'new-password'
+			await connectCloudView.currentPassword().fill(mimiri().config.password)
+			await connectCloudView.chooseNewPassword().check()
+			await connectCloudView.newPassword().fill(newPassword)
+			await connectCloudView.repeat().fill(newPassword)
+			await connectCloudView.button().click()
+			mimiri().config.password = newPassword
+			await settingNodes.controlPanel().click()
+			await expect(aboutView.accountType()).toHaveText('cloud')
+			await logout()
+			await login()
+			await settingNodes.controlPanel().click()
+			await expect(aboutView.accountType()).toHaveText('cloud')
+			await expect(aboutView.username()).toHaveText(mimiri().config.username)
+			await mimiri().pause()
+		})
+	})
+
+	test('local to cloud with change username and password', async () => {
+		await withMimiriContext(async () => {
+			await mimiri().home()
+			await expect(titleBar.accountButton()).toBeVisible()
+			await createTestTree(miniTestTree)
+			await verifyTestTree(miniTestTree)
+			await createLocalAccount()
+			await verifyTestTree(miniTestTree)
+			await settingNodes.controlPanel().click()
+			await expect(aboutView.accountType()).toHaveText('local')
+			await settingNodes.account().dblclick()
+			mimiri().config.username += 'B'
+			const newPassword = 'new-password'
+			await connectCloudView.username().fill(mimiri().config.username)
+			await connectCloudView.currentPassword().fill(mimiri().config.password)
+			await connectCloudView.chooseNewPassword().check()
+			await connectCloudView.newPassword().fill(newPassword)
+			await connectCloudView.repeat().fill(newPassword)
+			await connectCloudView.button().click()
+			mimiri().config.password = newPassword
+			await settingNodes.controlPanel().click()
+			await expect(aboutView.accountType()).toHaveText('cloud')
+			await logout()
+			await login()
+			await settingNodes.controlPanel().click()
+			await expect(aboutView.accountType()).toHaveText('cloud')
+			await expect(aboutView.username()).toHaveText(mimiri().config.username)
+			await mimiri().pause()
 		})
 	})
 })

@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test'
-import { mimiri, mimiriCreate, withMimiriContext } from './framework/mimiri-context'
+import { mimiri, mimiriClone, mimiriCreate, withMimiriContext } from './framework/mimiri-context'
 import { acceptShareDialog, editor, menu, note, settingNodes, shareDialog, titleBar } from './selectors'
 import {
 	createChildNote,
@@ -149,6 +149,13 @@ test.describe('cloud account', () => {
 			await verifyTestTree(standardTree)
 			await logout()
 			await login()
+			await verifyTestTree(standardTree)
+
+			await mimiriClone(true)
+			await mimiri().home()
+			await login()
+			await expect(titleBar.accountButton()).toBeVisible()
+			await expect(titleBar.accountButton()).toHaveAttribute('title', 'Account (Online)')
 			await verifyTestTree(standardTree)
 		})
 	})

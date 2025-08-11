@@ -18,7 +18,13 @@
 				<input class="basic-input" type="password" v-model="currentPassword" data-testid="current-password-input" />
 				<div />
 				<label class="flex items-center gap-2">
-					<input class="basic-input" v-model="chooseNewPassword" type="checkbox" /> Choose a new password
+					<input
+						class="basic-input"
+						v-model="chooseNewPassword"
+						type="checkbox"
+						data-testid="choose-new-password-checkbox"
+					/>
+					Choose a new password
 				</label>
 
 				<template v-if="chooseNewPassword">
