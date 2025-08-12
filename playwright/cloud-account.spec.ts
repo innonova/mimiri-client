@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test'
-import { mimiri, mimiriClone, mimiriCreate, withMimiriContext } from './framework/mimiri-context'
-import { acceptShareDialog, editor, menu, note, settingNodes, shareDialog, titleBar } from './selectors'
+import { mimiri, mimiriClone, withMimiriContext } from './framework/mimiri-context'
+import { editor, menu, note, settingNodes, titleBar } from './selectors'
 import {
 	createChildNote,
 	createRootNote,
@@ -13,15 +13,7 @@ import {
 	verifyComplexCopyNote,
 	verifyMoveNoteIntoOwnChild,
 } from './notes/actions'
-import {
-	receiveShareTestTree,
-	receiveShareTestTreeAfterSingleNote,
-	receiveShareTestTreeAfterFolder,
-	receiveShareTestTreeAfterMultiple,
-	receiveShareTestTreeAfterMixed,
-	shareTestTree,
-	standardTree,
-} from './notes/data'
+import { standardTree } from './notes/data'
 import { createCloudAccount, login, logout } from './core/actions'
 
 // test.describe.configure({ mode: 'serial' })

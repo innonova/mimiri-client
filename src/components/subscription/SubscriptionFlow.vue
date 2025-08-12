@@ -1,16 +1,16 @@
 <template>
-	<SubHome v-if="selectedId === 'subscription'" ref="subHome" @change="change" @pay-invoice="payInvoice" />
-	<NewSubscriptionView v-if="selectedId === 'new'" @choose="chooseNewPlan" />
-	<PayInvoice v-if="selectedId === 'pay-invoice'" :invoice="activeInvoice" @pay-in-progress="payInProgress" />
+	<SubHome v-if="subscriptionStage === 'subscription'" ref="subHome" @change="change" @pay-invoice="payInvoice" />
+	<NewSubscriptionView v-if="subscriptionStage === 'new'" @choose="chooseNewPlan" />
+	<PayInvoice v-if="subscriptionStage === 'pay-invoice'" :invoice="activeInvoice" @pay-in-progress="payInProgress" />
 	<UpgradeView
-		v-if="selectedId === 'upgrade'"
-		:product="newProduct"
-		:currency="currency"
+		v-if="subscriptionStage === 'upgrade'"
+		:product="subscriptionNewProduct"
+		:currency="subscriptionCurrency"
 		@pay-in-progress="payInProgress"
 		@change-plan="change"
 	/>
 	<WaitingForPayment
-		v-if="selectedId === 'pay-in-progress'"
+		v-if="subscriptionStage === 'pay-in-progress'"
 		:invoice-id="invoiceId"
 		@close="closeWaiting"
 		:waiting-for-user="waitingForUser"
@@ -26,12 +26,9 @@ import type { Guid } from '../../services/types/guid'
 import NewSubscriptionView from './NewSubscriptionView.vue'
 import UpgradeView from './UpgradeView.vue'
 import WaitingForPayment from './WaitingForPayment.vue'
-import { noteManager } from '../../global'
+import { noteManager, subscriptionStage, subscriptionNewProduct, subscriptionCurrency } from '../../global'
 import PayInvoice from './PayInvoice.vue'
 
-const selectedId = ref('subscription')
-const newProduct = ref<SubscriptionProduct>()
-const currency = ref<Currency>(Currency.CHF)
 const invoiceId = ref<Guid>()
 const waitingForUser = ref<boolean>(false)
 const activeInvoice = ref<Invoice>()
@@ -42,31 +39,31 @@ onMounted(() => {
 	noteManager.tree.registerActionListener({
 		select: (id: Guid) => {
 			if (id === 'settings-plan' || id === 'settings-plan-group') {
-				selectedId.value = 'subscription'
+				subscriptionStage.value = 'subscription'
 			}
 		},
 	})
 })
 
 const change = () => {
-	selectedId.value = 'new'
+	subscriptionStage.value = 'new'
 }
 
 const closeWaiting = () => {
-	selectedId.value = 'subscription'
+	subscriptionStage.value = 'subscription'
 	setTimeout(() => {
 		subHome.value?.populate()
 	}, 250)
 }
 
 const chooseNewPlan = async (product: SubscriptionProduct, cur: Currency) => {
-	newProduct.value = product
-	currency.value = cur
-	selectedId.value = 'upgrade'
+	subscriptionNewProduct.value = product
+	subscriptionCurrency.value = cur
+	subscriptionStage.value = 'upgrade'
 }
 
 const payInProgress = async (id: Guid, waiting: boolean, link: string) => {
-	selectedId.value = 'pay-in-progress'
+	subscriptionStage.value = 'pay-in-progress'
 	invoiceId.value = id
 	waitingForUser.value = waiting
 	payLink.value = link
@@ -74,6 +71,6 @@ const payInProgress = async (id: Guid, waiting: boolean, link: string) => {
 
 const payInvoice = async (invoice: Invoice) => {
 	activeInvoice.value = invoice
-	selectedId.value = 'pay-invoice'
+	subscriptionStage.value = 'pay-invoice'
 }
 </script>

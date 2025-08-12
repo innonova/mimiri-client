@@ -77,6 +77,7 @@ export class MimiriStore {
 				maxNoteBytes: 0,
 				maxNoteCount: 0,
 			},
+			needsToChooseTier: false,
 			busy: false,
 			busyLong: false,
 			busyLongDelay: 1000,
@@ -278,6 +279,7 @@ export class MimiriStore {
 		deleteAccount: (password: string, deleteLocal: boolean) => this.authManager.deleteAccount(password, deleteLocal),
 		verifyPassword: (password: string) => this.authManager.verifyPassword(password),
 		hasOneOrMoreAccounts: () => this.authManager.hasOneOrMoreAccounts(),
+		clearNeedsToChooseTier: () => this.authManager.clearNeedsToChooseTier(),
 	}
 
 	public readonly note = {

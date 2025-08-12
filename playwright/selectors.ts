@@ -143,6 +143,7 @@ export const settingView = {
 	deleteAccount: () => tid('settings-view-delete-account'),
 	cloudAccount: () => tid('settings-view-cloud-account'),
 	localAccount: () => tid('settings-view-local-account'),
+	currentPlan: () => tid('settings-view-current-plan'),
 }
 
 export const usernameInput = {
@@ -260,6 +261,8 @@ export const upgradeView = {
 	total: () => tid('upgrade-total'),
 	vat: () => tid('upgrade-vat'),
 	currency: () => tid('upgrade-currency'),
+	tier2Year: () => tid('sub-ABO-002-Y'),
+	tier1Month: () => tid('sub-ABO-001-M'),
 }
 
 export const payInvoiceView = {
@@ -469,4 +472,14 @@ export const infoDialog = {
 	container: () => tid(`info-dialog`),
 	okButton: () => tid(`info-dialog`).getByTestId(`info-dialog-ok`),
 	title: () => tid(`info-dialog`).getByTestId(`info-dialog-title`),
+}
+
+export const initialPlanChooser = {
+	container: () => tid(`initial-plan-chooser`),
+	chooseFree: () => tid('sub-free-choose'),
+	chooseTier2Year: () => tid('sub-ABO-002-Y-choose'),
+	chooseTier1Month: () => tid('sub-ABO-001-M-choose'),
+	periodMonth: () => tid('period-month'),
+	periodYear: () => tid('period-year'),
+	currencySelector: () => tid('currency-selector'),
 }

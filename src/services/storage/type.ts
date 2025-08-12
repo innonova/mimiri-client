@@ -2,6 +2,13 @@ import type { Guid } from '../types/guid'
 import type { NoteShareInfo } from '../types/note-share-info'
 import type { ClientConfig } from '../types/responses'
 
+export interface UserData {
+	rootNote: Guid
+	rootKey: Guid
+	createComplete: boolean
+	needsToChooseTier?: boolean
+}
+
 export interface LoginData {
 	username: string
 	password: string
@@ -52,6 +59,7 @@ export interface SharedState {
 	serverAuthenticated: boolean
 	clientConfig: ClientConfig
 	userStats: UserStats
+	needsToChooseTier: boolean
 
 	busy: boolean
 	busyLong: boolean
@@ -114,11 +122,7 @@ export interface LocalUserData {
 		algorithm: string
 		key: string
 	}
-	userData: {
-		rootNote: Guid
-		rootKey: Guid
-		createComplete: boolean
-	}
+	userData: UserData
 }
 
 export interface KeyData {

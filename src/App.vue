@@ -70,6 +70,9 @@
 			<LockScreen />
 		</div>
 		<div v-if="blockUserInput" class="absolute left-0 top-0 w-full h-full flex bg-transparent" />
+		<InitialPlanChooser
+			v-if="noteManager.state.needsToChooseTier && noteManager.state.accountType === AccountType.Cloud"
+		/>
 		<ContextMenu ref="contextMenu" />
 		<NotificationList ref="notificationList" />
 		<DeleteNodeDialog ref="deleteNodeDialog" />
@@ -158,13 +161,14 @@ import { localAuth } from './services/local-auth'
 import LockScreen from './components/LockScreen.vue'
 import { useEventListener } from '@vueuse/core'
 import SystemPage from './components/SystemPage.vue'
-import { ViewMode } from './services/storage/type'
+import { AccountType, ViewMode } from './services/storage/type'
 import PropertiesPage from './components/PropertiesPage.vue'
 import DeleteHistoryDialog from './components/dialogs/DeleteHistoryDialog.vue'
 import InfoDialog from './components/dialogs/InfoDialog.vue'
 import InconsistencyDialog from './components/dialogs/InconsistencyDialog.vue'
 import StatusBar from './components/elements/StatusBar.vue'
 import SyncErrorDialog from './components/dialogs/SyncErrorDialog.vue'
+import InitialPlanChooser from './components/subscription/InitialPlanChooser.vue'
 
 const colorScheme = ref('only light')
 const loading = ref(true)

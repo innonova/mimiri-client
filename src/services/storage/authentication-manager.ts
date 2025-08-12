@@ -4,7 +4,7 @@ import { fromBase64, toBase64, toHex } from '../hex-base64'
 import { mimiriPlatform } from '../mimiri-platform'
 import { SymmetricCrypt } from '../symmetric-crypt'
 import { emptyGuid, newGuid } from '../types/guid'
-import { AccountType, type InitializationData, type SharedState } from './type'
+import { AccountType, type InitializationData, type SharedState, type UserData } from './type'
 import type { MimiriDb } from './mimiri-db'
 import type { MimiriClient } from './mimiri-client'
 import type { CryptographyManager } from './cryptography-manager'
@@ -15,7 +15,7 @@ import type { LocalStateManager } from './local-state-manager'
 import { toRaw } from 'vue'
 
 export class AuthenticationManager {
-	private _userData: any
+	private _userData: UserData
 	private _userCryptAlgorithm: string = SymmetricCrypt.DEFAULT_SYMMETRIC_ALGORITHM
 	private _rootSignature: CryptSignature
 	private _proofBits = DEFAULT_PROOF_BITS
@@ -79,6 +79,14 @@ export class AuthenticationManager {
 			localStorage.removeItem('mimiri-login-data')
 		} else {
 			sessionStorage.removeItem('mimiri-login-data')
+		}
+	}
+
+	public async clearNeedsToChooseTier() {
+		if (this.state.needsToChooseTier || this.userData.needsToChooseTier) {
+			this.state.needsToChooseTier = false
+			this.userData.needsToChooseTier = false
+			await this.updateUserData()
 		}
 	}
 
@@ -204,7 +212,7 @@ export class AuthenticationManager {
 					this.state.clientConfig = data.clientConfig
 					this.state.workOffline = true
 					this._userData = data.userData
-				} else {
+				} else if (this.state.accountType !== AccountType.Cloud) {
 					this._userData = JSON.parse(await this.cryptoManager.rootCrypt.decrypt(initializationData.userData))
 					const userStats = await this.db.getUserStats()
 					if (userStats) {
@@ -215,7 +223,7 @@ export class AuthenticationManager {
 						this.state.userStats.size = userStats.size
 					}
 				}
-
+				this.state.needsToChooseTier = !!this._userData.needsToChooseTier
 				return true
 			} catch (ex) {
 				debug.logError('Failed to restore login data', ex)
@@ -307,6 +315,7 @@ export class AuthenticationManager {
 			initializationData.rootSignature.publicKey = await this._rootSignature.publicKeyPem()
 			initializationData.rootSignature.privateKey = await userCrypt.encrypt(await this._rootSignature.privateKeyPem())
 
+			this.userData.needsToChooseTier = true
 			initializationData.userData = await this.cryptoManager.rootCrypt.encrypt(JSON.stringify(this.userData))
 		}
 		await this.api.createAccount(username, newPassword, initializationData, pow)
@@ -475,6 +484,7 @@ export class AuthenticationManager {
 		await this.db.setInitializationData(initializationData)
 
 		await this.persistLogin()
+		this.state.needsToChooseTier = !!this._userData.needsToChooseTier
 		return true
 	}
 
@@ -488,6 +498,7 @@ export class AuthenticationManager {
 				rootNote: newGuid(),
 				rootKey: newGuid(),
 				createComplete: false,
+				needsToChooseTier: false,
 			}
 			await this.db.setLocalUserData({
 				rootCrypt: {
@@ -503,6 +514,7 @@ export class AuthenticationManager {
 			)
 			this._userData = initializationData.userData
 		}
+		this.state.needsToChooseTier = !!this._userData.needsToChooseTier
 		this.state.accountType = AccountType.None
 		this.state.username = 'local'
 		this.state.userId = emptyGuid()
@@ -519,7 +531,6 @@ export class AuthenticationManager {
 			return false
 		}
 		try {
-			console.log('AuthenticationManager.goOnline() - verifying credentials for', this.state.username)
 			const data = await this.api.verifyCredentials()
 			if (data === 'REJECTED') {
 				console.log('AuthenticationManager.goOnline() - credentials rejected')
@@ -530,6 +541,7 @@ export class AuthenticationManager {
 			if (data) {
 				this.state.serverAuthenticated = true
 				this._userData = JSON.parse(await this.cryptoManager.rootCrypt.decrypt(data))
+				this.state.needsToChooseTier = !!this._userData.needsToChooseTier
 				await this.db.setUserStats(toRaw(this.state.userStats))
 				await this.api.openWebSocket()
 				return true
@@ -558,6 +570,11 @@ export class AuthenticationManager {
 			await this.db.setInitializationData(initializationData)
 		} else if (this.state.accountType === AccountType.Cloud) {
 			const data = await this.cryptoManager.rootCrypt.encrypt(JSON.stringify(this._userData))
+			const initializationData = await this.db.getInitializationData()
+			if (initializationData) {
+				initializationData.userData = data
+				await this.db.setInitializationData(initializationData)
+			}
 			await this.api.updateUserData(data)
 		}
 	}
@@ -721,6 +738,7 @@ export class AuthenticationManager {
 		this.state.accountType = AccountType.None
 		this.state.isAnonymous = false
 		this.state.serverAuthenticated = false
+		this.state.needsToChooseTier = false
 
 		this.cryptoManager.rootCrypt = null
 		this.state.userId = null
@@ -729,7 +747,7 @@ export class AuthenticationManager {
 		await this.db.close()
 	}
 
-	public get userData(): any {
+	public get userData(): UserData {
 		return this._userData
 	}
 

@@ -13,6 +13,7 @@ import { ClipboardManager } from './services/clipboard-manager'
 import { FontManager } from './services/font-manager'
 import { BlogManager } from './services/blog-manager'
 import { DebugManager } from './services/debug-manager'
+import { Currency, type SubscriptionProduct } from './services/types/subscription'
 
 export const env = import.meta.env
 const host = env.VITE_MIMER_API_HOST
@@ -65,6 +66,10 @@ export const syncStatus = ref('idle')
 export const syncOverSizeNote = ref(emptyGuid())
 export const loginRequiredToGoOnline = ref(false)
 
+export const subscriptionStage = ref('subscription')
+export const subscriptionNewProduct = ref<SubscriptionProduct>()
+export const subscriptionCurrency = ref<Currency>(Currency.CHF)
+
 export const blockUserInput = ref(false)
 
 export const clipboardNote = ref<MimerNote>(undefined)
@@ -88,6 +93,6 @@ export const updateKeys = [
 	},
 ]
 
-watch(syncStatus, newStatus => {
-	console.log('Synchronization status changed:', newStatus)
-})
+// watch(syncStatus, newStatus => {
+// 	console.log('Synchronization status changed:', newStatus)
+// })
