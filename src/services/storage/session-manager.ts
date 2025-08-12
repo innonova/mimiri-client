@@ -169,13 +169,9 @@ export class SessionManager {
 		try {
 			if (await this.authManager.restoreLogin()) {
 				await this.cryptoManager.ensureLocalCrypt()
-				if (this.state.isOnline) {
-					await this.syncService.initialSync()
-					await this.cryptoManager.loadAllKeys()
-					await this.syncService.sync()
-				} else {
-					await this.cryptoManager.loadAllKeys()
-				}
+				await this.syncService.initialSync()
+				await this.cryptoManager.loadAllKeys()
+				await this.syncService.sync()
 				return true
 			}
 		} catch (ex) {

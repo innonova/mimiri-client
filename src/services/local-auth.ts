@@ -45,11 +45,11 @@ class LocalAuth implements LoginListener, HideShowListener {
 		this._state.locked = false
 		this._state.elapsed = true
 		sessionStorage.setItem('locked', 'false')
-		if (noteManager.state.isLoggedIn) {
-			await updateManager.check()
-			await blogManager.refreshAll()
-			noteManager.session.queueSync()
-		}
+		// if (noteManager.state.isLoggedIn) {
+		// 	await updateManager.check()
+		// 	await blogManager.refreshAll()
+		// 	noteManager.session.queueSync()
+		// }
 	}
 
 	private async lock() {
@@ -67,6 +67,7 @@ class LocalAuth implements LoginListener, HideShowListener {
 			this._timer = undefined
 		}
 		if (!this._state.locked) {
+			noteManager.resume()
 			return
 		}
 		if (this.lastPause < 0 || Date.now() - this.lastPause < this._lockTimeout) {
@@ -82,9 +83,11 @@ class LocalAuth implements LoginListener, HideShowListener {
 		} else {
 			await this.unlock()
 		}
+		noteManager.resume()
 	}
 
 	public async hiding() {
+		noteManager.suspend()
 		if (!this._state.locked) {
 			this.lastPause = Date.now()
 			if (mimiriPlatform.isElectron) {

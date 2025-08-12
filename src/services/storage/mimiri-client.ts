@@ -76,7 +76,6 @@ export class MimiriClient extends HttpClientBase {
 		state: SharedState,
 		private cryptoManager: CryptographyManager,
 		private localStateManager: LocalStateManager,
-		private notificationsCallback: (type: string, payload: any) => void,
 	) {
 		super(host, serverKeyId, state, serverKey)
 	}
@@ -242,7 +241,7 @@ export class MimiriClient extends HttpClientBase {
 			this.state.userStats.maxNoteBytes = +response.maxNoteBytes
 			this.state.userStats.maxNoteCount = +response.maxNoteCount
 
-			await this.openWebSocket()
+			// await this.openWebSocket()
 			return response.data
 		} catch (ex) {
 			if (ex.statusCode === 404) {
@@ -609,81 +608,7 @@ export class MimiriClient extends HttpClientBase {
 		return response.participants
 	}
 
-	public async openWebSocket(attempt: number = 0): Promise<void> {
-		try {
-			if (this.state.workOffline || this._signalRConnection || this.state.accountType !== AccountType.Cloud) {
-				return
-			}
-			const response = await this.createNotificationUrl()
-			if (!response?.url) {
-				return
-			}
-			const connection = new HubConnectionBuilder()
-				.withUrl(response.url, { accessTokenFactory: () => response.token })
-				// .configureLogging(LogLevel.Warning)
-				.withAutomaticReconnect()
-				.build()
-			connection.on('notification', async (sender, type, payload) => {
-				// console.log(`Notification received: ${type}`, payload)
-
-				if (type === 'note-update' || type === 'sync') {
-					this.notificationsCallback('sync', payload)
-				}
-				if (type === 'bundle-update') {
-					this.notificationsCallback('bundle-update', payload)
-				}
-				if (type === 'blog-post') {
-					this.notificationsCallback('blog-post', payload)
-				}
-			})
-			connection.onreconnecting(error => {
-				this.state.isOnline = false
-				this.notificationsCallback('reconnecting', error)
-			})
-			connection.onreconnected(() => {
-				this.state.isOnline = true
-				this.notificationsCallback('reconnected', null)
-			})
-			connection.onclose(error => {
-				this.state.isOnline = false
-				this.notificationsCallback('closed', error)
-			})
-			this._signalRConnection = connection
-			if (this.simulateOffline) {
-				throw new Error('Simulate offline')
-			}
-			await connection.start()
-			this.state.isOnline = true
-			this.notificationsCallback('connected', null)
-		} catch (ex) {
-			this._signalRConnection.stop().catch()
-			this._signalRConnection = null
-			debug.logError('Failed to connect for notifications', ex)
-			if (!this._websocketRequested) {
-				this._websocketRequested = true
-				void incrementalDelay(attempt).then(() => {
-					if (this._websocketRequested) {
-						void this.openWebSocket(attempt + 1)
-					}
-				})
-			}
-		}
-	}
-
-	public async closeWebSocket() {
-		this._websocketRequested = false
-		if (this._signalRConnection) {
-			try {
-				await this._signalRConnection.stop()
-			} catch (ex) {
-				console.log('Error stopping SignalR connection', ex)
-			} finally {
-				this._signalRConnection = null
-			}
-		}
-	}
-
 	public async logout(): Promise<void> {
-		await this.closeWebSocket()
+		// await this.closeWebSocket()
 	}
 }

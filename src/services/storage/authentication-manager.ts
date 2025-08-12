@@ -461,7 +461,7 @@ export class AuthenticationManager {
 		if (!initializationData.local) {
 			if (!localInitializationData) {
 				this.state.serverAuthenticated = true
-				await this.api.openWebSocket()
+				// await this.api.openWebSocket()
 			} else {
 				this.state.isOnline = false
 				this.state.serverAuthenticated = false
@@ -543,7 +543,7 @@ export class AuthenticationManager {
 				this._userData = JSON.parse(await this.cryptoManager.rootCrypt.decrypt(data))
 				this.state.needsToChooseTier = !!this._userData.needsToChooseTier
 				await this.db.setUserStats(toRaw(this.state.userStats))
-				await this.api.openWebSocket()
+				// await this.api.openWebSocket()
 				return true
 			}
 		} catch (ex) {
@@ -718,7 +718,7 @@ export class AuthenticationManager {
 			await this.localStateManager.workOffline()
 		}
 		if (this.state.workOffline) {
-			await this.api.closeWebSocket()
+			// await this.api.closeWebSocket()
 		} else {
 			if (!(await this.goOnline())) {
 				if (loginRequiredToGoOnline.value) {

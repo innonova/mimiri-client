@@ -19,6 +19,7 @@ import { NoteTreeManager, type ActionListener } from './note-tree-manager'
 import { NoteOperationsManager } from './note-operations-manager'
 import { SessionManager, type LoginListener } from './session-manager'
 import { LocalStateManager } from './local-state-manager'
+import { NotificationManager } from './notification-manager'
 
 export const DEFAULT_PROOF_BITS = 15
 export const DEFAULT_ITERATIONS = 1000000
@@ -37,6 +38,7 @@ export class MimiriStore {
 	private noteService: NoteService
 	private db: MimiriDb
 	private api: MimiriClient
+	private notificationManager: NotificationManager
 	private paymentClient: PaymentClient
 
 	private uiManager: UIStateManager
@@ -103,39 +105,38 @@ export class MimiriStore {
 		this.db = new MimiriDb()
 		this.localStateManager = new LocalStateManager(this.db, this.state)
 		this.cryptoManager = new CryptographyManager(this.db, this.state)
-		this.api = new MimiriClient(
-			host,
-			serverKeyId,
-			serverKey,
-			this.state,
-			this.cryptoManager,
-			this.localStateManager,
-			(type, payload) => {
-				switch (type) {
-					case 'connected':
-						void updateManager.check()
-						void blogManager.refreshAll()
-						this.syncService.queueSync(true)
-						break
-					case 'sync':
-						if (!this.syncService.isSyncIdIssued(payload)) {
-							this.syncService.queueSync()
-						}
-						break
-					case 'bundle-update':
-						void updateManager.check()
-						break
-					case 'blog-post':
-						void blogManager.refreshAll()
-						break
-					case 'reconnected':
-						void updateManager.check()
-						void blogManager.refreshAll()
-						this.syncService.queueSync(true)
-						break
-				}
-			},
-		)
+		this.api = new MimiriClient(host, serverKeyId, serverKey, this.state, this.cryptoManager, this.localStateManager)
+
+		this.notificationManager = new NotificationManager(this.api, this.state, (type, payload) => {
+			switch (type) {
+				case 'connected':
+					void updateManager.check()
+					void blogManager.refreshAll()
+					this.syncService.queueSync(true)
+					break
+				case 'sync':
+					if (!this.syncService.isSyncIdIssued(payload)) {
+						this.syncService.queueSync()
+					}
+					break
+				case 'bundle-update':
+					void updateManager.check()
+					break
+				case 'blog-post':
+					void blogManager.refreshAll()
+					break
+				case 'reconnected':
+					void updateManager.check()
+					void blogManager.refreshAll()
+					this.syncService.queueSync(true)
+					break
+				case 'resumed':
+					void updateManager.check()
+					void blogManager.refreshAll()
+					this.syncService.queueSync()
+					break
+			}
+		})
 
 		this.authManager = new AuthenticationManager(
 			this.db,
@@ -304,5 +305,13 @@ export class MimiriStore {
 
 	public get payment() {
 		return this.paymentClient
+	}
+
+	public suspend() {
+		this.notificationManager.suspend()
+	}
+
+	public resume() {
+		this.notificationManager.resume()
 	}
 }
