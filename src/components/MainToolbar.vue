@@ -83,6 +83,7 @@ import { MenuItems, menuManager } from '../services/menu-manager'
 import { mimiriPlatform } from '../services/mimiri-platform'
 import { notificationManager } from '../global'
 import { settingsManager } from '../services/settings-manager'
+import { AccountType } from '../services/storage/type'
 
 const toolbar = ref(null)
 const accountIcon = computed(() => {
@@ -104,15 +105,22 @@ const notificationsClick = () => {
 }
 const accountClick = () => {
 	const rect = toolbar.value.getBoundingClientRect()
-	menuManager.showMenu({ x: screen.width, y: rect.bottom, alignRight: true }, [
-		MenuItems.ChangeUsername,
-		MenuItems.ChangePassword,
-		MenuItems.DeleteAccount,
-		MenuItems.Separator,
-		...(noteManager.state.isAnonymous ? [MenuItems.CreatePassword, MenuItems.Login] : [MenuItems.Logout]),
-		MenuItems.Separator,
-		MenuItems.WorkOffline,
-	])
+
+	if (noteManager.state.accountType === AccountType.None) {
+		menuManager.showMenu({ x: screen.width, y: rect.bottom, alignRight: true }, [
+			MenuItems.CreateAccount,
+			MenuItems.Separator,
+			MenuItems.Login,
+		])
+	} else {
+		menuManager.showMenu({ x: screen.width, y: rect.bottom, alignRight: true }, [
+			MenuItems.ChangeUsername,
+			MenuItems.ChangePassword,
+			MenuItems.Logout,
+			MenuItems.Separator,
+			MenuItems.WorkOffline,
+		])
+	}
 }
 
 const createChildNote = async () => {
