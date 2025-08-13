@@ -581,7 +581,7 @@ export class MimerNote {
 		if (this.isControlPanel) {
 			return this._children.map(c => c.id)
 		}
-		return this.note.getItem('metadata').notes as Guid[]
+		return (this.note.getItem('metadata').notes as Guid[]) ?? []
 	}
 
 	public get children() {
