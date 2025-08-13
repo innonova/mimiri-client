@@ -6,13 +6,10 @@
 		ref="mainElement"
 		data-testid="note-tree"
 	>
-		<TreeNode
-			v-if="noteManager.authenticated && noteManager.root?.viewModel.children.length"
-			v-for="node of noteManager.root.viewModel.children"
-			:node="node"
-			:key="node.id"
-		></TreeNode>
-		<NewTreeNode v-if="createNewRootNode"></NewTreeNode>
+		<template v-if="noteManager.tree.rootRef().value?.viewModel.children.length">
+			<TreeNode v-for="node of noteManager.tree.rootRef().value?.viewModel.children" :node="node" :key="node.id" />
+		</template>
+		<NewTreeNode v-if="createNewRootNode" />
 		<div v-if="noSearchResults" class="text-center text-text text-size-menu mt-2 cursor-default">No results found</div>
 	</div>
 </template>
@@ -43,59 +40,84 @@ const stopWatching = watch(noteManager.state, () => {
 	if (
 		noteManager.state.stateLoaded &&
 		!stateLoaded &&
-		noteManager.authenticated &&
-		noteManager.root?.viewModel.children.length &&
-		noteManager.selectedNote
+		noteManager.state.isLoggedIn &&
+		noteManager.tree.root()?.viewModel.children.length &&
+		noteManager.tree.selectedNote()
 	) {
 		stateLoaded = true
 		mainElement.value.scrollTop = persistedState.getTreeScrollTop()
-		if (noteManager.isMobile && persistedState.noteOpen && noteManager.selectedNote) {
-			noteManager.openNote(noteManager.selectedNote.id)
+		if (noteManager.state.isMobile && persistedState.noteOpen && noteManager.tree.selectedNote()) {
+			noteManager.tree.openNote(noteManager.tree.selectedNote().id)
 		}
 		stopWatching()
 	}
 })
 
 const duplicateActiveNote = async () => {
-	if (noteManager.selectedNote) {
-		const index = noteManager.selectedNote.parent.childIds.indexOf(noteManager.selectedNote.id)
-		await noteManager.selectedNote.copy(noteManager.selectedNote.parent, index + 1)
+	const note = noteManager.tree.selectedNote()
+	if (note) {
+		if (note.isSystem) {
+			return
+		}
+		const index = note.parent.childIds.indexOf(note.id)
+		await note.copy(note.parent, index + 1)
 	}
 }
 const copyActiveNote = () => {
-	clipboardNote.value = noteManager.selectedNote
+	const note = noteManager.tree.selectedNote()
+	if (note?.isSystem) {
+		return
+	}
+	clipboardNote.value = note
 	isCut.value = false
 }
 const cutActiveNote = () => {
-	clipboardNote.value = noteManager.selectedNote
+	const note = noteManager.tree.selectedNote()
+	if (note?.isSystem) {
+		return
+	}
+	clipboardNote.value = note
 	isCut.value = true
 }
 const pasteIntoActiveNote = async () => {
-	if (clipboardNote.value && noteManager.selectedNote) {
-		noteManager.selectedNote.expand()
+	const note = noteManager.tree.selectedNote()
+	if (note?.isSystem) {
+		return
+	}
+	if (clipboardNote.value && note) {
+		await note.expand()
 		if (isCut.value) {
-			await clipboardNote.value.move(noteManager.selectedNote)
+			await clipboardNote.value.move(note)
 		} else {
-			await clipboardNote.value.copy(noteManager.selectedNote)
+			await clipboardNote.value.copy(note)
 		}
 	}
 }
 
 const deleteActiveNote = () => {
+	const note = noteManager.tree.selectedNote()
+	if (note?.isSystem) {
+		return
+	}
 	deleteNodeDialog.value.show()
 }
 
 const recycleActiveNote = () => {
-	if (noteManager.selectedNote.isShareRoot) {
+	const note = noteManager.tree.selectedNote()
+	if (note?.isSystem) {
+		return
+	}
+	if (note.isShareRoot) {
 		deleteNodeDialog.value.show()
 	} else {
-		noteManager.selectedNote.moveToRecycleBin()
+		void note.moveToRecycleBin()
 	}
 }
 
 const renameActiveNote = () => {
-	if (noteManager.selectedNote && !noteManager.selectedNote.isSystem) {
-		noteManager.selectedNote.viewModel.renaming = true
+	const note = noteManager.tree.selectedNote()
+	if (note && !note.isSystem) {
+		note.viewModel.renaming = true
 	}
 }
 
@@ -116,60 +138,60 @@ const findNextNodeDown = (note: MimerNote) => {
 }
 
 const moveSelectionUp = () => {
-	const note = noteManager.selectedNote
+	const note = noteManager.tree.selectedNote()
 	if (note) {
 		if (note.index == 0) {
 			if (note.parent && !note.isTopLevel) {
-				note.parent.select()
+				void note.parent.select()
 			}
 		} else if (note.prevSibling) {
 			findBottomMostNode(note.prevSibling).select()
 		}
-	} else if (noteManager.root.children.length > 0) {
-		noteManager.root.children[0].select()
+	} else if (noteManager.tree.root().children.length > 0) {
+		void noteManager.tree.root().children[0].select()
 	}
 }
 
 const moveSelectionDown = () => {
-	const note = noteManager.selectedNote
+	const note = noteManager.tree.selectedNote()
 	if (note) {
 		if (note.expanded) {
 			if (note.children.length > 0) {
-				note.children[0].select()
+				void note.children[0].select()
 			}
 		} else {
 			findNextNodeDown(note)?.select()
 		}
-	} else if (noteManager.root.children.length > 0) {
-		noteManager.root.children[0].select()
+	} else if (noteManager.tree.root().children.length > 0) {
+		void noteManager.tree.root().children[0].select()
 	}
 }
 
 const moveSelectionLeft = () => {
-	const note = noteManager.selectedNote
+	const note = noteManager.tree.selectedNote()
 	if (note) {
 		if (note.expanded) {
-			note.collapse()
+			void note.collapse()
 		} else if (note.parent && !note.isTopLevel) {
-			note.parent.select()
+			void note.parent.select()
 		}
-	} else if (noteManager.root.children.length > 0) {
-		noteManager.root.children[0].select()
+	} else if (noteManager.tree.root().children.length > 0) {
+		void noteManager.tree.root().children[0].select()
 	}
 }
 
 const moveSelectionRight = () => {
-	const note = noteManager.selectedNote
+	const note = noteManager.tree.selectedNote()
 	if (note) {
 		if (note.expanded) {
 			if (note.children.length > 0) {
-				note.children[0].select()
+				void note.children[0].select()
 			}
 		} else {
-			note.expand()
+			void note.expand()
 		}
-	} else if (noteManager.root.children.length > 0) {
-		noteManager.root.children[0].select()
+	} else if (noteManager.tree.root().children.length > 0) {
+		void noteManager.tree.root().children[0].select()
 	}
 }
 
@@ -184,7 +206,7 @@ const hasFocus = () => {
 }
 
 const scrollDebounce = new Debounce(async () => {
-	if (mainElement.value && noteManager && (!noteManager.state.noteOpen || !noteManager.isMobile)) {
+	if (mainElement.value && noteManager && (!noteManager.state.noteOpen || !noteManager.state.isMobile)) {
 		const scrollTop = Math.round(mainElement.value.scrollTop)
 		persistedState.setTreeScrollTop(scrollTop)
 	}

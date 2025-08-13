@@ -52,11 +52,11 @@ export class NotificationManager {
 		const notification = this.state.notifications.find(item => item.id === id)
 		if (notification.type === 'update') {
 			notificationList.value.close()
-			noteManager.openNote('settings-update' as Guid)
+			noteManager.tree.openNote('settings-update' as Guid)
 		}
 		if (notification.type === 'blog') {
 			notificationList.value.close()
-			noteManager.openNote('settings-blog' as Guid)
+			noteManager.tree.openNote('settings-blog' as Guid)
 		}
 	}
 

@@ -46,6 +46,7 @@
 	--color-error: red;
 	--color-online: green;
 	--color-offline: red;
+	--color-connecting: #ffa500;
 	--color-warning: #f6ba00;
 	--color-button-primary: #4381c1;
 	--color-button-primary-text: #fff;
@@ -100,6 +101,7 @@
 		--color-error: red;
 		--color-online: green;
 		--color-offline: red;
+		--color-connecting: #ffa500;
 		--color-warning: #f6ba00;
 		--color-button-primary: #777;
 		--color-button-primary-text: #fff;
@@ -185,11 +187,17 @@ h2 {
 	@apply font-display text-size-header;
 }
 
-a {
+button.link {
+	@apply cursor-pointer;
+}
+
+a,
+button.link {
 	@apply underline;
 }
 
-a:hover {
+a:hover,
+button.link:hover {
 	@apply no-underline;
 }
 
@@ -300,7 +308,7 @@ html[data-theme='dark'] {
 		@apply cursor-pointer;
 	}
 
-	span.mtk23 {
+	span.mtk29 {
 		-webkit-text-security: disc;
 	}
 }
@@ -311,7 +319,7 @@ html[data-theme='light'] {
 		@apply cursor-pointer;
 	}
 
-	span.mtk24 {
+	span.mtk29 {
 		-webkit-text-security: disc;
 	}
 }

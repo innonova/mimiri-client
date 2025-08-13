@@ -51,7 +51,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import type { Currency, SummaryItem } from '../../services/types/subscription'
 import ItemHeader from './ItemHeader.vue'
 import { calculateReverseVat, formatCurrency, vatRate } from '../../services/helpers'

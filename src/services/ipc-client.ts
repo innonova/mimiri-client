@@ -86,7 +86,7 @@ export class MimerMenu {
 			settingsManager.openAtLogin = !settingsManager.openAtLogin
 		})
 		this.api?.menu?.onMenuItemActivated((menuItemId: string) => {
-			menuManager.menuIdActivated(menuItemId)
+			void menuManager.menuIdActivated(menuItemId)
 		})
 	}
 
@@ -95,12 +95,12 @@ export class MimerMenu {
 	}
 
 	public show() {
-		this._listener?.showing()
+		void this._listener?.showing()
 		this.api.menu.show()
 	}
 
 	public hide() {
-		this._listener?.hiding()
+		void this._listener?.hiding()
 		this.api.menu.hide()
 	}
 
@@ -119,8 +119,8 @@ export class MimerMenu {
 	registerHideShowListener(listener: HideShowListener) {
 		if (capacitorClient.available) {
 			if (Capacitor.isPluginAvailable('App')) {
-				App.addListener('resume', async () => listener.showing())
-				App.addListener('pause', () => listener.hiding())
+				void App.addListener('resume', async () => listener.showing())
+				void App.addListener('pause', () => listener.hiding())
 			}
 		} else {
 			this._listener = listener
@@ -136,7 +136,7 @@ export class MimerSettings {
 	}
 
 	public save(value: MimerConfiguration) {
-		this.api.settings.save(value)
+		void this.api.settings.save(value)
 	}
 }
 

@@ -4,40 +4,56 @@
 		class="flex items-center py-px px-1.5 bg-toolbar border-b border-solid border-toolbar mobile:justify-between"
 		data-testid="main-toolbar"
 	>
-		<ToolbarIcon v-if="!mimiriPlatform.isDesktop" icon="menu" @click="showMobileMenu"></ToolbarIcon>
+		<ToolbarIcon
+			v-if="!mimiriPlatform.isDesktop"
+			icon="menu"
+			@click="showMobileMenu"
+			data-testid="toolbar-mobile-menu"
+		/>
 		<div
 			v-if="!mimiriPlatform.isDesktop"
 			class="inline-block h-4/5 w-0 border border-solid border-toolbar-separator m-0.5"
-		></div>
-		<ToolbarIcon icon="plus-small" :hoverEffect="true" title="New Root Note" @click="showCreateMenu"></ToolbarIcon>
+		/>
+		<ToolbarIcon
+			icon="plus-small"
+			:hoverEffect="true"
+			title="New Root Note"
+			@click="showCreateMenu"
+			data-testid="toolbar-create-menu"
+		/>
 		<ToolbarIcon
 			:icon="settingsManager.lastNoteCreateType === 'child' ? 'add-note' : 'add-sibling-note'"
 			:disabled="
-				!noteManager.selectedNote || noteManager.selectedNote.isSystem || noteManager.selectedNote.isInRecycleBin
+				!noteManager.tree.selectedNoteRef().value ||
+				noteManager.tree.selectedNoteRef().value.isSystem ||
+				noteManager.tree.selectedNoteRef().value.isInRecycleBin
 			"
 			:hoverEffect="true"
 			:title="settingsManager.lastNoteCreateType === 'child' ? 'New Child Note' : 'New Sibling Note'"
 			@click="createChildNote"
-		></ToolbarIcon>
-		<div class="inline-block h-4/5 w-0 border border-solid border-toolbar-separator m-0.5"></div>
+			data-testid="toolbar-create-sub-note"
+		/>
+		<div class="inline-block h-4/5 w-0 border border-solid border-toolbar-separator m-0.5" />
 		<ToolbarIcon
 			class="desktop:hidden"
 			icon="search-all-notes"
 			:hoverEffect="true"
 			title="Search All Notes"
 			@click="toggleSearchAllNotes"
-		></ToolbarIcon>
+			data-testid="toolbar-toggle-search"
+		/>
 		<ToolbarIcon
 			class="hidden! desktop:block!"
 			icon="search-all-notes"
 			:hoverEffect="true"
 			title="Search All Notes"
 			@click="gotoSearchAllNotes"
-		></ToolbarIcon>
+			data-testid="toolbar-goto-search"
+		/>
 		<div
 			v-if="mimiriPlatform.isPhone"
 			class="inline-block h-4/5 w-0 border border-solid border-toolbar-separator m-0.5"
-		></div>
+		/>
 		<ToolbarIcon
 			v-if="mimiriPlatform.isPhone"
 			:icon="notificationManager.unread > 0 ? 'notifications-active' : 'notifications'"
@@ -46,14 +62,16 @@
 			:disabled="notificationManager.count === 0"
 			title="Notifications"
 			@click="notificationsClick"
-		></ToolbarIcon>
+			data-testid="toolbar-notifications"
+		/>
 		<ToolbarIcon
 			v-if="mimiriPlatform.isPhone"
 			:icon="accountIcon"
 			:hoverEffect="true"
 			title="Account"
 			@click="accountClick"
-		></ToolbarIcon>
+			data-testid="toolbar-account"
+		/>
 	</div>
 </template>
 
@@ -71,7 +89,7 @@ const accountIcon = computed(() => {
 	if (!ipcClient.isAvailable) {
 		return 'account'
 	}
-	if (noteManager.state.online && noteManager.state.authenticated) {
+	if (noteManager.state.isOnline && noteManager.state.isLoggedIn) {
 		return 'account-online'
 	}
 	return 'account-offline'
@@ -91,19 +109,21 @@ const accountClick = () => {
 		MenuItems.ChangePassword,
 		MenuItems.DeleteAccount,
 		MenuItems.Separator,
-		...(noteManager.isAnonymous ? [MenuItems.CreatePassword, MenuItems.Login] : [MenuItems.Logout]),
+		...(noteManager.state.isAnonymous ? [MenuItems.CreatePassword, MenuItems.Login] : [MenuItems.Logout]),
+		MenuItems.Separator,
+		MenuItems.WorkOffline,
 	])
 }
 
-const createChildNote = () => {
+const createChildNote = async () => {
 	if (settingsManager.lastNoteCreateType === 'sibling') {
-		if (noteManager.selectedNote.parent.isRoot) {
-			noteManager.newRootNote()
+		if (noteManager.tree.selectedNote().parent.isRoot) {
+			noteManager.ui.newRootNote()
 			return
 		}
-		noteManager.selectedNote.parent.select()
+		await noteManager.tree.selectedNote().parent.select()
 	}
-	noteManager.newNote()
+	noteManager.ui.newNote()
 }
 
 const searchAllNotes = () => {
@@ -127,15 +147,26 @@ const showCreateMenu = () => {
 
 	const rect = toolbar.value.getBoundingClientRect()
 
-	menuManager.showMenu({ x: 10, y: rect.bottom }, noteManager.selectedNote ? createMenu : createMenu)
+	menuManager.showMenu({ x: 10, y: rect.bottom }, noteManager.tree.selectedNote() ? createMenu : createMenu)
 }
 
 const showMobileMenu = () => {
-	const isSystem = !!noteManager.selectedNote?.isSystem
-	const isRecycleBin = !!noteManager.selectedNote?.isRecycleBin
-	const isInRecycleBin = !!noteManager.selectedNote?.isInRecycleBin
-	const isShared = !!noteManager.selectedNote?.isShared
-	const isShareRoot = !!noteManager.selectedNote?.isShareRoot
+	const isSystem = !!noteManager.tree.selectedNote()?.isSystem
+	const isRecycleBin = !!noteManager.tree.selectedNote()?.isRecycleBin
+	const isInRecycleBin = !!noteManager.tree.selectedNote()?.isInRecycleBin
+
+	let showShare = true
+	let showAcceptShare = true
+	if (!!noteManager.tree.selectedNote()?.isShared) {
+		const note = noteManager.tree.selectedNote()
+		showShare = note.isShareRoot
+		showAcceptShare = false
+	}
+	if (!noteManager.state.isOnline) {
+		showShare = false
+		showAcceptShare = false
+	}
+
 	const whenSelectedNote = [
 		MenuItems.About,
 		MenuItems.DarkMode,
@@ -155,8 +186,8 @@ const showMobileMenu = () => {
 
 		...(!isSystem && isInRecycleBin ? [MenuItems.Separator, MenuItems.Cut, MenuItems.Copy] : []),
 		MenuItems.Separator,
-		...(!isSystem && !isInRecycleBin && (!isShared || isShareRoot) ? [MenuItems.Share] : []),
-		...(!isSystem && !isInRecycleBin && !isShared ? [MenuItems.ReceiveShare] : []),
+		...(!isSystem && !isInRecycleBin && showShare ? [MenuItems.Share] : []),
+		...(!isSystem && !isInRecycleBin && showAcceptShare ? [MenuItems.ReceiveShare] : []),
 		MenuItems.Refresh,
 		...(!isSystem && !isInRecycleBin ? [MenuItems.Separator, MenuItems.Rename, MenuItems.Recycle] : []),
 		...(!isSystem && isInRecycleBin ? [MenuItems.Separator, MenuItems.Delete] : []),
@@ -166,7 +197,10 @@ const showMobileMenu = () => {
 
 	const rect = toolbar.value.getBoundingClientRect()
 
-	menuManager.showMenu({ x: 10, y: rect.bottom }, noteManager.selectedNote ? whenSelectedNote : whenNoSelectedNote)
+	menuManager.showMenu(
+		{ x: 10, y: rect.bottom },
+		noteManager.tree.selectedNote() ? whenSelectedNote : whenNoSelectedNote,
+	)
 }
 
 defineExpose({

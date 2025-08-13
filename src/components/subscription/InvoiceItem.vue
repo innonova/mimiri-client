@@ -30,7 +30,7 @@
 			>
 				Status: <span class="text-good font-bold">CREDIT NOTE</span>
 			</div>
-			<div v-if="invoice.status === 'issued'"></div>
+			<div v-if="invoice.status === 'issued'" />
 			<div v-if="invoice.status === 'issued'">Due: {{ formatInvoiceDate(invoice.due) }}</div>
 			<div v-if="invoice.status === 'issued'" class="text-right">
 				<button class="primary" @click="payNow" :data-testid="`invoice-${invoice.no}-pay-now`">Pay Now</button>
@@ -43,7 +43,7 @@
 				<button class="primary" @click="showInvoice" :data-testid="`invoice-${invoice.no}-view-link`">View</button>
 				<button class="primary" @click="showInvoicePdf" :data-testid="`invoice-${invoice.no}-pdf-link`">PDF</button>
 			</div>
-			<div></div>
+			<div />
 			<div class="text-right" :data-testid="`invoice-${invoice.no}-total`">
 				{{ invoice.currency }} {{ formatCurrency(invoice.data.total) }}
 			</div>
@@ -72,7 +72,7 @@ const overdue = computed(
 
 onMounted(async () => {
 	if (props.invoice.status === InvoiceStatus.Issued && props.invoice.subscriptionId) {
-		const subscription = await noteManager.paymentClient.getCurrentSubscription()
+		const subscription = await noteManager.payment.getCurrentSubscription()
 		if (subscription?.id === props.invoice.subscriptionId) {
 			autoPay.value = subscription.renewalType === RenewalType.Automatic
 		}
@@ -80,19 +80,19 @@ onMounted(async () => {
 })
 
 const showInvoice = async () => {
-	const auth = await noteManager.paymentClient.createAuthQuery({
+	const auth = await noteManager.payment.createAuthQuery({
 		request: 'invoice',
 		timestamp: new Date(),
 		validUntil: add(new Date(), { hours: 12 }),
 	})
 	window.open(
-		`${accountHost}/invoice/${props.invoice.id}?auth=${auth}&status=true&username=${noteManager.username}&environment=${pdfEnvironment}`,
+		`${accountHost}/invoice/${props.invoice.id}?auth=${auth}&status=true&username=${noteManager.state.username}&environment=${pdfEnvironment}`,
 		'_blank',
 	)
 }
 
 const showInvoicePdf = async () => {
-	window.open(await noteManager.paymentClient.getPdfUrl(props.invoice), '_blank')
+	window.open(await noteManager.payment.getPdfUrl(props.invoice), '_blank')
 }
 
 const payNow = async () => {

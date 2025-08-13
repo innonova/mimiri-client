@@ -1,38 +1,129 @@
 import { expect } from '@playwright/test'
-import { loginCtrl, mainToolbar, menu, promoteAccount, settingNodes, settingView, titleBar } from '../selectors'
+import {
+	aboutView,
+	appMain,
+	connectCloudView,
+	createAccountView,
+	initialPlanChooser,
+	loginCtrl,
+	menu,
+	settingNodes,
+	titleBar,
+	usernameInput,
+} from '../selectors'
 import { mimiri } from '../framework/mimiri-context'
 
-export const createAccount = async () => {
-	await settingNodes.controlPanel().dblclick()
-	await settingNodes.account().click()
-	await expect(promoteAccount.container()).toBeVisible()
-	await promoteAccount.username().fill(mimiri().config.username)
-	await promoteAccount.password().fill(mimiri().config.password)
-	await promoteAccount.repeat().fill(mimiri().config.password)
-	await promoteAccount.noRecover().check()
-	await promoteAccount.button().click()
-	await expect(settingView.username()).toBeVisible()
-	await expect(mainToolbar.container()).toBeVisible({ timeout: 30000 })
-	await expect(titleBar.container()).toBeVisible()
-	if (await settingNodes.controlPanelOpen().isVisible()) {
+export const createLocalAccount = async () => {
+	if (await settingNodes.controlPanelClosed().isVisible()) {
 		await settingNodes.controlPanel().dblclick()
 	}
+	await settingNodes.createAccount().click()
+	await createAccountView.localTab().click()
+	await createAccountView.username().fill(mimiri().config.username)
+	await createAccountView.password().fill(mimiri().config.password)
+	await createAccountView.repeat().fill(mimiri().config.password)
+	await expect(usernameInput.status()).not.toBeVisible()
+	await createAccountView.button().click()
+	await expect(createAccountView.container()).not.toBeVisible()
+	await mimiri().waitForTimeout(1000)
+	await expect(settingNodes.controlPanel()).toBeVisible()
+	await settingNodes.controlPanel().click()
+	await expect(aboutView.username()).toHaveText(mimiri().config.username)
+}
+
+export const connectLocalAccount = async () => {
+	if (await settingNodes.controlPanelClosed().isVisible()) {
+		await settingNodes.controlPanel().dblclick()
+	}
+	if (await settingNodes.controlPanelClosed().isVisible()) {
+		await settingNodes.controlPanel().dblclick()
+	}
+	await settingNodes.account().click()
+	await connectCloudView.currentPassword().fill(mimiri().config.password)
+	await expect(usernameInput.available()).toBeVisible()
+	await connectCloudView.button().click()
+	await expect(connectCloudView.container()).not.toBeVisible()
+	await mimiri().waitForTimeout(1000)
+	await expect(settingNodes.controlPanel()).toBeVisible()
+	await settingNodes.controlPanel().click()
+	await expect(aboutView.username()).toHaveText(mimiri().config.username)
+}
+
+export const createCloudAccount = async () => {
+	if (await settingNodes.controlPanelClosed().isVisible()) {
+		await settingNodes.controlPanel().dblclick()
+	}
+	await settingNodes.createAccount().click()
+	await createAccountView.cloudTab().click()
+	await createAccountView.username().fill(mimiri().config.username)
+	await createAccountView.password().fill(mimiri().config.password)
+	await createAccountView.repeat().fill(mimiri().config.password)
+	await expect(usernameInput.available()).toBeVisible()
+	await createAccountView.button().click()
+	await expect(createAccountView.container()).not.toBeVisible()
+	await mimiri().waitForTimeout(1000)
+	await expect(initialPlanChooser.container()).toBeVisible()
+	await initialPlanChooser.chooseFree().click()
+	await expect(initialPlanChooser.container()).not.toBeVisible()
+	await expect(settingNodes.controlPanel()).toBeVisible()
+	await settingNodes.subscriptionGroup().dblclick()
+	await settingNodes.controlPanel().dblclick()
+	await expect(aboutView.username()).toHaveText(mimiri().config.username)
 }
 
 export const logout = async () => {
 	await titleBar.accountButton().click()
 	await menu.logout().click()
 	await expect(loginCtrl.container()).toBeVisible()
+	// await settingNodes.controlPanel().click()
+	// await expect(aboutView.username()).toHaveText('local')
 }
 
 export const login = async () => {
+	await expect(titleBar.container()).toBeVisible()
+	if (!(await loginCtrl.container().isVisible())) {
+		await titleBar.accountButton().click()
+		await menu.login().click()
+	}
 	await expect(loginCtrl.container()).toBeVisible()
-	await expect(loginCtrl.username()).toBeVisible()
-	await expect(loginCtrl.password()).toBeVisible()
-	await expect(loginCtrl.button()).toBeVisible()
 	await loginCtrl.username().fill(mimiri().config.username)
 	await loginCtrl.password().fill(mimiri().config.password)
 	await loginCtrl.button().click()
-	await expect(mainToolbar.container()).toBeVisible()
+	await mimiri().waitForTimeout(1000)
+	await settingNodes.controlPanel().click()
+	await expect(aboutView.username()).toHaveText(mimiri().config.username)
+}
+
+export const loginFail = async () => {
 	await expect(titleBar.container()).toBeVisible()
+	if (!(await loginCtrl.container().isVisible())) {
+		await titleBar.accountButton().click()
+		await menu.login().click()
+	}
+	await expect(loginCtrl.container()).toBeVisible()
+	await loginCtrl.username().fill(mimiri().config.username)
+	await loginCtrl.password().fill(mimiri().config.password)
+	await loginCtrl.button().click()
+	await expect(loginCtrl.loginError()).toBeVisible()
+}
+
+export const appReady = async () => {
+	await expect(appMain.status()).toHaveValue('ready')
+}
+
+export const appReadyCycle = async () => {
+	await expect(appMain.status()).not.toHaveValue('ready')
+	await expect(appMain.status()).toHaveValue('ready')
+}
+
+export const goOffline = async () => {
+	await titleBar.accountButton().click()
+	await menu.workOffline().click()
+	await expect(titleBar.accountButton()).toHaveAttribute('title', 'Account (Offline)')
+}
+
+export const goOnline = async () => {
+	await titleBar.accountButton().click()
+	await menu.workOffline().click()
+	await expect(titleBar.accountButton()).toHaveAttribute('title', 'Account (Online)')
 }

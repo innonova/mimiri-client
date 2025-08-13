@@ -24,29 +24,29 @@
 				v-show="indicatorVisible"
 				id="drop-indicator"
 				class="absolute left-4 indicator-top w-full h-0 border-2 border-solid border-drop-indicator pointer-events-none"
-			></div>
+			/>
 			<div v-show="!searchModeActive" class="flex items-center pl-1 pr-0.5 h-full" @click="toggleNode">
 				<PlusIcon
 					v-if="!node.expanded"
 					class="h-5 w-5 desktop:h-4 desktop:w-4 mt-px"
 					:class="{ invisible: !hasChildren }"
-				></PlusIcon>
+				/>
 				<MinusIcon
 					v-if="node.expanded"
 					class="h-5 w-5 desktop:h-4 desktop:w-4 mt-px"
 					:class="{ invisible: !hasChildren }"
-				></MinusIcon>
+				/>
 			</div>
 			<RecycleBinIcon
 				v-if="hasChildren"
 				class="w-[30px] h-[30px] desktop:w-[23px] desktop:h-[23px] p-0.5 mr-1 desktop:mr-0.5"
 				:class="{ 'text-shared': node.shared }"
-			></RecycleBinIcon>
+			/>
 			<RecycleBinEmptyIcon
 				v-if="!hasChildren"
 				class="w-[30px] h-[30px] desktop:w-[23px] desktop:h-[23px] p-0.5 mr-1 desktop:mr-0.5"
 				:class="{ 'text-shared': node.shared }"
-			></RecycleBinEmptyIcon>
+			/>
 			<div
 				class="select-none flex-1 overflow-hidden text-ellipsis"
 				:class="{
@@ -57,14 +57,11 @@
 				Recycle Bin
 			</div>
 			<div class="desktop:hidden pl-14 flex justify-end" @click="selectNode(true)">
-				<OpenIcon class="w-[23px] h-[23px] p-0.5"></OpenIcon>
+				<OpenIcon class="w-[23px] h-[23px] p-0.5" />
 			</div>
 		</div>
 		<template v-for="childNode of node.children" :key="childNode.id">
-			<TreeNode
-				v-show="(node.expanded && !searchModeActive) || searchModeActive"
-				:node="<NoteViewModel>childNode"
-			></TreeNode>
+			<TreeNode v-show="(node.expanded && !searchModeActive) || searchModeActive" :node="<NoteViewModel>childNode" />
 		</template>
 	</div>
 </template>
@@ -81,10 +78,8 @@ import PlusIcon from '../icons/plus.vue'
 import MinusIcon from '../icons/minus.vue'
 import OpenIcon from '../icons/open.vue'
 import { MenuItems, menuManager } from '../services/menu-manager'
-import { de } from 'date-fns/locale'
 
 const visualElement = ref(null)
-const renameInput = ref(null)
 const indicatorTop = ref('0px')
 const indicatorVisible = ref(false)
 let dragOver = 0
@@ -119,8 +114,8 @@ const onDrop = async event => {
 		event.stopPropagation()
 		dragOver = 0
 		indicatorVisible.value = false
-		const note = noteManager.getNoteById(dragId.value)
-		const dropNote = noteManager.getNoteById(props.node.id)
+		const note = noteManager.tree.getNoteById(dragId.value)
+		const dropNote = noteManager.tree.getNoteById(props.node.id)
 		if (target <= 0) {
 			await note.move(dropNote)
 		} else {
@@ -138,7 +133,7 @@ const onDragOver = event => {
 		if (id !== props.node.id) {
 			event.preventDefault()
 			const height = visualElement.value.offsetHeight
-			const top = height / 3
+			// const top = height / 3
 			const bottom = (2 * height) / 3
 
 			if (event.offsetY > bottom) {
@@ -187,17 +182,17 @@ const toggleNode = async e => {
 	e.stopPropagation()
 	if (hasChildren.value && !searchModeActive.value) {
 		if (!props.node.expanded) {
-			const note = noteManager.getNoteById(props.node.id)
-			note.expand()
+			const note = noteManager.tree.getNoteById(props.node.id)
+			void note.expand()
 		} else {
-			const note = noteManager.getNoteById(props.node.id)
+			const note = noteManager.tree.getNoteById(props.node.id)
 			note.collapse()
 		}
 	}
 }
 
 const selectNode = async (mobileSwitch: boolean) => {
-	noteManager.openNote(props.node.id, mobileSwitch)
+	noteManager.tree.openNote(props.node.id, mobileSwitch)
 }
 
 const showContextMenu = async e => {

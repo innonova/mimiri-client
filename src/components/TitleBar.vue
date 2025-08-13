@@ -76,7 +76,7 @@
 				type="text"
 				placeholder="Search Notes"
 				:value="searchManager.state.term"
-				:disabled="!noteManager.state.authenticated"
+				:disabled="!noteManager.state.isLoggedIn"
 				class="bg-input rounded-md text-center no-drag text-size-base h-full pb-1 outline-none"
 				:class="{
 					'w-2/3 max-w-80': mimiriPlatform.isDesktop,
@@ -99,11 +99,11 @@
 			<ScreenShareEnabledIcon
 				v-if="settingsManager.allowScreenSharing"
 				class="w-9 h-6 p-0.5 px-1 no-drag pointer-events-none text-warning"
-			></ScreenShareEnabledIcon>
+			/>
 			<ScreenShareDisabledIcon
 				v-if="!settingsManager.allowScreenSharing"
 				class="w-9 h-6 p-0.5 px-1 no-drag pointer-events-none text-title-text-blur"
-			></ScreenShareDisabledIcon>
+			/>
 		</div>
 		<div
 			class="h-full flex items-center justify-center relative"
@@ -121,39 +121,37 @@
 				:class="{
 					'text-title-text-blur': notificationManager.count <= 0,
 				}"
-			></NotificationIcon>
-			<NotificationActiveIcon
-				v-if="notificationManager.unread > 0"
-				class="w-9 h-6 p-px no-drag pointer-events-none"
-			></NotificationActiveIcon>
-			<div v-if="notificationManager.strong" class="absolute bottom-1 left-px w-2 h-2 rounded-sm bg-bad"></div>
+			/>
+			<NotificationActiveIcon v-if="notificationManager.unread > 0" class="w-9 h-6 p-px no-drag pointer-events-none" />
+			<div v-if="notificationManager.strong" class="absolute bottom-1 left-px w-2 h-2 rounded-sm bg-bad" />
 		</div>
 		<div
 			class="h-full flex items-center justify-center"
 			:class="{
-				'hover:bg-toolbar-hover active:bg-toolbar-hover': noteManager.isLoggedIn,
+				'hover:bg-toolbar-hover active:bg-toolbar-hover': noteManager.state.isLoggedIn,
 				'min-w-[44px] w-[55px]': mimiriPlatform.isDesktop,
 				'w-16': !mimiriPlatform.isDesktop,
 			}"
 			data-testid="account-button"
-			title="Account"
+			:title="title"
 			@click="menuClick($event, 'account')"
 			@mouseenter="menuHover($event, 'account')"
 		>
 			<AccountIcon
 				class="w-9 h-6 p-0.5 px-1 no-drag pointer-events-none"
 				:class="{
-					'text-title-text-blur': !noteManager.state.authenticated,
-					'p-px text-online active:p-px': noteManager.state.online && noteManager.state.authenticated,
-					'p-px text-offline active:p-px': !noteManager.state.online && noteManager.state.authenticated,
+					'text-title-text-blur': !noteManager.state.isLoggedIn,
+					'p-px text-online active:p-px': status === 'online',
+					'p-px text-connecting active:p-px': status === 'connecting',
+					'p-px text-offline active:p-px': status === 'offline',
 				}"
-			></AccountIcon>
+			/>
 		</div>
 	</div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { noteManager, searchInput, showSearchBox, ipcClient, notificationManager } from '../global'
 import ScreenShareEnabledIcon from '../icons/screen-sharing-enabled.vue'
 import ScreenShareDisabledIcon from '../icons/screen-sharing-disabled.vue'
@@ -162,11 +160,61 @@ import NotificationIcon from '../icons/notification.vue'
 import NotificationActiveIcon from '../icons/notification-active.vue'
 import { searchManager } from '../services/search-manager'
 import { MenuItems, menuManager } from '../services/menu-manager'
-import { settingsManager, UpdateMode } from '../services/settings-manager'
+import { settingsManager } from '../services/settings-manager'
 import { mimiriPlatform } from '../services/mimiri-platform'
 import { useEventListener } from '@vueuse/core'
+import { AccountType } from '../services/storage/type'
 
 const hasFocus = ref(true)
+
+const status = computed(() => {
+	const isLoggedIn = noteManager.state.isLoggedIn
+	const isOnline = noteManager.state.isOnline
+	const workOffline = noteManager.state.workOffline
+	const accountType = noteManager.state.accountType
+
+	if (!isLoggedIn) {
+		return 'not-logged-in'
+	}
+
+	if (accountType !== AccountType.Cloud) {
+		return 'offline'
+	}
+
+	if (isOnline) {
+		return 'online'
+	}
+
+	if (workOffline) {
+		return 'offline'
+	}
+
+	return 'connecting'
+})
+
+const title = computed(() => {
+	const isLoggedIn = noteManager.state.isLoggedIn
+	const isOnline = noteManager.state.isOnline
+	const workOffline = noteManager.state.workOffline
+	const accountType = noteManager.state.accountType
+
+	if (!isLoggedIn) {
+		return 'Account (Offline)'
+	}
+
+	if (accountType !== AccountType.Cloud) {
+		return 'Account (Offline)'
+	}
+
+	if (isOnline) {
+		return 'Account (Online)'
+	}
+
+	if (workOffline) {
+		return 'Account (Offline)'
+	}
+	return 'Account (Connecting)'
+})
 
 const updateTitleBar = () => {
 	hasFocus.value = document.hasFocus()
@@ -199,7 +247,7 @@ const checkSearch = e => {
 	}
 }
 
-const endEdit = e => {
+const endEdit = () => {
 	searchManager.updateTerm(searchInput.value.value)
 }
 
@@ -253,19 +301,27 @@ const showMenu = (rect, menu) => {
 		menuManager.showMenu({ x: rect.left, y: rect.bottom - 30, backdropTop: 32 }, menuManager.helpMenu)
 	}
 	if (menu === 'account') {
+		if (noteManager.state.accountType === AccountType.None) {
+			menuManager.showMenu({ x: rect.right, y: rect.bottom - 30, backdropTop: 32, alignRight: true }, [
+				MenuItems.CreateAccount,
+				MenuItems.Separator,
+				MenuItems.Login,
+			])
+			return
+		}
 		menuManager.showMenu({ x: rect.right, y: rect.bottom - 30, backdropTop: 32, alignRight: true }, [
-			...(noteManager.isAnonymous
+			...(noteManager.state.isAnonymous
 				? [MenuItems.CreatePassword, MenuItems.DeleteAccount]
 				: [
 						MenuItems.ChangeUsername,
 						MenuItems.ChangePassword,
 						...(mimiriPlatform.isElectron ? [MenuItems.SetPin] : []),
-						MenuItems.DeleteAccount,
 					]),
 			...(mimiriPlatform.isDesktop ? [MenuItems.Separator, MenuItems.ManageSubscription] : []),
-			...(!noteManager.isAnonymous && ipcClient.isAvailable ? [MenuItems.Separator] : []),
-			...(noteManager.isAnonymous ? [MenuItems.Login] : [MenuItems.Logout]),
-			...(ipcClient.isAvailable ? [MenuItems.Separator, MenuItems.GoOnline] : []),
+			...(!noteManager.state.isAnonymous && ipcClient.isAvailable ? [MenuItems.Separator] : []),
+			...(noteManager.state.isAnonymous ? [MenuItems.Login] : [MenuItems.Logout]),
+			MenuItems.Separator,
+			MenuItems.WorkOffline,
 		])
 	}
 }

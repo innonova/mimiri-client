@@ -33,7 +33,7 @@ export class CryptSignature {
 		if (algorithm !== 'RSA;3072' && algorithm !== 'RSA;4096') {
 			throw new Error(`Algorithm not supported ${algorithm}`)
 		}
-		let key = await crypto.subtle.generateKey(
+		const key = await crypto.subtle.generateKey(
 			{
 				name: 'RSASSA-PKCS1-v1_5',
 				modulusLength: parseInt(algorithm.split(';')[1]),
@@ -125,7 +125,7 @@ export class CryptSignature {
 	}
 
 	async verifyRaw(signature: string, data: Uint8Array) {
-		return await crypto.subtle.verify('RSASSA-PKCS1-v1_5', this.publicKey, fromBase64(signature), data)
+		return await crypto.subtle.verify('RSASSA-PKCS1-v1_5', this.publicKey, fromBase64(signature), data as any)
 	}
 
 	async encrypt(data: string) {

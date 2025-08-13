@@ -2,7 +2,7 @@ import { ipcClient } from '../global'
 
 class WatchDog {
 	check() {
-		ipcClient.watchDog.ok()
+		void ipcClient.watchDog.ok()
 	}
 }
 

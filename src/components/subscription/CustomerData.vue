@@ -67,7 +67,7 @@
 				</button>
 			</div>
 			<div class="text-right" :class="{ 'text-red-500': changed && !countryValid }">Country *</div>
-			<CountrySelector v-model:code="countryCode" v-model:name="countryName" :disabled="disabled"></CountrySelector>
+			<CountrySelector v-model:code="countryCode" v-model:name="countryName" :disabled="disabled" />
 			<div class="text-right" :class="{ 'text-red-500': changed && !stateValid }">
 				State/Province <span v-if="stateRequired">*</span><sup v-if="!stateRequired">1)</sup>
 			</div>
@@ -77,7 +77,7 @@
 				v-model:name="stateName"
 				v-model:mode="stateMode"
 				:disabled="disabled"
-			></StateSelector>
+			/>
 			<div class="text-right">City <sup>1)</sup></div>
 			<input
 				v-model="city"
@@ -106,12 +106,12 @@
 				autocomplete="street-address"
 				data-testid="address"
 				:disabled="disabled"
-			></textarea>
-			<div></div>
+			/>
+			<div />
 			<div>* required</div>
-			<div></div>
+			<div />
 			<div><sup>1)</sup> We recommend filling out all relevant fields if you need a tax invoice</div>
-			<div></div>
+			<div />
 		</div>
 	</div>
 </template>
@@ -188,14 +188,14 @@ const showEmailVerification = computed(
 
 const verifyEmail = async () => {
 	if (customer.value && customer.value.email.includes('@') && !customer.value.emailVerified) {
-		await noteManager.paymentClient.verifyEmail()
+		await noteManager.payment.verifyEmail()
 		emailVerificationEmailSent.value = true
 	}
 }
 
 const save = async (termsAccepted?: boolean, privacyPolicyAccepted?: boolean) => {
 	if (valid.value && changed.value) {
-		await noteManager.paymentClient.saveCustomerData({
+		await noteManager.payment.saveCustomerData({
 			givenName: givenName.value,
 			familyName: familyName.value,
 			company: company.value,
@@ -218,7 +218,7 @@ const cancel = async () => {
 }
 
 const loadCustomer = async () => {
-	customer.value = await noteManager.paymentClient.getCustomerData()
+	customer.value = await noteManager.payment.getCustomerData()
 	if (customer.value) {
 		givenName.value = customer.value.givenName
 		familyName.value = customer.value.familyName
@@ -258,7 +258,7 @@ watch(
 )
 
 watch(countryCode, async () => {
-	const countries = await noteManager.paymentClient.getCountries()
+	const countries = await noteManager.payment.getCountries()
 	const country = countries.find(c => c.code === countryCode.value)
 	stateRequired.value = !!country?.states?.length
 })

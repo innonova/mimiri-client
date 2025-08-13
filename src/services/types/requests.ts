@@ -35,6 +35,7 @@ export interface CreateUserRequest extends BasicRequest {
 		hash: string
 		iterations: number
 		algorithm: string
+		token: string
 	}
 	symmetricAlgorithm: string
 	symmetricKey: string
@@ -105,6 +106,7 @@ export interface UpdateUserRequest extends BasicRequest {
 		hash: string
 		iterations: number
 		algorithm: string
+		token: string
 	}
 	symmetricAlgorithm: string
 	symmetricKey: string
@@ -127,6 +129,7 @@ export enum NoteActionType {
 	Create = 'create',
 	Delete = 'delete',
 	Update = 'update',
+	Unregister = 'unregister',
 }
 
 export interface NoteAction {
@@ -160,4 +163,35 @@ export interface AddCommentRequest extends BasicRequest {
 	postId: Guid
 	displayName: string
 	comment: string
+}
+
+export interface SyncRequest extends BasicRequest {
+	noteSince: number
+	keySince: number
+}
+
+export interface NoteSyncItem {
+	type: string
+	data: string
+	version: number
+}
+
+export interface NoteSyncAction {
+	id: Guid
+	keyName: Guid
+	type: 'create' | 'update' | 'delete'
+	items: NoteSyncItem[]
+}
+
+export interface KeySyncAction {
+	id: Guid
+	name: Guid
+	type: 'create' | 'delete'
+	data: string
+}
+
+export interface SyncPushRequest extends BasicRequest {
+	notes: NoteSyncAction[]
+	keys: KeySyncAction[]
+	syncId: string
 }

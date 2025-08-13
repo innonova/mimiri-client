@@ -1,17 +1,13 @@
 <template>
-	<Invoices v-if="selectedId === 'invoices'" @pay-invoice="payInvoice"></Invoices>
-	<PayInvoice
-		v-if="selectedId === 'pay-invoice'"
-		:invoice="activeInvoice"
-		@pay-in-progress="payInProgress"
-	></PayInvoice>
+	<Invoices v-if="selectedId === 'invoices'" @pay-invoice="payInvoice" />
+	<PayInvoice v-if="selectedId === 'pay-invoice'" :invoice="activeInvoice" @pay-in-progress="payInProgress" />
 	<WaitingForPayment
 		v-if="selectedId === 'pay-in-progress'"
 		:invoice-id="invoiceId"
 		@close="closeWaiting"
 		:waiting-for-user="waitingForUser"
 		:link="payLink"
-	></WaitingForPayment>
+	/>
 </template>
 
 <script setup lang="ts">
@@ -31,7 +27,7 @@ const activeInvoice = ref<Invoice>()
 const payLink = ref('')
 
 onMounted(() => {
-	noteManager.registerActionListener({
+	noteManager.tree.registerActionListener({
 		select: (id: Guid) => {
 			if (id === 'settings-invoices') {
 				selectedId.value = 'invoices'

@@ -1,6 +1,6 @@
 <template>
 	<div v-if="settingsManager.debugEnabled" class="flex flex-col h-full">
-		<TabBar @selected="tabSelected" :items="['Settings', 'Errors', 'Messages', 'Latency']"></TabBar>
+		<TabBar @selected="tabSelected" :items="['Settings', 'Errors', 'Messages', 'Latency']" />
 		<div v-if="selectedTab === 'Settings'" class="w-full h-full overflow-y-auto">
 			<div class="flex items-center gap-2 p-2">
 				<button @click="testError" class="primary">Test Error</button>
@@ -35,19 +35,19 @@
 				<div class="flex items-baseline gap-1">
 					<input type="number" v-model="callErrorFrequency" class="border border-gray-300 w-24 rounded p-1" />%
 				</div>
-				<div></div>
-				<div></div>
+				<div />
+				<div />
 				<label for="call-error-delay">Call error delay</label>
 				<div class="flex items-baseline gap-1">
 					<input type="number" v-model="callErrorDelay" class="border border-gray-300 w-24 rounded p-1" />ms
 				</div>
-				<div></div>
-				<div></div>
+				<div />
+				<div />
 				<label for="latency-threshold-enabled">Latency Threshold</label>
 				<div class="flex items-baseline gap-1">
 					<input type="number" v-model="latencyThreshold" class="border border-gray-300 w-24 rounded p-1" />ms
 				</div>
-				<div></div>
+				<div />
 				<div class="col-span-4 text-right">
 					<button @click="save" class="primary mt-3">Save</button>
 				</div>

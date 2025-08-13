@@ -1,6 +1,6 @@
 <template>
 	<div class="flex flex-col h-full">
-		<TabBar :items="['Current Plan']"></TabBar>
+		<TabBar :items="['Current Plan']" />
 		<div class="flex flex-col overflow-y-auto">
 			<div class="p-1 pt-2 flex" :data-testid="populated ? 'home-view' : ''">
 				<SubscriptionItem
@@ -18,7 +18,7 @@
 					@cancel="cancel"
 					@resume="resume"
 					@pay-invoice="payInvoice"
-				></SubscriptionItem>
+				/>
 				<input type="hidden" data-testid="current-subscription-sku" :value="product?.sku" />
 				<input type="hidden" data-testid="current-subscription-paid-until" :value="subscription?.paidUntil" />
 			</div>
@@ -38,7 +38,7 @@
 							title="copy"
 							@click="copyEmail"
 							class="w-5 hover:w-6 cursor-pointer"
-						></CopyIcon>
+						/>
 						<div v-if="copied" class="ml-1 cursor-default select-none">Copied</div>
 					</li>
 				</ul>
@@ -69,8 +69,8 @@ onMounted(async () => {
 
 const populate = async () => {
 	populated.value = false
-	product.value = await noteManager.paymentClient.getCurrentSubscriptionProduct()
-	subscription.value = await noteManager.paymentClient.getCurrentSubscription()
+	product.value = await noteManager.payment.getCurrentSubscriptionProduct()
+	subscription.value = await noteManager.payment.getCurrentSubscription()
 	populated.value = true
 }
 
@@ -79,12 +79,12 @@ const change = async () => {
 }
 
 const cancel = async () => {
-	await noteManager.paymentClient.cancelSubscription()
+	await noteManager.payment.cancelSubscription()
 	await populate()
 }
 
 const resume = async () => {
-	await noteManager.paymentClient.resumeSubscription()
+	await noteManager.payment.resumeSubscription()
 	await populate()
 }
 

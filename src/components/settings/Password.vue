@@ -1,15 +1,15 @@
 <template>
-	<div class="flex flex-col h-full">
-		<TabBar @selected="tabSelected" :items="['Generate', 'Create']"></TabBar>
+	<div class="flex flex-col h-full" data-testid="settings-view-password">
+		<TabBar @selected="tabSelected" :items="['Generate', 'Create']" />
 		<div class="overflow-y-auto pb-10">
 			<div v-if="passwordMode === 'generate'" class="max-w-110 mr-2" data-testid="settings-view-password">
-				<PasswordGenerator ref="passwordGenerator" mode="mimiri" @password="onPasswordGenerated"></PasswordGenerator>
+				<PasswordGenerator ref="passwordGenerator" mode="mimiri" @password="onPasswordGenerated" />
 				<div class="p-1 mt-8 m-aut0 flex">
 					<div class="w-24 flex items-center">Generated:</div>
 					<div class="w-52 text-right relative flex">
 						<input v-model="generatedPassword" tabindex="2" type="text" class="basic-input" />
 						<div class="w-0 h-0 pt-1 overflow-visible select-none">
-							<RefreshIcon class="w-5 h-5 ml-2" @click="regeneratePassword"></RefreshIcon>
+							<RefreshIcon class="w-5 h-5 ml-2" @click="regeneratePassword" />
 						</div>
 					</div>
 				</div>
@@ -25,16 +25,16 @@
 						/>
 						<div v-if="generatedPassword" class="desktop:w-0 desktop:h-0 pt-0.5 overflow-visible">
 							<div v-if="generatedPasswordMatch" class="flex items-center w-52 desktop:ml-2 mt-1.5 desktop:mt-0.5">
-								<AvailableIcon class="w-5 h-5 mr-1 inline-block"></AvailableIcon> Matching
+								<AvailableIcon class="w-5 h-5 mr-1 inline-block" /> Matching
 							</div>
 							<div v-if="!generatedPasswordMatch" class="flex items-center w-52 desktop:ml-2 mt-1.5 desktop:mt-0.5">
-								<UnavailableIcon class="w-5 h-5 mr-1 inline-block"></UnavailableIcon> Not matching
+								<UnavailableIcon class="w-5 h-5 mr-1 inline-block" /> Not matching
 							</div>
 						</div>
 					</div>
 				</div>
 				<div class="px-1 m-auto flex">
-					<div v-if="capsLockOn" class="w-24 flex items-center"></div>
+					<div v-if="capsLockOn" class="w-24 flex items-center" />
 					<div v-if="capsLockOn" class="py-1">Caps Lock is on!</div>
 				</div>
 			</div>
@@ -52,8 +52,8 @@
 						/>
 						<div class="desktop:w-0 desktop:h-0 overflow-visible">
 							<div class="absolute right-2 invisible desktop:visible" @mousedown="showPassword" @mouseup="hidePassword">
-								<ShowPasswordIcon v-if="passwordFieldType === 'password'" class="w-5 h-5 mt-1"></ShowPasswordIcon>
-								<ShowingPasswordIcon v-if="passwordFieldType === 'text'" class="w-5 h-5 mt-1"></ShowingPasswordIcon>
+								<ShowPasswordIcon v-if="passwordFieldType === 'password'" class="w-5 h-5 mt-1" />
+								<ShowingPasswordIcon v-if="passwordFieldType === 'text'" class="w-5 h-5 mt-1" />
 							</div>
 						</div>
 						<div v-if="passwordQuality" class="desktop:w-0 desktop:h-0 overflow-visible">
@@ -61,19 +61,19 @@
 								v-if="passwordQuality === 'free-access'"
 								class="flex items-center w-52 h-7 desktop:ml-2 mt-1.5 desktop:mt-0 text-left"
 							>
-								<FreeAccessIcon class="w-5 h-5 mr-1 inline-block"></FreeAccessIcon> Not really a password
+								<FreeAccessIcon class="w-5 h-5 mr-1 inline-block" /> Not really a password
 							</div>
 							<div
 								v-if="passwordQuality === 'casual-use-only'"
 								class="flex items-center w-52 h-7 desktop:ml-2 mt-1.5 desktop:mt-0 text-left"
 							>
-								<CasualOnlyIcon class="w-5 h-5 mr-1 inline-block"></CasualOnlyIcon> Very limited security
+								<CasualOnlyIcon class="w-5 h-5 mr-1 inline-block" /> Very limited security
 							</div>
 							<div
 								v-if="passwordQuality === 'acceptable-security'"
 								class="flex items-center w-52 h-7 desktop:ml-2 mt-1.5 desktop:mt-0 text-left"
 							>
-								<LightSecurityIcon class="w-5 h-5 mr-1 inline-block"></LightSecurityIcon> Acceptable
+								<LightSecurityIcon class="w-5 h-5 mr-1 inline-block" /> Acceptable
 							</div>
 						</div>
 					</div>
@@ -91,16 +91,16 @@
 						/>
 						<div v-if="createdPassword" class="desktop:w-0 desktop:h-0 pt-1 overflow-visible">
 							<div v-if="createdPasswordMatch" class="flex items-center w-52 desktop:ml-2 mt-1.5 desktop:mt-0.5">
-								<AvailableIcon class="w-5 h-5 mr-1 inline-block"></AvailableIcon> Matching
+								<AvailableIcon class="w-5 h-5 mr-1 inline-block" /> Matching
 							</div>
 							<div v-if="!createdPasswordMatch" class="flex items-center w-52 desktop:ml-2 mt-1.5 desktop:mt-0.5">
-								<UnavailableIcon class="w-5 h-5 mr-1 inline-block"></UnavailableIcon> Not matching
+								<UnavailableIcon class="w-5 h-5 mr-1 inline-block" /> Not matching
 							</div>
 						</div>
 					</div>
 				</div>
 				<div class="px-1 m-auto flex">
-					<div v-if="capsLockOn" class="w-24 flex items-center"></div>
+					<div v-if="capsLockOn" class="w-24 flex items-center" />
 					<div v-if="capsLockOn" class="py-1">Caps Lock is on!</div>
 				</div>
 				<div class="p-1 m-auto flex">
@@ -116,8 +116,7 @@
 			<div class="mt-10 max-w-110 mr-2">
 				<hr />
 				<div class="w-full flex justify-end mt-2 gap-2">
-					<button class="primary" :disabled="!canSave" @click="save">Save</button>
-					<button class="secondary" @click="close">Close</button>
+					<button class="primary" :disabled="!canSave" @click="save" data-testid="save-button">Save</button>
 				</div>
 			</div>
 		</div>
@@ -140,7 +139,7 @@ import CasualOnlyIcon from '../../icons/casual-only.vue'
 import LightSecurityIcon from '../../icons/light-security.vue'
 import TabBar from '../elements/TabBar.vue'
 
-const emit = defineEmits(['close'])
+// const emit = defineEmits(['close'])
 
 const passwordGenerator = ref(null)
 const generatedPassword = ref('')
@@ -168,7 +167,7 @@ const time20M = computed(() => `~${passwordTimeFactor.time20M}s`)
 
 watch(createdPassword, value => {
 	if (value) {
-		const result = zxcvbn(value, [noteManager.username])
+		const result = zxcvbn(value, [noteManager.state.username])
 		const days = result.crack_times_seconds.offline_slow_hashing_1e4_per_second / 60 / 60 / 24
 		if (days < 0.0001) {
 			passwordQuality.value = 'free-access'
@@ -185,11 +184,11 @@ watch(createdPassword, value => {
 		passwordQuality.value = ''
 	}
 })
-watch([createdPassword, createdPasswordRepeat], value => {
+watch([createdPassword, createdPasswordRepeat], () => {
 	createdPasswordMatch.value = createdPassword.value === createdPasswordRepeat.value
 })
 
-watch([generatedPassword, generatedPasswordRepeat], value => {
+watch([generatedPassword, generatedPasswordRepeat], () => {
 	generatedPasswordMatch.value = generatedPassword.value === generatedPasswordRepeat.value
 })
 
@@ -205,13 +204,13 @@ const hidePassword = () => {
 	passwordFieldType.value = 'password'
 }
 
-const tabGenerateClick = () => {
-	passwordMode.value = 'generate'
-}
+// const tabGenerateClick = () => {
+// 	passwordMode.value = 'generate'
+// }
 
-const tabCreateClick = () => {
-	passwordMode.value = 'create'
-}
+// const tabCreateClick = () => {
+// 	passwordMode.value = 'create'
+// }
 
 const tabSelected = item => {
 	if (item === 'Create') {
@@ -235,16 +234,16 @@ const save = () => {
 		passwordDialog.value.showAction(async pwd => {
 			try {
 				if (passwordMode.value === 'generate') {
-					await noteManager.changeUserNameAndPassword(
-						noteManager.username,
+					await noteManager.auth.changeUserNameAndPassword(
+						noteManager.state.username,
 						pwd,
 						generatedPassword.value,
 						generatedIterations.value,
 					)
 					generatedPasswordRepeat.value = ''
 				} else {
-					await noteManager.changeUserNameAndPassword(
-						noteManager.username,
+					await noteManager.auth.changeUserNameAndPassword(
+						noteManager.state.username,
 						pwd,
 						createdPassword.value,
 						iterations.value,
@@ -257,9 +256,5 @@ const save = () => {
 			return false
 		})
 	}
-}
-
-const close = () => {
-	emit('close')
 }
 </script>

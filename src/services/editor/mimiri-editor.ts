@@ -8,9 +8,7 @@ import { EditorSimple } from './editor-simple'
 import { EditorDisplay } from './editor-display'
 import { settingsManager } from '../settings-manager'
 import { clipboardManager, debug, noteManager, saveEmptyNodeDialog } from '../../global'
-import { VersionConflictError } from '../mimer-client'
-
-const delay = ms => new Promise(resolve => setTimeout(resolve, ms))
+import { VersionConflictError } from '../storage/mimiri-client'
 
 export class MimiriEditor {
 	private _history = new NoteHistory(this)
@@ -197,7 +195,7 @@ export class MimiriEditor {
 				}
 			}
 		}
-		this._activeEditor.readonly = note.isCache || note.isSystem
+		this._activeEditor.readonly = note.isSystem
 	}
 
 	public async save(): Promise<string> {
@@ -207,14 +205,14 @@ export class MimiriEditor {
 		const initialText = this._activeEditor.initialText
 		if (noteId && targetText !== initialText) {
 			if (targetText.length === 0 && initialText.length > 5) {
-				const doSave = await saveEmptyNodeDialog.value.show(noteManager.getNoteById(noteId))
+				const doSave = await saveEmptyNodeDialog.value.show(noteManager.tree.getNoteById(noteId))
 				if (!doSave) {
 					return 'not-saved-empty'
 				}
 			}
 			while (true) {
 				try {
-					const note = noteManager.getNoteById(noteId)
+					const note = noteManager.tree.getNoteById(noteId)
 					if (targetText === note.text) {
 						if (note.id === this.note.id) {
 							this.resetChanged()
@@ -224,19 +222,23 @@ export class MimiriEditor {
 					if (initialText !== note.text) {
 						result = 'lost-update'
 					}
-					const sizeBefore = note.size
+					// const sizeBefore = note.size
 					note.text = targetText
-					const sizeAfter = note.size
-					if (sizeAfter > noteManager.maxNoteSize) {
-						return 'note-size'
-					} else if (noteManager.usedBytes > noteManager.maxBytes && sizeAfter >= sizeBefore) {
-						return 'total-size'
-					} else {
-						await note.save()
-						if (note.id === this.note.id) {
-							this.resetChanged()
-						}
+					// const sizeAfter = note.size
+					// if (sizeAfter > noteManager.state.userStats.maxNoteBytes && noteManager.state.userStats.maxNoteBytes > 0) {
+					// 	return 'note-size'
+					// } else if (
+					// 	noteManager.state.userStats.size > noteManager.state.userStats.maxTotalBytes &&
+					// 	sizeAfter >= sizeBefore &&
+					// 	noteManager.state.userStats.maxTotalBytes > 0
+					// ) {
+					// 	return 'total-size'
+					// } else {
+					await note.save()
+					if (note.id === this.note.id) {
+						this.resetChanged()
 					}
+					// }
 					break
 				} catch (ex) {
 					debug.logError(`Failed to save note ${noteId}`, ex)
@@ -253,19 +255,19 @@ export class MimiriEditor {
 	public activateEdit() {
 		this.activateEditor()
 		this._activeEditor.show(this.note.text, this.note.scrollTop)
-		this._activeEditor.readonly = this.note.isCache || this.note.isSystem
+		this._activeEditor.readonly = this.note.isSystem
 	}
 
 	public reloadNode() {
 		if (this.note) {
 			this._activeEditor.updateText(this.note.text)
-			this._activeEditor.readonly = this.note.isCache || this.note.isSystem
+			this._activeEditor.readonly = this.note.isSystem
 		}
 	}
 
 	public resetChanged() {
 		this._activeEditor.resetChanged()
-		this._activeEditor.readonly = this.note.isCache || this.note.isSystem
+		this._activeEditor.readonly = this.note.isSystem
 	}
 
 	public setHistoryText(text: string) {
@@ -274,7 +276,7 @@ export class MimiriEditor {
 
 	public hideHistory() {
 		this._activeEditor.hideHistory()
-		this._activeEditor.readonly = (this.note?.isCache || this.note?.isSystem) ?? true
+		this._activeEditor.readonly = this.note?.isSystem ?? true
 	}
 
 	public showHistory() {

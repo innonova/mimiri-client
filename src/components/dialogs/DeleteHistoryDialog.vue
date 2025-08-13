@@ -8,17 +8,14 @@
 				<div v-if="!deleteAllHistory">(keeping only the most recent 10 versions)</div>
 				<div class="mt-4">Affected note:</div>
 				<div class="mt-3 ml-3 mb-1 italic">
-					{{ noteManager.selectedViewModel?.title }}
+					{{ noteManager.tree.selectedViewModelRef().value?.title }}
 				</div>
 				<div v-if="shareParticipants.length > 0" class="mt-5">This note is shared with:</div>
-				<div
-					v-if="shareParticipants.length > 0 && shareParticipants.length < 5"
-					v-for="participant in shareParticipants"
-					:key="participant.username"
-					class="mt-3 ml-3 mb-1 italic"
-				>
-					{{ participant.username }}
-				</div>
+				<template v-if="shareParticipants.length > 0 && shareParticipants.length < 5">
+					<div v-for="participant in shareParticipants" :key="participant.username" class="mt-3 ml-3 mb-1 italic">
+						{{ participant.username }}
+					</div>
+				</template>
 				<div v-if="shareParticipants.length >= 5" class="mt-3 ml-3 mb-1 italic">
 					{{ shareParticipants.length }} other users
 				</div>
@@ -43,9 +40,9 @@ let callback: () => void
 const show = async (all: boolean, cb: () => void) => {
 	deleteAllHistory.value = !!all
 	callback = cb
-	if (noteManager.selectedNote?.isShared) {
-		shareParticipants.value = (await noteManager.getShareParticipants(noteManager.selectedNote.id)).filter(
-			item => item.username !== noteManager.username,
+	if (noteManager.tree.selectedNote()?.isShared) {
+		shareParticipants.value = (await noteManager.note.getShareParticipants(noteManager.tree.selectedNote().id)).filter(
+			item => item.username !== noteManager.state.username,
 		)
 	} else {
 		shareParticipants.value = []
@@ -59,9 +56,9 @@ const close = () => {
 
 const submitDialog = async () => {
 	if (deleteAllHistory.value) {
-		await noteManager.selectedNote.deleteHistory()
+		await noteManager.tree.selectedNote().deleteHistory()
 	} else {
-		await noteManager.selectedNote.deleteArchivedHistory()
+		await noteManager.tree.selectedNote().deleteArchivedHistory()
 	}
 	callback()
 	close()

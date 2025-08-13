@@ -1,6 +1,6 @@
 <template>
 	<div class="flex flex-col h-full">
-		<TabBar :items="['General']"></TabBar>
+		<TabBar :items="['General']" />
 		<div class="overflow-y-auto pb-10">
 			<div class="p-1 pt-2 m-auto text-left">
 				<label>
@@ -26,7 +26,7 @@
 			>
 				<label>
 					<input type="checkbox" v-model="openAtLogin" class="mr-1 relative top-0.5" />
-					Lunch Mimiri Notes on Login
+					Launch Mimiri Notes on Login
 				</label>
 			</div>
 			<div v-if="mimiriPlatform.isDesktop && !mimiriPlatform.isWeb" class="p-1 pt-2 m-auto text-left">
@@ -77,8 +77,6 @@ import { settingsManager } from '../../services/settings-manager'
 import { mimiriPlatform } from '../../services/mimiri-platform'
 import TabBar from '../elements/TabBar.vue'
 import { env } from '../../global'
-
-const emit = defineEmits(['close'])
 
 const darkMode = ref(false)
 const openAtLogin = ref(false)

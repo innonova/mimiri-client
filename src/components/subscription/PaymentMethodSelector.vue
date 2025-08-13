@@ -29,12 +29,7 @@
 					:disabled="disabled"
 					:data-testid="`payment-method-${method.name}`"
 				/>
-				<PaymentMethodItem
-					:method="method"
-					:is-default="false"
-					:show-actions="false"
-					:disabled="disabled"
-				></PaymentMethodItem>
+				<PaymentMethodItem :method="method" :is-default="false" :show-actions="false" :disabled="disabled" />
 				<!-- <div class="flex flex-col">
 					<div>
 						<img class="h-8" :src="`https://mimiri.payrexx.com/Frontend/Images/CardIcons/card_${method.brand}.svg`" />
@@ -54,7 +49,7 @@ import { noteManager } from '../../global'
 import ItemHeader from './ItemHeader.vue'
 import PaymentMethodItem from './PaymentMethodItem.vue'
 
-const props = defineProps<{
+defineProps<{
 	disabled?: boolean
 }>()
 
@@ -63,7 +58,7 @@ const methods = ref<PaymentMethod[]>()
 const loaded = ref(false)
 
 onMounted(async () => {
-	const items = await noteManager.paymentClient.getPaymentMethods()
+	const items = await noteManager.payment.getPaymentMethods()
 	methods.value = items
 	if (methods.value.length > 0) {
 		model.value = undefined

@@ -1,6 +1,6 @@
 <template>
 	<div class="flex flex-col h-full">
-		<TabBar :items="['PIN Code']"></TabBar>
+		<TabBar :items="['PIN Code']" />
 		<div class="overflow-y-auto pb-10">
 			<div class="flex flex-col items-center mt-10 max-w-110">
 				<div class="flex">
@@ -100,7 +100,7 @@ const save = () => {
 	inputEnabled = false
 	passwordDialog.value.show(
 		() => {
-			localAuth.setPin(pin.value)
+			void localAuth.setPin(pin.value)
 			inputEnabled = true
 			changed.value = false
 		},

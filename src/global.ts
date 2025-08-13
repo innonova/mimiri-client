@@ -1,8 +1,8 @@
-import { ref } from 'vue'
-import { NoteManager } from './services/note-manager'
+import { ref, watch } from 'vue'
+import { MimiriStore } from './services/storage/mimiri-store'
 import type { ContextMenuControl } from './services/types/context-menu'
 import type { MimerNote } from './services/types/mimer-note'
-import type { Guid } from './services/types/guid'
+import { emptyGuid, type Guid } from './services/types/guid'
 import { IpcClient } from './services/ipc-client'
 import { BrowserHistory } from './services/browser-history'
 import { UpdateManager } from './services/update-manager'
@@ -13,6 +13,7 @@ import { ClipboardManager } from './services/clipboard-manager'
 import { FontManager } from './services/font-manager'
 import { BlogManager } from './services/blog-manager'
 import { DebugManager } from './services/debug-manager'
+import { Currency, type SubscriptionProduct } from './services/types/subscription'
 
 export const env = import.meta.env
 const host = env.VITE_MIMER_API_HOST
@@ -26,7 +27,9 @@ export const debug = new DebugManager()
 
 export const ipcClient = new IpcClient()
 export const browserHistory = new BrowserHistory()
-export const noteManager = new NoteManager(host, paymentHost, serverKey, serverKeyId)
+export const noteManager = new MimiriStore(host, paymentHost, serverKeyId, serverKey, async note => {
+	await noteManager.tree.getNoteById(note.id)?.update(note)
+})
 export const updateManager = new UpdateManager(env.VITE_MIMER_UPDATE_HOST)
 export const blogManager = new BlogManager(noteManager)
 export const notificationManager = new NotificationManager()
@@ -44,6 +47,7 @@ export const emptyRecycleBinDialog = ref(null)
 export const passwordGeneratorDialog = ref(null)
 export const saveEmptyNodeDialog = ref(null)
 export const limitDialog = ref(null)
+export const syncErrorDialog = ref(null)
 export const shareDialog = ref(null)
 export const acceptShareDialog = ref(null)
 export const passwordDialog = ref(null)
@@ -56,19 +60,29 @@ export const conversionData = ref({ username: '', password: '' })
 export const createNewNode = ref(false)
 export const createNewRootNode = ref(false)
 export const searchInput = ref(null)
+export const appStatus = ref<string | null>('initializing')
+export const inconsistencyDialog = ref(null)
+export const syncStatus = ref('idle')
+export const syncOverSizeNote = ref(emptyGuid())
+export const loginRequiredToGoOnline = ref(false)
+
+export const subscriptionStage = ref('subscription')
+export const subscriptionNewProduct = ref<SubscriptionProduct>()
+export const subscriptionCurrency = ref<Currency>(Currency.CHF)
+
+export const blockUserInput = ref(false)
 
 export const clipboardNote = ref<MimerNote>(undefined)
 export const isCut = ref(false)
 export const dragId = ref<Guid>(undefined)
 
-export const showShareOffers = ref(false)
 export const showSearchBox = ref(false)
 
 export const mimiriEditor = new MimiriEditor()
 
 export const clipboardManager = new ClipboardManager()
 
-export const features = ['share-code']
+export const features = []
 
 export const updateKeys = [
 	{
@@ -78,3 +92,7 @@ export const updateKeys = [
 		current: true,
 	},
 ]
+
+// watch(syncStatus, newStatus => {
+// 	console.log('Synchronization status changed:', newStatus)
+// })

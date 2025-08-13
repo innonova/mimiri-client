@@ -5,16 +5,19 @@ export interface NoteItem {
 	version: number
 	type: string
 	data: any
-	updated?: boolean
 	changed?: boolean
 	size?: number
+	modified?: string
+	created?: string
 }
 
 export class Note {
 	public id: Guid = newGuid()
 	public keyName: Guid
 	public items: NoteItem[] = []
-	public isCache: boolean
+	public sync: number
+	public modified: string
+	public created: string
 
 	public getItem(type: string) {
 		let result: NoteItem = this.items.find(item => item.type === type)

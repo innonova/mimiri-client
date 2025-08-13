@@ -3,17 +3,18 @@
 		<div
 			class="rounded-sm overflow-hidden h-[30px] desktop:h-[25px] flex items-center py-[19px] desktop:py-0 bg-item-selected"
 		>
-			<div class="flex items-center ml-1 mr-0.5 h-full min-w-5 desktop:w-4 desktop:min-w-4"></div>
+			<div class="flex items-center ml-1 mr-0.5 h-full min-w-5 desktop:w-4 desktop:min-w-4" />
 			<NoteIcon
 				class="w-[30px] h-[30px] desktop:w-[23px] desktop:h-[23px] p-0.5 mr-1 desktop:mr-0.5"
-				:class="{ 'text-shared': createNewNode && noteManager.selectedViewModel?.shared }"
-			></NoteIcon>
+				:class="{ 'text-shared': createNewNode && noteManager.tree.selectedViewModelRef().value?.shared }"
+			/>
 			<input
 				class="outline-none bg-item-selected! border-collapse p-0! pt-px flex-1 min-w-1 text-size-base!"
 				ref="nameInput"
 				type="text"
 				@blur="endEdit"
 				@keydown="checkCancelEdit"
+				data-testid="new-tree-node-input"
 			/>
 		</div>
 	</div>
@@ -45,13 +46,13 @@ const checkCancelEdit = e => {
 	}
 }
 
-const endEdit = async e => {
+const endEdit = async () => {
 	const name = nameInput.value?.value.trim()
 	if (name) {
-		if (createNewNode.value && noteManager.selectedNote) {
-			await noteManager.selectedNote.addChild(name)
+		if (createNewNode.value && noteManager.tree.selectedNote()) {
+			await noteManager.tree.selectedNote().addChild(name)
 		} else if (createNewRootNode.value) {
-			await noteManager.root.addChild(name)
+			await noteManager.tree.root().addChild(name)
 		}
 		mimiriEditor.focus()
 	}

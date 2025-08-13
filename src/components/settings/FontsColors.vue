@@ -1,6 +1,6 @@
 <template>
 	<div class="flex flex-col h-full">
-		<TabBar :items="['Fonts']"></TabBar>
+		<TabBar :items="['Fonts']" />
 		<div class="overflow-y-auto pb-10">
 			<div class="grid grid-cols-[5rem_12rem] gap-3 items-baseline mx-1 mt-2">
 				<div class="col-span-2">Editor</div>
@@ -69,8 +69,6 @@ import { settingsManager } from '../../services/settings-manager'
 import TabBar from '../elements/TabBar.vue'
 import { fontManager } from '../../global'
 
-const emit = defineEmits(['close'])
-
 const editorFontFamily = ref('')
 const customFontFamily = ref('')
 const editorFontSize = ref(14)
@@ -114,7 +112,7 @@ const save = async () => {
 		settingsManager.editorFontFamily = customFontFamily.value
 	}
 	settingsManager.editorFontSize = editorFontSize.value
-	var root = document.querySelector(':root') as HTMLElement
+	const root = document.querySelector(':root') as HTMLElement
 	root.style.setProperty(
 		'--font-editor',
 		`'${editorFontFamily.value}', 'Consolas', 'Menlo', 'Droid Sans Mono', 'monospace', 'Courier New'`,

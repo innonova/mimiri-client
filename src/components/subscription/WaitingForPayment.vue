@@ -2,7 +2,7 @@
 	<div class="flex select-none">
 		<div class="py-2 px-4 bg-info cursor-default">Payment in progress</div>
 	</div>
-	<div class="bg-info w-full h-2 mb-2"></div>
+	<div class="bg-info w-full h-2 mb-2" />
 	<div class="p-1 pt-2 mt-5 text-center max-w-110" data-testid="waiting-view">
 		<div v-if="waitingForUser">
 			<div>Waiting for payment to be completed in browser window</div>
@@ -12,7 +12,7 @@
 		</div>
 		<div v-if="!waitingForUser">Waiting for payment to complete (this will happen automatically)</div>
 		<div class="flex items-center justify-center my-6">
-			<LoadingIcon class="animate-spin w-8 h-8 mr-2 inline-block"></LoadingIcon> {{ status }}
+			<LoadingIcon class="animate-spin w-8 h-8 mr-2 inline-block" /> {{ status }}
 		</div>
 		<div v-if="running" class="flex justify-center gap-2 mt-8">
 			<button class="primary" @click="check" data-testid="waiting-check">Check</button>
@@ -43,12 +43,12 @@ let timerActive = false
 const check = async () => {
 	status.value = 'Checking...'
 	if (props.invoiceId) {
-		const inv = await noteManager.paymentClient.getInvoicePaymentStatus(props.invoiceId)
+		const inv = await noteManager.payment.getInvoicePaymentStatus(props.invoiceId)
 		if (inv.status === 'confirmed') {
 			running.value = false
 			status.value = 'Success'
 			await new Promise(resolve => setTimeout(resolve, 1000))
-			await noteManager.updateUserStats()
+			await noteManager.session.updateUserStats()
 			emit('close')
 			return
 		} else if (inv.status !== 'pending') {
@@ -59,18 +59,18 @@ const check = async () => {
 			return
 		}
 	} else if (props.expectedMethodCount) {
-		const methods = await noteManager.paymentClient.getPaymentMethods()
+		const methods = await noteManager.payment.getPaymentMethods()
 		if (methods.length === props.expectedMethodCount) {
 			running.value = false
 			status.value = 'Success'
 			await new Promise(resolve => setTimeout(resolve, 1000))
-			await noteManager.updateUserStats()
+			await noteManager.session.updateUserStats()
 			emit('close')
 			return
 		}
 	}
 	await new Promise(resolve => setTimeout(resolve, 250))
-	if (running && props.invoiceId) {
+	if (running.value && props.invoiceId) {
 		status.value = 'Waiting...'
 		nextCheck()
 	}
@@ -81,7 +81,7 @@ const nextCheck = () => {
 		timerActive = true
 		setTimeout(() => {
 			timerActive = false
-			check()
+			void check()
 		}, 1000)
 	}
 }

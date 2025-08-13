@@ -1,6 +1,6 @@
 import { computed } from 'vue'
 import { blogManager, updateManager } from '../../global'
-import type { NoteManager } from '../note-manager'
+import type { MimiriStore } from '../storage/mimiri-store'
 import { settingsManager, UpdateMode } from '../settings-manager'
 import { dateTimeNow } from './date-time'
 import type { Guid } from './guid'
@@ -19,7 +19,7 @@ export class VirtualNote extends MimerNote {
 	private _vChildren: MimerNote[] = []
 
 	constructor(
-		owner: NoteManager,
+		owner: MimiriStore,
 		parent: MimerNote | undefined,
 		private _tree: VirtualTree,
 	) {
@@ -32,18 +32,18 @@ export class VirtualNote extends MimerNote {
 		this.updateViewModel()
 	}
 
-	public async ensureChildren(skipUpdateViewModel: boolean = false) {}
+	public async ensureChildren(_skipUpdateViewModel: boolean = false) {}
 
 	public async refresh() {}
 	public async save() {
 		throw new Error('Cannot save virtual')
 	}
 
-	public async copy(target: MimerNote, index: number = -1) {
+	public async copy(target: MimerNote, _index: number = -1) {
 		throw new Error('Cannot copy virtual')
 	}
 
-	public async move(target: MimerNote, index: number = -1) {
+	public async move(target: MimerNote, _index: number = -1) {
 		throw new Error('Cannot move virtual')
 	}
 

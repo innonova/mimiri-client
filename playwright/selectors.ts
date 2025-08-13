@@ -1,7 +1,11 @@
+import { Locator } from '@playwright/test'
 import { mimiri } from './framework/mimiri-context'
 
 const tid = (id: string) => {
 	return mimiri().getByTestId(id)
+}
+export const appMain = {
+	status: () => tid('app-status'),
 }
 
 export const subHomeView = {
@@ -12,6 +16,13 @@ export const subHomeView = {
 
 export const mainToolbar = {
 	container: () => tid('main-toolbar'),
+	mobileMenu: () => tid('toolbar-mobile-menu'),
+	createMenu: () => tid('toolbar-create-menu'),
+	createSubNote: () => tid('toolbar-create-sub-note'),
+	toggleSearch: () => tid('toolbar-toggle-search'),
+	gotoSearch: () => tid('toolbar-goto-search'),
+	notifications: () => tid('toolbar-notifications'),
+	account: () => tid('toolbar-account'),
 }
 
 export const titleBar = {
@@ -24,6 +35,12 @@ export const titleBar = {
 	help: () => tid('title-menu-help'),
 }
 
+export const statusBar = {
+	container: () => tid('status-bar'),
+	syncStatus: () => tid('sync-status'),
+	syncStatusCode: () => tid('sync-status-code'),
+}
+
 export const menu = {
 	backdrop: () => tid('context-menu-backdrop'),
 	manageSubscription: () => tid('menu-manage-subscription'),
@@ -34,14 +51,52 @@ export const menu = {
 	settings: () => tid('menu-settings'),
 	refresh: () => tid('menu-refresh'),
 	delete: () => tid('menu-delete'),
+	recycle: () => tid('menu-recycle'),
 	rename: () => tid('menu-rename'),
+	duplicate: () => tid('menu-duplicate'),
 	copy: () => tid('menu-copy'),
 	cut: () => tid('menu-cut'),
 	paste: () => tid('menu-paste'),
+	copyPath: () => tid('menu-copy-path'),
 	share: () => tid('menu-share'),
+	receiveShare: () => tid('menu-receive-share'),
+	receiveShareUnder: () => tid('menu-receive-share-under'),
 	newNote: () => tid('menu-new-note'),
 	newRootNote: () => tid('menu-new-root-note'),
+	newChildNote: () => tid('menu-new-child-note'),
+	newSiblingNote: () => tid('menu-new-sibling-note'),
 	logout: () => tid('menu-logout'),
+	createAccount: () => tid('menu-create-account'),
+	login: () => tid('menu-login'),
+	workOffline: () => tid('menu-work-offline'),
+	properties: () => tid('menu-properties'),
+	emptyRecycleBin: () => tid('menu-empty-recycle-bin'),
+}
+
+export const note = {
+	newInput: () => tid('new-tree-node-input'),
+	renameInput: () => tid('rename-input'),
+	container: (title: string, parent?: Locator) => (parent || tid(`note-tree`)).getByTitle(title, { exact: true }),
+	item: (title: string, parent?: Locator) =>
+		(parent || tid(`note-tree`)).getByTitle(title, { exact: true }).locator('div').nth(0),
+	items: (title: string, parent?: Locator) => (parent || tid(`note-tree`)).getByTitle(title, { exact: true }),
+	expand: (title: string, parent?: Locator) =>
+		(parent || tid(`note-tree`)).getByTitle(title, { exact: true }).locator('div').nth(0).getByTitle('Expand'),
+	collapse: (title: string, parent?: Locator) =>
+		(parent || tid(`note-tree`)).getByTitle(title, { exact: true }).locator('div').nth(0).getByTitle('Collapse'),
+}
+
+export const editor = {
+	monaco: () => tid('editor-monaco-container').locator('.monaco-editor'),
+	simple: () => tid('editor-simple-container'),
+	display: () => tid('editor-display-container'),
+	back: () => tid('editor-back-button'),
+	save: () => tid('editor-save-button'),
+	toggleWordWrap: () => tid('editor-toggle-wordwrap'),
+	undo: () => tid('editor-undo-button'),
+	redo: () => tid('editor-redo-button'),
+	history: () => tid('editor-history-button'),
+	markAsPassword: () => tid('editor-mark-as-password'),
 }
 
 export const dialog = {
@@ -55,11 +110,17 @@ export const settingNodes = {
 	controlPanelOpen: () => tid('node-control-panel-open'),
 	controlPanelClosed: () => tid('node-control-panel-closed'),
 	recycleBin: () => tid('node-recycle-bin'),
+	recycleBinOpen: () => tid('node-recycle-bin-open'),
+	recycleBinClosed: () => tid('node-recycle-bin-closed'),
 	update: () => tid('node-settings-update'),
+	blog: () => tid('node-settings-blog'),
 	settingGroup: () => tid('node-settings-group'),
 	general: () => tid('node-settings-general'),
+	fontsAndColors: () => tid('node-settings-fonts-colors'),
 	pin: () => tid('node-settings-pin'),
 	account: () => tid('node-settings-account'),
+	connectCloud: () => tid('node-settings-upgrade'),
+	createAccount: () => tid('node-settings-create-account'),
 	username: () => tid('node-settings-username'),
 	password: () => tid('node-settings-password'),
 	delete: () => tid('node-settings-delete'),
@@ -80,15 +141,30 @@ export const settingView = {
 	username: () => tid('settings-view-username'),
 	password: () => tid('settings-view-password'),
 	deleteAccount: () => tid('settings-view-delete-account'),
+	cloudAccount: () => tid('settings-view-cloud-account'),
+	localAccount: () => tid('settings-view-local-account'),
+	currentPlan: () => tid('settings-view-current-plan'),
+}
+
+export const usernameInput = {
+	container: () => tid('username-input'),
+	status: () => tid('username-status'),
+	current: () => tid('username-status').getByTestId('username-current'),
+	invalid: () => tid('username-status').getByTestId('username-invalid'),
+	checking: () => tid('username-status').getByTestId('username-checking'),
+	unavailable: () => tid('username-status').getByTestId('username-unavailable'),
+	available: () => tid('username-status').getByTestId('username-available'),
 }
 
 export const loginCtrl = {
-	container: () => tid('login-view'),
-	username: () => tid('username-input'),
-	password: () => tid('password-input'),
-	button: () => tid('login-button'),
-	createAccountLink: () => tid('create-account-link'),
-	loginError: () => tid('login-error'),
+	container: () => tid('login-dialog'),
+	username: () => tid('login-dialog').getByTestId('username-input'),
+	password: () => tid('login-dialog').getByTestId('password-input'),
+	button: () => tid('login-dialog').getByTestId('login-button'),
+	cancelButton: () => tid('login-dialog').getByTestId('cancel-button'),
+	createAccountLink: () => tid('login-dialog').getByTestId('create-account-link'),
+	loginError: () => tid('login-dialog').getByTestId('login-error'),
+	serverIndicator: () => tid('login-dialog').getByTestId('server-indicator'),
 }
 
 export const promoteAccount = {
@@ -98,6 +174,26 @@ export const promoteAccount = {
 	repeat: () => tid('promote-account-view').getByTestId('repeat-input'),
 	noRecover: () => tid('promote-account-view').getByTestId('no-recover-checkbox'),
 	button: () => tid('promote-account-view').getByTestId('create-button'),
+}
+
+export const createAccountView = {
+	container: () => tid('create-account-view'),
+	cloudTab: () => tid('settings-view-cloud-account'),
+	localTab: () => tid('settings-view-local-account'),
+	username: () => tid('create-account-view').getByTestId('username-input'),
+	password: () => tid('create-account-view').getByTestId('password-input'),
+	repeat: () => tid('create-account-view').getByTestId('repeat-input'),
+	button: () => tid('create-account-view').getByTestId('create-button').locator('button'),
+}
+
+export const connectCloudView = {
+	container: () => tid('connect-cloud-view'),
+	username: () => tid('connect-cloud-view').getByTestId('username-input'),
+	currentPassword: () => tid('connect-cloud-view').getByTestId('current-password-input'),
+	chooseNewPassword: () => tid('connect-cloud-view').getByTestId('choose-new-password-checkbox'),
+	newPassword: () => tid('connect-cloud-view').getByTestId('password-input'),
+	repeat: () => tid('connect-cloud-view').getByTestId('repeat-input'),
+	button: () => tid('connect-cloud-view').getByTestId('create-button').locator('button'),
 }
 
 export const createCtrl = {
@@ -165,6 +261,8 @@ export const upgradeView = {
 	total: () => tid('upgrade-total'),
 	vat: () => tid('upgrade-vat'),
 	currency: () => tid('upgrade-currency'),
+	tier2Year: () => tid('sub-ABO-002-Y'),
+	tier1Month: () => tid('sub-ABO-001-M'),
 }
 
 export const payInvoiceView = {
@@ -274,4 +372,114 @@ export const waitingView = {
 	report: () => tid(`waiting-report`),
 	check: () => tid(`waiting-check`),
 	cancel: () => tid(`waiting-cancel`),
+}
+
+export const aboutView = {
+	container: () => tid(`settings-view-about`),
+	username: () => tid(`about-username`),
+	accountType: () => tid(`about-account-type`),
+	noteCount: () => tid(`about-note-count`),
+	maxNoteCount: () => tid(`about-max-note-count`),
+	usedBytes: () => tid(`about-space-used`),
+	maxBytes: () => tid(`about-max-space`),
+	unsyncedNoteCount: () => tid(`about-unsynced-notes`),
+	unsyncedUsedBytes: () => tid(`about-unsynced-data`),
+}
+
+export const shareDialog = {
+	container: () => tid(`share-dialog`),
+	username: () => tid(`share-dialog`).getByTestId(`share-username-input`),
+	okButton: () => tid(`share-dialog`).getByTestId(`share-ok-button`),
+	closeButton: () => tid(`share-dialog`).getByTestId(`share-close-button`),
+	cancelButton: () => tid(`share-dialog`).getByTestId(`share-cancel-button`),
+	code: () => tid(`share-dialog`).getByTestId(`share-code`),
+}
+
+export const acceptShareDialog = {
+	container: () => tid(`accept-share-dialog`),
+	code: () => tid(`accept-share-dialog`).getByTestId(`share-code-input`),
+	okButton: () => tid(`accept-share-dialog`).getByTestId(`share-ok-button`),
+	cancelButton: () => tid(`accept-share-dialog`).getByTestId(`share-cancel-button`),
+	limitsExceeded: () => tid(`accept-share-dialog`).getByTestId(`share-limits-exceeded`),
+}
+
+export const emptyRecycleBinDialog = {
+	container: () => tid(`empty-recycle-bin-dialog`),
+	okButton: () => tid(`empty-recycle-bin-dialog`).getByTestId(`empty-recycle-bin-yes`),
+	cancelButton: () => tid(`empty-recycle-bin-dialog`).getByTestId(`empty-recycle-bin-no`),
+}
+
+export const changeUsernameView = {
+	container: () => tid(`change-username`),
+	username: () => tid(`change-username`).getByTestId(`username-input`),
+	saveButton: () => tid(`change-username`).getByTestId(`save-button`),
+}
+
+export const changePasswordView = {
+	container: () => tid(`settings-view-password`),
+	create: () => tid(`settings-view-create`),
+	generate: () => tid(`settings-view-generate`),
+	password: () => tid(`settings-view-password`).getByTestId(`password-input`),
+	repeat: () => tid(`settings-view-password`).getByTestId(`repeat-input`),
+	saveButton: () => tid(`settings-view-password`).getByTestId(`save-button`),
+}
+
+export const passwordDialog = {
+	container: () => tid(`password-dialog`),
+	password: () => tid(`password-dialog`).getByTestId(`password-dialog-input`),
+	okButton: () => tid(`password-dialog`).getByTestId(`password-dialog-ok`),
+	cancelButton: () => tid(`password-dialog`).getByTestId(`password-dialog-cancel`),
+	error: () => tid(`password-dialog`).getByTestId(`password-dialog-error`),
+}
+
+export const deleteNoteDialog = {
+	container: () => tid(`delete-note-dialog`),
+	confirmButton: () => tid(`delete-note-dialog`).getByTestId(`delete-dialog-confirm`),
+	cancelButton: () => tid(`delete-note-dialog`).getByTestId(`delete-dialog-cancel`),
+	deleteNote: () => tid(`delete-note-dialog`).getByTestId(`delete-note`),
+	deleteShare: () => tid(`delete-note-dialog`).getByTestId(`delete-share`),
+	leaveShare: () => tid(`delete-note-dialog`).getByTestId(`leave-share`),
+	confirmLeaveButton: () => tid(`delete-note-dialog`).getByTestId(`leave-dialog-confirm`),
+	cancelLeaveButton: () => tid(`delete-note-dialog`).getByTestId(`leave-dialog-cancel`),
+	deleteShareWithNoParticipants: () => tid(`delete-note-dialog`).getByTestId(`delete-share-with-no-participants`),
+}
+
+export const inconsistencyDialog = {
+	container: () => tid(`inconsistency-dialog`),
+	reloadButton: () => tid(`inconsistency-dialog`).getByTestId(`inconsistency-dialog-reload`),
+	cancelButton: () => tid(`inconsistency-dialog`).getByTestId(`inconsistency-dialog-cancel`),
+}
+
+export const syncErrorDialog = {
+	container: () => tid(`sync-error-dialog`),
+	okButton: () => tid(`sync-error-dialog`).getByTestId(`sync-error-dialog-ok`),
+	title: () => tid(`sync-error-dialog`).getByTestId(`sync-error-dialog-title`),
+}
+
+export const textNoteProperties = {
+	container: () => tid(`text-note-properties`),
+	dataSize: () => tid(`text-note-properties`).getByTestId(`note-data-size`),
+	historySize: () => tid(`text-note-properties`).getByTestId(`note-history-size`),
+	totalSize: () => tid(`text-note-properties`).getByTestId(`note-total-size`),
+	created: () => tid(`text-note-properties`).getByTestId(`note-created`),
+	updated: () => tid(`text-note-properties`).getByTestId(`note-updated`),
+	key: () => tid(`text-note-properties`).getByTestId(`note-key`),
+	shareParticipantUsername: () => tid(`text-note-properties`).getByTestId(`share-participant-username`),
+	noShareParticipants: () => tid(`text-note-properties`).getByTestId(`no-share-participants`),
+}
+
+export const infoDialog = {
+	container: () => tid(`info-dialog`),
+	okButton: () => tid(`info-dialog`).getByTestId(`info-dialog-ok`),
+	title: () => tid(`info-dialog`).getByTestId(`info-dialog-title`),
+}
+
+export const initialPlanChooser = {
+	container: () => tid(`initial-plan-chooser`),
+	chooseFree: () => tid('sub-free-choose'),
+	chooseTier2Year: () => tid('sub-ABO-002-Y-choose'),
+	chooseTier1Month: () => tid('sub-ABO-001-M-choose'),
+	periodMonth: () => tid('period-month'),
+	periodYear: () => tid('period-year'),
+	currencySelector: () => tid('currency-selector'),
 }

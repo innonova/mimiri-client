@@ -1,7 +1,7 @@
 import { env, noteManager } from '../global'
 import type { MimerNote } from './types/mimer-note'
 import { mimiriPlatform } from './mimiri-platform'
-import type { Guid } from './types/guid'
+import { emptyGuid, type Guid } from './types/guid'
 
 class PersistedState {
 	private scrollTops: { [key: Guid]: number } = {}
@@ -10,7 +10,7 @@ class PersistedState {
 
 	private loadState(): any {
 		if (this.enabled) {
-			const state = localStorage.getItem(`mimiri-state-${noteManager.userId}`)
+			const state = localStorage.getItem(`mimiri-state-${noteManager.state.userId ?? emptyGuid()}`)
 			if (state) {
 				return JSON.parse(state)
 			}
@@ -20,7 +20,7 @@ class PersistedState {
 
 	private saveState(state: any) {
 		if (this.enabled) {
-			localStorage.setItem(`mimiri-state-${noteManager.userId}`, JSON.stringify(state))
+			localStorage.setItem(`mimiri-state-${noteManager.state.userId ?? emptyGuid()}`, JSON.stringify(state))
 		}
 	}
 

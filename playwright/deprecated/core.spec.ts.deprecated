@@ -1,7 +1,7 @@
 import { test } from '@playwright/test'
-import { mimiri, withMimiriContext } from './framework/mimiri-context'
-import { createAccount, login, logout } from './core/actions'
-import { verifySettings, verifySettingsFromAccountMenu, verifySystemContextMenu } from './core/checks'
+import { mimiri, withMimiriContext } from '../framework/mimiri-context'
+import { createAccount, login, logout } from '../core/actions'
+import { verifySettings, verifySettingsFromAccountMenu, verifySystemContextMenu } from '../core/checks'
 
 // test.describe.configure({ mode: 'serial' })
 

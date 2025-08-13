@@ -9,7 +9,9 @@ export const isValidGuid = (value: string): value is Guid => {
 }
 
 export const assertGuid: AssertGuid = (value: string): asserts value is Guid => {
-	if (!isValidGuid(value)) throw new Error('Value must be a UUID')
+	if (!isValidGuid(value)) {
+		throw new Error('Value must be a UUID')
+	}
 }
 
 export const newGuid = (): Guid => {

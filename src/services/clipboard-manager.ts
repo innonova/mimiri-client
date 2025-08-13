@@ -13,7 +13,7 @@ export class ClipboardManager {
 		if (this._clipboardPlugin) {
 			this._clipboardPlugin.write({ text })
 		} else {
-			navigator.clipboard.writeText(text)
+			void navigator.clipboard.writeText(text)
 		}
 	}
 }

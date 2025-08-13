@@ -7,7 +7,9 @@ export const isValidDateTime = (value: string): value is DateTime => {
 }
 
 export const assertDateTime: AssertDateTime = (value: string): asserts value is DateTime => {
-	if (!isValidDateTime(value)) throw new Error('Value must be a UUID')
+	if (!isValidDateTime(value)) {
+		throw new Error('Value must be a UUID')
+	}
 }
 
 export const dateTimeNow = (): DateTime => {

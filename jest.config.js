@@ -4,4 +4,8 @@ export default {
 	transform: {
 		"^.+.tsx?$": ["ts-jest", { diagnostics: { ignoreCodes: ['TS151001'] } }],
 	},
+	testPathIgnorePatterns: [
+		"/node_modules/",
+		"/playwright/"
+	],
 };

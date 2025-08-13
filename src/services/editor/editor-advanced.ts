@@ -3,20 +3,19 @@ import { SelectionExpansion, type EditorState, type TextEditor, type TextEditorL
 import { settingsManager } from '../settings-manager'
 import { mimiriPlatform } from '../mimiri-platform'
 import { Debounce } from '../helpers'
-import { reactive } from 'vue'
 
 export class EditorAdvanced implements TextEditor {
-	private backgroundEditor: editor.IStandaloneCodeEditor
+	// private backgroundEditor: editor.IStandaloneCodeEditor
 	private monacoEditor: editor.IStandaloneCodeEditor
 	private monacoEditorModel: editor.ITextModel
-	private backgroundModel: editor.ITextModel
+	// private backgroundModel: editor.ITextModel
 	private monacoEditorHistoryModel: editor.ITextModel
 	private decorations: string[] = []
 	private styleElement: HTMLStyleElement
 	private backgroundElement: HTMLDivElement
-	private styleOverridesDirty = false
-	private styleUpdateRunning = false
-	private styleUpdateStartTime = Date.now()
+	// private styleOverridesDirty = false
+	// private styleUpdateRunning = false
+	// private styleUpdateStartTime = Date.now()
 	private _state: Omit<EditorState, 'mode'> = {
 		canUndo: false,
 		canRedo: false,
@@ -54,6 +53,10 @@ export class EditorAdvanced implements TextEditor {
 					[/(p`)([^``]+)(`)/, ['directive', 'password', 'directive']],
 					[/(\[)( |X|x)(\])/, ['checkbox', 'checkmark', 'checkbox']],
 					[/^(#{1,3}\s)(.*)/, ['head1', 'head1text']],
+					// Merge conflict markers
+					[/^<{7} .*$/, 'conflict-start'],
+					[/^={7}$/, 'conflict-separator'],
+					[/^>{7} .*$/, 'conflict-end'],
 					// [/^(_)(.*)(_)/, ['italic', 'italictext', 'italic']],
 					// [/^(\*\*)(.*)(\*\*)/, ['bold', 'boldtext', 'bold']],
 				],
@@ -74,6 +77,10 @@ export class EditorAdvanced implements TextEditor {
 				{ token: 'italictext', foreground: 'd4d4d7', fontStyle: 'italic' },
 				{ token: 'bold', foreground: 'd4d4d7', fontStyle: 'bold' },
 				{ token: 'boldtext', foreground: 'd4d4d7', fontStyle: 'bold' },
+				// Merge conflict styling
+				{ token: 'conflict-start', foreground: 'ff6b6b', background: '4a1a1a' },
+				{ token: 'conflict-separator', foreground: 'ffd93d', background: '4a3d1a' },
+				{ token: 'conflict-end', foreground: '6bcf7f', background: '1a4a26' },
 			],
 			colors: {},
 		})
@@ -92,8 +99,13 @@ export class EditorAdvanced implements TextEditor {
 				{ token: 'italictext', foreground: '000003', fontStyle: 'italic' },
 				{ token: 'bold', foreground: '000003', fontStyle: 'bold' },
 				{ token: 'boldtext', foreground: '000003', fontStyle: 'bold' },
+				// Merge conflict styling
+				{ token: 'conflict-start', foreground: 'dd0000', background: 'ffe6e6' },
+				{ token: 'conflict-separator', foreground: 'b8860b', background: 'fff8dc' },
+				{ token: 'conflict-end', foreground: '228b22', background: 'e6ffe6' },
 			],
 			colors: {},
+			encodedTokensColors: [],
 		})
 	}
 
@@ -147,20 +159,18 @@ export class EditorAdvanced implements TextEditor {
 			fontFamily: `'${settingsManager.editorFontFamily}', 'Consolas', 'Menlo', 'Droid Sans Mono', 'monospace', 'Courier New'`,
 			fontSize: settingsManager.editorFontSize,
 		}
-		this.backgroundEditor = editor.create(this.backgroundElement, config)
+		// this.backgroundEditor = editor.create(this.backgroundElement, config)
 		this.monacoEditor = editor.create(domElement, config)
 
 		this.monacoEditorModel = editor.createModel('', 'mimiri')
-		this.backgroundModel = editor.createModel('', 'mimiri')
+		// this.backgroundModel = editor.createModel('', 'text') // Use 'text' instead of 'mimiri' to avoid triggering semantic tokens
 		this.monacoEditorModel.setEOL(editor.EndOfLineSequence.LF)
-		this.backgroundModel.setEOL(editor.EndOfLineSequence.LF)
+		// this.backgroundModel.setEOL(editor.EndOfLineSequence.LF)
 
 		this.monacoEditor.setModel(this.monacoEditorModel)
-		this.backgroundEditor.setModel(this.backgroundModel)
+		// this.backgroundEditor.setModel(this.backgroundModel)
 
 		this.monacoEditorHistoryModel = editor.createModel('', 'mimiri')
-
-		this.updateStyleOverrides()
 
 		this.monacoEditor.onKeyDown(e => {
 			if (this._active) {
@@ -173,7 +183,7 @@ export class EditorAdvanced implements TextEditor {
 			}
 		})
 
-		this.monacoEditorModel.onDidChangeContent(event => {
+		this.monacoEditorModel.onDidChangeContent(() => {
 			if (this._active) {
 				this._text = this.monacoEditorModel.getValue()
 				this._state.canUndo = (this.monacoEditorModel as any).canUndo()
@@ -298,7 +308,7 @@ export class EditorAdvanced implements TextEditor {
 			this.updateAbilities()
 		})
 
-		this.monacoEditor.onDidBlurEditorText(e => {
+		this.monacoEditor.onDidBlurEditorText(() => {
 			if (!this.historyShowing) {
 				this.listener.onEditorBlur()
 			}
@@ -380,47 +390,6 @@ export class EditorAdvanced implements TextEditor {
 		this._domElement.style.display = this._active ? 'block' : 'none'
 	}
 
-	private executeUpdateStyleOverrides() {
-		if (this.styleOverridesDirty) {
-			for (const span of this.backgroundEditor.getDomNode().getElementsByTagName('span')) {
-				if (!span.innerHTML.includes('<') && span.innerHTML.includes('password')) {
-					if (span.className !== 'mtk1') {
-						this.styleOverridesDirty = false
-						this.styleElement.innerHTML = `.${span.className} { -webkit-text-security: disc; }`
-					}
-					break
-				}
-			}
-		}
-		if (this.styleOverridesDirty && Date.now() - this.styleUpdateStartTime < 600000) {
-			this.styleUpdateRunning = true
-			setTimeout(() => this.executeUpdateStyleOverrides(), 100)
-		} else {
-			if (this.styleOverridesDirty) {
-			}
-			this.styleUpdateRunning = false
-		}
-	}
-
-	private async updateStyleOverrides() {
-		if (settingsManager.darkMode) {
-			this.backgroundEditor.updateOptions({
-				theme: 'mimiri-dark',
-			})
-		} else {
-			this.backgroundEditor.updateOptions({
-				theme: 'mimiri-light',
-			})
-		}
-		// const passwordSyntax = 'p`password`'
-		// this.backgroundModel.setValue(passwordSyntax)
-		// if (!this.styleUpdateRunning) {
-		// 	this.styleOverridesDirty = true
-		// 	this.styleUpdateStartTime = Date.now()
-		// 	this.executeUpdateStyleOverrides()
-		// }
-	}
-
 	private updateAbilities() {
 		const selection = this.monacoEditor.getSelection()
 
@@ -476,9 +445,6 @@ export class EditorAdvanced implements TextEditor {
 	}
 
 	public show(text: string, scrollTop: number) {
-		if (this.styleOverridesDirty && !this.styleUpdateRunning) {
-			this.updateStyleOverrides()
-		}
 		this._initialText = text
 		this._text = text
 		this._state.changed = false
@@ -585,7 +551,7 @@ export class EditorAdvanced implements TextEditor {
 	}
 
 	public find() {
-		this.monacoEditor.getAction('actions.find').run()
+		void this.monacoEditor.getAction('actions.find').run()
 	}
 
 	public focus() {
@@ -611,7 +577,6 @@ export class EditorAdvanced implements TextEditor {
 				fontSize: settingsManager.editorFontSize,
 			})
 		}
-		this.updateStyleOverrides()
 		this.monacoEditor.updateOptions({ wordWrap: settingsManager.wordwrap ? 'on' : 'off' })
 	}
 

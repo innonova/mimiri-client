@@ -11,9 +11,10 @@ const createId = () => {
 }
 
 export class MimiriState {
-	private static _browser: Browser | undefined
-	private _context: BrowserContext
-	private _mainPage: Page
+	private static _defaultBrowser: Browser | undefined
+	private _browser: Browser | undefined
+	private _context!: BrowserContext
+	private _mainPage!: Page
 	private _pageStack: Page[] = []
 	private _expectedPage: Promise<Page> | undefined
 	private _start = 0
@@ -56,13 +57,31 @@ export class MimiriState {
 		this._orchestrationClient = new OrchestrationClient()
 	}
 
-	public async init() {
+	public clone() {
+		const newState = new MimiriState()
+		newState._config = { ...this._config }
+		newState._customer = { ...this._customer }
+		newState._mailClient = new MailPitClient(this._config.testId)
+		newState._orchestrationClient = new OrchestrationClient()
+		return newState
+	}
+
+	public async init(index = 0) {
 		// console.log('testId', this._config.testId)
 		this._start = performance.now()
-		if (!MimiriState._browser) {
-			MimiriState._browser = await chromium.launch()
+		if (!this._browser) {
+			if (index === 0) {
+				if (!MimiriState._defaultBrowser) {
+					MimiriState._defaultBrowser = await chromium.launch()
+				}
+				this._browser = MimiriState._defaultBrowser
+			} else {
+				this._browser = await chromium.launch({
+					args: ['--window-position=1350,10'],
+				})
+			}
 		}
-		this._context = await MimiriState._browser.newContext()
+		this._context = await this._browser.newContext()
 		this._mainPage = await this._context.newPage()
 		// this._mainPage.on('console', msg => console.log(msg.text()));
 		this._pageStack.push(this._mainPage)
@@ -74,12 +93,20 @@ export class MimiriState {
 		await this._orchestrationClient.cleanUp(this._config.username)
 		await new Promise(resolve => setTimeout(resolve, 250))
 		await this._mailClient.cleanUp()
-		this._mainPage.close()
-		this._context.close()
+		await this._mainPage.close()
+		await this._context.close()
 	}
 
 	public get page() {
 		return this._pageStack[this._pageStack.length - 1]
+	}
+
+	public get keyboard() {
+		return this.page.keyboard
+	}
+
+	public async getClipboardText() {
+		return this.page.evaluate(() => (globalThis as any).navigator.clipboard.readText())
 	}
 
 	public printElapsed() {
@@ -201,6 +228,18 @@ export class MimiriState {
 
 	public async associatedObjects(customerId: Guid) {
 		return this._orchestrationClient.associatedObjects(customerId)
+	}
+
+	public async setUserTypeCountTest() {
+		await this._orchestrationClient.setUserType(this._config.username, 1002)
+	}
+
+	public async setUserTypeSizeTest() {
+		await this._orchestrationClient.setUserType(this._config.username, 1001)
+	}
+
+	public async setUserTypeFree() {
+		await this._orchestrationClient.setUserType(this._config.username, 1)
 	}
 
 	public async waitForMailQueue() {

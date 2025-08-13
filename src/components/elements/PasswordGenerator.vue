@@ -103,9 +103,9 @@
 				<span v-if="iterations === 10000000">{{ time10M }}</span>
 				<span v-if="iterations === 20000000">{{ time20M }}</span>
 			</div>
-			<div v-if="showDetails || props.mode !== 'mimiri'"></div>
+			<div v-if="showDetails || props.mode !== 'mimiri'" />
 			<div class="underline cursor-pointer" @click="toggleDetails">
-				<span v-if="!showDetails"></span>
+				<span v-if="!showDetails" />
 				<span v-if="showDetails">hide</span>
 				details
 			</div>
@@ -130,7 +130,7 @@
 			</div>
 			<div v-if="!custom" class="flex justify-end mt-1.5 px-1">
 				<div class="underline cursor-pointer" @click="toggleInvestmentDetails">
-					<span v-if="!showInvestmentDetails"></span>
+					<span v-if="!showInvestmentDetails" />
 					<span v-if="showInvestmentDetails">hide</span>
 					details
 				</div>
@@ -154,12 +154,12 @@
 import { computed, onMounted, ref, watch, watchEffect } from 'vue'
 import { PasswordGenerator, passwordTimeFactor, type PasswordComplexity } from '../../services/password-generator'
 import { passwordHasher } from '../../services/password-hasher'
-import { DEFAULT_PASSWORD_ALGORITHM, MimerClient } from '../../services/mimer-client'
 import { SymmetricCrypt } from '../../services/symmetric-crypt'
+import { DEFAULT_ITERATIONS, DEFAULT_PASSWORD_ALGORITHM } from '../../services/storage/mimiri-store'
 const verificationInProgress = ref(false)
 const preset = ref(0)
 const custom = ref(false)
-const iterations = ref(MimerClient.DEFAULT_ITERATIONS)
+const iterations = ref(DEFAULT_ITERATIONS)
 const characterCount = ref(8)
 const includeLowerCase = ref(true)
 const includeUpperCase = ref(true)
@@ -452,14 +452,14 @@ watchEffect(async () => {
 		breachLikelyHood.value = calculateLikelyHood(complexity.value.hmacYear, 10)
 		targetedLikelyHood.value = calculateLikelyHood(complexity.value.hmacYear, 100000)
 	}
-	generator.generate().then(pwd => {
+	void generator.generate().then(pwd => {
 		password.value = pwd
 		emit('password', pwd, iterations.value)
 	})
 })
 
 const regeneratePassword = () => {
-	generator.generate().then(pwd => {
+	void generator.generate().then(pwd => {
 		password.value = pwd
 		emit('password', pwd, iterations.value)
 	})

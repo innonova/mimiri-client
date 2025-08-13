@@ -4,7 +4,7 @@ import { emptyGuid } from './types/guid'
 import type { Guid } from './types/guid'
 import type { BlogPost } from './types/responses'
 import { notificationManager } from '../global'
-import type { NoteManager } from './note-manager'
+import type { MimiriStore } from './storage/mimiri-store'
 
 export interface BlogConfig {
 	notificationLevel: 'notify-clearly' | 'notify-discreetly' | 'notify-never'
@@ -17,10 +17,10 @@ export interface BlogState {
 }
 
 export class BlogManager {
-	private noteManager: NoteManager
+	private noteManager: MimiriStore
 	public state: BlogState
 
-	constructor(noteManager: NoteManager) {
+	constructor(noteManager: MimiriStore) {
 		this.noteManager = noteManager
 		this.state = reactive<BlogState>({
 			latestPostId: emptyGuid(),
@@ -49,16 +49,23 @@ export class BlogManager {
 	}
 
 	public async addComment(postId: Guid, username: string, comment: string): Promise<void> {
-		if (settingsManager.disableDevBlog) return
-		await this.noteManager.addComment(postId, username, comment)
+		if (settingsManager.disableDevBlog) {
+			return
+		}
+		await this.noteManager.feedback.addComment(postId, username, comment)
 	}
 
-	public async initialize(): Promise<void> {
-		if (settingsManager.disableDevBlog) return
-		if (this.state.isInitialized) return
+	public async initialize(): Promise<boolean> {
+		if (settingsManager.disableDevBlog) {
+			return false
+		}
+		if (this.state.isInitialized) {
+			return false
+		}
 
 		await this.updateLatestBlogPost()
 		this.state.isInitialized = true
+		return true
 	}
 
 	public getConfig(): BlogConfig {
@@ -94,9 +101,12 @@ export class BlogManager {
 	}
 
 	public async refreshAll(): Promise<void> {
-		if (settingsManager.disableDevBlog) return
-		await this.initialize()
-		await this.updateLatestBlogPost()
+		if (settingsManager.disableDevBlog) {
+			return
+		}
+		if (!(await this.initialize())) {
+			await this.updateLatestBlogPost()
+		}
 	}
 
 	public markAsRead(): void {

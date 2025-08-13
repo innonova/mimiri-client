@@ -216,7 +216,7 @@ export class UpdateManager {
 									settingsManager.updateMode === UpdateMode.AutomaticOnStart
 								) {
 									if (allowUpdate) {
-										this.performAutomaticUpdate()
+										void this.performAutomaticUpdate()
 									}
 								} else if (
 									settingsManager.updateMode === UpdateMode.StrongNotify ||
@@ -258,7 +258,7 @@ export class UpdateManager {
 										settingsManager.updateMode === UpdateMode.AutomaticOnStart
 									) {
 										if (allowUpdate) {
-											this.performAutomaticUpdate()
+											void this.performAutomaticUpdate()
 										}
 									} else if (
 										settingsManager.updateMode === UpdateMode.StrongNotify ||
@@ -279,7 +279,7 @@ export class UpdateManager {
 									settingsManager.updateMode === UpdateMode.AutomaticOnStart
 								) {
 									if (allowUpdate) {
-										this.performAutomaticUpdate()
+										void this.performAutomaticUpdate()
 									}
 								} else if (
 									settingsManager.updateMode === UpdateMode.StrongNotify ||
@@ -299,7 +299,7 @@ export class UpdateManager {
 									settingsManager.updateMode === UpdateMode.AutomaticOnStart
 								) {
 									if (allowUpdate) {
-										this.performAutomaticUpdate()
+										void this.performAutomaticUpdate()
 									}
 								} else if (
 									settingsManager.updateMode === UpdateMode.StrongNotify ||
@@ -378,19 +378,21 @@ export class UpdateManager {
 
 			const reader = await this.getReader(bundlePath)
 
-			let total = electronInfo ? electronInfo.size : info.size
+			const total = electronInfo ? electronInfo.size : info.size
 			let downloaded = 0
 			let stage = 'download'
 			let error = ''
 			const values = []
 			while (true) {
 				const { done, value } = await reader.read()
-				if (done) break
+				if (done) {
+					break
+				}
 				values.push(value)
 				downloaded += value.length
 				if (status) {
 					if (!status({ total, downloaded, stage, error })) {
-						reader.cancel()
+						void reader.cancel()
 						return
 					}
 				}

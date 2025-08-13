@@ -1,5 +1,5 @@
 import { chromium, expect, Page, test } from '@playwright/test'
-import { generateRandomString } from './utils'
+import { generateRandomString } from '../utils'
 
 test.describe.configure({ mode: 'serial' })
 

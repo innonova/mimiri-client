@@ -1,6 +1,6 @@
 <template>
 	<div class="flex flex-col h-full">
-		<TabBar :items="['Update']"></TabBar>
+		<TabBar :items="['Update']" />
 		<div class="overflow-y-auto pb-10">
 			<div class="leading-7">
 				<div class="mt-2 px-1">
@@ -51,18 +51,18 @@
 					<li>
 						Notification will be shown like this
 						<div class="inline-block relative ml-2 top-1">
-							<NotificationActiveIcon class="w-9 h-7 p-px no-drag"></NotificationActiveIcon>
-							<div class="absolute bottom-0 left-px w-2 h-2 rounded-sm bg-bad"></div>
+							<NotificationActiveIcon class="w-9 h-7 p-px no-drag" />
+							<div class="absolute bottom-0 left-px w-2 h-2 rounded-sm bg-bad" />
 						</div>
 						in the titlebar and like this
 						<div class="inline-block relative ml-2 top-1">
-							<CogIcon class="w-9 h-7 p-px no-drag"></CogIcon>
-							<div class="absolute bottom-0 right-px w-2 h-2 rounded-sm bg-bad"></div>
+							<CogIcon class="w-9 h-7 p-px no-drag" />
+							<div class="absolute bottom-0 right-px w-2 h-2 rounded-sm bg-bad" />
 						</div>
 						and this
 						<div class="inline-block relative ml-2 top-1">
-							<DownloadIcon class="w-9 h-7 p-px no-drag"></DownloadIcon>
-							<div class="absolute bottom-0 right-px w-2 h-2 rounded-sm bg-bad"></div>
+							<DownloadIcon class="w-9 h-7 p-px no-drag" />
+							<div class="absolute bottom-0 right-px w-2 h-2 rounded-sm bg-bad" />
 						</div>
 						the System area in the treeview
 					</li>
@@ -82,12 +82,12 @@
 					<li>
 						Notification will be shown like this
 						<div class="inline-block relative ml-2 top-1">
-							<NotificationActiveIcon class="w-9 h-7 p-px no-drag"></NotificationActiveIcon>
+							<NotificationActiveIcon class="w-9 h-7 p-px no-drag" />
 						</div>
 						in the titlebar and like this
 						<div class="inline-block relative ml-2 top-1">
-							<DownloadIcon class="w-9 h-7 p-px no-drag"></DownloadIcon>
-							<div class="absolute bottom-0 right-px w-2 h-2 rounded-sm bg-bad"></div>
+							<DownloadIcon class="w-9 h-7 p-px no-drag" />
+							<div class="absolute bottom-0 right-px w-2 h-2 rounded-sm bg-bad" />
 						</div>
 						the System area in the treeview
 					</li>
@@ -154,7 +154,7 @@
 				</div>
 				<div v-if="!updateManager.isHostUpdate || !mimiriPlatform.isLinuxApp" class="max-w-110">
 					<div class="relative max-w-110 h-[30px] border border-solid border-dialog-border">
-						<div class="h-[30px] bg-progress-indicator progress"></div>
+						<div class="h-[30px] bg-progress-indicator progress" />
 						<div
 							v-if="running && stage === 'download'"
 							class="absolute h-full w-full top-0 left-0 text-center leading-[27px]"
@@ -319,9 +319,9 @@ const update = async () => {
 	}
 	// running.value = false
 }
-const later = () => {
-	// showUpdate.value = false
-}
+// const later = () => {
+// showUpdate.value = false
+// }
 
 const restart = async () => {
 	await updateManager.use(version, true)

@@ -30,25 +30,26 @@ export interface LoginResponse {
 	salt: string
 	iterations: number
 	algorithm: string
+	token: string
 	symmetricAlgorithm: string
 	symmetricKey: string
 	data: string
 	config: string
-	size: number
-	noteCount: number
-	maxTotalBytes: number
-	maxNoteBytes: number
-	maxNoteCount: number
+	size: string
+	noteCount: string
+	maxTotalBytes: string
+	maxNoteBytes: string
+	maxNoteCount: string
 }
 
 export interface UserDataResponse {
 	data: string
 	config: string
-	size: number
-	noteCount: number
-	maxTotalBytes: number
-	maxNoteBytes: number
-	maxNoteCount: number
+	size: string
+	noteCount: string
+	maxTotalBytes: string
+	maxNoteBytes: string
+	maxNoteCount: string
 }
 
 export interface PreLoginResponse {
@@ -123,4 +124,27 @@ export interface BlogPost {
 	url: string
 	published: boolean
 	publishDate: string
+}
+
+export interface SyncResponse {
+	keys: any[]
+	notes: any[]
+	deletedNotes: Guid[]
+	noteCount: string
+	size: string
+	maxTotalBytes: string
+	maxNoteBytes: string
+	maxNoteCount: string
+}
+
+export interface CreateKeyResponse {
+	success: boolean
+	maxCount: number
+	maxSize: number
+	count: number
+	size: number
+}
+
+export interface SyncPushResponse {
+	status: 'success' | 'conflict' | 'no-data' | 'error'
 }

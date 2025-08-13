@@ -1,15 +1,15 @@
 <template>
 	<div class="flex flex-col h-full">
-		<TabBar :items="['Create Password']"></TabBar>
+		<TabBar :items="['Create Password']" />
 		<div class="overflow-y-auto pb-10">
 			<div class="px-1 pt-3 pb-5 max-w-[20rem] leading-5">
 				Choose a username and password to allow you to access your data from anywhere
 			</div>
 			<div class="max-w-110" data-testid="promote-account-view">
-				<form class="w-96" v-on:submit.prevent="createAccount">
+				<form class="w-96" @submit.prevent="createAccount">
 					<div class="grid grid-cols-[5rem_12rem] gap-3 items-baseline">
 						<div class="flex items-center">Username:</div>
-						<UsernameInput :display-current="false" @changed="usernameChanged"></UsernameInput>
+						<UsernameInput :display-current="false" :check-username="true" @changed="usernameChanged" />
 						<div class="flex items-center">Password:</div>
 						<div class="text-right relative desktop:flex">
 							<input
@@ -26,8 +26,8 @@
 									@mousedown="showPassword"
 									@mouseup="hidePassword"
 								>
-									<ShowPasswordIcon v-if="passwordFieldType === 'password'" class="w-5 h-5 mt-1"></ShowPasswordIcon>
-									<ShowingPasswordIcon v-if="passwordFieldType === 'text'" class="w-5 h-5 mt-1"></ShowingPasswordIcon>
+									<ShowPasswordIcon v-if="passwordFieldType === 'password'" class="w-5 h-5 mt-1" />
+									<ShowingPasswordIcon v-if="passwordFieldType === 'text'" class="w-5 h-5 mt-1" />
 								</div>
 							</div>
 							<div v-if="passwordQuality" class="desktop:w-0 desktop:h-0 overflow-visible">
@@ -35,19 +35,19 @@
 									v-if="passwordQuality === 'free-access'"
 									class="flex items-center w-52 h-7 desktop:ml-2 mt-1.5 desktop:mt-0 text-left"
 								>
-									<FreeAccessIcon class="w-5 h-5 mr-1 inline-block"></FreeAccessIcon> Not really a password
+									<FreeAccessIcon class="w-5 h-5 mr-1 inline-block" /> Not really a password
 								</div>
 								<div
 									v-if="passwordQuality === 'casual-use-only'"
 									class="flex items-center w-52 h-7 desktop:ml-2 mt-1.5 desktop:mt-0 text-left"
 								>
-									<CasualOnlyIcon class="w-5 h-5 mr-1 inline-block"></CasualOnlyIcon> Very limited security
+									<CasualOnlyIcon class="w-5 h-5 mr-1 inline-block" /> Very limited security
 								</div>
 								<div
 									v-if="passwordQuality === 'acceptable-security'"
 									class="flex items-center w-52 h-7 desktop:ml-2 mt-1.5 desktop:mt-0 text-left"
 								>
-									<LightSecurityIcon class="w-5 h-5 mr-1 inline-block"></LightSecurityIcon> Acceptable
+									<LightSecurityIcon class="w-5 h-5 mr-1 inline-block" /> Acceptable
 								</div>
 							</div>
 						</div>
@@ -63,14 +63,14 @@
 							/>
 							<div v-if="password" class="desktop:w-0 desktop:h-0 pt-0.5 overflow-visible">
 								<div v-if="passwordMatch" class="flex items-center w-52 desktop:ml-2 mt-1.5 desktop:mt-0.5">
-									<AvailableIcon class="w-5 h-5 mr-1 inline-block"></AvailableIcon> Matching
+									<AvailableIcon class="w-5 h-5 mr-1 inline-block" /> Matching
 								</div>
 								<div v-if="!passwordMatch" class="flex items-center w-52 desktop:ml-2 mt-1.5 desktop:mt-0.5">
-									<UnavailableIcon class="w-5 h-5 mr-1 inline-block"></UnavailableIcon> Not matching
+									<UnavailableIcon class="w-5 h-5 mr-1 inline-block" /> Not matching
 								</div>
 							</div>
 						</div>
-						<div v-if="capsLockOn"></div>
+						<div v-if="capsLockOn" />
 						<div v-if="capsLockOn">Caps Lock is on!</div>
 					</div>
 					<div v-if="advancedSettingsVisible" class="p-1 m-auto flex">
@@ -98,19 +98,19 @@
 					</div>
 
 					<div class="p-1 m-auto" v-if="errorText">
-						<div class="inline-block w-24"></div>
+						<div class="inline-block w-24" />
 						<div class="inline-block w-52 text-error py-2.5 pr-1 text-right">{{ errorText }}</div>
 					</div>
 					<div class="p-1 m-auto" v-if="successText">
-						<div class="inline-block w-24"></div>
+						<div class="inline-block w-24" />
 						<div class="inline-block w-52 py-2.5 pr-1 text-right">{{ successText }}</div>
 					</div>
 
 					<div class="p-1 m-auto">
-						<div class="inline-block w-24"></div>
+						<div class="inline-block w-24" />
 						<div class="inline-block w-52 text-right create-account-submit">
 							<div v-if="loading" class="flex items-center justify-end">
-								<LoadingIcon class="animate-spin w-8 h-8 mr-2 inline-block"></LoadingIcon>
+								<LoadingIcon class="animate-spin w-8 h-8 mr-2 inline-block" />
 								Please wait
 							</div>
 							<button
@@ -144,15 +144,15 @@ import FreeAccessIcon from '../../icons/free-access.vue'
 import CasualOnlyIcon from '../../icons/casual-only.vue'
 import LightSecurityIcon from '../../icons/light-security.vue'
 import { passwordTimeFactor } from '../../services/password-generator'
-import { MimerClient } from '../../services/mimer-client'
 import { settingsManager } from '../../services/settings-manager'
 import { persistedState } from '../../services/persisted-state'
 import { deObfuscate } from '../../services/helpers'
 import UsernameInput from '../elements/UsernameInput.vue'
 import type { Guid } from '../../services/types/guid'
 import TabBar from '../elements/TabBar.vue'
+import { DEFAULT_ITERATIONS } from '../../services/storage/mimiri-store'
 
-const disallowString = '!"#$:%&@\'()*/=?[]{}~^`'
+// const disallowString = '!"#$:%&@\'()*/=?[]{}~^`'
 const disallowRegex = /[!"#$:%&@'()*/=?[\]{}~\^\\`\s]/
 
 const password = ref('')
@@ -171,8 +171,6 @@ const time1M = computed(() => `~${passwordTimeFactor.time1M}s`)
 const time2M = computed(() => `~${passwordTimeFactor.time2M}s`)
 const time10M = computed(() => `~${passwordTimeFactor.time10M}s`)
 const time20M = computed(() => `~${passwordTimeFactor.time20M}s`)
-
-const emit = defineEmits(['create'])
 
 const usernameValid = ref(false)
 let newUsername = ''
@@ -201,7 +199,7 @@ watch(password, value => {
 	}
 })
 
-watch(passwordRepeat, value => {
+watch(passwordRepeat, () => {
 	checkPasswordMatch()
 })
 
@@ -245,13 +243,13 @@ const createAccount = async () => {
 	loading.value = true
 	try {
 		try {
-			await noteManager.changeUserNameAndPassword(
+			await noteManager.auth.changeUserNameAndPassword(
 				newUsername,
 				await deObfuscate(settingsManager.anonymousPassword),
 				password.value,
-				MimerClient.DEFAULT_ITERATIONS,
+				DEFAULT_ITERATIONS,
 			)
-			persistedState.storeSelectedNote(noteManager.getNoteById('settings-account' as Guid))
+			persistedState.storeSelectedNote(noteManager.tree.getNoteById('settings-account' as Guid))
 			settingsManager.anonymousUsername = undefined
 			settingsManager.anonymousPassword = undefined
 			settingsManager.autoLoginData = undefined
@@ -265,10 +263,10 @@ const createAccount = async () => {
 	} finally {
 		loading.value = false
 	}
-	if (!noteManager.isLoggedIn) {
+	if (!noteManager.state.isLoggedIn) {
 		errorText.value = 'Unknown Error'
 	} else {
-		await noteManager.root.ensureChildren()
+		await noteManager.tree.root().ensureChildren()
 	}
 }
 </script>

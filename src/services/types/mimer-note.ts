@@ -1,5 +1,5 @@
 import { computed, reactive } from 'vue'
-import type { NoteManager } from '../note-manager'
+import type { MimiriStore } from '../storage/mimiri-store'
 import { dateTimeNow, type DateTime } from './date-time'
 import { type Guid } from './guid'
 import type { Note } from './note'
@@ -7,6 +7,7 @@ import { fromBase64, toBase64 } from '../hex-base64'
 import { persistedState } from '../persisted-state'
 import { blogManager, debug, updateManager } from '../../global'
 import { settingsManager, UpdateMode } from '../settings-manager'
+import { MimiriException, MimiriExceptionType } from './exceptions'
 
 const zip = async (text: string) => {
 	return toBase64(
@@ -17,23 +18,8 @@ const unzip = async (text: string) => {
 	return await new Response(new Blob([fromBase64(text)]).stream().pipeThrough(new DecompressionStream('gzip'))).text()
 }
 
-const isNoteNewerThan = (note: Note, than: Note) => {
-	if (note.keyName != than.keyName) {
-		return true
-	}
-	if (note.isCache != than.isCache) {
-		return true
-	}
-	for (const type of note.types) {
-		if (note.getVersion(type) > than.getVersion(type)) {
-			return true
-		}
-	}
-	return false
-}
-
 export const controlPanel = {
-	createChildren: (owner: NoteManager, parent: MimerNote) => {
+	createChildren: (_owner: MimiriStore, _parent: MimerNote) => {
 		return [] as MimerNote[]
 	},
 }
@@ -62,7 +48,6 @@ export interface NoteViewModel {
 	shared: boolean
 	populated: boolean
 	renaming: boolean
-	cache: boolean
 	hasMoreHistory: boolean
 	isRecycleBin: boolean
 	isControlPanel: boolean
@@ -83,12 +68,12 @@ export class MimerNote {
 	private controlPanelLoadedAfterFeatures: boolean = false
 
 	constructor(
-		private owner: NoteManager,
+		private owner: MimiriStore,
 		private _parent: MimerNote | undefined,
 		private _note: Note,
 		updateViewModel = true,
 	) {
-		this.owner.register(_note.id, this)
+		this.owner.tree.register(_note.id, this)
 		this.beforeChangeText = this.text
 		if (this.parent) {
 			this.viewModel = reactive({
@@ -103,7 +88,6 @@ export class MimerNote {
 				shared: this.isShared,
 				populated: true,
 				renaming: false,
-				cache: this.isCache,
 				hasMoreHistory: true,
 				isRecycleBin: this.isRecycleBin,
 				isControlPanel: this.isControlPanel,
@@ -124,7 +108,6 @@ export class MimerNote {
 				shared: false,
 				populated: true,
 				renaming: false,
-				cache: this.isCache,
 				hasMoreHistory: true,
 				isRecycleBin: this.isRecycleBin,
 				isControlPanel: this.isControlPanel,
@@ -143,20 +126,16 @@ export class MimerNote {
 	}
 
 	public async update(note: Note) {
-		// console.log('update.check', note.id, this.childIds.length, note.getItem('metadata').notes.length)
-		if (isNoteNewerThan(note, this.note)) {
-			// console.log('update.do', note)
-			this.note = note
-			this.beforeChangeText = this.text
-			if (this.historyElementsLoaded > 0) {
-				this.historyElementsLoaded = 0
-				this.historyItems = []
-			}
-			if (this.childrenPopulated) {
-				await this.ensureChildren(true)
-			}
-			this.updateViewModel()
+		this.note = note
+		this.beforeChangeText = this.text
+		if (this.historyElementsLoaded > 0) {
+			this.historyElementsLoaded = 0
+			this.historyItems = []
 		}
+		if (this.childrenPopulated) {
+			await this.ensureChildren(true)
+		}
+		this.updateViewModel()
 	}
 
 	protected updateViewModel() {
@@ -178,9 +157,6 @@ export class MimerNote {
 		if (this.viewModel.shared !== this.isShared) {
 			this.viewModel.shared = this.isShared
 		}
-		if (this.viewModel.cache !== this.isCache) {
-			this.viewModel.cache = this.isCache
-		}
 		for (const childId of this.childIds) {
 			if (!this.viewModel.children.find(c => c.id === childId)) {
 				this.viewModel.children.push({
@@ -195,7 +171,6 @@ export class MimerNote {
 					shared: false,
 					populated: false,
 					renaming: false,
-					cache: false,
 					hasMoreHistory: true,
 					isRecycleBin: this.isRecycleBin,
 					isControlPanel: this.isControlPanel,
@@ -238,7 +213,7 @@ export class MimerNote {
 
 	public async ensureChildren(skipUpdateViewModel: boolean = false) {
 		if (this.isControlPanel) {
-			if (this.owner.clientConfig && !this.controlPanelLoadedAfterFeatures) {
+			if (this.owner.state.clientConfig && !this.controlPanelLoadedAfterFeatures) {
 				this.controlPanelLoadedAfterFeatures = true
 				this._children = controlPanel.createChildren(this.owner, this)
 			}
@@ -258,7 +233,7 @@ export class MimerNote {
 				const ids = this._note.getItem('metadata').notes
 				for (const id of ids) {
 					if (!children.find(child => child.id == id)) {
-						const note = await this.owner.getNote(id)
+						const note = await this.owner.note.getNote(id)
 						if (note) {
 							children.push(new MimerNote(this.owner, this, note))
 							didChange = true
@@ -329,25 +304,17 @@ export class MimerNote {
 	}
 
 	public async shareWith(username: string) {
-		return this.owner.shareNote(this, username)
+		if (this.isSystem) {
+			return
+		}
+		return this.owner.note.shareMimerNote(this, username)
 	}
 
 	public async save() {
 		if (this.beforeChangeText !== this.text) {
-			this.owner.beginAction()
-			try {
-				await MimerNote.addHistoryEntry(this.note, this.text, this.owner.username, dateTimeNow())
-				await this.owner.saveNote(this)
-			} finally {
-				this.owner.endAction()
-			}
-		} else {
-			await this.owner.saveNote(this)
+			await MimerNote.addHistoryEntry(this.note, this.text, this.owner.state.username, dateTimeNow())
 		}
-	}
-
-	public async refresh() {
-		await this.owner.refreshNoteWithBase(this.note)
+		await this.owner.operations.saveNote(this)
 	}
 
 	public async expand() {
@@ -360,78 +327,130 @@ export class MimerNote {
 		}
 	}
 
-	public async collapse() {
+	public collapse() {
 		this.viewModel.expanded = false
 		persistedState.collapse(this)
 	}
 
-	public select() {
-		this.owner.select(this.id)
+	public async select() {
+		this.owner.tree.select(this.id)
 		let current = this.parent
 		while (current) {
-			current.expand()
+			await current.expand()
 			current = current.parent
-		}
-		if (this.owner.isOnline) {
-			void this.refresh()
 		}
 		persistedState.storeSelectedNote(this)
 	}
 
 	public async addChild(name: string = 'New Note') {
 		this.childrenPopulated = true
-		await this.owner.createNote(this, name)
+		await this.owner.operations.createMimerNote(this, name)
+	}
+
+	public async leaveShare() {
+		if (this.isSystem || !this.isShareRoot) {
+			return
+		}
+		if (this.parent) {
+			await this.owner.operations.delete(this, false, true)
+			await this.owner.operations.deleteKey(this.keyName)
+		} else {
+			throw new Error('Cannot delete root')
+		}
+	}
+
+	public async hasSharedDescendant(): Promise<boolean> {
+		if (this.isSystem) {
+			return false
+		}
+		await this.ensureChildren()
+		for (const child of this.children) {
+			if (child.isShared) {
+				return true
+			}
+			if (await child.hasSharedDescendant()) {
+				return true
+			}
+		}
+		return false
 	}
 
 	public async delete() {
+		if (this.isSystem) {
+			return
+		}
 		if (this.parent) {
-			await this.owner.delete(this, true)
+			if (!this.isShared && (await this.hasSharedDescendant())) {
+				throw new MimiriException(
+					MimiriExceptionType.CannotDeleteWithSharedDescendant,
+					'Cannot Delete',
+					'Cannot delete note containing shared notes.\nPlease remove shared notes before deleting.',
+				)
+			}
+			await this.owner.operations.delete(this, true, false)
+			if (this.isShareRoot) {
+				await this.owner.operations.deleteKey(this.keyName)
+			}
 		} else {
 			throw new Error('Cannot delete root')
 		}
 	}
 
 	public async deleteChildren() {
+		if (this.isSystem && !this.isRecycleBin) {
+			return
+		}
 		await this.ensureChildren()
 		for (const child of this.children) {
 			await child.delete()
 		}
+		if (this.childIds.length > 0) {
+			this.note.changeItem('metadata').notes = []
+			await this.save()
+		}
 	}
 
 	public async moveToRecycleBin() {
+		if (this.isSystem) {
+			return
+		}
 		if (this.parent) {
+			if (!this.isShared && (await this.hasSharedDescendant())) {
+				throw new MimiriException(
+					MimiriExceptionType.CannotDeleteWithSharedDescendant,
+					'Cannot Delete',
+					'Cannot delete note containing shared notes.\nPlease remove shared notes before deleting.',
+				)
+			}
 			if (this.prevSibling) {
-				this.prevSibling.select()
+				await this.prevSibling.select()
 			} else if (this.nextSibling) {
-				this.nextSibling.select()
+				await this.nextSibling.select()
 			} else {
-				this.parent.select()
+				await this.parent.select()
 			}
-			if (!this.owner.recycleBin.hasChildren) {
-				this.owner.recycleBin.collapse()
+			if (!this.owner.tree.recycleBin().hasChildren) {
+				this.owner.tree.recycleBin().collapse()
 			}
-			await this.owner.move(this.parent.id, this.owner.recycleBin.id, this, -1, this.isShareRoot, false)
+			await this.owner.operations.move(
+				this.parent.id,
+				this.owner.tree.recycleBin().id,
+				this,
+				-1,
+				this.isShareRoot,
+				false,
+			)
 		} else {
 			throw new Error('Cannot recycle root')
 		}
 	}
 
-	public async deleteReference(force: boolean = false) {
-		if (this.parent != null) {
-			if (!this.isShareRoot && !force) {
-				throw new Error(
-					'Deleting the reference of this note will leave it without any references, use Delete to delete the note, use force = true to override this check',
-				)
-			}
-			await this.owner.delete(this, false)
-		} else {
-			throw new Error('Cannot delete root')
-		}
-	}
-
 	public async copy(target: MimerNote, index: number = -1) {
+		if (this.isSystem || target.isSystem) {
+			return
+		}
 		if (this.parent != null) {
-			await this.owner.copy(target.id, this, index)
+			await this.owner.operations.copy(target.id, this, index)
 		} else {
 			throw new Error('Cannot copy root')
 		}
@@ -449,11 +468,14 @@ export class MimerNote {
 	}
 
 	public async move(target: MimerNote, index: number = -1) {
+		if (this.isSystem || target.isSystem) {
+			return
+		}
 		if (this.parent != null) {
 			if (this.isAncestorOf(target)) {
 				throw new Error('Cannot move a note into one of its children')
 			}
-			await this.owner.move(this.parent.id, target.id, this, index, this.isShareRoot, true)
+			await this.owner.operations.move(this.parent.id, target.id, this, index, this.isShareRoot, true)
 		} else {
 			throw new Error('Cannot move root')
 		}
@@ -532,14 +554,6 @@ export class MimerNote {
 		}
 	}
 
-	public async refreshAll() {
-		await this.refresh()
-		await this.ensureChildren()
-		for (const note of this.children) {
-			await note.refreshAll()
-		}
-	}
-
 	public getVersion(type: string) {
 		return this.note.getVersion(type)
 	}
@@ -579,7 +593,7 @@ export class MimerNote {
 	}
 
 	public get isShared() {
-		return this.owner.isShared(this.note)
+		return this.owner.note.isShared(this.note)
 	}
 
 	public get isShareRoot() {
@@ -600,12 +614,16 @@ export class MimerNote {
 		return this.note.keyName
 	}
 
+	public get keyFriendlyName() {
+		return this.note.keyName.split('-')[4]
+	}
+
 	public get isRoot() {
 		return !this.parent
 	}
 
 	public get isTopLevel() {
-		return this.parent?.id === this.owner.root.id
+		return this.parent?.id === this.owner.tree.root()?.id
 	}
 
 	public get hasChildren() {
@@ -613,10 +631,6 @@ export class MimerNote {
 			return true
 		}
 		return this.note.getItem('metadata').notes.length > 0
-	}
-
-	public get isCache() {
-		return this.note.isCache
 	}
 
 	public get id() {
@@ -777,6 +791,10 @@ export class MimerNote {
 
 	public get scrollTop() {
 		return persistedState.getScrollTop(this)
+	}
+
+	public get isGettingStarted() {
+		return !!this.note.getItem('metadata').isGettingStarted
 	}
 
 	public set scrollTop(value: number) {

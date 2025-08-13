@@ -2,8 +2,8 @@ import { mimiriPlatform } from './mimiri-platform'
 import { settingsManager } from './settings-manager'
 import { blogManager, ipcClient, noteManager, updateManager } from '../global'
 import { reactive } from 'vue'
-import type { LoginListener } from './note-manager'
 import type { HideShowListener } from './ipc-client'
+import type { LoginListener } from './storage/session-manager'
 
 class LocalAuth implements LoginListener, HideShowListener {
 	private _state: any = reactive({ locked: false, elapsed: true })
@@ -11,14 +11,14 @@ class LocalAuth implements LoginListener, HideShowListener {
 	private _timer
 
 	constructor() {
-		noteManager.registerListener(this)
+		noteManager.session.registerListener(this)
 		this._state.locked = sessionStorage.getItem('locked') === 'true'
 		ipcClient.menu.registerHideShowListener(this)
 	}
 
 	login() {
 		if (this._state.locked) {
-			this.showing()
+			void this.showing()
 		}
 	}
 
@@ -30,13 +30,13 @@ class LocalAuth implements LoginListener, HideShowListener {
 	online() {}
 
 	public async unlockWithPin(pin: string) {
-		const pinCode = noteManager.root.note.getItem('config')?.pinCode
+		const pinCode = noteManager.tree.root().note.getItem('config')?.pinCode
 		if (pin === pinCode) {
 			localStorage.setItem('lastPin', 'success')
 			await this.unlock()
 		} else {
 			localStorage.setItem('lastPin', 'failure')
-			noteManager.logout()
+			await noteManager.session.logout()
 		}
 	}
 
@@ -45,12 +45,11 @@ class LocalAuth implements LoginListener, HideShowListener {
 		this._state.locked = false
 		this._state.elapsed = true
 		sessionStorage.setItem('locked', 'false')
-		if (noteManager.isLoggedIn) {
-			updateManager.check()
-			blogManager.refreshAll()
-			noteManager.loadShareOffers()
-			await noteManager.selectedNote?.refresh()
-		}
+		// if (noteManager.state.isLoggedIn) {
+		// 	await updateManager.check()
+		// 	await blogManager.refreshAll()
+		// 	noteManager.session.queueSync()
+		// }
 	}
 
 	private async lock() {
@@ -68,6 +67,7 @@ class LocalAuth implements LoginListener, HideShowListener {
 			this._timer = undefined
 		}
 		if (!this._state.locked) {
+			noteManager.resume()
 			return
 		}
 		if (this.lastPause < 0 || Date.now() - this.lastPause < this._lockTimeout) {
@@ -83,14 +83,16 @@ class LocalAuth implements LoginListener, HideShowListener {
 		} else {
 			await this.unlock()
 		}
+		noteManager.resume()
 	}
 
 	public async hiding() {
+		noteManager.suspend()
 		if (!this._state.locked) {
 			this.lastPause = Date.now()
 			if (mimiriPlatform.isElectron) {
 				if (!this._timer && this.pinEnabled) {
-					this.lock()
+					await this.lock()
 					this._state.elapsed = false
 					this._timer = setTimeout(() => {
 						this._timer = undefined
@@ -104,8 +106,8 @@ class LocalAuth implements LoginListener, HideShowListener {
 	}
 
 	public async setPin(pin: string) {
-		noteManager.root.note.changeItem('config').pinCode = pin
-		await noteManager.root.save()
+		noteManager.tree.root().note.changeItem('config').pinCode = pin
+		await noteManager.tree.root().save()
 		settingsManager.pinEnabled = true
 	}
 
@@ -114,7 +116,7 @@ class LocalAuth implements LoginListener, HideShowListener {
 	}
 
 	public get pinEnabled() {
-		return settingsManager.pinEnabled && !!noteManager.root.note.getItem('config')?.pinCode
+		return settingsManager.pinEnabled && !!noteManager.tree.root().note.getItem('config')?.pinCode
 	}
 
 	public get locked() {
@@ -126,7 +128,7 @@ class LocalAuth implements LoginListener, HideShowListener {
 	}
 
 	public get pin() {
-		return noteManager.root.note.getItem('config').pinCode
+		return noteManager.tree.root().note.getItem('config').pinCode
 	}
 
 	public get lastPinFailed() {

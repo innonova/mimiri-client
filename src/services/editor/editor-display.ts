@@ -47,6 +47,8 @@ export class EditorDisplay implements TextEditor {
 			this._wordWrap = true
 			this._element.style.whiteSpace = 'pre-wrap'
 			this._history.style.whiteSpace = 'pre-wrap'
+			this._element.style.wordBreak = 'break-word'
+			this._history.style.wordBreak = 'break-word'
 			this._element.style.overflowX = 'hidden'
 			this._history.style.overflowX = 'hidden'
 		} else {
@@ -259,7 +261,7 @@ export class EditorDisplay implements TextEditor {
 	}
 
 	public clearSearchHighlights() {}
-	public setSearchHighlights(text: string) {}
+	public setSearchHighlights(_text: string) {}
 	public find() {}
 
 	public toggleWordWrap() {
@@ -269,10 +271,11 @@ export class EditorDisplay implements TextEditor {
 
 	public syncSettings() {
 		if (this._wordWrap !== settingsManager.wordwrap) {
-			const elm = this.historyShowing ? this._history : this._element
 			if (settingsManager.wordwrap) {
 				this._element.style.whiteSpace = 'pre-wrap'
 				this._history.style.whiteSpace = 'pre-wrap'
+				this._element.style.wordBreak = 'break-word'
+				this._history.style.wordBreak = 'break-word'
 				this._element.style.overflowX = 'hidden'
 				this._history.style.overflowX = 'hidden'
 				this._wordWrap = true
@@ -286,7 +289,7 @@ export class EditorDisplay implements TextEditor {
 		}
 	}
 
-	public expandSelection(type: SelectionExpansion) {}
+	public expandSelection(_type: SelectionExpansion) {}
 
 	public focus() {}
 
@@ -306,7 +309,7 @@ export class EditorDisplay implements TextEditor {
 		} catch {}
 	}
 
-	public paste(text: string) {}
+	public paste(_text: string) {}
 
 	public get readonly() {
 		return true

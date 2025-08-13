@@ -9,23 +9,17 @@
 					type="text"
 					@keydown="keyDown"
 				/>
-				<CloseButton @click="close" class="w-10"></CloseButton>
+				<CloseButton @click="close" class="w-10" />
 			</div>
-			<div
-				v-if="searchManager.state.searchRunning"
-				class="progress-bar-value absolute left-0 bottom-0 w-full h-1"
-			></div>
+			<div v-if="searchManager.state.searchRunning" class="progress-bar-value absolute left-0 bottom-0 w-full h-1" />
 		</div>
 		<div class="hidden desktop:block bg-info-bar-accented h-7 relative">
-			<div
-				v-if="searchManager.state.searchRunning"
-				class="progress-bar-value absolute left-0 top-0 w-full h-full"
-			></div>
+			<div v-if="searchManager.state.searchRunning" class="progress-bar-value absolute left-0 top-0 w-full h-full" />
 			<div class="flex absolute left-0 top-0 w-full justify-between items-center text-size-base! pl-1 select-none">
-				<SearchIcon class="h-7 w-7 p-px mr-1"></SearchIcon>
+				<SearchIcon class="h-7 w-7 p-px mr-1" />
 				<div>{{ searchManager.state.term }}</div>
 				<div class="w-7 h-7 flex justify-end bg-info-bar-accented">
-					<CloseButton @click="close"></CloseButton>
+					<CloseButton @click="close" />
 				</div>
 			</div>
 		</div>

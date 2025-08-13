@@ -4,11 +4,7 @@
 			{{ formatNotificationTimestamp(notification.timestamp) }}
 		</div>
 		<div class="flex items-center gap-1">
-			<component
-				:is="getIcon()"
-				class="h-5 mr-1.5"
-				:class="{ 'text-shared': props.notification.icon === 'share' }"
-			></component>
+			<component :is="getIcon()" class="h-5 mr-1.5" :class="{ 'text-shared': props.notification.icon === 'share' }" />
 			<div :class="{ 'font-bold': !props.notification.read }">{{ props.notification.title }}</div>
 		</div>
 	</div>

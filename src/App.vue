@@ -1,4 +1,5 @@
 <template>
+	<input :value="appStatus" type="hidden" data-testid="app-status" />
 	<div
 		v-if="loading"
 		class="h-full dark-mode safe-area-padding text-size-base"
@@ -7,7 +8,7 @@
 			'bg-back text-text': mimiriPlatform.isElectron,
 		}"
 	>
-		<div id="title-bar" class="w-full h-[36px] pl-px select-none drag"></div>
+		<div id="title-bar" class="w-full h-[36px] pl-px select-none drag" />
 		<div v-if="secondPassed" class="flex flex-col items-center justify-center h-full pb-10">
 			<img v-if="!mimiriPlatform.isElectron" class="ml-1.5 mr-1 mt-px p-1 w-32 h-32" src="/img/logo-big.png" />
 			<div class="flex text-size-header">
@@ -20,39 +21,45 @@
 		</div>
 	</div>
 	<div v-if="!loading" class="flex flex-col h-full bg-back text-text dark-mode safe-area-padding text-size-base">
-		<TitleBar ref="titleBar"></TitleBar>
-		<ConvertAccount v-if="showConvertAccount"></ConvertAccount>
+		<TitleBar ref="titleBar" />
+		<ConvertAccount v-if="showConvertAccount" />
 		<div v-show="!localAuth.locked" class="flex h-full overflow-hidden" @mouseup="endDragging">
 			<div
 				class="h-full overflow-y-hidden flex flex-col w-full divider-left"
 				:class="{ 'hidden desktop:flex': !showNavigation }"
 			>
-				<MainToolbar ref="mainToolbar"></MainToolbar>
-				<SearchBox v-show="showSearchBox"></SearchBox>
-				<NoteTreeView ref="noteTreeView"></NoteTreeView>
-				<ShareOfferView v-show="showShareOffers"></ShareOfferView>
+				<MainToolbar ref="mainToolbar" />
+				<SearchBox v-show="showSearchBox" />
+				<NoteTreeView ref="noteTreeView" />
+				<StatusBar />
 			</div>
-			<div class="w-2.5 min-w-2.5 bg-toolbar cursor-ew-resize hidden desktop:block" @mousedown="startDragging"></div>
+			<div class="w-2.5 min-w-2.5 bg-toolbar cursor-ew-resize hidden desktop:block" @mousedown="startDragging" />
 			<div class="h-full flex flex-col w-full divider-right" :class="{ 'hidden desktop:flex': !showEditor }">
 				<div
-					v-show="noteManager.selectedNote?.type === 'note-text' && noteManager.viewMode === ViewMode.Content"
-					class="h-full flex flex-col flex-1"
-				>
-					<NoteEditor ref="noteEditor"></NoteEditor>
-				</div>
-				<div
-					v-if="
-						noteManager.selectedNote?.type.startsWith('settings-') || noteManager.selectedNote?.type === 'recycle-bin'
+					v-show="
+						noteManager.tree.selectedNoteRef().value?.type === 'note-text' &&
+						noteManager.state.viewMode === ViewMode.Content
 					"
 					class="h-full flex flex-col flex-1"
 				>
-					<SystemPage></SystemPage>
+					<NoteEditor ref="noteEditor" />
 				</div>
 				<div
-					v-if="!noteManager.selectedNote?.isSystem && noteManager.viewMode === ViewMode.Properties"
+					v-if="
+						noteManager.tree.selectedNoteRef().value?.type.startsWith('settings-') ||
+						noteManager.tree.selectedNoteRef().value?.type === 'recycle-bin'
+					"
 					class="h-full flex flex-col flex-1"
 				>
-					<PropertiesPage></PropertiesPage>
+					<SystemPage />
+				</div>
+				<div
+					v-if="
+						!noteManager.tree.selectedNoteRef().value?.isSystem && noteManager.state.viewMode === ViewMode.Properties
+					"
+					class="h-full flex flex-col flex-1"
+				>
+					<PropertiesPage />
 				</div>
 			</div>
 		</div>
@@ -60,34 +67,40 @@
 			v-if="authenticated && localAuth.locked"
 			class="absolute left-0 top-0 w-full h-full flex bg-back items-center justify-center"
 		>
-			<LockScreen></LockScreen>
+			<LockScreen />
 		</div>
-		<ContextMenu ref="contextMenu"></ContextMenu>
-		<NotificationList ref="notificationList"></NotificationList>
-		<DeleteNodeDialog ref="deleteNodeDialog"></DeleteNodeDialog>
-		<DeleteHistoryDialog ref="deleteHistoryDialog"></DeleteHistoryDialog>
-		<DeleteMethodDialog ref="deletePaymentMethodDialog"></DeleteMethodDialog>
-		<EmptyRecycleBinDialog ref="emptyRecycleBinDialog"></EmptyRecycleBinDialog>
-		<PasswordGeneratorDialog ref="passwordGeneratorDialog"></PasswordGeneratorDialog>
-		<ShareDialog ref="shareDialog"></ShareDialog>
-		<AcceptShareDialog ref="acceptShareDialog"></AcceptShareDialog>
-		<SaveEmptyNodeDialog ref="saveEmptyNodeDialog"></SaveEmptyNodeDialog>
-		<LimitDialog ref="limitDialog"></LimitDialog>
-		<PasswordDialog ref="passwordDialog"></PasswordDialog>
-		<LoginDialog ref="loginDialog"></LoginDialog>
-		<InfoDialog ref="infoDialog"></InfoDialog>
+		<div v-if="blockUserInput" class="absolute left-0 top-0 w-full h-full flex bg-transparent" />
+		<InitialPlanChooser
+			v-if="noteManager.state.needsToChooseTier && noteManager.state.accountType === AccountType.Cloud"
+		/>
+		<ContextMenu ref="contextMenu" />
+		<NotificationList ref="notificationList" />
+		<DeleteNodeDialog ref="deleteNodeDialog" />
+		<DeleteHistoryDialog ref="deleteHistoryDialog" />
+		<DeleteMethodDialog ref="deletePaymentMethodDialog" />
+		<EmptyRecycleBinDialog ref="emptyRecycleBinDialog" />
+		<PasswordGeneratorDialog ref="passwordGeneratorDialog" />
+		<ShareDialog ref="shareDialog" />
+		<AcceptShareDialog ref="acceptShareDialog" />
+		<SaveEmptyNodeDialog ref="saveEmptyNodeDialog" />
+		<LimitDialog ref="limitDialog" />
+		<PasswordDialog ref="passwordDialog" />
+		<LoginDialog ref="loginDialog" />
+		<InfoDialog ref="infoDialog" />
+		<InconsistencyDialog ref="inconsistencyDialog" />
+		<SyncErrorDialog ref="syncErrorDialog" />
 		<div
 			v-if="noteManager.state.busy"
 			class="absolute left-0 top-0 w-full h-full flex items-center justify-around text-white"
 			:class="{ 'bg-backdrop': noteManager.state.busyLong }"
 		>
-			<LoadingIcon v-if="noteManager.state.spinner" class="animate-spin w-12 h-12"></LoadingIcon>
+			<LoadingIcon v-if="noteManager.state.spinner" class="animate-spin w-12 h-12" />
 		</div>
 	</div>
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import NoteTreeView from './components/NoteTreeView.vue'
 import NoteEditor from './components/NoteEditor.vue'
 import MainToolbar from './components/MainToolbar.vue'
@@ -98,7 +111,6 @@ import DeleteNodeDialog from './components/dialogs/DeleteNodeDialog.vue'
 import DeleteMethodDialog from './components/dialogs/DeleteMethodDialog.vue'
 import ShareDialog from './components/dialogs/ShareDialog.vue'
 import AcceptShareDialog from './components/dialogs/AcceptShareDialog.vue'
-import ShareOfferView from './components/ShareOfferView.vue'
 import SaveEmptyNodeDialog from './components/dialogs/SaveEmptyNodeDialog.vue'
 import LimitDialog from './components/dialogs/LimitDialog.vue'
 import PasswordDialog from './components/dialogs/PasswordDialog.vue'
@@ -112,7 +124,6 @@ import {
 	contextMenu,
 	shareDialog,
 	acceptShareDialog,
-	showShareOffers,
 	showSearchBox,
 	deleteNodeDialog,
 	emptyRecycleBinDialog,
@@ -130,11 +141,16 @@ import {
 	passwordDialog,
 	loginDialog,
 	limitDialog,
+	syncErrorDialog,
 	updateManager,
 	deletePaymentMethodDialog,
 	deleteHistoryDialog,
 	infoDialog,
 	debug,
+	blockUserInput,
+	appStatus,
+	inconsistencyDialog,
+	loginRequiredToGoOnline,
 } from './global'
 import { settingsManager } from './services/settings-manager'
 import LoadingIcon from './icons/loading.vue'
@@ -145,17 +161,21 @@ import { localAuth } from './services/local-auth'
 import LockScreen from './components/LockScreen.vue'
 import { useEventListener } from '@vueuse/core'
 import SystemPage from './components/SystemPage.vue'
-import { ViewMode } from './services/note-manager'
+import { AccountType, ViewMode } from './services/storage/type'
 import PropertiesPage from './components/PropertiesPage.vue'
 import DeleteHistoryDialog from './components/dialogs/DeleteHistoryDialog.vue'
 import InfoDialog from './components/dialogs/InfoDialog.vue'
+import InconsistencyDialog from './components/dialogs/InconsistencyDialog.vue'
+import StatusBar from './components/elements/StatusBar.vue'
+import SyncErrorDialog from './components/dialogs/SyncErrorDialog.vue'
+import InitialPlanChooser from './components/subscription/InitialPlanChooser.vue'
 
 const colorScheme = ref('only light')
 const loading = ref(true)
 const secondPassed = ref(false)
 const activity = ref('')
 
-const authenticated = computed(() => noteManager.state.authenticated)
+const authenticated = computed(() => noteManager.state.isLoggedIn)
 
 const showNavigation = computed(() => !noteManager.state.noteOpen)
 const showEditor = computed(() => noteManager.state.noteOpen)
@@ -169,12 +189,12 @@ const onResize = () => {
 	editorWidth.value = `${window.innerWidth - splitterPos - 10}px`
 }
 
-document.documentElement.setAttribute('data-device-type', noteManager.isMobile ? 'mobile' : 'desktop')
+document.documentElement.setAttribute('data-device-type', noteManager.state.isMobile ? 'mobile' : 'desktop')
 
 const updateTheme = () => {
 	document.documentElement.setAttribute('data-theme', settingsManager.darkMode ? 'dark' : 'light')
 	colorScheme.value = settingsManager.darkMode ? 'only dark' : 'only light'
-	var root = document.querySelector(':root') as HTMLElement
+	const root = document.querySelector(':root') as HTMLElement
 	root.style.setProperty(
 		'--font-editor',
 		`'${settingsManager.editorFontFamily}', 'Consolas', 'Courier New', 'monospace'`,
@@ -222,7 +242,7 @@ useEventListener(window, 'resize', onResize)
 useEventListener(document, 'contextmenu', e => e.preventDefault(), false)
 
 if (ipcClient.isAvailable) {
-	noteManager.setCacheManager(ipcClient.cache)
+	// noteManager.setCacheManager(ipcClient.cache)
 	menuManager.updateTrayMenu()
 	menuManager.updateAppMenu()
 }
@@ -235,20 +255,23 @@ const handleShortcut = event => {
 		event.stopPropagation()
 	}
 	if (
-		!authenticated ||
+		!authenticated.value ||
 		localAuth.locked ||
 		showCreateAccount.value ||
-		noteManager.selectedNote?.id === 'settings-pin'
+		noteManager.tree.selectedNote()?.id === 'settings-pin'
 	) {
 		return
 	}
 
 	const treeViewShortCutsActive =
 		(document.activeElement.tagName === 'BODY' || !noteEditor.value?.$el.contains(document.activeElement)) &&
-		event.target.tagName === 'BODY' &&
-		!noteManager.selectedNote?.isSystem
+		event.target.tagName === 'BODY'
+	const isSystemNote = noteManager.tree.selectedNote()?.isSystem
 
 	if (event.key === 'd' && ctrlActive) {
+		if (isSystemNote) {
+			return
+		}
 		if (treeViewShortCutsActive) {
 			event.preventDefault()
 			event.stopPropagation()
@@ -258,6 +281,9 @@ const handleShortcut = event => {
 		}
 	}
 	if (event.key === 'x' && ctrlActive) {
+		if (isSystemNote) {
+			return
+		}
 		if (treeViewShortCutsActive) {
 			event.preventDefault()
 			event.stopPropagation()
@@ -267,6 +293,9 @@ const handleShortcut = event => {
 		}
 	}
 	if (event.key === 'c' && ctrlActive) {
+		if (isSystemNote) {
+			return
+		}
 		if (treeViewShortCutsActive) {
 			event.preventDefault()
 			event.stopPropagation()
@@ -276,6 +305,9 @@ const handleShortcut = event => {
 		}
 	}
 	if (event.key === 'v' && ctrlActive) {
+		if (isSystemNote) {
+			return
+		}
 		if (treeViewShortCutsActive) {
 			event.preventDefault()
 			event.stopPropagation()
@@ -285,11 +317,18 @@ const handleShortcut = event => {
 		}
 	}
 	if (event.key === 'Delete') {
+		if (isSystemNote) {
+			return
+		}
 		if (treeViewShortCutsActive) {
 			event.preventDefault()
 			event.stopPropagation()
 			if (noteTreeView.value) {
-				if (event.shiftKey || !!noteManager.selectedNote?.isInRecycleBin || noteManager.selectedNote.isShared) {
+				if (
+					event.shiftKey ||
+					!!noteManager.tree.selectedNote()?.isInRecycleBin ||
+					noteManager.tree.selectedNote().isShared
+				) {
 					noteTreeView.value.deleteActiveNote()
 				} else {
 					noteTreeView.value.recycleActiveNote()
@@ -298,6 +337,9 @@ const handleShortcut = event => {
 		}
 	}
 	if (event.key === 'F2') {
+		if (isSystemNote) {
+			return
+		}
 		if (treeViewShortCutsActive) {
 			event.preventDefault()
 			event.stopPropagation()
@@ -343,18 +385,27 @@ const handleShortcut = event => {
 		}
 	}
 	if (event.key === 's' && ctrlActive) {
+		if (isSystemNote) {
+			return
+		}
 		event.preventDefault()
 		noteEditor.value.save()
 	}
 	if (event.key === 'C' && ctrlActive) {
+		if (isSystemNote) {
+			return
+		}
 		event.preventDefault()
 		mimiriEditor.toggleSelectionAsPassword()
 	}
 	if (event.key === 'n' && ctrlActive) {
+		if (isSystemNote) {
+			return
+		}
 		if (treeViewShortCutsActive) {
 			event.preventDefault()
 			event.stopPropagation()
-			noteManager.newNote()
+			noteManager.ui.newNote()
 		}
 	}
 	if (event.key === 'F3' || (event.key === 'F' && ctrlActive)) {
@@ -371,7 +422,7 @@ const handleShortcut = event => {
 
 	if (!ctrlActive && !event.altKey) {
 		if (event.key.length === 1 && event.key === event.key.toLowerCase() && noteTreeView.value?.hasFocus()) {
-			noteManager.findNextNoteStartingWith(event.key)
+			noteManager.ui.findNextNoteStartingWith(event.key)
 		}
 	}
 }
@@ -387,8 +438,11 @@ const resizeDebounce = new Debounce(async () => {
 useEventListener(window, 'resize', async () => {
 	resizeDebounce.activate()
 })
-;(async () => {
+
+appStatus.value = 'loading'
+onMounted(async () => {
 	try {
+		appStatus.value = 'loading'
 		setTimeout(() => (secondPassed.value = true), 1000)
 		progressActivity()
 
@@ -401,34 +455,33 @@ useEventListener(window, 'resize', async () => {
 
 		updateTheme()
 		if (await updateManager.checkUpdateInitial()) {
+			appStatus.value = 'update'
 			return
 		}
 		try {
-			if (!noteManager.isLoggedIn && settingsManager.autoLogin && settingsManager.autoLoginData) {
-				await noteManager.setLoginData(await deObfuscate(settingsManager.autoLoginData))
-				if (noteManager.isLoggedIn) {
-					await noteManager.loadState()
+			if (!noteManager.state.isLoggedIn && settingsManager.autoLogin && settingsManager.autoLoginData) {
+				await noteManager.auth.setLoginData(await deObfuscate(settingsManager.autoLoginData))
+				if (noteManager.state.isLoggedIn) {
+					await noteManager.tree.loadState()
 				}
 			}
 		} catch (ex) {
 			debug.logError('Error setting login data', ex)
 		}
-
-		if (!noteManager.isLoggedIn) {
+		if (!noteManager.state.isLoggedIn) {
 			try {
-				await noteManager.recoverLogin()
+				await noteManager.session.recoverLogin()
 			} catch (ex) {
 				debug.logError('Error recovering login', ex)
 			}
 		}
 
-		let showLogin = !noteManager.isLoggedIn
+		let showLogin = !noteManager.state.isLoggedIn
 
-		if (!noteManager.isLoggedIn) {
-			if (settingsManager.isNewInstall) {
-				await noteManager.loginAnonymousAccount()
-				if (noteManager.isLoggedIn) {
-					settingsManager.isNewInstall = false
+		if (!noteManager.state.isLoggedIn) {
+			if (!(await noteManager.auth.hasOneOrMoreAccounts())) {
+				await noteManager.session.openLocal()
+				if (noteManager.state.isLoggedIn) {
 					showLogin = false
 				}
 			} else {
@@ -439,13 +492,20 @@ useEventListener(window, 'resize', async () => {
 		loading.value = false
 		await settingsManager.save()
 		if (showLogin) {
+			loginDialog.value.show()
+		}
+		if (loginRequiredToGoOnline.value) {
+			loginRequiredToGoOnline.value = false
 			loginDialog.value.show(true)
 		}
+
+		appStatus.value = 'ready'
 	} catch (ex) {
+		appStatus.value = 'error'
 		debug.logError('Error during app initialization', ex)
-		setTimeout(() => location.reload(), 1000)
+		// setTimeout(() => location.reload(), 1000)
 	}
-})()
+})
 
 const handleDragging = e => {
 	let pos = e.pageX

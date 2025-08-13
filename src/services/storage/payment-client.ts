@@ -1,22 +1,25 @@
-import { HttpRequestError, type MimerClient } from './mimer-client'
 import type {
 	ChargeExistingMethodRequest,
 	CreateCustomerRequest,
 	CreatePaymentMethodRequest,
 	InvoiceToLinkRequest,
 	NewSubscriptionRequest,
-} from './types/payment-requests'
-import type { Country, Invoice, PaymentMethod, Subscription, SubscriptionProduct } from './types/subscription'
-import type { Guid } from './types/guid'
+} from '../types/payment-requests'
+import type { Country, Invoice, PaymentMethod, Subscription, SubscriptionProduct } from '../types/subscription'
+import type { Guid } from '../types/guid'
 import { add } from 'date-fns'
-import { updateManager } from '../global'
+import { updateManager } from '../../global'
+import { HttpRequestError } from './http-client-base'
+import type { AuthenticationManager } from './authentication-manager'
+import type { SharedState } from './type'
 
 export class PaymentClient {
 	private _countries: Country[] | undefined
 	private _subscriptionProduct: SubscriptionProduct[] | undefined
 
 	constructor(
-		private mimerClient: MimerClient,
+		private authManager: AuthenticationManager,
+		private sharedState: SharedState,
 		private host: string,
 	) {}
 
@@ -58,15 +61,15 @@ export class PaymentClient {
 	}
 
 	private async sign(request: any) {
-		request.username = this.mimerClient.username
+		request.username = this.sharedState.username
 		request.timestamp = new Date()
-		await this.mimerClient.signRequest(request)
+		await this.authManager.signRequest(request)
 		return request
 	}
 
 	public async createAuthQuery(request: any) {
-		request.username = this.mimerClient.username
-		await this.mimerClient.signRequest(request)
+		request.username = this.sharedState.username
+		await this.authManager.signRequest(request)
 		return btoa(JSON.stringify(request))
 	}
 

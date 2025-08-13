@@ -1,12 +1,12 @@
 <template>
-	<PaymentMethods v-if="selectedId === 'methods'" @pay-in-progress="payInProgress"></PaymentMethods>
+	<PaymentMethods v-if="selectedId === 'methods'" @pay-in-progress="payInProgress" />
 	<WaitingForPayment
 		v-if="selectedId === 'pay-in-progress'"
 		@close="closeWaiting"
 		:waiting-for-user="waitingForUser"
 		:expected-method-count="expectedMethodCount"
 		:link="payLink"
-	></WaitingForPayment>
+	/>
 </template>
 
 <script setup lang="ts">
@@ -16,14 +16,14 @@ import WaitingForPayment from './WaitingForPayment.vue'
 import { onMounted, ref } from 'vue'
 import PaymentMethods from './PaymentMethods.vue'
 
-let pageAfterPay = 'methods'
+const pageAfterPay = 'methods'
 const selectedId = ref('methods')
 const waitingForUser = ref<boolean>(false)
 const payLink = ref('')
 const expectedMethodCount = ref(0)
 
 onMounted(() => {
-	noteManager.registerActionListener({
+	noteManager.tree.registerActionListener({
 		select: (id: Guid) => {
 			if (id === 'settings-payment-methods') {
 				selectedId.value = 'methods'

@@ -7,13 +7,13 @@
 			<div class="text-center p-3 active:bg-toolbar-hover" @click="paste">Paste</div>
 		</div>
 		<div ref="toolbarElement" class="toolbar-pos bg-toolbar flex justify-between w-full absolute h-14">
-			<LineUp @click="lineUp" class="active:bg-toolbar-hover"></LineUp>
-			<ExpandLeft @click="expandLeft" class="active:bg-toolbar-hover"></ExpandLeft>
-			<ShrinkLeft @click="shrinkLeft" class="active:bg-toolbar-hover"></ShrinkLeft>
-			<MenuIcon @click="menu" class="active:bg-toolbar-hover"></MenuIcon>
-			<ShrinkRight @click="shrinkRight" class="active:bg-toolbar-hover"></ShrinkRight>
-			<ExpandRight @click="expandRight" class="active:bg-toolbar-hover"></ExpandRight>
-			<LineDown @click="lineDown" class="active:bg-toolbar-hover"></LineDown>
+			<LineUp @click="lineUp" class="active:bg-toolbar-hover" />
+			<ExpandLeft @click="expandLeft" class="active:bg-toolbar-hover" />
+			<ShrinkLeft @click="shrinkLeft" class="active:bg-toolbar-hover" />
+			<MenuIcon @click="menu" class="active:bg-toolbar-hover" />
+			<ShrinkRight @click="shrinkRight" class="active:bg-toolbar-hover" />
+			<ExpandRight @click="expandRight" class="active:bg-toolbar-hover" />
+			<LineDown @click="lineDown" class="active:bg-toolbar-hover" />
 		</div>
 	</div>
 </template>
@@ -40,7 +40,7 @@ const menuVisibility = ref('hidden')
 const toolbarVisibility = ref('hidden')
 
 if (!mimiriPlatform.isDesktop) {
-	visualViewport.addEventListener('resize', e => {
+	visualViewport.addEventListener('resize', () => {
 		const isPortrait = window.innerHeight > window.innerWidth
 		const viewPortHeight = visualViewport.height * visualViewport.scale
 		const screenHeight =
@@ -96,7 +96,7 @@ const copy = () => {
 
 const paste = () => {
 	menuVisibility.value = 'hidden'
-	mimiriEditor.paste()
+	void mimiriEditor.paste()
 }
 
 const menu = () => {

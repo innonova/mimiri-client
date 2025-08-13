@@ -9,6 +9,7 @@
 		@dragover="onDragOver"
 		@dragenter="onDragEnter"
 		@dragleave="onDragLeave"
+		:title="node.title"
 	>
 		<div
 			class="rounded-sm relative overflow-hidden h-[30px] desktop:h-[25px] flex items-center py-[19px] desktop:py-0"
@@ -25,82 +26,84 @@
 				v-show="indicatorVisible"
 				id="drop-indicator"
 				class="absolute left-4 indicator-top w-full h-0 border-2 border-solid border-drop-indicator pointer-events-none"
-			></div>
+			/>
 			<div v-show="!searchModeActive" class="flex items-center pl-1 pr-0.5 h-full" @click="toggleNode">
 				<PlusIcon
 					v-if="!node.expanded"
 					:data-testid="`${dataTestId}-closed`"
+					title="Expand"
 					class="h-5 w-5 desktop:h-4 desktop:w-4 mt-px"
 					:class="{ invisible: !hasChildren }"
-				></PlusIcon>
+				/>
 				<MinusIcon
 					v-if="node.expanded"
 					:data-testid="`${dataTestId}-open`"
+					title="Collapse"
 					class="h-5 w-5 desktop:h-4 desktop:w-4 mt-px"
 					:class="{ invisible: !hasChildren }"
-				></MinusIcon>
+				/>
 			</div>
 			<NoteIcon
 				v-if="node.icon === 'note'"
 				class="w-[30px] h-[30px] desktop:w-[23px] desktop:h-[23px] p-0.5 mr-1 desktop:mr-0.5"
 				:class="{ 'text-shared': node.shared }"
-			></NoteIcon>
+			/>
 			<CogIcon
 				v-if="node.icon === 'cog'"
 				class="w-[30px] h-[30px] desktop:w-[23px] desktop:h-[23px] p-0.5 mr-1 desktop:mr-0.5"
 				:class="{ 'text-shared': node.shared }"
-			></CogIcon>
+			/>
 			<FontIcon
 				v-if="node.icon === 'font'"
 				class="w-[30px] h-[30px] desktop:w-[23px] desktop:h-[23px] p-0.5 mr-1 desktop:mr-0.5"
 				:class="{ 'text-shared': node.shared }"
-			></FontIcon>
+			/>
 			<CoinsIcon
 				v-if="node.icon === 'coins'"
 				class="w-[30px] h-[30px] desktop:w-[23px] desktop:h-[23px] p-0.5 mr-1 desktop:mr-0.5"
 				:class="{ 'text-shared': node.shared }"
-			></CoinsIcon>
+			/>
 			<InfoIcon
 				v-if="node.icon === 'info'"
 				class="w-[30px] h-[30px] desktop:w-[23px] desktop:h-[23px] p-0.5 mr-1 desktop:mr-0.5"
 				:class="{ 'text-shared': node.shared }"
-			></InfoIcon>
+			/>
 			<DownloadIcon
 				v-if="node.icon === 'download'"
 				class="w-[30px] h-[30px] desktop:w-[23px] desktop:h-[23px] p-0.5 mr-1 desktop:mr-0.5"
 				:class="{ 'text-shared': node.shared }"
-			></DownloadIcon>
+			/>
 			<LockIcon
 				v-if="node.icon === 'lock'"
 				class="w-[30px] h-[30px] desktop:w-[23px] desktop:h-[23px] p-0.5 mr-1 desktop:mr-0.5"
 				:class="{ 'text-shared': node.shared }"
-			></LockIcon>
+			/>
 			<AccountIcon
 				v-if="node.icon === 'account'"
 				class="w-[30px] h-[30px] desktop:w-[23px] desktop:h-[23px] p-0.5 mr-1 desktop:mr-0.5"
 				:class="{ 'text-shared': node.shared }"
-			></AccountIcon>
+			/>
 			<AnnouncementIcon
 				v-if="node.icon === 'announcement'"
 				class="w-[30px] h-[30px] desktop:w-[23px] desktop:h-[23px] p-0.5 mr-1 desktop:mr-0.5"
 				:class="{ 'text-shared': node.shared }"
-			></AnnouncementIcon>
+			/>
 			<BulbIcon
 				v-if="node.icon === 'bulb'"
 				class="w-[30px] h-[30px] desktop:w-[23px] desktop:h-[23px] p-0.5 mr-1 desktop:mr-0.5"
 				:class="{ 'text-shared': node.shared }"
-			></BulbIcon>
+			/>
 			<RecycleBinIcon
 				v-if="node.icon === 'recycle-bin' && hasChildren"
 				class="w-[30px] h-[30px] desktop:w-[23px] desktop:h-[23px] p-0.5 mr-1 desktop:mr-0.5"
 				:class="{ 'text-shared': node.shared }"
-			></RecycleBinIcon>
+			/>
 			<RecycleBinEmptyIcon
 				v-if="node.icon === 'recycle-bin' && !hasChildren"
 				class="w-[30px] h-[30px] desktop:w-[23px] desktop:h-[23px] p-0.5 mr-1 desktop:mr-0.5"
 				:class="{ 'text-shared': node.shared }"
-			></RecycleBinEmptyIcon>
-			<div v-if="node.hasInfo" class="absolute bottom-0.5 left-[35px] w-2 h-2 rounded-sm bg-bad"></div>
+			/>
+			<div v-if="node.hasInfo" class="absolute bottom-0.5 left-[35px] w-2 h-2 rounded-sm bg-bad" />
 			<input
 				v-if="editName"
 				class="outline-hidden bg-item-selected! border-collapse p-0! pt-px! flex-1 min-w-1 text-size-base!"
@@ -109,6 +112,7 @@
 				:value="node.title"
 				@blur="endEdit"
 				@keydown="checkCancelEdit"
+				data-testid="rename-input"
 			/>
 			<div
 				v-if="!editName"
@@ -121,16 +125,15 @@
 				{{ node.title }}
 			</div>
 			<button class="desktop:hidden pl-10 py-[7px] flex justify-end" @click="selectNode(true)">
-				<OpenIcon class="w-[23px] h-[23px] p-0.5 mr-1"></OpenIcon>
+				<OpenIcon class="w-[23px] h-[23px] p-0.5 mr-1" />
 			</button>
 		</div>
-		<template v-for="childNode of node.children" :key="childNode.id">
-			<TreeNode
-				v-show="(node.expanded && !searchModeActive) || searchModeActive"
-				:node="<NoteViewModel>childNode"
-			></TreeNode>
+		<template v-if="(node.expanded && !searchModeActive) || searchModeActive">
+			<template v-for="childNode of node.children" :key="childNode.id">
+				<TreeNode :node="<NoteViewModel>childNode" />
+			</template>
 		</template>
-		<NewTreeNode v-if="isSelected && createNewNode"></NewTreeNode>
+		<NewTreeNode v-if="isSelected && createNewNode" />
 	</div>
 </template>
 
@@ -208,7 +211,7 @@ const searchModeActive = computed(() => {
 
 const startDrag = event => {
 	event.stopPropagation()
-	if (noteManager.isOnline && !props.node.isSystem) {
+	if (!props.node.isSystem) {
 		event.dataTransfer.dropEffect = 'move'
 		event.dataTransfer.effectAllowed = 'move'
 		dragId.value = props.node.id
@@ -222,12 +225,12 @@ const onDrop = async event => {
 		event.stopPropagation()
 		dragOver = 0
 		indicatorVisible.value = false
-		const note = noteManager.getNoteById(dragId.value)
-		const dropNote = noteManager.getNoteById(props.node.id)
+		const note = noteManager.tree.getNoteById(dragId.value)
+		const dropNote = noteManager.tree.getNoteById(props.node.id)
 		if (target < 0) {
 			await note.move(dropNote.parent, dropNote.index)
 		} else if (target === 0) {
-			dropNote.expand()
+			await dropNote.expand()
 			await note.move(dropNote)
 		} else {
 			await note.move(dropNote.parent, dropNote.index + 1)
@@ -296,22 +299,23 @@ const toggleNode = async e => {
 	e.stopPropagation()
 	if (hasChildren.value && !searchModeActive.value) {
 		if (!props.node.expanded) {
-			const note = noteManager.getNoteById(props.node.id)
-			note.expand()
+			const note = noteManager.tree.getNoteById(props.node.id)
+			void note.expand()
 		} else {
-			const note = noteManager.getNoteById(props.node.id)
+			const note = noteManager.tree.getNoteById(props.node.id)
 			note.collapse()
 		}
 	}
 }
 
 const selectNode = async (mobileSwitch: boolean) => {
-	noteManager.openNote(props.node.id, mobileSwitch)
+	noteManager.tree.openNote(props.node.id, mobileSwitch)
 }
 
 const checkCancelEdit = e => {
 	e.stopPropagation()
 	if (e.key === 'Escape') {
+		// eslint-disable-next-line vue/no-mutating-props
 		props.node.renaming = false
 		renameInput.value.value = props.node.title
 		renameInput.value.blur()
@@ -323,12 +327,14 @@ const checkCancelEdit = e => {
 
 const endEdit = async e => {
 	if (props.node.renaming) {
+		// eslint-disable-next-line vue/no-mutating-props
 		props.node.renaming = false
 		const inputElement = e.target as HTMLInputElement
 		if (inputElement) {
 			const newName = inputElement.value
-			const note = noteManager.getNoteById(props.node.id)
+			const note = noteManager.tree.getNoteById(props.node.id)
 			if (note.title !== newName) {
+				// eslint-disable-next-line vue/no-mutating-props
 				props.node.title = newName
 				note.title = newName
 				await note.save()
@@ -349,14 +355,18 @@ const showContextMenu = async e => {
 		])
 	} else {
 		let showShare = true
-		let showAcceptShare = features.includes('share-code')
+		let showAcceptShare = true
 		if (props.node.shared) {
-			const note = noteManager.getNoteById(props.node.id)
+			const note = noteManager.tree.getNoteById(props.node.id)
 			showShare = note.isShareRoot
 			showAcceptShare = false
 		}
+		if (!noteManager.state.isOnline) {
+			showShare = false
+			showAcceptShare = false
+		}
 
-		const note = noteManager.getNoteById(props.node.id)
+		const note = noteManager.tree.getNoteById(props.node.id)
 		const isInRecycleBin = note.isInRecycleBin
 
 		menuManager.showMenu({ x: e.x, y: e.y }, [

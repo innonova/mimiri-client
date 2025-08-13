@@ -1,17 +1,24 @@
 import { noteManager } from '../../global'
 import { mimiriPlatform } from '../mimiri-platform'
-import type { NoteManager } from '../note-manager'
+import type { MimiriStore } from '../storage/mimiri-store'
 import { settingsManager } from '../settings-manager'
 import type { Guid } from './guid'
 import type { MimerNote } from './mimer-note'
 import { VirtualNote } from './virtual-note'
+import { AccountType } from '../storage/type'
 
-export const createControlPanelTree = (owner: NoteManager, parent: MimerNote): MimerNote[] => {
+export const createControlPanelTree = (owner: MimiriStore, parent: MimerNote): MimerNote[] => {
 	const showUpdate = !mimiriPlatform.isWeb || location.host === 'localhost:5173'
-	const showPin = mimiriPlatform.isElectron || location.host === 'localhost:5173'
-	const showSubscription = mimiriPlatform.isDesktop
+	const showPin =
+		(mimiriPlatform.isElectron || location.host === 'localhost:5173') &&
+		noteManager.state.accountType !== AccountType.None
+	const showSubscription =
+		mimiriPlatform.isDesktop &&
+		noteManager.state.accountType !== AccountType.Local &&
+		noteManager.state.accountType !== AccountType.None
 	const showDevBlog = !settingsManager.disableDevBlog
 	const showDebug = settingsManager.debugEnabled
+	const isLocal = noteManager.state.accountType === AccountType.None
 
 	const items = [
 		...(showUpdate
@@ -80,52 +87,80 @@ export const createControlPanelTree = (owner: NoteManager, parent: MimerNote): M
 					: []),
 			],
 		},
-		{
-			id: 'settings-account' as Guid,
-			title: 'Account',
-			type: noteManager.isAnonymous ? 'settings-create-password' : 'settings-username',
-			icon: 'account',
-			children: [
-				...(!noteManager.isAnonymous
-					? [
+		...(isLocal
+			? [
+					{
+						id: 'settings-create-account' as Guid,
+						title: 'Create Account',
+						type: 'settings-create-account',
+						icon: 'account',
+						children: [],
+					},
+				]
+			: [
+					{
+						id: 'settings-account' as Guid,
+						title: 'Account',
+						type: noteManager.state.isAnonymous
+							? 'settings-create-password'
+							: noteManager.state.accountType === AccountType.Local
+								? 'settings-upgrade'
+								: 'settings-username',
+						icon: 'account',
+						children: [
+							...(noteManager.state.accountType === AccountType.Local
+								? [
+										{
+											id: 'settings-upgrade' as Guid,
+											title: 'Connect Cloud',
+											type: 'settings-upgrade',
+											icon: 'account',
+											children: [],
+										},
+									]
+								: []),
+							...(!noteManager.state.isAnonymous
+								? [
+										{
+											id: 'settings-username' as Guid,
+											title: 'Username',
+											type: 'settings-username',
+											icon: 'account',
+											children: [],
+										},
+										{
+											id: 'settings-password' as Guid,
+											title: 'Password',
+											type: 'settings-password',
+											icon: 'account',
+											children: [],
+										},
+									]
+								: [
+										{
+											id: 'settings-create-password' as Guid,
+											title: 'Create Password',
+											type: 'settings-create-password',
+											icon: 'account',
+											children: [],
+										},
+									]),
+
 							{
-								id: 'settings-username' as Guid,
-								title: 'Username',
-								type: 'settings-username',
+								id: 'settings-delete' as Guid,
+								title: 'Delete',
+								type: 'settings-delete',
 								icon: 'account',
 								children: [],
 							},
-							{
-								id: 'settings-password' as Guid,
-								title: 'Password',
-								type: 'settings-password',
-								icon: 'account',
-								children: [],
-							},
-						]
-					: [
-							{
-								id: 'settings-create-password' as Guid,
-								title: 'Create Password',
-								type: 'settings-create-password',
-								icon: 'account',
-								children: [],
-							},
-						]),
-				{
-					id: 'settings-delete' as Guid,
-					title: 'Delete',
-					type: 'settings-delete',
-					icon: 'account',
-					children: [],
-				},
-			],
-		},
+						],
+					},
+				]),
 		...(showSubscription
 			? [
 					{
 						id: 'settings-plan-group' as Guid,
-						title: 'Plan (BETA)',
+						title: 'Plan',
 						type: 'settings-plan',
 						icon: 'coins',
 						children: [
@@ -161,10 +196,21 @@ export const createControlPanelTree = (owner: NoteManager, parent: MimerNote): M
 					},
 				]
 			: []),
+		// isLocal
+		// 	? [
+		// 			{
+		// 				id: 'settings-explain-plan' as Guid,
+		// 				title: 'Plan',
+		// 				type: 'settings-explain-plan',
+		// 				icon: 'coins',
+		// 				children: [],
+		// 			},
+		// 		]
+		// 	: []),
 	]
 
 	return items.map(tree => {
-		const existing = owner.getNoteById(tree.id)
+		const existing = owner.tree.getNoteById(tree.id)
 		if (existing) {
 			return existing
 		}

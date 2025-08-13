@@ -7,9 +7,9 @@
 			@pointerup="up"
 			@pointermove="move"
 		>
-			<slot></slot>
+			<slot />
 		</div>
-		<CloseButton :disabled="disabled" @click="close" class="mr-1.5 w-7 mobile:hidden"></CloseButton>
+		<CloseButton :disabled="disabled" @click="close" class="mr-1.5 w-7 mobile:hidden" />
 	</header>
 </template>
 
@@ -20,7 +20,7 @@ import { noteManager } from '../../global'
 
 const titleBar = ref(null)
 
-const props = defineProps<{
+defineProps<{
 	disabled?: boolean
 }>()
 
@@ -47,7 +47,7 @@ const findDialog = (elm: HTMLElement) => {
 const emit = defineEmits(['close'])
 
 const down = (e: PointerEvent) => {
-	if (noteManager.isMobile) {
+	if (noteManager.state.isMobile) {
 		return
 	}
 	offsetY = e.offsetY
@@ -60,7 +60,7 @@ const down = (e: PointerEvent) => {
 }
 
 const up = (e: PointerEvent) => {
-	if (noteManager.isMobile) {
+	if (noteManager.state.isMobile) {
 		return
 	}
 	captured = false
@@ -68,7 +68,7 @@ const up = (e: PointerEvent) => {
 }
 
 const move = (e: PointerEvent) => {
-	if (noteManager.isMobile) {
+	if (noteManager.state.isMobile) {
 		return
 	}
 	if (captured) {

@@ -45,10 +45,11 @@ class SearchManager {
 		this.state.searchRunning = true
 
 		let first = true
-		noteManager.root
+		void noteManager.tree
+			.root()
 			.search(text, (note: MimerNote) => {
 				if (first) {
-					note.select()
+					void note.select()
 					first = false
 				}
 				notes[note.id] = FoundType.Found

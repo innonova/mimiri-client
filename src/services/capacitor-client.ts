@@ -19,15 +19,15 @@ class NoOpMenu implements IpcMenuApi {
 	hide() {}
 	quit() {}
 	showDevTools() {}
-	onToggleScreenSharing(callback: () => void) {}
-	onToggleOpenAtLogin(callback: () => void) {}
-	setAppMenu(value: any) {}
-	seTrayMenu(value: any, colors: any) {}
-	onMenuItemActivated(callback: (menuItemIdd: string) => void) {}
+	onToggleScreenSharing(_callback: () => void) {}
+	onToggleOpenAtLogin(_callback: () => void) {}
+	setAppMenu(_value: any) {}
+	seTrayMenu(_value: any, _colors: any) {}
+	onMenuItemActivated(_callback: (menuItemIdd: string) => void) {}
 }
 
 class NoOpWindow implements IpcWindowApi {
-	async setMainWindowSize(value: { width: number; height: number }): Promise<void> {}
+	async setMainWindowSize(_value: { width: number; height: number }): Promise<void> {}
 	getMainWindowSize(): Promise<{ width: number; height: number }> {
 		return Promise.resolve({ width: 0, height: 0 })
 	}
@@ -38,7 +38,7 @@ class NoOpWindow implements IpcWindowApi {
 
 class NoOpWatchDog implements IpcWatchDog {
 	async ok(): Promise<void> {}
-	onCheck(callback: () => void) {}
+	onCheck(_callback: () => void) {}
 }
 
 interface CachePlugin {
@@ -73,11 +73,11 @@ interface MimiriUpdatePlugin {
 class CapacitorCache implements IpcCacheApi {
 	constructor(private cache: CachePlugin) {}
 
-	async setTestId(testId: any): Promise<boolean> {
+	async setTestId(_testId: any): Promise<boolean> {
 		return false
 	}
 
-	async tearDown(keepLogs: any): Promise<boolean> {
+	async tearDown(_keepLogs: any): Promise<boolean> {
 		return false
 	}
 
@@ -162,7 +162,7 @@ class MimiriBundle implements IpcBundleApi {
 	good(version: string): Promise<void> {
 		return this.bundle.good({ version })
 	}
-	async saveElectronUpdate(release: string, data: ArrayBuffer) {
+	async saveElectronUpdate(_release: string, _data: ArrayBuffer) {
 		throw new Error('Not supported, saveElectronUpdate, capacitor')
 	}
 	async updateElectron() {

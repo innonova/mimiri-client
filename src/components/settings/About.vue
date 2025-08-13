@@ -1,6 +1,6 @@
 <template>
 	<div class="flex flex-col h-full">
-		<TabBar :items="['About']"></TabBar>
+		<TabBar :items="['About']" />
 		<div class="flex flex-col overflow-y-auto">
 			<div @click="boxClicked">
 				<div class="p-1 pl-4">Bundle Version: {{ updateManager.currentVersion }}</div>
@@ -8,9 +8,36 @@
 					Host Version: {{ mimiriPlatform.isWeb ? browserName : updateManager.hostVersion }}
 				</div>
 				<div class="p-1 pl-4 pt-2">Released: {{ formatDate(updateManager.releaseDate) }}</div>
-				<div class="p-1 pl-4 pt-6">Notes: {{ noteCount }} / {{ maxNoteCount }} ({{ notesPercent }})</div>
-				<div class="p-1 pl-4 pt-2">Space Used: {{ usedBytes }} / {{ maxBytes }} ({{ bytesPercent }})</div>
-				<div class="p-1 pl-4 pt-2">Account: {{ noteManager.username }}</div>
+				<template v-if="maxNoteCount > 0">
+					<div class="p-1 pl-4 pt-6">
+						Notes: <span data-testid="about-note-count">{{ noteCount }}</span> /
+						<span data-testid="about-max-note-count">{{ maxNoteCount }}</span> ({{ notesPercent }})
+					</div>
+					<div class="p-1 pl-4 pt-2">
+						Space Used: <span data-testid="about-space-used" :title="`${usedBytesRaw}`">{{ usedBytes }}</span> /
+						<span data-testid="about-max-space">{{ maxBytes }}</span> ({{ bytesPercent }})
+					</div>
+					<div class="p-1 pl-4 pt-2">
+						Unsynced Notes: <span data-testid="about-unsynced-notes">{{ localNoteCount }}</span>
+					</div>
+					<div class="p-1 pl-4 pt-2">
+						Unsynced Data: <span data-testid="about-unsynced-data">{{ localUsedBytes }}</span>
+					</div>
+				</template>
+				<template v-else>
+					<div class="p-1 pl-4 pt-6">Notes: {{ noteCount }}</div>
+					<div class="p-1 pl-4 pt-2">Space Used: {{ usedBytes }}</div>
+				</template>
+				<div class="p-1 pl-4 pt-6">
+					Account:
+					<span
+						><span data-testid="about-username">{{ noteManager.state.username }}</span> (<span
+							class="inline-block mx-px capitalize"
+							data-testid="about-account-type"
+							>{{ noteManager.state.accountType }}</span
+						>)</span
+					>
+				</div>
 				<div class="pt-6 pl-4"><a href="https://mimiri.io/terms" target="_blank">Terms & Conditions</a></div>
 				<div class="pt-3 pl-4"><a href="https://mimiri.io/privacy" target="_blank">Privacy Policy</a></div>
 				<div class="pt-6 pl-4"><a href="https://mimiri.io" target="_blank">https://mimiri.io</a></div>
@@ -27,8 +54,8 @@
 				<div @click="resetBoxClicks" class="flex flex-col items-start">
 					<div class="flex info flex-col mx-4 mt-4 bg-info">
 						<b>Attributions:</b>
-						<template v-for="att of iconAttributions">
-							<div class="mt-2 leading-5" v-html="att"></div>
+						<template v-for="att of iconAttributions" :key="att">
+							<div class="mt-2 leading-5" v-html="att" />
 						</template>
 					</div>
 					<div class="flex info flex-col mx-4 mt-4 mb-10 bg-info">
@@ -77,22 +104,23 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue'
+import { ref, watch } from 'vue'
 import { noteManager, updateManager } from '../../global'
 import { settingsManager } from '../../services/settings-manager'
 import { iconAttributions } from '../../icons/attributions'
 import { mimiriPlatform } from '../../services/mimiri-platform'
 import TabBar from '../elements/TabBar.vue'
 import { fontManager } from '../../global'
+import { formatBytes } from '../../services/helpers'
+import { SYSTEM_NOTE_COUNT } from '../../services/storage/synchronization-service'
 
-const SYSTEM_NOTE_COUNT = 3
-
-const dialog = ref(null)
-
+const usedBytesRaw = ref(0)
 const usedBytes = ref('0 MB')
 const maxBytes = ref('10 MB')
+const localUsedBytes = ref('0 MB')
 const bytesPercent = ref('0 %')
 const noteCount = ref(0)
+const localNoteCount = ref(0)
 const maxNoteCount = ref(0)
 const notesPercent = ref('0 %')
 const maxNoteSize = ref('1 MB')
@@ -116,14 +144,6 @@ const formatDate = (date: Date) => {
 	return result
 }
 
-const toMB = bytes => {
-	const mb = bytes / 1024 / 1024
-	if (mb < 0.1) {
-		return `${Math.round(1000 * mb) / 1000} MB`
-	}
-	return `${Math.round(100 * mb) / 100} MB`
-}
-
 const toPercent = (used, max) => {
 	const percent = (used / max) * 100
 	if (percent < 1) {
@@ -132,42 +152,59 @@ const toPercent = (used, max) => {
 	return `${Math.round(10 * percent) / 10} %`
 }
 
-onMounted(() => {
-	if (noteManager.isLoggedIn) {
-		usedBytes.value = toMB(noteManager.usedBytes)
-		maxBytes.value = toMB(noteManager.maxBytes)
-		bytesPercent.value = toPercent(noteManager.usedBytes, noteManager.maxBytes)
-		noteCount.value = noteManager.noteCount - SYSTEM_NOTE_COUNT
-		maxNoteCount.value = noteManager.maxNoteCount
-		notesPercent.value = toPercent(noteManager.noteCount, noteManager.maxNoteCount)
-		maxNoteSize.value = toMB(noteManager.maxNoteSize)
-		if (noteManager.selectedNote) {
-			currentNoteSize.value = toMB(noteManager.selectedNote.size)
-			currentNotePercent.value = toPercent(noteManager.selectedNote.size, noteManager.maxNoteSize)
-		} else {
-			currentNoteSize.value = '0 MB'
-			currentNotePercent.value = '0 %'
+watch(
+	noteManager.state,
+	() => {
+		if (noteManager.state.isLoggedIn) {
+			usedBytesRaw.value = noteManager.state.userStats.size + noteManager.state.userStats.localSizeDelta
+			usedBytes.value = formatBytes(usedBytesRaw.value)
+			maxBytes.value = formatBytes(noteManager.state.userStats.maxTotalBytes)
+			localUsedBytes.value = formatBytes(noteManager.state.userStats.localSize)
+			bytesPercent.value = toPercent(
+				noteManager.state.userStats.size + noteManager.state.userStats.localSizeDelta,
+				noteManager.state.userStats.maxTotalBytes,
+			)
+			noteCount.value =
+				noteManager.state.userStats.noteCount + noteManager.state.userStats.localNoteCountDelta - SYSTEM_NOTE_COUNT
+			maxNoteCount.value = noteManager.state.userStats.maxNoteCount
+			localNoteCount.value = noteManager.state.userStats.localNoteCount
+			notesPercent.value = toPercent(
+				noteManager.state.userStats.noteCount + noteManager.state.userStats.localNoteCountDelta,
+				noteManager.state.userStats.maxNoteCount,
+			)
+			maxNoteSize.value = formatBytes(noteManager.state.userStats.maxNoteBytes)
+			if (noteManager.tree.selectedNote()) {
+				currentNoteSize.value = formatBytes(noteManager.tree.selectedNote().size)
+				currentNotePercent.value = toPercent(
+					noteManager.tree.selectedNote().size,
+					noteManager.state.userStats.maxNoteBytes,
+				)
+			} else {
+				currentNoteSize.value = '0 MB'
+				currentNotePercent.value = '0 %'
+			}
 		}
-	}
-})
+	},
+	{ immediate: true },
+)
 
 let clickCount = 0
-let firstClick = Date.now() - 60000
+let firstClick = Date.now() - 2000
 const boxClicked = () => {
-	if (Date.now() - firstClick > 60000) {
+	if (Date.now() - firstClick > 2000) {
 		clickCount = 0
 		firstClick = Date.now()
 	}
 	if (++clickCount >= 10) {
 		clickCount = 0
-		firstClick = Date.now() - 60000
+		firstClick = Date.now() - 2000
 		showLog.value = true
 	}
 }
 
 const resetBoxClicks = () => {
 	clickCount = 0
-	firstClick = Date.now() - 60000
+	firstClick = Date.now() - 2000
 }
 
 const reload = () => {

@@ -1,6 +1,10 @@
 <template>
-	<dialog class="bg-dialog desktop:border border-solid border-dialog-border text-text" ref="dialog">
-		<form v-on:submit.prevent="submitDialog">
+	<dialog
+		class="bg-dialog desktop:border border-solid border-dialog-border text-text"
+		ref="dialog"
+		data-testid="password-dialog"
+	>
+		<form @submit.prevent="submitDialog">
 			<div class="grid grid-rows-[auto_1fr_auto] gap-6">
 				<DialogTitle @close="close">Verify that it is you</DialogTitle>
 				<main class="px-2">
@@ -15,20 +19,25 @@
 								autofocus
 								type="password"
 								class="basic-input"
+								data-testid="password-dialog-input"
 								@keydown="pwKeyDown"
 							/>
 						</div>
 					</div>
 					<div>
-						<div v-if="capsLockOn" class="inline-block w-24 items-center"></div>
+						<div v-if="capsLockOn" class="inline-block w-24 items-center" />
 						<div v-if="capsLockOn" class="inline-block py-1">Caps Lock is on!</div>
 					</div>
-					<div v-if="error" class="mt-4 text-right mr-1 text-error">Incorrect Password</div>
+					<div v-if="error" class="mt-4 text-right mr-1 text-error" data-testid="password-dialog-error">
+						Incorrect Password
+					</div>
 				</main>
 				<footer class="flex justify-end mobile:justify-center gap-2 pr-2 pb-2">
-					<LoadingIcon v-if="busy" class="animate-spin w-8 h-8 mr-8 inline-block"></LoadingIcon>
-					<button class="primary" v-if="!busy" type="submit">OK</button>
-					<button class="secondary" @click="close" :disabled="busy" type="button">Cancel</button>
+					<LoadingIcon v-if="busy" class="animate-spin w-8 h-8 mr-8 inline-block" />
+					<button class="primary" v-if="!busy" type="submit" data-testid="password-dialog-ok">OK</button>
+					<button class="secondary" @click="close" :disabled="busy" type="button" data-testid="password-dialog-cancel">
+						Cancel
+					</button>
 				</footer>
 			</div>
 		</form>
@@ -95,7 +104,7 @@ const submitDialog = async () => {
 		}
 		return
 	}
-	if (await noteManager.verifyPassword(password.value)) {
+	if (await noteManager.auth.verifyPassword(password.value)) {
 		busy.value = false
 		password.value = ''
 		okCallback()

@@ -116,14 +116,14 @@ export class MailPitClient {
 		const url = `${this._host}/search?query=tag:${this.tag}`
 		const json = await fetch(url, {
 			headers: { authorization: this._auth },
-		}).then(res => res.json())
+		}).then(res => res.json() as any)
 		return json.messages.filter((m: any) => !this._hidden[m.ID])
 	}
 
 	public async message(id: string): Promise<MailSummary> {
 		const json = await fetch(`${this._host}/message/${id}`, {
 			headers: { authorization: this._auth },
-		}).then(res => res.json())
+		}).then(res => res.json() as any)
 		return parseLinks(json)
 	}
 }
