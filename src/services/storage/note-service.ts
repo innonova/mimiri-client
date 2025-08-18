@@ -1,7 +1,7 @@
 import { type Guid } from '../types/guid'
 import { Note } from '../types/note'
 import { NoteActionType, type NoteAction } from '../types/requests'
-import type { NoteData, SharedState } from './type'
+import type { NoteData, NoteItem, SharedState } from './type'
 import type { CryptographyManager } from './cryptography-manager'
 import type { MimiriDb } from './mimiri-db'
 import type { MimiriClient } from './mimiri-client'
@@ -28,25 +28,29 @@ export class NoteService {
 		return this.db.syncLock.withLock('writeNote', async () => {
 			const remoteNote = await this.db.getNote(note.id)
 			const localNote = await this.db.getLocalNote(note.id)
+			const items: NoteItem[] = []
+			for (const item of note.items) {
+				const data = await this.cryptoManager.localCrypt.encrypt(JSON.stringify(item.data))
+				const remoteItem = remoteNote?.items.find(i => i.type === item.type)
+				if (remoteItem && item.version !== remoteItem.version) {
+					console.log(
+						`Version conflict detected for item ${note.id}.${item.type}: local ${item.version}, remote ${remoteItem.version}`,
+					)
+				}
+				items.push({
+					version: remoteItem?.version ?? item.version, // protect against edge case race condition
+					type: item.type,
+					data,
+					modified: item.modified,
+					created: item.created,
+					size: data.length,
+				})
+			}
 			const noteData: NoteData = {
 				id: note.id,
 				keyName: note.keyName,
 				sync: note.sync,
-				items: (
-					await Promise.all(
-						note.items.map(async item => ({
-							version: item.version,
-							type: item.type,
-							data: await this.cryptoManager.localCrypt.encrypt(JSON.stringify(item.data)),
-							modified: item.modified,
-							created: item.created,
-							size: item.data.length,
-						})),
-					)
-				).map(item => {
-					item.size = item.data.length
-					return item
-				}),
+				items,
 				modified: note.modified,
 				created: note.created,
 				size: 0,

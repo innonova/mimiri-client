@@ -135,6 +135,7 @@ export interface SyncResponse {
 	maxTotalBytes: string
 	maxNoteBytes: string
 	maxNoteCount: string
+	sha256: string
 }
 
 export interface CreateKeyResponse {

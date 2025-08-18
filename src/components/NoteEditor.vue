@@ -97,7 +97,7 @@
 				</button>
 			</div>
 			<SelectionControl v-if="mimiriEditor.mode === 'advanced'" />
-			<div v-if="historyVisible" class="w-full h-1/3 flex flex-col">
+			<div v-if="historyVisible" class="w-full h-1/3 flex flex-col" data-testid="editor-history-container">
 				<div
 					class="flex items-center justify-between bg-toolbar border-b border-solid border-toolbar cursor-default text-size-menu p-0.5"
 				>
@@ -112,6 +112,7 @@
 								'bg-item-selected': index === mimiriEditor.history.state.selectedHistoryIndex,
 							}"
 							@click="selectHistoryItem(index)"
+							:data-testid="`editor-history-item-${index}`"
 						>
 							{{ historyItem.username }} - {{ formatDate(historyItem.timestamp) }}
 						</div>

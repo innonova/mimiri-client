@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test'
 import { mimiri, mimiriCreate, withMimiriContext } from './framework/mimiri-context'
 import { menu, note, titleBar, editor, shareDialog, acceptShareDialog, deleteNoteDialog } from './selectors'
 import { createChildNote, createTestTree, verifyTestTree } from './notes/actions'
-import { createCloudAccount } from './core/actions'
+import { createCloudAccount, saveNote } from './core/actions'
 import { sharedBaseTree, collaborationHubTree, afterNoteCreation, afterEdit } from './notes/data.shared'
 
 test.describe('shared note live sync tests', () => {
@@ -50,7 +50,7 @@ test.describe('shared note live sync tests', () => {
 			mimiri(0, true)
 			await note.item('Shared Container').click()
 			await createChildNote('Live Shared Note', 'This is content created live by user 1 in shared space')
-			await editor.save().click()
+			await saveNote()
 
 			// User 2 should see the new note appear live
 			mimiri(1, true)
@@ -105,7 +105,7 @@ test.describe('shared note live sync tests', () => {
 			mimiri(0, true)
 			await note.item('Shared Container').click()
 			await createChildNote('Live Shared Edit Test', 'Original content that will be edited live.')
-			await editor.save().click()
+			await saveNote()
 
 			// User 2 waits for the test note to sync over
 			mimiri(1, true)
@@ -117,7 +117,7 @@ test.describe('shared note live sync tests', () => {
 			await editor.monaco().click()
 			await mimiri().page.keyboard.press('Control+a')
 			await mimiri().page.keyboard.type('Content edited live by user 1 in shared space')
-			await editor.save().click()
+			await saveNote()
 
 			// User 2 should see the live edit
 			mimiri(1, true)
@@ -175,10 +175,10 @@ test.describe('shared note live sync tests', () => {
 			mimiri(0, true)
 			await note.item('Shared Container').click()
 			await createChildNote('Shared To Be Deleted', 'This note will be deleted during shared testing.')
-			await editor.save().click()
+			await saveNote()
 			await note.item('Shared Container').click() // Go back to container
 			await createChildNote('Shared To Remain', 'This note will remain after shared deletion testing.')
-			await editor.save().click()
+			await saveNote()
 
 			// User 2 waits for the notes to sync over
 			mimiri(1, true)

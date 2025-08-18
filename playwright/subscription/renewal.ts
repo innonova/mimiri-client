@@ -432,6 +432,8 @@ export const failRenewalNoMethods = async () => {
 
 	await setNow(nextRenewal.time)
 
+	await settingNodes.subscription().click()
+
 	await expect(subItem.overdue()).toBeVisible()
 	await expect(subItem.payNow()).toBeVisible()
 	await expect(subItem.renewsAutomatically()).not.toBeVisible()
@@ -536,6 +538,7 @@ export const failRenewalDeclined = async () => {
 export const ignoreRenewalFailure = async () => {
 	let nextRenewal = await mimiri().nextRenewalDate()
 	await setNow(nextRenewal.time)
+	await settingNodes.subscription().click()
 	await expect(subHomeView.container()).toBeVisible()
 	await expect(subHomeView.currentSubscriptionPaidUntil()).not.toBeEmpty()
 	await expect(subHomeView.currentSubscriptionSku()).not.toBeEmpty()

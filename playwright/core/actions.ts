@@ -4,10 +4,12 @@ import {
 	appMain,
 	connectCloudView,
 	createAccountView,
+	editor,
 	initialPlanChooser,
 	loginCtrl,
 	menu,
 	settingNodes,
+	statusBar,
 	titleBar,
 	usernameInput,
 } from '../selectors'
@@ -126,4 +128,16 @@ export const goOnline = async () => {
 	await titleBar.accountButton().click()
 	await menu.workOffline().click()
 	await expect(titleBar.accountButton()).toHaveAttribute('title', 'Account (Online)')
+}
+
+export const waitForSyncToEnd = async () => {
+	await editor.save().click()
+	await expect(statusBar.syncStatusCode()).toHaveValue(
+		/idle|total-size-limit-exceeded|count-limit-exceeded|note-size-limit-exceeded|server-rejection|synchronization-error/,
+	)
+}
+
+export const saveNote = async () => {
+	await editor.save().click()
+	await waitForSyncToEnd()
 }

@@ -290,7 +290,7 @@ export class SynchronizationService {
 		localNote: NoteData,
 		remoteNote: NoteData,
 	): Promise<NoteData | undefined> {
-		let differenceFound = remoteNote.items.length !== baseNote.items.length
+		let differenceFound = remoteNote.items.length !== baseNote?.items.length
 		if (!differenceFound) {
 			for (const item of remoteNote.items) {
 				const baseItem = baseNote.items.find(i => i.type === item.type)
@@ -320,12 +320,14 @@ export class SynchronizationService {
 					})),
 				),
 			}
-			const baseKeySet = await this.cryptoManager.getKeyByName(baseNote.keyName)
+			const baseKeySetSym = baseNote
+				? (await this.cryptoManager.getKeyByName(baseNote.keyName)).symmetric
+				: this.cryptoManager.localCrypt
 			const base: MergeableNote = {
 				items: await Promise.all(
-					baseNote.items.map(async item => ({
+					(baseNote ?? localNote).items.map(async item => ({
 						type: item.type,
-						data: JSON.parse(await baseKeySet.symmetric.decrypt(item.data)),
+						data: JSON.parse(await baseKeySetSym.decrypt(item.data)),
 					})),
 				),
 			}

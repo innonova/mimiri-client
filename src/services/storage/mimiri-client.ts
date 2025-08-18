@@ -48,10 +48,9 @@ import type {
 	VersionConflict,
 } from '../types/responses'
 import type { CryptographyManager } from './cryptography-manager'
-import { AccountType, type InitializationData, type SharedState, type SyncInfo } from './type'
-import { HubConnectionBuilder } from '@microsoft/signalr'
+import { type InitializationData, type SharedState, type SyncInfo } from './type'
 import { HttpClientBase } from './http-client-base'
-import { incrementalDelay } from '../helpers'
+import { computeSha256 } from '../helpers'
 import type { AuthenticationManager } from './authentication-manager'
 import { DEFAULT_PASSWORD_ALGORITHM, DEFAULT_SALT_SIZE } from './mimiri-store'
 import { SymmetricCrypt } from '../symmetric-crypt'
@@ -354,27 +353,42 @@ export class MimiriClient extends HttpClientBase {
 	}
 
 	public async getChangesSince(noteSince: number, keySince: number): Promise<SyncInfo> {
-		const request: SyncRequest = {
-			username: this.state.username,
-			noteSince,
-			keySince,
-			timestamp: dateTimeNow(),
-			requestId: newGuid(),
-			signatures: [],
-		}
-		await this._authManager.signRequest(request)
+		let retryCount = 0
+		while (true) {
+			const request: SyncRequest = {
+				username: this.state.username,
+				noteSince,
+				keySince,
+				timestamp: dateTimeNow(),
+				requestId: newGuid(),
+				signatures: [],
+			}
+			await this._authManager.signRequest(request)
 
-		const response = await this.post<SyncResponse>('/sync/changes-since', request)
+			const response = await this.post<SyncResponse>('/sync/changes-since', request)
 
-		return {
-			keys: response.keys,
-			notes: response.notes,
-			deletedNotes: response.deletedNotes,
-			noteCount: +response.noteCount,
-			size: +response.size,
-			maxTotalBytes: +response.maxTotalBytes,
-			maxNoteBytes: +response.maxNoteBytes,
-			maxNoteCount: +response.maxNoteCount,
+			const sha256 = response.sha256
+			delete response.sha256
+			const calculatedHash = await computeSha256(JSON.stringify(response))
+
+			if (sha256 !== calculatedHash) {
+				if (retryCount++ > 3) {
+					throw new Error(`Response integrity check failed ${sha256} !== ${calculatedHash}`)
+				}
+				console.log(`Response integrity check failed ${sha256} !== ${calculatedHash}`)
+				continue
+			}
+
+			return {
+				keys: response.keys,
+				notes: response.notes,
+				deletedNotes: response.deletedNotes,
+				noteCount: +response.noteCount,
+				size: +response.size,
+				maxTotalBytes: +response.maxTotalBytes,
+				maxNoteBytes: +response.maxNoteBytes,
+				maxNoteCount: +response.maxNoteCount,
+			}
 		}
 	}
 

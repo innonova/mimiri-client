@@ -1,6 +1,6 @@
 import { expect, Locator } from '@playwright/test'
 import { mimiri } from '../framework/mimiri-context'
-import { editor, mainToolbar, menu, note } from '../selectors'
+import { editor, mainToolbar, menu, note, statusBar } from '../selectors'
 import {
 	complexTestTree,
 	complexTestTreeAfterCopy,
@@ -10,6 +10,7 @@ import {
 	testTreeAfterCopy,
 	testTreeAfterMove,
 } from './data'
+import { waitForSyncToEnd } from '../core/actions'
 
 export interface CreateTreeOptions {
 	verify?: boolean
@@ -42,7 +43,7 @@ export const createRootNote = async (name: string, text?: string, options: Creat
 	await menu.newRootNote().click({ timeout: 2000 })
 	await note.newInput().fill(name)
 	await note.newInput().press('Enter')
-	await mimiri().waitForTimeout(250)
+	await waitForSyncToEnd()
 	if (text) {
 		await editor.monaco().click({ timeout: 2000 })
 		await expect(editor.monaco()).toHaveClass(/\bfocused\b/, { timeout: 2000 })
@@ -58,6 +59,7 @@ export const createRootNote = async (name: string, text?: string, options: Creat
 			await expect(editor.monaco()).toHaveText(text.replaceAll('\n', ''), { timeout: 2000 })
 		}
 	}
+	await waitForSyncToEnd()
 }
 
 export const createChildNote = async (name: string, text?: string, options: CreateTreeOptions = {}) => {
@@ -66,7 +68,7 @@ export const createChildNote = async (name: string, text?: string, options: Crea
 	await menu.newChildNote().click({ timeout: 2000 })
 	await note.newInput().fill(name)
 	await note.newInput().press('Enter')
-	await mimiri().waitForTimeout(250)
+	await waitForSyncToEnd()
 	if (text) {
 		await editor.monaco().click({ timeout: 2000 })
 		await expect(editor.monaco()).toHaveClass(/\bfocused\b/, { timeout: 2000 })
@@ -82,6 +84,7 @@ export const createChildNote = async (name: string, text?: string, options: Crea
 			await expect(editor.monaco()).toHaveText(text.replaceAll('\n', ''), { timeout: 2000 })
 		}
 	}
+	await waitForSyncToEnd()
 }
 
 export const createSiblingNote = async (name: string, text?: string, options: CreateTreeOptions = {}) => {
@@ -90,7 +93,7 @@ export const createSiblingNote = async (name: string, text?: string, options: Cr
 	await menu.newSiblingNote().click({ timeout: 2000 })
 	await note.newInput().fill(name)
 	await note.newInput().press('Enter')
-	await mimiri().waitForTimeout(250)
+	await waitForSyncToEnd()
 	if (text) {
 		await editor.monaco().click({ timeout: 2000 })
 		await expect(editor.monaco()).toHaveClass(/\bfocused\b/, { timeout: 2000 })
@@ -106,6 +109,7 @@ export const createSiblingNote = async (name: string, text?: string, options: Cr
 			await expect(editor.monaco()).toHaveText(text.replaceAll('\n', ''), { timeout: 2000 })
 		}
 	}
+	await waitForSyncToEnd()
 }
 
 export const createTestTree = async (tree: StandardTreeNode[], options: CreateTreeOptions = {}) => {
@@ -132,6 +136,7 @@ export const createTestTree = async (tree: StandardTreeNode[], options: CreateTr
 		}
 	}
 	await editor.save().click()
+	await waitForSyncToEnd()
 }
 
 export const verifyTestTree = async (tree: StandardTreeNode[]) => {

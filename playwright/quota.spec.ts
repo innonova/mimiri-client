@@ -15,7 +15,7 @@ import {
 	textNoteProperties,
 	titleBar,
 } from './selectors'
-import { createCloudAccount } from './core/actions'
+import { createCloudAccount, saveNote } from './core/actions'
 import { createChildNote, createRootNote, createTestTree } from './notes/actions'
 import { boundaryTestTree, longRandomLine, quotaSizeTestTree, quotaTestTree } from './notes/data.quotas'
 
@@ -172,7 +172,7 @@ test.describe('quotas', () => {
 			await editor.monaco().click({ timeout: 2000 })
 			await expect(editor.monaco()).toHaveClass(/\bfocused\b/, { timeout: 2000 })
 			await mimiri().page.keyboard.insertText(longRandomLine())
-			await editor.save().click()
+			await saveNote()
 
 			await note.item('Max Note Size Test').click({ button: 'right' })
 			await menu.properties().click()
@@ -220,7 +220,7 @@ test.describe('quotas', () => {
 			await editor.monaco().click({ timeout: 2000 })
 			await expect(editor.monaco()).toHaveClass(/\bfocused\b/, { timeout: 2000 })
 			await mimiri().page.keyboard.insertText('test')
-			await editor.save().click()
+			await saveNote()
 			await expect(statusBar.container()).not.toBeVisible()
 		})
 	})
@@ -406,7 +406,7 @@ test.describe('quotas', () => {
 			mimiri(1, true)
 			await note.item('Shared Workspace').click()
 			await createChildNote('Added by User 2', 'This note was added by the second user')
-			await editor.save().click()
+			await saveNote()
 
 			// Verify count increased for both users
 			await settingNodes.controlPanel().click()
@@ -551,7 +551,7 @@ test.describe('quotas', () => {
 			mimiri(0, true)
 			await editor.monaco().click()
 			await mimiri().page.keyboard.type('Add More Text')
-			await editor.save().click()
+			await saveNote()
 
 			mimiri(1, true)
 			await expect(editor.monaco()).toHaveText('Root node for testing note count quotas (16 items total)Add More Text')

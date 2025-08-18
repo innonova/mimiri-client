@@ -1,8 +1,8 @@
 import { expect, test } from '@playwright/test'
 import { mimiri, mimiriClone, withMimiriContext } from './framework/mimiri-context'
-import { menu, note, editor, inconsistencyDialog, settingNodes, emptyRecycleBinDialog } from './selectors'
+import { menu, note, editor, inconsistencyDialog, settingNodes, emptyRecycleBinDialog, statusBar } from './selectors'
 import { createRootNote, createTestTree, getTextFromEditor, replaceTextInEditor, verifyTestTree } from './notes/actions'
-import { createCloudAccount, goOffline, goOnline, login } from './core/actions'
+import { createCloudAccount, goOffline, goOnline, login, saveNote, waitForSyncToEnd } from './core/actions'
 import { syncNoteCreationTree } from './notes/data.sync'
 import { conflictScenarios } from './notes/data.text-conflicts'
 import { moveTestTree, moveTestTreeAfterConflict } from './notes/data.metadata-conflicts'
@@ -30,33 +30,36 @@ test.describe('conflict tests', () => {
 
 					await note.item(scenario.description).click()
 					await replaceTextInEditor(scenario.base)
-					await editor.save().click()
+					await saveNote()
 
-					await editor.save().click()
+					await mimiri().waitForTimeout(250)
 					await goOffline()
 
 					await note.item(scenario.description).click()
 					await replaceTextInEditor(scenario.local)
-					await editor.save().click()
+					await saveNote()
 
 					mimiri(1, true)
 
 					await note.item(scenario.description).click()
 					await replaceTextInEditor(scenario.remote)
-					await editor.save().click()
+					await saveNote()
 
 					mimiri(0, true)
+					await mimiri().waitForTimeout(250)
 					await goOnline()
+
+					await mimiri().waitForTimeout(250)
 
 					text = await getTextFromEditor()
 
 					await expect(text.replaceAll('\r', '')).toBe(scenario.expected.replaceAll('\r', ''))
 				} catch (error) {
-					// 	console.log(
-					// 		`\n\n\n\n\nScenario: ${scenario.description}, \n\nExpected: \n###${scenario.expected}###\n\nActual: \n###${text}###`,
-					// 	)
-					// 	console.error(`Error in scenario "${scenario.description}":`, scenario)
-					// 	await mimiri().pause()
+					// console.log(
+					// 	`\n\n\n\n\nScenario: ${scenario.description}, \n\nExpected: \n###${scenario.expected}###\n\nActual: \n###${text}###`,
+					// )
+					// console.error(`Error in scenario "${scenario.description}":`, scenario)
+					// await mimiri().pause()
 					throw error
 				}
 			}
@@ -104,8 +107,6 @@ test.describe('conflict tests', () => {
 			mimiri(1, true)
 			await expect(note.item('Tech Specs')).toBeVisible()
 			await expect(note.item('Not Tech Specs')).not.toBeVisible()
-
-			await mimiri().pause()
 		})
 	})
 
@@ -166,6 +167,7 @@ test.describe('conflict tests', () => {
 
 			mimiri(0, true)
 			await createTestTree(moveTestTree)
+			await waitForSyncToEnd()
 			mimiri(1, true)
 			await verifyTestTree(moveTestTree)
 

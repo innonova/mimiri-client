@@ -1,5 +1,6 @@
 import { format } from 'date-fns'
 import { SymmetricCrypt } from './symmetric-crypt'
+import { toHex } from './hex-base64'
 
 export class Debounce {
 	private lastActivate = 0
@@ -208,4 +209,9 @@ export function formatBytes(bytes: number): string {
 export const incrementalDelay = async (attempt: number, baseDelay = 1000, maxDelay = 30000, multiplier = 2) => {
 	const delayMs = Math.min(baseDelay * Math.pow(multiplier, attempt), maxDelay)
 	await delay(delayMs)
+}
+
+export const computeSha256 = async (data: string) => {
+	const hashBuffer = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(data))
+	return toHex(hashBuffer)
 }

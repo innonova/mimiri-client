@@ -99,6 +99,11 @@ export const editor = {
 	markAsPassword: () => tid('editor-mark-as-password'),
 }
 
+export const editorHistory = {
+	container: () => tid('editor-history-container'),
+	item: (index: number) => tid(`editor-history-item-${index}`),
+}
+
 export const dialog = {
 	deletePaymentMethod: () => tid('dialog-delete-payment-method'),
 	yes: () => tid('dialog-yes'),

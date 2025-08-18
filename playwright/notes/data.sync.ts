@@ -85,7 +85,7 @@ export const syncAfterEditProtection: StandardTreeNode[] = [
 	},
 	{
 		title: 'Edit Protection Test',
-		text: 'Changed by device 1 while device 2 was editing',
+		text: 'Base content for edit protection testing.Changed by device 2',
 	},
 ]
 

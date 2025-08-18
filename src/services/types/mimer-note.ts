@@ -709,7 +709,7 @@ export class MimerNote {
 		if (this.isControlPanel) {
 			return 'System'
 		}
-		return this.note.getItem('metadata').title as string
+		return (this.note.getItem('metadata').title as string) ?? '[MISSING TITLE]'
 	}
 
 	public set title(value: string) {
