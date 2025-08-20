@@ -114,6 +114,7 @@ export class AuthenticationManager {
 						clientConfig: this.state.clientConfig,
 						userStats: this.state.userStats,
 						userData: this._userData,
+						token: this._token,
 					}),
 					true,
 				),
@@ -173,13 +174,14 @@ export class AuthenticationManager {
 					loginData.rootCrypt.algorithm,
 					loginData.rootCrypt.key,
 				)
-				this.state.isLoggedIn = true
-
 				this._rootSignature = await CryptSignature.fromPem(
 					loginData.rootSignature.algorithm ?? CryptSignature.DEFAULT_ASYMMETRIC_ALGORITHM,
 					loginData.rootSignature.publicKey,
 					loginData.rootSignature.privateKey,
 				)
+
+				const data = JSON.parse(await this.cryptoManager.rootCrypt.decrypt(loginData.data))
+				this._token = data.token || 'NO_TOKEN'
 
 				if (!(await this.db.exists(this.state.username))) {
 					return false
@@ -200,7 +202,6 @@ export class AuthenticationManager {
 				}
 
 				if (this.state.accountType === AccountType.Cloud && !(await this.goOnline())) {
-					const data = JSON.parse(await this.cryptoManager.rootCrypt.decrypt(loginData.data))
 					const userStats = await this.db.getUserStats()
 					if (userStats) {
 						this.state.userStats.maxNoteBytes = userStats.maxNoteBytes
@@ -224,6 +225,8 @@ export class AuthenticationManager {
 					}
 				}
 				this.state.needsToChooseTier = !!this._userData.needsToChooseTier
+				this.state.isLoggedIn = true
+
 				return true
 			} catch (ex) {
 				debug.logError('Failed to restore login data', ex)

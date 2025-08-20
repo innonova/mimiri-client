@@ -33,8 +33,6 @@ export interface MimerConfiguration {
 	closeOnX: boolean
 	updateMode: UpdateMode
 	trayIcon: string
-	autoLogin: boolean
-	autoLoginData: string | undefined
 	anonymousUsername: string | undefined
 	anonymousPassword: string | undefined
 	isNewInstall: boolean | undefined
@@ -47,6 +45,7 @@ export interface MimerConfiguration {
 	blogPostNotificationLevel: string
 	lastReadBlogPostId: Guid
 	disableDevBlog: boolean
+	startLoggedOut: boolean
 	debugEnabled?: boolean
 }
 
@@ -73,8 +72,6 @@ class SettingsManager {
 		closeOnX: false,
 		trayIcon: 'system',
 		updateMode: UpdateMode.AutomaticOnIdle,
-		autoLogin: false,
-		autoLoginData: undefined,
 		anonymousUsername: undefined,
 		anonymousPassword: undefined,
 		isNewInstall: undefined,
@@ -87,6 +84,7 @@ class SettingsManager {
 		blogPostNotificationLevel: 'clearly',
 		lastReadBlogPostId: emptyGuid(),
 		disableDevBlog: false,
+		startLoggedOut: false,
 		debugEnabled: undefined,
 	})
 
@@ -290,24 +288,6 @@ class SettingsManager {
 		void this.save()
 	}
 
-	public get autoLogin() {
-		return this.state.autoLogin
-	}
-
-	public set autoLogin(value: boolean) {
-		this.state.autoLogin = value
-		void this.save()
-	}
-
-	public get autoLoginData() {
-		return this.state.autoLoginData
-	}
-
-	public set autoLoginData(value: string | undefined) {
-		this.state.autoLoginData = value
-		void this.save()
-	}
-
 	public get anonymousUsername() {
 		return this.state.anonymousUsername
 	}
@@ -413,6 +393,15 @@ class SettingsManager {
 
 	public set disableDevBlog(value: boolean) {
 		this.state.disableDevBlog = value
+		void this.save()
+	}
+
+	public get startLoggedOut() {
+		return !!this.state.startLoggedOut
+	}
+
+	public set startLoggedOut(value: boolean) {
+		this.state.startLoggedOut = value
 		void this.save()
 	}
 

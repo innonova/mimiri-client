@@ -252,8 +252,6 @@ const createAccount = async () => {
 			persistedState.storeSelectedNote(noteManager.tree.getNoteById('settings-account' as Guid))
 			settingsManager.anonymousUsername = undefined
 			settingsManager.anonymousPassword = undefined
-			settingsManager.autoLoginData = undefined
-			settingsManager.autoLogin = false
 			await settingsManager.waitForSaveComplete()
 			location.reload()
 		} catch (ex) {

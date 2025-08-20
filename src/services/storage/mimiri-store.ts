@@ -262,7 +262,7 @@ export class MimiriStore {
 		goOnline: (password?: string): Promise<boolean> => this.sessionManager.goOnline(password),
 		openLocal: () => this.sessionManager.openLocal(),
 		updateUserStats: () => this.sessionManager.updateUserStats(),
-		logout: (): Promise<void> => this.sessionManager.logout(),
+		logout: (userInitiated: boolean = false): Promise<void> => this.sessionManager.logout(userInitiated),
 		promoteToCloudAccount: (username: string, oldPassword: string, newPassword: string, iterations: number) =>
 			this.sessionManager.promoteToCloudAccount(username, oldPassword, newPassword, iterations),
 		promoteToLocalAccount: (username: string, password: string, iterations: number) =>
@@ -270,6 +270,7 @@ export class MimiriStore {
 		registerListener: (listener: LoginListener) => this.sessionManager.registerListener(listener),
 		queueSync: () => this.syncService.queueSync(),
 		toggleWorkOffline: async () => this.sessionManager.toggleWorkOffline(),
+		initialize: async () => this.sessionManager.initialize(),
 	}
 
 	public readonly auth = {

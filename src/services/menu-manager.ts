@@ -132,7 +132,7 @@ class MenuManager {
 				ipcClient.menu.hide()
 			}
 		} else if (itemId === 'logout') {
-			await noteManager.session.logout()
+			await noteManager.session.logout(true)
 			window.location.reload()
 		} else if (itemId === 'login') {
 			loginDialog.value.show()

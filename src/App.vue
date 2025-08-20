@@ -458,47 +458,8 @@ onMounted(async () => {
 			appStatus.value = 'update'
 			return
 		}
-		try {
-			if (!noteManager.state.isLoggedIn && settingsManager.autoLogin && settingsManager.autoLoginData) {
-				await noteManager.auth.setLoginData(await deObfuscate(settingsManager.autoLoginData))
-				if (noteManager.state.isLoggedIn) {
-					await noteManager.tree.loadState()
-				}
-			}
-		} catch (ex) {
-			debug.logError('Error setting login data', ex)
-		}
-		if (!noteManager.state.isLoggedIn) {
-			try {
-				await noteManager.session.recoverLogin()
-			} catch (ex) {
-				debug.logError('Error recovering login', ex)
-			}
-		}
-
-		let showLogin = !noteManager.state.isLoggedIn
-
-		if (!noteManager.state.isLoggedIn) {
-			if (!(await noteManager.auth.hasOneOrMoreAccounts())) {
-				await noteManager.session.openLocal()
-				if (noteManager.state.isLoggedIn) {
-					showLogin = false
-				}
-			} else {
-				showLogin = true
-			}
-		}
-
 		loading.value = false
-		await settingsManager.save()
-		if (showLogin) {
-			loginDialog.value.show()
-		}
-		if (loginRequiredToGoOnline.value) {
-			loginRequiredToGoOnline.value = false
-			loginDialog.value.show(true)
-		}
-
+		await noteManager.session.initialize()
 		appStatus.value = 'ready'
 	} catch (ex) {
 		appStatus.value = 'error'

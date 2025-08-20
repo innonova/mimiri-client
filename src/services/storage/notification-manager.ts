@@ -26,8 +26,7 @@ export class NotificationManager {
 	}
 
 	private async updateState() {
-		console.log('Updating notification manager state')
-		if (!this._suspended && !this._workOffline && !this._connectionExpected) {
+		if (!this._suspended && !this._workOffline && !this._connectionExpected && this.state.isLoggedIn) {
 			if (this.state.isMobile && Date.now() - this._resumeTime < 10000) {
 				setTimeout(() => {
 					void this.updateState()

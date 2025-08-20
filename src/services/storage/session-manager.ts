@@ -1,6 +1,14 @@
 import { Note } from '../types/note'
 import { dateTimeNow } from '../types/date-time'
-import { browserHistory, debug, env, ipcClient, updateManager } from '../../global'
+import {
+	browserHistory,
+	debug,
+	env,
+	ipcClient,
+	loginDialog,
+	loginRequiredToGoOnline,
+	updateManager,
+} from '../../global'
 import type { AuthenticationManager } from './authentication-manager'
 import type { CryptographyManager } from './cryptography-manager'
 import type { NoteService } from './note-service'
@@ -13,6 +21,8 @@ import type { NoteTreeManager } from './note-tree-manager'
 import type { MimiriClient } from './mimiri-client'
 import type { MimiriDb } from './mimiri-db'
 import type { LocalStateManager } from './local-state-manager'
+import { settingsManager } from '../settings-manager'
+import { deObfuscate } from '../helpers'
 
 export interface LoginListener {
 	login()
@@ -189,6 +199,7 @@ export class SessionManager {
 				await this.loadRootNote()
 				await this.treeManager.loadState()
 				await updateManager.good()
+				settingsManager.startLoggedOut = false
 			} else {
 				await this.logout()
 			}
@@ -218,6 +229,7 @@ export class SessionManager {
 					await updateManager.good()
 				}
 				this._listener?.login()
+				settingsManager.startLoggedOut = false
 				return true
 			} else {
 				return false
@@ -247,24 +259,30 @@ export class SessionManager {
 		this.state.noteOpen = !this.state.isMobile
 		browserHistory.openTree(ipcClient.isAvailable && Capacitor.getPlatform() === 'web')
 		try {
-			await this.authManager.openLocal()
-			await this.cryptoManager.ensureLocalCrypt()
-			await this.cryptoManager.loadAllKeys()
-			if (this.state.isLoggedIn) {
-				await this.ensureCreateComplete()
-				await this.loadRootNote()
-				await this.treeManager.loadState()
-				await updateManager.good()
-				this._listener?.login()
-				if (this.localStateManager.firstLogin) {
-					await this.treeManager.controlPanel.expand()
-					await this.treeManager.gettingStarted?.expand()
-					await this.treeManager.gettingStarted?.select()
-					await this.localStateManager.clearFirstLogin()
-				}
-				return true
+			if (settingsManager.anonymousUsername && settingsManager.anonymousPassword) {
+				const password = await deObfuscate(settingsManager.anonymousPassword)
+				return await this.login(settingsManager.anonymousUsername, password)
 			} else {
-				return false
+				await this.authManager.openLocal()
+				await this.cryptoManager.ensureLocalCrypt()
+				await this.cryptoManager.loadAllKeys()
+				if (this.state.isLoggedIn) {
+					await this.ensureCreateComplete()
+					await this.loadRootNote()
+					await this.treeManager.loadState()
+					await updateManager.good()
+					this._listener?.login()
+					if (this.localStateManager.firstLogin) {
+						await this.treeManager.controlPanel.expand()
+						await this.treeManager.gettingStarted?.expand()
+						await this.treeManager.gettingStarted?.select()
+						await this.localStateManager.clearFirstLogin()
+					}
+					settingsManager.startLoggedOut = false
+					return true
+				} else {
+					return false
+				}
 			}
 		} finally {
 			this.uiManager.endAction()
@@ -311,7 +329,22 @@ export class SessionManager {
 		return this.authManager.toggleWorkOffline()
 	}
 
-	public async logout(): Promise<void> {
+	public async initialize(): Promise<void> {
+		await this.recoverLogin()
+		if (!this.state.isLoggedIn) {
+			if (!(await this.authManager.hasOneOrMoreAccounts()) && !settingsManager.startLoggedOut) {
+				await this.openLocal()
+			}
+		}
+		if (!this.state.isLoggedIn) {
+			loginDialog.value.show()
+		} else if (loginRequiredToGoOnline.value) {
+			loginRequiredToGoOnline.value = false
+			loginDialog.value.show(true)
+		}
+	}
+
+	public async logout(userInitiated: boolean = false): Promise<void> {
 		await this.authManager.logout()
 		await this.api.logout()
 		await this.localStateManager.logout()
@@ -331,5 +364,8 @@ export class SessionManager {
 		this.state.stateLoaded = false
 		this._listener?.logout()
 		this.treeManager.logout()
+		if (userInitiated) {
+			settingsManager.startLoggedOut = true
+		}
 	}
 }
