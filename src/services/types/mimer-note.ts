@@ -59,7 +59,6 @@ export class MimerNote {
 	public viewModel: NoteViewModel
 
 	private beforeChangeText: string = ''
-	private _historyItems: HistoryItem[] = []
 	private historyElementsLoaded: number = 0
 	private childrenPopulated: boolean = false
 	private _children: MimerNote[] = []
@@ -83,7 +82,7 @@ export class MimerNote {
 				title: this.title,
 				text: this.text,
 				children: [],
-				history: this._historyItems,
+				history: [],
 				expanded: false,
 				shared: this.isShared,
 				populated: true,
@@ -94,7 +93,6 @@ export class MimerNote {
 				isSystem: this.isSystem,
 				hasInfo: this.hasInfo,
 			})
-			this._historyItems = this.viewModel.history
 		} else {
 			this.viewModel = reactive({
 				id: this.id,
@@ -103,7 +101,7 @@ export class MimerNote {
 				title: this.title,
 				text: this.text,
 				children: [],
-				history: this._historyItems,
+				history: [],
 				expanded: true,
 				shared: false,
 				populated: true,
@@ -114,7 +112,6 @@ export class MimerNote {
 				isSystem: this.isSystem,
 				hasInfo: this.hasInfo,
 			})
-			this._historyItems = this.viewModel.history
 		}
 		if (this.isControlPanel) {
 			this._children = controlPanel.createChildren(owner, this)
@@ -130,7 +127,7 @@ export class MimerNote {
 		this.beforeChangeText = this.text
 		if (this.historyElementsLoaded > 0) {
 			this.historyElementsLoaded = 0
-			this.historyItems = []
+			this.viewModel.history = []
 		}
 		if (this.childrenPopulated) {
 			await this.ensureChildren(true)
@@ -150,8 +147,7 @@ export class MimerNote {
 		}
 		if (this.viewModel.text !== this.text) {
 			this.viewModel.text = this.text
-			this._historyItems = []
-			this.viewModel.history = this._historyItems
+			this.viewModel.history = []
 			this.viewModel.hasMoreHistory = true
 		}
 		if (this.viewModel.shared !== this.isShared) {
@@ -166,7 +162,7 @@ export class MimerNote {
 					title: 'Loading...',
 					text: '',
 					children: [],
-					history: this._historyItems,
+					history: [],
 					expanded: false,
 					shared: false,
 					populated: false,
@@ -488,7 +484,7 @@ export class MimerNote {
 			activeReversed.reverse()
 			if (this.historyElementsLoaded == 0) {
 				for (const item of activeReversed) {
-					this.historyItems.push(item)
+					this.viewModel.history.push(item)
 				}
 				this.historyElementsLoaded = 1
 				this.viewModel.hasMoreHistory = !!history.hotArchive
@@ -500,7 +496,7 @@ export class MimerNote {
 				hotArchiveReversed.reverse()
 				for (const item of hotArchiveReversed) {
 					didAdd = true
-					this.historyItems.push(item)
+					this.viewModel.history.push(item)
 				}
 				this.historyElementsLoaded = 2
 				if (didAdd) {
@@ -513,7 +509,7 @@ export class MimerNote {
 				const coldArchive = history.coldArchive
 				if (coldIndex < coldArchive.length) {
 					for (const item of JSON.parse(await unzip(coldArchive[coldIndex])).reverse()) {
-						this.historyItems.push(item)
+						this.viewModel.history.push(item)
 					}
 				}
 				this.historyElementsLoaded++
@@ -543,8 +539,8 @@ export class MimerNote {
 	public async search(searchTerm: string, callback: (note: MimerNote) => void) {
 		if (
 			!this.isRoot &&
-			(this.text.toUpperCase().includes(searchTerm.toUpperCase()) ||
-				this.title.toUpperCase().includes(searchTerm.toUpperCase()))
+			(this.text?.toUpperCase().includes(searchTerm.toUpperCase()) ||
+				this.title?.toUpperCase().includes(searchTerm.toUpperCase()))
 		) {
 			callback(this)
 		}
@@ -559,11 +555,7 @@ export class MimerNote {
 	}
 
 	public get historyItems() {
-		return this._historyItems
-	}
-
-	private set historyItems(value) {
-		this._historyItems = value
+		return this.viewModel.history
 	}
 
 	public get hasMoreHistory() {

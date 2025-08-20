@@ -63,11 +63,7 @@ export class NoteHistory {
 		}
 	}
 
-	public get historyItems() {
-		return this.mimiriEditor.note?.historyItems ?? []
-	}
-
-	public get hasMoreHistory() {
-		return this.mimiriEditor.note.viewModel.hasMoreHistory
+	public get note() {
+		return this.mimiriEditor.note
 	}
 }

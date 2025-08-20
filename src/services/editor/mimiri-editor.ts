@@ -186,6 +186,7 @@ export class MimiriEditor {
 			this._note = note
 			this.history.reset()
 			this._activeEditor.show(note.text, this.note.scrollTop)
+			this._activeEditor.readonly = note.isSystem
 		} else {
 			if (!this._activeEditor.changed) {
 				this._activeEditor.updateText(note.text)
@@ -195,7 +196,6 @@ export class MimiriEditor {
 				}
 			}
 		}
-		this._activeEditor.readonly = note.isSystem
 	}
 
 	public async save(): Promise<string> {

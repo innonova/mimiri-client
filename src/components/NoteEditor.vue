@@ -97,7 +97,11 @@
 				</button>
 			</div>
 			<SelectionControl v-if="mimiriEditor.mode === 'advanced'" />
-			<div v-if="historyVisible" class="w-full h-1/3 flex flex-col" data-testid="editor-history-container">
+			<div
+				v-if="historyVisible && mimiriEditor.history.note"
+				class="w-full h-1/3 flex flex-col"
+				data-testid="editor-history-container"
+			>
 				<div
 					class="flex items-center justify-between bg-toolbar border-b border-solid border-toolbar cursor-default text-size-menu p-0.5"
 				>
@@ -105,7 +109,10 @@
 					<CloseButton @click="showHistory" class="w-6 h-6" />
 				</div>
 				<div class="flex-auto overflow-y-auto h-0 pb-5 w-full bg-input">
-					<template v-for="(historyItem, index) of mimiriEditor.history.historyItems" :key="historyItem.timestamp">
+					<template
+						v-for="(historyItem, index) of mimiriEditor.history.note.viewModel.history"
+						:key="historyItem.timestamp"
+					>
 						<div
 							class="py-1.5 px-2.5 cursor-default"
 							:class="{
@@ -118,7 +125,11 @@
 						</div>
 					</template>
 				</div>
-				<button class="primary rounded-none!" :disabled="!mimiriEditor.history.hasMoreHistory" @click="loadMoreHistory">
+				<button
+					class="primary rounded-none!"
+					:disabled="!mimiriEditor.history.note.viewModel.hasMoreHistory"
+					@click="loadMoreHistory"
+				>
 					Read More Entries
 				</button>
 			</div>
