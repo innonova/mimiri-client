@@ -13,6 +13,7 @@ import { DEFAULT_ITERATIONS, DEFAULT_PASSWORD_ALGORITHM, DEFAULT_PROOF_BITS, DEF
 import { ProofOfWork } from '../proof-of-work'
 import type { LocalStateManager } from './local-state-manager'
 import { toRaw } from 'vue'
+import { settingsManager } from '../settings-manager'
 
 export class AuthenticationManager {
 	private _userData: UserData
@@ -184,11 +185,49 @@ export class AuthenticationManager {
 				this._token = data.token || 'NO_TOKEN'
 
 				if (!(await this.db.exists(this.state.username))) {
-					return false
+					if (ipcClient.isAvailable && ipcClient.session.isAvailable) {
+						const legacyLoginData = await ipcClient.cache.getUser(this.state.username)
+						const preLoginData = await ipcClient.cache.getPreLogin(this.state.username)
+						if (!legacyLoginData || !preLoginData) {
+							settingsManager.startLoggedOut = true
+							return false
+						}
+						const initData: InitializationData = {
+							password: {
+								algorithm: preLoginData.algorithm,
+								salt: preLoginData.salt,
+								iterations: preLoginData.iterations,
+							},
+							userCrypt: {
+								algorithm: legacyLoginData.algorithm,
+								salt: legacyLoginData.salt,
+								iterations: legacyLoginData.iterations,
+							},
+							rootCrypt: {
+								algorithm: legacyLoginData.symmetricAlgorithm,
+								key: legacyLoginData.symmetricKey,
+							},
+							rootSignature: {
+								algorithm: legacyLoginData.asymmetricAlgorithm,
+								publicKey: legacyLoginData.publicKey,
+								privateKey: legacyLoginData.privateKey,
+							},
+							userId: legacyLoginData.userId,
+							userData: legacyLoginData.data,
+							token: '',
+							local: false,
+						}
+						await this.db.open(this.state.username)
+						await this.db.setInitializationData(initData)
+					} else {
+						settingsManager.startLoggedOut = true
+						return false
+					}
 				}
 				await this.db.open(this.state.username)
 				await this.localStateManager.login()
 				const initializationData = await this.db.getInitializationData()
+
 				if (!initializationData) {
 					return false
 				}
