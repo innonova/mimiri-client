@@ -3,8 +3,9 @@
 		class="bg-dialog desktop:border border-solid border-dialog-border text-text"
 		ref="dialog"
 		data-testid="share-dialog"
+		@close="isOpen = false"
 	>
-		<div class="grid grid-rows-[auto_1fr_auto]">
+		<div v-if="isOpen" class="grid grid-rows-[auto_1fr_auto]">
 			<DialogTitle @close="close">Share Note</DialogTitle>
 			<form @submit.prevent="submitDialog" class="mx-2 mt-5 mb-2 mobile:mx-8">
 				<div class="grid grid-cols-[5.5rem_10rem] mobile:grid-cols-[5.5rem_auto] items-center gap-2 mx-2 mb-2">
@@ -80,6 +81,7 @@ const dialog = ref(null)
 const nameInput = ref(null)
 const code = ref('')
 const trimmedName = ref('')
+const isOpen = ref(false)
 
 const name = ref('')
 const invalid = ref(false)
@@ -104,6 +106,7 @@ const show = () => {
 	invalid.value = false
 	shareWithSelf.value = false
 	shareFailed.value = false
+	isOpen.value = true
 	dialog.value.showModal()
 	nameInput.value?.focus()
 }

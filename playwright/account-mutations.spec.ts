@@ -164,7 +164,7 @@ test.describe('account-mutations', () => {
 			await expect(aboutView.accountType()).toHaveText('local')
 			await settingNodes.account().dblclick()
 			await settingNodes.username().click()
-			mimiri().config.username += '_new'
+			mimiri().setUsername(mimiri().config.username + '_new')
 			await changeUsernameView.username().fill(mimiri().config.username)
 			await changeUsernameView.saveButton().click()
 			await expect(passwordDialog.container()).toBeVisible()
@@ -198,7 +198,7 @@ test.describe('account-mutations', () => {
 			await expect(aboutView.accountType()).toHaveText('cloud')
 			await settingNodes.account().dblclick()
 			await settingNodes.username().click()
-			mimiri().config.username += '_new'
+			mimiri().setUsername(mimiri().config.username + '_new')
 			await changeUsernameView.username().fill(mimiri().config.username)
 			await changeUsernameView.saveButton().click()
 			await expect(passwordDialog.container()).toBeVisible()
@@ -370,7 +370,7 @@ test.describe('account-mutations', () => {
 			await settingNodes.controlPanel().click()
 			await expect(aboutView.accountType()).toHaveText('local')
 			await settingNodes.account().dblclick()
-			mimiri().config.username += 'B'
+			mimiri().setUsername(mimiri().config.username + 'B')
 			await connectCloudView.username().fill(mimiri().config.username)
 			await connectCloudView.currentPassword().fill(mimiri().config.password)
 			await expect(usernameInput.available()).toBeVisible()
@@ -426,7 +426,7 @@ test.describe('account-mutations', () => {
 			await settingNodes.controlPanel().click()
 			await expect(aboutView.accountType()).toHaveText('local')
 			await settingNodes.account().dblclick()
-			mimiri().config.username += 'B'
+			mimiri().setUsername(mimiri().config.username + 'B')
 			const newPassword = 'new-password'
 			await connectCloudView.username().fill(mimiri().config.username)
 			await connectCloudView.currentPassword().fill(mimiri().config.password)

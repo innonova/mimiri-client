@@ -3,8 +3,9 @@
 		class="min-w-72 bg-dialog text-text desktop:border border-solid border-dialog-border"
 		ref="dialog"
 		data-testid="info-dialog"
+		@close="isOpen = false"
 	>
-		<div class="grid grid-rows-[auto_1fr_auto] gap-6">
+		<div v-if="isOpen" class="grid grid-rows-[auto_1fr_auto] gap-6">
 			<DialogTitle @close="close" data-testid="info-dialog-title">{{ titleText }}</DialogTitle>
 			<main class="pl-3 pr-4">
 				<div class="leading-5 max-w-86 whitespace-pre-wrap">{{ infoText }}</div>
@@ -22,10 +23,12 @@ import DialogTitle from '../elements/DialogTitle.vue'
 const dialog = ref(null)
 const titleText = ref('')
 const infoText = ref('')
+const isOpen = ref(false)
 
 const show = (title: string, info: string) => {
 	titleText.value = title
 	infoText.value = info
+	isOpen.value = true
 	dialog.value.showModal()
 }
 

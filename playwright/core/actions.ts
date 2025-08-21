@@ -6,8 +6,11 @@ import {
 	createAccountView,
 	editor,
 	initialPlanChooser,
+	lockScreen,
 	loginCtrl,
 	menu,
+	passwordDialog,
+	pinCodeView,
 	settingNodes,
 	statusBar,
 	titleBar,
@@ -107,6 +110,34 @@ export const loginFail = async () => {
 	await loginCtrl.password().fill(mimiri().config.password)
 	await loginCtrl.button().click()
 	await expect(loginCtrl.loginError()).toBeVisible()
+}
+
+export const setPin = async (pin: string) => {
+	if (await settingNodes.controlPanelClosed().isVisible()) {
+		await settingNodes.controlPanelClosed().click()
+	}
+	if (await settingNodes.settingGroupClosed().isVisible()) {
+		await settingNodes.settingGroupClosed().click()
+	}
+	await settingNodes.pin().click()
+	await expect(pinCodeView.container()).toBeVisible()
+
+	await mimiri().page.keyboard.type(pin)
+
+	await pinCodeView.save().click()
+
+	await expect(passwordDialog.container()).toBeVisible()
+	await passwordDialog.password().fill(mimiri().password)
+	await passwordDialog.okButton().click()
+	await expect(passwordDialog.container()).not.toBeVisible()
+}
+
+export const enterPin = async (pin: string) => {
+	await expect(lockScreen.container()).toBeVisible()
+	await mimiri().page.keyboard.type(pin)
+	await expect(lockScreen.container()).not.toBeVisible()
+	await expect(loginCtrl.container()).not.toBeVisible()
+	await expect(settingNodes.controlPanel()).toBeVisible()
 }
 
 export const appReady = async () => {

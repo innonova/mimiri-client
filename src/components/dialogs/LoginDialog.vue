@@ -3,17 +3,15 @@
 		class="modal bg-dialog text-text desktop:border border-solid border-dialog-border backdrop-grayscale"
 		ref="dialog"
 		data-testid="login-dialog"
+		@close="isOpen = false"
 	>
-		<div class="grid grid-rows-[auto_1fr_auto] gap-3 content-between">
+		<div v-if="isOpen" class="grid grid-rows-[auto_1fr_auto] gap-3 content-between">
 			<DialogTitle @close="cancel" :disabled="loading"
 				>Login <span v-if="neededForServer" data-testid="server-indicator">&nbsp;(Server)</span></DialogTitle
 			>
 			<form @submit.prevent="login" class="mx-2 mobile:mx-8">
 				<div v-if="neededForServer" class="mx-1 mb-2 max-w-72">
-					You appear to have changed your password since last you logged into this device.
-				</div>
-				<div v-if="neededForServer" class="mx-1 mb-4 max-w-72">
-					You will need to enter your new password to reconnect with the server.
+					Please enter your username and password to reauthenticate with the server.
 				</div>
 				<div class="grid grid-cols-[4rem_10rem] mobile:grid-cols-[4rem_auto] items-center gap-2 mx-2 mb-2">
 					<div>Username:</div>
@@ -61,12 +59,11 @@
 						Cancel
 					</button>
 				</div>
-				<div v-if="neededForServer" class="mx-1 mt-4 mb-2 max-w-72">
-					If you click cancel you will be logged in with your local account, but you will not be able to access the
-					server, until you log in with your new password.
-				</div>
-				<div v-if="neededForServer" class="mx-1 mt-4 mb-2 max-w-72">
-					If you did not change your password, the server may be experiencing issues. Please try again later.
+				<div v-if="neededForServer" class="mx-1 mt-4 mb-1 max-w-72 font-bold">Why are you seeing this?</div>
+				<div v-if="neededForServer" class="mx-1 mt-1 mb-2 max-w-72">
+					<li>You changed password on another device</li>
+					<li>You updated from a version prior to 2.5.0</li>
+					<li>Something unexpected went wrong</li>
 				</div>
 			</form>
 		</div>
@@ -90,6 +87,7 @@ const longTime = ref(false)
 const showVersion = ref(false)
 const capsLockOn = ref(false)
 const neededForServer = ref(false)
+const isOpen = ref(false)
 
 const canLogin = computed(() => !!username.value?.trim() && !!password.value)
 
@@ -98,6 +96,7 @@ const show = (neededForServerOnly: boolean = false) => {
 	if (neededForServerOnly) {
 		username.value = noteManager.state.username
 	}
+	isOpen.value = true
 	dialog.value.showModal()
 	showVersion.value = true
 }

@@ -14,6 +14,7 @@ import { FontManager } from './services/font-manager'
 import { BlogManager } from './services/blog-manager'
 import { DebugManager } from './services/debug-manager'
 import { Currency, type SubscriptionProduct } from './services/types/subscription'
+import { DevTools } from './services/dev-tools'
 
 export const env = import.meta.env
 const host = env.VITE_MIMER_API_HOST
@@ -81,6 +82,8 @@ export const showSearchBox = ref(false)
 export const mimiriEditor = new MimiriEditor()
 
 export const clipboardManager = new ClipboardManager()
+
+export const devTools = new DevTools(env)
 
 export const features = []
 

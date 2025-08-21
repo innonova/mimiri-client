@@ -1,5 +1,5 @@
 <template>
-	<div class="flex flex-col h-full">
+	<div class="flex flex-col h-full" data-testid="pin-code-container">
 		<TabBar :items="['PIN Code']" />
 		<div class="overflow-y-auto pb-10">
 			<div class="flex flex-col items-center mt-10 max-w-110">
@@ -17,17 +17,14 @@
 						<h1 v-if="pin.length > 3" class="mt-1">*</h1>
 					</div>
 				</div>
-				<div class="p-1 pt-2 mt-5 m-auto text-left">
-					<label>
-						<input type="checkbox" v-model="enabled" class="mr-1 relative top-0.5" />
-						Enable PIN
-					</label>
-				</div>
 			</div>
 			<div class="mt-10 max-w-110 mr-2">
 				<hr />
 				<div class="w-full flex justify-end mt-2 gap-2">
-					<button :disabled="!canSave" @click="save" class="primary">Save</button>
+					<button :disabled="!localAuth.pinEnabled" @click="clear" class="secondary" data-testid="clear-pin">
+						Clear
+					</button>
+					<button :disabled="!canSave" @click="save" class="primary" data-testid="save-pin">Save</button>
 				</div>
 			</div>
 		</div>
@@ -93,6 +90,11 @@ useEventListener(document, 'keypress', e => {
 				pin.value += e.key
 			}
 		}
+		if (e.key === 'Enter') {
+			if (canSave.value) {
+				save()
+			}
+		}
 	}
 })
 
@@ -101,6 +103,21 @@ const save = () => {
 	passwordDialog.value.show(
 		() => {
 			void localAuth.setPin(pin.value)
+			inputEnabled = true
+			changed.value = false
+		},
+		() => {
+			inputEnabled = true
+		},
+	)
+}
+
+const clear = () => {
+	inputEnabled = false
+	passwordDialog.value.show(
+		() => {
+			void localAuth.setPin('')
+			pin.value = ''
 			inputEnabled = true
 			changed.value = false
 		},

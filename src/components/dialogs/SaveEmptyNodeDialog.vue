@@ -1,6 +1,10 @@
 <template>
-	<dialog class="w-72 bg-dialog text-text desktop:border border-solid border-dialog-border" ref="dialog">
-		<div class="grid grid-rows-[auto_1fr_auto] gap-6">
+	<dialog
+		class="w-72 bg-dialog text-text desktop:border border-solid border-dialog-border"
+		ref="dialog"
+		@close="isOpen = false"
+	>
+		<div v-if="isOpen" class="grid grid-rows-[auto_1fr_auto] gap-6">
 			<DialogTitle @close="close">Save Empty Note</DialogTitle>
 			<main class="px-2">
 				<div>Are you sure you want to save empty version of node:</div>
@@ -23,12 +27,14 @@ import { mimiriEditor } from '../../global'
 import DialogTitle from '../elements/DialogTitle.vue'
 const dialog = ref(null)
 const noteItem = ref<MimerNote>(undefined)
+const isOpen = ref(false)
 let complete: (value: boolean) => void
 
 const show = (note: MimerNote) => {
 	return new Promise<boolean>(resolve => {
 		complete = resolve
 		noteItem.value = note
+		isOpen.value = true
 		dialog.value.showModal()
 	})
 }

@@ -1,5 +1,9 @@
 <template>
-	<div v-if="localAuth.pinEnabled && localAuth.elapsed" class="flex flex-col items-center select-none">
+	<div
+		v-if="localAuth.pinEnabled && localAuth.elapsed"
+		class="flex flex-col items-center select-none"
+		data-testid="lock-screen"
+	>
 		<h2 class="mb-4">Enter PIN to unlock</h2>
 		<div class="flex">
 			<div class="border-2 w-10 h-16 rounded-lg flex items-center justify-center mr-2">

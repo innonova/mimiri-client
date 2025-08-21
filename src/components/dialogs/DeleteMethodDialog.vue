@@ -3,8 +3,9 @@
 		class="w-72 bg-dialog text-text desktop:border border-solid border-dialog-border"
 		ref="dialog"
 		data-testid="dialog-delete-payment-method"
+		@close="isOpen = false"
 	>
-		<div class="grid grid-rows-[auto_1fr_auto] gap-6">
+		<div v-if="isOpen" class="grid grid-rows-[auto_1fr_auto] gap-6">
 			<DialogTitle @close="close">Delete Payment Method</DialogTitle>
 			<main class="px-2">
 				<div>Are you sure you want to delete:</div>
@@ -25,9 +26,11 @@ import { ref } from 'vue'
 import DialogTitle from '../elements/DialogTitle.vue'
 const dialog = ref(null)
 const text = ref('')
+const isOpen = ref(false)
 let cb: (confirmed: boolean) => void | undefined = undefined
 
 const show = (name: string, callback: (confirmed: boolean) => void) => {
+	isOpen.value = true
 	dialog.value.showModal()
 	text.value = name
 	cb = callback

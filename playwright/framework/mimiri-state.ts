@@ -12,6 +12,7 @@ const createId = () => {
 
 export class MimiriState {
 	private static _defaultBrowser: Browser | undefined
+	private _usernames: string[] = []
 	private _browser: Browser | undefined
 	private _context!: BrowserContext
 	private _mainPage!: Page
@@ -55,6 +56,7 @@ export class MimiriState {
 		this._customer.email = `max+${this._config.testId}@testmail.mimiri.io`
 		this._mailClient = new MailPitClient(this._config.testId)
 		this._orchestrationClient = new OrchestrationClient()
+		this._usernames.push(this._config.username)
 	}
 
 	public clone() {
@@ -90,7 +92,9 @@ export class MimiriState {
 
 	public async terminate() {
 		await this._orchestrationClient.waitForMailQueue(this._config.testId)
-		await this._orchestrationClient.cleanUp(this._config.username)
+		for (const username of this._usernames) {
+			await this._orchestrationClient.cleanUp(username)
+		}
 		await new Promise(resolve => setTimeout(resolve, 250))
 		await this._mailClient.cleanUp()
 		await this._mainPage.close()
@@ -103,6 +107,20 @@ export class MimiriState {
 
 	public get keyboard() {
 		return this.page.keyboard
+	}
+
+	public async setLockTimeout(timeout: number) {
+		return this.page.evaluate(timeout => {
+			;(globalThis as any).devTools.setLockTimeout(timeout)
+		}, timeout)
+	}
+
+	public async applicationHiding() {
+		return this.page.evaluate(() => (globalThis as any).devTools.hideShowListener.hiding())
+	}
+
+	public async applicationShowing() {
+		return this.page.evaluate(() => (globalThis as any).devTools.hideShowListener.showing())
 	}
 
 	public async getClipboardText() {
@@ -298,6 +316,13 @@ export class MimiriState {
 		this._config.cardNumber = ''
 		this._config.cardExpiration = ''
 		this._config.cardCvc = ''
+	}
+
+	public setUsername(username: string) {
+		this._config.username = username
+		if (!this._usernames.includes(username)) {
+			this._usernames.push(username)
+		}
 	}
 
 	public get config() {

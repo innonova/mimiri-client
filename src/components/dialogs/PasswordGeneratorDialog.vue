@@ -1,6 +1,10 @@
 <template>
-	<dialog class="bg-dialog text-text desktop:border border-solid border-dialog-border" ref="dialog">
-		<div class="grid grid-rows-[auto_1fr_auto] gap-6">
+	<dialog
+		class="bg-dialog text-text desktop:border border-solid border-dialog-border"
+		ref="dialog"
+		@close="isOpen = false"
+	>
+		<div v-if="isOpen" class="grid grid-rows-[auto_1fr_auto] gap-6">
 			<DialogTitle @close="close">Generate Password</DialogTitle>
 			<main class="px-3">
 				<PasswordGeneratorComp ref="passwordGenerator" mode="3rdp" @password="onPasswordGenerated" />
@@ -33,7 +37,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import PasswordGeneratorComp from '../elements/PasswordGenerator.vue'
 import ShowPasswordIcon from '../../icons/show-password.vue'
 import ShowingPasswordIcon from '../../icons/showing-password.vue'
@@ -45,6 +49,11 @@ const passwordGenerator = ref(null)
 const password = ref('')
 const dialog = ref(null)
 const passwordFieldType = ref('password')
+const isOpen = ref(false)
+
+watch(isOpen, () => {
+	console.log('Dialog is now', isOpen.value ? 'open' : 'closed')
+})
 
 onMounted(() => {})
 
@@ -69,6 +78,7 @@ const hidePassword = () => {
 }
 
 const show = () => {
+	isOpen.value = true
 	dialog.value.showModal()
 }
 

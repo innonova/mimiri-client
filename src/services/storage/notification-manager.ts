@@ -46,7 +46,23 @@ export class NotificationManager {
 		const connection = new HubConnectionBuilder()
 			.withUrl(url, { accessTokenFactory: () => token })
 			// .configureLogging(LogLevel.Warning)
-			.withAutomaticReconnect()
+			.withAutomaticReconnect({
+				nextRetryDelayInMilliseconds: retryContext => {
+					const err: any = retryContext.retryReason
+					if (retryContext.previousRetryCount > 3 && (err?.statusCode === 401 || err?.statusCode === 403)) {
+						return null
+					}
+					let next
+					if (retryContext.previousRetryCount > 5) {
+						next = 30000
+					} else {
+						next = Math.min(1000 * Math.pow(2, retryContext.previousRetryCount), 30000)
+					}
+					const jitter = 0.5 + Math.random()
+					next = Math.floor(next * jitter)
+					return next
+				},
+			})
 			.build()
 
 		connection.on('notification', async (sender, type, payload) => {

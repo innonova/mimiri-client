@@ -1,6 +1,10 @@
 <template>
-	<dialog class="bg-dialog text-text desktop:border border-solid border-dialog-border" ref="dialog">
-		<div class="grid grid-rows-[auto_1fr_auto] gap-6">
+	<dialog
+		class="bg-dialog text-text desktop:border border-solid border-dialog-border"
+		ref="dialog"
+		@close="isOpen = false"
+	>
+		<div v-if="isOpen" class="grid grid-rows-[auto_1fr_auto] gap-6">
 			<DialogTitle @close="close">Delete History</DialogTitle>
 			<main class="px-2 leading-5">
 				<div v-if="deleteAllHistory">Are you sure you want to delete ALL history</div>
@@ -35,6 +39,7 @@ import DialogTitle from '../elements/DialogTitle.vue'
 const dialog = ref(null)
 const deleteAllHistory = ref(false)
 const shareParticipants = ref([])
+const isOpen = ref(false)
 let callback: () => void
 
 const show = async (all: boolean, cb: () => void) => {
@@ -47,6 +52,7 @@ const show = async (all: boolean, cb: () => void) => {
 	} else {
 		shareParticipants.value = []
 	}
+	isOpen.value = true
 	dialog.value.showModal()
 }
 

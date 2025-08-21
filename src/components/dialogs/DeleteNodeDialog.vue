@@ -3,8 +3,9 @@
 		class="min-w-72 bg-dialog text-text desktop:border border-solid border-dialog-border"
 		ref="dialog"
 		data-testid="delete-note-dialog"
+		@close="isOpen = false"
 	>
-		<div v-if="mode === 'delete'" class="grid grid-rows-[auto_1fr_auto] gap-6" data-testid="delete-note">
+		<div v-if="isOpen && mode === 'delete'" class="grid grid-rows-[auto_1fr_auto] gap-6" data-testid="delete-note">
 			<DialogTitle @close="close">Delete Note</DialogTitle>
 			<main class="px-2 mobile:text-center">
 				<div>Are you sure you want to delete:</div>
@@ -24,7 +25,7 @@
 				<button class="secondary" @click="close" data-testid="delete-dialog-cancel">Cancel</button>
 			</footer>
 		</div>
-		<div v-if="mode === 'leave-share'" class="grid grid-rows-[auto_1fr_auto] gap-6" data-testid="leave-share">
+		<div v-if="isOpen && mode === 'leave-share'" class="grid grid-rows-[auto_1fr_auto] gap-6" data-testid="leave-share">
 			<DialogTitle @close="close">Leave Share</DialogTitle>
 			<main class="px-2 mobile:text-center">
 				<div>Are you sure you want to leave this share:</div>
@@ -91,6 +92,7 @@ import DialogTitle from '../elements/DialogTitle.vue'
 const dialog = ref(null)
 const shareParticipants = ref([])
 const mode = ref('none')
+const isOpen = ref(false)
 
 const show = async () => {
 	if (noteManager.tree.selectedNote()?.isShared) {
@@ -110,6 +112,7 @@ const show = async () => {
 		shareParticipants.value = []
 		mode.value = 'delete'
 	}
+	isOpen.value = true
 	dialog.value.showModal()
 }
 

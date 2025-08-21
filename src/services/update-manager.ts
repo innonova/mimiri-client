@@ -1,5 +1,5 @@
 import { reactive } from 'vue'
-import { debug, ipcClient, notificationManager, updateKeys, updateManager } from '../global'
+import { debug, env, ipcClient, notificationManager, updateKeys, updateManager } from '../global'
 import { version, releaseDate } from '../version'
 import { CryptSignature } from './crypt-signature'
 import type { InstalledBundleInfo } from './types/ipc.interfaces'
@@ -73,7 +73,11 @@ export class UpdateManager {
 	private installingElectronUpdate = false
 	private installedVersions: InstalledBundleInfo[] = []
 
-	constructor(private host: string) {}
+	constructor(private host: string) {
+		if (env.DEV && __DEV_VERSION__) {
+			this.state.version = __DEV_VERSION__
+		}
+	}
 
 	private async get<T>(path: string): Promise<T> {
 		// console.log(`GET ${this.host}${path}`)
@@ -151,6 +155,9 @@ export class UpdateManager {
 			try {
 				const lastRunHostVersion = settingsManager.lastRunHostVersion
 				await this.check(false)
+				if (!this.state.activeVersion) {
+					return false
+				}
 				if (
 					compareVersions(this.state.activeVersion.hostVersion, lastRunHostVersion) &&
 					this.state.latestVersion &&

@@ -3,8 +3,9 @@
 		class="bg-dialog desktop:border border-solid border-dialog-border text-text"
 		ref="dialog"
 		data-testid="accept-share-dialog"
+		@close="isOpen = false"
 	>
-		<div class="grid grid-rows-[auto_1fr_auto]">
+		<div v-if="isOpen" class="grid grid-rows-[auto_1fr_auto]">
 			<DialogTitle @close="close">Accept Share</DialogTitle>
 			<form @submit.prevent="submitDialog" class="mx-2 mt-5 mb-2 mobile:mx-8">
 				<div class="grid grid-cols-[4rem_10rem] mobile:grid-cols-[4rem_auto] items-center gap-2 mx-2 mb-2">
@@ -53,6 +54,7 @@ const dialog = ref(null)
 const code = ref('')
 const codeInput = ref(null)
 const loading = ref(null)
+const isOpen = ref(false)
 
 const invalid = ref(false)
 const limitsExceeded = ref('')
@@ -63,6 +65,7 @@ const show = (note?: MimerNote) => {
 	code.value = ''
 	invalid.value = false
 	loading.value = false
+	isOpen.value = true
 	dialog.value.showModal()
 }
 

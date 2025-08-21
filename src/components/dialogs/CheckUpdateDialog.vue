@@ -1,6 +1,10 @@
 <template>
-	<dialog class="w-96 bg-dialog text-text desktop:border border-solid border-dialog-border" ref="dialog">
-		<div class="grid grid-rows-[auto_1fr_auto] gap-6">
+	<dialog
+		class="w-96 bg-dialog text-text desktop:border border-solid border-dialog-border"
+		ref="dialog"
+		@close="isOpen = false"
+	>
+		<div v-if="isOpen" class="grid grid-rows-[auto_1fr_auto] gap-6">
 			<DialogTitle @close="close">Mimiri Notes</DialogTitle>
 			<main>
 				<div class="p-2">
@@ -21,8 +25,10 @@ import { ref } from 'vue'
 import { updateManager } from '../../global'
 import DialogTitle from '../elements/DialogTitle.vue'
 const dialog = ref(null)
+const isOpen = ref(false)
 
 const show = () => {
+	isOpen.value = true
 	dialog.value.showModal()
 }
 

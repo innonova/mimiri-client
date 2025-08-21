@@ -120,6 +120,7 @@ export const settingNodes = {
 	update: () => tid('node-settings-update'),
 	blog: () => tid('node-settings-blog'),
 	settingGroup: () => tid('node-settings-group'),
+	settingGroupClosed: () => tid('node-settings-group-closed'),
 	general: () => tid('node-settings-general'),
 	fontsAndColors: () => tid('node-settings-fonts-colors'),
 	pin: () => tid('node-settings-pin'),
@@ -391,6 +392,11 @@ export const aboutView = {
 	unsyncedUsedBytes: () => tid(`about-unsynced-data`),
 }
 
+export const pinCodeView = {
+	container: () => tid(`pin-code-container`),
+	save: () => tid(`pin-code-container`).getByTestId(`save-pin`),
+}
+
 export const shareDialog = {
 	container: () => tid(`share-dialog`),
 	username: () => tid(`share-dialog`).getByTestId(`share-username-input`),
@@ -487,4 +493,8 @@ export const initialPlanChooser = {
 	periodMonth: () => tid('period-month'),
 	periodYear: () => tid('period-year'),
 	currencySelector: () => tid('currency-selector'),
+}
+
+export const lockScreen = {
+	container: () => tid(`lock-screen`),
 }

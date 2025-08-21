@@ -1,6 +1,6 @@
 import { mimiriPlatform } from './mimiri-platform'
 import { settingsManager } from './settings-manager'
-import { blogManager, ipcClient, noteManager, updateManager } from '../global'
+import { devTools, env, ipcClient, noteManager, updateManager } from '../global'
 import { reactive } from 'vue'
 import type { HideShowListener } from './ipc-client'
 import type { LoginListener } from './storage/session-manager'
@@ -14,6 +14,9 @@ class LocalAuth implements LoginListener, HideShowListener {
 		noteManager.session.registerListener(this)
 		this._state.locked = sessionStorage.getItem('locked') === 'true'
 		ipcClient.menu.registerHideShowListener(this)
+		devTools.registerSetLockTimeout(timeout => {
+			this._lockTimeout = timeout
+		})
 	}
 
 	login() {
@@ -36,7 +39,8 @@ class LocalAuth implements LoginListener, HideShowListener {
 			await this.unlock()
 		} else {
 			localStorage.setItem('lastPin', 'failure')
-			await noteManager.session.logout()
+			await noteManager.session.logout(true)
+			location.reload()
 		}
 	}
 
@@ -72,7 +76,7 @@ class LocalAuth implements LoginListener, HideShowListener {
 		}
 		if (this.lastPause < 0 || Date.now() - this.lastPause < this._lockTimeout) {
 			await this.unlock()
-		} else if (mimiriPlatform.isElectron) {
+		} else if (mimiriPlatform.isElectron || env.DEV) {
 			if (!this.pinEnabled) {
 				await this.unlock()
 			}
@@ -108,15 +112,10 @@ class LocalAuth implements LoginListener, HideShowListener {
 	public async setPin(pin: string) {
 		noteManager.tree.root().note.changeItem('config').pinCode = pin
 		await noteManager.tree.root().save()
-		settingsManager.pinEnabled = true
-	}
-
-	public disablePin() {
-		settingsManager.pinEnabled = false
 	}
 
 	public get pinEnabled() {
-		return settingsManager.pinEnabled && !!noteManager.tree.root().note.getItem('config')?.pinCode
+		return noteManager.tree.root().note.getItem('config')?.pinCode?.length === 4
 	}
 
 	public get locked() {

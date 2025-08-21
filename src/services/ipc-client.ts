@@ -10,6 +10,7 @@ import { toRaw } from 'vue'
 import { watchDog } from './watch-dog'
 import { Capacitor } from '@capacitor/core'
 import { App } from '@capacitor/app'
+import { devTools } from '../global'
 
 export class MimerCache implements ICacheManager {
 	constructor(private api: IpcApi) {}
@@ -117,6 +118,7 @@ export class MimerMenu {
 	}
 
 	registerHideShowListener(listener: HideShowListener) {
+		devTools.registerHideShowListener(listener)
 		if (capacitorClient.available) {
 			if (Capacitor.isPluginAvailable('App')) {
 				void App.addListener('resume', async () => listener.showing())

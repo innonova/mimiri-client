@@ -1,6 +1,10 @@
 <template>
-	<dialog class="w-80 bg-dialog text-text desktop:border border-solid border-dialog-border" ref="dialog">
-		<div class="grid grid-rows-[auto_1fr_auto] gap-6">
+	<dialog
+		class="w-80 bg-dialog text-text desktop:border border-solid border-dialog-border"
+		ref="dialog"
+		@close="isOpen = false"
+	>
+		<div v-if="isOpen" class="grid grid-rows-[auto_1fr_auto] gap-6">
 			<DialogTitle @close="close">{{ title }}</DialogTitle>
 			<main class="px-2 leading-5">
 				<div>{{ text }}</div>
@@ -19,6 +23,7 @@ import DialogTitle from '../elements/DialogTitle.vue'
 const dialog = ref(null)
 const title = ref('')
 const text = ref('')
+const isOpen = ref(false)
 
 const toMB = bytes => {
 	return `${Math.round((100 * bytes) / 1024 / 1024) / 100} MB`
@@ -41,6 +46,7 @@ const show = (limit: string) => {
 			noteManager.tree.selectedNote()?.size ?? 0,
 		)} the maximum allowed is ${toMB(noteManager.state.userStats.maxNoteBytes)}`
 	}
+	isOpen.value = true
 	dialog.value.showModal()
 }
 

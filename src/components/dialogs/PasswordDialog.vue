@@ -3,8 +3,9 @@
 		class="bg-dialog desktop:border border-solid border-dialog-border text-text"
 		ref="dialog"
 		data-testid="password-dialog"
+		@close="isOpen = false"
 	>
-		<form @submit.prevent="submitDialog">
+		<form v-if="isOpen" @submit.prevent="submitDialog">
 			<div class="grid grid-rows-[auto_1fr_auto] gap-6">
 				<DialogTitle @close="close">Verify that it is you</DialogTitle>
 				<main class="px-2">
@@ -55,6 +56,7 @@ const password = ref('')
 const busy = ref(false)
 const error = ref(false)
 const capsLockOn = ref(false)
+const isOpen = ref(false)
 
 let actionCallback: (value: string) => Promise<boolean>
 let okCallback: () => void
@@ -65,6 +67,7 @@ const pwKeyDown = event => {
 }
 
 const show = (ok: () => void, cancel: () => void) => {
+	isOpen.value = true
 	error.value = false
 	busy.value = false
 	password.value = ''
@@ -75,6 +78,7 @@ const show = (ok: () => void, cancel: () => void) => {
 }
 
 const showAction = (action: (value: string) => Promise<boolean>) => {
+	isOpen.value = true
 	error.value = false
 	busy.value = false
 	password.value = ''

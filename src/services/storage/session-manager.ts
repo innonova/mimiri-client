@@ -330,17 +330,24 @@ export class SessionManager {
 	}
 
 	public async initialize(): Promise<void> {
-		await this.recoverLogin()
-		if (!this.state.isLoggedIn) {
-			if (!(await this.authManager.hasOneOrMoreAccounts()) && !settingsManager.startLoggedOut) {
-				await this.openLocal()
+		try {
+			await this.recoverLogin()
+			if (!this.state.isLoggedIn) {
+				if (!(await this.authManager.hasOneOrMoreAccounts()) && !settingsManager.startLoggedOut) {
+					await this.openLocal()
+				}
 			}
-		}
-		if (!this.state.isLoggedIn) {
-			loginDialog.value.show()
-		} else if (loginRequiredToGoOnline.value) {
-			loginRequiredToGoOnline.value = false
-			loginDialog.value.show(true)
+
+			if (!this.state.isLoggedIn) {
+				loginDialog.value.show()
+			} else if (loginRequiredToGoOnline.value) {
+				loginRequiredToGoOnline.value = false
+				loginDialog.value.show(true)
+			}
+		} catch (ex) {
+			settingsManager.startLoggedOut = false
+			await this.logout()
+			location.reload()
 		}
 	}
 
