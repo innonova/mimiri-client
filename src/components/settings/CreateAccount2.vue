@@ -27,7 +27,6 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
-import { Period, type SubscriptionProduct } from '../../services/types/subscription'
 import { blockUserInput, noteManager } from '../../global'
 import UsernameInput from '../elements/UsernameInput.vue'
 import PasswordInput from '../elements/PasswordInput.vue'
@@ -37,8 +36,6 @@ import TabBar from '../elements/TabBar.vue'
 import ItemHeader from '../subscription/ItemHeader.vue'
 import { DEFAULT_ITERATIONS } from '../../services/storage/mimiri-store'
 
-const period = ref(Period.Year)
-const products = ref<SubscriptionProduct[]>([])
 const loading = ref(false)
 const createMode = ref('cloud')
 const stage = ref('create-account')
@@ -74,12 +71,6 @@ const createAccount = async () => {
 	}
 }
 
-const populate = async () => {
-	products.value = (await noteManager.payment.getSubscriptionProducts()).filter(
-		prod => prod.data.period === period.value || prod.sku === 'free',
-	)
-}
-
 const tabSelected = item => {
 	if (item === 'Cloud Account') {
 		createMode.value = 'cloud'
@@ -88,7 +79,5 @@ const tabSelected = item => {
 	}
 }
 
-onMounted(async () => {
-	await populate()
-})
+onMounted(async () => {})
 </script>
