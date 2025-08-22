@@ -142,18 +142,20 @@
 				<OpenIcon class="w-[23px] h-[23px] p-0.5 mr-1" />
 			</button>
 		</div>
-		<template v-if="(node.expanded && !searchModeActive) || searchModeActive">
-			<template v-for="childNode of node.children" :key="childNode.id">
-				<TreeNode :node="<NoteViewModel>childNode" />
+		<div class="child-container">
+			<template v-if="(node.expanded && !searchModeActive) || searchModeActive">
+				<template v-for="childNode of node.children" :key="childNode.id">
+					<TreeNode :node="<NoteViewModel>childNode" />
+				</template>
 			</template>
-		</template>
+		</div>
 		<NewTreeNode v-if="isSelected && createNewNode" />
 	</div>
 </template>
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { noteManager, dragId, showSearchBox, createNewNode, createNewRootNode, features, debug } from '../global'
+import { noteManager, dragId, showSearchBox, createNewNode, createNewRootNode, debug } from '../global'
 import type { NoteViewModel } from '../services/types/mimer-note'
 import { searchManager } from '../services/search-manager'
 import NewTreeNode from './NewTreeNode.vue'
@@ -175,7 +177,6 @@ import DownloadIcon from '../icons/download.vue'
 import LockIcon from '../icons/lock.vue'
 import AnnouncementIcon from '../icons/announcement.vue'
 import BulbIcon from '../icons/bulb.vue'
-import ChevronDown from '../icons/chevron-down.vue'
 import { settingsManager } from '../services/settings-manager'
 
 const visualElement = ref(null)
@@ -422,5 +423,19 @@ const showContextMenu = async e => {
 
 .title-vertical-adjust {
 	vertical-align: 3px;
+}
+
+.child-container {
+	position: relative;
+}
+
+.child-container::before {
+	content: '';
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0.6rem;
+	width: 1px;
+	background: var(--color-back);
 }
 </style>
