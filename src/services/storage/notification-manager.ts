@@ -92,7 +92,6 @@ export class NotificationManager {
 	}
 
 	private async connect(attempt: number = 0) {
-		console.log('Connecting to notifications')
 		try {
 			if (!this._connectionExpected) {
 				return
@@ -106,7 +105,6 @@ export class NotificationManager {
 			}
 			this._connection = this.createConnection(response.url, response.token)
 			await this._connection.start()
-			console.log('Connected to notifications')
 			this.state.isOnline = true
 			this.notificationsCallback('connected', null)
 		} catch (ex) {
@@ -120,7 +118,6 @@ export class NotificationManager {
 	}
 
 	private async close() {
-		console.log('Closing notifications connection')
 		if (this._connection) {
 			try {
 				await this._connection.stop()

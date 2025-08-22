@@ -262,7 +262,8 @@ export class MimiriStore {
 		goOnline: (password?: string): Promise<boolean> => this.sessionManager.goOnline(password),
 		openLocal: () => this.sessionManager.openLocal(),
 		updateUserStats: () => this.sessionManager.updateUserStats(),
-		logout: (userInitiated: boolean = false): Promise<void> => this.sessionManager.logout(userInitiated),
+		logout: (userInitiated: boolean = false, clearData: boolean = false): Promise<void> =>
+			this.sessionManager.logout(userInitiated, clearData),
 		promoteToCloudAccount: (username: string, oldPassword: string, newPassword: string, iterations: number) =>
 			this.sessionManager.promoteToCloudAccount(username, oldPassword, newPassword, iterations),
 		promoteToLocalAccount: (username: string, password: string, iterations: number) =>

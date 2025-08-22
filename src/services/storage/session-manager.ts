@@ -351,8 +351,8 @@ export class SessionManager {
 		}
 	}
 
-	public async logout(userInitiated: boolean = false): Promise<void> {
-		await this.authManager.logout()
+	public async logout(userInitiated: boolean = false, clearData: boolean = false): Promise<void> {
+		await this.authManager.logout(clearData)
 		await this.api.logout()
 		await this.localStateManager.logout()
 		this.cryptoManager.clearKeys()

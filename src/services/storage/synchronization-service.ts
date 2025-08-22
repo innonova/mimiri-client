@@ -116,13 +116,11 @@ export class SynchronizationService {
 				this._waitingForSync = []
 			}
 		} else {
-			console.log('Synchronization already in progress, queuing sync request')
 			this._syncRequestedWhileInProgress = true
 		}
 	}
 
 	public queueSync(shouldCheckConsistency: boolean = false): void {
-		console.log('SynchronizationService.queueSync() called', this._initialized, this.canSync)
 		if (!this._initialized && this.canSync && this._ready) {
 			void this.initialSync().then(() => {
 				void this.sync(shouldCheckConsistency)
@@ -130,13 +128,6 @@ export class SynchronizationService {
 			return
 		}
 		if (!this._initialized || !this.canSync) {
-			console.log(
-				'SynchronizationService.queueSync() ignored',
-				this._initialized,
-				this.state.isLoggedIn,
-				this.state.isOnline,
-				this.state.accountType,
-			)
 			return
 		}
 		void this.sync(shouldCheckConsistency)
@@ -592,8 +583,6 @@ export class SynchronizationService {
 			localNoteCount = this.state.userStats.localNoteCount
 		})
 
-		console.log('SynchronizationService.syncPush() - local notes:', error, syncStatus.value)
-
 		if (error) {
 			return false
 		}
@@ -615,8 +604,6 @@ export class SynchronizationService {
 		}
 
 		const status = await this.api.syncPushChanges(noteActions, keyActions, syncId)
-
-		console.log('SynchronizationService.syncPush()', status, noteActions.length, keyActions.length)
 
 		if (status !== 'success') {
 			syncStatus.value = 'server-rejection'
@@ -663,8 +650,6 @@ export class SynchronizationService {
 		await this.localStateManager.updateLocalSizeData()
 
 		syncStatus.value = 'idle'
-
-		console.log('SynchronizationService.syncPush() completed successfully')
 
 		return true
 	}

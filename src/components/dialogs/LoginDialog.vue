@@ -16,6 +16,7 @@
 				<div class="grid grid-cols-[4rem_10rem] mobile:grid-cols-[4rem_auto] items-center gap-2 mx-2 mb-2">
 					<div>Username:</div>
 					<input
+						ref="usernameInput"
 						v-model="username"
 						tabindex="1"
 						type="text"
@@ -88,6 +89,7 @@ const showVersion = ref(false)
 const capsLockOn = ref(false)
 const neededForServer = ref(false)
 const isOpen = ref(false)
+const usernameInput = ref(null)
 
 const canLogin = computed(() => !!username.value?.trim() && !!password.value)
 
@@ -99,6 +101,9 @@ const show = (neededForServerOnly: boolean = false) => {
 	isOpen.value = true
 	dialog.value.showModal()
 	showVersion.value = true
+	setTimeout(() => {
+		usernameInput.value?.focus()
+	}, 0)
 }
 
 const cancel = async () => {

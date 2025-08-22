@@ -26,10 +26,8 @@ export class SyncLock {
 					resolve: () => {
 						if (type === 'shared') {
 							this.sharedCount++
-							console.log(`Acquired shared lock (queued), count: ${this.sharedCount}`)
 						} else {
 							this.exclusiveLocked = true
-							console.log(`Acquired exclusive lock (queued)`)
 						}
 
 						resolve(() => this.release(type))

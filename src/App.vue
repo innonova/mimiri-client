@@ -89,6 +89,7 @@
 		<InfoDialog ref="infoDialog" />
 		<InconsistencyDialog ref="inconsistencyDialog" />
 		<SyncErrorDialog ref="syncErrorDialog" />
+		<DeleteLocalDataDialog ref="deleteLocalDataDialog" />
 		<div
 			v-if="noteManager.state.busy"
 			class="absolute left-0 top-0 w-full h-full flex items-center justify-around text-white"
@@ -145,18 +146,18 @@ import {
 	updateManager,
 	deletePaymentMethodDialog,
 	deleteHistoryDialog,
+	deleteLocalDataDialog,
 	infoDialog,
 	debug,
 	blockUserInput,
 	appStatus,
 	inconsistencyDialog,
-	loginRequiredToGoOnline,
 } from './global'
 import { settingsManager } from './services/settings-manager'
 import LoadingIcon from './icons/loading.vue'
 import { mimiriPlatform } from './services/mimiri-platform'
 import { menuManager } from './services/menu-manager'
-import { Debounce, deObfuscate } from './services/helpers'
+import { Debounce } from './services/helpers'
 import { localAuth } from './services/local-auth'
 import LockScreen from './components/LockScreen.vue'
 import { useEventListener } from '@vueuse/core'
@@ -169,6 +170,7 @@ import InconsistencyDialog from './components/dialogs/InconsistencyDialog.vue'
 import StatusBar from './components/elements/StatusBar.vue'
 import SyncErrorDialog from './components/dialogs/SyncErrorDialog.vue'
 import InitialPlanChooser from './components/subscription/InitialPlanChooser.vue'
+import DeleteLocalDataDialog from './components/dialogs/DeleteLocalDataDialog.vue'
 
 const colorScheme = ref('only light')
 const loading = ref(true)

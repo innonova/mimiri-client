@@ -3,6 +3,7 @@ import {
 	acceptShareDialog,
 	clipboardNote,
 	contextMenu,
+	deleteLocalDataDialog,
 	deleteNodeDialog,
 	emptyRecycleBinDialog,
 	env,
@@ -132,8 +133,12 @@ class MenuManager {
 				ipcClient.menu.hide()
 			}
 		} else if (itemId === 'logout') {
-			await noteManager.session.logout(true)
-			window.location.reload()
+			if (mimiriPlatform.isWeb) {
+				deleteLocalDataDialog.value.show()
+			} else {
+				await noteManager.session.logout(true)
+				window.location.reload()
+			}
 		} else if (itemId === 'login') {
 			loginDialog.value.show()
 		} else if (itemId === 'create-account') {

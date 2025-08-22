@@ -24,6 +24,13 @@ class PersistedState {
 		}
 	}
 
+	clear() {
+		if (this.enabled) {
+			console.log(`Clearing persisted state for user ${noteManager.state.userId}`)
+			localStorage.removeItem(`mimiri-state-${noteManager.state.userId}`)
+		}
+	}
+
 	storeSelectedNote(note: MimerNote) {
 		if (this.enabled) {
 			const state = this.loadState()

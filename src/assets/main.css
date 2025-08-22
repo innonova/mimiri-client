@@ -249,7 +249,7 @@ div {
 }
 
 dialog {
-	@apply m-auto mobile:mt-0 mobile:w-full mobile:max-w-full backdrop:bg-dialog-backdrop mobile:backdrop:bg-back;
+	@apply m-auto mobile:mt-0 mobile:w-full mobile:max-w-full backdrop:bg-dialog-backdrop mobile:backdrop:bg-back outline-none;
 	padding-top: var(--safe-area-top);
 }
 

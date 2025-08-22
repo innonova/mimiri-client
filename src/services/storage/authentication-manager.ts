@@ -14,6 +14,7 @@ import { ProofOfWork } from '../proof-of-work'
 import type { LocalStateManager } from './local-state-manager'
 import { toRaw } from 'vue'
 import { settingsManager } from '../settings-manager'
+import { persistedState } from '../persisted-state'
 
 export class AuthenticationManager {
 	private _userData: UserData
@@ -424,7 +425,6 @@ export class AuthenticationManager {
 		let localInitializationData = true
 		let initializationData = await this.db.getInitializationData()
 		if (!initializationData?.local) {
-			// TODO compare with local data after going online
 			try {
 				if (this.state.workOffline) {
 					await this.localStateManager.workOnline()
@@ -575,7 +575,6 @@ export class AuthenticationManager {
 		try {
 			const data = await this.api.verifyCredentials()
 			if (data === 'REJECTED') {
-				console.log('AuthenticationManager.goOnline() - credentials rejected')
 				loginRequiredToGoOnline.value = true
 				return false
 			}
@@ -771,8 +770,11 @@ export class AuthenticationManager {
 		return true
 	}
 
-	public async logout(): Promise<void> {
+	public async logout(deleteDatabase: boolean = false): Promise<void> {
 		await this.clearLoginData()
+		if (deleteDatabase) {
+			persistedState.clear()
+		}
 		this._userData = undefined
 		this._rootSignature = undefined
 		this._token = 'NO_TOKEN'
@@ -786,7 +788,12 @@ export class AuthenticationManager {
 		this.state.userId = null
 		this.state.isLoggedIn = false
 
-		await this.db.close()
+		if (deleteDatabase) {
+			await this.db.deleteDatabase()
+			persistedState.clear()
+		} else {
+			await this.db.close()
+		}
 	}
 
 	public get userData(): UserData {
