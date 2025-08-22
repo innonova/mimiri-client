@@ -64,6 +64,7 @@ export class NoteTreeManager {
 
 	public select(id: Guid) {
 		this.state.selectedNoteId = id
+		this.state.selectedNoteParentId = this.selectedNote?.parent?.id
 		if (!this._isMobile) {
 			browserHistory.open(id)
 		}

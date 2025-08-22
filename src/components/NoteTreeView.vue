@@ -5,6 +5,8 @@
 		@scroll="onScroll"
 		ref="mainElement"
 		data-testid="note-tree"
+		@mouseenter="onMouseEnter"
+		@mouseleave="onMouseLeave"
 	>
 		<template v-if="noteManager.tree.rootRef().value?.viewModel.children.length">
 			<TreeNode v-for="node of noteManager.tree.rootRef().value?.viewModel.children" :node="node" :key="node.id" />
@@ -15,7 +17,15 @@
 </template>
 
 <script setup lang="ts">
-import { clipboardNote, createNewRootNode, deleteNodeDialog, isCut, noteManager, showSearchBox } from '../global'
+import {
+	clipboardNote,
+	createNewRootNode,
+	deleteNodeDialog,
+	isCut,
+	noteManager,
+	showSearchBox,
+	treeHover,
+} from '../global'
 import type { MimerNote } from '../services/types/mimer-note'
 import TreeNode from './TreeNode.vue'
 import NewTreeNode from './NewTreeNode.vue'
@@ -52,6 +62,14 @@ const stopWatching = watch(noteManager.state, () => {
 		stopWatching()
 	}
 })
+
+const onMouseEnter = () => {
+	treeHover.value = true
+}
+
+const onMouseLeave = () => {
+	treeHover.value = false
+}
 
 const duplicateActiveNote = async () => {
 	const note = noteManager.tree.selectedNote()

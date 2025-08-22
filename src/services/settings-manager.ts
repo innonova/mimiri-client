@@ -46,13 +46,14 @@ export interface MimerConfiguration {
 	disableDevBlog: boolean
 	startLoggedOut: boolean
 	useChevrons: boolean
+	showVerticalGuides: boolean
 	debugEnabled?: boolean
 }
 
 class SettingsManager {
 	private defaultThemeIsDark: boolean
 	private _saveInProgress = false
-	private _outstandingSaves = 0
+	private _saveRequestedWhileInProgress = false
 
 	public state: MimerConfiguration = reactive({
 		openAtLogin: true,
@@ -85,6 +86,7 @@ class SettingsManager {
 		disableDevBlog: false,
 		startLoggedOut: false,
 		useChevrons: true,
+		showVerticalGuides: true,
 		debugEnabled: undefined,
 	})
 
@@ -131,26 +133,35 @@ class SettingsManager {
 	}
 
 	public async save() {
-		this._outstandingSaves++
-		while (this._saveInProgress) {
-			await delay(25)
-		}
-		try {
-			this._saveInProgress = true
-			if (ipcClient.isAvailable) {
-				await ipcClient.settings.save(toRaw(this.state))
-				menuManager.updateTrayMenu()
-			} else if (localStorage) {
-				localStorage.setItem('mimer-settings', JSON.stringify(toRaw(this.state)))
+		if (!this._saveInProgress) {
+			try {
+				this._saveInProgress = true
+				while (true) {
+					await delay(0)
+					this._saveRequestedWhileInProgress = false
+					if (ipcClient.isAvailable) {
+						console.log('Saving settings to IPC')
+						await ipcClient.settings.save(toRaw(this.state))
+						menuManager.updateTrayMenu()
+					} else if (localStorage) {
+						localStorage.setItem('mimer-settings', JSON.stringify(toRaw(this.state)))
+					}
+					if (this._saveRequestedWhileInProgress) {
+						this._saveRequestedWhileInProgress = false
+						continue
+					}
+					break
+				}
+			} finally {
+				this._saveInProgress = false
 			}
-		} finally {
-			this._outstandingSaves--
-			this._saveInProgress = false
+		} else {
+			this._saveRequestedWhileInProgress = true
 		}
 	}
 
 	public async waitForSaveComplete() {
-		while (this._outstandingSaves > 0) {
+		while (this._saveInProgress) {
 			await delay(25)
 		}
 	}
@@ -402,6 +413,15 @@ class SettingsManager {
 
 	public set useChevrons(value: boolean) {
 		this.state.useChevrons = value
+		void this.save()
+	}
+
+	public get showVerticalGuides() {
+		return !!this.state.showVerticalGuides
+	}
+
+	public set showVerticalGuides(value: boolean) {
+		this.state.showVerticalGuides = value
 		void this.save()
 	}
 

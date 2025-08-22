@@ -75,6 +75,8 @@
 	--color-bad: red;
 	--color-splash: #4381c1;
 	--color-checkbox: #4381c1;
+	--color-tree-line: #e8e8e8;
+	--color-tree-line-highlight: #d8d8d8;
 }
 
 @layer theme {
@@ -130,6 +132,8 @@
 		--color-bad: #ff2222;
 		--color-splash: #4381c1;
 		--color-checkbox: #4381c1;
+		--color-tree-line: #333333;
+		--color-tree-line-highlight: #555555;
 	}
 }
 

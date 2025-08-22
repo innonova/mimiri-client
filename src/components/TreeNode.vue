@@ -142,7 +142,12 @@
 				<OpenIcon class="w-[23px] h-[23px] p-0.5 mr-1" />
 			</button>
 		</div>
-		<div class="child-container">
+		<div
+			:class="{
+				'child-container': settingsManager.showVerticalGuides && treeHover && !noteManager.state.isMobile,
+				'child-container-highlight': noteManager.state.selectedNoteParentId === node.id && !noteManager.state.isMobile,
+			}"
+		>
 			<template v-if="(node.expanded && !searchModeActive) || searchModeActive">
 				<template v-for="childNode of node.children" :key="childNode.id">
 					<TreeNode :node="<NoteViewModel>childNode" />
@@ -155,7 +160,7 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { noteManager, dragId, showSearchBox, createNewNode, createNewRootNode, debug } from '../global'
+import { noteManager, dragId, showSearchBox, createNewNode, createNewRootNode, debug, treeHover } from '../global'
 import type { NoteViewModel } from '../services/types/mimer-note'
 import { searchManager } from '../services/search-manager'
 import NewTreeNode from './NewTreeNode.vue'
@@ -429,13 +434,27 @@ const showContextMenu = async e => {
 	position: relative;
 }
 
+.child-container-highlight {
+	position: relative;
+}
+
 .child-container::before {
 	content: '';
 	position: absolute;
 	top: 0;
 	bottom: 0;
-	left: 0.6rem;
+	left: 1.3rem;
 	width: 1px;
-	background: var(--color-back);
+	background: var(--color-tree-line);
+}
+
+.child-container-highlight::before {
+	content: '';
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 1.3rem;
+	width: 1px;
+	background: var(--color-tree-line-highlight);
 }
 </style>

@@ -67,6 +67,7 @@ export interface SharedState {
 	spinner: boolean
 	noteOpen: boolean
 	selectedNoteId?: Guid
+	selectedNoteParentId?: Guid
 	stateLoaded: boolean
 	initInProgress: boolean
 	viewMode: ViewMode

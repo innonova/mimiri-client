@@ -55,6 +55,12 @@
 			</div>
 			<div class="p-1 pt-2 m-auto text-left">
 				<label>
+					<input type="checkbox" v-model="showVerticalGuides" class="mr-1 relative top-0.5" />
+					Show vertical guides
+				</label>
+			</div>
+			<div class="p-1 pt-2 m-auto text-left">
+				<label>
 					<input type="checkbox" v-model="disableDevBlog" class="mr-1 relative top-0.5" />
 					Disable Dev Blog
 				</label>
@@ -92,6 +98,7 @@ const closeOnX = ref(false)
 const trayIcon = ref('system')
 const disableDevBlog = ref(false)
 const useChevrons = ref(false)
+const showVerticalGuides = ref(false)
 
 const alwaysEdit = ref(true)
 const simpleEditor = ref(false)
@@ -107,7 +114,8 @@ const canSave = computed(
 		alwaysEdit.value !== settingsManager.alwaysEdit ||
 		simpleEditor.value !== settingsManager.simpleEditor ||
 		disableDevBlog.value !== settingsManager.disableDevBlog ||
-		useChevrons.value !== settingsManager.useChevrons,
+		useChevrons.value !== settingsManager.useChevrons ||
+		showVerticalGuides.value !== settingsManager.showVerticalGuides,
 )
 
 onMounted(() => {
@@ -121,6 +129,7 @@ onMounted(() => {
 	simpleEditor.value = settingsManager.simpleEditor
 	disableDevBlog.value = settingsManager.disableDevBlog
 	useChevrons.value = settingsManager.useChevrons
+	showVerticalGuides.value = settingsManager.showVerticalGuides
 })
 
 const save = async () => {
@@ -135,6 +144,7 @@ const save = async () => {
 	const reload = settingsManager.disableDevBlog !== disableDevBlog.value
 	settingsManager.disableDevBlog = disableDevBlog.value
 	settingsManager.useChevrons = useChevrons.value
+	settingsManager.showVerticalGuides = showVerticalGuides.value
 	if (reload) {
 		window.location.reload()
 	}

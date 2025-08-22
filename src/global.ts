@@ -67,6 +67,7 @@ export const inconsistencyDialog = ref(null)
 export const syncStatus = ref('idle')
 export const syncOverSizeNote = ref(emptyGuid())
 export const loginRequiredToGoOnline = ref(false)
+export const treeHover = ref(false)
 
 export const subscriptionStage = ref('subscription')
 export const subscriptionNewProduct = ref<SubscriptionProduct>()
