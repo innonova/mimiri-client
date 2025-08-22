@@ -435,6 +435,7 @@ export class AuthenticationManager {
 				} else {
 					initializationData = response
 					localInitializationData = false
+					loginRequiredToGoOnline.value = false
 				}
 			} catch (ex) {
 				console.error('Unable to authenticate with server', ex)

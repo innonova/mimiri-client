@@ -120,19 +120,23 @@ const login = async () => {
 	loading.value = true
 	error.value = false
 	await noteManager.session.logout()
-
-	if (await noteManager.session.login(username.value?.trim(), password.value)) {
-		loading.value = false
-		await noteManager.tree.loadState()
-		showVersion.value = false
-		if (loginRequiredToGoOnline.value) {
-			loginRequiredToGoOnline.value = false
-			neededForServer.value = true
-			password.value = ''
+	try {
+		if (await noteManager.session.login(username.value?.trim(), password.value)) {
+			loading.value = false
+			await noteManager.tree.loadState()
+			showVersion.value = false
+			if (loginRequiredToGoOnline.value) {
+				loginRequiredToGoOnline.value = false
+				neededForServer.value = true
+				password.value = ''
+			} else {
+				dialog.value.close()
+			}
 		} else {
-			dialog.value.close()
+			error.value = true
 		}
-	} else {
+	} catch (e) {
+		console.error(e)
 		error.value = true
 	}
 	loading.value = false
