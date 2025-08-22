@@ -49,6 +49,12 @@
 			</div>
 			<div class="p-1 pt-2 m-auto text-left">
 				<label>
+					<input type="checkbox" v-model="useChevrons" class="mr-1 relative top-0.5" />
+					Use chevrons in tree view
+				</label>
+			</div>
+			<div class="p-1 pt-2 m-auto text-left">
+				<label>
 					<input type="checkbox" v-model="disableDevBlog" class="mr-1 relative top-0.5" />
 					Disable Dev Blog
 				</label>
@@ -85,6 +91,7 @@ const keepTrayIconVisible = ref(false)
 const closeOnX = ref(false)
 const trayIcon = ref('system')
 const disableDevBlog = ref(false)
+const useChevrons = ref(false)
 
 const alwaysEdit = ref(true)
 const simpleEditor = ref(false)
@@ -99,7 +106,8 @@ const canSave = computed(
 		trayIcon.value !== settingsManager.trayIcon ||
 		alwaysEdit.value !== settingsManager.alwaysEdit ||
 		simpleEditor.value !== settingsManager.simpleEditor ||
-		disableDevBlog.value !== settingsManager.disableDevBlog,
+		disableDevBlog.value !== settingsManager.disableDevBlog ||
+		useChevrons.value !== settingsManager.useChevrons,
 )
 
 onMounted(() => {
@@ -112,6 +120,7 @@ onMounted(() => {
 	alwaysEdit.value = settingsManager.alwaysEdit
 	simpleEditor.value = settingsManager.simpleEditor
 	disableDevBlog.value = settingsManager.disableDevBlog
+	useChevrons.value = settingsManager.useChevrons
 })
 
 const save = async () => {
@@ -125,6 +134,7 @@ const save = async () => {
 	settingsManager.simpleEditor = simpleEditor.value
 	const reload = settingsManager.disableDevBlog !== disableDevBlog.value
 	settingsManager.disableDevBlog = disableDevBlog.value
+	settingsManager.useChevrons = useChevrons.value
 	if (reload) {
 		window.location.reload()
 	}

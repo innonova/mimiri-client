@@ -371,5 +371,29 @@
 		"license": "CC0",
 		"attribution": "",
 		"collection": "https://www.svgrepo.com/collection/ui-oval-interface-icons/"
+	},
+	"chevron-right": {
+		"url": "https://www.svgrepo.com/download/471168/chevron-right.svg",
+		"license": "CC0",
+		"attribution": "",
+		"collection": "https://www.svgrepo.com/collection/ui-oval-interface-icons/"
+	},
+	"chevron-left": {
+		"url": "https://www.svgrepo.com/download/471166/chevron-left.svg",
+		"license": "CC0",
+		"attribution": "",
+		"collection": "https://www.svgrepo.com/collection/ui-oval-interface-icons/"
+	},
+	"chevron-down": {
+		"url": "https://www.svgrepo.com/download/471164/chevron-down.svg",
+		"license": "CC0",
+		"attribution": "",
+		"collection": "https://www.svgrepo.com/collection/ui-oval-interface-icons/"
+	},
+	"chevron-up": {
+		"url": "https://www.svgrepo.com/download/471172/chevron-up.svg",
+		"license": "CC0",
+		"attribution": "",
+		"collection": "https://www.svgrepo.com/collection/ui-oval-interface-icons/"
 	}
 }

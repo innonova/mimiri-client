@@ -27,16 +27,30 @@
 				id="drop-indicator"
 				class="absolute left-4 indicator-top w-full h-0 border-2 border-solid border-drop-indicator pointer-events-none"
 			/>
-			<div v-show="!searchModeActive" class="flex items-center pl-1 pr-0.5 h-full" @click="toggleNode">
+			<div v-show="!searchModeActive" class="flex items-center pl-1 h-full" @click="toggleNode">
 				<PlusIcon
-					v-if="!node.expanded"
+					v-if="!settingsManager.useChevrons && !node.expanded"
 					:data-testid="`${dataTestId}-closed`"
 					title="Expand"
 					class="h-5 w-5 desktop:h-4 desktop:w-4 mt-px"
 					:class="{ invisible: !hasChildren }"
 				/>
 				<MinusIcon
-					v-if="node.expanded"
+					v-if="!settingsManager.useChevrons && node.expanded"
+					:data-testid="`${dataTestId}-open`"
+					title="Collapse"
+					class="h-5 w-5 desktop:h-4 desktop:w-4 mt-px"
+					:class="{ invisible: !hasChildren }"
+				/>
+				<ChevronRightIcon
+					v-if="settingsManager.useChevrons && !node.expanded"
+					:data-testid="`${dataTestId}-closed`"
+					title="Expand"
+					class="h-5 w-5 desktop:h-4 desktop:w-4 mt-px"
+					:class="{ invisible: !hasChildren }"
+				/>
+				<ChevronDownIcon
+					v-if="settingsManager.useChevrons && node.expanded"
 					:data-testid="`${dataTestId}-open`"
 					title="Collapse"
 					class="h-5 w-5 desktop:h-4 desktop:w-4 mt-px"
@@ -148,6 +162,8 @@ import RecycleBinIcon from '../icons/recycle-bin.vue'
 import RecycleBinEmptyIcon from '../icons/recycle-bin-empty.vue'
 import PlusIcon from '../icons/plus.vue'
 import MinusIcon from '../icons/minus.vue'
+import ChevronRightIcon from '../icons/chevron-right.vue'
+import ChevronDownIcon from '../icons/chevron-down.vue'
 import OpenIcon from '../icons/open.vue'
 import { MenuItems, menuManager } from '../services/menu-manager'
 import CogIcon from '../icons/cog.vue'
@@ -159,6 +175,8 @@ import DownloadIcon from '../icons/download.vue'
 import LockIcon from '../icons/lock.vue'
 import AnnouncementIcon from '../icons/announcement.vue'
 import BulbIcon from '../icons/bulb.vue'
+import ChevronDown from '../icons/chevron-down.vue'
+import { settingsManager } from '../services/settings-manager'
 
 const visualElement = ref(null)
 const renameInput = ref(null)
@@ -391,7 +409,7 @@ const showContextMenu = async e => {
 
 <style scoped>
 .tree-indent .tree-indent {
-	margin-left: 25px;
+	margin-left: 1.3rem;
 }
 
 .indicator-top {

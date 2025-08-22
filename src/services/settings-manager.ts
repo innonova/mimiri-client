@@ -45,6 +45,7 @@ export interface MimerConfiguration {
 	lastReadBlogPostId: Guid
 	disableDevBlog: boolean
 	startLoggedOut: boolean
+	useChevrons: boolean
 	debugEnabled?: boolean
 }
 
@@ -83,6 +84,7 @@ class SettingsManager {
 		lastReadBlogPostId: emptyGuid(),
 		disableDevBlog: false,
 		startLoggedOut: false,
+		useChevrons: true,
 		debugEnabled: undefined,
 	})
 
@@ -391,6 +393,15 @@ class SettingsManager {
 
 	public set startLoggedOut(value: boolean) {
 		this.state.startLoggedOut = value
+		void this.save()
+	}
+
+	public get useChevrons() {
+		return !!this.state.useChevrons
+	}
+
+	public set useChevrons(value: boolean) {
+		this.state.useChevrons = value
 		void this.save()
 	}
 
