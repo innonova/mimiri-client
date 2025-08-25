@@ -14,7 +14,8 @@ public class MimiriUpdatePlugin: CAPPlugin, CAPBridgedPlugin {
     CAPPluginMethod(name: "save", returnType: CAPPluginReturnPromise),
     CAPPluginMethod(name: "use", returnType: CAPPluginReturnPromise),
     CAPPluginMethod(name: "delete", returnType: CAPPluginReturnPromise),
-    CAPPluginMethod(name: "good", returnType: CAPPluginReturnPromise)
+    CAPPluginMethod(name: "good", returnType: CAPPluginReturnPromise),
+    CAPPluginMethod(name: "activate", returnType: CAPPluginReturnPromise)
 	]
 
   private func ensureConfig() {
