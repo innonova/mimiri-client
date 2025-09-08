@@ -72,6 +72,7 @@ export interface Customer {
 
 export interface ProductFeature {
 	description: string
+	unique?: boolean
 }
 
 export interface ProductData {

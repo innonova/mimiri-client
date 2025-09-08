@@ -70,9 +70,6 @@
 			<LockScreen />
 		</div>
 		<div v-if="blockUserInput" class="absolute left-0 top-0 w-full h-full flex bg-transparent" />
-		<InitialPlanChooser
-			v-if="noteManager.state.needsToChooseTier && noteManager.state.accountType === AccountType.Cloud"
-		/>
 		<ContextMenu ref="contextMenu" />
 		<NotificationList ref="notificationList" />
 		<DeleteNodeDialog ref="deleteNodeDialog" />
@@ -101,7 +98,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import NoteTreeView from './components/NoteTreeView.vue'
 import NoteEditor from './components/NoteEditor.vue'
 import MainToolbar from './components/MainToolbar.vue'
@@ -169,8 +166,8 @@ import InfoDialog from './components/dialogs/InfoDialog.vue'
 import InconsistencyDialog from './components/dialogs/InconsistencyDialog.vue'
 import StatusBar from './components/elements/StatusBar.vue'
 import SyncErrorDialog from './components/dialogs/SyncErrorDialog.vue'
-import InitialPlanChooser from './components/subscription/InitialPlanChooser.vue'
 import DeleteLocalDataDialog from './components/dialogs/DeleteLocalDataDialog.vue'
+import type { Guid } from './services/types/guid'
 
 const colorScheme = ref('only light')
 const loading = ref(true)
@@ -241,7 +238,16 @@ watch(noteManager.state, () => {
 })
 useEventListener(window, 'resize', onResize)
 
-useEventListener(document, 'contextmenu', e => e.preventDefault(), false)
+useEventListener(
+	document,
+	'contextmenu',
+	e => {
+		if ((e.target as HTMLElement).tagName !== 'INPUT' && (e.target as HTMLElement).tagName !== 'TEXTAREA') {
+			e.preventDefault()
+		}
+	},
+	false,
+)
 
 if (ipcClient.isAvailable) {
 	// noteManager.setCacheManager(ipcClient.cache)
@@ -462,6 +468,7 @@ onMounted(async () => {
 		}
 		loading.value = false
 		await noteManager.session.initialize()
+
 		appStatus.value = 'ready'
 	} catch (ex) {
 		appStatus.value = 'error'

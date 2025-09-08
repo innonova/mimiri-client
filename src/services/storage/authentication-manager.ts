@@ -84,14 +84,6 @@ export class AuthenticationManager {
 		}
 	}
 
-	public async clearNeedsToChooseTier() {
-		if (this.state.needsToChooseTier || this.userData.needsToChooseTier) {
-			this.state.needsToChooseTier = false
-			this.userData.needsToChooseTier = false
-			await this.updateUserData()
-		}
-	}
-
 	public async persistLogin() {
 		if (
 			env.DEV ||
@@ -264,7 +256,6 @@ export class AuthenticationManager {
 						this.state.userStats.size = userStats.size
 					}
 				}
-				this.state.needsToChooseTier = !!this._userData.needsToChooseTier
 				this.state.isLoggedIn = true
 
 				return true
@@ -358,7 +349,6 @@ export class AuthenticationManager {
 			initializationData.rootSignature.publicKey = await this._rootSignature.publicKeyPem()
 			initializationData.rootSignature.privateKey = await userCrypt.encrypt(await this._rootSignature.privateKeyPem())
 
-			this.userData.needsToChooseTier = true
 			initializationData.userData = await this.cryptoManager.rootCrypt.encrypt(JSON.stringify(this.userData))
 		}
 		await this.api.createAccount(username, newPassword, initializationData, pow)
@@ -527,7 +517,6 @@ export class AuthenticationManager {
 		await this.db.setInitializationData(initializationData)
 
 		await this.persistLogin()
-		this.state.needsToChooseTier = !!this._userData.needsToChooseTier
 		return true
 	}
 
@@ -541,7 +530,6 @@ export class AuthenticationManager {
 				rootNote: newGuid(),
 				rootKey: newGuid(),
 				createComplete: false,
-				needsToChooseTier: false,
 			}
 			await this.db.setLocalUserData({
 				rootCrypt: {
@@ -557,7 +545,6 @@ export class AuthenticationManager {
 			)
 			this._userData = initializationData.userData
 		}
-		this.state.needsToChooseTier = !!this._userData.needsToChooseTier
 		this.state.accountType = AccountType.None
 		this.state.username = 'local'
 		this.state.userId = emptyGuid()
@@ -583,7 +570,6 @@ export class AuthenticationManager {
 			if (data) {
 				this.state.serverAuthenticated = true
 				this._userData = JSON.parse(await this.cryptoManager.rootCrypt.decrypt(data))
-				this.state.needsToChooseTier = !!this._userData.needsToChooseTier
 				await this.db.setUserStats(toRaw(this.state.userStats))
 				// await this.api.openWebSocket()
 				return true
@@ -783,7 +769,6 @@ export class AuthenticationManager {
 		this.state.accountType = AccountType.None
 		this.state.isAnonymous = false
 		this.state.serverAuthenticated = false
-		this.state.needsToChooseTier = false
 
 		this.cryptoManager.rootCrypt = null
 		this.state.userId = null

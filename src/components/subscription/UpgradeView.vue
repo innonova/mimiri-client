@@ -7,16 +7,23 @@
 		<div class="flex flex-col overflow-y-auto pr-2" data-testid="upgrade-view">
 			<form @submit.prevent="submit" class="max-w-110 relative">
 				<ItemHeader>Chosen Plan</ItemHeader>
-				<div class="flex justify-center pb-5">
-					<Subscription
-						v-if="product"
-						:product="product"
-						:compact="true"
-						:showChange="true"
-						:currency="currency"
-						:disabled="payInProgress"
-						@change="changePlan"
-					/>
+				<div class="grid grid-cols-[9em_18em] gap-x-3 gap-y-1 pb-5">
+					<div class="text-right">Plan</div>
+					<div>Mimiri Tier 1</div>
+					<div class="text-right">Monthly</div>
+					<div v-if="isMonthly">
+						{{ formatCurrency(monthlyPrice, currency) }}
+					</div>
+					<div v-else class="text-size-secondary italic">({{ formatCurrency(monthlyPrice, currency) }})</div>
+					<div class="text-right">Yearly</div>
+					<div v-if="!isMonthly">{{ formatCurrency(yearlyPrice, currency) }}</div>
+					<div v-else class="text-size-secondary italic">({{ formatCurrency(yearlyPrice, currency) }})</div>
+					<div class="text-right">Recurring</div>
+					<div>{{ isMonthly ? 'Monthly' : 'Yearly' }}</div>
+					<div class="text-right"></div>
+					<div class="pt-4">
+						<button class="primary" @click="changePlan" :data-testid="`sub-${product.sku}-change`">Change</button>
+					</div>
 				</div>
 				<ItemHeader>Billing address</ItemHeader>
 				<CustomerData
@@ -48,22 +55,49 @@
 						Pay now
 					</button>
 				</div>
+
+				<div v-if="false" class="w-120 mt-2 pb-25">
+					<ItemHeader class="col-span-2">Why do we ask for this information?</ItemHeader>
+					<div class="mt-2">
+						The EU requires us to pay Taxes (VAT) based on your country of residence (<a
+							href="https://mimiri.com/eu-vat"
+							target="_blank"
+							>more information</a
+						>).<br />
+						<br />
+						We will use your email address solely to send you receipts, notifications of failed payments and reminders
+						prior to renewal. Your email address also serves as a last resort for canceling your subscription in case
+						you lose access to your account.<br />
+						<br />
+						We will never use your email address for marketing purposes, news letters or any other kind of unsolicited
+						communication.<br />
+						<br />
+						The above data is shared with our payment provider to process your payment (primarily for fraud prevention).
+						<br />
+						<br />
+						We will, however, never share your data with any other parties see
+						<a href="https://mimiri.com/privacy" target="_blank">Privacy Policy</a> for details.
+						<br />
+						<br />
+						All data is handled in compliance with the GDPR and Swiss data protection laws.
+					</div>
+				</div>
 			</form>
 		</div>
 	</div>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import CustomerData from './CustomerData.vue'
 import PaymentMethodSelector from './PaymentMethodSelector.vue'
 import ItemHeader from './ItemHeader.vue'
-import Subscription from './SubscriptionItem.vue'
-import { Currency, RenewalType, type SubscriptionProduct } from '../../services/types/subscription'
+import { Currency, Period, RenewalType, type SubscriptionProduct } from '../../services/types/subscription'
 import { noteManager } from '../../global'
 import { assertGuid } from '../../services/types/guid'
 import PaymentSummary from './PaymentSummary.vue'
 import LoadingIcon from '../../icons/loading.vue'
+import { formatCurrency } from '../../services/helpers'
 
 const props = defineProps<{
 	product: SubscriptionProduct
@@ -81,6 +115,18 @@ const payInProgress = ref(false)
 const countryCode = ref('')
 
 const method = ref('')
+
+const isMonthly = computed(() => {
+	return props.product.data.period === Period.Month
+})
+
+const monthlyPrice = computed(() => {
+	return props.product.data.period === Period.Month ? props.product.price : props.product.price / 12
+})
+
+const yearlyPrice = computed(() => {
+	return props.product.data.period === Period.Year ? props.product.price : props.product.price * 12
+})
 
 const changePlan = () => {
 	emit('change-plan')

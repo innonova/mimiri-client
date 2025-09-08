@@ -163,12 +163,12 @@ export class SessionManager {
 	public async addGettingStarted(note?: Note) {
 		try {
 			const json = await fetch(`${env.VITE_MIMER_UPDATE_HOST}/getting-started.json`).then(res => res.json())
-			await this.addGettingStartedNotesRecursive(
-				note ?? (await this.noteService.readNote(this.authManager.userData.rootNote)),
-				json.notes,
-			)
+
+			const root = note ?? (await this.noteService.readNote(this.authManager.userData.rootNote))
+
+			await this.addGettingStartedNotesRecursive(root, json.notes)
 			if (!note) {
-				await this.operationsManager.writeNote(await this.noteService.readNote(this.authManager.userData.rootNote))
+				await this.operationsManager.writeNote(root)
 			}
 		} catch (ex) {
 			debug.log('Failed to load getting started notes', ex)

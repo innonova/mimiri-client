@@ -16,6 +16,8 @@
 - prefer awaiting promises over using `.then()`
 - prefer undefined over null
 - use minimal comments to explain why something is done, not what is done and only when necessary
+- prefer inline tailwind over style tags
+- use theming from main.css rather than tailwinds dark theme classes
 
 # Test Code Organization
 

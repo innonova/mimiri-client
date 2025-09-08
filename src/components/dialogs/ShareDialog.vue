@@ -10,10 +10,12 @@
 			<form @submit.prevent="submitDialog" class="mx-2 mt-5 mb-2 mobile:mx-8">
 				<div class="grid grid-cols-[5.5rem_10rem] mobile:grid-cols-[5.5rem_auto] items-center gap-2 mx-2 mb-2">
 					<div v-if="code" class="col-span-2 flex flex-col items-center">
-						<div class="text-center leading-5">Share this code with {{ name }} to complete the share</div>
+						<div class="text-center leading-5">
+							Share this one time code with {{ name }} to complete the share of {{ noteName }}
+						</div>
 						<div class="text-size-header my-5 flex gap-1 items-center">
 							<div class="mb-1 ml-2" data-testid="share-code">{{ code }}</div>
-							<div class="w-6">
+							<div class="w-6 ml-px">
 								<CopyIcon v-if="!copied" title="copy" @click="copyCode" class="w-5 hover:w-6 cursor-pointer" />
 								<div v-if="copied" class="ml-1 mb-1 cursor-default select-none text-size-base">Copied</div>
 							</div>
@@ -23,18 +25,18 @@
 						</div>
 						<div class="info mt-4">
 							<div class="text-left leading-5">
-								If you lose this code, simply share the note with {{ name }} again to show the code again.
+								If you lose this code, simply share {{ noteName }} with {{ name }} again to show the code again.
 							</div>
 							<div class="text-left leading-5 mt-3">
 								If you wish to share this note with multiple people you will need to repeat this process for each user.
 							</div>
 						</div>
 					</div>
-					<span v-if="!code">Share with:</span>
+					<div v-if="!code" class="col-span-2 mb-1">Share {{ noteName }} and all child notes with:</div>
 					<input
 						v-if="!code"
 						ref="nameInput"
-						class="basic-input"
+						class="basic-input col-span-2"
 						type="text"
 						autofocus
 						v-model="name"
@@ -50,10 +52,10 @@
 					<div v-if="!code" class="col-span-2 flex flex-col items-center">
 						<div class="info mt-2">
 							<div class="text-left leading-5">
-								Enter the username of another user in the field above to share this note.
+								Enter the username of another user in the field above to share {{ noteName }}.
 							</div>
 							<div class="text-left leading-5 mt-3">
-								The recipient will then need to accept this share to begin sharing this note and all child notes.
+								Then share the provided one time code with them so they can accept the share.
 							</div>
 						</div>
 					</div>
@@ -72,8 +74,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { clipboardManager, features, noteManager } from '../../global'
+import { nextTick, ref } from 'vue'
+import { clipboardManager, noteManager } from '../../global'
 import LoadingIcon from '../../icons/loading.vue'
 import DialogTitle from '../elements/DialogTitle.vue'
 import CopyIcon from '../../icons/copy.vue'
@@ -83,6 +85,7 @@ const code = ref('')
 const trimmedName = ref('')
 const isOpen = ref(false)
 
+const noteName = ref('')
 const name = ref('')
 const invalid = ref(false)
 const shareWithSelf = ref(false)
@@ -99,7 +102,8 @@ const copyCode = () => {
 	setTimeout(() => (copied.value = false), 1000)
 }
 
-const show = () => {
+const show = async () => {
+	noteName.value = noteManager.tree.selectedNote()?.title
 	name.value = ''
 	code.value = ''
 	loading.value = false
@@ -108,6 +112,7 @@ const show = () => {
 	shareFailed.value = false
 	isOpen.value = true
 	dialog.value.showModal()
+	await nextTick()
 	nameInput.value?.focus()
 }
 

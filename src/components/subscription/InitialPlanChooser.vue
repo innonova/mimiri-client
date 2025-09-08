@@ -25,6 +25,7 @@
 </template>
 
 <script setup lang="ts">
+// DEPRECATED: Replaced by opening the plan settings note directly from App.vue
 import { onMounted, ref, watch } from 'vue'
 import { Currency, Period, type SubscriptionProduct } from '../../services/types/subscription'
 import SubscriptionItem from './SubscriptionItem.vue'
@@ -44,11 +45,11 @@ const populate = async () => {
 }
 
 onMounted(async () => {
-	if (noteManager.state.isMobile) {
-		await noteManager.auth.clearNeedsToChooseTier()
-	} else {
-		await populate()
-	}
+	// if (noteManager.state.isMobile) {
+	// 	await noteManager.auth.clearNeedsToChooseTier()
+	// } else {
+	// 	await populate()
+	// }
 })
 
 watch(period, async () => {
@@ -56,16 +57,16 @@ watch(period, async () => {
 })
 
 const choose = async (sku: string) => {
-	await noteManager.auth.clearNeedsToChooseTier()
-	if (sku === 'free') {
-		noteManager.tree.openNote('settings-plan' as Guid)
-	} else {
-		noteManager.tree.openNote('settings-plan' as Guid)
-		setTimeout(() => {
-			subscriptionNewProduct.value = products.value.find(p => p.sku === sku)
-			subscriptionCurrency.value = currency.value
-			subscriptionStage.value = 'upgrade'
-		})
-	}
+	// await noteManager.auth.clearNeedsToChooseTier()
+	// if (sku === 'free') {
+	// 	noteManager.tree.openNote('settings-plan' as Guid)
+	// } else {
+	// 	noteManager.tree.openNote('settings-plan' as Guid)
+	// 	setTimeout(() => {
+	// 		subscriptionNewProduct.value = products.value.find(p => p.sku === sku)
+	// 		subscriptionCurrency.value = currency.value
+	// 		subscriptionStage.value = 'upgrade'
+	// 	})
+	// }
 }
 </script>

@@ -8,18 +8,19 @@
 		<div v-if="isOpen" class="grid grid-rows-[auto_1fr_auto]">
 			<DialogTitle @close="close">Accept Share</DialogTitle>
 			<form @submit.prevent="submitDialog" class="mx-2 mt-5 mb-2 mobile:mx-8">
-				<div class="grid grid-cols-[4rem_10rem] mobile:grid-cols-[4rem_auto] items-center gap-2 mx-2 mb-2">
-					<span class="whitespace-nowrap">Code:</span>
-					<input
-						ref="codeInput"
-						class="basic-input"
-						type="text"
-						autofocus
-						v-model="code"
-						:class="{ invalid: invalid }"
-						@keyup.enter="submitDialog"
-						data-testid="share-code-input"
-					/>
+				<div class="grid grid-cols-[4rem_10.2rem] mobile:grid-cols-[4rem_auto] items-center gap-2 mx-2 mb-2">
+					<div class="col-span-2">
+						<PinInput :auto-focus="true" :length="4" v-model="code" />
+					</div>
+
+					<div class="col-span-2 flex flex-col items-center">
+						<div class="info mt-2">
+							<div class="text-left leading-5">Enter the one time code to accept a share.</div>
+							<div class="text-left leading-5 mt-3">
+								We do not recommend accepting shares from users you do not know.
+							</div>
+						</div>
+					</div>
 					<div v-if="invalid" />
 					<div v-if="invalid" class="text-error leading-4">No share found</div>
 					<div
@@ -31,7 +32,15 @@
 					</div>
 					<div class="col-span-2 flex justify-end mobile:justify-center gap-2 mt-2 mobile:mt-8">
 						<LoadingIcon v-if="loading" class="animate-spin w-8 h-8 mr-2 inline-block" />
-						<button v-if="!loading" class="primary" @click="submitDialog" data-testid="share-ok-button">OK</button>
+						<button
+							v-if="!loading"
+							:disabled="code.length < 4"
+							class="primary"
+							@click="submitDialog"
+							data-testid="share-ok-button"
+						>
+							OK
+						</button>
 						<button class="secondary" @click="close" data-testid="share-cancel-button">Cancel</button>
 					</div>
 				</div>
@@ -49,6 +58,7 @@ import LoadingIcon from '../../icons/loading.vue'
 import { LimitError } from '../../services/storage/type'
 import { formatBytes } from '../../services/helpers'
 import { SYSTEM_NOTE_COUNT } from '../../services/storage/synchronization-service'
+import PinInput from '../elements/PinInput.vue'
 
 const dialog = ref(null)
 const code = ref('')

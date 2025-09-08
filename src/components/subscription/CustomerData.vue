@@ -7,6 +7,7 @@
 				:disabled="disabled"
 				name="givenName"
 				autocomplete="given-name"
+				:readonly="readonly"
 				type="text"
 				class="basic-input"
 				data-testid="given-name"
@@ -17,6 +18,7 @@
 				:disabled="disabled"
 				name="familyName"
 				autocomplete="family-name"
+				:readonly="readonly"
 				type="text"
 				class="basic-input"
 				data-testid="family-name"
@@ -27,6 +29,7 @@
 				:disabled="disabled"
 				name="company"
 				autocomplete="company"
+				:readonly="readonly"
 				type="text"
 				class="basic-input"
 				data-testid="company"
@@ -38,6 +41,7 @@
 					:disabled="disabled"
 					name="email"
 					autocomplete="email"
+					:readonly="readonly"
 					type="text"
 					class="basic-input w-full!"
 					data-testid="email"
@@ -84,6 +88,7 @@
 				name="city"
 				:disabled="disabled"
 				autocomplete="address-level2"
+				:readonly="readonly"
 				type="text"
 				class="basic-input"
 				data-testid="city"
@@ -94,6 +99,7 @@
 				name="postalCode"
 				:disabled="disabled"
 				autocomplete="postal-code"
+				:readonly="readonly"
 				type="text"
 				class="basic-input"
 				data-testid="postal-code"
@@ -104,6 +110,7 @@
 				name="street-address"
 				class="p-1 h-20"
 				autocomplete="street-address"
+				:readonly="readonly"
 				data-testid="address"
 				:disabled="disabled"
 			/>
@@ -129,6 +136,7 @@ const props = defineProps<{
 }>()
 
 const model = defineModel()
+const readonly = ref(true)
 const givenName = ref('')
 const familyName = ref('')
 const company = ref('')
@@ -220,6 +228,7 @@ const cancel = async () => {
 const loadCustomer = async () => {
 	customer.value = await noteManager.payment.getCustomerData()
 	if (customer.value) {
+		readonly.value = true
 		givenName.value = customer.value.givenName
 		familyName.value = customer.value.familyName
 		company.value = customer.value.company
@@ -232,6 +241,7 @@ const loadCustomer = async () => {
 		emailVerified.value = customer.value.emailVerified
 		emailVerificationEmailSent.value = false
 	}
+	readonly.value = false
 }
 
 onMounted(async () => {

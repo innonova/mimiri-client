@@ -1,7 +1,7 @@
 <template>
 	<div
-		class="flex flex-col items-center border shadow-sm rounded-xs"
-		:class="{ 'w-48': compact }"
+		class="flex flex-col items-center rounded-lg border border-border p-5 m-1.5 ring-2 ring-ring"
+		:class="{ 'w-48': compact, 'ring-ring-highlight! bg-back-highlight': showCurrent }"
 		:data-testid="`sub-${product.sku}`"
 	>
 		<div class="pt-2 text-center h-9">
@@ -10,31 +10,31 @@
 		</div>
 		<div class="text-center h-10">
 			<div v-if="product.data.period === Period.Month" :data-testid="`sub-${product.sku}-per-month`">
-				{{ formatCurrency(product.price, currency) }}/md
+				{{ formatCurrency(product.price, currency) }}<span class="px-px">/</span>month
 			</div>
 			<div
 				v-if="product.data.period === Period.Month"
-				class="italic text-size-secondary font-light"
+				class="italic text-size-secondary font-light mt-0.5"
 				:data-testid="`sub-${product.sku}-per-year-derived`"
 			>
-				{{ formatCurrency(product.price * 12, currency) }}/year
+				{{ formatCurrency(product.price * 12, currency) }}<span class="px-px">/</span>year
 			</div>
 			<div v-if="product.data.period === Period.Year" :data-testid="`sub-${product.sku}-per-year`">
-				{{ formatCurrency(product.price, currency) }}/year
+				{{ formatCurrency(product.price, currency) }}<span class="px-px">/</span>year
 			</div>
 			<div
 				v-if="product.data.period === Period.Year"
 				:data-testid="`sub-${product.sku}-per-month-derived`"
-				class="italic text-size-secondary font-light"
+				class="italic text-size-secondary font-light mt-0.5"
 			>
-				{{ formatCurrency(product.price / 12, currency) }}/month
+				{{ formatCurrency(product.price / 12, currency) }}<span class="px-px">/</span>month
 			</div>
 		</div>
-		<hr v-if="showFeatures" class="w-[95%]" />
-		<div v-if="showFeatures" class="py-4 pl-8 pr-4">
+		<hr v-if="showFeatures" class="w-[95%] mt-1" />
+		<div v-if="showFeatures" class="py-4 pl-8 pr-4 max-w-54">
 			<ul class="list-disc">
 				<template v-for="feature of product.data.features" :key="feature.title">
-					<li class="py-1 whitespace-nowrap">{{ feature.description }}</li>
+					<li class="py-1" :class="{ 'font-bold': feature.unique }">{{ feature.description }}</li>
 				</template>
 			</ul>
 		</div>
@@ -95,7 +95,7 @@
 			class="flex-1 w-full flex flex-col items-center justify-end pb-2"
 		>
 			<hr class="w-[95%]" />
-			<div class="pt-4 h-10 flex gap-2 items-center mb-2 px-2">
+			<div class="pt-6 h-10 flex gap-2 items-center px-2">
 				<button
 					v-if="showResume"
 					:disabled="disabled"
@@ -159,7 +159,7 @@
 				>
 					Cancel
 				</button>
-				<div v-if="showCurrent">Current</div>
+				<div v-if="showCurrent" class="font-bold">Current</div>
 			</div>
 		</div>
 	</div>

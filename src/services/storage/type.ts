@@ -6,7 +6,6 @@ export interface UserData {
 	rootNote: Guid
 	rootKey: Guid
 	createComplete: boolean
-	needsToChooseTier?: boolean
 }
 
 export interface LoginData {
@@ -59,7 +58,6 @@ export interface SharedState {
 	serverAuthenticated: boolean
 	clientConfig: ClientConfig
 	userStats: UserStats
-	needsToChooseTier: boolean
 
 	busy: boolean
 	busyLong: boolean
