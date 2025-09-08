@@ -1,5 +1,5 @@
 <template>
-	<div class="flex flex-col">
+	<div class="flex flex-col mb-15">
 		<div
 			v-for="(item, index) in faqItems"
 			:key="index"
