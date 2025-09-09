@@ -7,6 +7,7 @@
 				<button @click="clearErrors" class="primary">Clear Errors</button>
 				<button @click="clearMessages" class="primary">Clear Messages</button>
 				<button @click="clearLatency" class="primary">Clear Latency</button>
+				<button @click="timeTravel" class="primary">Time Travel</button>
 			</div>
 			<hr class="my-2" />
 			<div class="grid grid-cols-[1rem_8rem_8rem_10rem] gap-2 p-2 items-center">
@@ -91,7 +92,7 @@
 import { onMounted, ref } from 'vue'
 import TabBar from '../elements/TabBar.vue'
 import { settingsManager } from '../../services/settings-manager'
-import { debug } from '../../global'
+import { debug, noteManager } from '../../global'
 import { formatDateTime } from '../../services/helpers'
 import { emptyGuid } from '../../services/types/guid'
 
@@ -181,5 +182,9 @@ const clearMessages = () => {
 
 const clearLatency = () => {
 	debug.clearLatencyLog()
+}
+
+const timeTravel = () => {
+	noteManager.state.created = new Date(noteManager.state.created.getTime() - 25 * 60 * 60 * 1000)
 }
 </script>

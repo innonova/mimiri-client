@@ -33,11 +33,9 @@ export class NotificationManager {
 				}, 500)
 				return
 			}
-			this.state.isOnlineDelayed = false
 			this._connectionExpected = true
 			await this.connect()
 		}
-		this.state.isOnlineDelayed = false
 		if ((this._suspended || this._workOffline) && this._connectionExpected) {
 			this._connectionExpected = false
 			await this.close()
@@ -113,6 +111,7 @@ export class NotificationManager {
 			this.state.isOnline = true
 			this.notificationsCallback('connected', null)
 		} catch (ex) {
+			this.state.isOnlineDelayed = false
 			void this._connection?.stop().catch()
 			this._connection = null
 			debug.logError('Failed to connect for notifications', ex)
