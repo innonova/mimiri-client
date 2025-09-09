@@ -8,6 +8,7 @@ import { persistedState } from '../persisted-state'
 import { blogManager, debug, updateManager } from '../../global'
 import { settingsManager, UpdateMode } from '../settings-manager'
 import { MimiriException, MimiriExceptionType } from './exceptions'
+import { differenceInHours, isAfter } from 'date-fns'
 
 const zip = async (text: string) => {
 	return toBase64(
@@ -67,7 +68,7 @@ export class MimerNote {
 	private controlPanelLoadedAfterFeatures: boolean = false
 
 	constructor(
-		private owner: MimiriStore,
+		protected owner: MimiriStore,
 		private _parent: MimerNote | undefined,
 		private _note: Note,
 		updateViewModel = true,
@@ -171,7 +172,7 @@ export class MimerNote {
 					isRecycleBin: this.isRecycleBin,
 					isControlPanel: this.isControlPanel,
 					isSystem: this.isSystem,
-					hasInfo: updateManager.isUpdateAvailable && settingsManager.updateMode === UpdateMode.StrongNotify,
+					hasInfo: false,
 				})
 			}
 		}
@@ -654,7 +655,10 @@ export class MimerNote {
 			return computed(
 				() =>
 					(updateManager.isUpdateAvailable && settingsManager.updateMode === UpdateMode.StrongNotify) ||
-					(blogManager.hasNewPost.value && settingsManager.blogPostNotificationLevel === 'clearly'),
+					(blogManager.hasNewPost.value && settingsManager.blogPostNotificationLevel === 'clearly') ||
+					(!this.owner.state.flags['create-account-read'] &&
+						differenceInHours(new Date(), this.owner.state.created) > 24) ||
+					(!this.owner.state.flags['create-account-read'] && this.owner.state.isAnonymous),
 			)
 		}
 		return false

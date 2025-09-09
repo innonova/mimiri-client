@@ -63,6 +63,7 @@ export class MimiriStore {
 			userId: null,
 			isLoggedIn: false,
 			isOnline: false,
+			isOnlineDelayed: false,
 			accountType: AccountType.None,
 			isAnonymous: false,
 			workOffline: false,
@@ -79,6 +80,8 @@ export class MimiriStore {
 				maxNoteBytes: 0,
 				maxNoteCount: 0,
 			},
+			flags: {},
+			created: new Date(),
 			busy: false,
 			busyLong: false,
 			busyLongDelay: 1000,
@@ -281,6 +284,7 @@ export class MimiriStore {
 		deleteAccount: (password: string, deleteLocal: boolean) => this.authManager.deleteAccount(password, deleteLocal),
 		verifyPassword: (password: string) => this.authManager.verifyPassword(password),
 		hasOneOrMoreAccounts: () => this.authManager.hasOneOrMoreAccounts(),
+		setFlag: (flag: string, value: boolean) => this.authManager.setFlag(flag, value),
 	}
 
 	public readonly note = {

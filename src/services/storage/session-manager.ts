@@ -333,7 +333,7 @@ export class SessionManager {
 		try {
 			await this.recoverLogin()
 			if (!this.state.isLoggedIn) {
-				if (!(await this.authManager.hasOneOrMoreAccounts()) && !settingsManager.startLoggedOut) {
+				if (!(await this.authManager.hasOneOrMoreAccounts()) || !settingsManager.startLoggedOut) {
 					await this.openLocal()
 				}
 			}

@@ -84,6 +84,11 @@ export class AuthenticationManager {
 		}
 	}
 
+	private updateStateFromUserData() {
+		this.state.flags = this.userData.flags ?? {}
+		this.state.created = this._userData.created ? new Date(this._userData.created) : new Date()
+	}
+
 	public async persistLogin() {
 		if (
 			env.DEV ||
@@ -256,6 +261,8 @@ export class AuthenticationManager {
 						this.state.userStats.size = userStats.size
 					}
 				}
+
+				this.updateStateFromUserData()
 				this.state.isLoggedIn = true
 
 				return true
@@ -457,6 +464,7 @@ export class AuthenticationManager {
 					await userCrypt.decrypt(initializationData.rootSignature.privateKey),
 				)
 				this._userData = JSON.parse(await this.cryptoManager.rootCrypt.decrypt(initializationData.userData))
+				this.updateStateFromUserData()
 				const userStats = await this.db.getUserStats()
 				if (userStats) {
 					this.state.userStats.maxNoteBytes = userStats.maxNoteBytes
@@ -497,6 +505,7 @@ export class AuthenticationManager {
 				// await this.api.openWebSocket()
 			} else {
 				this.state.isOnline = false
+				this.state.isOnlineDelayed = false
 				this.state.serverAuthenticated = false
 				this.state.workOffline = true
 			}
@@ -529,6 +538,7 @@ export class AuthenticationManager {
 			this._userData = {
 				rootNote: newGuid(),
 				rootKey: newGuid(),
+				created: new Date().toISOString(),
 				createComplete: false,
 			}
 			await this.db.setLocalUserData({
@@ -545,9 +555,11 @@ export class AuthenticationManager {
 			)
 			this._userData = initializationData.userData
 		}
+
 		this.state.accountType = AccountType.None
 		this.state.username = 'local'
 		this.state.userId = emptyGuid()
+		this.updateStateFromUserData()
 		this.state.isLoggedIn = true
 		void blogManager.refreshAll()
 	}
@@ -571,7 +583,7 @@ export class AuthenticationManager {
 				this.state.serverAuthenticated = true
 				this._userData = JSON.parse(await this.cryptoManager.rootCrypt.decrypt(data))
 				await this.db.setUserStats(toRaw(this.state.userStats))
-				// await this.api.openWebSocket()
+				this.updateStateFromUserData()
 				return true
 			}
 		} catch (ex) {
@@ -757,12 +769,25 @@ export class AuthenticationManager {
 		return true
 	}
 
+	public async setFlag(flag: string, value: boolean) {
+		if (!this.userData.flags) {
+			this.userData.flags = {}
+		}
+		if (this.userData.flags[flag] !== value) {
+			this.userData.flags[flag] = value
+			this.state.flags[flag] = value
+			await this.updateUserData()
+		}
+	}
+
 	public async logout(deleteDatabase: boolean = false): Promise<void> {
 		await this.clearLoginData()
 		if (deleteDatabase) {
 			persistedState.clear()
 		}
 		this._userData = undefined
+		this.state.flags = {}
+		this.state.created = new Date()
 		this._rootSignature = undefined
 		this._token = 'NO_TOKEN'
 		this.state.username = undefined

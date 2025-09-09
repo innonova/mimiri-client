@@ -132,7 +132,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { noteManager } from '../../global'
 import zxcvbn from 'zxcvbn'
 import LoadingIcon from '../../icons/loading.vue'
@@ -181,6 +181,10 @@ const usernameChanged = (valid: boolean, username: string) => {
 }
 
 const canCreate = computed(() => understandNoRecover.value && passwordMatch.value && usernameValid.value)
+
+onMounted(async () => {
+	await noteManager.auth.setFlag('create-account-read', true)
+})
 
 watch(password, value => {
 	if (value) {

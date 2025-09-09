@@ -21,7 +21,7 @@
 								<li class="py-0.5">Unlimited version history</li>
 								<li class="py-0.5">100 MB & 2000 notes for free</li>
 							</ul>
-							<div class="mt-4">
+							<div v-if="!noteManager.state.isMobile" class="mt-4">
 								<a href="https://mimiri.io/pricing" target="_blank">See pricing for additional space</a>
 							</div>
 						</div>
@@ -166,6 +166,7 @@ const populate = async () => {
 
 onMounted(async () => {
 	await populate()
+	await noteManager.auth.setFlag('create-account-read', true)
 })
 
 const createAccount = async () => {
@@ -174,9 +175,14 @@ const createAccount = async () => {
 	try {
 		if (createMode.value === 'cloud') {
 			await noteManager.session.promoteToCloudAccount(username.value, '', password.value, DEFAULT_ITERATIONS)
-			noteManager.tree.openNote('settings-plan' as Guid)
+			if (!noteManager.state.isMobile) {
+				noteManager.tree.openNote('settings-plan' as Guid)
+			} else {
+				void noteManager.tree.controlPanel().expand()
+			}
 		} else {
 			await noteManager.session.promoteToLocalAccount(username.value, password.value, DEFAULT_ITERATIONS)
+			void noteManager.tree.controlPanel().expand()
 		}
 	} catch (error) {
 		console.error('Error creating account:', error)

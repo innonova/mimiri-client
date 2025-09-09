@@ -77,7 +77,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { noteManager, showSearchBox, ipcClient, searchInput } from '../global'
+import { noteManager, showSearchBox, ipcClient, searchInput, env } from '../global'
 import ToolbarIcon from './ToolbarIcon.vue'
 import { MenuItems, menuManager } from '../services/menu-manager'
 import { mimiriPlatform } from '../services/mimiri-platform'
@@ -87,10 +87,13 @@ import { AccountType } from '../services/storage/type'
 
 const toolbar = ref(null)
 const accountIcon = computed(() => {
-	if (!ipcClient.isAvailable) {
+	if (!ipcClient.isAvailable && !env.DEV) {
 		return 'account'
 	}
 	if (noteManager.state.isOnline && noteManager.state.isLoggedIn) {
+		return 'account-online'
+	}
+	if (noteManager.state.isOnlineDelayed && noteManager.state.isMobile) {
 		return 'account-online'
 	}
 	return 'account-offline'

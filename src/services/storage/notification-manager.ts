@@ -4,7 +4,6 @@ import type { MimiriClient } from './mimiri-client'
 import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr'
 import { debug } from '../../global'
 import { incrementalDelay } from '../helpers'
-import { newGuid } from '../types/guid'
 
 export class NotificationManager {
 	private _connection: HubConnection | null = null
@@ -28,14 +27,17 @@ export class NotificationManager {
 	private async updateState() {
 		if (!this._suspended && !this._workOffline && !this._connectionExpected && this.state.isLoggedIn) {
 			if (this.state.isMobile && Date.now() - this._resumeTime < 10000) {
+				this.state.isOnlineDelayed = true
 				setTimeout(() => {
 					void this.updateState()
 				}, 500)
 				return
 			}
+			this.state.isOnlineDelayed = false
 			this._connectionExpected = true
 			await this.connect()
 		}
+		this.state.isOnlineDelayed = false
 		if ((this._suspended || this._workOffline) && this._connectionExpected) {
 			this._connectionExpected = false
 			await this.close()
@@ -77,14 +79,17 @@ export class NotificationManager {
 			}
 		})
 		connection.onreconnecting(error => {
+			this.state.isOnlineDelayed = false
 			this.state.isOnline = false
 			this.notificationsCallback('reconnecting', error)
 		})
 		connection.onreconnected(() => {
+			this.state.isOnlineDelayed = false
 			this.state.isOnline = true
 			this.notificationsCallback('reconnected', null)
 		})
 		connection.onclose(error => {
+			this.state.isOnlineDelayed = false
 			this.state.isOnline = false
 			this.notificationsCallback('closed', error)
 		})

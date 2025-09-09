@@ -31,7 +31,7 @@
 			</div>
 		</div>
 		<hr v-if="showFeatures" class="w-[95%] mt-1" />
-		<div v-if="showFeatures" class="py-4 pl-8 pr-4 max-w-54">
+		<div v-if="showFeatures" class="py-4 pl-8 pr-4 w-54">
 			<ul class="list-disc">
 				<template v-for="feature of product.data.features" :key="feature.title">
 					<li class="py-1" :class="{ 'font-bold': feature.unique }">{{ feature.description }}</li>

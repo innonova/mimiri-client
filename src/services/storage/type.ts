@@ -6,6 +6,8 @@ export interface UserData {
 	rootNote: Guid
 	rootKey: Guid
 	createComplete: boolean
+	created?: string
+	flags?: { [key: string]: boolean }
 }
 
 export interface LoginData {
@@ -52,12 +54,15 @@ export interface SharedState {
 	userId: Guid | null
 	isLoggedIn: boolean
 	isOnline: boolean
+	isOnlineDelayed: boolean
 	accountType: AccountType
 	isAnonymous: boolean
 	workOffline: boolean
 	serverAuthenticated: boolean
 	clientConfig: ClientConfig
 	userStats: UserStats
+	flags: { [key: string]: boolean }
+	created: Date
 
 	busy: boolean
 	busyLong: boolean

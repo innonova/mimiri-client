@@ -6,6 +6,7 @@ import { dateTimeNow } from './date-time'
 import type { Guid } from './guid'
 import { MimerNote } from './mimer-note'
 import { Note } from './note'
+import { differenceInHours } from 'date-fns'
 
 export interface VirtualTree {
 	id: Guid
@@ -90,6 +91,16 @@ export class VirtualNote extends MimerNote {
 		}
 		if (this.id === 'settings-blog') {
 			return computed(() => blogManager.hasNewPost.value && settingsManager.blogPostNotificationLevel !== 'never')
+		}
+		if (this.id === 'settings-create-account') {
+			return computed(
+				() =>
+					!this.owner.state.flags['create-account-read'] &&
+					differenceInHours(new Date(), this.owner.state.created) > 24,
+			)
+		}
+		if (this.id === 'settings-create-password' || this.id === 'settings-account') {
+			return computed(() => !this.owner.state.flags['create-account-read'] && this.owner.state.isAnonymous)
 		}
 		return false
 	}
