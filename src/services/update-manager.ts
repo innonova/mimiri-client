@@ -1,5 +1,5 @@
 import { reactive } from 'vue'
-import { debug, env, ipcClient, notificationManager, updateKeys, updateManager } from '../global'
+import { debug, env, ipcClient, notificationManager, updateKeys, updateManager, noteManager } from '../global'
 import { version, releaseDate } from '../version'
 import { CryptSignature } from './crypt-signature'
 import type { InstalledBundleInfo } from './types/ipc.interfaces'
@@ -205,30 +205,10 @@ export class UpdateManager {
 	}
 
 	public async check(allowUpdate: boolean = true) {
-		console.log('UpdateManager.check')
-
-		if (ipcClient.isAvailable || env.DEV) {
+		if (ipcClient.isAvailable) {
 			try {
-				this.installedVersions = ipcClient.isAvailable
-					? await ipcClient.bundle.getInstalledVersions()
-					: [
-							{
-								version: '0.0.0',
-								minElectronVersion: '0.0.0',
-								minElectronVersionWin32: '0.0.0',
-								minElectronVersionDarwin: '0.0.0',
-								minElectronVersionLinux: '0.0.0',
-								minIosVersion: '0.0.0',
-								minAndroidVersion: '0.0.0',
-								releaseDate: '0.0.0',
-								size: 0,
-								active: true,
-								previous: false,
-								good: true,
-								base: true,
-								hostVersion: '2.3.0',
-							},
-						]
+				this.installedVersions = await ipcClient.bundle.getInstalledVersions()
+
 				this.setActive()
 				const currentKey = updateKeys.find(item => item.current)
 
@@ -545,6 +525,8 @@ export class UpdateManager {
 	}
 
 	public get platformString() {
-		return `${mimiriPlatform.platform};${this.currentVersion};${this.hostVersion}`
+		return `${mimiriPlatform.platform};${this.currentVersion};${this.hostVersion ?? '0.0.0'};${
+			noteManager.state.accountType
+		}`
 	}
 }
