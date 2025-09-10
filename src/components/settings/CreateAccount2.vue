@@ -130,13 +130,13 @@ const refreshPassword = () => {
 const faqItems = ref([
 	{
 		question: 'Is the Cloud Account free?',
-		answer: `Yes up to 2000 notes and 10MB which is equivalent to thousands of pages of notes.`,
+		answer: `Yes up to 2000 notes and 100MB.`,
 	},
 	{
 		question: 'Do I need a Cloud Account?',
-		answer: `If you want to access your notes from multiple devices or you wish to share notes with other users you yes.
+		answer: `If you want to access your notes from multiple devices or you wish to share notes with other users, then yes.
 
-		If you want to keep your notes only on this device and not sync them anywhere then no`,
+		If you want to keep your notes only on this device and not sync them anywhere, then no.`,
 	},
 	{
 		question: 'Is my data safe in the Cloud?',
@@ -150,7 +150,7 @@ const faqItems = ref([
 	},
 	{
 		question: 'Is my data safer with a Local Account?',
-		answer: `Technically a Local Account offers stronger privacy guarantees. However, with a well chosen password the difference is academic.
+		answer: `Technically a Local Account offers stronger privacy guarantees. However, with a well-chosen password the difference is academic.
 
 		And a Local Account does not help ensure your own access to the data in case of device loss or in an emergency situation.
 

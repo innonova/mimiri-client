@@ -128,23 +128,21 @@
 		<div v-if="showInfoText" class="max-w-120 mt-2 info">
 			<div class="mt-2">
 				We need your country of residence to manage VAT (this has no impact on the price you pay - the price you are
-				shown is the final price). <br />
+				shown is the final price).<br />
 				<br />
-				We will use your email address solely to send you receipts, notifications of failed payments and reminders prior
-				to renewal. Your email address also serves as a last resort for canceling your subscription in case you lose
-				access to your account.<br />
+				We will use your email address solely to send you receipts, notifications of failed payments, and reminders
+				prior to renewal. Your email address also serves as a last resort for canceling your subscription in case you
+				lose access to your account.<br />
 				<br />
-				We will never use your email address for marketing purposes, news letters or any other kind of unsolicited
+				We will never use your email address for marketing purposes, newsletters, or any other kind of unsolicited
 				communication.<br />
 				<br />
-				The above data is shared with our payment provider to process your payment (primarily for fraud prevention).
+				The above data is shared with our payment provider to process your payment, primarily for fraud prevention.<br />
 				<br />
+				We will, however, never share your data with any other parties. See our
+				<a href="https://mimiri.io/privacy" target="_blank">Privacy Policy</a> for details.<br />
 				<br />
-				We will, however, never share your data with any other parties see
-				<a href="https://mimiri.io/privacy" target="_blank">Privacy Policy</a> for details.
-				<br />
-				<br />
-				All data is handled in compliance with both GDPR and Swiss data protection laws regardless of your country of
+				All data is handled in compliance with both GDPR and Swiss data protection laws, regardless of your country of
 				residence.
 			</div>
 		</div>

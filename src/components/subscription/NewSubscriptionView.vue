@@ -70,7 +70,7 @@ const faqItems = ref([
 	{
 		question: 'Is the free tier really free?',
 		answer: `Yes, the free tier is free and will remain so.
-		 And for most use cases the limits are more than adequate.`,
+		For most use cases, the limits are more than adequate.`,
 	},
 	{
 		question: 'Why would I choose a paid plan?',
