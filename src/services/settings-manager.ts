@@ -140,7 +140,6 @@ class SettingsManager {
 					await delay(0)
 					this._saveRequestedWhileInProgress = false
 					if (ipcClient.isAvailable) {
-						console.log('Saving settings to IPC')
 						await ipcClient.settings.save(toRaw(this.state))
 						menuManager.updateTrayMenu()
 					} else if (localStorage) {
