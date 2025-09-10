@@ -162,7 +162,12 @@ export class SessionManager {
 
 	public async addGettingStarted(note?: Note) {
 		try {
-			const json = await fetch(`${env.VITE_MIMER_UPDATE_HOST}/getting-started.json`).then(res => res.json())
+			const json = await fetch(`${env.VITE_MIMER_UPDATE_HOST}/getting-started.json`, {
+				method: 'GET',
+				headers: {
+					'X-Mimiri-Version': `${updateManager.platformString}`,
+				},
+			}).then(res => res.json())
 
 			const root = note ?? (await this.noteService.readNote(this.authManager.userData.rootNote))
 

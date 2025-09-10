@@ -83,6 +83,9 @@ export class UpdateManager {
 		// console.log(`GET ${this.host}${path}`)
 		const response = await fetch(`${this.host}${path}`, {
 			method: 'GET',
+			headers: {
+				'X-Mimiri-Version': `${this.platformString}`,
+			},
 		})
 		if (response.status !== 200) {
 			throw new Error(`Get of ${path} failed with status code ${response.status}`)
@@ -93,6 +96,9 @@ export class UpdateManager {
 	private async getReader(path: string) {
 		const response = await fetch(`${this.host}${path}`, {
 			method: 'GET',
+			headers: {
+				'X-Mimiri-Version': `${this.platformString}`,
+			},
 		})
 		if (response.status !== 200) {
 			throw new Error(`Get of ${path} failed with status code ${response.status}`)
@@ -107,20 +113,20 @@ export class UpdateManager {
 			(this.installedVersions.length > 0
 				? this.installedVersions[0]
 				: {
-						version: '0.0.0',
+						version: __DEV_VERSION__,
 						minElectronVersion: '0.0.0',
 						minElectronVersionWin32: '0.0.0',
 						minElectronVersionDarwin: '0.0.0',
 						minElectronVersionLinux: '0.0.0',
 						minIosVersion: '0.0.0',
 						minAndroidVersion: '0.0.0',
-						releaseDate: '0.0.0',
+						releaseDate: new Date().toISOString(),
 						size: 0,
 						active: true,
 						previous: false,
 						good: true,
 						base: true,
-						hostVersion: '2.3.0',
+						hostVersion: '0.0.0',
 					})
 	}
 
@@ -199,9 +205,30 @@ export class UpdateManager {
 	}
 
 	public async check(allowUpdate: boolean = true) {
-		if (ipcClient.isAvailable) {
+		console.log('UpdateManager.check')
+
+		if (ipcClient.isAvailable || env.DEV) {
 			try {
-				this.installedVersions = await ipcClient.bundle.getInstalledVersions()
+				this.installedVersions = ipcClient.isAvailable
+					? await ipcClient.bundle.getInstalledVersions()
+					: [
+							{
+								version: '0.0.0',
+								minElectronVersion: '0.0.0',
+								minElectronVersionWin32: '0.0.0',
+								minElectronVersionDarwin: '0.0.0',
+								minElectronVersionLinux: '0.0.0',
+								minIosVersion: '0.0.0',
+								minAndroidVersion: '0.0.0',
+								releaseDate: '0.0.0',
+								size: 0,
+								active: true,
+								previous: false,
+								good: true,
+								base: true,
+								hostVersion: '2.3.0',
+							},
+						]
 				this.setActive()
 				const currentKey = updateKeys.find(item => item.current)
 

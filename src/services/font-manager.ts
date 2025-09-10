@@ -1,5 +1,5 @@
 import fonts from '../assets/fonts.json'
-import { debug } from '../global'
+import { debug, updateManager } from '../global'
 import { mimiriPlatform } from './mimiri-platform'
 
 export interface MimiriFont {
@@ -47,7 +47,12 @@ export class FontManager {
 		try {
 			const font = this._fonts.find(f => f.name === name)
 			const url = font.url.replace(/(\.woff2|\.ttf|\.otf)$/, '.license.txt')
-			const license = await fetch(url).then(res => res.text())
+			const license = await fetch(url, {
+				method: 'GET',
+				headers: {
+					'X-Mimiri-Version': `${updateManager.platformString}`,
+				},
+			}).then(res => res.text())
 			return license
 		} catch (ex) {
 			debug.logError(`Failed to fetch license for font ${name}`, ex)
