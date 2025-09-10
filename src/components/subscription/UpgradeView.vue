@@ -55,33 +55,6 @@
 						Pay now
 					</button>
 				</div>
-
-				<div v-if="false" class="w-120 mt-2 pb-25">
-					<ItemHeader class="col-span-2">Why do we ask for this information?</ItemHeader>
-					<div class="mt-2">
-						The EU requires us to pay Taxes (VAT) based on your country of residence (<a
-							href="https://mimiri.com/eu-vat"
-							target="_blank"
-							>more information</a
-						>).<br />
-						<br />
-						We will use your email address solely to send you receipts, notifications of failed payments and reminders
-						prior to renewal. Your email address also serves as a last resort for canceling your subscription in case
-						you lose access to your account.<br />
-						<br />
-						We will never use your email address for marketing purposes, news letters or any other kind of unsolicited
-						communication.<br />
-						<br />
-						The above data is shared with our payment provider to process your payment (primarily for fraud prevention).
-						<br />
-						<br />
-						We will, however, never share your data with any other parties see
-						<a href="https://mimiri.com/privacy" target="_blank">Privacy Policy</a> for details.
-						<br />
-						<br />
-						All data is handled in compliance with the GDPR and Swiss data protection laws.
-					</div>
-				</div>
 			</form>
 		</div>
 	</div>

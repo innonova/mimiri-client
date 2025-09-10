@@ -1,5 +1,5 @@
 <template>
-	<div data-testid="customer-data" class="flex">
+	<div data-testid="customer-data" class="flex flex-col">
 		<div class="grid grid-cols-[9em_18em] gap-3 items-baseline">
 			<div class="text-right" :class="{ 'text-red-500': changed && !givenNameValid }">First name *</div>
 			<input
@@ -119,6 +119,34 @@
 			<div />
 			<div><sup>1)</sup> We recommend filling out all relevant fields if you need a tax invoice</div>
 			<div />
+			<div>
+				<button class="underline cursor-pointer" @click="toggleInfo">Why do we ask for this information?</button>
+			</div>
+			<div />
+		</div>
+
+		<div v-if="showInfoText" class="max-w-120 mt-2 info">
+			<div class="mt-2">
+				We need your country of residence to manage VAT (this has no impact on the price you pay - the price you are
+				shown is the final price). <br />
+				<br />
+				We will use your email address solely to send you receipts, notifications of failed payments and reminders prior
+				to renewal. Your email address also serves as a last resort for canceling your subscription in case you lose
+				access to your account.<br />
+				<br />
+				We will never use your email address for marketing purposes, news letters or any other kind of unsolicited
+				communication.<br />
+				<br />
+				The above data is shared with our payment provider to process your payment (primarily for fraud prevention).
+				<br />
+				<br />
+				We will, however, never share your data with any other parties see
+				<a href="https://mimiri.io/privacy" target="_blank">Privacy Policy</a> for details.
+				<br />
+				<br />
+				All data is handled in compliance with both GDPR and Swiss data protection laws regardless of your country of
+				residence.
+			</div>
 		</div>
 	</div>
 </template>
@@ -153,6 +181,7 @@ const stateRequired = ref(false)
 const emailVerified = ref(false)
 const emailVerificationEmailSent = ref(false)
 const customer = ref<Customer>()
+const showInfoText = ref(false)
 
 const valid = defineModel('valid')
 const changed = defineModel('changed')
@@ -163,6 +192,10 @@ const familyNameValid = computed(() => familyName.value?.length > 0)
 const emailValid = computed(() => email.value?.length > 0)
 const countryValid = computed(() => countryName.value?.length > 0)
 const stateValid = computed(() => stateMode.value === 'text' || stateName.value?.length > 0)
+
+const toggleInfo = () => {
+	showInfoText.value = !showInfoText.value
+}
 
 watch(countryCode, () => {
 	countryCodeOut.value = countryCode.value
