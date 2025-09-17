@@ -114,7 +114,7 @@ export class MimiriStore {
 				case 'connected':
 					void updateManager.check()
 					void blogManager.refreshAll()
-					this.syncService.queueSync(true)
+					this.syncService.queueSync(false)
 					break
 				case 'sync':
 					if (!this.syncService.isSyncIdIssued(payload)) {
@@ -130,7 +130,7 @@ export class MimiriStore {
 				case 'reconnected':
 					void updateManager.check()
 					void blogManager.refreshAll()
-					this.syncService.queueSync(true)
+					this.syncService.queueSync(false)
 					break
 				case 'resumed':
 					void updateManager.check()
