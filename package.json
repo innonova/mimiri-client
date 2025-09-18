@@ -39,7 +39,8 @@
 		"create-key": "node ./scripts/create-key",
 		"deploy-web": "node ./scripts/deploy-web",
 		"demo": "npx playwright test -c playwright.demo.config.ts",
-		"process-screenshots": "node ./scripts/process-screenshots.js"
+		"process-screenshots": "node ./scripts/process-screenshots.js",
+		"create-screenshots": "npm run demo && npm run process-screenshots"
 	},
 	"dependencies": {
 		"@capacitor/android": "^7.0.0",

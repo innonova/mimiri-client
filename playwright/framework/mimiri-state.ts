@@ -142,6 +142,29 @@ export class MimiriState {
 		return this.page.evaluate(() => (globalThis as any).navigator.clipboard.readText())
 	}
 
+	public async screenshot(name: string, clip?: { x: number; y: number; width: number; height: number }) {
+		await this.page.screenshot({
+			path: `${process.env.SCREENSHOT_WORK_PATH}/screens/light${clip ? `-cutouts` : ''}/${name}.png`,
+			clip,
+		})
+		await this.page.evaluate(() => (globalThis as any).mimiriApi.setDarkMode(true))
+		await this.page.screenshot({
+			path: `${process.env.SCREENSHOT_WORK_PATH}/screens/dark${clip ? `-cutouts` : ''}/${name}.png`,
+			clip,
+		})
+		await this.page.evaluate(() => (globalThis as any).mimiriApi.setDarkMode(false))
+	}
+
+	public async screenshotMobile(name: string) {
+		await this.page.screenshot({
+			path: `${process.env.SCREENSHOT_WORK_PATH}/screens/light-mobile/${name}.png`,
+		})
+		await this.page.evaluate(() => (globalThis as any).mimiriApi.setDarkMode(true))
+		await this.page.screenshot({
+			path: `${process.env.SCREENSHOT_WORK_PATH}/screens/dark-mobile/${name}.png`,
+		})
+	}
+
 	public printElapsed() {
 		console.log(`${performance.now() - this._start}`)
 	}

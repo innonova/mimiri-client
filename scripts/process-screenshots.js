@@ -1,10 +1,11 @@
 import { Jimp } from 'jimp';
-import { readdir, mkdir, access, constants } from 'fs/promises';
+import { readdir, mkdir, access, constants, readFile } from 'fs/promises';
 import { join } from 'path';
 import sharp from 'sharp';
 import 'dotenv/config'
 const themes = ['dark', 'light'];
 const mobileThemes = ['dark-mobile', 'light-mobile'];
+const cutoutThemes = ['dark-cutouts', 'light-cutouts'];
 const platforms = [
 	{ name: 'windows', base: 'windows-base.png', lightBase: 'light-windows-base.png', mask: 'windows-mask.png' },
 	{ name: 'linux', base: 'linux-base.png', lightBase: 'light-linux-base.png', mask: 'linux-mask.png' },
@@ -94,6 +95,35 @@ async function processMobileScreenshots() {
 	}
 }
 
+async function processCutouts() {
+	for (const cutoutTheme of cutoutThemes) {
+		const screensDir = `${process.env.SCREENSHOT_WORK_PATH}/screens/${cutoutTheme}`;
+		const files = await readdir(screensDir);
+		const imageFiles = files.filter(file => file.toLowerCase().endsWith('.png'));
+
+		for (const imageFile of imageFiles) {
+			console.log(`Processing cutout ${cutoutTheme}/${imageFile}...`);
+			const outputTheme = cutoutTheme.replace('-cutouts', '');
+
+			try {
+				const image = await Jimp.read(join(screensDir, imageFile));
+
+				// Save as PNG
+				await image.write(`${process.env.SCREENSHOT_PUBLIC_PATH}/cutouts/${outputTheme}/${imageFile}`);
+
+				// Save as WebP using Sharp
+				const webpFilename = imageFile.replace(/\.png$/i, '.webp');
+				const pngBuffer = await image.getBuffer('image/png');
+				await sharp(pngBuffer)
+					.webp({ quality: 80 })
+					.toFile(`${process.env.SCREENSHOT_PUBLIC_PATH}/cutouts/${outputTheme}/${webpFilename}`);
+			} catch (error) {
+				console.error(`Error processing cutout ${imageFile}: ${error.message}`);
+			}
+		}
+	}
+}
+
 async function ensureDirectoriesExist() {
 	const basePath = process.env.SCREENSHOT_PUBLIC_PATH;
 
@@ -121,6 +151,12 @@ async function ensureDirectoriesExist() {
 		const outputTheme = mobileTheme.replace('-mobile', '');
 		await mkdir(`${basePath}/iphone/${outputTheme}`, { recursive: true });
 	}
+
+	// Create directories for cutouts
+	for (const cutoutTheme of cutoutThemes) {
+		const outputTheme = cutoutTheme.replace('-cutouts', '');
+		await mkdir(`${basePath}/cutouts/${outputTheme}`, { recursive: true });
+	}
 }
 
 async function processScreenshots() {
@@ -128,6 +164,7 @@ async function processScreenshots() {
 
 	await processDesktopScreenshots();
 	await processMobileScreenshots();
+	await processCutouts();
 }
 
 await processScreenshots();
