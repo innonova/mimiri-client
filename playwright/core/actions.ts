@@ -5,13 +5,13 @@ import {
 	connectCloudView,
 	createAccountView,
 	editor,
-	initialPlanChooser,
 	lockScreen,
 	loginCtrl,
 	menu,
 	passwordDialog,
 	pinCodeView,
 	settingNodes,
+	settingView,
 	statusBar,
 	titleBar,
 	usernameInput,
@@ -67,9 +67,7 @@ export const createCloudAccount = async () => {
 	await createAccountView.button().click()
 	await expect(createAccountView.container()).not.toBeVisible()
 	await mimiri().waitForTimeout(1000)
-	await expect(initialPlanChooser.container()).toBeVisible()
-	await initialPlanChooser.chooseFree().click()
-	await expect(initialPlanChooser.container()).not.toBeVisible()
+	await expect(settingView.currentPlan()).toBeVisible()
 	await expect(settingNodes.controlPanel()).toBeVisible()
 	await settingNodes.subscriptionGroup().dblclick()
 	await settingNodes.controlPanel().dblclick()

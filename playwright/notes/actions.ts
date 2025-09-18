@@ -1,6 +1,6 @@
 import { expect, Locator } from '@playwright/test'
 import { mimiri } from '../framework/mimiri-context'
-import { editor, mainToolbar, menu, note, statusBar } from '../selectors'
+import { editor, emptyRecycleBinDialog, mainToolbar, menu, note, settingNodes, statusBar } from '../selectors'
 import {
 	complexTestTree,
 	complexTestTreeAfterCopy,
@@ -220,4 +220,27 @@ export const verifyMoveNoteIntoOwnChild = async () => {
 	await menu.paste().click()
 	// Tree should remain exactly the same as the original
 	await verifyTestTree(complexTestTree)
+}
+
+export const deleteAllNotes = async () => {
+	let didDelete = false
+	while (true) {
+		await note.item('Getting Started').click()
+		await mimiri().page.keyboard.press('ArrowDown')
+		const text = await note.selectedItem().textContent()
+		if (text === 'Getting Started') {
+			break
+		}
+		await note.selectedItem().click({ button: 'right' })
+		await menu.recycle().click()
+		didDelete = true
+	}
+	if (didDelete) {
+		await settingNodes.recycleBin().click({ button: 'right' })
+		await menu.emptyRecycleBin().click()
+		await emptyRecycleBinDialog.okButton().click()
+		await expect(statusBar.syncStatusCode()).toHaveValue(
+			/idle|total-size-limit-exceeded|count-limit-exceeded|note-size-limit-exceeded|server-rejection|synchronization-error/,
+		)
+	}
 }

@@ -8,7 +8,7 @@
 		}"
 		data-testid="status-bar"
 	>
-		<span data-testid="sync-status">{{ status }}</span>
+		<span data-testid="sync-status" :class="{ 'pl-7': noteManager.state.isMobile }">{{ status }}</span>
 	</button>
 	<input type="hidden" data-testid="sync-status-code" :value="syncStatus" />
 </template>

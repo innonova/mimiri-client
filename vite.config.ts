@@ -9,6 +9,19 @@ export default defineConfig({
 	plugins: [vue()],
 	server: {
 		allowedHosts: ['app-dev-aek.mimiri.io'],
+		watch: {
+			ignored: [
+				'**/node_modules/**',
+				'**/.*/**',
+				'**/screenshots/**',
+				'**/dist/**',
+				'**/certs/**',
+				'**/docs/**',
+				'**/android/**',
+				'**/ios/**',
+				'**/scripts/**',
+			],
+		},
 	},
 	define: {
 		__DEV_VERSION__: JSON.stringify(packageJson.version),

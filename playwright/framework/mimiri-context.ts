@@ -1,5 +1,6 @@
 import { AsyncLocalStorage } from 'async_hooks'
 import { MimiriState } from './mimiri-state'
+import { BrowserContextOptions } from '@playwright/test'
 
 interface MiStore {
 	state: MimiriState[]
@@ -8,9 +9,9 @@ interface MiStore {
 
 const asyncLocalStorage = new AsyncLocalStorage()
 
-export const withMimiriContext = async (runner: () => Promise<void>) => {
+export const withMimiriContext = async (runner: () => Promise<void>, options?: BrowserContextOptions) => {
 	const store: MiStore = { state: [new MimiriState()], active: 0 }
-	await store.state[0].init(0)
+	await store.state[0].init(0, options)
 	try {
 		await asyncLocalStorage.run(store, runner)
 	} finally {

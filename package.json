@@ -37,7 +37,9 @@
 		"set-version": "node ./scripts/set-version",
 		"make-bundle": "node ./scripts/make-bundle",
 		"create-key": "node ./scripts/create-key",
-		"deploy-web": "node ./scripts/deploy-web"
+		"deploy-web": "node ./scripts/deploy-web",
+		"demo": "npx playwright test -c playwright.demo.config.ts",
+		"process-screenshots": "node ./scripts/process-screenshots.js"
 	},
 	"dependencies": {
 		"@capacitor/android": "^7.0.0",
@@ -82,6 +84,7 @@
 		"html-entities": "^2.6.0",
 		"jest": "^29.7.0",
 		"jest-environment-jsdom": "^29.7.0",
+		"jimp": "^1.6.0",
 		"moment": "2.29.4",
 		"npm-run-all2": "6.1.1",
 		"postcss": "^8.4.47",

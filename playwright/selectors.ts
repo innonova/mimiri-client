@@ -84,6 +84,7 @@ export const note = {
 		(parent || tid(`note-tree`)).getByTitle(title, { exact: true }).locator('div').nth(0).getByTitle('Expand'),
 	collapse: (title: string, parent?: Locator) =>
 		(parent || tid(`note-tree`)).getByTitle(title, { exact: true }).locator('div').nth(0).getByTitle('Collapse'),
+	selectedItem: () => tid('note-tree').locator('.bg-item-selected'),
 }
 
 export const editor = {
@@ -150,6 +151,10 @@ export const settingView = {
 	cloudAccount: () => tid('settings-view-cloud-account'),
 	localAccount: () => tid('settings-view-local-account'),
 	currentPlan: () => tid('settings-view-current-plan'),
+}
+export const generalSettings = {
+	darkMode: () => tid('dark-mode-toggle'),
+	saveButton: () => tid('general-settings-save-button'),
 }
 
 export const usernameInput = {

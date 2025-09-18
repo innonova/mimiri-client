@@ -1,4 +1,11 @@
-import { chromium, type Browser, type BrowserContext, type Page } from '@playwright/test'
+import test, {
+	BrowserContextOptions,
+	chromium,
+	devices,
+	type Browser,
+	type BrowserContext,
+	type Page,
+} from '@playwright/test'
 import { MailPitClient } from './mailpit-client'
 import { OrchestrationClient } from './orchestration-client'
 import 'dotenv/config'
@@ -68,7 +75,7 @@ export class MimiriState {
 		return newState
 	}
 
-	public async init(index = 0) {
+	public async init(index = 0, options?: BrowserContextOptions) {
 		// console.log('testId', this._config.testId)
 		this._start = performance.now()
 		if (!this._browser) {
@@ -83,7 +90,15 @@ export class MimiriState {
 				})
 			}
 		}
-		this._context = await this._browser.newContext()
+		const globalOpts = {
+			...devices['Desktop Chrome'],
+			...test.info().project.use,
+		}
+		if (options) {
+			this._context = await this._browser.newContext({ ...globalOpts, ...options })
+		} else {
+			this._context = await this._browser.newContext(globalOpts)
+		}
 		this._mainPage = await this._context.newPage()
 		// this._mainPage.on('console', msg => console.log(msg.text()));
 		this._pageStack.push(this._mainPage)
