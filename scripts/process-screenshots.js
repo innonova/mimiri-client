@@ -1,5 +1,5 @@
 import { Jimp } from 'jimp';
-import { readdir } from 'fs/promises';
+import { readdir, mkdir, access, constants } from 'fs/promises';
 import { join } from 'path';
 import sharp from 'sharp';
 import 'dotenv/config'
@@ -13,7 +13,7 @@ const platforms = [
 
 async function processDesktopScreenshots() {
 	for (const theme of themes) {
-		const screensDir = `${process.env.SCREENSHOT_PATH}/screens/${theme}`;
+		const screensDir = `${process.env.SCREENSHOT_WORK_PATH}/screens/${theme}`;
 		const files = await readdir(screensDir);
 		const imageFiles = files.filter(file => file.toLowerCase().endsWith('.png'));
 
@@ -22,8 +22,8 @@ async function processDesktopScreenshots() {
 
 			for (const platform of platforms) {
 				const baseImage = theme === 'light' ? platform.lightBase : platform.base;
-				const base = await Jimp.read(`${process.env.SCREENSHOT_PATH}/${baseImage}`);
-				const mask = await Jimp.read(`${process.env.SCREENSHOT_PATH}/${platform.mask}`);
+				const base = await Jimp.read(`${process.env.SCREENSHOT_WORK_PATH}/${baseImage}`);
+				const mask = await Jimp.read(`${process.env.SCREENSHOT_WORK_PATH}/${platform.mask}`);
 				const shot = await Jimp.read(join(screensDir, imageFile));
 
 				shot.mask(mask, 0, 0);   // apply mask in-place
@@ -31,14 +31,14 @@ async function processDesktopScreenshots() {
 				base.composite(shot, 0, 0);
 
 				// Save as PNG
-				await base.write(`${process.env.SCREENSHOT_PATH}/${platform.name}/${theme}/${imageFile}`);
+				await base.write(`${process.env.SCREENSHOT_PUBLIC_PATH}/${platform.name}/${theme}/${imageFile}`);
 
 				// Save as WebP using Sharp
 				const webpFilename = imageFile.replace(/\.png$/i, '.webp');
 				const pngBuffer = await base.getBuffer('image/png');
 				await sharp(pngBuffer)
 					.webp({ quality: 80 })
-					.toFile(`${process.env.SCREENSHOT_PATH}/${platform.name}/${theme}/${webpFilename}`);
+					.toFile(`${process.env.SCREENSHOT_PUBLIC_PATH}/${platform.name}/${theme}/${webpFilename}`);
 			}
 		}
 	}
@@ -46,7 +46,7 @@ async function processDesktopScreenshots() {
 
 async function processMobileScreenshots() {
 	for (const mobileTheme of mobileThemes) {
-		const screensDir = `${process.env.SCREENSHOT_PATH}/screens/${mobileTheme}`;
+		const screensDir = `${process.env.SCREENSHOT_WORK_PATH}/screens/${mobileTheme}`;
 		const files = await readdir(screensDir);
 		const imageFiles = files.filter(file => file.toLowerCase().endsWith('.png'));
 
@@ -56,8 +56,8 @@ async function processMobileScreenshots() {
 			// Determine the output theme folder (remove '-mobile' suffix)
 			const outputTheme = mobileTheme.replace('-mobile', '');
 
-			const base = await Jimp.read(`${process.env.SCREENSHOT_PATH}/iphone-base.png`);
-			const mask = await Jimp.read(`${process.env.SCREENSHOT_PATH}/iphone-mask.png`);
+			const base = await Jimp.read(`${process.env.SCREENSHOT_WORK_PATH}/iphone-base.png`);
+			const mask = await Jimp.read(`${process.env.SCREENSHOT_WORK_PATH}/iphone-mask.png`);
 			const shot = await Jimp.read(join(screensDir, imageFile));
 
 			// Scale the screenshot up by 300%
@@ -82,19 +82,49 @@ async function processMobileScreenshots() {
 			canvas.composite(base, 0, 0);
 
 			// Save as PNG
-			await canvas.write(`${process.env.SCREENSHOT_PATH}/iphone/${outputTheme}/${imageFile}`);
+			await canvas.write(`${process.env.SCREENSHOT_PUBLIC_PATH}/iphone/${outputTheme}/${imageFile}`);
 
 			// Save as WebP using Sharp
 			const webpFilename = imageFile.replace(/\.png$/i, '.webp');
 			const pngBuffer = await canvas.getBuffer('image/png');
 			await sharp(pngBuffer)
 				.webp({ quality: 80 })
-				.toFile(`${process.env.SCREENSHOT_PATH}/iphone/${outputTheme}/${webpFilename}`);
+				.toFile(`${process.env.SCREENSHOT_PUBLIC_PATH}/iphone/${outputTheme}/${webpFilename}`);
 		}
 	}
 }
 
+async function ensureDirectoriesExist() {
+	const basePath = process.env.SCREENSHOT_PUBLIC_PATH;
+
+	// Validate that SCREENSHOT_PUBLIC_PATH is configured
+	if (!basePath) {
+		throw new Error('SCREENSHOT_PUBLIC_PATH environment variable is not set');
+	}
+
+	// Validate that the base path exists
+	try {
+		await access(basePath, constants.F_OK);
+	} catch (error) {
+		throw new Error(`SCREENSHOT_PUBLIC_PATH directory does not exist: ${basePath}`);
+	}
+
+	// Create directories for desktop platforms and themes
+	for (const platform of platforms) {
+		for (const theme of themes) {
+			await mkdir(`${basePath}/${platform.name}/${theme}`, { recursive: true });
+		}
+	}
+
+	// Create directories for mobile themes
+	for (const mobileTheme of mobileThemes) {
+		const outputTheme = mobileTheme.replace('-mobile', '');
+		await mkdir(`${basePath}/iphone/${outputTheme}`, { recursive: true });
+	}
+}
+
 async function processScreenshots() {
+	await ensureDirectoriesExist();
 
 	await processDesktopScreenshots();
 	await processMobileScreenshots();
