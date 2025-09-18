@@ -1,7 +1,7 @@
 import { Jimp } from 'jimp';
 import { readdir } from 'fs/promises';
 import { join } from 'path';
-
+import sharp from 'sharp';
 const themes = ['dark', 'light'];
 const mobileThemes = ['dark-mobile', 'light-mobile'];
 const platforms = [
@@ -28,7 +28,16 @@ async function processDesktopScreenshots() {
 				shot.mask(mask, 0, 0);   // apply mask in-place
 
 				base.composite(shot, 0, 0);
+
+				// Save as PNG
 				await base.write(`screenshots/${platform.name}/${theme}/${imageFile}`);
+
+				// Save as WebP using Sharp
+				const webpFilename = imageFile.replace(/\.png$/i, '.webp');
+				const pngBuffer = await base.getBuffer('image/png');
+				await sharp(pngBuffer)
+					.webp({ quality: 80 })
+					.toFile(`screenshots/${platform.name}/${theme}/${webpFilename}`);
 			}
 		}
 	}
@@ -71,7 +80,15 @@ async function processMobileScreenshots() {
 			// Then composite the iPhone frame on top
 			canvas.composite(base, 0, 0);
 
-			await canvas.write(`screenshots/ios/${outputTheme}/${imageFile}`);
+			// Save as PNG
+			await canvas.write(`screenshots/iphone/${outputTheme}/${imageFile}`);
+
+			// Save as WebP using Sharp
+			const webpFilename = imageFile.replace(/\.png$/i, '.webp');
+			const pngBuffer = await canvas.getBuffer('image/png');
+			await sharp(pngBuffer)
+				.webp({ quality: 80 })
+				.toFile(`screenshots/iphone/${outputTheme}/${webpFilename}`);
 		}
 	}
 }
