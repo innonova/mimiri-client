@@ -18,6 +18,7 @@
 - use minimal comments to explain why something is done, not what is done and only when necessary
 - prefer inline tailwind over style tags
 - use theming from main.css rather than tailwinds dark theme classes
+- consult context7 when using new APIs
 
 # Test Code Organization
 

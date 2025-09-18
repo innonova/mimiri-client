@@ -15,9 +15,9 @@ test.describe('Screenshots', () => {
 					(globalThis as any).document.documentElement.style.setProperty('--safe-area-bottom', '34px'),
 				)
 				await expect(settingNodes.controlPanel()).toBeVisible()
-				await mimiri().page.screenshot({ path: 'screenshots/screens/light-mobile/alice-setup.png' })
+				await mimiri().page.screenshot({ path: `${process.env.SCREENSHOT_PATH}/screens/light-mobile/alice-setup.png` })
 				await mimiri().page.evaluate(() => (globalThis as any).mimiriApi.setDarkMode(true))
-				await mimiri().page.screenshot({ path: 'screenshots/screens/dark-mobile/alice-setup.png' })
+				await mimiri().page.screenshot({ path: `${process.env.SCREENSHOT_PATH}/screens/dark-mobile/alice-setup.png` })
 			},
 			{ viewport: { width: 402, height: 874 }, userAgent: devices['iPhone 14 Pro'].userAgent },
 		)
