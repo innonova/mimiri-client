@@ -43,7 +43,23 @@ class MimiriPlatform {
 	private _isMacAppStore = false
 
 	constructor() {
-		if (Capacitor.isPluginAvailable('MimiriPlatform')) {
+		let emulateCapacitor = undefined
+		if (import.meta.env.DEV) {
+			emulateCapacitor = sessionStorage.getItem('emulateCapacitor') ?? undefined
+		}
+		if (emulateCapacitor) {
+			this._isCapacitor = true
+			this._isIos = emulateCapacitor.includes('iphone') || emulateCapacitor.includes('ipad')
+			this._isAndroid = !this._isIos
+			let mode = 'phone'
+			if (emulateCapacitor.includes('ipad') || emulateCapacitor.includes('tablet')) {
+				mode = 'tablet'
+			}
+			this._nativePlatform = {
+				info: async () => ({ mode, biometrics: false }),
+				verifyBiometry: async () => ({ verified: true }),
+			}
+		} else if (Capacitor.isPluginAvailable('MimiriPlatform')) {
 			this._isCapacitor = true
 			this._nativePlatform = registerPlugin<MimiriNativePlatform>('MimiriPlatform')
 			this._isIos = Capacitor.getPlatform() === 'ios'
@@ -76,6 +92,12 @@ class MimiriPlatform {
 			this._isWeb = true
 		}
 		void this.init()
+	}
+
+	public emulateCapacitor(platform: string) {
+		if (env.DEV) {
+			sessionStorage.setItem('emulateCapacitor', platform)
+		}
 	}
 
 	public async init() {

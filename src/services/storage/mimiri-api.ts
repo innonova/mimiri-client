@@ -3,6 +3,7 @@ import { settingsManager } from '../settings-manager'
 import { env, noteManager } from '../../global'
 import { persistedState } from '../persisted-state'
 import type { HistoryItem } from '../types/mimer-note'
+import { mimiriPlatform } from '../mimiri-platform'
 
 export interface MimiriApiState {
 	appearShared?: string[]
@@ -36,6 +37,9 @@ class MimiriApi {
 				},
 				setConnectDelay: (delay: number) => {
 					noteManager.setConnectDelay(delay)
+				},
+				emulateCapacitor: (platform: string) => {
+					mimiriPlatform.emulateCapacitor(platform)
 				},
 			}
 		}

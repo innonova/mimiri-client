@@ -187,6 +187,10 @@ export class MimiriState {
 		)
 	}
 
+	public async emulateCapacitor(platform: string) {
+		return this.page.evaluate(platform => (globalThis as any).mimiriApi.emulateCapacitor(platform), platform)
+	}
+
 	public async screenshot(name: string, clip?: { x: number; y: number; width: number; height: number }) {
 		await this.setDarkMode(false)
 		await this.page.screenshot({

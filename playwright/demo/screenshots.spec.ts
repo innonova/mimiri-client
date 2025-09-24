@@ -18,6 +18,18 @@ const phoneDevices = [
 	{
 		name: 'iPhone',
 		device: {
+			viewport: { width: 414, height: 896 },
+			userAgent: devices['iPhone 14 Pro'].userAgent,
+			deviceScaleFactor: 3,
+			isMobile: true,
+			hasTouch: true,
+		},
+		safeArea: { top: '44px', bottom: '34px' },
+		screenshotName: 'iphone',
+	},
+	{
+		name: 'iPhone17',
+		device: {
 			viewport: { width: 402, height: 874 },
 			userAgent: devices['iPhone 14 Pro'].userAgent,
 			deviceScaleFactor: 3,
@@ -25,7 +37,7 @@ const phoneDevices = [
 			hasTouch: true,
 		},
 		safeArea: { top: '62px', bottom: '34px' },
-		screenshotName: 'iphone',
+		screenshotName: 'iphone-17',
 	},
 	{
 		name: 'Android Phone',
@@ -192,9 +204,40 @@ test.describe('Screenshots', () => {
 	})
 
 	phoneDevices.forEach(({ name, device, safeArea, screenshotName }) => {
+		test(`${name} - Tree View`, async () => {
+			await withMimiriContext(async () => {
+				await mimiri().home()
+				await mimiri().emulateCapacitor(name.toLowerCase())
+				await mimiri().reload()
+				mimiri().config.username = 'Alice'
+				mimiri().config.password = process.env.DEMO_ACCOUNT_PASSWORD!
+				mimiri().config.cleanUp = false
+				await login()
+				await expect(settingNodes.controlPanel()).toBeVisible()
+				await mimiri().setConnectDelay(100)
+				await mimiri().waitForTimeout(500)
+
+				await mimiri().appearShared(sharedNotes)
+				await settingNodes.controlPanel().dblclick()
+				await note.item('Dev Blog').click()
+				await mimiri().waitForTimeout(500)
+				await note.item('Work Projects').dblclick()
+				await note.item('Personal').dblclick()
+				await note.item('Trips & Events').dblclick()
+				await note.item('Personal').click()
+
+				await mimiri().setSafeInsets(safeArea)
+				await mimiri().screenshotMobile('tree-view', screenshotName)
+			}, device)
+		})
+	})
+
+	phoneDevices.forEach(({ name, device, safeArea, screenshotName }) => {
 		test(`${name} - Front Page`, async () => {
 			await withMimiriContext(async () => {
 				await mimiri().home()
+				await mimiri().emulateCapacitor(name.toLowerCase())
+				await mimiri().reload()
 				mimiri().config.username = 'Alice'
 				mimiri().config.password = process.env.DEMO_ACCOUNT_PASSWORD!
 				mimiri().config.cleanUp = false
@@ -219,9 +262,11 @@ test.describe('Screenshots', () => {
 	})
 
 	phoneDevices.forEach(({ name, device, safeArea, screenshotName }) => {
-		test.only(`${name} - Share`, async () => {
+		test(`${name} - Share`, async () => {
 			await withMimiriContext(async () => {
 				await mimiri().home()
+				await mimiri().emulateCapacitor(name.toLowerCase())
+				await mimiri().reload()
 				mimiri().config.username = 'Alice'
 				mimiri().config.password = process.env.DEMO_ACCOUNT_PASSWORD!
 				mimiri().config.cleanUp = false
@@ -253,6 +298,8 @@ test.describe('Screenshots', () => {
 		test(`${name} - History`, async () => {
 			await withMimiriContext(async () => {
 				await mimiri().home()
+				await mimiri().emulateCapacitor(name.toLowerCase())
+				await mimiri().reload()
 				mimiri().config.username = 'Alice'
 				mimiri().config.password = process.env.DEMO_ACCOUNT_PASSWORD!
 				mimiri().config.cleanUp = false
@@ -283,6 +330,8 @@ test.describe('Screenshots', () => {
 		test(`${name} - Create Account`, async () => {
 			await withMimiriContext(async () => {
 				await mimiri().home()
+				await mimiri().emulateCapacitor(name.toLowerCase())
+				await mimiri().reload()
 				await expect(settingNodes.controlPanel()).toBeVisible()
 				await mimiri().setSafeInsets(safeArea)
 
@@ -300,6 +349,8 @@ test.describe('Screenshots', () => {
 		test(`${name} - Front Page`, async () => {
 			await withMimiriContext(async () => {
 				await mimiri().home()
+				await mimiri().emulateCapacitor(name.toLowerCase())
+				await mimiri().reload()
 				mimiri().config.username = 'Alice'
 				mimiri().config.password = process.env.DEMO_ACCOUNT_PASSWORD!
 				mimiri().config.cleanUp = false
@@ -323,9 +374,11 @@ test.describe('Screenshots', () => {
 	})
 
 	tabletDevices.forEach(({ name, device, safeArea, screenshotName }) => {
-		test.only(`${name} - Share`, async () => {
+		test(`${name} - Share`, async () => {
 			await withMimiriContext(async () => {
 				await mimiri().home()
+				await mimiri().emulateCapacitor(name.toLowerCase())
+				await mimiri().reload()
 				mimiri().config.username = 'Alice'
 				mimiri().config.password = process.env.DEMO_ACCOUNT_PASSWORD!
 				mimiri().config.cleanUp = false
@@ -354,6 +407,8 @@ test.describe('Screenshots', () => {
 		test(`${name} - History`, async () => {
 			await withMimiriContext(async () => {
 				await mimiri().home()
+				await mimiri().emulateCapacitor(name.toLowerCase())
+				await mimiri().reload()
 				mimiri().config.username = 'Alice'
 				mimiri().config.password = process.env.DEMO_ACCOUNT_PASSWORD!
 				mimiri().config.cleanUp = false
@@ -384,6 +439,8 @@ test.describe('Screenshots', () => {
 		test(`${name} - Create Account`, async () => {
 			await withMimiriContext(async () => {
 				await mimiri().home()
+				await mimiri().emulateCapacitor(name.toLowerCase())
+				await mimiri().reload()
 				await expect(settingNodes.controlPanel()).toBeVisible()
 				await mimiri().setSafeInsets(safeArea)
 
@@ -399,7 +456,6 @@ test.describe('Screenshots', () => {
 
 	test('Cutout Sharing', async () => {
 		await withMimiriContext(async () => {
-			console.log('Setting up Alice account...')
 			await mimiri().home()
 
 			mimiri().config.username = 'Alice'

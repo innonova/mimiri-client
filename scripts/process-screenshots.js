@@ -5,6 +5,7 @@ import sharp from 'sharp';
 import { generateGalleryHTML } from './gallery-generator.js';
 import 'dotenv/config'
 const themes = ['dark', 'light'];
+const iphone17Themes = ['dark-iphone-17', 'light-iphone-17'];
 const mobileThemes = ['dark-iphone', 'light-iphone'];
 const tabletThemes = ['dark-ipad', 'light-ipad'];
 const androidThemes = ['dark-android', 'light-android'];
@@ -51,7 +52,7 @@ async function processDesktopScreenshots() {
 }
 
 async function processMobileScreenshots() {
-	for (const mobileTheme of mobileThemes) {
+	for (const mobileTheme of iphone17Themes) {
 		const screensDir = `${process.env.SCREENSHOT_WORK_PATH}/screens/${mobileTheme}`;
 		const files = await readdir(screensDir);
 		const imageFiles = files.filter(file => file.toLowerCase().endsWith('.png'));
@@ -60,10 +61,11 @@ async function processMobileScreenshots() {
 			console.log(`Processing mobile ${mobileTheme}/${imageFile}...`);
 
 			// Determine the output theme folder (remove '-iphone' suffix)
-			const outputTheme = mobileTheme.replace('-iphone', '');
+			const outputTheme = mobileTheme.replace('-iphone-17', '');
 
-			const base = await Jimp.read(`${process.env.SCREENSHOT_WORK_PATH}/iphone-base.png`);
-			const mask = await Jimp.read(`${process.env.SCREENSHOT_WORK_PATH}/iphone-mask.png`);
+			const base = await Jimp.read(`${process.env.SCREENSHOT_WORK_PATH}/iphone-17-base.png`);
+			const mask = await Jimp.read(`${process.env.SCREENSHOT_WORK_PATH}/iphone-17-mask.png`);
+			const overlay = await Jimp.read(`${process.env.SCREENSHOT_WORK_PATH}/iphone-17-store-${outputTheme}-overlay.png`);
 			const shot = await Jimp.read(join(screensDir, imageFile));
 
 			// Create a canvas the same size as the iPhone base
@@ -80,6 +82,7 @@ async function processMobileScreenshots() {
 
 			// First composite the scaled screenshot onto the canvas
 			canvas.composite(shot, x, y);
+			canvas.composite(overlay, x, y);
 			canvas.mask(mask, 0, 0);   // apply mask in-place
 			// Then composite the iPhone frame on top
 			canvas.composite(base, 0, 0);
