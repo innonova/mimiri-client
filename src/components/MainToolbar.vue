@@ -110,13 +110,13 @@ const accountClick = () => {
 	const rect = toolbar.value.getBoundingClientRect()
 
 	if (noteManager.state.accountType === AccountType.None) {
-		menuManager.showMenu({ x: screen.width, y: rect.bottom, alignRight: true }, [
+		menuManager.showMenu({ x: window.innerWidth, y: rect.bottom, alignRight: true }, [
 			MenuItems.CreateAccount,
 			MenuItems.Separator,
 			MenuItems.Login,
 		])
 	} else {
-		menuManager.showMenu({ x: screen.width, y: rect.bottom, alignRight: true }, [
+		menuManager.showMenu({ x: window.innerWidth, y: rect.bottom, alignRight: true }, [
 			MenuItems.ChangeUsername,
 			MenuItems.ChangePassword,
 			MenuItems.Logout,

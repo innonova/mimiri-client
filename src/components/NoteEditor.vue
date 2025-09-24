@@ -89,6 +89,7 @@
 				<button
 					@click="activateEdit"
 					class="bg-button-primary text-button-primary-text hover:brightness-125 select-none; font-display text-size-base; cursor-default; py-2 px-4; w-full"
+					data-testid="editor-activate-edit-mode"
 				>
 					Edit
 				</button>
@@ -108,22 +109,23 @@
 					<div>History entries:</div>
 					<CloseButton @click="showHistory" class="w-6 h-6" />
 				</div>
-				<div class="flex-auto overflow-y-auto h-0 pb-5 w-full bg-input">
-					<template
-						v-for="(historyItem, index) of mimiriEditor.history.note.viewModel.history"
-						:key="historyItem.timestamp"
-					>
-						<div
-							class="py-1.5 px-2.5 cursor-default"
-							:class="{
-								'bg-item-selected': index === mimiriEditor.history.state.selectedHistoryIndex,
-							}"
-							@click="selectHistoryItem(index)"
-							:data-testid="`editor-history-item-${index}`"
-						>
-							{{ historyItem.username }} - {{ formatDate(historyItem.timestamp) }}
-						</div>
-					</template>
+				<div class="flex-auto overflow-y-auto h-0 pb-5 w-full bg-input" data-testid="editor-history-scroll-container">
+					<div class="grid grid-cols-[auto_auto_1fr] gap-x-2">
+						<template v-for="(historyItem, index) of historyItems" :key="historyItem.timestamp">
+							<div
+								class="py-1.5 px-2.5 cursor-default col-span-full grid grid-cols-subgrid items-center"
+								:class="{
+									'bg-item-selected': index === mimiriEditor.history.state.selectedHistoryIndex,
+								}"
+								@click="selectHistoryItem(index)"
+								:data-testid="`editor-history-item-${index}`"
+							>
+								<div>{{ historyItem.username }}</div>
+								<div>-</div>
+								<div>{{ formatDate(historyItem.timestamp) }}</div>
+							</div>
+						</template>
+					</div>
 				</div>
 				<button
 					class="primary rounded-none!"
@@ -139,7 +141,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch, type WatchStopHandle } from 'vue'
-import { infoDialog, limitDialog, mimiriEditor, noteManager, showSearchBox, titleBar } from '../global'
+import { env, infoDialog, limitDialog, mimiriEditor, noteManager, showSearchBox, titleBar } from '../global'
 import type { NoteViewModel } from '../services/types/mimer-note'
 import { searchManager } from '../services/search-manager'
 import ToolbarIcon from './ToolbarIcon.vue'
@@ -149,6 +151,7 @@ import { useEventListener } from '@vueuse/core'
 import CloseButton from './elements/CloseButton.vue'
 import SettingIcon from '../icons/cog.vue'
 import type { Guid } from '../services/types/guid'
+import { mimiriApi } from '../services/storage/mimiri-api'
 
 let activeViewModelStopWatch: WatchStopHandle = undefined
 let activeViewModel: NoteViewModel = undefined
@@ -159,6 +162,12 @@ const windowFocus = ref(true)
 const historyVisible = ref(false)
 const displayMode = ref(true)
 const selectedHistoryItem = computed(() => mimiriEditor.history.state.selectedHistoryItem)
+const historyItems = computed(() => {
+	if (env.DEV && mimiriApi.state.historyEntries) {
+		return mimiriApi.state.historyEntries
+	}
+	return mimiriEditor.history.note.viewModel.history
+})
 let saveInProgress = false
 
 const biCif = value => {

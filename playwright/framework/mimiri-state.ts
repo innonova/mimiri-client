@@ -40,6 +40,7 @@ export class MimiriState {
 		cardCvc: '123',
 		payUrl: 'https://mock-payrexx.mimiri.io',
 		invoiceUrl: 'https://account.mimiri.io/invoice',
+		cleanUp: true,
 	}
 	private _customer = {
 		givenName: 'Max',
@@ -81,7 +82,10 @@ export class MimiriState {
 		if (!this._browser) {
 			if (index === 0) {
 				if (!MimiriState._defaultBrowser) {
-					MimiriState._defaultBrowser = await chromium.launch()
+					MimiriState._defaultBrowser = await chromium.launch({
+						// args: ['--disable-features=OverlayScrollbar,OverlayScrollbars', '--disable-features=VizDisplayCompositor'],
+						// ignoreDefaultArgs: ['--hide-scrollbars'],
+					})
 				}
 				this._browser = MimiriState._defaultBrowser
 			} else {
@@ -107,11 +111,13 @@ export class MimiriState {
 
 	public async terminate() {
 		await this._orchestrationClient.waitForMailQueue(this._config.testId)
-		for (const username of this._usernames) {
-			await this._orchestrationClient.cleanUp(username)
+		if (this._config.cleanUp) {
+			for (const username of this._usernames) {
+				await this._orchestrationClient.cleanUp(username)
+			}
+			await new Promise(resolve => setTimeout(resolve, 250))
+			await this._mailClient.cleanUp()
 		}
-		await new Promise(resolve => setTimeout(resolve, 250))
-		await this._mailClient.cleanUp()
 		await this._mainPage.close()
 		await this._context.close()
 	}
@@ -142,27 +148,71 @@ export class MimiriState {
 		return this.page.evaluate(() => (globalThis as any).navigator.clipboard.readText())
 	}
 
+	public async setDarkMode(dark: boolean) {
+		return this.page.evaluate(dark => (globalThis as any).mimiriApi.setDarkMode(dark), dark)
+	}
+
+	public async appearShared(names: string[]) {
+		return this.page.evaluate(names => (globalThis as any).mimiriApi.appearShared(names), names)
+	}
+
+	public async setShareCode(code: string) {
+		return this.page.evaluate(code => (globalThis as any).mimiriApi.setShareCode(code), code)
+	}
+
+	public async resetTreeState() {
+		return this.page.evaluate(() => (globalThis as any).mimiriApi.resetTreeState())
+	}
+
+	public async setHistoryEntries(entries: { timestamp: string; username: string; text: string }[]) {
+		return this.page.evaluate(entries => (globalThis as any).mimiriApi.setHistoryEntries(entries), entries)
+	}
+
+	public async isMobile() {
+		return this.page.evaluate(() => (globalThis as any).mimiriApi.isMobile())
+	}
+
+	public async setConnectDelay(delay: number) {
+		return this.page.evaluate(delay => (globalThis as any).mimiriApi.setConnectDelay(delay), delay)
+	}
+
+	public async setSafeInsets(safeArea: { top: string; bottom: string }) {
+		await this.page.evaluate(
+			top => (globalThis as any).document.documentElement.style.setProperty('--safe-area-top', top),
+			safeArea.top,
+		)
+		await this.page.evaluate(
+			bottom => (globalThis as any).document.documentElement.style.setProperty('--safe-area-bottom', bottom),
+			safeArea.bottom,
+		)
+	}
+
 	public async screenshot(name: string, clip?: { x: number; y: number; width: number; height: number }) {
+		await this.setDarkMode(false)
 		await this.page.screenshot({
 			path: `${process.env.SCREENSHOT_WORK_PATH}/screens/light${clip ? `-cutouts` : ''}/${name}.png`,
 			clip,
 		})
-		await this.page.evaluate(() => (globalThis as any).mimiriApi.setDarkMode(true))
+		await this.setDarkMode(true)
+		await this.waitForTimeout(250)
 		await this.page.screenshot({
 			path: `${process.env.SCREENSHOT_WORK_PATH}/screens/dark${clip ? `-cutouts` : ''}/${name}.png`,
 			clip,
 		})
-		await this.page.evaluate(() => (globalThis as any).mimiriApi.setDarkMode(false))
+		await this.setDarkMode(false)
 	}
 
-	public async screenshotMobile(name: string) {
+	public async screenshotMobile(name: string, device: string) {
+		await this.setDarkMode(false)
 		await this.page.screenshot({
-			path: `${process.env.SCREENSHOT_WORK_PATH}/screens/light-mobile/${name}.png`,
+			path: `${process.env.SCREENSHOT_WORK_PATH}/screens/light-${device}/${name}.png`,
 		})
-		await this.page.evaluate(() => (globalThis as any).mimiriApi.setDarkMode(true))
+		await this.setDarkMode(true)
+		await this.waitForTimeout(250)
 		await this.page.screenshot({
-			path: `${process.env.SCREENSHOT_WORK_PATH}/screens/dark-mobile/${name}.png`,
+			path: `${process.env.SCREENSHOT_WORK_PATH}/screens/dark-${device}/${name}.png`,
 		})
+		await this.setDarkMode(false)
 	}
 
 	public printElapsed() {

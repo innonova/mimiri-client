@@ -60,62 +60,62 @@
 			<NoteIcon
 				v-if="node.icon === 'note'"
 				class="w-[30px] h-[30px] desktop:w-[23px] desktop:h-[23px] p-0.5 mr-1 desktop:mr-0.5"
-				:class="{ 'text-shared': node.shared }"
+				:class="{ 'text-shared': shared }"
 			/>
 			<CogIcon
 				v-if="node.icon === 'cog'"
 				class="w-[30px] h-[30px] desktop:w-[23px] desktop:h-[23px] p-0.5 mr-1 desktop:mr-0.5"
-				:class="{ 'text-shared': node.shared }"
+				:class="{ 'text-shared': shared }"
 			/>
 			<FontIcon
 				v-if="node.icon === 'font'"
 				class="w-[30px] h-[30px] desktop:w-[23px] desktop:h-[23px] p-0.5 mr-1 desktop:mr-0.5"
-				:class="{ 'text-shared': node.shared }"
+				:class="{ 'text-shared': shared }"
 			/>
 			<CoinsIcon
 				v-if="node.icon === 'coins'"
 				class="w-[30px] h-[30px] desktop:w-[23px] desktop:h-[23px] p-0.5 mr-1 desktop:mr-0.5"
-				:class="{ 'text-shared': node.shared }"
+				:class="{ 'text-shared': shared }"
 			/>
 			<InfoIcon
 				v-if="node.icon === 'info'"
 				class="w-[30px] h-[30px] desktop:w-[23px] desktop:h-[23px] p-0.5 mr-1 desktop:mr-0.5"
-				:class="{ 'text-shared': node.shared }"
+				:class="{ 'text-shared': shared }"
 			/>
 			<DownloadIcon
 				v-if="node.icon === 'download'"
 				class="w-[30px] h-[30px] desktop:w-[23px] desktop:h-[23px] p-0.5 mr-1 desktop:mr-0.5"
-				:class="{ 'text-shared': node.shared }"
+				:class="{ 'text-shared': shared }"
 			/>
 			<LockIcon
 				v-if="node.icon === 'lock'"
 				class="w-[30px] h-[30px] desktop:w-[23px] desktop:h-[23px] p-0.5 mr-1 desktop:mr-0.5"
-				:class="{ 'text-shared': node.shared }"
+				:class="{ 'text-shared': shared }"
 			/>
 			<AccountIcon
 				v-if="node.icon === 'account'"
 				class="w-[30px] h-[30px] desktop:w-[23px] desktop:h-[23px] p-0.5 mr-1 desktop:mr-0.5"
-				:class="{ 'text-shared': node.shared }"
+				:class="{ 'text-shared': shared }"
 			/>
 			<AnnouncementIcon
 				v-if="node.icon === 'announcement'"
 				class="w-[30px] h-[30px] desktop:w-[23px] desktop:h-[23px] p-0.5 mr-1 desktop:mr-0.5"
-				:class="{ 'text-shared': node.shared }"
+				:class="{ 'text-shared': shared }"
 			/>
 			<BulbIcon
 				v-if="node.icon === 'bulb'"
 				class="w-[30px] h-[30px] desktop:w-[23px] desktop:h-[23px] p-0.5 mr-1 desktop:mr-0.5"
-				:class="{ 'text-shared': node.shared }"
+				:class="{ 'text-shared': shared }"
 			/>
 			<RecycleBinIcon
 				v-if="node.icon === 'recycle-bin' && hasChildren"
 				class="w-[30px] h-[30px] desktop:w-[23px] desktop:h-[23px] p-0.5 mr-1 desktop:mr-0.5"
-				:class="{ 'text-shared': node.shared }"
+				:class="{ 'text-shared': shared }"
 			/>
 			<RecycleBinEmptyIcon
 				v-if="node.icon === 'recycle-bin' && !hasChildren"
 				class="w-[30px] h-[30px] desktop:w-[23px] desktop:h-[23px] p-0.5 mr-1 desktop:mr-0.5"
-				:class="{ 'text-shared': node.shared }"
+				:class="{ 'text-shared': shared }"
 			/>
 			<div v-if="node.hasInfo" class="absolute bottom-0.5 left-[35px] w-2 h-2 rounded-sm bg-bad" />
 			<input
@@ -183,11 +183,13 @@ import LockIcon from '../icons/lock.vue'
 import AnnouncementIcon from '../icons/announcement.vue'
 import BulbIcon from '../icons/bulb.vue'
 import { settingsManager } from '../services/settings-manager'
+import { mimiriApi } from '../services/storage/mimiri-api'
 
 const visualElement = ref(null)
 const renameInput = ref(null)
 const indicatorTop = ref('0px')
 const indicatorVisible = ref(false)
+const shared = computed(() => !!props.node.shared || mimiriApi.state.appearShared?.includes(props.node.title))
 let dragOver = 0
 let target = 0
 

@@ -151,6 +151,7 @@
 
 @custom-variant mobile (&:where([data-device-type="mobile"] *));
 @custom-variant desktop (&:where([data-device-type="desktop"] *));
+@custom-variant compact (@media (max-width: 89rem) or (max-height: 50rem));
 
 html {
 	--sa-support: env(safe-area-inset-top);
@@ -265,8 +266,7 @@ div {
 }
 
 dialog {
-	@apply m-auto mobile:mt-0 mobile:w-full mobile:max-w-full backdrop:bg-dialog-backdrop mobile:backdrop:bg-back outline-none;
-	padding-top: var(--safe-area-top);
+	@apply m-auto mobile:mt-0 mobile:w-full mobile:max-w-full backdrop:bg-dialog-backdrop mobile:backdrop:bg-back outline-none mobile:pt-[var(--safe-area-top)];
 }
 
 .display-editor-container {

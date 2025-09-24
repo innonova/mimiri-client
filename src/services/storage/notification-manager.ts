@@ -11,6 +11,7 @@ export class NotificationManager {
 	private _workOffline = false
 	private _connectionExpected = false
 	private _resumeTime = Date.now()
+	private _connectDelay = 5000
 
 	constructor(
 		private api: MimiriClient,
@@ -26,11 +27,11 @@ export class NotificationManager {
 
 	private async updateState() {
 		if (!this._suspended && !this._workOffline && !this._connectionExpected && this.state.isLoggedIn) {
-			if (this.state.isMobile && Date.now() - this._resumeTime < 10000) {
+			if (this.state.isMobile && Date.now() - this._resumeTime < this._connectDelay) {
 				this.state.isOnlineDelayed = true
 				setTimeout(() => {
 					void this.updateState()
-				}, 500)
+				}, 100)
 				return
 			}
 			this._connectionExpected = true
@@ -149,5 +150,9 @@ export class NotificationManager {
 			this.notificationsCallback('resumed', null)
 		}
 		void this.updateState()
+	}
+
+	public setConnectDelay(delay: number) {
+		this._connectDelay = delay
 	}
 }

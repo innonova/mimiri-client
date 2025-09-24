@@ -318,4 +318,8 @@ export class MimiriStore {
 	public resume() {
 		this.notificationManager.resume()
 	}
+
+	public setConnectDelay(delay: number) {
+		this.notificationManager.setConnectDelay(delay)
+	}
 }

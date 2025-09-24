@@ -79,6 +79,8 @@ export const note = {
 	container: (title: string, parent?: Locator) => (parent || tid(`note-tree`)).getByTitle(title, { exact: true }),
 	item: (title: string, parent?: Locator) =>
 		(parent || tid(`note-tree`)).getByTitle(title, { exact: true }).locator('div').nth(0),
+	open: (title: string, parent?: Locator) =>
+		(parent || tid(`note-tree`)).getByTitle(title, { exact: true }).locator('button').nth(0),
 	items: (title: string, parent?: Locator) => (parent || tid(`note-tree`)).getByTitle(title, { exact: true }),
 	expand: (title: string, parent?: Locator) =>
 		(parent || tid(`note-tree`)).getByTitle(title, { exact: true }).locator('div').nth(0).getByTitle('Expand'),
@@ -98,10 +100,12 @@ export const editor = {
 	redo: () => tid('editor-redo-button'),
 	history: () => tid('editor-history-button'),
 	markAsPassword: () => tid('editor-mark-as-password'),
+	activateEditMode: () => tid('editor-activate-edit-mode'),
 }
 
 export const editorHistory = {
 	container: () => tid('editor-history-container'),
+	scrollContainer: () => tid('editor-history-scroll-container'),
 	item: (index: number) => tid(`editor-history-item-${index}`),
 }
 

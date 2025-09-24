@@ -2,9 +2,14 @@ import { Jimp } from 'jimp';
 import { readdir, mkdir, access, constants, readFile } from 'fs/promises';
 import { join } from 'path';
 import sharp from 'sharp';
+import { generateGalleryHTML } from './gallery-generator.js';
 import 'dotenv/config'
 const themes = ['dark', 'light'];
-const mobileThemes = ['dark-mobile', 'light-mobile'];
+const mobileThemes = ['dark-iphone', 'light-iphone'];
+const tabletThemes = ['dark-ipad', 'light-ipad'];
+const androidThemes = ['dark-android', 'light-android'];
+const tablet10Themes = ['dark-tablet-10', 'light-tablet-10'];
+const tablet7Themes = ['dark-tablet-7', 'light-tablet-7'];
 const cutoutThemes = ['dark-cutouts', 'light-cutouts'];
 const platforms = [
 	{ name: 'windows', base: 'windows-base.png', lightBase: 'light-windows-base.png', mask: 'windows-mask.png' },
@@ -54,15 +59,12 @@ async function processMobileScreenshots() {
 		for (const imageFile of imageFiles) {
 			console.log(`Processing mobile ${mobileTheme}/${imageFile}...`);
 
-			// Determine the output theme folder (remove '-mobile' suffix)
-			const outputTheme = mobileTheme.replace('-mobile', '');
+			// Determine the output theme folder (remove '-iphone' suffix)
+			const outputTheme = mobileTheme.replace('-iphone', '');
 
 			const base = await Jimp.read(`${process.env.SCREENSHOT_WORK_PATH}/iphone-base.png`);
 			const mask = await Jimp.read(`${process.env.SCREENSHOT_WORK_PATH}/iphone-mask.png`);
 			const shot = await Jimp.read(join(screensDir, imageFile));
-
-			// Scale the screenshot up by 300%
-			shot.scale(3.0);
 
 			// Create a canvas the same size as the iPhone base
 			const canvas = new Jimp({ width: base.bitmap.width, height: base.bitmap.height, color: 0x00000000 });
@@ -91,6 +93,55 @@ async function processMobileScreenshots() {
 			await sharp(pngBuffer)
 				.webp({ quality: 80 })
 				.toFile(`${process.env.SCREENSHOT_PUBLIC_PATH}/iphone/${outputTheme}/${webpFilename}`);
+		}
+	}
+}
+
+async function processStoreOverlays() {
+	const deviceConfigs = [
+		{ themes: mobileThemes, device: 'iphone', suffix: '-iphone' },
+		{ themes: tabletThemes, device: 'ipad', suffix: '-ipad' },
+		{ themes: androidThemes, device: 'android', suffix: '-android' },
+		{ themes: tablet10Themes, device: 'tablet-10', suffix: '-tablet-10' },
+		{ themes: tablet7Themes, device: 'tablet-7', suffix: '-tablet-7' }
+	];
+
+	for (const { themes, device, suffix } of deviceConfigs) {
+		for (const theme of themes) {
+			const screensDir = `${process.env.SCREENSHOT_WORK_PATH}/screens/${theme}`;
+			const outputTheme = theme.replace(suffix, '');
+
+			try {
+				const files = await readdir(screensDir);
+				const imageFiles = files.filter(file => file.toLowerCase().endsWith('.png'));
+
+				for (const imageFile of imageFiles) {
+					console.log(`Processing store overlay ${outputTheme}/${imageFile}...`);
+
+					const overlay = await Jimp.read(`${process.env.SCREENSHOT_WORK_PATH}/${device}-store-${outputTheme}-overlay.png`);
+					const shot = await Jimp.read(join(screensDir, imageFile));
+
+					// Create a canvas the same size as the screenshot
+					const canvas = new Jimp({ width: shot.bitmap.width, height: shot.bitmap.height, color: 0x00000000 });
+
+					// First composite the screenshot onto the canvas
+					canvas.composite(shot, 0, 0);
+					// Then composite the store overlay on top
+					canvas.composite(overlay, 0, 0);
+
+					// Save as PNG
+					await canvas.write(`${process.env.SCREENSHOT_PUBLIC_PATH}/app-store/${device}/${outputTheme}/${imageFile}`);
+
+					// Save as WebP using Sharp
+					const webpFilename = imageFile.replace(/\.png$/i, '.webp');
+					const pngBuffer = await canvas.getBuffer('image/png');
+					await sharp(pngBuffer)
+						.webp({ quality: 80 })
+						.toFile(`${process.env.SCREENSHOT_PUBLIC_PATH}/app-store/${device}/${outputTheme}/${webpFilename}`);
+				}
+			} catch (error) {
+				console.error(`Error processing store overlay for ${outputTheme}: ${error.message}`);
+			}
 		}
 	}
 }
@@ -148,7 +199,7 @@ async function ensureDirectoriesExist() {
 
 	// Create directories for mobile themes
 	for (const mobileTheme of mobileThemes) {
-		const outputTheme = mobileTheme.replace('-mobile', '');
+		const outputTheme = mobileTheme.replace('-iphone', '');
 		await mkdir(`${basePath}/iphone/${outputTheme}`, { recursive: true });
 	}
 
@@ -157,14 +208,48 @@ async function ensureDirectoriesExist() {
 		const outputTheme = cutoutTheme.replace('-cutouts', '');
 		await mkdir(`${basePath}/cutouts/${outputTheme}`, { recursive: true });
 	}
+
+	// Create directories for store overlays
+	for (const mobileTheme of mobileThemes) {
+		const outputTheme = mobileTheme.replace('-iphone', '');
+		await mkdir(`${basePath}/app-store/iphone/${outputTheme}`, { recursive: true });
+	}
+
+	// Create directories for store ipad overlays
+	for (const tabletTheme of tabletThemes) {
+		const outputTheme = tabletTheme.replace('-ipad', '');
+		await mkdir(`${basePath}/app-store/ipad/${outputTheme}`, { recursive: true });
+	}
+
+	// Create directories for store android overlays
+	for (const androidTheme of androidThemes) {
+		const outputTheme = androidTheme.replace('-android', '');
+		await mkdir(`${basePath}/app-store/android/${outputTheme}`, { recursive: true });
+	}
+
+	// Create directories for store tablet-10 overlays
+	for (const tablet10Theme of tablet10Themes) {
+		const outputTheme = tablet10Theme.replace('-tablet-10', '');
+		await mkdir(`${basePath}/app-store/tablet-10/${outputTheme}`, { recursive: true });
+	}
+
+	// Create directories for store tablet-7 overlays
+	for (const tablet7Theme of tablet7Themes) {
+		const outputTheme = tablet7Theme.replace('-tablet-7', '');
+		await mkdir(`${basePath}/app-store/tablet-7/${outputTheme}`, { recursive: true });
+	}
 }
+
+
 
 async function processScreenshots() {
 	await ensureDirectoriesExist();
 
 	await processDesktopScreenshots();
 	await processMobileScreenshots();
+	await processStoreOverlays();
 	await processCutouts();
+	await generateGalleryHTML(process.env.SCREENSHOT_PUBLIC_PATH, themes, platforms);
 }
 
 await processScreenshots();

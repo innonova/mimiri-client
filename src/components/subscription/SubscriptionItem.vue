@@ -1,6 +1,6 @@
 <template>
 	<div
-		class="flex flex-col items-center rounded-lg border border-border p-5 m-1.5 ring-2 ring-ring"
+		class="flex flex-col items-center rounded-lg border border-border p-5 compact:py-3 compact:px-1.5 m-1.5 ring-2 ring-ring"
 		:class="{ 'w-48': compact, 'ring-ring-highlight! bg-back-highlight': showCurrent }"
 		:data-testid="`sub-${product.sku}`"
 	>
@@ -30,11 +30,11 @@
 				{{ formatCurrency(product.price / 12, currency) }}<span class="px-px">/</span>month
 			</div>
 		</div>
-		<hr v-if="showFeatures" class="w-[95%] mt-1" />
-		<div v-if="showFeatures" class="py-4 pl-8 pr-4 w-54">
+		<hr v-if="showFeatures" class="w-[95%] mt-1 compact:mt-0" />
+		<div v-if="showFeatures" class="py-4 compact:py-2 pl-8 pr-4 w-54">
 			<ul class="list-disc">
 				<template v-for="feature of product.data.features" :key="feature.title">
-					<li class="py-1" :class="{ 'font-bold': feature.unique }">{{ feature.description }}</li>
+					<li class="py-1 compact:py-0.5" :class="{ 'font-bold': feature.unique }">{{ feature.description }}</li>
 				</template>
 			</ul>
 		</div>

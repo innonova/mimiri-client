@@ -92,11 +92,6 @@ class SettingsManager {
 
 	constructor() {
 		this.defaultThemeIsDark = !!window.matchMedia?.('(prefers-color-scheme: dark)')?.matches
-		globalThis.mimiriApi = {
-			setDarkMode: (isDark: boolean | undefined) => {
-				this.darkMode = !!isDark
-			},
-		}
 	}
 
 	private setTitleBar() {

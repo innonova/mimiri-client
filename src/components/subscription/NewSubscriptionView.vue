@@ -3,11 +3,11 @@
 		<TabBar :items="['Current Plan']" />
 		<div class="flex flex-col items-start overflow-auto">
 			<div data-testid="new-subscription-view" class="flex flex-col items-center">
-				<div class="pb-4 pt-4 cursor-default flex gap-5 justify-center items-center">
+				<div class="pb-4 pt-4 compact:pt-2 cursor-default flex gap-5 justify-center items-center">
 					<Slider v-model="period" :options="periodOptions" />
 					<Slider v-model="currency" :options="currencyOptions" />
 				</div>
-				<div class="flex gap-1">
+				<div class="flex gap-1 compact:gap-0 compact:ml-[-5px] compact:mt-[-5px]">
 					<SubscriptionItem
 						v-if="currentProduct && !products.find(p => p.id === currentProduct?.id)"
 						:product="currentProduct"

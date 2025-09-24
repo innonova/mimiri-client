@@ -2,7 +2,8 @@ import { test } from '@playwright/test'
 import { mimiri, withMimiriContext } from '../framework/mimiri-context'
 import { createCloudAccount, login } from '../core/actions'
 import { createTestTree, deleteAllNotes } from '../notes/actions'
-import { aliceInitialTree, bobInitialTree } from './demo'
+import { aliceInitialTree } from './demo.alice'
+import { bobInitialTree } from './demo.bob'
 
 test.describe('Demo Setup', () => {
 	test.skip('Setup Alice Account', async () => {
@@ -10,6 +11,7 @@ test.describe('Demo Setup', () => {
 			await mimiri().home()
 			mimiri().config.username = 'Alice'
 			mimiri().config.password = process.env.DEMO_ACCOUNT_PASSWORD!
+			mimiri().config.cleanUp = false
 			await createCloudAccount()
 		})
 	})
@@ -19,6 +21,7 @@ test.describe('Demo Setup', () => {
 			await mimiri().home()
 			mimiri().config.username = 'Alice'
 			mimiri().config.password = process.env.DEMO_ACCOUNT_PASSWORD!
+			mimiri().config.cleanUp = false
 			await login()
 			await deleteAllNotes()
 			await createTestTree(aliceInitialTree, { verify: false })
@@ -30,6 +33,7 @@ test.describe('Demo Setup', () => {
 			await mimiri().home()
 			mimiri().config.username = 'Bob'
 			mimiri().config.password = process.env.DEMO_ACCOUNT_PASSWORD!
+			mimiri().config.cleanUp = false
 			await createCloudAccount()
 		})
 	})
@@ -39,6 +43,7 @@ test.describe('Demo Setup', () => {
 			await mimiri().home()
 			mimiri().config.username = 'Bob'
 			mimiri().config.password = process.env.DEMO_ACCOUNT_PASSWORD!
+			mimiri().config.cleanUp = false
 			await login()
 			await deleteAllNotes()
 			await createTestTree(bobInitialTree, { verify: false })

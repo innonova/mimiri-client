@@ -74,11 +74,12 @@
 </template>
 
 <script setup lang="ts">
-import { nextTick, ref } from 'vue'
-import { clipboardManager, noteManager } from '../../global'
+import { nextTick, ref, watch } from 'vue'
+import { clipboardManager, env, noteManager } from '../../global'
 import LoadingIcon from '../../icons/loading.vue'
 import DialogTitle from '../elements/DialogTitle.vue'
 import CopyIcon from '../../icons/copy.vue'
+import { mimiriApi } from '../../services/storage/mimiri-api'
 const dialog = ref(null)
 const nameInput = ref(null)
 const code = ref('')
@@ -100,6 +101,14 @@ const copyCode = () => {
 	clipboardManager.write(code.value)
 	copied.value = true
 	setTimeout(() => (copied.value = false), 1000)
+}
+
+if (env.DEV) {
+	watch(mimiriApi.state, () => {
+		if (mimiriApi.state.shareCode) {
+			code.value = mimiriApi.state.shareCode
+		}
+	})
 }
 
 const show = async () => {

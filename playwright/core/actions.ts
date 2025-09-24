@@ -7,6 +7,7 @@ import {
 	editor,
 	lockScreen,
 	loginCtrl,
+	mainToolbar,
 	menu,
 	passwordDialog,
 	pinCodeView,
@@ -83,10 +84,19 @@ export const logout = async () => {
 }
 
 export const login = async () => {
-	await expect(titleBar.container()).toBeVisible()
-	if (!(await loginCtrl.container().isVisible())) {
-		await titleBar.accountButton().click()
-		await menu.login().click()
+	const isMobile = await mimiri().isMobile()
+	if (isMobile) {
+		await expect(mainToolbar.container()).toBeVisible()
+		if (!(await loginCtrl.container().isVisible())) {
+			await mainToolbar.account().click()
+			await menu.login().click()
+		}
+	} else {
+		await expect(titleBar.container()).toBeVisible()
+		if (!(await loginCtrl.container().isVisible())) {
+			await titleBar.accountButton().click()
+			await menu.login().click()
+		}
 	}
 	await expect(loginCtrl.container()).toBeVisible()
 	await loginCtrl.username().fill(mimiri().config.username)
