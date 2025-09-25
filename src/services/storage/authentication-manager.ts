@@ -187,7 +187,6 @@ export class AuthenticationManager {
 						const legacyLoginData = await ipcClient.cache.getUser(this.state.username)
 						const preLoginData = await ipcClient.cache.getPreLogin(this.state.username)
 						if (!legacyLoginData || !preLoginData) {
-							settingsManager.startLoggedOut = true
 							return false
 						}
 						const initData: InitializationData = {
@@ -218,7 +217,6 @@ export class AuthenticationManager {
 						await this.db.open(this.state.username)
 						await this.db.setInitializationData(initData)
 					} else {
-						settingsManager.startLoggedOut = true
 						return false
 					}
 				}

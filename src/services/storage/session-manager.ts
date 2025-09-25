@@ -204,7 +204,6 @@ export class SessionManager {
 				await this.loadRootNote()
 				await this.treeManager.loadState()
 				await updateManager.good()
-				settingsManager.startLoggedOut = false
 			} else {
 				await this.logout()
 			}
@@ -234,7 +233,7 @@ export class SessionManager {
 					await updateManager.good()
 				}
 				this._listener?.login()
-				settingsManager.startLoggedOut = false
+				settingsManager.startOnLocalAccount = false
 				return true
 			} else {
 				return false
@@ -283,7 +282,7 @@ export class SessionManager {
 						await this.treeManager.gettingStarted?.select()
 						await this.localStateManager.clearFirstLogin()
 					}
-					settingsManager.startLoggedOut = false
+					settingsManager.startOnLocalAccount = true
 					return true
 				} else {
 					return false
@@ -338,7 +337,7 @@ export class SessionManager {
 		try {
 			await this.recoverLogin()
 			if (!this.state.isLoggedIn) {
-				if (!(await this.authManager.hasOneOrMoreAccounts()) || !settingsManager.startLoggedOut) {
+				if (!(await this.authManager.hasOneOrMoreAccounts()) || settingsManager.startOnLocalAccount) {
 					await this.openLocal()
 				}
 			}
@@ -350,7 +349,6 @@ export class SessionManager {
 				loginDialog.value.show(true)
 			}
 		} catch (ex) {
-			settingsManager.startLoggedOut = false
 			await this.logout()
 			location.reload()
 		}
@@ -376,8 +374,5 @@ export class SessionManager {
 		this.state.stateLoaded = false
 		this._listener?.logout()
 		this.treeManager.logout()
-		if (userInitiated) {
-			settingsManager.startLoggedOut = true
-		}
 	}
 }

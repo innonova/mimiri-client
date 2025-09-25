@@ -44,7 +44,7 @@ export interface MimerConfiguration {
 	blogPostNotificationLevel: string
 	lastReadBlogPostId: Guid
 	disableDevBlog: boolean
-	startLoggedOut: boolean
+	startOnLocalAccount: boolean
 	useChevrons: boolean
 	showVerticalGuides: boolean
 	debugEnabled?: boolean
@@ -84,7 +84,7 @@ class SettingsManager {
 		blogPostNotificationLevel: 'clearly',
 		lastReadBlogPostId: emptyGuid(),
 		disableDevBlog: false,
-		startLoggedOut: false,
+		startOnLocalAccount: false,
 		useChevrons: true,
 		showVerticalGuides: true,
 		debugEnabled: undefined,
@@ -397,12 +397,12 @@ class SettingsManager {
 		void this.save()
 	}
 
-	public get startLoggedOut() {
-		return !!this.state.startLoggedOut
+	public get startOnLocalAccount() {
+		return !!this.state.startOnLocalAccount
 	}
 
-	public set startLoggedOut(value: boolean) {
-		this.state.startLoggedOut = value
+	public set startOnLocalAccount(value: boolean) {
+		this.state.startOnLocalAccount = value
 		void this.save()
 	}
 
