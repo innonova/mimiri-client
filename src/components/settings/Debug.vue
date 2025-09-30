@@ -1,6 +1,6 @@
 <template>
 	<div v-if="settingsManager.debugEnabled" class="flex flex-col h-full">
-		<TabBar @selected="tabSelected" :items="['Settings', 'Errors', 'Messages', 'Latency']" />
+		<TabBar @selected="tabSelected" :items="['Settings', 'Errors', 'Messages', 'Latency', 'Functions']" />
 		<div v-if="selectedTab === 'Settings'" class="w-full h-full overflow-y-auto">
 			<div class="flex items-center gap-2 p-2">
 				<button @click="testError" class="primary">Test Error</button>
@@ -85,6 +85,19 @@
 				</template>
 			</div>
 		</div>
+		<div v-if="selectedTab === 'Functions'" class="w-full h-full overflow-y-auto pb-10">
+			<div class="grid grid-cols-[10rem_10rem] gap-2 p-2">
+				<button @click="enableAutoStart" class="primary">Enable AutoStart</button>
+				<button @click="disableAutoStart" class="primary">Disable AutoStart</button>
+				<button @click="saveFile" class="primary">Save File</button>
+				<button @click="loadFile" class="primary">Load File</button>
+				<button @click="saveFolder" class="primary">Save Folder</button>
+				<button @click="loadFolder" class="primary">Load Folder</button>
+			</div>
+			<div class="p-2 whitespace-pre-wrap">
+				{{ functionResult }}
+			</div>
+		</div>
 	</div>
 </template>
 
@@ -92,9 +105,10 @@
 import { onMounted, ref } from 'vue'
 import TabBar from '../elements/TabBar.vue'
 import { settingsManager } from '../../services/settings-manager'
-import { debug, noteManager } from '../../global'
+import { debug, ipcClient, noteManager } from '../../global'
 import { formatDateTime } from '../../services/helpers'
 import { emptyGuid } from '../../services/types/guid'
+import { toBase64 } from '../../services/hex-base64'
 
 const selectedTab = ref('Settings')
 const errorLog = ref([])
@@ -112,6 +126,8 @@ const callErrorFrequency = ref(10)
 const callErrorFrequencyEnabled = ref(false)
 const callErrorDelay = ref(0)
 const latencyThreshold = ref(1000)
+
+const functionResult = ref('')
 
 onMounted(() => {
 	preCallLatency.value = debug.settings.preCallLatency
@@ -149,6 +165,8 @@ const tabSelected = item => {
 	} else if (item === 'Latency') {
 		selectedTab.value = 'Latency'
 		latencyLog.value = debug.latencyLog
+	} else if (item === 'Functions') {
+		selectedTab.value = 'Functions'
 	} else {
 		selectedTab.value = ''
 	}
@@ -186,5 +204,59 @@ const clearLatency = () => {
 
 const timeTravel = () => {
 	noteManager.state.created = new Date(noteManager.state.created.getTime() - 25 * 60 * 60 * 1000)
+}
+
+const enableAutoStart = () => {
+	functionResult.value = 'Enable AutoStart clicked'
+}
+
+const disableAutoStart = () => {
+	functionResult.value = 'Disable AutoStart clicked'
+}
+
+const saveFile = async () => {
+	functionResult.value = 'Save File clicked'
+	if (ipcClient.isAvailable) {
+		const base64Data = await toBase64(new TextEncoder().encode('TEST'))
+		const result = await ipcClient.fileSystem.saveFile(
+			{ path: '', isFolder: false, content: base64Data },
+			{
+				title: 'Save Test File',
+				filters: [{ name: 'Text Files', extensions: ['txt'] }],
+			},
+		)
+		functionResult.value += JSON.stringify(result, null, 2)
+	}
+}
+
+const loadFile = async () => {
+	functionResult.value = 'Load File clicked'
+	if (ipcClient.isAvailable) {
+		const result = await ipcClient.fileSystem.loadFile()
+		functionResult.value += JSON.stringify(result, null, 2)
+	}
+}
+
+const saveFolder = async () => {
+	functionResult.value = 'Save Folder clicked'
+	if (ipcClient.isAvailable) {
+		const files = [
+			{ path: 'test.txt', isFolder: false, content: await toBase64(new TextEncoder().encode('TEST')) },
+			{ path: 'test2.txt', isFolder: false, content: await toBase64(new TextEncoder().encode('TEST 2')) },
+			{ path: 'sub/test3.txt', isFolder: false, content: await toBase64(new TextEncoder().encode('TEST 3')) },
+			{ path: 'sub2/test4.txt', isFolder: false, content: await toBase64(new TextEncoder().encode('TEST 4')) },
+			{ path: 'sub2/subsub/test5.txt', isFolder: false, content: await toBase64(new TextEncoder().encode('TEST 5')) },
+		]
+		const result = await ipcClient.fileSystem.saveFolder(files, { title: 'Save Test Folder' })
+		functionResult.value += JSON.stringify(result, null, 2)
+	}
+}
+
+const loadFolder = async () => {
+	functionResult.value = 'Load Folder clicked'
+	if (ipcClient.isAvailable) {
+		const result = await ipcClient.fileSystem.loadFolder()
+		functionResult.value += JSON.stringify(result, null, 2)
+	}
 }
 </script>

@@ -780,7 +780,12 @@ class MenuManager {
 					},
 				],
 				{
-					trayIcon: settingsManager.trayIcon,
+					trayIcon:
+						settingsManager.trayIcon === 'system'
+							? settingsManager.darkMode
+								? 'white'
+								: 'black'
+							: settingsManager.trayIcon,
 				},
 			)
 		}

@@ -71,6 +71,30 @@ export interface IpcSession {
 	get(name: string): Promise<any>
 }
 
+export interface FileData {
+	path: string
+	isFolder: boolean
+	content: string
+}
+
+export interface IpcFileSystem {
+	loadFile(options?: {
+		title?: string
+		filters?: Array<{ name: string; extensions: string[] }>
+		multiple?: boolean
+	}): Promise<FileData[]>
+	saveFile(
+		data: FileData,
+		options?: {
+			title?: string
+			defaultName?: string
+			filters?: Array<{ name: string; extensions: string[] }>
+		},
+	): Promise<boolean>
+	loadFolder(options?: { title?: string; multiple?: boolean }): Promise<FileData[]>
+	saveFolder(data: FileData[], options?: { title?: string }): Promise<boolean>
+}
+
 export interface IpcApi {
 	cache: IpcCacheApi
 	menu: IpcMenuApi
@@ -79,4 +103,5 @@ export interface IpcApi {
 	window: IpcWindowApi
 	watchDog: IpcWatchDog
 	session: IpcSession
+	fileSystem: IpcFileSystem
 }
