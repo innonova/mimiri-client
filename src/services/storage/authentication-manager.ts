@@ -184,8 +184,8 @@ export class AuthenticationManager {
 
 				if (!(await this.db.exists(this.state.username))) {
 					if (ipcClient.isAvailable && ipcClient.session.isAvailable) {
-						const legacyLoginData = await ipcClient.cache.getUser(this.state.username)
-						const preLoginData = await ipcClient.cache.getPreLogin(this.state.username)
+						const legacyLoginData = undefined // await ipcClient.cache.getUser(this.state.username)
+						const preLoginData = undefined // await ipcClient.cache.getPreLogin(this.state.username)
 						if (!legacyLoginData || !preLoginData) {
 							return false
 						}
