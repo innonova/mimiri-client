@@ -206,12 +206,18 @@ const timeTravel = () => {
 	noteManager.state.created = new Date(noteManager.state.created.getTime() - 25 * 60 * 60 * 1000)
 }
 
-const enableAutoStart = () => {
+const enableAutoStart = async () => {
 	functionResult.value = 'Enable AutoStart clicked'
+	if (ipcClient.isAvailable) {
+		await ipcClient.os.setAutoStart(true)
+	}
 }
 
-const disableAutoStart = () => {
+const disableAutoStart = async () => {
 	functionResult.value = 'Disable AutoStart clicked'
+	if (ipcClient.isAvailable) {
+		await ipcClient.os.setAutoStart(false)
+	}
 }
 
 const saveFile = async () => {

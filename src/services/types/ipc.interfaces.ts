@@ -95,12 +95,19 @@ export interface IpcFileSystem {
 	saveFolder(data: FileData[], options?: { title?: string }): Promise<boolean>
 }
 
+export interface IpcOs {
+	setAutoStart(enabled: boolean): Promise<void>
+	getAutoStart(): Promise<boolean>
+	rules(): Promise<string[]>
+}
+
 export interface IpcApi {
 	cache: IpcCacheApi
 	menu: IpcMenuApi
 	settings: IpcSettingsApi
 	bundle: IpcBundleApi
 	window: IpcWindowApi
+	os: IpcOs
 	watchDog: IpcWatchDog
 	session: IpcSession
 	fileSystem: IpcFileSystem

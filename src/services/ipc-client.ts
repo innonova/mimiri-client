@@ -179,6 +179,19 @@ export class FileSystem {
 	}
 }
 
+export class Os {
+	constructor(private api: IpcApi) {}
+	public setAutoStart(enabled: boolean): Promise<void> {
+		return this.api.os.setAutoStart(enabled)
+	}
+	public getAutoStart(): Promise<boolean> {
+		return this.api.os.getAutoStart()
+	}
+	public rules(): Promise<string[]> {
+		return this.api.os.rules()
+	}
+}
+
 export class IpcClient {
 	private api: IpcApi
 	public readonly menu: MimerMenu
@@ -188,6 +201,7 @@ export class IpcClient {
 	public readonly watchDog: WatchDog
 	public readonly session: ElectronSession
 	public readonly fileSystem: FileSystem
+	public readonly os: Os
 
 	constructor() {
 		if (capacitorClient.available) {
@@ -202,6 +216,7 @@ export class IpcClient {
 		this.watchDog = new WatchDog(this.api)
 		this.session = new ElectronSession(this.api)
 		this.fileSystem = new FileSystem(this.api)
+		this.os = new Os(this.api)
 	}
 
 	public get isAvailable() {

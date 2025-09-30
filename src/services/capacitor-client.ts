@@ -7,6 +7,7 @@ import type {
 	IpcCacheApi,
 	IpcFileSystem,
 	IpcMenuApi,
+	IpcOs,
 	IpcSession,
 	IpcSettingsApi,
 	IpcWatchDog,
@@ -64,6 +65,16 @@ class NoOpFileSystem implements IpcFileSystem {
 
 	async saveFolder(_data: FileData[], _options?: { title?: string }): Promise<boolean> {
 		return false
+	}
+}
+
+class NoOpOs implements IpcOs {
+	async setAutoStart(_enabled: boolean): Promise<void> {}
+	async getAutoStart(): Promise<boolean> {
+		return Promise.resolve(false)
+	}
+	async rules(): Promise<string[]> {
+		return Promise.resolve([])
 	}
 }
 
@@ -131,6 +142,7 @@ class CapacitorClient implements IpcApi {
 	public watchDog: IpcWatchDog
 	public session: IpcSession
 	public fileSystem: IpcFileSystem
+	public os: IpcOs
 
 	constructor() {
 		this.available = false
@@ -144,6 +156,7 @@ class CapacitorClient implements IpcApi {
 		this.window = new NoOpWindow()
 		this.watchDog = new NoOpWatchDog()
 		this.fileSystem = new NoOpFileSystem()
+		this.os = new NoOpOs()
 	}
 }
 
