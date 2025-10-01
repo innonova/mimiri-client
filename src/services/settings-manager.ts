@@ -116,7 +116,7 @@ class SettingsManager {
 			if (settings) {
 				Object.assign(this.state, settings)
 			} else if (ipcClient.isFlatpak) {
-				settings.openAtLogin = false
+				this.state.openAtLogin = false
 			}
 			this.setTitleBar()
 		} else if (localStorage) {
