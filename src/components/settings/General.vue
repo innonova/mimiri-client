@@ -5,7 +5,12 @@
 			<div class="p-1 pt-2 m-auto text-left">
 				<label>
 					<input type="checkbox" v-model="darkMode" class="mr-1 relative top-0.5" />
-					Dark Mode
+					Dark Mode - Tray:
+					<select v-model="trayIcon" class="ml-1" v-if="mimiriPlatform.isLinuxApp">
+						<option value="system">Match</option>
+						<option value="white">White</option>
+						<option value="black">Black</option>
+					</select>
 				</label>
 			</div>
 			<div v-if="!mimiriPlatform.isDesktop || !alwaysEdit || env.DEV" class="p-1 pt-2 m-auto text-left">
@@ -61,14 +66,6 @@
 					<input type="checkbox" v-model="disableDevBlog" class="mr-1 relative top-0.5" />
 					Disable Dev Blog
 				</label>
-			</div>
-			<div v-if="mimiriPlatform.isLinuxApp" class="p-1 pt-2 m-auto text-left flex gap-2 items-center">
-				<div>Tray icon color:</div>
-				<select v-model="trayIcon">
-					<option value="system">Auto</option>
-					<option value="white">White</option>
-					<option value="black">Black</option>
-				</select>
 			</div>
 			<div class="mt-10 max-w-110 mr-2">
 				<hr />
