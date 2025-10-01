@@ -88,7 +88,10 @@ export class SymmetricCrypt {
 		if (!algo) {
 			throw new Error(`Algorithm not supported ${algorithm}`)
 		}
-		const key = await crypto.subtle.importKey('raw', keyData, { name: algo.name }, true, ['encrypt', 'decrypt'])
+		const key = await crypto.subtle.importKey('raw', keyData as BufferSource, { name: algo.name }, true, [
+			'encrypt',
+			'decrypt',
+		])
 		return new SymmetricCrypt(algo, key)
 	}
 
@@ -123,7 +126,7 @@ export class SymmetricCrypt {
 	async encryptBytes(data: ArrayBuffer | Uint8Array, allowZip: boolean = false): Promise<string> {
 		if (data.byteLength > 512 && allowZip) {
 			const zipped = await new Response(
-				new Blob([data]).stream().pipeThrough(new CompressionStream('gzip')),
+				new Blob([data as BufferSource]).stream().pipeThrough(new CompressionStream('gzip')),
 			).arrayBuffer()
 			const data2 = new Uint8Array(zipped.byteLength + 4)
 			data2.set([0x00, 0x00, 0x00, 0x01], 0)
@@ -131,7 +134,9 @@ export class SymmetricCrypt {
 			data = data2
 		}
 		const iv = crypto.getRandomValues(new Uint8Array(this._algorithm.ivSize))
-		const encrypted = new Uint8Array(await crypto.subtle.encrypt({ name: this._algorithm.name, iv }, this.key, data))
+		const encrypted = new Uint8Array(
+			await crypto.subtle.encrypt({ name: this._algorithm.name, iv }, this.key, data as BufferSource),
+		)
 		const combined = new Uint8Array(this._algorithm.ivSize + encrypted.length)
 		combined.set(iv)
 		combined.set(encrypted, this._algorithm.ivSize)

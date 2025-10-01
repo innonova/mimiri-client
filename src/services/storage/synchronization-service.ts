@@ -146,7 +146,7 @@ export class SynchronizationService {
 			return Promise.resolve(true)
 		} else {
 			return new Promise<boolean>(resolve => {
-				let timeoutId: NodeJS.Timeout | undefined
+				let timeoutId: any
 
 				const wrappedResolve = (success: boolean) => {
 					cleanup()
