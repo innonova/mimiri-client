@@ -48,6 +48,7 @@ export interface MimerConfiguration {
 	useChevrons: boolean
 	showVerticalGuides: boolean
 	debugEnabled?: boolean
+	startCount: number
 }
 
 class SettingsManager {
@@ -88,6 +89,7 @@ class SettingsManager {
 		useChevrons: true,
 		showVerticalGuides: true,
 		debugEnabled: undefined,
+		startCount: 0,
 	})
 
 	constructor() {
@@ -113,6 +115,8 @@ class SettingsManager {
 			const settings = await ipcClient.settings.load()
 			if (settings) {
 				Object.assign(this.state, settings)
+			} else if (ipcClient.isFlatpak) {
+				settings.openAtLogin = false
 			}
 			this.setTitleBar()
 		} else if (localStorage) {
@@ -127,8 +131,9 @@ class SettingsManager {
 			} else {
 				this.state.isNewInstall = true
 			}
-			await this.save()
 		}
+		this.state.startCount = (this.state.startCount || 0) + 1
+		await this.save()
 		fontManager.load(this.editorFontFamily)
 	}
 
@@ -431,6 +436,10 @@ class SettingsManager {
 	public set debugEnabled(value: boolean) {
 		this.state.debugEnabled = value
 		void this.save()
+	}
+
+	public get startCount() {
+		return this.state.startCount || 0
 	}
 }
 

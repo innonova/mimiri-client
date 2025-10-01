@@ -222,4 +222,20 @@ export class IpcClient {
 	public get isAvailable() {
 		return !!this.api
 	}
+
+	public get platform() {
+		return this.api?.platform || 'web'
+	}
+	public get isFlatpak() {
+		return !!this.api?.isFlatpak
+	}
+	public get isSnap() {
+		return !!this.api?.isSnap
+	}
+	public get isAppImage() {
+		return !!this.api?.isAppImage
+	}
+	public get isTarGz() {
+		return !!this.api?.isTarGz
+	}
 }

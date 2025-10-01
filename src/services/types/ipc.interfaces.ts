@@ -111,4 +111,9 @@ export interface IpcApi {
 	watchDog: IpcWatchDog
 	session: IpcSession
 	fileSystem: IpcFileSystem
+	platform: string
+	isFlatpak: boolean
+	isSnap: boolean
+	isAppImage: boolean
+	isTarGz: boolean
 }

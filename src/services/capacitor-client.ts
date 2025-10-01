@@ -143,6 +143,11 @@ class CapacitorClient implements IpcApi {
 	public session: IpcSession
 	public fileSystem: IpcFileSystem
 	public os: IpcOs
+	public platform = 'capacitor'
+	public isFlatpak = false
+	public isSnap = false
+	public isAppImage = false
+	public isTarGz = false
 
 	constructor() {
 		this.available = false
