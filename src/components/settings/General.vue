@@ -10,12 +10,9 @@
 					<option value="dark">Dark</option>
 				</select>
 			</div>
-			<div
-				v-if="!mimiriPlatform.isDesktop || !alwaysEdit || env.DEV"
-				class="p-1 pt-2 m-auto text-left flex items-center"
-			>
+			<div v-if="!mimiriPlatform.isLinuxApp || env.DEV" class="p-1 pt-2 m-auto text-left flex items-center">
 				<div class="w-15">Tray Icon</div>
-				<select v-model="trayIcon" class="ml-1" v-if="mimiriPlatform.isLinuxApp">
+				<select v-model="trayIcon" class="ml-1">
 					<option value="system">System</option>
 					<option value="white">White</option>
 					<option value="black">Black</option>
