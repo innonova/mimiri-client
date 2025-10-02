@@ -49,10 +49,10 @@ export interface MimerConfiguration {
 	showVerticalGuides: boolean
 	debugEnabled?: boolean
 	startCount: number
+	systemTheme: string
 }
 
 class SettingsManager {
-	private defaultThemeIsDark: boolean
 	private _saveInProgress = false
 	private _saveRequestedWhileInProgress = false
 
@@ -90,10 +90,15 @@ class SettingsManager {
 		showVerticalGuides: true,
 		debugEnabled: undefined,
 		startCount: 0,
+		systemTheme: 'light',
 	})
 
 	constructor() {
-		this.defaultThemeIsDark = !!window.matchMedia?.('(prefers-color-scheme: dark)')?.matches
+		this.state.systemTheme = !!window.matchMedia?.('(prefers-color-scheme: dark)')?.matches ? 'dark' : 'light'
+		const mql = window.matchMedia('(prefers-color-scheme: dark)')
+		mql.addEventListener('change', event => {
+			this.state.systemTheme = event.matches ? 'dark' : 'light'
+		})
 	}
 
 	private setTitleBar() {
@@ -173,10 +178,11 @@ class SettingsManager {
 	}
 
 	public get darkMode() {
-		if (this.state.theme === 'default') {
-			return this.defaultThemeIsDark
-		}
-		return this.state.theme === 'dark'
+		const useSystem = this.state.theme === 'default'
+		const themeIsDark = this.state.theme === 'dark'
+		const systemIsDark = this.state.systemTheme === 'dark'
+		if (useSystem) return systemIsDark
+		return themeIsDark
 	}
 
 	public set darkMode(value: boolean | undefined) {
@@ -188,6 +194,15 @@ class SettingsManager {
 			this.state.theme = 'default'
 		}
 		this.setTitleBar()
+		void this.save()
+	}
+
+	public get theme() {
+		return this.state.theme
+	}
+
+	public set theme(value: string) {
+		this.state.theme = value
 		void this.save()
 	}
 

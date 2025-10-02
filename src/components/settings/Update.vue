@@ -64,7 +64,7 @@
 							<DownloadIcon class="w-9 h-7 p-px no-drag" />
 							<div class="absolute bottom-0 right-px w-2 h-2 rounded-sm bg-bad" />
 						</div>
-						the System area in the treeview
+						in the System area in the treeview
 					</li>
 					<li>The update can then be manually performed from here.</li>
 					<li v-if="isIos">Larger updates will happen like normal through the AppStore</li>
@@ -89,7 +89,7 @@
 							<DownloadIcon class="w-9 h-7 p-px no-drag" />
 							<div class="absolute bottom-0 right-px w-2 h-2 rounded-sm bg-bad" />
 						</div>
-						the System area in the treeview
+						in the System area in the treeview
 					</li>
 					<li>The update can then be manually performed from here.</li>
 					<li v-if="isIos">Larger updates will happen like normal through the AppStore</li>

@@ -2,16 +2,24 @@
 	<div class="flex flex-col h-full">
 		<TabBar :items="['General']" />
 		<div class="overflow-y-auto pb-10">
-			<div class="p-1 pt-2 m-auto text-left">
-				<label>
-					<input type="checkbox" v-model="darkMode" class="mr-1 relative top-0.5" />
-					Dark Mode - Tray:
-					<select v-model="trayIcon" class="ml-1" v-if="mimiriPlatform.isLinuxApp">
-						<option value="system">Match</option>
-						<option value="white">White</option>
-						<option value="black">Black</option>
-					</select>
-				</label>
+			<div class="p-1 pt-2 m-auto text-left flex items-center">
+				<div class="w-15">Theme</div>
+				<select v-model="theme" class="ml-1">
+					<option value="default">System</option>
+					<option value="light">Light</option>
+					<option value="dark">Dark</option>
+				</select>
+			</div>
+			<div
+				v-if="!mimiriPlatform.isDesktop || !alwaysEdit || env.DEV"
+				class="p-1 pt-2 m-auto text-left flex items-center"
+			>
+				<div class="w-15">Tray Icon</div>
+				<select v-model="trayIcon" class="ml-1" v-if="mimiriPlatform.isLinuxApp">
+					<option value="system">System</option>
+					<option value="white">White</option>
+					<option value="black">Black</option>
+				</select>
 			</div>
 			<div v-if="!mimiriPlatform.isDesktop || !alwaysEdit || env.DEV" class="p-1 pt-2 m-auto text-left">
 				<label>
@@ -84,7 +92,7 @@ import { mimiriPlatform } from '../../services/mimiri-platform'
 import TabBar from '../elements/TabBar.vue'
 import { env } from '../../global'
 
-const darkMode = ref(false)
+const theme = ref('default')
 const openAtLogin = ref(false)
 const showInTaskBar = ref(false)
 const keepTrayIconVisible = ref(false)
@@ -99,7 +107,7 @@ const simpleEditor = ref(false)
 
 const canSave = computed(
 	() =>
-		darkMode.value !== settingsManager.darkMode ||
+		theme.value !== settingsManager.theme ||
 		keepTrayIconVisible.value !== settingsManager.keepTrayIconVisible ||
 		showInTaskBar.value !== settingsManager.showInTaskBar ||
 		openAtLogin.value !== settingsManager.openAtLogin ||
@@ -113,7 +121,7 @@ const canSave = computed(
 )
 
 onMounted(() => {
-	darkMode.value = settingsManager.darkMode
+	theme.value = settingsManager.theme
 	keepTrayIconVisible.value = settingsManager.keepTrayIconVisible
 	showInTaskBar.value = settingsManager.showInTaskBar
 	openAtLogin.value = settingsManager.openAtLogin
@@ -127,7 +135,7 @@ onMounted(() => {
 })
 
 const save = async () => {
-	settingsManager.darkMode = darkMode.value
+	settingsManager.theme = theme.value
 	settingsManager.keepTrayIconVisible = keepTrayIconVisible.value
 	settingsManager.showInTaskBar = showInTaskBar.value
 	settingsManager.openAtLogin = openAtLogin.value
