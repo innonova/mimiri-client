@@ -763,16 +763,12 @@ class MenuManager {
 								},
 							]
 						: []),
-					...(!mimiriPlatform.isFlatpak
-						? [
-								{
-									id: 'open-at-login',
-									title: 'Launch on Startup',
-									type: 'checkbox',
-									checked: settingsManager.openAtLogin,
-								},
-							]
-						: []),
+					{
+						id: 'open-at-login',
+						title: 'Launch on Startup',
+						type: 'checkbox',
+						checked: settingsManager.openAtLogin,
+					},
 					{ type: 'separator' },
 					{
 						id: 'quit',
