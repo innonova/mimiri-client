@@ -118,10 +118,10 @@ class SettingsManager {
 		this.state.editorFontSize = fontManager.defaultEditorFontSize
 		if (ipcClient.isAvailable) {
 			const settings = await ipcClient.settings.load()
-			console.log('settings loaded', settings)
+			const rules = await ipcClient.os?.rules()
 			if (settings) {
 				Object.assign(this.state, settings)
-			} else if (ipcClient.isFlatpak) {
+			} else if (rules?.flags?.includes('requires-permissions')) {
 				this.state.openAtLogin = false
 			}
 			this.setTitleBar()
@@ -139,7 +139,6 @@ class SettingsManager {
 			}
 		}
 		this.state.startCount = (this.state.startCount || 0) + 1
-		console.log('settings loaded this.state', this.state)
 		await this.save()
 		fontManager.load(this.editorFontFamily)
 	}

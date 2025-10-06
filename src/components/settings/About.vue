@@ -38,7 +38,7 @@
 						>)</span
 					>
 				</div>
-				<div v-if="flags" class="p-1 pl-4 pt-2">Flags: {{ flags }}</div>
+				<div v-if="flags" class="p-1 pl-4 pt-2">System: {{ flags }}</div>
 				<div class="pt-6 pl-4"><a href="https://mimiri.io/terms" target="_blank">Terms & Conditions</a></div>
 				<div class="pt-3 pl-4"><a href="https://mimiri.io/privacy" target="_blank">Privacy Policy</a></div>
 				<div class="pt-6 pl-4"><a href="https://mimiri.io" target="_blank">https://mimiri.io</a></div>
@@ -135,7 +135,7 @@ const fontLink = ref('')
 const flags = ref('')
 
 if (ipcClient.isAvailable) {
-	ipcClient.os.rules().then(rules => (flags.value = rules?.flags.join(', ')))
+	ipcClient.os?.rules().then(rules => (flags.value = rules?.flags?.join(', ')))
 }
 
 const biCif = value => {
