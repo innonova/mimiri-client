@@ -1,5 +1,5 @@
 import { settingsManager, type MimerConfiguration } from './settings-manager'
-import type { FileData, InstalledBundleInfo, IpcApi } from './types/ipc.interfaces'
+import type { FileData, InstalledBundleInfo, IpcApi, PlatformRules } from './types/ipc.interfaces'
 import { capacitorClient } from './capacitor-client'
 import type { Bundle } from './update-manager'
 import { menuManager } from './menu-manager'
@@ -187,7 +187,7 @@ export class Os {
 	public getAutoStart(): Promise<boolean> {
 		return this.api.os.getAutoStart()
 	}
-	public rules(): Promise<string[]> {
+	public rules(): Promise<PlatformRules> {
 		return this.api.os.rules()
 	}
 }

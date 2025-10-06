@@ -95,10 +95,18 @@ export interface IpcFileSystem {
 	saveFolder(data: FileData[], options?: { title?: string }): Promise<boolean>
 }
 
+export interface PlatformRules {
+	startOnLoginRequiresApproval: boolean
+	canPreventScreenRecording: boolean
+	canKeepTrayIconVisible: boolean
+	needsTrayIconColorControl: boolean
+	flags: string[]
+}
+
 export interface IpcOs {
 	setAutoStart(enabled: boolean): Promise<void>
 	getAutoStart(): Promise<boolean>
-	rules(): Promise<string[]>
+	rules(): Promise<PlatformRules>
 }
 
 export interface IpcApi {

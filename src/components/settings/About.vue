@@ -38,6 +38,7 @@
 						>)</span
 					>
 				</div>
+				<div v-if="flags" class="p-1 pl-4 pt-2">Flags: {{ flags }}</div>
 				<div class="pt-6 pl-4"><a href="https://mimiri.io/terms" target="_blank">Terms & Conditions</a></div>
 				<div class="pt-3 pl-4"><a href="https://mimiri.io/privacy" target="_blank">Privacy Policy</a></div>
 				<div class="pt-6 pl-4"><a href="https://mimiri.io" target="_blank">https://mimiri.io</a></div>
@@ -105,7 +106,7 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import { noteManager, updateManager } from '../../global'
+import { ipcClient, noteManager, updateManager } from '../../global'
 import { settingsManager } from '../../services/settings-manager'
 import { iconAttributions } from '../../icons/attributions'
 import { mimiriPlatform } from '../../services/mimiri-platform'
@@ -131,6 +132,11 @@ const browserName = ref(navigator.userAgent)
 const selectedFont = ref('CHOOSE')
 const fontLicense = ref('')
 const fontLink = ref('')
+const flags = ref('')
+
+if (ipcClient.isAvailable) {
+	ipcClient.os.rules().then(rules => (flags.value = rules?.flags.join(', ')))
+}
 
 const biCif = value => {
 	if (value < 10) {

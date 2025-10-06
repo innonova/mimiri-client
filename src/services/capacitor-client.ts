@@ -12,6 +12,7 @@ import type {
 	IpcSettingsApi,
 	IpcWatchDog,
 	IpcWindowApi,
+	PlatformRules,
 } from './types/ipc.interfaces'
 import type { MimerConfiguration } from './settings-manager'
 import type { Bundle } from './update-manager'
@@ -73,8 +74,14 @@ class NoOpOs implements IpcOs {
 	async getAutoStart(): Promise<boolean> {
 		return Promise.resolve(false)
 	}
-	async rules(): Promise<string[]> {
-		return Promise.resolve([])
+	async rules(): Promise<PlatformRules> {
+		return Promise.resolve({
+			startOnLoginRequiresApproval: false,
+			canPreventScreenRecording: false,
+			canKeepTrayIconVisible: false,
+			needsTrayIconColorControl: false,
+			flags: [],
+		})
 	}
 }
 
