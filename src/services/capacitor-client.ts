@@ -100,13 +100,13 @@ interface MimiriUpdatePlugin {
 }
 
 class CapacitorSettings implements IpcSettingsApi {
-	constructor(private cache: SettingsPlugin) {}
+	constructor(private settings: SettingsPlugin) {}
 
 	load(): Promise<MimerConfiguration> {
-		return this.cache.load()
+		return this.settings.load()
 	}
 	save(settings: MimerConfiguration): Promise<void> {
-		return this.cache.save({ settings })
+		return this.settings.save({ settings })
 	}
 }
 

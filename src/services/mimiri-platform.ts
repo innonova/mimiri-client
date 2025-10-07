@@ -92,7 +92,6 @@ class MimiriPlatform {
 			}
 			this._isWeb = true
 		}
-		void this.init()
 	}
 
 	public emulateCapacitor(platform: string) {

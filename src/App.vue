@@ -450,6 +450,7 @@ useEventListener(window, 'resize', async () => {
 appStatus.value = 'loading'
 onMounted(async () => {
 	try {
+		await mimiriPlatform.init()
 		appStatus.value = 'loading'
 		setTimeout(() => (secondPassed.value = true), 1000)
 		progressActivity()

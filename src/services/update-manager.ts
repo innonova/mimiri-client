@@ -206,6 +206,7 @@ export class UpdateManager {
 	}
 
 	public async check(allowUpdate: boolean = true) {
+		debug.log(`UpdateManager.check ${ipcClient.isAvailable}`)
 		if (ipcClient.isAvailable) {
 			try {
 				this.installedVersions = await ipcClient.bundle.getInstalledVersions()
