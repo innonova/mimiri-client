@@ -200,7 +200,7 @@
 					"
 					class="max-w-110"
 				>
-					<div class="py-3">An update of the Electron Client is available here:</div>
+					<div class="py-3">An update of the Electron Client is required</div>
 					<div class="py-2">
 						Direct download: <a :href="updateManager.downloadUrl" target="_blank">{{ updateManager.downloadName }}</a>
 					</div>
@@ -214,7 +214,7 @@
 					"
 					class="max-w-110"
 				>
-					<div class="py-3">An update of the Electron Client is available</div>
+					<div class="py-3">An update of the Electron Client is required</div>
 				</div>
 			</div>
 			<div
