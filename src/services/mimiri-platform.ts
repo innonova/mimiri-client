@@ -1,7 +1,8 @@
 import { Capacitor, registerPlugin } from '@capacitor/core'
 import { Keyboard } from '@capacitor/keyboard'
 import { reactive } from 'vue'
-import { env } from '../global'
+import { debug, env } from '../global'
+import { delay } from './helpers'
 
 interface PlatformInfo {
 	mode: string
@@ -134,8 +135,33 @@ class MimiriPlatform {
 		if (env.DEV) {
 			return true
 		}
-		const result = await this._nativePlatform.verifyBiometry()
-		return result.verified
+
+		// Add 100ms delay before first attempt to let system settle
+		await delay(100)
+
+		debug.log('Biometric verification attempt (initial)')
+		let result = await this._nativePlatform.verifyBiometry()
+
+		if (result.verified) {
+			debug.log('Biometric verification succeeded (initial)')
+			return true
+		}
+
+		debug.log('Biometric verification failed (initial), retrying in 1s')
+
+		// Wait 1s and try again for transient failures
+		await delay(1000)
+
+		debug.log('Biometric verification attempt (retry)')
+		result = await this._nativePlatform.verifyBiometry()
+
+		if (result.verified) {
+			debug.log('Biometric verification succeeded (retry)')
+			return true
+		} else {
+			debug.log('Biometric verification failed (retry)')
+			return false
+		}
 	}
 
 	public get isPhone() {

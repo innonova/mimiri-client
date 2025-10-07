@@ -147,15 +147,15 @@ export class AuthenticationManager {
 					str = await ipcClient.session.get('mimiri-login-data')
 				} else if (mimiriPlatform.isIosApp || mimiriPlatform.isAndroidApp) {
 					const localStr = localStorage.getItem('mimiri-login-data')
-					if (!localStr || !(await mimiriPlatform.verifyBiometry())) {
-						return
+					if (!localStr || (mimiriPlatform.supportsBiometry && !(await mimiriPlatform.verifyBiometry()))) {
+						return false
 					}
 					str = localStr
 				} else {
 					str = sessionStorage.getItem('mimiri-login-data')
 				}
 				if (!str) {
-					return
+					return false
 				}
 				const unzipped = await new Response(
 					new Blob([fromBase64(str)]).stream().pipeThrough(new DecompressionStream('gzip')),
