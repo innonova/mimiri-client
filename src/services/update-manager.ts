@@ -107,6 +107,7 @@ export class UpdateManager {
 	}
 
 	private setActive() {
+		debug.log(`UpdateManager.setActive ${JSON.stringify(this.installedVersions)}`)
 		this.state.activeVersion =
 			this.installedVersions.find(ver => ver.active) ??
 			this.installedVersions.find(ver => ver.base) ??
