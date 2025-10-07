@@ -136,11 +136,13 @@ export class AuthenticationManager {
 	}
 
 	public async restoreLogin(): Promise<boolean> {
+		debug.log(`restoreLogin called  ${mimiriPlatform.isIosApp} ${mimiriPlatform.supportsBiometry}`)
 		if (
 			env.DEV ||
 			mimiriPlatform.isElectron ||
 			((mimiriPlatform.isIosApp || mimiriPlatform.isAndroidApp) && mimiriPlatform.supportsBiometry)
 		) {
+			debug.log(`restoreLogin called - trying to restore`)
 			try {
 				let str
 				if (ipcClient.isAvailable && ipcClient.session.isAvailable) {
