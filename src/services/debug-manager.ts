@@ -57,7 +57,7 @@ export class DebugManager {
 		const log = localStorage.getItem('errorLog')
 		if (log) {
 			try {
-				this._errorLog = JSON.parse(log) as ErrorLogItem[]
+				this._errorLog = [...this._errorLog, ...(JSON.parse(log) as ErrorLogItem[])]
 			} catch (e) {
 				console.error('Failed to parse error log:', e)
 				this._errorLog = []
@@ -69,7 +69,7 @@ export class DebugManager {
 		const log = localStorage.getItem('messageLog')
 		if (log) {
 			try {
-				this._messageLog = JSON.parse(log) as MessageLogItem[]
+				this._messageLog = [...this._messageLog, ...(JSON.parse(log) as MessageLogItem[])]
 			} catch (e) {
 				console.error('Failed to parse message log:', e)
 				this._messageLog = []
@@ -163,39 +163,39 @@ export class DebugManager {
 
 	public logError(message: string, error?: Error) {
 		console.error(message, error)
-		if (this._initialized) {
-			this._errorLog.push({
-				id: newGuid(),
-				message,
-				stack: error?.stack,
-				timestamp: Date.now(),
-			})
-			while (this._errorLog.length > 100) {
-				this._errorLog.shift()
-			}
-			this.saveErrorLog()
+		// if (this._initialized) {
+		this._errorLog.push({
+			id: newGuid(),
+			message,
+			stack: error?.stack,
+			timestamp: Date.now(),
+		})
+		while (this._errorLog.length > 100) {
+			this._errorLog.shift()
 		}
+		this.saveErrorLog()
+		// }
 	}
 
 	public log(...message: any[]) {
-		if (this._initialized) {
-			this._messageLog.push({
-				id: newGuid(),
-				message: message
-					.map(msg => {
-						if (typeof msg === 'object') {
-							return JSON.stringify(msg)
-						}
-						return String(msg)
-					})
-					.join(', '),
-				timestamp: Date.now(),
-			})
-			while (this._messageLog.length > 100) {
-				this._messageLog.shift()
-			}
-			this.saveMessageLog()
+		// if (this._initialized) {
+		this._messageLog.push({
+			id: newGuid(),
+			message: message
+				.map(msg => {
+					if (typeof msg === 'object') {
+						return JSON.stringify(msg)
+					}
+					return String(msg)
+				})
+				.join(', '),
+			timestamp: Date.now(),
+		})
+		while (this._messageLog.length > 100) {
+			this._messageLog.shift()
 		}
+		this.saveMessageLog()
+		// }
 	}
 
 	public logLatency(message: string, latency: number) {

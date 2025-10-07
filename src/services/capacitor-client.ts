@@ -160,9 +160,11 @@ class CapacitorClient implements IpcApi {
 		this.available = false
 		if (Capacitor.isPluginAvailable('Settings')) {
 			this.settings = new CapacitorSettings(registerPlugin<SettingsPlugin>('Settings'))
+			this.available = true
 		}
 		if (Capacitor.isPluginAvailable('MimiriUpdate')) {
 			this.bundle = new MimiriBundle(registerPlugin<MimiriUpdatePlugin>('MimiriUpdate'))
+			this.available = true
 		}
 		this.menu = new NoOpMenu()
 		this.window = new NoOpWindow()
