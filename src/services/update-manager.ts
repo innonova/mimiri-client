@@ -107,7 +107,6 @@ export class UpdateManager {
 	}
 
 	private setActive() {
-		debug.log(`UpdateManager.setActive ${JSON.stringify(this.installedVersions)}`)
 		this.state.activeVersion =
 			this.installedVersions.find(ver => ver.active) ??
 			this.installedVersions.find(ver => ver.base) ??
@@ -206,7 +205,6 @@ export class UpdateManager {
 	}
 
 	public async check(allowUpdate: boolean = true) {
-		debug.log(`UpdateManager.check ${ipcClient.isAvailable}`)
 		if (ipcClient.isAvailable) {
 			try {
 				this.installedVersions = await ipcClient.bundle.getInstalledVersions()
