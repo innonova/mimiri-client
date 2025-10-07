@@ -182,13 +182,13 @@ export class FileSystem {
 export class Os {
 	constructor(private api: IpcApi) {}
 	public setAutoStart(enabled: boolean): Promise<void> {
-		return this.api.os.setAutoStart(enabled)
+		return this.api.os?.setAutoStart(enabled)
 	}
 	public getAutoStart(): Promise<boolean> {
-		return this.api.os.getAutoStart()
+		return this.api.os?.getAutoStart()
 	}
 	public rules(): Promise<PlatformRules> {
-		return this.api.os.rules()
+		return this.api.os?.rules()
 	}
 }
 
@@ -202,12 +202,18 @@ export class IpcClient {
 	public readonly session: ElectronSession
 	public readonly fileSystem: FileSystem
 	public readonly os: Os
+	private _platformRules: PlatformRules | null = null
 
 	constructor() {
 		if (capacitorClient.available) {
 			this.api = capacitorClient
 		} else {
 			this.api = (window as any).mimiri
+			if (this.api?.os) {
+				this.api.os.rules().then(rules => {
+					this._platformRules = rules
+				})
+			}
 		}
 		this.menu = new MimerMenu(this.api)
 		this.settings = new MimerSettings(this.api)
@@ -237,5 +243,8 @@ export class IpcClient {
 	}
 	public get isTarGz() {
 		return !!this.api?.isTarGz
+	}
+	public get rules() {
+		return this._platformRules
 	}
 }

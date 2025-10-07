@@ -725,18 +725,26 @@ class MenuManager {
 		return result
 	}
 
-	public updateTrayMenu() {
+	public async updateTrayMenu() {
 		if (ipcClient.isAvailable) {
+			const rules = await ipcClient.os.rules()
+			const isGnome = rules?.flags?.find(r => r.toLowerCase().includes('gnome'))
+			const isWayland = rules?.flags?.includes('wayland')
+
 			ipcClient.menu.seTrayMenu(
 				[
 					{
 						id: 'show',
 						title: 'Show',
 					},
-					{
-						id: 'show-dev-tools',
-						title: 'Dev Tools',
-					},
+					...(!(isGnome && isWayland)
+						? [
+								{
+									id: 'show-dev-tools',
+									title: 'Dev Tools',
+								},
+							]
+						: []),
 					...(!mimiriPlatform.isLinuxApp
 						? [
 								{
@@ -844,9 +852,12 @@ class MenuManager {
 	}
 
 	public get helpMenu() {
+		const isGnome = ipcClient.isAvailable && !!ipcClient.rules?.flags?.find(r => r.toLowerCase().includes('gnome'))
+		const isWayland = ipcClient.isAvailable && !!ipcClient.rules?.flags?.includes('wayland')
 		return [
 			MenuItems.About,
-			...(ipcClient.isAvailable ? [MenuItems.CheckForUpdate, MenuItems.ShowDevTools] : []),
+			...(ipcClient.isAvailable ? [MenuItems.CheckForUpdate] : []),
+			...(ipcClient.isAvailable && !(isGnome && isWayland) ? [MenuItems.ShowDevTools] : []),
 			...(env.DEV || settingsManager.developerMode ? [MenuItems.Separator, MenuItems.AddGettingStarted] : []),
 		]
 	}

@@ -135,7 +135,7 @@ const fontLink = ref('')
 const flags = ref('')
 
 if (ipcClient.isAvailable) {
-	ipcClient.os?.rules().then(rules => (flags.value = rules?.flags?.join(', ')))
+	ipcClient.os.rules().then(rules => (flags.value = rules?.flags?.join(', ')))
 }
 
 const biCif = value => {

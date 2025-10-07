@@ -118,7 +118,7 @@ class SettingsManager {
 		this.state.editorFontSize = fontManager.defaultEditorFontSize
 		if (ipcClient.isAvailable) {
 			const settings = await ipcClient.settings.load()
-			const rules = await ipcClient.os?.rules()
+			const rules = await ipcClient.os.rules()
 			if (settings) {
 				Object.assign(this.state, settings)
 			} else if (rules?.flags?.includes('requires-permissions')) {
