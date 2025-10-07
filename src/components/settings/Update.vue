@@ -191,12 +191,30 @@
 						Cancel
 					</button>
 				</div>
-				<div v-if="updateManager.isHostUpdate && mimiriPlatform.isLinuxApp" class="max-w-110">
+				<div
+					v-if="
+						updateManager.isHostUpdate &&
+						mimiriPlatform.isLinuxApp &&
+						!mimiriPlatform.isFlatHub &&
+						!mimiriPlatform.isSnapStore
+					"
+					class="max-w-110"
+				>
 					<div class="py-3">An update of the Electron Client is available here:</div>
 					<div class="py-2">
 						Direct download: <a :href="updateManager.downloadUrl" target="_blank">{{ updateManager.downloadName }}</a>
 					</div>
 					<div class="py-2"><a href="https://mimiri.io/#downloads" target="_blank">Other download options</a></div>
+				</div>
+				<div
+					v-if="
+						updateManager.isHostUpdate &&
+						mimiriPlatform.isLinuxApp &&
+						(mimiriPlatform.isFlatHub || mimiriPlatform.isSnapStore)
+					"
+					class="max-w-110"
+				>
+					<div class="py-3">An update of the Electron Client is available</div>
 				</div>
 			</div>
 			<div
