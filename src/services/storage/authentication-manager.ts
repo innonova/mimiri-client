@@ -13,7 +13,6 @@ import { DEFAULT_ITERATIONS, DEFAULT_PASSWORD_ALGORITHM, DEFAULT_PROOF_BITS, DEF
 import { ProofOfWork } from '../proof-of-work'
 import type { LocalStateManager } from './local-state-manager'
 import { toRaw } from 'vue'
-import { settingsManager } from '../settings-manager'
 import { persistedState } from '../persisted-state'
 
 export class AuthenticationManager {
