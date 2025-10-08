@@ -663,7 +663,10 @@ class MenuManager {
 						type: 'checkbox',
 						checked: settingsManager.wordwrap,
 						icon: settingsManager.wordwrap ? 'checkmark' : '',
-						enabled: noteManager.state.isLoggedIn && !noteManager.tree.selectedNote().isSystem,
+						enabled:
+							noteManager.state.isLoggedIn &&
+							!!noteManager.tree.selectedNote() &&
+							!noteManager.tree.selectedNote().isSystem,
 					})
 					break
 				case MenuItems.UpdateAvailable:
