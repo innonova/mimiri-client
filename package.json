@@ -1,8 +1,8 @@
 {
 	"name": "webclient-vue",
-	"version": "2.5.67",
-	"minElectronVersionWin32": "2.5.53",
-	"minElectronVersionDarwin": "2.5.53",
+	"version": "2.5.68",
+	"minElectronVersionWin32": "2.5.12",
+	"minElectronVersionDarwin": "2.5.12",
 	"minElectronVersionLinux": "2.5.12",
 	"minIosVersion": "2.3.1",
 	"minAndroidVersion": "2.3.1",
