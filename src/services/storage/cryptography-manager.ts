@@ -129,15 +129,15 @@ export class CryptographyManager {
 	public async loadAllKeysNoLock(): Promise<void> {
 		const localKeys = await this.db.getAllLocalKeys()
 		const remoteKeys = await this.db.getAllKeys()
-		this._keys = []
-
-		await this.loadKeysFromSource(localKeys, this._localCrypt)
-		await this.loadKeysFromSource(remoteKeys, this._rootCrypt)
+		const keys = []
+		await this.loadKeysFromSource(localKeys, this._localCrypt, keys)
+		await this.loadKeysFromSource(remoteKeys, this._rootCrypt, keys)
+		this._keys = keys
 	}
 
-	private async loadKeysFromSource(keyDataArray: KeyData[], crypt: SymmetricCrypt): Promise<void> {
+	private async loadKeysFromSource(keyDataArray: KeyData[], crypt: SymmetricCrypt, keys: KeySet[]): Promise<void> {
 		for (const keyData of keyDataArray) {
-			if (!this._keys.some(key => key.id === keyData.id)) {
+			if (!keys.some(key => key.id === keyData.id)) {
 				try {
 					const sym = await SymmetricCrypt.fromKey(keyData.algorithm, await crypt.decryptBytes(keyData.keyData))
 					const signer = await CryptSignature.fromPem(
@@ -145,7 +145,7 @@ export class CryptographyManager {
 						keyData.publicKey,
 						await crypt.decrypt(keyData.privateKey),
 					)
-					this._keys.push({
+					keys.push({
 						id: keyData.id,
 						name: keyData.name,
 						symmetric: sym,
