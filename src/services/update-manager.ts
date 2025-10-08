@@ -365,7 +365,7 @@ export class UpdateManager {
 				const hostSupportsVersion = compareVersions(info.minElectronVersion, this.state.activeVersion.hostVersion) <= 0
 
 				if (!hostSupportsVersion) {
-					const latest = await this.get<any>(`/latest.json`)
+					const latest = await this.get<any>(`/latest.json?r=${Date.now()}`)
 					if (mimiriPlatform.isWindowsApp) {
 						const links = latest.systems.find(s => s.name === 'Windows')?.[settingsManager.channel]
 						const jsonUrl = links.find(l => l.url.endsWith('.json')).url.split('/')
