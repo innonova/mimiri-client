@@ -152,6 +152,7 @@ export class CryptographyManager {
 						signature: signer,
 						metadata: JSON.parse(await crypt.decrypt(keyData.metadata)),
 					})
+					console.log(`Key ${keyData.name} loaded successfully`)
 				} catch (ex) {
 					console.error('Error loading key:', keyData, await crypt.decryptBytes(keyData.keyData))
 				}

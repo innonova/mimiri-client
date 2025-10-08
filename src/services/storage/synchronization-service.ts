@@ -205,6 +205,7 @@ export class SynchronizationService {
 							syncChanged = true
 						}
 						const data = JSON.parse(key.data) as KeyData
+						console.log(`Key ${key.name} updated during sync pull`)
 						await this.db.setKey({
 							id: key.id,
 							userId: data.userId,

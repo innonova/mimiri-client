@@ -98,6 +98,10 @@ export class NoteService {
 			note.sync = +noteData.sync
 			const crypt = local ? this.cryptoManager.localCrypt : keySet?.symmetric
 
+			if (!crypt) {
+				console.log(`No key found for note ${note.id}, keyName ${note.keyName} (local=${local})`)
+			}
+
 			note.items = await Promise.all(
 				noteData.items.map(async item => ({
 					version: +item.version,
