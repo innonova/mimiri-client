@@ -41,7 +41,14 @@
 
 			<div class="flex gap-2">
 				<button class="primary" @click="showInvoice" :data-testid="`invoice-${invoice.no}-view-link`">View</button>
-				<button class="primary" @click="showInvoicePdf" :data-testid="`invoice-${invoice.no}-pdf-link`">PDF</button>
+				<button
+					class="primary"
+					@click="showInvoicePdf"
+					:data-testid="`invoice-${invoice.no}-pdf-link`"
+					style="transform: translateZ(0)"
+				>
+					PDF
+				</button>
 			</div>
 			<div />
 			<div class="text-right" :data-testid="`invoice-${invoice.no}-total`">
