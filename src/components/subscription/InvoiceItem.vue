@@ -39,18 +39,10 @@
 				Will be paid automatically on {{ formatInvoiceDate(invoice.due) }}
 			</div>
 
-			<div class="flex gap-2">
+			<div class="flex gap-2 col-span-2">
 				<button class="primary" @click="showInvoice" :data-testid="`invoice-${invoice.no}-view-link`">View</button>
-				<button
-					class="primary"
-					@click="showInvoicePdf"
-					:data-testid="`invoice-${invoice.no}-pdf-link`"
-					style="transform: translateZ(0)"
-				>
-					PDF
-				</button>
+				<button class="primary" @click="showInvoicePdf" :data-testid="`invoice-${invoice.no}-pdf-link`">PDF</button>
 			</div>
-			<div />
 			<div class="text-right" :data-testid="`invoice-${invoice.no}-total`">
 				{{ invoice.currency }} {{ formatCurrency(invoice.data.total) }}
 			</div>
