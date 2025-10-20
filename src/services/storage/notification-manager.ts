@@ -130,6 +130,9 @@ export class NotificationManager {
 			this._connectionInProgress = true
 			const response = await this.api.createNotificationUrl()
 			if (!response?.url) {
+				if (this.state.isLoggedIn) {
+					throw new Error('Failed to get notification URL')
+				}
 				this._connectionInProgress = false
 				return
 			}
@@ -146,6 +149,7 @@ export class NotificationManager {
 			void this._connection?.stop().catch()
 			this._connection = null
 			debug.logError('Failed to connect for notifications', ex)
+			console.log('Failed to connect for notifications', ex)
 			void incrementalDelay(attempt).then(() => {
 				void this.connect(attempt + 1)
 			})
