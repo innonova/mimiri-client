@@ -10,6 +10,7 @@ export class NotificationManager {
 	private _suspended = false
 	private _workOffline = false
 	private _connectionExpected = false
+	private _connectionInProgress = false
 	private _resumeTime = Date.now()
 	private _connectDelay = 5000
 
@@ -44,6 +45,8 @@ export class NotificationManager {
 			!this._workOffline &&
 			!this._suspended &&
 			this._connectionExpected &&
+			!this._connectionInProgress &&
+			this._connection &&
 			this._connection.state !== HubConnectionState.Connected
 		) {
 			await this.connect()
@@ -124,8 +127,10 @@ export class NotificationManager {
 			if (this.simulateOffline) {
 				throw new Error('Simulate offline')
 			}
+			this._connectionInProgress = true
 			const response = await this.api.createNotificationUrl()
 			if (!response?.url) {
+				this._connectionInProgress = false
 				return
 			}
 			if (this._connection) {
@@ -133,6 +138,7 @@ export class NotificationManager {
 			}
 			this._connection = this.createConnection(response.url, response.token)
 			await this._connection.start()
+			this._connectionInProgress = false
 			this.state.isOnline = true
 			this.notificationsCallback('connected', null)
 		} catch (ex) {
