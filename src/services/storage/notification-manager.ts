@@ -51,7 +51,6 @@ export class NotificationManager {
 			this._connection &&
 			this._connection.state !== HubConnectionState.Connected
 		) {
-			e
 			console.log('connect from 2')
 			await this.connect()
 		}
