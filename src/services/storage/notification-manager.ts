@@ -112,8 +112,6 @@ export class NotificationManager {
 			}
 			this.state.isOnlineDelayed = false
 			this.state.isOnline = false
-			this._connectionExpected = false
-			debug.log('WebSocket closed')
 			this.notificationsCallback('closed', error)
 		})
 		return connection
