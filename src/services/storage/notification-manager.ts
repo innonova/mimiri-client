@@ -120,8 +120,10 @@ export class NotificationManager {
 	}
 
 	private async connect(attempt: number = 0) {
+		console.log('connect', attempt)
 		try {
 			if (!this._connectionExpected) {
+				console.log('Connection not expected')
 				return
 			}
 			if (this.simulateOffline) {
@@ -133,6 +135,7 @@ export class NotificationManager {
 				if (this.state.isLoggedIn) {
 					throw new Error('Failed to get notification URL')
 				}
+				console.log('Failed to get notification URL - not logged in')
 				this._connectionInProgress = false
 				return
 			}
