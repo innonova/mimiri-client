@@ -36,11 +36,9 @@ export class NotificationManager {
 				return
 			}
 			this._connectionExpected = true
-			console.log('connect from 1')
 			await this.connect()
 		} else if ((this._suspended || this._workOffline) && this._connectionExpected) {
 			this._connectionExpected = false
-			console.log('close from 1')
 			await this.close()
 		} else if (
 			this.state.isLoggedIn &&
@@ -51,7 +49,6 @@ export class NotificationManager {
 			this._connection &&
 			this._connection.state !== HubConnectionState.Connected
 		) {
-			console.log('connect from 2')
 			await this.connect()
 		}
 	}
@@ -94,7 +91,6 @@ export class NotificationManager {
 			}
 		})
 		connection.onreconnecting(error => {
-			console.log('reconnecting', error)
 			if (connection !== this._connection) {
 				return
 			}
@@ -103,7 +99,6 @@ export class NotificationManager {
 			this.notificationsCallback('reconnecting', error)
 		})
 		connection.onreconnected(() => {
-			console.log('reconnected')
 			if (connection !== this._connection) {
 				return
 			}
@@ -112,7 +107,6 @@ export class NotificationManager {
 			this.notificationsCallback('reconnected', null)
 		})
 		connection.onclose(error => {
-			console.log('closed', error)
 			if (connection !== this._connection) {
 				return
 			}
@@ -124,10 +118,8 @@ export class NotificationManager {
 	}
 
 	private async connect(attempt: number = 0) {
-		console.log('connect', attempt)
 		try {
 			if (!this._connectionExpected) {
-				console.log('Connection not expected')
 				return
 			}
 			if (this.simulateOffline) {
@@ -139,12 +131,10 @@ export class NotificationManager {
 				if (this.state.isLoggedIn) {
 					throw new Error('Failed to get notification URL')
 				}
-				console.log('Failed to get notification URL - not logged in')
 				this._connectionInProgress = false
 				return
 			}
 			if (this._connection) {
-				console.log('close from connect')
 				await this.close()
 			}
 			this._connection = this.createConnection(response.url, response.token)
@@ -157,7 +147,6 @@ export class NotificationManager {
 			void this._connection?.stop().catch()
 			this._connection = null
 			debug.logError('Failed to connect for notifications', ex)
-			console.log('Failed to connect for notifications', ex)
 			void incrementalDelay(attempt).then(() => {
 				void this.connect(attempt + 1)
 			})
@@ -165,7 +154,6 @@ export class NotificationManager {
 	}
 
 	private async close() {
-		console.log('close notifications')
 		if (this._connection) {
 			try {
 				await this._connection.stop()
