@@ -1,7 +1,7 @@
 import { watch } from 'vue'
 import { AccountType, type SharedState } from './type'
 import type { MimiriClient } from './mimiri-client'
-import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr'
+import { HubConnection, HubConnectionBuilder, HubConnectionState } from '@microsoft/signalr'
 import { debug } from '../../global'
 import { incrementalDelay } from '../helpers'
 
@@ -36,10 +36,17 @@ export class NotificationManager {
 			}
 			this._connectionExpected = true
 			await this.connect()
-		}
-		if ((this._suspended || this._workOffline) && this._connectionExpected) {
+		} else if ((this._suspended || this._workOffline) && this._connectionExpected) {
 			this._connectionExpected = false
 			await this.close()
+		} else if (
+			this.state.isLoggedIn &&
+			!this._workOffline &&
+			!this._suspended &&
+			this._connectionExpected &&
+			this._connection.state !== HubConnectionState.Connected
+		) {
+			await this.connect()
 		}
 	}
 
@@ -67,6 +74,9 @@ export class NotificationManager {
 			.build()
 
 		connection.on('notification', async (sender, type, payload) => {
+			if (connection !== this._connection) {
+				return
+			}
 			if (type === 'note-update' || type === 'sync') {
 				this.notificationsCallback('sync', payload)
 			}
@@ -78,18 +88,29 @@ export class NotificationManager {
 			}
 		})
 		connection.onreconnecting(error => {
+			if (connection !== this._connection) {
+				return
+			}
 			this.state.isOnlineDelayed = false
 			this.state.isOnline = false
 			this.notificationsCallback('reconnecting', error)
 		})
 		connection.onreconnected(() => {
+			if (connection !== this._connection) {
+				return
+			}
 			this.state.isOnlineDelayed = false
 			this.state.isOnline = true
 			this.notificationsCallback('reconnected', null)
 		})
 		connection.onclose(error => {
+			if (connection !== this._connection) {
+				return
+			}
 			this.state.isOnlineDelayed = false
 			this.state.isOnline = false
+			this._connectionExpected = false
+			debug.log('WebSocket closed')
 			this.notificationsCallback('closed', error)
 		})
 		return connection
@@ -106,6 +127,9 @@ export class NotificationManager {
 			const response = await this.api.createNotificationUrl()
 			if (!response?.url) {
 				return
+			}
+			if (this._connection) {
+				await this.close()
 			}
 			this._connection = this.createConnection(response.url, response.token)
 			await this._connection.start()
@@ -139,14 +163,16 @@ export class NotificationManager {
 	}
 
 	public suspend() {
-		this._suspended = true
-		void this.updateState()
+		if (this.state.isMobile) {
+			this._suspended = true
+			void this.updateState()
+		}
 	}
 
 	public resume() {
-		this._suspended = false
-		this._resumeTime = Date.now()
 		if (this.state.isMobile) {
+			this._suspended = false
+			this._resumeTime = Date.now()
 			this.notificationsCallback('resumed', null)
 		}
 		void this.updateState()
