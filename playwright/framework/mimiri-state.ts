@@ -19,6 +19,7 @@ const createId = () => {
 
 export class MimiriState {
 	private static _defaultBrowser: Browser | undefined
+	private static _headedBrowser: Browser | undefined
 	private _usernames: string[] = []
 	private _browser: Browser | undefined
 	private _context!: BrowserContext
@@ -76,22 +77,33 @@ export class MimiriState {
 		return newState
 	}
 
-	public async init(index = 0, options?: BrowserContextOptions) {
+	public async init(index = 0, options?: BrowserContextOptions, forceHeaded?: boolean) {
 		// console.log('testId', this._config.testId)
 		this._start = performance.now()
 		if (!this._browser) {
-			if (index === 0) {
-				if (!MimiriState._defaultBrowser) {
-					MimiriState._defaultBrowser = await chromium.launch({
-						// args: ['--disable-features=OverlayScrollbar,OverlayScrollbars', '--disable-features=VizDisplayCompositor'],
-						// ignoreDefaultArgs: ['--hide-scrollbars'],
+			if (forceHeaded) {
+				if (index === 0) {
+					if (!MimiriState._headedBrowser) {
+						MimiriState._headedBrowser = await chromium.launch({ headless: false })
+					}
+					this._browser = MimiriState._headedBrowser
+				} else {
+					this._browser = await chromium.launch({
+						headless: false,
+						args: ['--window-position=1350,10'],
 					})
 				}
-				this._browser = MimiriState._defaultBrowser
 			} else {
-				this._browser = await chromium.launch({
-					args: ['--window-position=1350,10'],
-				})
+				if (index === 0) {
+					if (!MimiriState._defaultBrowser) {
+						MimiriState._defaultBrowser = await chromium.launch()
+					}
+					this._browser = MimiriState._defaultBrowser
+				} else {
+					this._browser = await chromium.launch({
+						args: ['--window-position=1350,10'],
+					})
+				}
 			}
 		}
 		const globalOpts = {

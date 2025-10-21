@@ -54,6 +54,12 @@ Also need to think about social login UX - should we show both email/password AN
 							{
 								title: 'Real-time Sync',
 								text: 'WebSocket implementation for live collaboration. Need to handle conflict resolution and offline scenarios.',
+								children: [
+									{
+										title: 'WebSocket Server Setup',
+										text: 'Bob to set up the WebSocket server using Socket.IO. Ensure scalability for multiple concurrent users.',
+									},
+								],
 							},
 							{
 								title: 'Mobile App',

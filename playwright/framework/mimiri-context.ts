@@ -9,9 +9,13 @@ interface MiStore {
 
 const asyncLocalStorage = new AsyncLocalStorage()
 
-export const withMimiriContext = async (runner: () => Promise<void>, options?: BrowserContextOptions) => {
+export const withMimiriContext = async (
+	runner: () => Promise<void>,
+	options?: BrowserContextOptions,
+	forceHeaded?: boolean,
+) => {
 	const store: MiStore = { state: [new MimiriState()], active: 0 }
-	await store.state[0].init(0, options)
+	await store.state[0].init(0, options, forceHeaded)
 	try {
 		await asyncLocalStorage.run(store, runner)
 	} finally {
