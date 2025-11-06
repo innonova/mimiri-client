@@ -395,5 +395,29 @@
 		"license": "CC0",
 		"attribution": "",
 		"collection": "https://www.svgrepo.com/collection/ui-oval-interface-icons/"
+	},
+	"check-list": {
+		"url": "https://www.svgrepo.com/download/532191/list-check.svg",
+		"license": "CC Attribution License",
+		"attribution": "Vectors and icons by <a href=\"https://dazzleui.gumroad.com/l/dazzleiconsfree?ref=svgrepo.com\" target=\"_blank\">Dazzle Ui</a> in CC Attribution License via <a href=\"https://www.svgrepo.com/\" target=\"_blank\">SVG Repo</a>",
+		"collection": "https://www.svgrepo.com/collection/dazzle-line-icons/"
+	},
+	"number-list": {
+		"url": "https://www.svgrepo.com/download/532190/list-ol.svg",
+		"license": "CC Attribution License",
+		"attribution": "Vectors and icons by <a href=\"https://dazzleui.gumroad.com/l/dazzleiconsfree?ref=svgrepo.com\" target=\"_blank\">Dazzle Ui</a> in CC Attribution License via <a href=\"https://www.svgrepo.com/\" target=\"_blank\">SVG Repo</a>",
+		"collection": "https://www.svgrepo.com/collection/dazzle-line-icons/"
+	},
+	"list": {
+		"url": "https://www.svgrepo.com/download/532192/list.svg",
+		"license": "CC Attribution License",
+		"attribution": "Vectors and icons by <a href=\"https://dazzleui.gumroad.com/l/dazzleiconsfree?ref=svgrepo.com\" target=\"_blank\">Dazzle Ui</a> in CC Attribution License via <a href=\"https://www.svgrepo.com/\" target=\"_blank\">SVG Repo</a>",
+		"collection": "https://www.svgrepo.com/collection/dazzle-line-icons/"
+	},
+	"heading": {
+		"url": "https://www.svgrepo.com/download/471501/heading-01.svg",
+		"license": "CC0",
+		"attribution": "",
+		"collection": "https://www.svgrepo.com/collection/ui-oval-interface-icons/"
 	}
 }

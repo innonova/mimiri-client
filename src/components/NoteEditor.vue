@@ -54,6 +54,7 @@
 				@click="showHistory"
 				data-testid="editor-history-button"
 			/>
+			<div class="inline-block h-4/5 w-0 border border-solid border-toolbar-separator m-0.5" />
 			<ToolbarIcon
 				icon="hide"
 				:hoverEffect="true"
@@ -61,6 +62,39 @@
 				title="Mark as Password Ctrl+Shift+C"
 				@click="markAsPassword"
 				data-testid="editor-mark-as-password"
+			/>
+			<ToolbarIcon
+				icon="heading"
+				:hoverEffect="true"
+				:disabled="false"
+				title="Heading"
+				@click="insertHeading"
+				data-testid="editor-insert-heading"
+			/>
+			<div class="inline-block h-4/5 w-0 border border-solid border-toolbar-separator m-0.5" />
+			<ToolbarIcon
+				icon="check-list"
+				:hoverEffect="true"
+				:disabled="false"
+				title="Checkbox"
+				@click="insertCheckboxList"
+				data-testid="editor-insert-checkbox"
+			/>
+			<ToolbarIcon
+				icon="list"
+				:hoverEffect="true"
+				:disabled="false"
+				title="List"
+				@click="insertUnorderedList"
+				data-testid="editor-insert-unordered-list"
+			/>
+			<ToolbarIcon
+				icon="number-list"
+				:hoverEffect="true"
+				:disabled="false"
+				title="Ordered List"
+				@click="insertOrderedList"
+				data-testid="editor-insert-ordered-list"
 			/>
 		</div>
 		<div class="relative flex-auto flex flex-col items-stretch overflow-hidden">
@@ -209,6 +243,26 @@ const checkLoadHistory = async () => {
 const markAsPassword = () => {
 	mimiriEditor.focus()
 	mimiriEditor.toggleSelectionAsPassword()
+}
+
+const insertCheckboxList = () => {
+	mimiriEditor.focus()
+	mimiriEditor.executeFormatAction('insert-checkbox-list')
+}
+
+const insertUnorderedList = () => {
+	mimiriEditor.focus()
+	mimiriEditor.executeFormatAction('insert-unordered-list')
+}
+
+const insertOrderedList = () => {
+	mimiriEditor.focus()
+	mimiriEditor.executeFormatAction('insert-ordered-list')
+}
+
+const insertHeading = () => {
+	mimiriEditor.focus()
+	mimiriEditor.executeFormatAction('insert-heading')
 }
 
 watch(historyVisible, (newVal, _) => {

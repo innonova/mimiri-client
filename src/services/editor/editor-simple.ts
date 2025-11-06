@@ -223,6 +223,8 @@ export class EditorSimple implements TextEditor {
 		} catch {}
 	}
 
+	public executeFormatAction(action: string) {}
+
 	public get active(): boolean {
 		return this._active
 	}

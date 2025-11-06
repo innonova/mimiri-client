@@ -3,6 +3,8 @@ import { SelectionExpansion, type EditorState, type TextEditor, type TextEditorL
 import { settingsManager } from '../settings-manager'
 import { mimiriPlatform } from '../mimiri-platform'
 import { Debounce } from '../helpers'
+import { ListPlugin } from './plugins/list-plugin'
+import { HeadingPlugin } from './plugins/heading-plugin'
 
 export class EditorAdvanced implements TextEditor {
 	// private backgroundEditor: editor.IStandaloneCodeEditor
@@ -34,6 +36,7 @@ export class EditorAdvanced implements TextEditor {
 	private _mouseDownPosition: { lineNumber: number; column: number } | undefined
 	private _selectionHistory: Selection[] = []
 	private _preClickSelection: Selection | undefined
+	private _plugins: any[] = []
 
 	constructor(private listener: TextEditorListener) {
 		this.styleElement = document.getElementById('mimiri-style-overrides') as HTMLStyleElement
@@ -172,6 +175,9 @@ export class EditorAdvanced implements TextEditor {
 
 		this.monacoEditorHistoryModel = editor.createModel('', 'mimiri')
 
+		this._plugins.push(new ListPlugin(this.monacoEditor))
+		this._plugins.push(new HeadingPlugin(this.monacoEditor))
+
 		this.monacoEditor.onKeyDown(e => {
 			if (this._active) {
 				if (e.keyCode === KeyCode.KeyS && e.ctrlKey && !this.historyShowing) {
@@ -183,7 +189,12 @@ export class EditorAdvanced implements TextEditor {
 			}
 		})
 
-		this.monacoEditorModel.onDidChangeContent(() => {
+		this.monacoEditor.onKeyUp(e => {
+			if (this._active) {
+			}
+		})
+
+		this.monacoEditorModel.onDidChangeContent(e => {
 			if (this._active) {
 				this._text = this.monacoEditorModel.getValue()
 				this._state.canUndo = (this.monacoEditorModel as any).canUndo()
@@ -659,6 +670,14 @@ export class EditorAdvanced implements TextEditor {
 		}
 	}
 
+	public executeFormatAction(action: string) {
+		for (const plugin of this._plugins) {
+			if (plugin.executeFormatAction && plugin.executeFormatAction(action)) {
+				break
+			}
+		}
+	}
+
 	public expandSelection(type: SelectionExpansion) {
 		const selection = this.monacoEditor.getSelection()
 		const newSelection = {
@@ -748,6 +767,9 @@ export class EditorAdvanced implements TextEditor {
 			if (this._active) {
 				this.listener.onStateUpdated(this._state)
 			}
+			this._plugins.forEach(plugin => {
+				plugin.active = this._active
+			})
 		}
 	}
 
