@@ -55,6 +55,7 @@ export class EditorAdvanced implements TextEditor {
 		languages.setMonarchTokensProvider('mimiri', {
 			tokenizer: {
 				root: [
+					[/(p`)([^``]+)(`)/, ['directive', 'password', 'directive']],
 					[/^(#{1,3}\s)(.*)/, ['head1', 'head1text']],
 					// Merge conflict markers
 					[/^<{7} .*$/, 'conflict-start'],
