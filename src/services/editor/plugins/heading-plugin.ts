@@ -1,7 +1,8 @@
 import { se } from 'date-fns/locale'
 import { KeyCode, type editor } from 'monaco-editor'
+import type { EditorPlugin } from '../editor-plugin'
 
-export class HeadingPlugin {
+export class HeadingPlugin implements EditorPlugin {
 	private _active: boolean = true
 	private monacoEditorModel: editor.ITextModel
 
@@ -37,6 +38,10 @@ export class HeadingPlugin {
 		}
 		return false
 	}
+
+	show(): void {}
+
+	updateText(): void {}
 
 	public get active(): boolean {
 		return this._active

@@ -1,9 +1,10 @@
 import { se } from 'date-fns/locale'
 import { KeyCode, type editor } from 'monaco-editor'
+import type { EditorPlugin } from '../editor-plugin'
 
 const checkBoxListRegex = /^(?<indent>(\s*))(?<checkbox>\[(?:x| )\])(?<space>\s)/
 const numberedListRegex = /^(?<indent>\s*)(?<number>\d+|[a-z])(?<delimiter>[.)])(?<space>\s)/
-const listItemRegex = /^(?<indent>\s*)(?<symbol>\W)(?<space>\s)/
+const listItemRegex = /^(?<indent>\s*)(?<symbol>[^\w\s])(?<space>\s)/
 const indentRegex = /^(?<indent>\s*)(?<content>.*)/
 const letters = [
 	'a',
@@ -34,7 +35,7 @@ const letters = [
 	'z',
 ]
 
-export class ListPlugin {
+export class ListPlugin implements EditorPlugin {
 	private _active: boolean = true
 	private monacoEditorModel: editor.ITextModel
 
@@ -372,6 +373,10 @@ export class ListPlugin {
 		}
 		return false
 	}
+
+	show(): void {}
+
+	updateText(): void {}
 
 	public get active(): boolean {
 		return this._active

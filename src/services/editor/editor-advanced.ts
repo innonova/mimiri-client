@@ -5,6 +5,8 @@ import { mimiriPlatform } from '../mimiri-platform'
 import { Debounce } from '../helpers'
 import { ListPlugin } from './plugins/list-plugin'
 import { HeadingPlugin } from './plugins/heading-plugin'
+import { CodeBlockPlugin } from './plugins/code-block-plugin'
+import { InlineMarkdownPlugin } from './plugins/inline-markdown-plugin'
 
 export class EditorAdvanced implements TextEditor {
 	// private backgroundEditor: editor.IStandaloneCodeEditor
@@ -53,8 +55,6 @@ export class EditorAdvanced implements TextEditor {
 		languages.setMonarchTokensProvider('mimiri', {
 			tokenizer: {
 				root: [
-					[/(p`)([^``]+)(`)/, ['directive', 'password', 'directive']],
-					[/(\[)( |X|x)(\])/, ['checkbox', 'checkmark', 'checkbox']],
 					[/^(#{1,3}\s)(.*)/, ['head1', 'head1text']],
 					// Merge conflict markers
 					[/^<{7} .*$/, 'conflict-start'],
@@ -177,6 +177,8 @@ export class EditorAdvanced implements TextEditor {
 
 		this._plugins.push(new ListPlugin(this.monacoEditor))
 		this._plugins.push(new HeadingPlugin(this.monacoEditor))
+		this._plugins.push(new CodeBlockPlugin(this.monacoEditor))
+		this._plugins.push(new InlineMarkdownPlugin(this.monacoEditor))
 
 		this.monacoEditor.onKeyDown(e => {
 			if (this._active) {
@@ -460,6 +462,9 @@ export class EditorAdvanced implements TextEditor {
 		this._text = text
 		this._state.changed = false
 		this.monacoEditorModel.setValue(text)
+		this._plugins.forEach(plugin => {
+			plugin.show()
+		})
 		this.skipScrollUntil = Date.now() + 500
 		this.lastScrollTop = scrollTop
 		this.monacoEditor.setScrollTop(scrollTop, editor.ScrollType.Immediate)
@@ -478,6 +483,9 @@ export class EditorAdvanced implements TextEditor {
 		this._state.changed = false
 		if (this.monacoEditorModel.getValue() !== text) {
 			this.monacoEditorModel.setValue(text)
+			this._plugins.forEach(plugin => {
+				plugin.updateText()
+			})
 		}
 		if (this._active) {
 			this.listener.onStateUpdated(this._state)

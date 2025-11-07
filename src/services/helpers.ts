@@ -4,17 +4,20 @@ import { toHex } from './hex-base64'
 
 export class Debounce {
 	private lastActivate = 0
+	private lastRun = 0
 	private interval
 
 	constructor(
 		private action: () => void,
 		private delay: number,
+		private maxWait: number = -1,
 	) {}
 
 	private check() {
-		if (Date.now() - this.lastActivate > this.delay) {
+		if (Date.now() - this.lastActivate > this.delay || (this.maxWait > 0 && Date.now() - this.lastRun > this.maxWait)) {
 			clearInterval(this.interval)
 			this.interval = undefined
+			this.lastRun = Date.now()
 			this.action()
 		}
 	}
@@ -22,7 +25,8 @@ export class Debounce {
 	activate() {
 		this.lastActivate = Date.now()
 		if (!this.interval) {
-			this.interval = setInterval(() => this.check(), 100)
+			this.interval = setInterval(() => this.check(), 50)
+			this.check()
 		}
 	}
 }
