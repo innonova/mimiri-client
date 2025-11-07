@@ -464,12 +464,12 @@ export class CodeBlockPlugin implements EditorPlugin {
 				this.monacoEditor.executeEdits(undefined, [
 					{
 						range: {
-							startLineNumber: expandedSelection.endLineNumber + 1,
-							startColumn: 1,
-							endLineNumber: expandedSelection.endLineNumber + 1,
-							endColumn: 1,
+							startLineNumber: expandedSelection.endLineNumber,
+							startColumn: this.monacoEditorModel.getLineMaxColumn(expandedSelection.endLineNumber),
+							endLineNumber: expandedSelection.endLineNumber,
+							endColumn: this.monacoEditorModel.getLineMaxColumn(expandedSelection.endLineNumber),
 						},
-						text: '```\n',
+						text: '\n```\n',
 					},
 					{
 						range: {

@@ -363,12 +363,14 @@ export class ListPlugin implements EditorPlugin {
 					this.renumberListFromLine(selection.startLineNumber)
 				}
 			}
-			this.monacoEditor.setSelection({
-				startLineNumber: selection.startLineNumber,
-				startColumn: 1,
-				endLineNumber: selection.endLineNumber,
-				endColumn: this.monacoEditorModel.getLineMaxColumn(selection.endLineNumber),
-			})
+			if (!selection.isEmpty()) {
+				this.monacoEditor.setSelection({
+					startLineNumber: selection.startLineNumber,
+					startColumn: 1,
+					endLineNumber: selection.endLineNumber,
+					endColumn: this.monacoEditorModel.getLineMaxColumn(selection.endLineNumber),
+				})
+			}
 			return true
 		}
 		return false
