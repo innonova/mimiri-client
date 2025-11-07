@@ -1,0 +1,307 @@
+import { editor } from 'monaco-editor'
+import type { EditorPlugin } from '../editor-plugin'
+import { Debounce } from '../../helpers'
+
+export class InlineMarkdownPlugin implements EditorPlugin {
+	private _active: boolean = true
+	private monacoEditorModel: editor.ITextModel
+	private lineDecorations: Map<number, string[]> = new Map() // line number -> decoration IDs
+	private pendingLines: Set<number> = new Set() // Accumulate affected lines across multiple changes
+	private debounce: Debounce
+
+	constructor(private monacoEditor: editor.IStandaloneCodeEditor) {
+		this.monacoEditorModel = this.monacoEditor.getModel()
+
+		this.debounce = new Debounce(
+			() => {
+				const linesToUpdate = Array.from(this.pendingLines)
+				this.pendingLines.clear()
+				this.updateLines(linesToUpdate)
+			},
+			50,
+			100,
+		)
+
+		this.monacoEditorModel.onDidChangeContent(e => {
+			if (!this._active) return
+
+			// Get affected lines from changes
+			const affectedLines = new Set<number>()
+
+			for (const change of e.changes) {
+				const startLine = change.range.startLineNumber
+				const endLine = change.range.endLineNumber
+				const newLineCount = change.text.split('\n').length - 1
+				const oldLineCount = endLine - startLine
+
+				// Mark changed lines for update
+				for (let i = 0; i <= newLineCount; i++) {
+					affectedLines.add(startLine + i)
+				}
+
+				// Adjust line numbers for decorations below the change
+				const lineDelta = newLineCount - oldLineCount
+				if (lineDelta !== 0) {
+					this.adjustLineNumbers(endLine, lineDelta)
+				}
+			}
+
+			// Schedule update for affected lines
+			this.scheduleUpdate(Array.from(affectedLines))
+		})
+	}
+
+	private adjustLineNumbers(afterLine: number, delta: number): void {
+		if (delta === 0) return
+
+		const newMap = new Map<number, string[]>()
+		const newPendingLines = new Set<number>()
+
+		// Adjust line numbers in the decoration map
+		for (const [lineNumber, decorationIds] of this.lineDecorations.entries()) {
+			if (lineNumber > afterLine) {
+				// Move decoration tracking to new line number
+				newMap.set(lineNumber + delta, decorationIds)
+			} else {
+				// Keep decoration tracking at same line
+				newMap.set(lineNumber, decorationIds)
+			}
+		}
+
+		// Adjust line numbers in pending updates
+		for (const lineNumber of this.pendingLines) {
+			if (lineNumber > afterLine) {
+				newPendingLines.add(lineNumber + delta)
+			} else {
+				newPendingLines.add(lineNumber)
+			}
+		}
+
+		this.lineDecorations = newMap
+		this.pendingLines = newPendingLines
+	}
+
+	private scheduleUpdate(affectedLines: number[]): void {
+		// Accumulate affected lines
+		for (const line of affectedLines) {
+			this.pendingLines.add(line)
+		}
+
+		this.debounce.activate()
+	}
+
+	private updateLines(lineNumbers: number[]): void {
+		const model = this.monacoEditorModel
+
+		// Skip for extremely large documents
+		if (model.getLineCount() > 100000) {
+			return
+		}
+
+		for (const lineNumber of lineNumbers) {
+			// Skip invalid line numbers
+			if (lineNumber < 1 || lineNumber > model.getLineCount()) {
+				// Remove decorations for deleted lines
+				if (this.lineDecorations.has(lineNumber)) {
+					const oldIds = this.lineDecorations.get(lineNumber)!
+					model.deltaDecorations(oldIds, [])
+					this.lineDecorations.delete(lineNumber)
+				}
+				continue
+			}
+
+			// Clear old decorations for this line
+			const oldDecorationIds = this.lineDecorations.get(lineNumber) || []
+
+			// Get new decorations for this line
+			const line = model.getLineContent(lineNumber)
+			const decorations: editor.IModelDeltaDecoration[] = []
+
+			// Check for password pattern
+			const passwordMatches = this.findPasswordPatterns(line, lineNumber)
+			decorations.push(...passwordMatches)
+
+			// Check for checkbox pattern
+			const checkboxMatches = this.findCheckboxPatterns(line, lineNumber)
+			decorations.push(...checkboxMatches)
+
+			// Update decorations for this line
+			const newDecorationIds = model.deltaDecorations(oldDecorationIds, decorations)
+
+			if (newDecorationIds.length > 0) {
+				this.lineDecorations.set(lineNumber, newDecorationIds)
+			} else {
+				this.lineDecorations.delete(lineNumber)
+			}
+		}
+	}
+
+	private fullScan(): void {
+		const model = this.monacoEditorModel
+		const lineCount = model.getLineCount()
+
+		// Skip for extremely large documents
+		if (lineCount > 100000) {
+			return
+		}
+
+		// Clear all existing decorations
+		for (const decorationIds of this.lineDecorations.values()) {
+			model.deltaDecorations(decorationIds, [])
+		}
+		this.lineDecorations.clear()
+
+		// Update all lines
+		const allLines: number[] = []
+		for (let i = 1; i <= lineCount; i++) {
+			allLines.push(i)
+		}
+		this.updateLines(allLines)
+	}
+
+	private findPasswordPatterns(line: string, lineNumber: number): editor.IModelDeltaDecoration[] {
+		const decorations: editor.IModelDeltaDecoration[] = []
+		const regex = /p`([^`]+)`/g
+		let match: RegExpExecArray | null
+
+		while ((match = regex.exec(line)) !== null) {
+			const startCol = match.index + 1
+			const delimiterLength = 2 // p`
+			const contentLength = match[1].length
+			const endDelimiterStart = startCol + delimiterLength + contentLength
+
+			// Opening delimiter `p`
+			decorations.push({
+				range: {
+					startLineNumber: lineNumber,
+					startColumn: startCol,
+					endLineNumber: lineNumber,
+					endColumn: startCol + delimiterLength,
+				},
+				options: {
+					inlineClassName: 'password-delimiter',
+				},
+			})
+
+			// Password content (will be masked with CSS)
+			decorations.push({
+				range: {
+					startLineNumber: lineNumber,
+					startColumn: startCol + delimiterLength,
+					endLineNumber: lineNumber,
+					endColumn: endDelimiterStart,
+				},
+				options: {
+					inlineClassName: 'password-content',
+				},
+			})
+
+			// Closing delimiter `
+			decorations.push({
+				range: {
+					startLineNumber: lineNumber,
+					startColumn: endDelimiterStart,
+					endLineNumber: lineNumber,
+					endColumn: endDelimiterStart + 1,
+				},
+				options: {
+					inlineClassName: 'password-delimiter',
+				},
+			})
+		}
+
+		return decorations
+	}
+
+	private findCheckboxPatterns(line: string, lineNumber: number): editor.IModelDeltaDecoration[] {
+		const decorations: editor.IModelDeltaDecoration[] = []
+		const regex = /\[([ Xx])\]/g
+		let match: RegExpExecArray | null
+
+		while ((match = regex.exec(line)) !== null) {
+			const startCol = match.index + 1
+			const isChecked = match[1].toLowerCase() === 'x'
+
+			// Opening bracket [
+			decorations.push({
+				range: {
+					startLineNumber: lineNumber,
+					startColumn: startCol,
+					endLineNumber: lineNumber,
+					endColumn: startCol + 1,
+				},
+				options: {
+					inlineClassName: 'checkbox-bracket',
+				},
+			})
+
+			// Checkmark or space
+			decorations.push({
+				range: {
+					startLineNumber: lineNumber,
+					startColumn: startCol + 1,
+					endLineNumber: lineNumber,
+					endColumn: startCol + 2,
+				},
+				options: {
+					inlineClassName: isChecked ? 'checkbox-checked' : 'checkbox-unchecked',
+				},
+			})
+
+			// Closing bracket ]
+			decorations.push({
+				range: {
+					startLineNumber: lineNumber,
+					startColumn: startCol + 2,
+					endLineNumber: lineNumber,
+					endColumn: startCol + 3,
+				},
+				options: {
+					inlineClassName: 'checkbox-bracket',
+				},
+			})
+
+			// Add a whole-element decoration for hover/click behavior
+			decorations.push({
+				range: {
+					startLineNumber: lineNumber,
+					startColumn: startCol,
+					endLineNumber: lineNumber,
+					endColumn: startCol + 3,
+				},
+				options: {
+					inlineClassName: 'checkbox-interactive',
+				},
+			})
+		}
+
+		return decorations
+	}
+
+	show(): void {}
+
+	updateText(): void {}
+
+	executeFormatAction(action: string): boolean {
+		return false
+	}
+
+	get active(): boolean {
+		return this._active
+	}
+
+	set active(value: boolean) {
+		if (this._active !== value) {
+			this._active = value
+			if (this._active) {
+				this.fullScan()
+			} else {
+				// Clear all decorations when disabled
+				for (const decorationIds of this.lineDecorations.values()) {
+					this.monacoEditorModel.deltaDecorations(decorationIds, [])
+				}
+				this.lineDecorations.clear()
+			}
+		}
+	}
+}

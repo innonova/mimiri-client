@@ -53,7 +53,11 @@ import NotificationActiveIcon from '../icons/notification-active.vue'
 import HideIcon from '../icons/hide.vue'
 import PlusIcon from '../icons/plus.vue'
 import PlusSmallIcon from '../icons/plus-small.vue'
+import ListIcon from '../icons/list.vue'
+import CheckListIcon from '../icons/check-list.vue'
+import NumberListIcon from '../icons/number-list.vue'
 import AnnouncementIcon from '../icons/announcement.vue'
+import HeadingIcon from '../icons/heading.vue'
 import { mimiriPlatform } from '../services/mimiri-platform'
 
 const props = defineProps<{
@@ -158,6 +162,18 @@ const getComponent = () => {
 	}
 	if (props.icon === 'announcement') {
 		return AnnouncementIcon
+	}
+	if (props.icon === 'list') {
+		return ListIcon
+	}
+	if (props.icon === 'check-list') {
+		return CheckListIcon
+	}
+	if (props.icon === 'number-list') {
+		return NumberListIcon
+	}
+	if (props.icon === 'heading') {
+		return HeadingIcon
 	}
 }
 

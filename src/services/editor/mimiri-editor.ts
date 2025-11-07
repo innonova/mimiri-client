@@ -351,6 +351,10 @@ export class MimiriEditor {
 		}
 	}
 
+	public executeFormatAction(action: string) {
+		this._activeEditor.executeFormatAction(action)
+	}
+
 	public focus() {
 		this._activeEditor.focus()
 	}

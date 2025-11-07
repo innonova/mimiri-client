@@ -143,6 +143,7 @@ export class EditorDisplay implements TextEditor {
 
 	public unMarkSelectionAsPassword() {}
 	public markSelectionAsPassword() {}
+	public executeFormatAction(action: string) {}
 
 	public get active(): boolean {
 		return this._active

@@ -48,6 +48,7 @@ export interface TextEditor {
 	paste(text: string)
 	unMarkSelectionAsPassword()
 	markSelectionAsPassword()
+	executeFormatAction(action: string)
 
 	get readonly()
 	set readonly(value: boolean)

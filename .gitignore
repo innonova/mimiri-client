@@ -41,3 +41,4 @@ bundle.json
 build-dev.sh
 prod.env
 screenshots/
+.playwright-profile/
