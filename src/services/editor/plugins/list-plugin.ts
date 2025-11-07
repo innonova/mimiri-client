@@ -95,8 +95,8 @@ export class ListPlugin implements EditorPlugin {
 								range: {
 									startLineNumber: prevLine,
 									startColumn: 1,
-									endLineNumber: currentLine,
-									endColumn: 1,
+									endLineNumber: prevLine,
+									endColumn: this.monacoEditorModel.getLineMaxColumn(prevLine),
 								},
 								text: '',
 							}
