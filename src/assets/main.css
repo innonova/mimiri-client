@@ -456,3 +456,20 @@ dialog {
 .monaco-editor.vs-dark .checkbox-checked {
 	color: #6ba3d8;
 }
+
+/* Monaco autocomplete widget styling - Remove underlines and simplify icons */
+.suggest-widget .monaco-list-row .label-name,
+.suggest-widget .monaco-list-row .monaco-highlighted-label,
+.suggest-widget .monaco-list-row * {
+	text-decoration: none !important;
+}
+
+.suggest-widget .monaco-list-row {
+	padding-top: 2px !important;
+	padding-left: 4px !important;
+}
+
+/* Hide or simplify the icon */
+.suggest-widget .suggest-icon.codicon {
+	display: none !important;
+}

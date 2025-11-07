@@ -1,6 +1,9 @@
-import { editor, languages } from 'monaco-editor'
-import type { EditorPlugin } from '../editor-plugin'
+import { editor, languages, type IDisposable, type IRange } from 'monaco-editor'
 import { Debounce } from '../../helpers'
+import type { EditorPlugin } from '../editor-plugin'
+import { mimiriCompletionProvider } from '../completetion/mimiri-provider'
+import { MimiriCodeLensProvider, type MimiriCodeLensItem } from '../providers/mimiri-code-lens-provider'
+import { clipboardManager } from '../../../global'
 
 interface CodeBlockState {
 	start: number // Opening fence line number
@@ -17,9 +20,54 @@ export class CodeBlockPlugin implements EditorPlugin {
 	private debounce: Debounce
 	private loadedLanguages: Set<string> = new Set()
 	private newLanguageDetected: boolean = false
+	private completionProvider: IDisposable | null = null
+	private codeLensDisposable: IDisposable | null = null
+	private copyCodeBlockCommandId: string
+	private selectCodeBlockCommandId: string
+	private codeLensProvider: MimiriCodeLensProvider
 
 	constructor(private monacoEditor: editor.IStandaloneCodeEditor) {
 		this.monacoEditorModel = this.monacoEditor.getModel()
+
+		this.completionProvider = languages.registerCompletionItemProvider(
+			this.monacoEditorModel.getLanguageId(),
+			mimiriCompletionProvider,
+		)
+
+		this.copyCodeBlockCommandId = this.monacoEditor.addCommand(0, (_, args?: MimiriCodeLensItem) => {
+			if (!args) return
+			const block = this.findBlockByStartLine(args.startLine)
+			if (!block) return
+			const contentRange = this.getBlockContentRange(block)
+			if (!contentRange) return
+
+			const text = this.monacoEditorModel.getValueInRange(contentRange)
+			if (!text) return
+
+			clipboardManager.write(text)
+		})
+
+		this.selectCodeBlockCommandId = this.monacoEditor.addCommand(0, (_, args?: MimiriCodeLensItem) => {
+			if (!args) return
+			const block = this.findBlockByStartLine(args.startLine)
+			if (!block) return
+			const range = this.getBlockFullRange(block)
+			this.monacoEditor.setSelection(range)
+			this.monacoEditor.revealRangeInCenter(range)
+		})
+
+		this.codeLensProvider = new MimiriCodeLensProvider({
+			getItems: () => this.codeBlockStates.map(block => ({ startLine: block.start })),
+			commands: [
+				{ title: 'Copy block', commandId: this.copyCodeBlockCommandId },
+				{ title: 'Select block', commandId: this.selectCodeBlockCommandId },
+			],
+		})
+
+		this.codeLensDisposable = languages.registerCodeLensProvider(
+			this.monacoEditorModel.getLanguageId(),
+			this.codeLensProvider,
+		)
 
 		this.debounce = new Debounce(
 			() => {
@@ -208,6 +256,7 @@ export class CodeBlockPlugin implements EditorPlugin {
 			}
 		}
 		this.checkForNewLanguage()
+		this.refreshCodeLens()
 	}
 
 	private updateBlocks(blocks: CodeBlockState[]): void {
@@ -235,6 +284,8 @@ export class CodeBlockPlugin implements EditorPlugin {
 			const decorations = this.generateBlockDecorations(block.start, block.end, block.language)
 			block.decorationIds = model.deltaDecorations([], decorations)
 		}
+
+		this.refreshCodeLens()
 	}
 
 	private generateBlockDecorations(
@@ -382,6 +433,69 @@ export class CodeBlockPlugin implements EditorPlugin {
 	updateText(): void {}
 
 	executeFormatAction(action: string): boolean {
+		if (action === 'insert-code-block') {
+			const selection = this.monacoEditor.getSelection()
+			let expandedSelection = {
+				...selection,
+				startColumn: 1,
+				endColumn: this.monacoEditorModel.getLineMaxColumn(selection.endLineNumber),
+			}
+			if (selection.isEmpty()) {
+				// Insert code block and position cursor for language input
+				this.monacoEditor.executeEdits(undefined, [
+					{
+						range: selection,
+						text: '```\n\n```\n',
+					},
+				])
+
+				// Position cursor right after the opening ```
+				const newPosition = {
+					lineNumber: selection.startLineNumber,
+					column: 4, // After ```
+				}
+				this.monacoEditor.setPosition(newPosition)
+
+				// Trigger autocomplete to show language suggestions
+				setTimeout(() => {
+					this.monacoEditor.trigger('keyboard', 'editor.action.triggerSuggest', {})
+				}, 50)
+			} else {
+				this.monacoEditor.executeEdits(undefined, [
+					{
+						range: {
+							startLineNumber: expandedSelection.endLineNumber + 1,
+							startColumn: 1,
+							endLineNumber: expandedSelection.endLineNumber + 1,
+							endColumn: 1,
+						},
+						text: '```\n',
+					},
+					{
+						range: {
+							startLineNumber: expandedSelection.startLineNumber,
+							startColumn: 1,
+							endLineNumber: expandedSelection.startLineNumber,
+							endColumn: 1,
+						},
+						text: '```\n',
+					},
+				])
+
+				// Position cursor after opening fence for language input
+				const newPosition = {
+					lineNumber: expandedSelection.startLineNumber,
+					column: 4, // After ```
+				}
+				this.monacoEditor.setPosition(newPosition)
+
+				// Trigger autocomplete to show language suggestions
+				setTimeout(() => {
+					this.monacoEditor.trigger('keyboard', 'editor.action.triggerSuggest', {})
+				}, 50)
+			}
+			return true
+		}
 		return false
 	}
 
@@ -396,5 +510,51 @@ export class CodeBlockPlugin implements EditorPlugin {
 				this.fullScan()
 			}
 		}
+	}
+
+	dispose(): void {
+		// Clean up completion provider when plugin is disposed
+		if (this.completionProvider) {
+			this.completionProvider.dispose()
+			this.completionProvider = null
+		}
+
+		if (this.codeLensDisposable) {
+			this.codeLensDisposable.dispose()
+			this.codeLensDisposable = null
+		}
+
+		this.codeLensProvider.dispose()
+	}
+
+	private findBlockByStartLine(startLine: number): CodeBlockState | undefined {
+		return this.codeBlockStates.find(block => block.start === startLine)
+	}
+
+	private getBlockContentRange(block: CodeBlockState): IRange | null {
+		if (block.end - block.start <= 1) {
+			return null
+		}
+
+		const lastContentLine = block.end - 1
+		return {
+			startLineNumber: block.start + 1,
+			startColumn: 1,
+			endLineNumber: lastContentLine,
+			endColumn: this.monacoEditorModel.getLineMaxColumn(lastContentLine),
+		}
+	}
+
+	private getBlockFullRange(block: CodeBlockState): IRange {
+		return {
+			startLineNumber: block.start,
+			startColumn: 1,
+			endLineNumber: block.end,
+			endColumn: this.monacoEditorModel.getLineMaxColumn(block.end),
+		}
+	}
+
+	private refreshCodeLens(): void {
+		this.codeLensProvider.refresh()
 	}
 }

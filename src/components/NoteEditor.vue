@@ -71,6 +71,14 @@
 				@click="insertHeading"
 				data-testid="editor-insert-heading"
 			/>
+			<ToolbarIcon
+				icon="code-block"
+				:hoverEffect="true"
+				:disabled="false"
+				title="Code Block"
+				@click="insertCodeBlock"
+				data-testid="editor-insert-code-block"
+			/>
 			<div class="inline-block h-4/5 w-0 border border-solid border-toolbar-separator m-0.5" />
 			<ToolbarIcon
 				icon="check-list"
@@ -263,6 +271,11 @@ const insertOrderedList = () => {
 const insertHeading = () => {
 	mimiriEditor.focus()
 	mimiriEditor.executeFormatAction('insert-heading')
+}
+
+const insertCodeBlock = () => {
+	mimiriEditor.focus()
+	mimiriEditor.executeFormatAction('insert-code-block')
 }
 
 watch(historyVisible, (newVal, _) => {

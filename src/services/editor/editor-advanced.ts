@@ -212,7 +212,9 @@ export class EditorAdvanced implements TextEditor {
 			} else {
 				this._preClickSelection = undefined
 			}
-			this._mouseDownPosition = { lineNumber: e.target.position.lineNumber, column: e.target.position.column }
+			if (e.target.position) {
+				this._mouseDownPosition = { lineNumber: e.target.position.lineNumber, column: e.target.position.column }
+			}
 		})
 
 		this.monacoEditor.onMouseUp(e => {
