@@ -3,12 +3,13 @@ import { NoteHistory } from './note-history'
 import { mimiriPlatform } from '../mimiri-platform'
 import { EditorAdvanced } from './editor-advanced'
 import type { EditorState, SelectionExpansion, TextEditor, TextEditorListener } from './type'
-import { reactive } from 'vue'
+import { reactive, type Ref } from 'vue'
 import { EditorSimple } from './editor-simple'
 import { EditorDisplay } from './editor-display'
 import { settingsManager } from '../settings-manager'
 import { clipboardManager, debug, noteManager, saveEmptyNodeDialog } from '../../global'
 import { VersionConflictError } from '../storage/mimiri-client'
+import { EditorMilkdown } from './editor-milkdown'
 
 export class MimiriEditor {
 	private _history = new NoteHistory(this)
@@ -17,14 +18,17 @@ export class MimiriEditor {
 	private _editorAdvanced: EditorAdvanced
 	private _editorSimple: EditorSimple
 	private _editorDisplay: EditorDisplay
+	private _editorMilkdown: EditorMilkdown
 	private _activeEditor: TextEditor
 	private _state: EditorState
 	private _monacoElement: HTMLElement
 	private _simpleElement: HTMLElement
 	private _displayElement: HTMLElement
+	private _milkdownElement: HTMLElement
 	private _monacoInitialized: boolean = false
 	private _simpleInitialized: boolean = false
 	private _displayInitialized: boolean = false
+	private _milkdownInitialized: boolean = false
 
 	private saveListener: () => void
 	public onSave(listener: () => void) {
@@ -79,6 +83,7 @@ export class MimiriEditor {
 		this._editorAdvanced = new EditorAdvanced(editorListener)
 		this._editorSimple = new EditorSimple(editorListener)
 		this._editorDisplay = new EditorDisplay(editorListener)
+		this._editorMilkdown = new EditorMilkdown(editorListener)
 	}
 
 	private animateNotification(top: number, left: number, text: string) {
@@ -133,15 +138,35 @@ export class MimiriEditor {
 		this._activeEditor.syncSettings()
 	}
 
-	private activateEditor() {
-		if (settingsManager.simpleEditor) {
-			this.activateSimple()
-		} else {
-			this.activateAdvanced()
+	private activateMilkdown() {
+		if (!this._milkdownInitialized) {
+			this._milkdownInitialized = true
+			this._editorMilkdown.init(this._milkdownElement)
 		}
+		this._editorAdvanced.active = false
+		this._editorSimple.active = false
+		this._editorDisplay.active = false
+		this._editorMilkdown.active = true
+		this._activeEditor = this._editorMilkdown
+		this._state.mode = 'milkdown'
+		this._activeEditor.syncSettings()
 	}
 
-	public init(monacoElement: HTMLElement, simpleElement: HTMLElement, displayElement: HTMLElement) {
+	private activateEditor() {
+		this.activateMilkdown()
+		// if (settingsManager.simpleEditor) {
+		// 	this.activateSimple()
+		// } else {
+		// 	this.activateAdvanced()
+		// }
+	}
+
+	public init(
+		monacoElement: HTMLElement,
+		simpleElement: HTMLElement,
+		displayElement: HTMLElement,
+		milkdownElement: HTMLElement,
+	) {
 		this.infoElement = document.getElementById('mimiri-editor-info') as HTMLDivElement
 		if (!this.infoElement) {
 			this.infoElement = document.createElement('div')
@@ -157,6 +182,7 @@ export class MimiriEditor {
 		this._monacoElement = monacoElement
 		this._simpleElement = simpleElement
 		this._displayElement = displayElement
+		this._milkdownElement = milkdownElement
 
 		this.activateEditor()
 	}

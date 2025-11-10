@@ -127,6 +127,13 @@
 				ref="displayContainer"
 				data-testid="editor-display-container"
 			/>
+			<div
+				id="milkdownEditor"
+				class="overflow-auto flex-1 flex flex-col"
+				style="display: none"
+				ref="milkdownContainer"
+				data-testid="editor-milkdown-container"
+			/>
 			<div v-if="!historyVisible && mimiriEditor.mode === 'display'" class="display-editor-toolbar flex flex-row gap-1">
 				<button
 					@click="activateEdit"
@@ -182,7 +189,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch, type WatchStopHandle } from 'vue'
+import { ref, computed, onMounted, watch, type WatchStopHandle, onBeforeUnmount } from 'vue'
 import { env, infoDialog, limitDialog, mimiriEditor, noteManager, showSearchBox, titleBar } from '../global'
 import type { NoteViewModel } from '../services/types/mimer-note'
 import { searchManager } from '../services/search-manager'
@@ -200,6 +207,7 @@ let activeViewModel: NoteViewModel = undefined
 const monacoContainer = ref(null)
 const simpleContainer = ref(null)
 const displayContainer = ref(null)
+const milkdownContainer = ref(null)
 const windowFocus = ref(true)
 const historyVisible = ref(false)
 const displayMode = ref(true)
@@ -312,7 +320,7 @@ const setActiveViewModel = viewModel => {
 }
 
 onMounted(() => {
-	mimiriEditor.init(monacoContainer.value, simpleContainer.value, displayContainer.value)
+	mimiriEditor.init(monacoContainer.value, simpleContainer.value, displayContainer.value, milkdownContainer.value)
 	mimiriEditor.onSave(() => save())
 	mimiriEditor.onSearchAll(() => titleBar.value?.searchAllNotes())
 	mimiriEditor.onBlur(() => save())
