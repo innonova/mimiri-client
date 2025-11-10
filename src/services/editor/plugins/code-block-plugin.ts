@@ -45,7 +45,7 @@ export class CodeBlockPlugin implements EditorPlugin {
 			const text = this.monacoEditorModel.getValueInRange(contentRange)
 			if (!text) return
 
-			clipboardManager.write(text.replace(/p`([^`]+)`/, '$1'))
+			clipboardManager.write(text.replace(/p`([^`]+)`/g, '$1'))
 		})
 
 		this.selectCodeBlockCommandId = this.monacoEditor.addCommand(0, (_, args?: MimiriCodeLensItem) => {
@@ -92,7 +92,7 @@ export class CodeBlockPlugin implements EditorPlugin {
 			}
 			const text = this.monacoEditorModel.getValueInRange(this.monacoEditor.getSelection())
 			if (!text) return
-			clipboardManager.write(text.replace(/p`([^`]+)`/, '$1'))
+			clipboardManager.write(text.replace(/p`([^`]+)`/g, '$1'))
 		})
 
 		this.codeLensProvider = new MimiriCodeLensProvider({
