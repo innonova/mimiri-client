@@ -24,6 +24,7 @@ export class CodeBlockPlugin implements EditorPlugin {
 	private codeLensDisposable: IDisposable | null = null
 	private copyCodeBlockCommandId: string
 	private selectCodeBlockCommandId: string
+	private copyNextLineCommandId: string
 	private codeLensProvider: MimiriCodeLensProvider
 
 	constructor(private monacoEditor: editor.IStandaloneCodeEditor) {
@@ -44,7 +45,7 @@ export class CodeBlockPlugin implements EditorPlugin {
 			const text = this.monacoEditorModel.getValueInRange(contentRange)
 			if (!text) return
 
-			clipboardManager.write(text)
+			clipboardManager.write(text.replace(/p`([^`]+)`/, '$1'))
 		})
 
 		this.selectCodeBlockCommandId = this.monacoEditor.addCommand(0, (_, args?: MimiriCodeLensItem) => {
@@ -56,11 +57,50 @@ export class CodeBlockPlugin implements EditorPlugin {
 			this.monacoEditor.revealRangeInCenter(range)
 		})
 
+		this.copyNextLineCommandId = this.monacoEditor.addCommand(0, (_, args?: MimiriCodeLensItem) => {
+			if (!args) return
+			const block = this.findBlockByStartLine(args.startLine)
+			if (!block) return
+			const selection = this.monacoEditor.getSelection()
+			if (
+				selection.isEmpty() ||
+				selection.startLineNumber <= block.start ||
+				selection.startLineNumber !== selection.endLineNumber
+			) {
+				this.monacoEditor.setSelection({
+					startLineNumber: block.start + 1,
+					startColumn: 1,
+					endLineNumber: block.start + 1,
+					endColumn: this.monacoEditorModel.getLineMaxColumn(block.start + 1),
+				})
+			} else {
+				let lineToCopy = selection.startLineNumber + 1
+				let endColumn = this.monacoEditorModel.getLineMaxColumn(lineToCopy)
+				while (endColumn === 1 && lineToCopy < block.end && lineToCopy < this.monacoEditorModel.getLineCount()) {
+					endColumn = this.monacoEditorModel.getLineMaxColumn(++lineToCopy)
+				}
+				if (lineToCopy >= block.end) {
+					lineToCopy = block.start + 1
+					endColumn = this.monacoEditorModel.getLineMaxColumn(lineToCopy)
+				}
+				this.monacoEditor.setSelection({
+					startLineNumber: lineToCopy,
+					startColumn: 1,
+					endLineNumber: lineToCopy,
+					endColumn,
+				})
+			}
+			const text = this.monacoEditorModel.getValueInRange(this.monacoEditor.getSelection())
+			if (!text) return
+			clipboardManager.write(text.replace(/p`([^`]+)`/, '$1'))
+		})
+
 		this.codeLensProvider = new MimiriCodeLensProvider({
 			getItems: () => this.codeBlockStates.map(block => ({ startLine: block.start })),
 			commands: [
 				{ title: 'Copy block', commandId: this.copyCodeBlockCommandId },
 				{ title: 'Select block', commandId: this.selectCodeBlockCommandId },
+				{ title: 'Copy Next Line', commandId: this.copyNextLineCommandId },
 			],
 		})
 

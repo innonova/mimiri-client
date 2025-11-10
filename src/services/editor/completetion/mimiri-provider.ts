@@ -146,6 +146,7 @@ export const mimiriCompletionProvider = {
 				sh: 'shell',
 				cs: 'csharp',
 				md: 'markdown',
+				bash: 'shell',
 			}
 
 			// Add aliases as separate suggestions (only if target language is included)
