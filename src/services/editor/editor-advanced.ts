@@ -192,6 +192,75 @@ export class EditorAdvanced implements TextEditor {
 			}
 		})
 
+		if (mimiriPlatform.isMacApp) {
+			this.monacoEditor.onKeyDown(async e => {
+				if (this._active) {
+					if (e.metaKey && e.keyCode === KeyCode.KeyV) {
+						e.preventDefault()
+
+						try {
+							const text = await navigator.clipboard.readText()
+
+							const pasteEvent = new ClipboardEvent('paste', {
+								bubbles: true,
+								cancelable: true,
+								clipboardData: new DataTransfer(),
+							})
+
+							pasteEvent.clipboardData.setData('text/plain', text)
+							e.target.dispatchEvent(pasteEvent)
+						} catch (err) {
+							console.error('Clipboard read failed:', err)
+						}
+					}
+
+					if (e.metaKey && e.keyCode === KeyCode.KeyC) {
+						e.preventDefault()
+
+						const copyEvent = new ClipboardEvent('copy', {
+							bubbles: true,
+							cancelable: true,
+							clipboardData: new DataTransfer(),
+						})
+
+						e.target.dispatchEvent(copyEvent)
+
+						const text = copyEvent.clipboardData.getData('text/plain')
+
+						if (text) {
+							try {
+								await navigator.clipboard.writeText(text)
+							} catch (err) {
+								console.error('Clipboard write failed:', err)
+							}
+						}
+					}
+
+					if (e.metaKey && e.keyCode === KeyCode.KeyX) {
+						e.preventDefault()
+
+						const copyEvent = new ClipboardEvent('cut', {
+							bubbles: true,
+							cancelable: true,
+							clipboardData: new DataTransfer(),
+						})
+
+						e.target.dispatchEvent(copyEvent)
+
+						const text = copyEvent.clipboardData.getData('text/plain')
+
+						if (text) {
+							try {
+								await navigator.clipboard.writeText(text)
+							} catch (err) {
+								console.error('Clipboard write failed:', err)
+							}
+						}
+					}
+				}
+			})
+		}
+
 		this.monacoEditor.onKeyUp(e => {
 			if (this._active) {
 			}

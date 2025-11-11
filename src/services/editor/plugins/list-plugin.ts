@@ -1,39 +1,10 @@
-import { se } from 'date-fns/locale'
 import { KeyCode, type editor } from 'monaco-editor'
 import type { EditorPlugin } from '../editor-plugin'
 
 const checkBoxListRegex = /^(?<indent>(\s*))(?<checkbox>\[(?:x| )\])(?<space>\s)/
-const numberedListRegex = /^(?<indent>\s*)(?<number>\d+|[a-z])(?<delimiter>[.)])(?<space>\s)/
+const numberedListRegex = /^(?<indent>\s*)(?<number>\d+)(?<delimiter>[.)])(?<space>\s)/
 const listItemRegex = /^(?<indent>\s*)(?<symbol>[^\w\s])(?<space>\s)/
 const indentRegex = /^(?<indent>\s*)(?<content>.*)/
-const letters = [
-	'a',
-	'b',
-	'c',
-	'd',
-	'e',
-	'f',
-	'g',
-	'h',
-	'i',
-	'j',
-	'k',
-	'l',
-	'm',
-	'n',
-	'o',
-	'p',
-	'q',
-	'r',
-	's',
-	't',
-	'u',
-	'v',
-	'w',
-	'x',
-	'y',
-	'z',
-]
 
 export class ListPlugin implements EditorPlugin {
 	private _active: boolean = true
@@ -67,18 +38,9 @@ export class ListPlugin implements EditorPlugin {
 							if (numberedListMatch[0] === prevLineContent) {
 								deletePrevLine = true
 							} else {
-								const mode: 'number' | 'letter' = isNaN(parseInt(numberedListMatch.groups.number)) ? 'letter' : 'number'
-								if (mode === 'letter') {
-									const currentLetter = numberedListMatch.groups.number
-									const currentIndex = letters.indexOf(currentLetter)
-									const nextIndex = (currentIndex + 1) % letters.length
-									const nextLetter = letters[nextIndex]
-									newContent = `${numberedListMatch.groups.indent}${nextLetter}${numberedListMatch.groups.delimiter} `
-								} else {
-									const itemNumber = parseInt(numberedListMatch.groups.number)
-									const newLineNumber = itemNumber + 1
-									newContent = `${numberedListMatch.groups.indent}${newLineNumber}${numberedListMatch.groups.delimiter} `
-								}
+								const itemNumber = parseInt(numberedListMatch.groups.number)
+								const newLineNumber = itemNumber + 1
+								newContent = `${numberedListMatch.groups.indent}${newLineNumber}${numberedListMatch.groups.delimiter} `
 								const nextLineContent = this.monacoEditorModel.getLineContent(currentLine + 1)
 								renumber = !!numberedListRegex.exec(nextLineContent)
 							}
@@ -181,13 +143,9 @@ export class ListPlugin implements EditorPlugin {
 			}
 		}
 
-		const indentLevelState: Map<number, { mode: 'number' | 'letter'; counter: number }> = new Map()
+		const indentLevelState: Map<number, number> = new Map()
 		const indentLevels: number[] = []
 		const edits = []
-
-		const firstLineContent = this.monacoEditorModel.getLineContent(currentLine)
-		const firstMatch = numberedListRegex.exec(firstLineContent)
-		const baseMode: 'number' | 'letter' = firstMatch && isNaN(parseInt(firstMatch.groups.number)) ? 'letter' : 'number'
 
 		let previousIndentLength = -1
 
@@ -216,24 +174,12 @@ export class ListPlugin implements EditorPlugin {
 				previousIndentLength = indentLength
 
 				if (!indentLevelState.has(indentLength)) {
-					const depth = indentLevels.filter(level => level < indentLength).length
-					let mode: 'number' | 'letter'
-					if (depth % 2 === 0) {
-						mode = baseMode
-					} else {
-						mode = baseMode === 'number' ? 'letter' : 'number'
-					}
-					indentLevelState.set(indentLength, { mode, counter: 1 })
+					indentLevelState.set(indentLength, 1)
 					indentLevels.push(indentLength)
 				}
 
-				const state = indentLevelState.get(indentLength)
-				let expectedNumber = ''
-				if (state.mode === 'number') {
-					expectedNumber = `${state.counter}`
-				} else {
-					expectedNumber = letters[(state.counter - 1) % letters.length]
-				}
+				const counter = indentLevelState.get(indentLength)
+				const expectedNumber = `${counter}`
 
 				if (match.groups.number !== expectedNumber) {
 					const newLineContent = lineContent.replace(
@@ -252,7 +198,7 @@ export class ListPlugin implements EditorPlugin {
 					edits.push(action)
 				}
 
-				state.counter++
+				indentLevelState.set(indentLength, counter + 1)
 				currentLine++
 			} else {
 				break

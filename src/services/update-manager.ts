@@ -157,7 +157,7 @@ export class UpdateManager {
 	}
 
 	public async checkUpdateInitial() {
-		if (this.currentVersion !== '0.0.0') {
+		if (this.currentVersion !== '0.0.0' && location.host !== 'localhost' && location.host !== env.VITE_ALLOWED_HOST) {
 			try {
 				const lastRunHostVersion = settingsManager.lastRunHostVersion
 				await this.check(false)
