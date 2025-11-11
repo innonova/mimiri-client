@@ -63,7 +63,7 @@
 				@click="markAsPassword"
 				data-testid="editor-mark-as-password"
 			/>
-			<ToolbarIcon
+			<!-- <ToolbarIcon
 				icon="heading"
 				:hoverEffect="true"
 				:disabled="false"
@@ -78,9 +78,9 @@
 				title="Code Block"
 				@click="insertCodeBlock"
 				data-testid="editor-insert-code-block"
-			/>
+			/> -->
 			<div class="inline-block h-4/5 w-0 border border-solid border-toolbar-separator m-0.5" />
-			<ToolbarIcon
+			<!-- <ToolbarIcon
 				icon="check-list"
 				:hoverEffect="true"
 				:disabled="false"
@@ -103,7 +103,7 @@
 				title="Ordered List"
 				@click="insertOrderedList"
 				data-testid="editor-insert-ordered-list"
-			/>
+			/> -->
 		</div>
 		<div class="relative flex-auto flex flex-col items-stretch overflow-hidden">
 			<div v-if="historyVisible && selectedHistoryItem" class="px-2 py-1 bg-info-bar cursor-default text-size-menu">
