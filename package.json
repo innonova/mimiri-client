@@ -51,6 +51,7 @@
 		"@microsoft/signalr": "^9.0.6",
 		"@milkdown/core": "^7.17.1",
 		"@milkdown/ctx": "^7.17.1",
+		"@milkdown/plugin-history": "^7.17.1",
 		"@milkdown/plugin-listener": "^7.17.1",
 		"@milkdown/preset-commonmark": "^7.17.1",
 		"@milkdown/preset-gfm": "^7.17.1",

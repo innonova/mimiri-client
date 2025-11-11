@@ -20,6 +20,14 @@
 			/>
 			<div class="inline-block h-4/5 w-0 border border-solid border-toolbar-separator m-0.5" />
 			<ToolbarIcon
+				icon="refresh"
+				:hoverEffect="true"
+				title="Toggle Edit Mode"
+				@click="toggleEditModeClicked"
+				data-testid="editor-toggle-edit-mode-button"
+			/>
+			<div class="inline-block h-4/5 w-0 border border-solid border-toolbar-separator m-0.5" />
+			<ToolbarIcon
 				:icon="settingsManager.wordwrap ? 'wordwrap-on' : 'wordwrap-off'"
 				:hoverEffect="true"
 				:disabled="noteManager.tree.selectedNoteRef().value?.isSystem"
@@ -284,6 +292,10 @@ const insertHeading = () => {
 const insertCodeBlock = () => {
 	mimiriEditor.focus()
 	mimiriEditor.executeFormatAction('insert-code-block')
+}
+
+const toggleEditModeClicked = () => {
+	mimiriEditor.toggleEditMode()
 }
 
 watch(historyVisible, (newVal, _) => {

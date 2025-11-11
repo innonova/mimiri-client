@@ -107,6 +107,7 @@ export class MimiriEditor {
 		this._editorAdvanced.active = true
 		this._editorSimple.active = false
 		this._editorDisplay.active = false
+		this._editorMilkdown.active = false
 		this._activeEditor = this._editorAdvanced
 		this._state.mode = 'advanced'
 		this._activeEditor.syncSettings()
@@ -120,6 +121,7 @@ export class MimiriEditor {
 		this._editorAdvanced.active = false
 		this._editorSimple.active = true
 		this._editorDisplay.active = false
+		this._editorMilkdown.active = false
 		this._activeEditor = this._editorSimple
 		this._state.mode = 'simple'
 		this._activeEditor.syncSettings()
@@ -133,15 +135,16 @@ export class MimiriEditor {
 		this._editorAdvanced.active = false
 		this._editorSimple.active = false
 		this._editorDisplay.active = true
+		this._editorMilkdown.active = false
 		this._activeEditor = this._editorDisplay
 		this._state.mode = 'display'
 		this._activeEditor.syncSettings()
 	}
 
-	private activateMilkdown() {
+	private async activateMilkdown() {
 		if (!this._milkdownInitialized) {
 			this._milkdownInitialized = true
-			this._editorMilkdown.init(this._milkdownElement)
+			await this._editorMilkdown.init(this._milkdownElement)
 		}
 		this._editorAdvanced.active = false
 		this._editorSimple.active = false
@@ -153,12 +156,12 @@ export class MimiriEditor {
 	}
 
 	private activateEditor() {
-		this.activateMilkdown()
-		// if (settingsManager.simpleEditor) {
-		// 	this.activateSimple()
-		// } else {
-		// 	this.activateAdvanced()
-		// }
+		// this.activateMilkdown()
+		if (settingsManager.simpleEditor) {
+			this.activateSimple()
+		} else {
+			this.activateAdvanced()
+		}
 	}
 
 	public init(
@@ -185,6 +188,18 @@ export class MimiriEditor {
 		this._milkdownElement = milkdownElement
 
 		this.activateEditor()
+	}
+
+	public async toggleEditMode() {
+		if (this._editorMilkdown.active) {
+			this.activateAdvanced()
+			this._editorAdvanced.show(this._editorMilkdown.text, this._editorMilkdown.scrollTop)
+			this._editorAdvanced.readonly = this._editorMilkdown.readonly
+		} else {
+			await this.activateMilkdown()
+			this._editorMilkdown.show(this._editorAdvanced.text, this._editorAdvanced.scrollTop)
+			this._editorMilkdown.readonly = this._editorAdvanced.readonly
+		}
 	}
 
 	public mobileClosing() {

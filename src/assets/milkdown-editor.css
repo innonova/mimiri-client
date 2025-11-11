@@ -1,0 +1,155 @@
+.milkdown {
+	@apply flex-1 flex flex-col;
+}
+
+.ProseMirror {
+	position: relative;
+	overflow-y: auto;
+	padding: 10px;
+	outline: none;
+	background-color: var(--color-input);
+	flex: 1;
+	word-wrap: break-word;
+	white-space: pre-wrap;
+	white-space: break-spaces;
+	-webkit-font-variant-ligatures: none;
+	font-variant-ligatures: none;
+	font-feature-settings: 'liga' 0;
+}
+
+.ProseMirror pre {
+	white-space: pre-wrap;
+}
+
+.ProseMirror-hideselection *::selection {
+	background: transparent;
+}
+.ProseMirror-hideselection *::-moz-selection {
+	background: transparent;
+}
+.ProseMirror-hideselection {
+	caret-color: transparent;
+}
+
+.ProseMirror [draggable][contenteditable='false'] {
+	user-select: text;
+}
+
+.ProseMirror-selectednode {
+	outline: 2px solid #8cf;
+}
+
+.ProseMirror img.ProseMirror-separator {
+	display: inline !important;
+	border: none !important;
+	margin: 0 !important;
+}
+
+/* Lists */
+.milkdown ul,
+.milkdown ol {
+	padding-left: 1.5rem;
+	margin: 0.2rem 0;
+	ol,
+	ul {
+		padding-left: 1rem;
+	}
+}
+
+.milkdown ul:has(li[data-item-type='task']) {
+	padding-left: 0.25rem;
+	ul {
+		margin-left: -0.5rem;
+	}
+}
+
+.milkdown ul {
+	list-style-type: disc;
+}
+
+.milkdown ol {
+	list-style-type: decimal;
+}
+
+.milkdown li {
+	display: list-item;
+}
+
+/* Code blocks */
+.milkdown pre {
+	background: #555;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+	padding: 1rem;
+	margin: 1rem 0;
+	overflow-x: auto;
+}
+
+.milkdown code {
+	font-family: 'Courier New', monospace;
+	font-size: 0.9em;
+}
+
+.milkdown pre code {
+	background: none;
+	padding: 0;
+}
+
+/* Hide default bullet points for task items */
+li[data-item-type='task'] {
+	list-style: none;
+	position: relative;
+	padding-left: 1.5rem;
+}
+
+/* Create checkbox using ::before pseudo-element */
+li[data-item-type='task']::before {
+	content: '';
+	position: absolute;
+	left: 0;
+	top: 0.25rem;
+	width: 1rem;
+	height: 1rem;
+	border: 2px solid #666;
+	border-radius: 3px;
+	background: white;
+	cursor: pointer;
+}
+
+/* Checked state */
+li[data-item-type='task'][data-checked='true']::before {
+	background: #2196f3;
+	border-color: #2196f3;
+}
+
+/* Checkmark for checked items */
+li[data-item-type='task'][data-checked='true']::after {
+	content: '✓';
+	position: absolute;
+	left: 0.2rem;
+	top: 0.1rem;
+	color: white;
+	font-size: 0.8rem;
+	font-weight: bold;
+}
+
+/* Strike through checked items */
+li[data-item-type='task'][data-checked='true'] p {
+	text-decoration: line-through;
+	color: #999;
+}
+
+/* Password field styling - inline editable approach */
+.password-prefix {
+	/* The "p" before the backtick - already styled by text-text-secondary */
+}
+
+.password-inline-code {
+	/* The inline code containing the password */
+	color: var(--color-text);
+	cursor: pointer;
+}
+
+.password-inline-code.password-hidden {
+	-webkit-text-security: disc;
+}

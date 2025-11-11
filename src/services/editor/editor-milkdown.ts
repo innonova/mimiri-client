@@ -1,15 +1,22 @@
 import { Debounce } from '../helpers'
 import { settingsManager } from '../settings-manager'
 import type { EditorState, SelectionExpansion, TextEditor, TextEditorListener } from './type'
-import { Editor, rootCtx, defaultValueCtx } from '@milkdown/core'
+import { Editor, rootCtx, defaultValueCtx, editorViewCtx } from '@milkdown/core'
 import { commonmark } from '@milkdown/preset-commonmark'
 import { listener, listenerCtx } from '@milkdown/plugin-listener'
-import { replaceAll } from '@milkdown/utils'
+import { replaceAll, callCommand } from '@milkdown/utils'
 import { gfm } from '@milkdown/preset-gfm'
+import { history, redoCommand, undoCommand } from '@milkdown/plugin-history'
+import { closeHistory } from 'prosemirror-history'
+import { EditorState as ProseMirrorEditorState } from 'prosemirror-state'
+import {
+	createPasswordPlugin,
+	passwordInputRule,
+	passwordConversionPluginExport,
+} from './plugins/milkdown-password-plugin'
 
 export class EditorMilkdown implements TextEditor {
 	private _domElement: HTMLElement | undefined
-	private _element: HTMLDivElement | undefined
 	private _history: HTMLDivElement | undefined
 	private _initialText: string = ''
 	private lastScrollTop: number
@@ -43,7 +50,8 @@ export class EditorMilkdown implements TextEditor {
 
 				// Listen to changes
 				ctx.get(listenerCtx).markdownUpdated((ctx, markdown) => {
-					console.log('Markdown changed:', markdown)
+					// console.log('Markdown changed:', markdown)
+					this.updateUndoRedoState()
 				})
 				ctx.get(listenerCtx).mounted(ctx => {
 					const editorElement = document.querySelector(`#${this._domElement.id}`)
@@ -58,10 +66,17 @@ export class EditorMilkdown implements TextEditor {
 							// Update via Milkdown API
 						}
 					})
+
+					// Initial undo/redo state
+					this.updateUndoRedoState()
 				})
 			})
 			.use(commonmark)
 			.use(gfm)
+			.use(history) // Enable undo/redo functionality
+			.use(passwordConversionPluginExport) // Convert p`...` code back to plain text
+			.use(passwordInputRule)
+			.use(createPasswordPlugin(this.listener)) // Pass listener for double-click handling
 			.use(listener)
 			.create()
 	}
@@ -90,14 +105,29 @@ export class EditorMilkdown implements TextEditor {
 
 	public show(text: string, scrollTop: number) {
 		this._state.changed = false
-		console.log(text)
+		// console.log(text)
 
+		// The conversion plugin will handle p`...` patterns automatically
 		this._editor.action(replaceAll(text))
 
-		// this._editor!.commands.setContent(text, {
-		// 	contentType: 'markdown',
-		// })
+		// Clear history by creating a new EditorState with fresh history
+		this._editor.action(ctx => {
+			const view = ctx.get(editorViewCtx) as any
+			if (view?.state) {
+				// Create a new state with the same document and plugins but fresh history
+				const newState = ProseMirrorEditorState.create({
+					doc: view.state.doc,
+					plugins: view.state.plugins,
+				})
+				view.updateState(newState)
+			}
+		})
+
 		this._initialText = text
+
+		// Update undo/redo state
+		setTimeout(() => this.updateUndoRedoState(), 0)
+
 		// this.lastScrollTop = scrollTop
 		// this._element.scrollTop = scrollTop
 		// if (this._active) {
@@ -175,16 +205,38 @@ export class EditorMilkdown implements TextEditor {
 		// }
 	}
 
+	private updateUndoRedoState() {
+		if (this._editor) {
+			this._editor.action(ctx => {
+				const view = ctx.get(editorViewCtx) as any
+				if (view?.state?.history$) {
+					const undoDepth = view.state.history$.done.eventCount ?? 0
+					const redoDepth = view.state.history$.undone.eventCount ?? 0
+
+					this._state.canUndo = undoDepth > 0
+					this._state.canRedo = redoDepth > 0
+
+					if (this._active) {
+						this.listener.onStateUpdated(this._state)
+					}
+				}
+			})
+		}
+	}
 	public undo() {
-		try {
-			document.execCommand('undo')
-		} catch {}
+		if (this._editor) {
+			this._editor.action(callCommand(undoCommand.key))
+			// Update state after undo
+			setTimeout(() => this.updateUndoRedoState(), 0)
+		}
 	}
 
 	public redo() {
-		try {
-			document.execCommand('redo')
-		} catch {}
+		if (this._editor) {
+			this._editor.action(callCommand(redoCommand.key))
+			// Update state after redo
+			setTimeout(() => this.updateUndoRedoState(), 0)
+		}
 	}
 
 	public clearSearchHighlights() {}
@@ -241,12 +293,14 @@ export class EditorMilkdown implements TextEditor {
 	public expandSelection(_type: SelectionExpansion) {}
 	public focus() {
 		if (!this.historyShowing) {
-			this._element.focus()
+			this._editor?.action(ctx => {
+				ctx.get<any, string>('editorView').focus()
+			})
 		}
 	}
 
 	public selectAll() {
-		document.getSelection().selectAllChildren(this._element)
+		// document.getSelection().selectAllChildren(this._element)
 	}
 
 	public cut() {
@@ -267,7 +321,8 @@ export class EditorMilkdown implements TextEditor {
 		} catch {}
 	}
 	public get readonly() {
-		return this._element.contentEditable === 'false'
+		return false
+		// return this._element.contentEditable === 'false'
 	}
 
 	public set readonly(value: boolean) {
