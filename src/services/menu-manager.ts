@@ -229,19 +229,78 @@ class MenuManager {
 				}
 			}
 		} else if (itemId === 'copy') {
-			clipboardNote.value = noteManager.tree.selectedNote()
-			isCut.value = false
+			if (document.activeElement.tagName === 'BODY' || !noteEditor.value?.$el.contains(document.activeElement)) {
+				clipboardNote.value = noteManager.tree.selectedNote()
+				isCut.value = false
+			} else if (mimiriPlatform.isMacApp) {
+				;(async () => {
+					const copyEvent = new ClipboardEvent('copy', {
+						bubbles: true,
+						cancelable: true,
+						clipboardData: new DataTransfer(),
+					})
+
+					document.activeElement.dispatchEvent(copyEvent)
+
+					const text = copyEvent.clipboardData.getData('text/plain')
+
+					if (text) {
+						try {
+							await navigator.clipboard.writeText(text)
+						} catch (err) {
+							console.error('Clipboard write failed:', err)
+						}
+					}
+				})()
+			}
 		} else if (itemId === 'cut') {
-			clipboardNote.value = noteManager.tree.selectedNote()
-			isCut.value = true
+			if (document.activeElement.tagName === 'BODY' || !noteEditor.value?.$el.contains(document.activeElement)) {
+				clipboardNote.value = noteManager.tree.selectedNote()
+				isCut.value = true
+			} else if (mimiriPlatform.isMacApp) {
+				;(async () => {
+					const copyEvent = new ClipboardEvent('cut', {
+						bubbles: true,
+						cancelable: true,
+						clipboardData: new DataTransfer(),
+					})
+
+					document.activeElement.dispatchEvent(copyEvent)
+
+					const text = copyEvent.clipboardData.getData('text/plain')
+
+					if (text) {
+						try {
+							await navigator.clipboard.writeText(text)
+						} catch (err) {
+							console.error('Clipboard write failed:', err)
+						}
+					}
+				})()
+			}
 		} else if (itemId === 'paste') {
-			if (clipboardNote.value && noteManager.tree.selectedNote()) {
-				await noteManager.tree.selectedNote().expand()
-				if (isCut.value) {
-					await clipboardNote.value.move(noteManager.tree.selectedNote())
-				} else {
-					await clipboardNote.value.copy(noteManager.tree.selectedNote())
+			if (document.activeElement.tagName === 'BODY' || !noteEditor.value?.$el.contains(document.activeElement)) {
+				if (clipboardNote.value && noteManager.tree.selectedNote()) {
+					await noteManager.tree.selectedNote().expand()
+					if (isCut.value) {
+						await clipboardNote.value.move(noteManager.tree.selectedNote())
+					} else {
+						await clipboardNote.value.copy(noteManager.tree.selectedNote())
+					}
 				}
+			} else if (mimiriPlatform.isMacApp) {
+				;(async () => {
+					const text = await navigator.clipboard.readText()
+
+					const pasteEvent = new ClipboardEvent('paste', {
+						bubbles: true,
+						cancelable: true,
+						clipboardData: new DataTransfer(),
+					})
+
+					pasteEvent.clipboardData.setData('text/plain', text)
+					document.activeElement.dispatchEvent(pasteEvent)
+				})()
 			}
 		} else if (itemId === 'copy-path') {
 			if (noteManager.tree.selectedNote()) {
