@@ -1,6 +1,6 @@
 @import 'tailwindcss';
 @import './monaco-editor.css';
-@import './milkdown-editor.css';
+@import './prosemirror-editor.css';
 
 /* Blue color scale based on logo: https://maketintsandshades.com/#4381C1 */
 @theme {

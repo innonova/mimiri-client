@@ -1,4 +1,4 @@
-export interface EditorState {
+export interface MimiriEditorState {
 	canUndo: boolean
 	canRedo: boolean
 	changed: boolean
@@ -22,14 +22,14 @@ export interface TextEditorListener {
 	onEditorBlur()
 	onScroll(position: number)
 	onPasswordClicked(top: number, left: number, text: string)
-	onStateUpdated(state: Omit<EditorState, 'mode'>)
+	onStateUpdated(state: Omit<MimiriEditorState, 'mode' | 'changed'>)
 }
 
 export interface TextEditor {
 	show(text: string, scrollTop: number)
 	updateText(text: string)
 	clear()
-	resetChanged()
+	// resetChanged()
 	setHistoryText(text: string)
 	hideHistory()
 	showHistory()
@@ -53,7 +53,7 @@ export interface TextEditor {
 	get readonly()
 	set readonly(value: boolean)
 	get scrollTop(): number
-	get initialText(): string
+	// get initialText(): string
 	get text(): string
-	get changed(): boolean
+	// get changed(): boolean
 }

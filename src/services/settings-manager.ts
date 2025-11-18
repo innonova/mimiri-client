@@ -36,8 +36,6 @@ export interface MimerConfiguration {
 	anonymousPassword: string | undefined
 	isNewInstall: boolean | undefined
 	showCreateOverCancel: boolean | undefined
-	alwaysEdit: boolean
-	simpleEditor: boolean
 	editorFontFamily: string
 	editorFontSize: number
 	lastNoteCreateType: string
@@ -77,8 +75,6 @@ class SettingsManager {
 		anonymousPassword: undefined,
 		isNewInstall: undefined,
 		showCreateOverCancel: false,
-		alwaysEdit: mimiriPlatform.isDesktop,
-		simpleEditor: !mimiriPlatform.isDesktop,
 		editorFontFamily: 'Consolas',
 		editorFontSize: 14,
 		lastNoteCreateType: 'child',
@@ -343,24 +339,6 @@ class SettingsManager {
 
 	public set showCreateOverCancel(value: boolean) {
 		this.state.showCreateOverCancel = value
-		void this.save()
-	}
-
-	public get alwaysEdit() {
-		return !!this.state.alwaysEdit
-	}
-
-	public set alwaysEdit(value: boolean) {
-		this.state.alwaysEdit = value
-		void this.save()
-	}
-
-	public get simpleEditor() {
-		return !!this.state.simpleEditor
-	}
-
-	public set simpleEditor(value: boolean) {
-		this.state.simpleEditor = value
 		void this.save()
 	}
 

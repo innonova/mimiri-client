@@ -1,6 +1,6 @@
 import { Debounce } from '../helpers'
 import { settingsManager } from '../settings-manager'
-import type { EditorState, SelectionExpansion, TextEditor, TextEditorListener } from './type'
+import type { MimiriEditorState, SelectionExpansion, TextEditor, TextEditorListener } from './type'
 
 export class EditorSimple implements TextEditor {
 	private _domElement: HTMLElement | undefined
@@ -14,7 +14,7 @@ export class EditorSimple implements TextEditor {
 	private _active = true
 	private _wordWrap = true
 	private _activePasswordEntry: { node: Node; start: number; end: number } | undefined
-	private _state: Omit<EditorState, 'mode'> = {
+	private _state: Omit<MimiriEditorState, 'mode'> = {
 		canUndo: true,
 		canRedo: true,
 		changed: false,

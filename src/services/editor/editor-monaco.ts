@@ -1,5 +1,5 @@
 import { editor, KeyCode, languages, Selection } from 'monaco-editor'
-import { SelectionExpansion, type EditorState, type TextEditor, type TextEditorListener } from './type'
+import { SelectionExpansion, type MimiriEditorState, type TextEditor, type TextEditorListener } from './type'
 import { settingsManager } from '../settings-manager'
 import { mimiriPlatform } from '../mimiri-platform'
 import { Debounce } from '../helpers'
@@ -8,22 +8,16 @@ import { HeadingPlugin } from './plugins/heading-plugin'
 import { CodeBlockPlugin } from './plugins/code-block-plugin'
 import { InlineMarkdownPlugin } from './plugins/inline-markdown-plugin'
 
-export class EditorAdvanced implements TextEditor {
-	// private backgroundEditor: editor.IStandaloneCodeEditor
+export class EditorMonaco implements TextEditor {
 	private monacoEditor: editor.IStandaloneCodeEditor
 	private monacoEditorModel: editor.ITextModel
-	// private backgroundModel: editor.ITextModel
 	private monacoEditorHistoryModel: editor.ITextModel
 	private decorations: string[] = []
 	private styleElement: HTMLStyleElement
 	private backgroundElement: HTMLDivElement
-	// private styleOverridesDirty = false
-	// private styleUpdateRunning = false
-	// private styleUpdateStartTime = Date.now()
-	private _state: Omit<EditorState, 'mode'> = {
+	private _state: Omit<MimiriEditorState, 'mode' | 'changed'> = {
 		canUndo: false,
 		canRedo: false,
-		changed: false,
 		canMarkAsPassword: false,
 		canUnMarkAsPassword: false,
 	}
@@ -32,7 +26,7 @@ export class EditorAdvanced implements TextEditor {
 	private lastScrollTop = 0
 	private lastSelection: Selection | null = null
 	private _text: string = ''
-	private _initialText: string = ''
+	// private _initialText: string = ''
 	private _domElement: HTMLElement | undefined
 	private _active = true
 	private _mouseDownPosition: { lineNumber: number; column: number } | undefined
@@ -271,7 +265,7 @@ export class EditorAdvanced implements TextEditor {
 				this._text = this.monacoEditorModel.getValue()
 				this._state.canUndo = (this.monacoEditorModel as any).canUndo()
 				this._state.canRedo = (this.monacoEditorModel as any).canRedo()
-				this._state.changed = this._text !== this._initialText
+				// this._state.changed = this._text !== this._initialText
 				this.listener.onStateUpdated(this._state)
 			}
 		})
@@ -530,9 +524,9 @@ export class EditorAdvanced implements TextEditor {
 	}
 
 	public show(text: string, scrollTop: number) {
-		this._initialText = text
+		// this._initialText = text
 		this._text = text
-		this._state.changed = false
+		// this._state.changed = false
 		this.monacoEditorModel.setValue(text)
 		this._plugins.forEach(plugin => {
 			plugin.show()
@@ -550,9 +544,9 @@ export class EditorAdvanced implements TextEditor {
 	}
 
 	public updateText(text: string) {
-		this._initialText = text
+		// this._initialText = text
 		this._text = text
-		this._state.changed = false
+		// this._state.changed = false
 		if (this.monacoEditorModel.getValue() !== text) {
 			this.monacoEditorModel.setValue(text)
 			this._plugins.forEach(plugin => {
@@ -564,18 +558,18 @@ export class EditorAdvanced implements TextEditor {
 		}
 	}
 
-	public resetChanged() {
-		this._initialText = this._text
-		this._state.changed = false
-		if (this._active) {
-			this.listener.onStateUpdated(this._state)
-		}
-	}
+	// public resetChanged() {
+	// 	// this._initialText = this._text
+	// 	this._state.changed = false
+	// 	if (this._active) {
+	// 		this.listener.onStateUpdated(this._state)
+	// 	}
+	// }
 
 	public clear() {
-		this._initialText = ''
+		// this._initialText = ''
 		this._text = ''
-		this._state.changed = false
+		// this._state.changed = false
 		this._state.canUndo = false
 		this._state.canRedo = false
 		this.monacoEditorModel.setValue('')
@@ -865,15 +859,15 @@ export class EditorAdvanced implements TextEditor {
 		return this.monacoEditor.getScrollTop()
 	}
 
-	get initialText(): string {
-		return this._initialText
-	}
+	// get initialText(): string {
+	// 	return this._initialText
+	// }
 
 	public get text() {
 		return this._text
 	}
 
-	public get changed() {
-		return this._state.changed
-	}
+	// public get changed() {
+	// 	return this._state.changed
+	// }
 }

@@ -1,7 +1,7 @@
 import { Debounce } from '../helpers'
 import { mimiriPlatform } from '../mimiri-platform'
 import { settingsManager } from '../settings-manager'
-import type { EditorState, SelectionExpansion, TextEditor, TextEditorListener } from './type'
+import type { MimiriEditorState, SelectionExpansion, TextEditor, TextEditorListener } from './type'
 
 export class EditorDisplay implements TextEditor {
 	private _domElement: HTMLElement | undefined
@@ -16,7 +16,7 @@ export class EditorDisplay implements TextEditor {
 	private _initialText: string = ''
 	private _redoText: string = ''
 	private _test: any
-	private _state: Omit<EditorState, 'mode'> = {
+	private _state: Omit<MimiriEditorState, 'mode'> = {
 		canUndo: false,
 		canRedo: false,
 		changed: false,

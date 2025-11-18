@@ -1,8 +1,12 @@
 {
 	"cSpell.words": [
+		"dropcursor",
+		"gapcursor",
 		"gibi",
 		"Hasher",
 		"IDBP",
+		"inputrules",
+		"keymap",
 		"kibi",
 		"mailpit",
 		"mibi",
@@ -11,8 +15,10 @@
 		"nupkg",
 		"onreconnected",
 		"onreconnecting",
+		"prosemirror",
 		"Reshare",
 		"signalr",
+		"textblock",
 		"Twint",
 		"vueuse",
 		"zxcvbn"

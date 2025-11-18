@@ -1,24 +1,29 @@
-import { Debounce } from '../helpers'
 import { settingsManager } from '../settings-manager'
-import type { EditorState, SelectionExpansion, TextEditor, TextEditorListener } from './type'
-import { Editor, rootCtx, defaultValueCtx, editorViewCtx } from '@milkdown/core'
-import { commonmark } from '@milkdown/preset-commonmark'
-import { listener, listenerCtx } from '@milkdown/plugin-listener'
-import { replaceAll, callCommand } from '@milkdown/utils'
-import { gfm } from '@milkdown/preset-gfm'
-import { history, redoCommand, undoCommand } from '@milkdown/plugin-history'
-import { closeHistory } from 'prosemirror-history'
-import { EditorState as ProseMirrorEditorState } from 'prosemirror-state'
-import {
-	createPasswordPlugin,
-	passwordInputRule,
-	passwordConversionPluginExport,
-} from './plugins/milkdown-password-plugin'
+import type { MimiriEditorState, SelectionExpansion, TextEditor, TextEditorListener } from './type'
 
-export class EditorMilkdown implements TextEditor {
+import { EditorState } from 'prosemirror-state'
+import { EditorView } from 'prosemirror-view'
+import { dropCursor } from 'prosemirror-dropcursor'
+import { gapCursor } from 'prosemirror-gapcursor'
+import { keymap } from 'prosemirror-keymap'
+import { history, redo, undo } from 'prosemirror-history'
+import {
+	baseKeymap,
+	chainCommands,
+	createParagraphNear,
+	liftEmptyBlock,
+	newlineInCode,
+	splitBlock,
+} from 'prosemirror-commands'
+import { mimiriSchema } from './prosemirror/mimiri-schema'
+import { mimiriInputRules } from './prosemirror/mimiri-input-rules'
+import { liftListItem, sinkListItem, splitListItem } from 'prosemirror-schema-list'
+import { deserialize } from './prosemirror/mimiri-deserializer'
+import { serialize } from './prosemirror/mimiri-serializer'
+
+export class EditorProseMirror implements TextEditor {
 	private _domElement: HTMLElement | undefined
 	private _history: HTMLDivElement | undefined
-	private _initialText: string = ''
 	private lastScrollTop: number
 	private historyShowing: boolean = false
 	private lastSelection: { startNode: Node; start: number; endNode: Node; end: number } | undefined | undefined
@@ -26,14 +31,13 @@ export class EditorMilkdown implements TextEditor {
 	private _active = true
 	private _wordWrap = true
 	private _activePasswordEntry: { node: Node; start: number; end: number } | undefined
-	private _state: Omit<EditorState, 'mode'> = {
+	private _state: Omit<MimiriEditorState, 'mode' | 'changed'> = {
 		canUndo: true,
 		canRedo: true,
-		changed: false,
 		canMarkAsPassword: false,
 		canUnMarkAsPassword: false,
 	}
-	private _editor: Editor | undefined
+	private _editor: EditorView | undefined
 
 	constructor(private listener: TextEditorListener) {}
 
@@ -41,44 +45,38 @@ export class EditorMilkdown implements TextEditor {
 		this._domElement = domElement
 		this._domElement.style.display = this._active ? 'flex' : 'none'
 
-		console.log('this._domElement.id', this._domElement.id)
+		const doc = deserialize('')
 
-		this._editor = await Editor.make()
-			.config(ctx => {
-				ctx.set(rootCtx, `#${this._domElement.id}`)
-				ctx.set(defaultValueCtx, '# Your markdown here')
+		let state = EditorState.create({
+			schema: mimiriSchema,
+			plugins: [
+				mimiriInputRules(mimiriSchema),
+				keymap({
+					'Mod-z': undo,
+					'Mod-y': redo,
+					Enter: splitListItem(mimiriSchema.nodes.list_item),
+					Tab: sinkListItem(mimiriSchema.nodes.list_item),
+					'Shift-Tab': liftListItem(mimiriSchema.nodes.list_item),
+					'Shift-Enter': chainCommands(newlineInCode, createParagraphNear, liftEmptyBlock, splitBlock),
+				}),
+				keymap(baseKeymap),
+				dropCursor(),
+				gapCursor(),
+				history(),
+			],
+			doc,
+		})
 
-				// Listen to changes
-				ctx.get(listenerCtx).markdownUpdated((ctx, markdown) => {
-					// console.log('Markdown changed:', markdown)
-					this.updateUndoRedoState()
-				})
-				ctx.get(listenerCtx).mounted(ctx => {
-					const editorElement = document.querySelector(`#${this._domElement.id}`)
+		const view = new EditorView(this._domElement, {
+			state,
+			dispatchTransaction(transaction) {
+				let newState = view.state.apply(transaction)
+				view.updateState(newState)
 
-					editorElement.addEventListener('click', e => {
-						const taskItem = e.target as HTMLElement
-						if (taskItem) {
-							// Toggle the task - you'll need to update the markdown
-							const isChecked = taskItem.getAttribute('data-checked') === 'true'
-							console.log(isChecked)
-
-							// Update via Milkdown API
-						}
-					})
-
-					// Initial undo/redo state
-					this.updateUndoRedoState()
-				})
-			})
-			.use(commonmark)
-			.use(gfm)
-			.use(history) // Enable undo/redo functionality
-			.use(passwordConversionPluginExport) // Convert p`...` code back to plain text
-			.use(passwordInputRule)
-			.use(createPasswordPlugin(this.listener)) // Pass listener for double-click handling
-			.use(listener)
-			.create()
+				// console.log(serialize(view.state.doc))
+			},
+		})
+		this._editor = view
 	}
 
 	public unMarkSelectionAsPassword() {}
@@ -104,28 +102,16 @@ export class EditorMilkdown implements TextEditor {
 	}
 
 	public show(text: string, scrollTop: number) {
-		this._state.changed = false
-		// console.log(text)
+		const newDoc = deserialize(text)
 
-		// The conversion plugin will handle p`...` patterns automatically
-		this._editor.action(replaceAll(text))
-
-		// Clear history by creating a new EditorState with fresh history
-		this._editor.action(ctx => {
-			const view = ctx.get(editorViewCtx) as any
-			if (view?.state) {
-				// Create a new state with the same document and plugins but fresh history
-				const newState = ProseMirrorEditorState.create({
-					doc: view.state.doc,
-					plugins: view.state.plugins,
-				})
-				view.updateState(newState)
-			}
+		const newState = EditorState.create({
+			schema: mimiriSchema,
+			doc: newDoc,
+			plugins: this._editor.state.plugins,
 		})
 
-		this._initialText = text
+		this._editor.updateState(newState)
 
-		// Update undo/redo state
 		setTimeout(() => this.updateUndoRedoState(), 0)
 
 		// this.lastScrollTop = scrollTop
@@ -136,6 +122,18 @@ export class EditorMilkdown implements TextEditor {
 	}
 
 	public updateText(text: string) {
+		const newDoc = deserialize(text)
+
+		const newState = EditorState.create({
+			schema: mimiriSchema,
+			doc: newDoc,
+			plugins: this._editor.state.plugins,
+		})
+
+		this._editor.updateState(newState)
+
+		setTimeout(() => this.updateUndoRedoState(), 0)
+
 		// this._state.changed = false
 		// if (this._element.innerText !== text) {
 		// 	this._element.innerText = text
@@ -155,6 +153,7 @@ export class EditorMilkdown implements TextEditor {
 	}
 
 	public clear() {
+		// Clear formatting detector
 		// this._initialText = ''
 		// this._state.changed = false
 		// this._state.canUndo = false
@@ -205,39 +204,11 @@ export class EditorMilkdown implements TextEditor {
 		// }
 	}
 
-	private updateUndoRedoState() {
-		if (this._editor) {
-			this._editor.action(ctx => {
-				const view = ctx.get(editorViewCtx) as any
-				if (view?.state?.history$) {
-					const undoDepth = view.state.history$.done.eventCount ?? 0
-					const redoDepth = view.state.history$.undone.eventCount ?? 0
+	private updateUndoRedoState() {}
 
-					this._state.canUndo = undoDepth > 0
-					this._state.canRedo = redoDepth > 0
+	public undo() {}
 
-					if (this._active) {
-						this.listener.onStateUpdated(this._state)
-					}
-				}
-			})
-		}
-	}
-	public undo() {
-		if (this._editor) {
-			this._editor.action(callCommand(undoCommand.key))
-			// Update state after undo
-			setTimeout(() => this.updateUndoRedoState(), 0)
-		}
-	}
-
-	public redo() {
-		if (this._editor) {
-			this._editor.action(callCommand(redoCommand.key))
-			// Update state after redo
-			setTimeout(() => this.updateUndoRedoState(), 0)
-		}
-	}
+	public redo() {}
 
 	public clearSearchHighlights() {}
 	public setSearchHighlights(_text: string) {}
@@ -291,11 +262,9 @@ export class EditorMilkdown implements TextEditor {
 	}
 
 	public expandSelection(_type: SelectionExpansion) {}
+
 	public focus() {
 		if (!this.historyShowing) {
-			this._editor?.action(ctx => {
-				ctx.get<any, string>('editorView').focus()
-			})
 		}
 	}
 
@@ -333,15 +302,15 @@ export class EditorMilkdown implements TextEditor {
 		// return this._element.scrollTop
 	}
 
-	get initialText(): string {
-		return this._initialText
-	}
+	// get initialText(): string {
+	// 	return this._initialText
+	// }
 
 	public get text(): string {
-		return this._initialText
+		return serialize(this._editor.state.doc)
 	}
 
-	public get changed(): boolean {
-		return this._state.changed
-	}
+	// public get changed(): boolean {
+	// 	return this._state.changed
+	// }
 }

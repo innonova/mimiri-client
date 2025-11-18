@@ -18,18 +18,6 @@
 					<option value="black">Black</option>
 				</select>
 			</div>
-			<div v-if="!mimiriPlatform.isDesktop || !alwaysEdit || env.DEV" class="p-1 pt-2 m-auto text-left">
-				<label>
-					<input type="checkbox" v-model="alwaysEdit" class="mr-1 relative top-0.5" />
-					Always edit
-				</label>
-			</div>
-			<div v-if="!mimiriPlatform.isDesktop || simpleEditor || env.DEV" class="p-1 pt-2 m-auto text-left">
-				<label>
-					<input type="checkbox" v-model="simpleEditor" class="mr-1 relative top-0.5" />
-					Use simplified editor
-				</label>
-			</div>
 			<div v-if="mimiriPlatform.isDesktop && !mimiriPlatform.isWeb" class="p-1 pt-2 m-auto text-left">
 				<label>
 					<input type="checkbox" v-model="openAtLogin" class="mr-1 relative top-0.5" />
@@ -99,9 +87,6 @@ const disableDevBlog = ref(false)
 const useChevrons = ref(false)
 const showVerticalGuides = ref(false)
 
-const alwaysEdit = ref(true)
-const simpleEditor = ref(false)
-
 const canSave = computed(
 	() =>
 		theme.value !== settingsManager.theme ||
@@ -110,8 +95,6 @@ const canSave = computed(
 		openAtLogin.value !== settingsManager.openAtLogin ||
 		closeOnX.value !== settingsManager.closeOnX ||
 		trayIcon.value !== settingsManager.trayIcon ||
-		alwaysEdit.value !== settingsManager.alwaysEdit ||
-		simpleEditor.value !== settingsManager.simpleEditor ||
 		disableDevBlog.value !== settingsManager.disableDevBlog ||
 		useChevrons.value !== settingsManager.useChevrons ||
 		showVerticalGuides.value !== settingsManager.showVerticalGuides,
@@ -124,8 +107,6 @@ onMounted(() => {
 	openAtLogin.value = settingsManager.openAtLogin
 	closeOnX.value = settingsManager.closeOnX
 	trayIcon.value = settingsManager.trayIcon
-	alwaysEdit.value = settingsManager.alwaysEdit
-	simpleEditor.value = settingsManager.simpleEditor
 	disableDevBlog.value = settingsManager.disableDevBlog
 	useChevrons.value = settingsManager.useChevrons
 	showVerticalGuides.value = settingsManager.showVerticalGuides
@@ -138,8 +119,6 @@ const save = async () => {
 	settingsManager.openAtLogin = openAtLogin.value
 	settingsManager.closeOnX = closeOnX.value
 	settingsManager.trayIcon = trayIcon.value
-	settingsManager.alwaysEdit = alwaysEdit.value
-	settingsManager.simpleEditor = simpleEditor.value
 	const reload = settingsManager.disableDevBlog !== disableDevBlog.value
 	settingsManager.disableDevBlog = disableDevBlog.value
 	settingsManager.useChevrons = useChevrons.value

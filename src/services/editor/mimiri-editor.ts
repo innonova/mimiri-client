@@ -1,34 +1,26 @@
 import type { MimerNote } from '../types/mimer-note'
 import { NoteHistory } from './note-history'
 import { mimiriPlatform } from '../mimiri-platform'
-import { EditorAdvanced } from './editor-advanced'
-import type { EditorState, SelectionExpansion, TextEditor, TextEditorListener } from './type'
-import { reactive, type Ref } from 'vue'
-import { EditorSimple } from './editor-simple'
-import { EditorDisplay } from './editor-display'
-import { settingsManager } from '../settings-manager'
+import { EditorMonaco } from './editor-monaco'
+import type { MimiriEditorState, SelectionExpansion, TextEditor, TextEditorListener } from './type'
+import { reactive } from 'vue'
 import { clipboardManager, debug, noteManager, saveEmptyNodeDialog } from '../../global'
 import { VersionConflictError } from '../storage/mimiri-client'
-import { EditorMilkdown } from './editor-milkdown'
+import { EditorProseMirror } from './editor-prosemirror'
 
 export class MimiriEditor {
 	private _history = new NoteHistory(this)
 	private _note: MimerNote
 	private infoElement: HTMLDivElement
-	private _editorAdvanced: EditorAdvanced
-	private _editorSimple: EditorSimple
-	private _editorDisplay: EditorDisplay
-	private _editorMilkdown: EditorMilkdown
+	private _editorMonaco: EditorMonaco
+	private _editorProseMirror: EditorProseMirror
 	private _activeEditor: TextEditor
-	private _state: EditorState
+	private _state: MimiriEditorState
 	private _monacoElement: HTMLElement
-	private _simpleElement: HTMLElement
-	private _displayElement: HTMLElement
-	private _milkdownElement: HTMLElement
+	private _proseMirrorElement: HTMLElement
 	private _monacoInitialized: boolean = false
-	private _simpleInitialized: boolean = false
-	private _displayInitialized: boolean = false
-	private _milkdownInitialized: boolean = false
+	private _proseMirrorInitialized: boolean = false
+	private _initialText: string = ''
 
 	private saveListener: () => void
 	public onSave(listener: () => void) {
@@ -80,10 +72,8 @@ export class MimiriEditor {
 			},
 		}
 
-		this._editorAdvanced = new EditorAdvanced(editorListener)
-		this._editorSimple = new EditorSimple(editorListener)
-		this._editorDisplay = new EditorDisplay(editorListener)
-		this._editorMilkdown = new EditorMilkdown(editorListener)
+		this._editorMonaco = new EditorMonaco(editorListener)
+		this._editorProseMirror = new EditorProseMirror(editorListener)
 	}
 
 	private animateNotification(top: number, left: number, text: string) {
@@ -99,77 +89,39 @@ export class MimiriEditor {
 		}
 	}
 
-	private activateAdvanced() {
+	private activateMonaco() {
 		if (!this._monacoInitialized) {
 			this._monacoInitialized = true
-			this._editorAdvanced.init(this._monacoElement)
+			this._editorMonaco.init(this._monacoElement)
 		}
-		this._editorAdvanced.active = true
-		this._editorSimple.active = false
-		this._editorDisplay.active = false
-		this._editorMilkdown.active = false
-		this._activeEditor = this._editorAdvanced
+		this._editorMonaco.active = true
+		this._editorProseMirror.active = false
+		this._activeEditor = this._editorMonaco
 		this._state.mode = 'advanced'
 		this._activeEditor.syncSettings()
 	}
 
-	private activateSimple() {
-		if (!this._simpleInitialized) {
-			this._simpleInitialized = true
-			this._editorSimple.init(this._simpleElement)
+	private async activateProseMirror() {
+		if (!this._proseMirrorInitialized) {
+			this._proseMirrorInitialized = true
+			await this._editorProseMirror.init(this._proseMirrorElement)
 		}
-		this._editorAdvanced.active = false
-		this._editorSimple.active = true
-		this._editorDisplay.active = false
-		this._editorMilkdown.active = false
-		this._activeEditor = this._editorSimple
-		this._state.mode = 'simple'
+		this._editorMonaco.active = false
+		this._editorProseMirror.active = true
+		this._activeEditor = this._editorProseMirror
+		this._state.mode = 'proseMirror'
 		this._activeEditor.syncSettings()
 	}
 
-	private activateDisplay() {
-		if (!this._displayInitialized) {
-			this._displayInitialized = true
-			this._editorDisplay.init(this._displayElement)
-		}
-		this._editorAdvanced.active = false
-		this._editorSimple.active = false
-		this._editorDisplay.active = true
-		this._editorMilkdown.active = false
-		this._activeEditor = this._editorDisplay
-		this._state.mode = 'display'
-		this._activeEditor.syncSettings()
+	private activateSource() {
+		this.activateMonaco()
 	}
 
-	private async activateMilkdown() {
-		if (!this._milkdownInitialized) {
-			this._milkdownInitialized = true
-			await this._editorMilkdown.init(this._milkdownElement)
-		}
-		this._editorAdvanced.active = false
-		this._editorSimple.active = false
-		this._editorDisplay.active = false
-		this._editorMilkdown.active = true
-		this._activeEditor = this._editorMilkdown
-		this._state.mode = 'milkdown'
-		this._activeEditor.syncSettings()
+	private activateWysiwyg() {
+		this.activateProseMirror()
 	}
 
-	private activateEditor() {
-		// this.activateMilkdown()
-		if (settingsManager.simpleEditor) {
-			this.activateSimple()
-		} else {
-			this.activateAdvanced()
-		}
-	}
-
-	public init(
-		monacoElement: HTMLElement,
-		simpleElement: HTMLElement,
-		displayElement: HTMLElement,
-		milkdownElement: HTMLElement,
-	) {
+	public init(monacoElement: HTMLElement, proseMirrorElement: HTMLElement) {
 		this.infoElement = document.getElementById('mimiri-editor-info') as HTMLDivElement
 		if (!this.infoElement) {
 			this.infoElement = document.createElement('div')
@@ -183,28 +135,20 @@ export class MimiriEditor {
 		}
 
 		this._monacoElement = monacoElement
-		this._simpleElement = simpleElement
-		this._displayElement = displayElement
-		this._milkdownElement = milkdownElement
+		this._proseMirrorElement = proseMirrorElement
 
-		this.activateEditor()
+		this.activateSource()
 	}
 
 	public async toggleEditMode() {
-		if (this._editorMilkdown.active) {
-			this.activateAdvanced()
-			this._editorAdvanced.show(this._editorMilkdown.text, this._editorMilkdown.scrollTop)
-			this._editorAdvanced.readonly = this._editorMilkdown.readonly
+		if (this._editorProseMirror.active) {
+			this.activateMonaco()
+			this._editorMonaco.updateText(this._editorProseMirror.text)
+			this._editorMonaco.readonly = this._editorProseMirror.readonly
 		} else {
-			await this.activateMilkdown()
-			this._editorMilkdown.show(this._editorAdvanced.text, this._editorAdvanced.scrollTop)
-			this._editorMilkdown.readonly = this._editorAdvanced.readonly
-		}
-	}
-
-	public mobileClosing() {
-		if (!settingsManager.alwaysEdit && this.note.text.trim().length > 0) {
-			this.activateDisplay()
+			await this.activateProseMirror()
+			this._editorProseMirror.updateText(this._editorMonaco.text)
+			this._editorProseMirror.readonly = this._editorMonaco.readonly
 		}
 	}
 
@@ -219,21 +163,27 @@ export class MimiriEditor {
 			return
 		}
 		if (note.id !== this.note?.id) {
-			if (!settingsManager.alwaysEdit && note.text.trim().length > 0) {
-				this.activateDisplay()
+			// TODO store choice per note
+			if (mimiriPlatform.isDesktop) {
+				this.activateSource()
 			} else {
-				this.activateEditor()
+				this.activateWysiwyg()
 			}
 			this._note = note
 			this.history.reset()
+			this._initialText = note.text
+			this._state.changed = false
 			this._activeEditor.show(note.text, this.note.scrollTop)
 			this._activeEditor.readonly = note.isSystem
 		} else {
-			if (!this._activeEditor.changed) {
+			if (!this._state.changed) {
+				this._initialText = note.text
 				this._activeEditor.updateText(note.text)
 			} else {
 				if (note.text === this._activeEditor.text) {
-					this._activeEditor.resetChanged()
+					this._initialText = note.text
+					this._state.changed = false
+					// this._activeEditor.resetChanged()
 				}
 			}
 		}
@@ -243,9 +193,9 @@ export class MimiriEditor {
 		let result = 'success'
 		const noteId = this.note?.id
 		const targetText = this._activeEditor.text
-		const initialText = this._activeEditor.initialText
-		if (noteId && targetText !== initialText) {
-			if (targetText.length === 0 && initialText.length > 5) {
+		// const initialText = this._activeEditor.initialText
+		if (noteId && targetText !== this._initialText) {
+			if (targetText.length === 0 && this._initialText.length > 5) {
 				const doSave = await saveEmptyNodeDialog.value.show(noteManager.tree.getNoteById(noteId))
 				if (!doSave) {
 					return 'not-saved-empty'
@@ -256,11 +206,13 @@ export class MimiriEditor {
 					const note = noteManager.tree.getNoteById(noteId)
 					if (targetText === note.text) {
 						if (note.id === this.note.id) {
-							this.resetChanged()
+							this._initialText = note.text
+							this._state.changed = false
+							// this.resetChanged()
 						}
 						return 'success'
 					}
-					if (initialText !== note.text) {
+					if (this._initialText !== note.text) {
 						result = 'lost-update'
 					}
 					// const sizeBefore = note.size
@@ -277,7 +229,9 @@ export class MimiriEditor {
 					// } else {
 					await note.save()
 					if (note.id === this.note.id) {
-						this.resetChanged()
+						this._initialText = note.text
+						this._state.changed = false
+						// this.resetChanged()
 					}
 					// }
 					break
@@ -294,7 +248,7 @@ export class MimiriEditor {
 	}
 
 	public activateEdit() {
-		this.activateEditor()
+		this.activateSource()
 		this._activeEditor.show(this.note.text, this.note.scrollTop)
 		this._activeEditor.readonly = this.note.isSystem
 	}
@@ -306,10 +260,10 @@ export class MimiriEditor {
 		}
 	}
 
-	public resetChanged() {
-		this._activeEditor.resetChanged()
-		this._activeEditor.readonly = this.note.isSystem
-	}
+	// public resetChanged() {
+	// 	this._activeEditor.resetChanged()
+	// 	this._activeEditor.readonly = this.note.isSystem
+	// }
 
 	public setHistoryText(text: string) {
 		this._activeEditor.setHistoryText(text)

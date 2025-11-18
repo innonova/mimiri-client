@@ -124,36 +124,11 @@
 				data-testid="editor-monaco-container"
 			/>
 			<div
-				class="overflow-hidden flex-1"
+				class="overflow-auto flex-1 flex-col"
 				style="display: none"
-				ref="simpleContainer"
-				data-testid="editor-simple-container"
+				ref="proseMirrorContainer"
+				data-testid="editor-prosemirror-container"
 			/>
-			<div
-				class="overflow-hidden flex-1"
-				style="display: none"
-				ref="displayContainer"
-				data-testid="editor-display-container"
-			/>
-			<div
-				id="milkdownEditor"
-				class="overflow-auto flex-1 flex flex-col"
-				style="display: none"
-				ref="milkdownContainer"
-				data-testid="editor-milkdown-container"
-			/>
-			<div v-if="!historyVisible && mimiriEditor.mode === 'display'" class="display-editor-toolbar flex flex-row gap-1">
-				<button
-					@click="activateEdit"
-					class="bg-button-primary text-button-primary-text hover:brightness-125 select-none; font-display text-size-base; cursor-default; py-2 px-4; w-full"
-					data-testid="editor-activate-edit-mode"
-				>
-					Edit
-				</button>
-				<button @click="activateSettings" class="bg-button-primary text-button-primary-text hover:brightness-125">
-					<SettingIcon class="w-6 h-6 my-1 mx-3" />
-				</button>
-			</div>
 			<SelectionControl v-if="mimiriEditor.mode === 'advanced'" />
 			<div
 				v-if="historyVisible && mimiriEditor.history.note"
@@ -197,7 +172,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch, type WatchStopHandle, onBeforeUnmount } from 'vue'
+import { ref, computed, onMounted, watch, type WatchStopHandle } from 'vue'
 import { env, infoDialog, limitDialog, mimiriEditor, noteManager, showSearchBox, titleBar } from '../global'
 import type { NoteViewModel } from '../services/types/mimer-note'
 import { searchManager } from '../services/search-manager'
@@ -206,19 +181,14 @@ import SelectionControl from './SelectionControl.vue'
 import { settingsManager } from '../services/settings-manager'
 import { useEventListener } from '@vueuse/core'
 import CloseButton from './elements/CloseButton.vue'
-import SettingIcon from '../icons/cog.vue'
-import type { Guid } from '../services/types/guid'
 import { mimiriApi } from '../services/storage/mimiri-api'
 
 let activeViewModelStopWatch: WatchStopHandle = undefined
 let activeViewModel: NoteViewModel = undefined
 const monacoContainer = ref(null)
-const simpleContainer = ref(null)
-const displayContainer = ref(null)
-const milkdownContainer = ref(null)
+const proseMirrorContainer = ref(null)
 const windowFocus = ref(true)
 const historyVisible = ref(false)
-const displayMode = ref(true)
 const selectedHistoryItem = computed(() => mimiriEditor.history.state.selectedHistoryItem)
 const historyItems = computed(() => {
 	if (env.DEV && mimiriApi.state.historyEntries) {
@@ -233,15 +203,6 @@ const biCif = value => {
 		return `0${value}`
 	}
 	return `${value}`
-}
-
-const activateEdit = () => {
-	displayMode.value = false
-	mimiriEditor.activateEdit()
-}
-
-const activateSettings = () => {
-	noteManager.tree.openNote('settings-general' as Guid)
 }
 
 const formatDate = (value: string) => {
@@ -332,7 +293,7 @@ const setActiveViewModel = viewModel => {
 }
 
 onMounted(() => {
-	mimiriEditor.init(monacoContainer.value, simpleContainer.value, displayContainer.value, milkdownContainer.value)
+	mimiriEditor.init(monacoContainer.value, proseMirrorContainer.value)
 	mimiriEditor.onSave(() => save())
 	mimiriEditor.onSearchAll(() => titleBar.value?.searchAllNotes())
 	mimiriEditor.onBlur(() => save())
@@ -392,7 +353,6 @@ const find = () => {
 
 const onBack = () => {
 	void save()
-	mimiriEditor.mobileClosing()
 	window.history.back()
 	noteManager.ui.closeEditorIfMobile()
 }
