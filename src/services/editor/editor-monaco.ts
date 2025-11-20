@@ -3,10 +3,10 @@ import { SelectionExpansion, type MimiriEditorState, type TextEditor, type TextE
 import { settingsManager } from '../settings-manager'
 import { mimiriPlatform } from '../mimiri-platform'
 import { Debounce } from '../helpers'
-import { ListPlugin } from './plugins/list-plugin'
-import { HeadingPlugin } from './plugins/heading-plugin'
-import { CodeBlockPlugin } from './plugins/code-block-plugin'
-import { InlineMarkdownPlugin } from './plugins/inline-markdown-plugin'
+import { ListPlugin } from './monaco-editor/list-plugin'
+import { HeadingPlugin } from './monaco-editor/heading-plugin'
+import { CodeBlockPlugin } from './monaco-editor/code-block-plugin'
+import { InlineMarkdownPlugin } from './monaco-editor/inline-markdown-plugin'
 import { clipboardManager } from '../../global'
 
 export class EditorMonaco implements TextEditor {

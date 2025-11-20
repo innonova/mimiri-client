@@ -1,10 +1,5 @@
 import { languages } from 'monaco-editor'
-import {
-	LANGUAGE_ALIASES,
-	LANGUAGE_DEFINITIONS,
-	LANGUAGES_CURATED,
-	SUPPORTED_LANGUAGES,
-} from '../highlighting-languages'
+import { LANGUAGE_ALIASES, LANGUAGE_DEFINITIONS, LANGUAGES_CURATED, SUPPORTED_LANGUAGES } from '../highlighting'
 
 export const mimiriCompletionProvider = {
 	triggerCharacters: [

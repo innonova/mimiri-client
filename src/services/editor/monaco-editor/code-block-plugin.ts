@@ -1,10 +1,10 @@
 import { editor, languages, type IDisposable, type IRange } from 'monaco-editor'
 import { Debounce } from '../../helpers'
 import type { EditorPlugin } from '../editor-plugin'
-import { mimiriCompletionProvider } from '../completetion/mimiri-provider'
-import { MimiriCodeLensProvider, type MimiriCodeLensItem } from '../providers/mimiri-code-lens-provider'
+import { mimiriCompletionProvider } from './mimiri-provider'
+import { MimiriCodeLensProvider, type MimiriCodeLensItem } from './mimiri-code-lens-provider'
 import { clipboardManager } from '../../../global'
-import { LANGUAGE_ALIASES, LANGUAGE_DEFINITIONS } from '../highlighting-languages'
+import { LANGUAGE_ALIASES, LANGUAGE_DEFINITIONS } from '../highlighting'
 
 interface CodeBlockState {
 	start: number // Opening fence line number

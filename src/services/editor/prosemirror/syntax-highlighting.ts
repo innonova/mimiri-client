@@ -2,7 +2,7 @@ import { createHighlighter, type Highlighter } from 'shiki'
 import { Plugin } from 'prosemirror-state'
 import { Decoration, DecorationSet } from 'prosemirror-view'
 import { bundledThemes } from 'shiki'
-import { SUPPORTED_LANGUAGES } from '../highlighting-languages'
+import { SUPPORTED_LANGUAGES } from '../highlighting'
 
 let highlighter: Highlighter | null = null
 
