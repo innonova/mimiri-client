@@ -7,6 +7,7 @@ import { ListPlugin } from './plugins/list-plugin'
 import { HeadingPlugin } from './plugins/heading-plugin'
 import { CodeBlockPlugin } from './plugins/code-block-plugin'
 import { InlineMarkdownPlugin } from './plugins/inline-markdown-plugin'
+import { clipboardManager } from '../../global'
 
 export class EditorMonaco implements TextEditor {
 	private monacoEditor: editor.IStandaloneCodeEditor
@@ -222,11 +223,7 @@ export class EditorMonaco implements TextEditor {
 						const text = copyEvent.clipboardData.getData('text/plain')
 
 						if (text) {
-							try {
-								await navigator.clipboard.writeText(text)
-							} catch (err) {
-								console.error('Clipboard write failed:', err)
-							}
+							clipboardManager.write(text)
 						}
 					}
 
@@ -244,11 +241,7 @@ export class EditorMonaco implements TextEditor {
 						const text = copyEvent.clipboardData.getData('text/plain')
 
 						if (text) {
-							try {
-								await navigator.clipboard.writeText(text)
-							} catch (err) {
-								console.error('Clipboard write failed:', err)
-							}
+							clipboardManager.write(text)
 						}
 					}
 				}

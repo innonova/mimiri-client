@@ -3,13 +3,42 @@ import type { Node } from 'prosemirror-model'
 const serializeNode = (node: Node, depth: number, indentStyle: string): string => {
 	let text = ''
 	if (node.isText) {
-		text += node.text
+		if (node.marks.length > 0) {
+			for (const mark of node.marks) {
+				if (mark.type.name === 'strong') {
+					text += '**'
+				} else if (mark.type.name === 'em') {
+					text += '*'
+				} else if (mark.type.name === 'code') {
+					text += '`'
+				} else if (mark.type.name === 'password') {
+					text += 'p`'
+				}
+			}
+			text += node.text
+			for (const mark of node.marks.slice().reverse()) {
+				if (mark.type.name === 'strong') {
+					text += '**'
+				} else if (mark.type.name === 'em') {
+					text += '*'
+				} else if (mark.type.name === 'code') {
+					text += '`'
+				} else if (mark.type.name === 'password') {
+					text += '`'
+				}
+			}
+		} else {
+			text += node.text
+		}
 	} else {
 		if (node.type.name === 'list_item') {
 			text += `${indentStyle.repeat(depth)}${node.attrs.marker ?? '-'} ${node.attrs.checked !== null ? (node.attrs.checked ? '[x] ' : '[ ] ') : ''}`
 		}
 		if (node.type.name === 'code_block') {
 			text += `\`\`\`${node.attrs.language ?? ''}\n`
+		}
+		if (node.type.name === 'heading') {
+			text += `#`.repeat(node.attrs.level) + ' '
 		}
 		node.forEach(child => {
 			text += serializeNode(
@@ -34,7 +63,7 @@ const serializeNode = (node: Node, depth: number, indentStyle: string): string =
 }
 
 export const serialize = (doc: Node) => {
-	// console.log(doc)
+	console.log(doc)
 	let text = ''
 	if (doc.type.name !== 'doc') {
 		throw new Error('Expected a document node')

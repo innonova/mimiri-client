@@ -1,5 +1,4 @@
-import { se } from 'date-fns/locale'
-import { KeyCode, type editor } from 'monaco-editor'
+import { type editor } from 'monaco-editor'
 import type { EditorPlugin } from '../editor-plugin'
 
 export class HeadingPlugin implements EditorPlugin {

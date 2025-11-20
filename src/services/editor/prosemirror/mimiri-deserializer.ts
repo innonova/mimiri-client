@@ -1,4 +1,3 @@
-import { is } from 'date-fns/locale'
 import { mimiriSchema } from './mimiri-schema'
 import type { Node } from 'prosemirror-model'
 
@@ -8,8 +7,6 @@ const blockquoteRegex = /^(\s*)>\s?(.*)$/
 const codeBlockRegex = /^```(.*)$/
 const indentedTextRegex = /^(\s+)(\S.*)$/
 const orderedRegex = /^(\d+)\./
-const strongRegex = /(?:\*\*([^*]+?)\*\*|__([^_]+?)__)/g
-const emphasisRegex = /(?:\*([^*]+?)\*|_([^_]+?)_)/g
 
 interface Token {
 	type: string
@@ -51,20 +48,271 @@ const subTokenizeText = (
 	lineEnd: boolean,
 	lineStart: boolean,
 	indent: string = '',
+	inCodeBlock: boolean = false,
 ): void => {
-	let match
-	if ((match = strongRegex.test(text))) {
-		console.log(match)
+	const startIdx = tokens.length
+	let i = 0
+	let currentText = ''
+
+	const flushText = () => {
+		if (currentText) {
+			tokens.push({
+				type: 'text',
+				value: currentText,
+				lineEnd: false,
+				lineStart: false,
+				indent: '',
+				depth: 0,
+			})
+			currentText = ''
+		}
 	}
-	tokens.push({ type: 'text', value: text, lineEnd, lineStart, indent, depth: indentToDepth(indent) })
+
+	// If we're in a code block, don't process any markdown, just treat everything as text
+	if (inCodeBlock) {
+		tokens.push({
+			type: 'text',
+			value: text,
+			lineEnd,
+			lineStart,
+			indent,
+			depth: indentToDepth(indent),
+		})
+		return
+	}
+
+	const findClosing = (startIdx: number, delimiter: string): number => {
+		let idx = startIdx + delimiter.length
+		while (idx <= text.length - delimiter.length) {
+			// Check for escape
+			if (text[idx - 1] === '\\') {
+				idx++
+				continue
+			}
+			if (text.substring(idx, idx + delimiter.length) === delimiter) {
+				return idx
+			}
+			idx++
+		}
+		return -1
+	}
+
+	const findLinkEnd = (startIdx: number): { textEnd: number; urlEnd: number } | null => {
+		let idx = startIdx + 1
+		let depth = 1
+
+		// Find closing ] for link text
+		while (idx < text.length) {
+			if (text[idx - 1] === '\\') {
+				idx++
+				continue
+			}
+			if (text[idx] === '[') depth++
+			if (text[idx] === ']') {
+				depth--
+				if (depth === 0) break
+			}
+			idx++
+		}
+
+		if (depth !== 0 || idx >= text.length) return null
+		const textEnd = idx
+
+		// Check for opening (
+		if (text[idx + 1] !== '(') return null
+		idx += 2
+
+		// Find closing ) for URL
+		depth = 1
+		while (idx < text.length) {
+			if (text[idx - 1] === '\\') {
+				idx++
+				continue
+			}
+			if (text[idx] === '(') depth++
+			if (text[idx] === ')') {
+				depth--
+				if (depth === 0) return { textEnd, urlEnd: idx }
+			}
+			idx++
+		}
+
+		return null
+	}
+
+	while (i < text.length) {
+		const char = text[i]
+
+		// Handle escape sequences
+		if (char === '\\' && i + 1 < text.length) {
+			const nextChar = text[i + 1]
+			if ('*_[]()\\`'.includes(nextChar)) {
+				currentText += nextChar
+				i += 2
+				continue
+			}
+		}
+		// Check for strong emphasis: ***text*** or ___text___
+		if (
+			(char === '*' && text[i + 1] === '*' && text[i + 2] === '*') ||
+			(char === '_' && text[i + 1] === '_' && text[i + 2] === '_')
+		) {
+			const delimiter = char + text[i + 1] + text[i + 2]
+			const closingIdx = findClosing(i, delimiter)
+			if (closingIdx !== -1) {
+				flushText()
+				const content = text.substring(i + delimiter.length, closingIdx)
+				tokens.push({
+					type: 'strong_emphasis',
+					value: content,
+					lineEnd: false,
+					lineStart: false,
+					indent: '',
+					depth: 0,
+				})
+				console.log(tokens[tokens.length - 1])
+
+				i = closingIdx + delimiter.length
+				continue
+			}
+		}
+
+		// Check for strong: **text** or __text__
+		if ((char === '*' && text[i + 1] === '*') || (char === '_' && text[i + 1] === '_')) {
+			const delimiter = char + text[i + 1]
+			const closingIdx = findClosing(i, delimiter)
+			if (closingIdx !== -1) {
+				flushText()
+				const content = text.substring(i + delimiter.length, closingIdx)
+				tokens.push({
+					type: 'strong',
+					value: content,
+					lineEnd: false,
+					lineStart: false,
+					indent: '',
+					depth: 0,
+				})
+				i = closingIdx + delimiter.length
+				continue
+			}
+		}
+
+		// Check for emphasis: *text* or _text_
+		if (char === '*' || char === '_') {
+			const closingIdx = findClosing(i, char)
+			if (closingIdx !== -1) {
+				flushText()
+				const content = text.substring(i + 1, closingIdx)
+				tokens.push({
+					type: 'emphasis',
+					value: content,
+					lineEnd: false,
+					lineStart: false,
+					indent: '',
+					depth: 0,
+				})
+				i = closingIdx + 1
+				continue
+			}
+		}
+
+		// Check for inline password: p`password`
+		if (text[i] === 'p' && text[i + 1] === '`') {
+			const closingIdx = findClosing(i + 1, '`')
+			if (closingIdx !== -1) {
+				flushText()
+				const content = text.substring(i + 2, closingIdx)
+				tokens.push({
+					type: 'password',
+					value: content,
+					lineEnd: false,
+					lineStart: false,
+					indent: '',
+					depth: 0,
+				})
+				i = closingIdx + 1
+				continue
+			}
+		}
+
+		// Check for inline code: `code`
+		if (char === '`') {
+			const closingIdx = findClosing(i, '`')
+			if (closingIdx !== -1) {
+				flushText()
+				const content = text.substring(i + 1, closingIdx)
+				tokens.push({
+					type: 'code',
+					value: content,
+					lineEnd: false,
+					lineStart: false,
+					indent: '',
+					depth: 0,
+				})
+				i = closingIdx + 1
+				continue
+			}
+		}
+
+		// Check for links: [text](url)
+		if (char === '[') {
+			const linkEnd = findLinkEnd(i)
+			if (linkEnd) {
+				flushText()
+				const linkText = text.substring(i + 1, linkEnd.textEnd)
+				const linkUrl = text.substring(linkEnd.textEnd + 2, linkEnd.urlEnd)
+				tokens.push({
+					type: 'link',
+					value: JSON.stringify({ text: linkText, url: linkUrl }),
+					lineEnd: false,
+					lineStart: false,
+					indent: '',
+					depth: 0,
+				})
+				i = linkEnd.urlEnd + 1
+				continue
+			}
+		}
+
+		// Regular character
+		currentText += char
+		i++
+	}
+
+	flushText()
+
+	// Apply lineStart and lineEnd to the first and last tokens added
+	if (tokens.length > startIdx) {
+		const firstToken = tokens[startIdx]
+		const lastToken = tokens[tokens.length - 1]
+
+		if (lineStart) {
+			firstToken.lineStart = true
+			firstToken.indent = indent
+			firstToken.depth = indentToDepth(indent)
+		}
+
+		if (lineEnd) {
+			lastToken.lineEnd = true
+		}
+	}
 }
 
 const tokenize = (text: string): Token[] => {
 	const lines = text.split('\n') //.slice(0, 10)
 	const tokens: Token[] = []
+	let inCodeBlock = false
+
 	for (const line of lines) {
 		let match
-		if ((match = headingRegex.exec(line))) {
+
+		if ((match = codeBlockRegex.exec(line))) {
+			tokens.push({ type: 'code_block', value: match[1], lineEnd: true, lineStart: true, indent: '', depth: 0 })
+			inCodeBlock = !inCodeBlock
+		} else if (inCodeBlock) {
+			// If we're in a code block, treat everything as text without processing markdown
+			subTokenizeText(tokens, line, true, true, '', true)
+		} else if ((match = headingRegex.exec(line))) {
 			tokens.push({
 				type: 'heading',
 				indent: match[1],
@@ -104,8 +352,6 @@ const tokenize = (text: string): Token[] => {
 				lineStart: true,
 			})
 			subTokenizeText(tokens, match[2], true, false)
-		} else if ((match = codeBlockRegex.exec(line))) {
-			tokens.push({ type: 'code_block', value: match[1], lineEnd: true, lineStart: true, indent: '', depth: 0 })
 		} else if ((match = indentedTextRegex.exec(line))) {
 			subTokenizeText(tokens, match[0], true, true, match[1])
 		} else if (line.trim() === '') {
@@ -169,15 +415,45 @@ const buildTree = (tokens: Token[]): TreeNode => {
 
 		// console.log(token.type, token.value, parentType())
 
-		if (token.type === 'text') {
+		const isInlineToken = ['text', 'strong', 'emphasis', 'strong_emphasis', 'code', 'link', 'password'].includes(
+			token.type,
+		)
+
+		if (isInlineToken) {
 			if (token.lineStart && token.indent === '' && isParent('list_item')) {
 				while (isParent('list_item', 'bullet_list', 'ordered_list')) {
 					stack.pop()
 				}
 			}
+
+			// Check if we need to create a paragraph wrapper for inline content
+			// Paragraphs are needed when the parent is NOT heading, blockquote, or already a paragraph
+			// List items DO need paragraphs as they contain block content
+			const needsParagraph = !isParent('heading', 'blockquote', 'paragraph', 'code_block')
+
+			if (needsParagraph) {
+				// Start a new paragraph (will hold all inline tokens until lineEnd)
+				const paragraphNode: TreeNode = {
+					type: 'paragraph',
+					indent: '',
+					depth: 0,
+					children: [],
+				}
+				pushChild(paragraphNode)
+				stack.push(paragraphNode)
+			}
+
 			pushChild(node)
-			if (token.lineEnd && isParent('heading', 'blockquote')) {
-				stack.pop()
+
+			if (token.lineEnd) {
+				// Close paragraph if we're in one
+				if (isParent('paragraph')) {
+					stack.pop()
+				}
+				// Also close heading/blockquote if we're at line end
+				if (isParent('heading', 'blockquote')) {
+					stack.pop()
+				}
 			}
 		} else if (token.type === 'blank_line') {
 			if (isParent('list_item')) {
@@ -262,6 +538,8 @@ const buildProseMirrorNode = (parent: TreeNode, treeNode: TreeNode, index: numbe
 			return mimiriSchema.node('ordered_list', { indent: treeNode.indent }, children)
 		case 'blockquote':
 			return mimiriSchema.node('blockquote', null, children)
+		case 'paragraph':
+			return mimiriSchema.node('paragraph', null, children)
 		case 'code_block':
 			return mimiriSchema.node('code_block', { language: treeNode.value }, children)
 		case 'blank_line':
@@ -279,11 +557,29 @@ const buildProseMirrorNode = (parent: TreeNode, treeNode: TreeNode, index: numbe
 				} else {
 					return mimiriSchema.text(treeNode.value ?? '')
 				}
-			} else if (parent?.type === 'heading' || parent?.type === 'blockquote') {
-				return mimiriSchema.text(treeNode.value ?? 'a')
 			} else {
-				return mimiriSchema.node('paragraph', null, [mimiriSchema.text(treeNode.value ?? 'a')])
+				// Text is always inline, no paragraph wrapping here
+				return mimiriSchema.text(treeNode.value ?? '')
 			}
+		case 'strong':
+			// Create text node with strong mark (always inline)
+			return mimiriSchema.text(treeNode.value ?? '', [mimiriSchema.mark('strong')])
+		case 'emphasis':
+			// Create text node with em mark (always inline)
+			return mimiriSchema.text(treeNode.value ?? '', [mimiriSchema.mark('em')])
+		case 'strong_emphasis':
+			// Create text node with strong and em marks (always inline)
+			return mimiriSchema.text(treeNode.value ?? '', [mimiriSchema.mark('strong'), mimiriSchema.mark('em')])
+		case 'code':
+			// Create text node with code mark (always inline)
+			return mimiriSchema.text(treeNode.value ?? '', [mimiriSchema.mark('code')])
+		case 'link':
+			// Parse link data and create text node with link mark (always inline)
+			const linkData = JSON.parse(treeNode.value ?? '{"text":"","url":""}')
+			return mimiriSchema.text(linkData.text, [mimiriSchema.mark('link', { href: linkData.url, title: null })])
+		case 'password':
+			// Create text node with password mark (always inline)
+			return mimiriSchema.text(treeNode.value ?? '', [mimiriSchema.mark('password')])
 		default:
 			throw new Error(`Unknown node type: ${treeNode.type}`)
 	}
@@ -291,8 +587,9 @@ const buildProseMirrorNode = (parent: TreeNode, treeNode: TreeNode, index: numbe
 
 export const deserialize = (text: string) => {
 	const tokens = tokenize(text.replace(/\r\n/g, '\n').replace(/\r/g, '\n'))
+	console.log('tokens', tokens)
 	const tree = buildTree(tokens)
-	// console.log('tree', tree)
+	console.log('tree', tree)
 	const doc2 = buildProseMirrorNode(null, tree, 0)
 	// console.log('des', doc2)
 

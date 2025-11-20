@@ -1,7 +1,7 @@
 import { settingsManager } from '../settings-manager'
 import type { MimiriEditorState, SelectionExpansion, TextEditor, TextEditorListener } from './type'
 
-import { EditorState } from 'prosemirror-state'
+import { EditorState, TextSelection } from 'prosemirror-state'
 import { EditorView } from 'prosemirror-view'
 import { dropCursor } from 'prosemirror-dropcursor'
 import { gapCursor } from 'prosemirror-gapcursor'
@@ -20,6 +20,9 @@ import { mimiriInputRules } from './prosemirror/mimiri-input-rules'
 import { liftListItem, sinkListItem, splitListItem } from 'prosemirror-schema-list'
 import { deserialize } from './prosemirror/mimiri-deserializer'
 import { serialize } from './prosemirror/mimiri-serializer'
+import { markExitPlugin } from './prosemirror/mark-exit-plugint'
+import { initHighlighter, syntaxHighlightPlugin } from './prosemirror/syntax-highlighting'
+import { clipboardManager } from '../../global'
 
 export class EditorProseMirror implements TextEditor {
 	private _domElement: HTMLElement | undefined
@@ -45,6 +48,8 @@ export class EditorProseMirror implements TextEditor {
 		this._domElement = domElement
 		this._domElement.style.display = this._active ? 'flex' : 'none'
 
+		await initHighlighter()
+
 		const doc = deserialize('')
 
 		let state = EditorState.create({
@@ -63,6 +68,9 @@ export class EditorProseMirror implements TextEditor {
 				dropCursor(),
 				gapCursor(),
 				history(),
+				markExitPlugin,
+				// syntaxHighlightPlugin(settingsManager.theme === 'dark' ? 'dark-plus' : 'github-light'),
+				syntaxHighlightPlugin(),
 			],
 			doc,
 		})
@@ -74,6 +82,129 @@ export class EditorProseMirror implements TextEditor {
 				view.updateState(newState)
 
 				// console.log(serialize(view.state.doc))
+			},
+
+			handleDOMEvents: {
+				mousedown(view, event) {
+					const target = event.target as HTMLElement
+					const action = target.getAttribute('data-action')
+					if (
+						action === 'copy-block' ||
+						action === 'select-block' ||
+						action === 'copy-next-line' ||
+						action === 'choose-language'
+					) {
+						event.preventDefault()
+						// Focus the editor if it's not already focused
+						if (!view.hasFocus()) {
+							view.focus()
+						}
+						return true
+					}
+					return false
+				},
+				mouseup(view, event) {
+					const element = event.target as HTMLElement
+					const action = element.getAttribute('data-action')
+
+					if (!action) return false
+
+					// Get the position and node from the mouse coordinates
+					const pos = view.posAtCoords({ left: event.clientX, top: event.clientY })
+					if (!pos) return false
+
+					const $pos = view.state.doc.resolve(pos.pos)
+					let node = null
+					let nodePos = -1
+
+					// Walk up the tree to find the code_block node
+					for (let d = $pos.depth; d > 0; d--) {
+						const n = $pos.node(d)
+						if (n.type.name === 'code_block') {
+							node = n
+							nodePos = $pos.before(d)
+							break
+						}
+					}
+
+					if (!node || node.type.name !== 'code_block') return false
+
+					if (action === 'copy-block') {
+						const text = node.textContent
+						clipboardManager.write(text.replace(/p`([^`]+)`/g, '$1'))
+						return true
+					} else if (action === 'select-block') {
+						// Select all the content of the code block
+						const from = nodePos + 1
+						const to = nodePos + node.nodeSize - 1
+						const tr = view.state.tr.setSelection(TextSelection.create(view.state.doc, from, to))
+						view.dispatch(tr)
+						return true
+					} else if (action === 'copy-next-line') {
+						// Get current selection within the code block
+						const { from, to } = view.state.selection
+						const text = node.textContent
+						const lines = text.split('\n')
+						const blockStart = nodePos + 1
+
+						// Find which line is currently selected (if any)
+						let currentLineIndex = -1
+						let charCount = blockStart
+
+						if (to > from) {
+							for (let i = 0; i < lines.length; i++) {
+								const lineStart = charCount
+								const lineEnd = charCount + lines[i].length
+								// Check if selection is within this line
+								if (from >= lineStart && from <= lineEnd && to >= lineStart && to <= lineEnd) {
+									currentLineIndex = i
+									break
+								}
+								charCount = lineEnd + 1 // +1 for newline
+							}
+						}
+
+						// Select next line, or first line if none selected or we're at the last line
+						let nextLineIndex
+						if (currentLineIndex === -1 || currentLineIndex === lines.length - 1) {
+							nextLineIndex = 0
+						} else {
+							nextLineIndex = currentLineIndex + 1
+						}
+
+						// Find the next line with actual content (skip blank lines)
+						let attempts = 0
+						while (lines[nextLineIndex].trim() === '' && attempts < lines.length) {
+							nextLineIndex = (nextLineIndex + 1) % lines.length
+							attempts++
+						}
+
+						// If all lines are blank, just use the calculated nextLineIndex
+						const nextLine = lines[nextLineIndex]
+
+						// Copy the line to clipboard
+						clipboardManager.write(nextLine.replace(/p`([^`]+)`/g, '$1'))
+
+						// Calculate position of the next line
+						let lineStart = blockStart
+						for (let i = 0; i < nextLineIndex; i++) {
+							lineStart += lines[i].length + 1
+						}
+						const lineEnd = lineStart + nextLine.length
+
+						// Select the line
+						const tr = view.state.tr.setSelection(TextSelection.create(view.state.doc, lineStart, lineEnd))
+						view.dispatch(tr)
+						return true
+					} else if (action === 'choose-language') {
+					}
+
+					return false
+				},
+			},
+
+			handleClickOn(view, pos, node, nodePos, event, direct) {
+				return false
 			},
 		})
 		this._editor = view

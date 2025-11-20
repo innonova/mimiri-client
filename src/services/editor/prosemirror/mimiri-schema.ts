@@ -1,25 +1,19 @@
-import { Schema, type NodeSpec, type MarkSpec, type DOMOutputSpec } from 'prosemirror-model'
+import { Schema, type NodeSpec, type MarkSpec } from 'prosemirror-model'
 
-const pDOM: DOMOutputSpec = ['p', 0],
-	blockquoteDOM: DOMOutputSpec = ['blockquote', 0],
-	hrDOM: DOMOutputSpec = ['hr'],
-	preDOM: DOMOutputSpec = ['pre', ['code', 0]],
-	brDOM: DOMOutputSpec = ['br']
-
-export const nodes = {
+export const nodes: { [key: string]: NodeSpec } = {
 	doc: {
 		content: 'block+',
 		attrs: { indent: { default: null } },
-	} as NodeSpec,
+	},
 
 	paragraph: {
 		content: 'inline*',
 		group: 'block',
 		parseDOM: [{ tag: 'p' }],
 		toDOM() {
-			return pDOM
+			return ['p', 0]
 		},
-	} as NodeSpec,
+	},
 
 	blockquote: {
 		content: 'block+',
@@ -27,9 +21,9 @@ export const nodes = {
 		defining: true,
 		parseDOM: [{ tag: 'blockquote' }],
 		toDOM() {
-			return blockquoteDOM
+			return ['blockquote', 0]
 		},
-	} as NodeSpec,
+	},
 
 	bullet_list: {
 		content: 'list_item+',
@@ -39,7 +33,7 @@ export const nodes = {
 		toDOM() {
 			return ['ul', 0]
 		},
-	} as NodeSpec,
+	},
 
 	ordered_list: {
 		content: 'list_item+',
@@ -56,7 +50,7 @@ export const nodes = {
 		toDOM(node) {
 			return node.attrs.order == 1 ? ['ol', 0] : ['ol', { start: node.attrs.order }, 0]
 		},
-	} as NodeSpec,
+	},
 
 	list_item: {
 		content: 'paragraph block*',
@@ -88,15 +82,15 @@ export const nodes = {
 			}
 			return ['li', 0]
 		},
-	} as NodeSpec,
+	},
 
 	horizontal_rule: {
 		group: 'block',
 		parseDOM: [{ tag: 'hr' }],
 		toDOM() {
-			return hrDOM
+			return ['hr']
 		},
-	} as NodeSpec,
+	},
 
 	heading: {
 		attrs: { level: { default: 1, validate: 'number' } },
@@ -114,7 +108,7 @@ export const nodes = {
 		toDOM(node) {
 			return ['h' + node.attrs.level, 0]
 		},
-	} as NodeSpec,
+	},
 
 	code_block: {
 		content: 'text*',
@@ -126,14 +120,28 @@ export const nodes = {
 		code: true,
 		defining: true,
 		parseDOM: [{ tag: 'pre', preserveWhitespace: 'full' }],
-		toDOM() {
-			return preDOM
+		toDOM(node) {
+			return [
+				'div',
+				[
+					'codelens',
+					{ contenteditable: 'false', 'data-pm-ignore': 'true' },
+					['a', { 'data-action': 'copy-block' }, 'Copy Block'],
+					['div', '|'],
+					['a', { 'data-action': 'select-block' }, 'Select Block'],
+					['div', '|'],
+					['a', { 'data-action': 'copy-next-line' }, 'Copy Next Line'],
+					['div', '|'],
+					['a', { 'data-action': 'choose-language' }, `Language: ${node.attrs.language || 'plain'}`],
+				],
+				['pre', ['code', 0]],
+			]
 		},
-	} as NodeSpec,
+	},
 
 	text: {
 		group: 'inline',
-	} as NodeSpec,
+	},
 
 	image: {
 		inline: true,
@@ -160,7 +168,7 @@ export const nodes = {
 			let { src, alt, title } = node.attrs
 			return ['img', { src, alt, title }]
 		},
-	} as NodeSpec,
+	},
 
 	hard_break: {
 		inline: true,
@@ -168,16 +176,12 @@ export const nodes = {
 		selectable: false,
 		parseDOM: [{ tag: 'br' }],
 		toDOM() {
-			return brDOM
+			return ['br']
 		},
-	} as NodeSpec,
+	},
 }
 
-const emDOM: DOMOutputSpec = ['em', 0],
-	strongDOM: DOMOutputSpec = ['strong', 0],
-	codeDOM: DOMOutputSpec = ['code', 0]
-
-export const marks = {
+export const marks: { [key: string]: MarkSpec } = {
 	link: {
 		attrs: {
 			href: { validate: 'string' },
@@ -196,7 +200,7 @@ export const marks = {
 			let { href, title } = node.attrs
 			return ['a', { href, title }, 0]
 		},
-	} as MarkSpec,
+	},
 
 	em: {
 		parseDOM: [
@@ -206,9 +210,9 @@ export const marks = {
 			{ style: 'font-style=normal', clearMark: m => m.type.name == 'em' },
 		],
 		toDOM() {
-			return emDOM
+			return ['em', 0]
 		},
-	} as MarkSpec,
+	},
 
 	strong: {
 		parseDOM: [
@@ -218,17 +222,25 @@ export const marks = {
 			{ style: 'font-weight', getAttrs: (value: string) => /^(bold(er)?|[5-9]\d{2,})$/.test(value) && null },
 		],
 		toDOM() {
-			return strongDOM
+			return ['strong', 0]
 		},
-	} as MarkSpec,
+	},
 
 	code: {
 		code: true,
 		parseDOM: [{ tag: 'code' }],
 		toDOM() {
-			return codeDOM
+			return ['code', 0]
 		},
-	} as MarkSpec,
+	},
+
+	password: {
+		code: true,
+		parseDOM: [{ tag: 'password' }],
+		toDOM() {
+			return ['password', 0]
+		},
+	},
 }
 
 export const mimiriSchema = new Schema({ nodes, marks })

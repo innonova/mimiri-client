@@ -66,6 +66,7 @@
 		"prosemirror-schema-list": "^1.5.1",
 		"prosemirror-state": "^1.4.4",
 		"prosemirror-view": "^1.41.3",
+		"shiki": "^3.15.0",
 		"uuid": "^13.0.0",
 		"vue": "^3.5.22",
 		"vue-router": "^4.5.1",

@@ -10,10 +10,16 @@ export class ClipboardManager {
 	}
 
 	public write(text: string) {
-		if (this._clipboardPlugin) {
-			this._clipboardPlugin.write({ text })
-		} else {
-			void navigator.clipboard.writeText(text)
+		try {
+			if (this._clipboardPlugin) {
+				this._clipboardPlugin.write({ text })
+			} else {
+				void navigator.clipboard.writeText(text).catch(err => {
+					console.error('Clipboard write failed:', err)
+				})
+			}
+		} catch (err) {
+			console.error('Clipboard write failed:', err)
 		}
 	}
 }
