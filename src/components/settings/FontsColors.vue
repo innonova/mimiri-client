@@ -1,6 +1,6 @@
 <template>
 	<div class="flex flex-col h-full">
-		<TabBar :items="['Fonts']" />
+		<TabBar :items="['Fonts & Theme']" />
 		<div class="overflow-y-auto pb-10">
 			<div class="grid grid-cols-[5rem_12rem] gap-3 items-baseline mx-1 mt-2">
 				<div class="col-span-2">Editor</div>
@@ -23,6 +23,16 @@
 						<option :value="item">{{ item }}</option>
 					</template>
 				</select>
+				<div>Theme:</div>
+				<select v-model="editorTheme">
+					<option :value="undefined">Auto (based on system)</option>
+					<template v-for="theme of EDITOR_THEMES" :key="theme.id">
+						<option :value="theme.id">{{ theme.label }}</option>
+					</template>
+				</select>
+				<div v-if="editorTheme !== undefined" class="col-span-2 mt-[-0.8rem] text-xs opacity-70">
+					{{ selectedThemeDescription }}
+				</div>
 				<!-- <div class="col-span-2 mt-5">User Interface</div>
 		<hr class="col-span-2 mt-[-0.4rem]" /> -->
 			</div>
@@ -68,15 +78,27 @@ import { computed, onMounted, ref, watch } from 'vue'
 import { settingsManager } from '../../services/settings-manager'
 import TabBar from '../elements/TabBar.vue'
 import { fontManager } from '../../global'
+import { EDITOR_THEMES } from '../../services/editor/theme-manager'
 
 const editorFontFamily = ref('')
 const customFontFamily = ref('')
 const editorFontSize = ref(14)
+const editorTheme = ref<string | undefined>(undefined)
+
 const canSave = computed(
 	() =>
 		currentFontFamily.value !== settingsManager.editorFontFamily ||
-		editorFontSize.value !== settingsManager.editorFontSize,
+		editorFontSize.value !== settingsManager.editorFontSize ||
+		editorTheme.value !== settingsManager.state.editorTheme,
 )
+
+const selectedThemeDescription = computed(() => {
+	if (editorTheme.value === undefined) {
+		return ''
+	}
+	const theme = EDITOR_THEMES.find(t => t.id === editorTheme.value)
+	return theme ? theme.description : ''
+})
 
 const currentFontFamily = computed(() =>
 	editorFontFamily.value !== 'CUSTOM' ? editorFontFamily.value : customFontFamily.value,
@@ -96,12 +118,14 @@ onMounted(async () => {
 		customFontFamily.value = settingsManager.editorFontFamily
 	}
 	editorFontSize.value = settingsManager.editorFontSize
+	editorTheme.value = settingsManager.state.editorTheme
 })
 
 const reset = async () => {
 	document.body.style.fontSize = '16px'
 	editorFontFamily.value = 'Consolas'
 	editorFontSize.value = 14
+	editorTheme.value = undefined
 	await save()
 }
 
@@ -112,12 +136,16 @@ const save = async () => {
 		settingsManager.editorFontFamily = customFontFamily.value
 	}
 	settingsManager.editorFontSize = editorFontSize.value
+	settingsManager.state.editorTheme = editorTheme.value
+
 	const root = document.querySelector(':root') as HTMLElement
 	root.style.setProperty(
 		'--font-editor',
 		`'${editorFontFamily.value}', 'Consolas', 'Menlo', 'Droid Sans Mono', 'monospace', 'Courier New'`,
 	)
 	root.style.setProperty('--text-size-editor', `${editorFontSize.value}px`)
+
+	await settingsManager.save()
 }
 
 const sampleText = `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent elit augue,

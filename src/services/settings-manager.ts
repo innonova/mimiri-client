@@ -19,6 +19,7 @@ export interface MimerConfiguration {
 	openAtLogin: boolean
 	allowScreenSharing: boolean
 	theme: string
+	editorTheme: string | undefined
 	titleBarColor: string
 	titleBarSymbolColor: string
 	titleBarHeight: number
@@ -58,6 +59,7 @@ class SettingsManager {
 		openAtLogin: true,
 		allowScreenSharing: false,
 		theme: 'default',
+		editorTheme: undefined,
 		titleBarColor: '#f4f4f4',
 		titleBarSymbolColor: '#000',
 		titleBarHeight: 36,
@@ -148,7 +150,7 @@ class SettingsManager {
 					this._saveRequestedWhileInProgress = false
 					if (ipcClient.isAvailable) {
 						await ipcClient.settings.save(toRaw(this.state))
-						menuManager.updateTrayMenu()
+						void menuManager.updateTrayMenu()
 					} else if (localStorage) {
 						localStorage.setItem('mimer-settings', JSON.stringify(toRaw(this.state)))
 					}
@@ -176,7 +178,9 @@ class SettingsManager {
 		const useSystem = this.state.theme === 'default'
 		const themeIsDark = this.state.theme === 'dark'
 		const systemIsDark = this.state.systemTheme === 'dark'
-		if (useSystem) return systemIsDark
+		if (useSystem) {
+			return systemIsDark
+		}
 		return themeIsDark
 	}
 

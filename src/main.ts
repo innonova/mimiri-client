@@ -2,6 +2,7 @@ import './assets/main.css'
 
 import { createApp } from 'vue'
 import App from './App.vue'
+import { initializeMonacoThemes } from './services/editor/theme-manager'
 
 import editorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker'
 import jsonWorker from 'monaco-editor/esm/vs/language/json/json.worker?worker'
@@ -30,6 +31,8 @@ import tsWorker from 'monaco-editor/esm/vs/language/typescript/ts.worker?worker'
 	},
 }
 
-const app = createApp(App)
-
-app.mount('#app')
+// Initialize Monaco themes from Shiki before creating the app
+void initializeMonacoThemes().then(() => {
+	const app = createApp(App)
+	app.mount('#app')
+})

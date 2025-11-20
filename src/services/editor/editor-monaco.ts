@@ -8,6 +8,7 @@ import { HeadingPlugin } from './monaco-editor/heading-plugin'
 import { CodeBlockPlugin } from './monaco-editor/code-block-plugin'
 import { InlineMarkdownPlugin } from './monaco-editor/inline-markdown-plugin'
 import { clipboardManager } from '../../global'
+import { getThemeById } from './theme-manager'
 
 export class EditorMonaco implements TextEditor {
 	private monacoEditor: editor.IStandaloneCodeEditor
@@ -73,51 +74,6 @@ export class EditorMonaco implements TextEditor {
 				],
 			},
 		})
-
-		editor.defineTheme('mimiri-dark', {
-			base: 'vs-dark',
-			inherit: true,
-			rules: [
-				{ token: 'directive', foreground: '666666' },
-				{ token: 'password', foreground: 'd4d4d5' },
-				{ token: 'checkbox', foreground: '666667' },
-				{ token: 'checkmark', foreground: 'd4d4d6' },
-				{ token: 'head1', foreground: '4381c1', fontStyle: 'bold' },
-				{ token: 'head1text', foreground: '4381c1', fontStyle: 'bold' },
-				{ token: 'italic', foreground: 'd4d4d7', fontStyle: 'italic' },
-				{ token: 'italictext', foreground: 'd4d4d7', fontStyle: 'italic' },
-				{ token: 'bold', foreground: 'd4d4d7', fontStyle: 'bold' },
-				{ token: 'boldtext', foreground: 'd4d4d7', fontStyle: 'bold' },
-				// Merge conflict styling
-				{ token: 'conflict-start', foreground: 'ff6b6b', background: '4a1a1a' },
-				{ token: 'conflict-separator', foreground: 'ffd93d', background: '4a3d1a' },
-				{ token: 'conflict-end', foreground: '6bcf7f', background: '1a4a26' },
-			],
-			colors: {},
-		})
-
-		editor.defineTheme('mimiri-light', {
-			base: 'vs',
-			inherit: true,
-			rules: [
-				{ token: 'directive', foreground: 'aaaaaa' },
-				{ token: 'password', foreground: '000001' },
-				{ token: 'checkbox', foreground: 'aaaaab' },
-				{ token: 'checkmark', foreground: '000002' },
-				{ token: 'head1', foreground: '4381c1', fontStyle: 'bold' },
-				{ token: 'head1text', foreground: '4381c1', fontStyle: 'bold' },
-				{ token: 'italic', foreground: '000003', fontStyle: 'italic' },
-				{ token: 'italictext', foreground: '000003', fontStyle: 'italic' },
-				{ token: 'bold', foreground: '000003', fontStyle: 'bold' },
-				{ token: 'boldtext', foreground: '000003', fontStyle: 'bold' },
-				// Merge conflict styling
-				{ token: 'conflict-start', foreground: 'dd0000', background: 'ffe6e6' },
-				{ token: 'conflict-separator', foreground: 'b8860b', background: 'fff8dc' },
-				{ token: 'conflict-end', foreground: '228b22', background: 'e6ffe6' },
-			],
-			colors: {},
-			encodedTokensColors: [],
-		})
 	}
 
 	public init(domElement: HTMLElement) {
@@ -166,7 +122,7 @@ export class EditorMonaco implements TextEditor {
 				showWords: false,
 			},
 			renderLineHighlight: 'none',
-			theme: settingsManager.darkMode ? 'mimiri-dark' : 'mimiri-light',
+			theme: getThemeById(settingsManager.state.editorTheme, settingsManager.darkMode).monacoTheme,
 			fontFamily: `'${settingsManager.editorFontFamily}', 'Consolas', 'Menlo', 'Droid Sans Mono', 'monospace', 'Courier New'`,
 			fontSize: settingsManager.editorFontSize,
 		}
@@ -654,20 +610,13 @@ export class EditorMonaco implements TextEditor {
 	}
 
 	public syncSettings() {
-		if (settingsManager.darkMode) {
-			this.monacoEditor.updateOptions({
-				theme: 'mimiri-dark',
-				fontFamily: `'${settingsManager.editorFontFamily}', 'Consolas', 'Menlo', 'Droid Sans Mono', 'monospace', 'Courier New'`,
-				fontSize: settingsManager.editorFontSize,
-			})
-		} else {
-			this.monacoEditor.updateOptions({
-				theme: 'mimiri-light',
-				fontFamily: `'${settingsManager.editorFontFamily}', 'Consolas', 'Menlo', 'Droid Sans Mono', 'monospace', 'Courier New'`,
-				fontSize: settingsManager.editorFontSize,
-			})
-		}
-		this.monacoEditor.updateOptions({ wordWrap: settingsManager.wordwrap ? 'on' : 'off' })
+		const theme = getThemeById(settingsManager.state.editorTheme, settingsManager.darkMode)
+		this.monacoEditor.updateOptions({
+			theme: theme.monacoTheme,
+			fontFamily: `'${settingsManager.editorFontFamily}', 'Consolas', 'Menlo', 'Droid Sans Mono', 'monospace', 'Courier New'`,
+			fontSize: settingsManager.editorFontSize,
+			wordWrap: settingsManager.wordwrap ? 'on' : 'off',
+		})
 	}
 
 	public cut() {

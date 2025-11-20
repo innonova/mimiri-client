@@ -22,6 +22,7 @@ import { deserialize } from './prosemirror/mimiri-deserializer'
 import { serialize } from './prosemirror/mimiri-serializer'
 import { markExitPlugin } from './prosemirror/mark-exit-plugint'
 import { initHighlighter, syntaxHighlightPlugin } from './prosemirror/syntax-highlighting'
+import { getThemeById } from './theme-manager'
 import { clipboardManager } from '../../global'
 import AutoComplete from '../../components/elements/AutoComplete.vue'
 import { getLanguageSuggestions } from './language-suggestions'
@@ -73,8 +74,9 @@ export class EditorProseMirror implements TextEditor {
 				gapCursor(),
 				history(),
 				markExitPlugin,
-				// syntaxHighlightPlugin(settingsManager.theme === 'dark' ? 'dark-plus' : 'github-light'),
-				syntaxHighlightPlugin(),
+				syntaxHighlightPlugin(() => {
+					return getThemeById(settingsManager.state.editorTheme, settingsManager.darkMode).shikiTheme
+				}),
 			],
 			doc,
 		})
@@ -396,6 +398,12 @@ export class EditorProseMirror implements TextEditor {
 	}
 
 	public syncSettings() {
+		// Force a recalculation of syntax highlighting decorations when theme changes
+		if (this._editor) {
+			const tr = this._editor.state.tr
+			tr.setMeta('forceUpdate', true)
+			this._editor.dispatch(tr)
+		}
 		// if (this._wordWrap !== settingsManager.wordwrap) {
 		// 	if (this.historyShowing) {
 		// 		if (settingsManager.wordwrap) {

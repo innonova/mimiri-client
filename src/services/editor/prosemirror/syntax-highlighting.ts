@@ -1,29 +1,34 @@
 import { createHighlighter, type Highlighter } from 'shiki'
 import { Plugin } from 'prosemirror-state'
 import { Decoration, DecorationSet } from 'prosemirror-view'
-import { bundledThemes } from 'shiki'
 import { SUPPORTED_LANGUAGES } from '../highlighting'
+import { EDITOR_THEMES } from '../theme-manager'
 
 let highlighter: Highlighter | null = null
 
 export const initHighlighter = async () => {
-	// console.log('bundledThemes', bundledThemes)
+	// Load all themes used in the theme manager
+	const themes = EDITOR_THEMES.map(t => t.shikiTheme)
 
 	highlighter = await createHighlighter({
-		themes: ['one-dark-pro', 'github-dark-default', 'github-dark', 'github-light', 'monokai', 'dark-plus'],
+		themes,
 		langs: SUPPORTED_LANGUAGES,
 	})
 }
 
-export const syntaxHighlightPlugin = (theme: string = 'dark-plus') => {
+export const syntaxHighlightPlugin = (getTheme: () => string) => {
 	return new Plugin({
 		state: {
 			init(_, { doc }) {
-				return highlighter ? createDecorations(doc, theme) : DecorationSet.empty
+				return highlighter ? createDecorations(doc, getTheme()) : DecorationSet.empty
 			},
 			apply(tr, old) {
-				if (!highlighter) return old
-				return tr.docChanged ? createDecorations(tr.doc, theme) : old
+				if (!highlighter) {
+					return old
+				}
+				// Recompute if document changed or if forced (e.g., theme change)
+				const forceUpdate = tr.getMeta('forceUpdate')
+				return tr.docChanged || forceUpdate ? createDecorations(tr.doc, getTheme()) : old
 			},
 		},
 		props: {
