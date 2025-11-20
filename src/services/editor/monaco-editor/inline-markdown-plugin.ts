@@ -23,7 +23,9 @@ export class InlineMarkdownPlugin implements EditorPlugin {
 		)
 
 		this.monacoEditorModel.onDidChangeContent(e => {
-			if (!this._active) return
+			if (!this._active) {
+				return
+			}
 
 			// Get affected lines from changes
 			const affectedLines = new Set<number>()
@@ -52,7 +54,9 @@ export class InlineMarkdownPlugin implements EditorPlugin {
 	}
 
 	private adjustLineNumbers(afterLine: number, delta: number): void {
-		if (delta === 0) return
+		if (delta === 0) {
+			return
+		}
 
 		const newMap = new Map<number, string[]>()
 		const newPendingLines = new Set<number>()

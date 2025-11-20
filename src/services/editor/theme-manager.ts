@@ -271,6 +271,8 @@ function getMimiriTokenOverrides(shikiTheme: any): editor.ITokenThemeRule[] {
 		{ token: 'italictext', foreground: fg.replace('#', ''), fontStyle: 'italic' },
 		{ token: 'bold', foreground: fg.replace('#', ''), fontStyle: 'bold' },
 		{ token: 'boldtext', foreground: fg.replace('#', ''), fontStyle: 'bold' },
+		{ token: 'bolditalic', foreground: isDark ? 'd4d4d4' : '000000', fontStyle: 'bold italic' },
+		{ token: 'bolditalictext', foreground: isDark ? 'd4d4d4' : '000000', fontStyle: 'bold italic' },
 		{ token: 'conflict-start', foreground: errorColor, background: isDark ? '490202' : 'ffebe9' },
 		{ token: 'conflict-separator', foreground: warningColor, background: isDark ? '4a3d1a' : 'fff8c5' },
 		{ token: 'conflict-end', foreground: successColor, background: isDark ? '033a16' : 'dafbe1' },
@@ -329,6 +331,8 @@ function createFallbackMonacoTheme(themeConfig: EditorTheme) {
 			{ token: 'italictext', foreground: isDark ? 'd4d4d4' : '000000', fontStyle: 'italic' },
 			{ token: 'bold', foreground: isDark ? 'd4d4d4' : '000000', fontStyle: 'bold' },
 			{ token: 'boldtext', foreground: isDark ? 'd4d4d4' : '000000', fontStyle: 'bold' },
+			{ token: 'bolditalic', foreground: isDark ? 'd4d4d4' : '000000', fontStyle: 'bold italic' },
+			{ token: 'bolditalictext', foreground: isDark ? 'd4d4d4' : '000000', fontStyle: 'bold italic' },
 			{ token: 'conflict-start', foreground: isDark ? 'ff7b72' : 'cf222e', background: isDark ? '490202' : 'ffebe9' },
 			{
 				token: 'conflict-separator',
