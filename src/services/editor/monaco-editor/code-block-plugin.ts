@@ -4,12 +4,10 @@ import type { EditorPlugin } from '../editor-plugin'
 import { mimiriCompletionProvider } from './mimiri-provider'
 import { MimiriCodeLensProvider, type MimiriCodeLensItem } from './mimiri-code-lens-provider'
 import { clipboardManager } from '../../../global'
-import { LANGUAGE_ALIASES, LANGUAGE_DEFINITIONS } from '../highlighting'
 
 interface CodeBlockState {
 	start: number // Opening fence line number
 	end: number // Closing fence line number
-	language: string // Language identifier (e.g., 'javascript')
 	decorationIds: string[] // All decoration IDs for this block
 }
 
@@ -19,15 +17,12 @@ export class CodeBlockPlugin implements EditorPlugin {
 	private codeBlockStates: CodeBlockState[] = []
 	private pendingBlocks: Set<CodeBlockState> = new Set()
 	private debounce: Debounce
-	private loadedLanguages: Set<string> = new Set()
-	private newLanguageDetected: boolean = false
 	private completionProvider: IDisposable | null = null
 	private codeLensDisposable: IDisposable | null = null
 	private copyCodeBlockCommandId: string
 	private selectCodeBlockCommandId: string
 	private copyNextLineCommandId: string
 	private codeLensProvider: MimiriCodeLensProvider
-
 	constructor(private monacoEditor: editor.IStandaloneCodeEditor) {
 		this.monacoEditorModel = this.monacoEditor.getModel()
 
@@ -204,18 +199,8 @@ export class CodeBlockPlugin implements EditorPlugin {
 					// Change outside blocks - check if line numbers need adjustment
 					this.adjustBlockLineNumbers(e.changes)
 				}
-				this.checkForNewLanguage()
 			}
 		})
-	}
-
-	private checkForNewLanguage(): void {
-		if (this.newLanguageDetected) {
-			this.newLanguageDetected = false
-			setTimeout(() => {
-				this.fullScan()
-			}, 100)
-		}
 	}
 
 	private getAffectedBlocks(changes: editor.IModelContentChange[]): CodeBlockState[] {
@@ -271,7 +256,6 @@ export class CodeBlockPlugin implements EditorPlugin {
 	private fullScan() {
 		const model = this.monacoEditorModel
 		const lineCount = model.getLineCount()
-		this.newLanguageDetected = false
 
 		// Skip code block processing for extremely large documents to prevent UI hangs
 		if (lineCount > 100000) {
@@ -287,7 +271,6 @@ export class CodeBlockPlugin implements EditorPlugin {
 		// Scan for code blocks
 		let inCodeBlock = false
 		let codeBlockStart = -1
-		let codeBlockLanguage = ''
 
 		for (let i = 1; i <= lineCount; i++) {
 			const line = model.getLineContent(i)
@@ -298,25 +281,22 @@ export class CodeBlockPlugin implements EditorPlugin {
 					// Starting a code block
 					inCodeBlock = true
 					codeBlockStart = i
-					codeBlockLanguage = trimmedLine.substring(3).trim()
 				} else {
 					// Ending a code block - generate decorations
 					inCodeBlock = false
 
-					const decorations = this.generateBlockDecorations(codeBlockStart, i, codeBlockLanguage)
+					const decorations = this.generateBlockDecorations(codeBlockStart, i)
 
 					const decorationIds = model.deltaDecorations([], decorations)
 
 					this.codeBlockStates.push({
 						start: codeBlockStart,
 						end: i,
-						language: codeBlockLanguage,
 						decorationIds,
 					})
 				}
 			}
 		}
-		this.checkForNewLanguage()
 		this.refreshCodeLens()
 	}
 
@@ -342,18 +322,14 @@ export class CodeBlockPlugin implements EditorPlugin {
 			block.end = actualEnd
 
 			// Regenerate decorations for the block with updated boundaries
-			const decorations = this.generateBlockDecorations(block.start, block.end, block.language)
+			const decorations = this.generateBlockDecorations(block.start, block.end)
 			block.decorationIds = model.deltaDecorations([], decorations)
 		}
 
 		this.refreshCodeLens()
 	}
 
-	private generateBlockDecorations(
-		startLine: number,
-		endLine: number,
-		language: string,
-	): editor.IModelDeltaDecoration[] {
+	private generateBlockDecorations(startLine: number, endLine: number): editor.IModelDeltaDecoration[] {
 		const model = this.monacoEditorModel
 		const decorations: editor.IModelDeltaDecoration[] = []
 
@@ -387,11 +363,9 @@ export class CodeBlockPlugin implements EditorPlugin {
 			},
 		})
 
-		// Add syntax-highlighted decorations for content lines
+		// Add background decorations for content lines
+		// Syntax highlighting is now handled by Monaco's tokenizer via nextEmbedded
 		for (let j = startLine + 1; j < endLine; j++) {
-			const contentLine = model.getLineContent(j)
-
-			// Background decoration for the line
 			decorations.push({
 				range: {
 					startLineNumber: j,
@@ -404,67 +378,6 @@ export class CodeBlockPlugin implements EditorPlugin {
 					className: 'code-block-line',
 				},
 			})
-
-			// Add syntax highlighting if language is specified
-			if (language && contentLine.trim().length > 0) {
-				const syntaxDecorations = this.getSyntaxHighlightingDecorations(contentLine, j, language)
-				decorations.push(...syntaxDecorations)
-			}
-		}
-
-		return decorations
-	}
-
-	private getSyntaxHighlightingDecorations(
-		line: string,
-		lineNumber: number,
-		language: string,
-	): editor.IModelDeltaDecoration[] {
-		const decorations: editor.IModelDeltaDecoration[] = []
-
-		try {
-			// Map common language aliases to Monaco language IDs
-			const lowerLang = language.toLowerCase()
-			const canonicalLang = LANGUAGE_ALIASES[lowerLang] || lowerLang
-			const definition = LANGUAGE_DEFINITIONS[canonicalLang]
-			const monacoLanguage = definition ? definition.monacoId || canonicalLang : canonicalLang
-
-			if (!this.loadedLanguages.has(monacoLanguage)) {
-				this.loadedLanguages.add(monacoLanguage)
-				this.newLanguageDetected = true
-			}
-
-			// Tokenize the line using Monaco's tokenizer
-			const tokens = editor.tokenize(line, monacoLanguage)
-
-			if (tokens && tokens[0]) {
-				for (let i = 0; i < tokens[0].length; i++) {
-					const token = tokens[0][i]
-					const nextToken = tokens[0][i + 1]
-					const startColumn = token.offset + 1
-					const endColumn = nextToken ? nextToken.offset + 1 : line.length + 1
-
-					if (startColumn < endColumn && token.type) {
-						// Extract the base token type (e.g., 'keyword.js' -> 'keyword')
-						const tokenType = token.type.split('.')[0]
-
-						decorations.push({
-							range: {
-								startLineNumber: lineNumber,
-								startColumn: startColumn,
-								endLineNumber: lineNumber,
-								endColumn: endColumn,
-							},
-							options: {
-								inlineClassName: `syntax-${tokenType}`,
-							},
-						})
-					}
-				}
-			}
-		} catch (error) {
-			// If tokenization fails, silently skip syntax highlighting for this line
-			console.warn(`Failed to tokenize line as ${language}:`, error)
 		}
 
 		return decorations

@@ -58,6 +58,18 @@ export class EditorMonaco implements TextEditor {
 					[/^>{7} .*$/, 'conflict-end'],
 					// [/^(_)(.*)(_)/, ['italic', 'italictext', 'italic']],
 					// [/^(\*\*)(.*)(\*\*)/, ['bold', 'boldtext', 'bold']],
+					[
+						/^```\s*(\w+)\s*$/,
+						{
+							token: 'string',
+							next: '@codeblock',
+							nextEmbedded: '$1', // Switches to the tokenizer of the captured language
+						},
+					],
+				],
+				codeblock: [
+					// When seeing the closing fence, pop back to your language
+					[/^```\s*$/, { token: 'string', next: '@pop', nextEmbedded: '@pop' }],
 				],
 			},
 		})
@@ -126,7 +138,7 @@ export class EditorMonaco implements TextEditor {
 
 		const config: editor.IStandaloneEditorConstructionOptions = {
 			value: '',
-			language: 'text',
+			language: 'mimiri',
 			lineNumbers: 'off',
 			glyphMargin: false,
 			folding: false,
