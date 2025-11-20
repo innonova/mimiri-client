@@ -1,4 +1,10 @@
 import { languages } from 'monaco-editor'
+import {
+	LANGUAGE_ALIASES,
+	LANGUAGE_DEFINITIONS,
+	LANGUAGES_CURATED,
+	SUPPORTED_LANGUAGES,
+} from '../highlighting-languages'
 
 export const mimiriCompletionProvider = {
 	triggerCharacters: [
@@ -47,50 +53,6 @@ export const mimiriCompletionProvider = {
 		// Get all available languages from Monaco
 		const availableLanguages = languages.getLanguages()
 
-		// Curated list of most common languages to show by default
-		const curatedLanguages = [
-			'javascript',
-			'typescript',
-			'python',
-			'java',
-			'html',
-			'css',
-			'json',
-			'sql',
-			'shell',
-			'bash',
-			'csharp',
-		]
-
-		// Common language aliases and their display names
-		const languageInfo: { [key: string]: { label: string; detail?: string } } = {
-			javascript: { label: 'javascript', detail: 'JavaScript' },
-			typescript: { label: 'typescript', detail: 'TypeScript' },
-			python: { label: 'python', detail: 'Python' },
-			java: { label: 'java', detail: 'Java' },
-			csharp: { label: 'csharp', detail: 'C#' },
-			cpp: { label: 'cpp', detail: 'C++' },
-			c: { label: 'c', detail: 'C' },
-			go: { label: 'go', detail: 'Go' },
-			rust: { label: 'rust', detail: 'Rust' },
-			ruby: { label: 'ruby', detail: 'Ruby' },
-			php: { label: 'php', detail: 'PHP' },
-			swift: { label: 'swift', detail: 'Swift' },
-			kotlin: { label: 'kotlin', detail: 'Kotlin' },
-			shell: { label: 'shell', detail: 'Shell / Bash' },
-			bash: { label: 'bash', detail: 'Bash' },
-			powershell: { label: 'powershell', detail: 'PowerShell' },
-			sql: { label: 'sql', detail: 'SQL' },
-			html: { label: 'html', detail: 'HTML' },
-			css: { label: 'css', detail: 'CSS' },
-			scss: { label: 'scss', detail: 'SCSS' },
-			json: { label: 'json', detail: 'JSON' },
-			xml: { label: 'xml', detail: 'XML' },
-			yaml: { label: 'yaml', detail: 'YAML' },
-			markdown: { label: 'markdown', detail: 'Markdown' },
-			dockerfile: { label: 'dockerfile', detail: 'Dockerfile' },
-		}
-
 		// Create suggestions
 		const suggestions: languages.CompletionItem[] = []
 		const addedLanguages = new Set<string>()
@@ -112,13 +74,15 @@ export const mimiriCompletionProvider = {
 		}
 
 		// Add main languages (only curated if no user input)
-		for (const [langId, info] of Object.entries(languageInfo)) {
+		for (const [langId, info] of Object.entries(LANGUAGE_DEFINITIONS)) {
 			// Skip if not in curated list and user hasn't typed anything
-			if (!hasUserInput && !curatedLanguages.includes(langId)) {
+			if (!hasUserInput && !LANGUAGES_CURATED.includes(langId)) {
 				continue
 			}
 
-			if (availableLanguages.some(lang => lang.id === langId)) {
+			const targetMonacoId = info.monacoId || langId
+
+			if (availableLanguages.some(lang => lang.id === targetMonacoId)) {
 				suggestions.push({
 					label: info.label,
 					kind: languages.CompletionItemKind.Value,
@@ -137,25 +101,14 @@ export const mimiriCompletionProvider = {
 
 		// Add any other Monaco languages not in our list (only if user is typing)
 		if (hasUserInput) {
-			// Add common short aliases
-			const aliases: { [key: string]: string } = {
-				js: 'javascript',
-				ts: 'typescript',
-				py: 'python',
-				rb: 'ruby',
-				sh: 'shell',
-				cs: 'csharp',
-				md: 'markdown',
-				bash: 'shell',
-			}
-
 			// Add aliases as separate suggestions (only if target language is included)
-			for (const [alias, target] of Object.entries(aliases)) {
+			for (const [alias, target] of Object.entries(LANGUAGE_ALIASES)) {
 				if (addedLanguages.has(target)) {
+					const targetInfo = LANGUAGE_DEFINITIONS[target]
 					suggestions.push({
 						label: alias,
 						kind: languages.CompletionItemKind.Value,
-						detail: `${languageInfo[target]?.detail || target} (alias)`,
+						detail: `${targetInfo?.detail || target} (alias)`,
 						insertText: alias,
 						range: {
 							startLineNumber: position.lineNumber,
@@ -167,7 +120,20 @@ export const mimiriCompletionProvider = {
 				}
 			}
 			for (const lang of availableLanguages) {
-				if (!addedLanguages.has(lang.id) && lang.id !== 'plaintext' && !lang.id.startsWith('freemarker2')) {
+				// Check if this monaco language is already covered by one of our added languages
+				// This is a bit tricky because addedLanguages contains our keys (e.g. 'bash'), but lang.id is monaco id (e.g. 'shell')
+				// But we also want to avoid duplicates if 'shell' is in our list and monaco has 'shell'.
+
+				// Simple check: if lang.id is in addedLanguages, skip.
+				if (addedLanguages.has(lang.id)) continue
+
+				// Also check if any added language maps to this monaco id
+				const alreadyCovered = Array.from(addedLanguages).some(added => {
+					const def = LANGUAGE_DEFINITIONS[added]
+					return (def?.monacoId || added) === lang.id
+				})
+
+				if (!alreadyCovered && lang.id !== 'plaintext' && !lang.id.startsWith('freemarker2')) {
 					suggestions.push({
 						label: lang.id,
 						kind: languages.CompletionItemKind.Value,

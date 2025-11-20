@@ -4,6 +4,7 @@ import type { EditorPlugin } from '../editor-plugin'
 import { mimiriCompletionProvider } from '../completetion/mimiri-provider'
 import { MimiriCodeLensProvider, type MimiriCodeLensItem } from '../providers/mimiri-code-lens-provider'
 import { clipboardManager } from '../../../global'
+import { LANGUAGE_ALIASES, LANGUAGE_DEFINITIONS } from '../highlighting-languages'
 
 interface CodeBlockState {
 	start: number // Opening fence line number
@@ -403,25 +404,10 @@ export class CodeBlockPlugin implements EditorPlugin {
 
 		try {
 			// Map common language aliases to Monaco language IDs
-			const languageMap: { [key: string]: string } = {
-				js: 'javascript',
-				ts: 'typescript',
-				py: 'python',
-				rb: 'ruby',
-				sh: 'shell',
-				bash: 'shell',
-				cs: 'csharp',
-				md: 'markdown',
-				json: 'json',
-				xml: 'xml',
-				html: 'html',
-				css: 'css',
-				sql: 'sql',
-				yaml: 'yaml',
-				dockerfile: 'dockerfile',
-			}
-
-			const monacoLanguage = languageMap[language.toLowerCase()] || language.toLowerCase()
+			const lowerLang = language.toLowerCase()
+			const canonicalLang = LANGUAGE_ALIASES[lowerLang] || lowerLang
+			const definition = LANGUAGE_DEFINITIONS[canonicalLang]
+			const monacoLanguage = definition ? definition.monacoId || canonicalLang : canonicalLang
 
 			if (!this.loadedLanguages.has(monacoLanguage)) {
 				this.loadedLanguages.add(monacoLanguage)
