@@ -3,6 +3,7 @@ import './assets/main.css'
 import { createApp } from 'vue'
 import App from './App.vue'
 import { initializeMonacoThemes } from './services/editor/theme-manager'
+import { initializeTextMateGrammars } from './services/editor/textmate-setup'
 
 import editorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker'
 import jsonWorker from 'monaco-editor/esm/vs/language/json/json.worker?worker'
@@ -31,8 +32,17 @@ import tsWorker from 'monaco-editor/esm/vs/language/typescript/ts.worker?worker'
 	},
 }
 
-// Initialize Monaco themes from Shiki before creating the app
-void initializeMonacoThemes().then(() => {
+// Initialize TextMate grammars and Monaco themes before creating the app
+async function initializeEditor() {
+	// Initialize TextMate grammars first (required for Monaco themes to work with TextMate)
+	await initializeTextMateGrammars()
+
+	// Then initialize Monaco themes
+	await initializeMonacoThemes()
+
+	// Finally mount the app
 	const app = createApp(App)
 	app.mount('#app')
-})
+}
+
+void initializeEditor()

@@ -1,7 +1,7 @@
 .ProseMirror {
 	position: relative;
 	overflow-y: auto;
-	padding: 10px;
+	padding: 10px 5px;
 	padding-bottom: 50rem;
 	outline: none;
 	background-color: var(--color-input);
@@ -87,15 +87,15 @@
 	padding: 0 0 0.25rem 0.25rem;
 	margin: 0 0 0.5rem 0;
 	overflow-x: auto;
-	font-family: Consolas, 'Courier New', monospace;
 }
 
 .ProseMirror code {
-	font-family: Consolas, 'Courier New', monospace;
 	font-size: 0.9em;
 }
 
 .ProseMirror pre code {
+	font-family: Consolas, 'Courier New', monospace;
+	font-size: 14px;
 	background: none;
 	padding: 0;
 }

@@ -2,27 +2,6 @@ import { editor } from 'monaco-editor'
 import type { BundledTheme, ThemeRegistration } from 'shiki'
 import { bundledThemes } from 'shiki'
 
-const MONACO_TOKEN_MAP = {
-	comment: ['comment', 'comment.line', 'comment.block'],
-	string: ['string', 'string.quoted'],
-	keyword: ['keyword', 'storage.type', 'storage.modifier'],
-	number: ['constant.numeric'],
-	regexp: ['string.regexp'],
-	type: ['entity.name.type', 'support.type', 'support.class'],
-	class: ['entity.name.class'],
-	function: ['entity.name.function', 'support.function'],
-	identifier: ['entity.name.function', 'variable.other.readwrite', 'variable.other', 'meta.definition.variable'],
-	'identifier.function': ['entity.name.function', 'support.function'],
-	variable: ['variable.other.readwrite', 'variable.other', 'variable'],
-	'variable.parameter': ['variable.parameter'],
-	'variable.language': ['variable.language'],
-	operator: ['keyword.operator'],
-	delimiter: ['punctuation', 'punctuation.definition'],
-	'type.identifier': ['support.type', 'support.class', 'entity.name.type'],
-	'html.tag': ['entity.name.tag'],
-	'attribute.name': ['entity.other.attribute-name'],
-}
-
 /**
  * Unified theme configuration for both Monaco and ProseMirror/Shiki editors
  */
@@ -191,8 +170,10 @@ function convertShikiThemeToMonaco(
 	const bg = shikiTheme.bg || (isDark ? '#1e1e1e' : '#ffffff')
 	const fg = shikiTheme.fg || (isDark ? '#d4d4d4' : '#000000')
 
-	// Build a lookup map from Shiki scopes to colors
-	const shikiScopeMap = new Map<string, { foreground: string; fontStyle?: string }>()
+	// Convert all Shiki token colors to Monaco rules
+	// With TextMate grammars, we can use the full TextMate scope names directly
+	const rules: editor.ITokenThemeRule[] = []
+
 	if (shikiTheme.tokenColors) {
 		for (const tokenColor of shikiTheme.tokenColors) {
 			if (!tokenColor.scope || !tokenColor.settings) {
@@ -205,30 +186,12 @@ function convertShikiThemeToMonaco(
 
 			if (foreground) {
 				for (const scope of scopes) {
-					// Only set if not already defined (first match wins, more specific first)
-					if (!shikiScopeMap.has(scope)) {
-						shikiScopeMap.set(scope, { foreground, fontStyle })
-					}
+					rules.push({
+						token: scope,
+						foreground,
+						fontStyle: fontStyle || undefined,
+					})
 				}
-			}
-		}
-	}
-
-	// Use MONACO_TOKEN_MAP to create Monaco rules from Shiki colors
-	const rules: editor.ITokenThemeRule[] = []
-
-	for (const [monacoToken, shikiScopes] of Object.entries(MONACO_TOKEN_MAP)) {
-		// Find first matching Shiki scope in priority order
-		for (const shikiScope of shikiScopes) {
-			// const color = monacoToken === 'type.identifier' ? { foreground: 'ff00ff' } : shikiScopeMap.get(shikiScope)
-			const color = shikiScopeMap.get(shikiScope)
-			if (color) {
-				rules.push({
-					token: monacoToken,
-					foreground: color.foreground,
-					fontStyle: color.fontStyle || undefined,
-				})
-				break // Found a match, stop looking
 			}
 		}
 	}
@@ -333,7 +296,6 @@ export async function initializeMonacoThemes() {
 			const shikiTheme = await loadShikiTheme(themeConfig.shikiTheme)
 			const mimiriOverrides = getMimiriTokenOverrides(shikiTheme)
 			const monacoTheme = convertShikiThemeToMonaco(shikiTheme, themeConfig.monacoTheme, mimiriOverrides)
-			console.log(themeConfig.monacoTheme, monacoTheme)
 
 			editor.defineTheme(themeConfig.monacoTheme, monacoTheme)
 		} catch (error) {
