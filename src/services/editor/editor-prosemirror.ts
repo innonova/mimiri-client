@@ -23,9 +23,12 @@ import { serialize } from './prosemirror/mimiri-serializer'
 import { markExitPlugin } from './prosemirror/mark-exit-plugint'
 import { initHighlighter, syntaxHighlightPlugin } from './prosemirror/syntax-highlighting'
 import { clipboardManager } from '../../global'
+import AutoComplete from '../../components/elements/AutoComplete.vue'
+import { getLanguageSuggestions } from './language-suggestions'
 
 export class EditorProseMirror implements TextEditor {
 	private _domElement: HTMLElement | undefined
+	private _autoComplete: InstanceType<typeof AutoComplete> | undefined
 	private _history: HTMLDivElement | undefined
 	private lastScrollTop: number
 	private historyShowing: boolean = false
@@ -44,15 +47,16 @@ export class EditorProseMirror implements TextEditor {
 
 	constructor(private listener: TextEditorListener) {}
 
-	public async init(domElement: HTMLElement) {
+	public async init(domElement: HTMLElement, autoComplete: InstanceType<typeof AutoComplete>) {
 		this._domElement = domElement
+		this._autoComplete = autoComplete
 		this._domElement.style.display = this._active ? 'flex' : 'none'
 
 		await initHighlighter()
 
 		const doc = deserialize('')
 
-		let state = EditorState.create({
+		const state = EditorState.create({
 			schema: mimiriSchema,
 			plugins: [
 				mimiriInputRules(mimiriSchema),
@@ -78,16 +82,17 @@ export class EditorProseMirror implements TextEditor {
 		const view = new EditorView(this._domElement, {
 			state,
 			dispatchTransaction(transaction) {
-				let newState = view.state.apply(transaction)
+				const newState = view.state.apply(transaction)
 				view.updateState(newState)
 
 				// console.log(serialize(view.state.doc))
 			},
 
 			handleDOMEvents: {
-				mousedown(view, event) {
+				mousedown: (view, event) => {
 					const target = event.target as HTMLElement
 					const action = target.getAttribute('data-action')
+					this._autoComplete.hide()
 					if (
 						action === 'copy-block' ||
 						action === 'select-block' ||
@@ -103,15 +108,19 @@ export class EditorProseMirror implements TextEditor {
 					}
 					return false
 				},
-				mouseup(view, event) {
+				mouseup: (view, event) => {
 					const element = event.target as HTMLElement
 					const action = element.getAttribute('data-action')
 
-					if (!action) return false
+					if (!action) {
+						return false
+					}
 
 					// Get the position and node from the mouse coordinates
 					const pos = view.posAtCoords({ left: event.clientX, top: event.clientY })
-					if (!pos) return false
+					if (!pos) {
+						return false
+					}
 
 					const $pos = view.state.doc.resolve(pos.pos)
 					let node = null
@@ -127,7 +136,9 @@ export class EditorProseMirror implements TextEditor {
 						}
 					}
 
-					if (!node || node.type.name !== 'code_block') return false
+					if (!node || node.type.name !== 'code_block') {
+						return false
+					}
 
 					if (action === 'copy-block') {
 						const text = node.textContent
@@ -197,15 +208,49 @@ export class EditorProseMirror implements TextEditor {
 						view.dispatch(tr)
 						return true
 					} else if (action === 'choose-language') {
+						const rect = (event.target as HTMLElement).getBoundingClientRect()
+						const containerRect = this._domElement.getBoundingClientRect()
+
+						// Calculate position relative to container
+						const relativeLeft = rect.left - containerRect.left
+						const relativeBottom = rect.bottom - containerRect.top
+						const relativeTop = rect.top - containerRect.top
+
+						// Estimate autocomplete height (rough estimate based on typical item count)
+						const estimatedHeight = 250 // Approximate max height for autocomplete
+						const spaceBelow = containerRect.height - relativeBottom
+						const showAbove = spaceBelow < estimatedHeight && relativeTop > estimatedHeight
+
+						this._autoComplete.show(
+							relativeLeft,
+							showAbove ? relativeTop : relativeBottom,
+							node.attrs.language ?? '',
+							(query: string) => {
+								return getLanguageSuggestions(query).map(suggestion => suggestion.label)
+							},
+							(item: string) => {
+								// Update the code block's language attribute
+								const tr = view.state.tr.setNodeMarkup(nodePos, null, {
+									...node.attrs,
+									language: item,
+								})
+								view.dispatch(tr)
+								this._autoComplete.hide()
+							},
+							() => {
+								this._autoComplete.hide()
+							},
+							showAbove,
+						)
 					}
 
 					return false
 				},
 			},
 
-			handleClickOn(view, pos, node, nodePos, event, direct) {
-				return false
-			},
+			// handleClickOn(view, pos, node, nodePos, event, direct) {
+			// 	return false
+			// },
 		})
 		this._editor = view
 	}

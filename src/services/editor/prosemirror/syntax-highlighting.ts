@@ -7,7 +7,7 @@ import { SUPPORTED_LANGUAGES } from '../highlighting'
 let highlighter: Highlighter | null = null
 
 export const initHighlighter = async () => {
-	console.log('bundledThemes', bundledThemes)
+	// console.log('bundledThemes', bundledThemes)
 
 	highlighter = await createHighlighter({
 		themes: ['one-dark-pro', 'github-dark-default', 'github-dark', 'github-light', 'monokai', 'dark-plus'],

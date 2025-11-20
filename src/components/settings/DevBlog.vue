@@ -58,7 +58,7 @@ const onMessage = async (event: MessageEvent) => {
 				try {
 					await blogManager.addComment(data.postId, data.username, data.comment)
 					postMessageToFrame({ type: 'comment-posted' })
-				} catch (error) {
+				} catch (error: any) {
 					postMessageToFrame({ type: 'comment-error', error: error.message })
 				}
 				break

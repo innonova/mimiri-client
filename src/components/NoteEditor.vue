@@ -124,11 +124,13 @@
 				data-testid="editor-monaco-container"
 			/>
 			<div
-				class="overflow-auto flex-1 flex-col"
+				class="overflow-auto flex-1 flex-col relative"
 				style="display: none"
 				ref="proseMirrorContainer"
 				data-testid="editor-prosemirror-container"
-			/>
+			>
+				<AutoComplete ref="proseMirrorPopup"></AutoComplete>
+			</div>
 			<SelectionControl v-if="mimiriEditor.mode === 'advanced'" />
 			<div
 				v-if="historyVisible && mimiriEditor.history.note"
@@ -182,11 +184,13 @@ import { settingsManager } from '../services/settings-manager'
 import { useEventListener } from '@vueuse/core'
 import CloseButton from './elements/CloseButton.vue'
 import { mimiriApi } from '../services/storage/mimiri-api'
+import AutoComplete from './elements/AutoComplete.vue'
 
 let activeViewModelStopWatch: WatchStopHandle = undefined
 let activeViewModel: NoteViewModel = undefined
 const monacoContainer = ref(null)
 const proseMirrorContainer = ref(null)
+const proseMirrorPopup = ref<InstanceType<typeof AutoComplete> | null>(null)
 const windowFocus = ref(true)
 const historyVisible = ref(false)
 const selectedHistoryItem = computed(() => mimiriEditor.history.state.selectedHistoryItem)
@@ -256,7 +260,7 @@ const insertCodeBlock = () => {
 }
 
 const toggleEditModeClicked = () => {
-	mimiriEditor.toggleEditMode()
+	void mimiriEditor.toggleEditMode()
 }
 
 watch(historyVisible, (newVal, _) => {
@@ -293,7 +297,7 @@ const setActiveViewModel = viewModel => {
 }
 
 onMounted(() => {
-	mimiriEditor.init(monacoContainer.value, proseMirrorContainer.value)
+	mimiriEditor.init(monacoContainer.value, proseMirrorContainer.value, proseMirrorPopup.value)
 	mimiriEditor.onSave(() => save())
 	mimiriEditor.onSearchAll(() => titleBar.value?.searchAllNotes())
 	mimiriEditor.onBlur(() => save())

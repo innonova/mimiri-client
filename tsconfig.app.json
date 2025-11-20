@@ -6,7 +6,10 @@
 		"composite": true,
 		"noEmit": true,
 		"baseUrl": ".",
-		"strict": false,
+		"strict": true,
+		"strictNullChecks": false,
+		"strictPropertyInitialization": false,
+		"noImplicitAny": false,
 		"paths": {
 			"@/*": ["./src/*"]
 		}

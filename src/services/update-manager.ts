@@ -458,7 +458,7 @@ export class UpdateManager {
 					return
 				}
 			}
-		} catch (ex) {
+		} catch (ex: any) {
 			status?.({ total: 0, downloaded: 0, stage: 'error', error: ex.message })
 			debug.logError('UpdateManager.download', ex)
 		}

@@ -63,7 +63,7 @@ const serializeNode = (node: Node, depth: number, indentStyle: string): string =
 }
 
 export const serialize = (doc: Node) => {
-	console.log(doc)
+	// console.log(doc)
 	let text = ''
 	if (doc.type.name !== 'doc') {
 		throw new Error('Expected a document node')

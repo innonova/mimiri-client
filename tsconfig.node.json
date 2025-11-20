@@ -7,11 +7,13 @@
 		"nightwatch.conf.*",
 		"playwright.config.*",
 		"playwright.*.config.*",
-		"playwright/**/*"
+		"playwright/**/*",
+		"eslint.config.js"
 	],
 	"compilerOptions": {
 		"composite": true,
 		"noEmit": true,
+		"allowJs": true,
 		"module": "ESNext",
 		"moduleResolution": "Bundler",
 		"types": ["node"]

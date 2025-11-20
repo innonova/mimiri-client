@@ -170,7 +170,7 @@ const subTokenizeText = (
 					indent: '',
 					depth: 0,
 				})
-				console.log(tokens[tokens.length - 1])
+				// console.log(tokens[tokens.length - 1])
 
 				i = closingIdx + delimiter.length
 				continue
@@ -587,9 +587,9 @@ const buildProseMirrorNode = (parent: TreeNode, treeNode: TreeNode, index: numbe
 
 export const deserialize = (text: string) => {
 	const tokens = tokenize(text.replace(/\r\n/g, '\n').replace(/\r/g, '\n'))
-	console.log('tokens', tokens)
+	// console.log('tokens', tokens)
 	const tree = buildTree(tokens)
-	console.log('tree', tree)
+	// console.log('tree', tree)
 	const doc2 = buildProseMirrorNode(null, tree, 0)
 	// console.log('des', doc2)
 

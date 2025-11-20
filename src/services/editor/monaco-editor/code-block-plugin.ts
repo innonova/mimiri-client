@@ -37,31 +37,47 @@ export class CodeBlockPlugin implements EditorPlugin {
 		)
 
 		this.copyCodeBlockCommandId = this.monacoEditor.addCommand(0, (_, args?: MimiriCodeLensItem) => {
-			if (!args) return
+			if (!args) {
+				return
+			}
 			const block = this.findBlockByStartLine(args.startLine)
-			if (!block) return
+			if (!block) {
+				return
+			}
 			const contentRange = this.getBlockContentRange(block)
-			if (!contentRange) return
+			if (!contentRange) {
+				return
+			}
 
 			const text = this.monacoEditorModel.getValueInRange(contentRange)
-			if (!text) return
+			if (!text) {
+				return
+			}
 
 			clipboardManager.write(text.replace(/p`([^`]+)`/g, '$1'))
 		})
 
 		this.selectCodeBlockCommandId = this.monacoEditor.addCommand(0, (_, args?: MimiriCodeLensItem) => {
-			if (!args) return
+			if (!args) {
+				return
+			}
 			const block = this.findBlockByStartLine(args.startLine)
-			if (!block) return
+			if (!block) {
+				return
+			}
 			const range = this.getBlockFullRange(block)
 			this.monacoEditor.setSelection(range)
 			this.monacoEditor.revealRangeInCenter(range)
 		})
 
 		this.copyNextLineCommandId = this.monacoEditor.addCommand(0, (_, args?: MimiriCodeLensItem) => {
-			if (!args) return
+			if (!args) {
+				return
+			}
 			const block = this.findBlockByStartLine(args.startLine)
-			if (!block) return
+			if (!block) {
+				return
+			}
 			const selection = this.monacoEditor.getSelection()
 			if (
 				selection.isEmpty() ||
@@ -92,7 +108,9 @@ export class CodeBlockPlugin implements EditorPlugin {
 				})
 			}
 			const text = this.monacoEditorModel.getValueInRange(this.monacoEditor.getSelection())
-			if (!text) return
+			if (!text) {
+				return
+			}
 			clipboardManager.write(text.replace(/p`([^`]+)`/g, '$1'))
 		})
 
@@ -121,7 +139,9 @@ export class CodeBlockPlugin implements EditorPlugin {
 		)
 
 		this.monacoEditorModel.onDidChangeContent(e => {
-			if (!this._active) return
+			if (!this._active) {
+				return
+			}
 
 			// Determine what kind of update is needed
 			const hasFenceChange = e.changes.some(change => {
@@ -414,10 +434,6 @@ export class CodeBlockPlugin implements EditorPlugin {
 				this.newLanguageDetected = true
 			}
 
-			// Check if the language is available
-			const availableLanguages = languages.getLanguages()
-			const isLanguageAvailable = availableLanguages.some(lang => lang.id === monacoLanguage)
-
 			// Tokenize the line using Monaco's tokenizer
 			const tokens = editor.tokenize(line, monacoLanguage)
 
@@ -461,7 +477,7 @@ export class CodeBlockPlugin implements EditorPlugin {
 	executeFormatAction(action: string): boolean {
 		if (action === 'insert-code-block') {
 			const selection = this.monacoEditor.getSelection()
-			let expandedSelection = {
+			const expandedSelection = {
 				...selection,
 				startColumn: 1,
 				endColumn: this.monacoEditorModel.getLineMaxColumn(selection.endLineNumber),

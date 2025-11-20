@@ -258,7 +258,7 @@ const createAccount = async () => {
 			settingsManager.anonymousPassword = undefined
 			await settingsManager.waitForSaveComplete()
 			location.reload()
-		} catch (ex) {
+		} catch (ex: any) {
 			errorText.value = ex.message
 			return
 		}

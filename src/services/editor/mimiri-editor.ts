@@ -7,6 +7,7 @@ import { reactive } from 'vue'
 import { clipboardManager, debug, noteManager, saveEmptyNodeDialog } from '../../global'
 import { VersionConflictError } from '../storage/mimiri-client'
 import { EditorProseMirror } from './editor-prosemirror'
+import AutoComplete from '../../components/elements/AutoComplete.vue'
 
 export class MimiriEditor {
 	private _history = new NoteHistory(this)
@@ -18,6 +19,7 @@ export class MimiriEditor {
 	private _state: MimiriEditorState
 	private _monacoElement: HTMLElement
 	private _proseMirrorElement: HTMLElement
+	private _proseMirrorAutoComplete: any
 	private _monacoInitialized: boolean = false
 	private _proseMirrorInitialized: boolean = false
 	private _initialText: string = ''
@@ -104,7 +106,7 @@ export class MimiriEditor {
 	private async activateProseMirror() {
 		if (!this._proseMirrorInitialized) {
 			this._proseMirrorInitialized = true
-			await this._editorProseMirror.init(this._proseMirrorElement)
+			await this._editorProseMirror.init(this._proseMirrorElement, this._proseMirrorAutoComplete)
 		}
 		this._editorMonaco.active = false
 		this._editorProseMirror.active = true
@@ -118,10 +120,14 @@ export class MimiriEditor {
 	}
 
 	private activateWysiwyg() {
-		this.activateProseMirror()
+		void this.activateProseMirror()
 	}
 
-	public init(monacoElement: HTMLElement, proseMirrorElement: HTMLElement) {
+	public init(
+		monacoElement: HTMLElement,
+		proseMirrorElement: HTMLElement,
+		proseMirrorAutoComplete: InstanceType<typeof AutoComplete>,
+	) {
 		this.infoElement = document.getElementById('mimiri-editor-info') as HTMLDivElement
 		if (!this.infoElement) {
 			this.infoElement = document.createElement('div')
@@ -136,6 +142,7 @@ export class MimiriEditor {
 
 		this._monacoElement = monacoElement
 		this._proseMirrorElement = proseMirrorElement
+		this._proseMirrorAutoComplete = proseMirrorAutoComplete
 
 		this.activateSource()
 	}
