@@ -107,19 +107,27 @@ const subTokenizeText = (
 				idx++
 				continue
 			}
-			if (text[idx] === '[') depth++
+			if (text[idx] === '[') {
+				depth++
+			}
 			if (text[idx] === ']') {
 				depth--
-				if (depth === 0) break
+				if (depth === 0) {
+					break
+				}
 			}
 			idx++
 		}
 
-		if (depth !== 0 || idx >= text.length) return null
+		if (depth !== 0 || idx >= text.length) {
+			return null
+		}
 		const textEnd = idx
 
 		// Check for opening (
-		if (text[idx + 1] !== '(') return null
+		if (text[idx + 1] !== '(') {
+			return null
+		}
 		idx += 2
 
 		// Find closing ) for URL
@@ -129,10 +137,14 @@ const subTokenizeText = (
 				idx++
 				continue
 			}
-			if (text[idx] === '(') depth++
+			if (text[idx] === '(') {
+				depth++
+			}
 			if (text[idx] === ')') {
 				depth--
-				if (depth === 0) return { textEnd, urlEnd: idx }
+				if (depth === 0) {
+					return { textEnd, urlEnd: idx }
+				}
 			}
 			idx++
 		}
@@ -514,7 +526,7 @@ const buildTree = (tokens: Token[]): TreeNode => {
 }
 
 const buildProseMirrorNode = (parent: TreeNode, treeNode: TreeNode, index: number): Node => {
-	let children: Node[] = []
+	const children: Node[] = []
 	for (let i = 0; i < treeNode.children.length; i++) {
 		children.push(buildProseMirrorNode(treeNode, treeNode.children[i], i))
 	}

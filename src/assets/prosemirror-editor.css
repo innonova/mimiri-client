@@ -182,3 +182,12 @@ li[data-item-type='task'][data-checked='true'] p {
 .ProseMirror password {
 	-webkit-text-security: disc;
 }
+
+.ProseMirror .password-delimiter {
+	color: #888888;
+}
+.ProseMirror .password-content {
+	-webkit-text-security: disc;
+	text-security: disc;
+	color: #aaaaaa;
+}
