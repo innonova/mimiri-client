@@ -53,7 +53,7 @@ defineProps<{
 	disabled?: boolean
 }>()
 
-const model = defineModel()
+const model = defineModel<string>()
 const methods = ref<PaymentMethod[]>()
 const loaded = ref(false)
 

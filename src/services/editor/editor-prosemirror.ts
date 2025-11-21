@@ -270,7 +270,7 @@ export class EditorProseMirror implements TextEditor {
 
 	public markSelectionAsPassword() {}
 
-	public executeFormatAction(action: string) {}
+	public executeFormatAction(_action: string) {}
 
 	public get active(): boolean {
 		return this._active
@@ -288,7 +288,7 @@ export class EditorProseMirror implements TextEditor {
 		}
 	}
 
-	public show(text: string, scrollTop: number) {
+	public show(text: string, _scrollTop: number) {
 		const newDoc = deserialize(text)
 
 		const newState = EditorState.create({
@@ -352,7 +352,7 @@ export class EditorProseMirror implements TextEditor {
 		// }
 	}
 
-	public setHistoryText(text: string) {
+	public setHistoryText(_text: string) {
 		// this._history.innerText = text
 	}
 

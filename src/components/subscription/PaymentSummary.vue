@@ -63,8 +63,8 @@ const props = defineProps<{
 	disabled?: boolean
 }>()
 
-const termsAccepted = defineModel('terms')
-const privacyAccepted = defineModel('privacy')
+const termsAccepted = defineModel<boolean>('terms')
+const privacyAccepted = defineModel<boolean>('privacy')
 
 const total = computed(() => props.items.map(item => item.price * item.quantity).reduce((p, n) => p + n, 0))
 </script>

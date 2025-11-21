@@ -98,7 +98,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import NoteTreeView from './components/NoteTreeView.vue'
 import NoteEditor from './components/NoteEditor.vue'
 import MainToolbar from './components/MainToolbar.vue'
@@ -159,7 +159,7 @@ import { localAuth } from './services/local-auth'
 import LockScreen from './components/LockScreen.vue'
 import { useEventListener } from '@vueuse/core'
 import SystemPage from './components/SystemPage.vue'
-import { AccountType, ViewMode } from './services/storage/type'
+import { ViewMode } from './services/storage/type'
 import PropertiesPage from './components/PropertiesPage.vue'
 import DeleteHistoryDialog from './components/dialogs/DeleteHistoryDialog.vue'
 import InfoDialog from './components/dialogs/InfoDialog.vue'
@@ -167,7 +167,6 @@ import InconsistencyDialog from './components/dialogs/InconsistencyDialog.vue'
 import StatusBar from './components/elements/StatusBar.vue'
 import SyncErrorDialog from './components/dialogs/SyncErrorDialog.vue'
 import DeleteLocalDataDialog from './components/dialogs/DeleteLocalDataDialog.vue'
-import type { Guid } from './services/types/guid'
 
 const colorScheme = ref('only light')
 const loading = ref(true)
@@ -251,7 +250,7 @@ useEventListener(
 
 if (ipcClient.isAvailable) {
 	// noteManager.setCacheManager(ipcClient.cache)
-	menuManager.updateTrayMenu()
+	void menuManager.updateTrayMenu()
 	menuManager.updateAppMenu()
 }
 

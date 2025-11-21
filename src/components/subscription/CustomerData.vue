@@ -161,7 +161,7 @@ const props = defineProps<{
 	disabled?: boolean
 }>()
 
-const model = defineModel()
+const model = defineModel<Partial<Customer>>()
 const readonly = ref(true)
 const givenName = ref('')
 const familyName = ref('')
@@ -181,9 +181,9 @@ const emailVerificationEmailSent = ref(false)
 const customer = ref<Customer>()
 const showInfoText = ref(false)
 
-const valid = defineModel('valid')
-const changed = defineModel('changed')
-const countryCodeOut = defineModel('countryCode')
+const valid = defineModel<boolean>('valid')
+const changed = defineModel<boolean>('changed')
+const countryCodeOut = defineModel<string>('countryCode')
 
 const givenNameValid = computed(() => givenName.value?.length > 0)
 const familyNameValid = computed(() => familyName.value?.length > 0)

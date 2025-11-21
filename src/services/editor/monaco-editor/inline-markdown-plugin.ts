@@ -286,7 +286,7 @@ export class InlineMarkdownPlugin implements EditorPlugin {
 
 	updateText(): void {}
 
-	executeFormatAction(action: string): boolean {
+	executeFormatAction(_action: string): boolean {
 		return false
 	}
 

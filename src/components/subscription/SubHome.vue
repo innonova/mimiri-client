@@ -27,7 +27,7 @@
 </template>
 
 <script setup lang="ts">
-import { clipboardManager, noteManager } from '../../global'
+import { noteManager } from '../../global'
 import { type Invoice, type Subscription, type SubscriptionProduct } from '../../services/types/subscription'
 import SubscriptionItem from './SubscriptionItem.vue'
 import { onMounted, ref } from 'vue'
@@ -37,7 +37,6 @@ const ready = ref(false)
 const product = ref<SubscriptionProduct>()
 const subscription = ref<Subscription>()
 const populated = ref(false)
-const copied = ref(false)
 
 const emit = defineEmits(['change', 'pay-invoice'])
 
@@ -73,12 +72,6 @@ const resume = async () => {
 
 const payInvoice = (invoice: Invoice) => {
 	emit('pay-invoice', invoice)
-}
-
-const copyEmail = () => {
-	clipboardManager.write('info@innonova.ch')
-	copied.value = true
-	setTimeout(() => (copied.value = false), 1000)
 }
 
 defineExpose({

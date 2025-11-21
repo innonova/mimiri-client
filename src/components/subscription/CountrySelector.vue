@@ -22,8 +22,8 @@ const selectElement = ref<HTMLSelectElement>(undefined!)
 defineProps<{
 	disabled?: boolean
 }>()
-const code = defineModel('code')
-const name = defineModel('name')
+const code = defineModel<string>('code')
+const name = defineModel<string>('name')
 
 const countries = ref<Country[]>([])
 

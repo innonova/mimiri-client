@@ -34,6 +34,8 @@ export default defineConfigWithVueTs(
 			"vue/attribute-hyphenation": "off",
 			"vue/html-self-closing": "off",
 			"@typescript-eslint/no-explicit-any": "off",
+			"@typescript-eslint/no-empty-object-type": "off",
+			"vue/html-closing-bracket-spacing": "off",
 			"@typescript-eslint/no-unused-vars": [
 				"warn",
 				{

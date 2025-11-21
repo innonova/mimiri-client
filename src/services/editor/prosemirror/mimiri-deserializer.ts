@@ -602,11 +602,7 @@ export const deserialize = (text: string) => {
 	// console.log('tokens', tokens)
 	const tree = buildTree(tokens)
 	// console.log('tree', tree)
-	const doc2 = buildProseMirrorNode(null, tree, 0)
+	const doc = buildProseMirrorNode(null, tree, 0)
 	// console.log('des', doc2)
-
-	const doc = mimiriSchema.node('doc', null, [
-		mimiriSchema.node('paragraph', null, [mimiriSchema.text('Hello world!')]),
-	])
-	return doc2
+	return doc
 }

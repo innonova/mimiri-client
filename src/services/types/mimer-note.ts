@@ -8,7 +8,7 @@ import { persistedState } from '../persisted-state'
 import { blogManager, debug, updateManager } from '../../global'
 import { settingsManager, UpdateMode } from '../settings-manager'
 import { MimiriException, MimiriExceptionType } from './exceptions'
-import { differenceInHours, isAfter } from 'date-fns'
+import { differenceInHours } from 'date-fns'
 
 const zip = async (text: string) => {
 	return toBase64(

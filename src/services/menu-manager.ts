@@ -233,7 +233,7 @@ class MenuManager {
 				clipboardNote.value = noteManager.tree.selectedNote()
 				isCut.value = false
 			} else if (mimiriPlatform.isMacApp) {
-				;(async () => {
+				void (async () => {
 					const copyEvent = new ClipboardEvent('copy', {
 						bubbles: true,
 						cancelable: true,
@@ -251,14 +251,16 @@ class MenuManager {
 							console.error('Clipboard write failed:', err)
 						}
 					}
-				})()
+				})().catch(err => {
+					console.error('Clipboard paste failed:', err)
+				})
 			}
 		} else if (itemId === 'cut') {
 			if (document.activeElement.tagName === 'BODY' || !noteEditor.value?.$el.contains(document.activeElement)) {
 				clipboardNote.value = noteManager.tree.selectedNote()
 				isCut.value = true
 			} else if (mimiriPlatform.isMacApp) {
-				;(async () => {
+				void (async () => {
 					const copyEvent = new ClipboardEvent('cut', {
 						bubbles: true,
 						cancelable: true,
@@ -276,7 +278,9 @@ class MenuManager {
 							console.error('Clipboard write failed:', err)
 						}
 					}
-				})()
+				})().catch(err => {
+					console.error('Clipboard paste failed:', err)
+				})
 			}
 		} else if (itemId === 'paste') {
 			if (document.activeElement.tagName === 'BODY' || !noteEditor.value?.$el.contains(document.activeElement)) {
@@ -289,7 +293,7 @@ class MenuManager {
 					}
 				}
 			} else if (mimiriPlatform.isMacApp) {
-				;(async () => {
+				void (async () => {
 					const text = await navigator.clipboard.readText()
 
 					const pasteEvent = new ClipboardEvent('paste', {
@@ -300,7 +304,9 @@ class MenuManager {
 
 					pasteEvent.clipboardData.setData('text/plain', text)
 					document.activeElement.dispatchEvent(pasteEvent)
-				})()
+				})().catch(err => {
+					console.error('Clipboard paste failed:', err)
+				})
 			}
 		} else if (itemId === 'copy-path') {
 			if (noteManager.tree.selectedNote()) {

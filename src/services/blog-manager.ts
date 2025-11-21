@@ -45,7 +45,7 @@ export class BlogManager {
 			) {
 				notificationManager.blogAvailable(new Date(this.state.latestPostDate))
 			}
-		} catch (error) {
+		} catch {
 			this.state.latestPostId = emptyGuid()
 			this.state.latestPostDate = undefined
 		}

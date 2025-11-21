@@ -7,7 +7,9 @@ export const markExitPlugin = new Plugin({
 		let modified = false
 
 		transactions.forEach(transaction => {
-			if (!transaction.docChanged) return
+			if (!transaction.docChanged) {
+				return
+			}
 
 			const { $from } = newState.selection
 			const marks = $from.marks()
@@ -16,7 +18,9 @@ export const markExitPlugin = new Plugin({
 				if (step instanceof ReplaceStep && step.slice) {
 					let insertedText = ''
 					step.slice.content.forEach(node => {
-						if (node.isText) insertedText += node.text
+						if (node.isText) {
+							insertedText += node.text
+						}
 					})
 
 					if (insertedText === ' ' && marks.length > 0) {

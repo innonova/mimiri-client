@@ -34,9 +34,9 @@ const props = defineProps<{
 }>()
 
 const selectElement = ref<HTMLSelectElement>(undefined!)
-const code = defineModel('code')
-const name = defineModel('name')
-const mode = defineModel('mode')
+const code = defineModel<string>('code')
+const name = defineModel<string>('name')
+const mode = defineModel<string>('mode')
 
 const states = ref<State[]>([])
 

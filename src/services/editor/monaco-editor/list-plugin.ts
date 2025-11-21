@@ -94,9 +94,9 @@ export class ListPlugin implements EditorPlugin {
 						const listItemMatch = listItemRegex.exec(lineContent)
 						if (checkboxMatch || numberedListMatch || listItemMatch) {
 							if (e.shiftKey) {
-								this.monacoEditor.getAction('editor.action.outdentLines').run()
+								void this.monacoEditor.getAction('editor.action.outdentLines').run()
 							} else {
-								this.monacoEditor.getAction('editor.action.indentLines').run()
+								void this.monacoEditor.getAction('editor.action.indentLines').run()
 							}
 							e.stopPropagation()
 							e.preventDefault()
@@ -113,8 +113,7 @@ export class ListPlugin implements EditorPlugin {
 					const change = e.changes[0]
 					if (change.text === '' && change.range.startLineNumber !== change.range.endLineNumber) {
 						const lineCount = this.monacoEditorModel.getLineCount()
-						const prevLine = change.range.startLineNumber - 1
-						let nextLine = change.range.startLineNumber
+						const nextLine = change.range.startLineNumber
 						if (lineCount < nextLine) {
 							return
 						}

@@ -220,12 +220,12 @@ export class EditorMonaco implements TextEditor {
 			})
 		}
 
-		this.monacoEditor.onKeyUp(e => {
-			if (this._active) {
-			}
-		})
+		// this.monacoEditor.onKeyUp(e => {
+		// 	if (this._active) {
+		// 	}
+		// })
 
-		this.monacoEditorModel.onDidChangeContent(e => {
+		this.monacoEditorModel.onDidChangeContent(() => {
 			if (this._active) {
 				this._text = this.monacoEditorModel.getValue()
 				this._state.canUndo = (this.monacoEditorModel as any).canUndo()

@@ -1,4 +1,4 @@
-import { ref, watch } from 'vue'
+import { ref } from 'vue'
 import { MimiriStore } from './services/storage/mimiri-store'
 import type { ContextMenuControl } from './services/types/context-menu'
 import type { MimerNote } from './services/types/mimer-note'
