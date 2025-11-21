@@ -26,6 +26,7 @@ import { getThemeById } from './theme-manager'
 import { clipboardManager } from '../../global'
 import AutoComplete from '../../components/elements/AutoComplete.vue'
 import { getLanguageSuggestions } from './language-suggestions'
+import { CheckboxListItemView } from './prosemirror/checkbox-list-item-view'
 
 export class EditorProseMirror implements TextEditor {
 	private _domElement: HTMLElement | undefined
@@ -83,6 +84,14 @@ export class EditorProseMirror implements TextEditor {
 
 		const view = new EditorView(this._domElement, {
 			state,
+			nodeViews: {
+				list_item: (node, view, getPos) => {
+					if (node.attrs.checked !== null) {
+						return new CheckboxListItemView(node, view, getPos as () => number)
+					}
+					return undefined
+				},
+			},
 			dispatchTransaction(transaction) {
 				const newState = view.state.apply(transaction)
 				view.updateState(newState)
