@@ -1,7 +1,7 @@
 import { KeyCode, type editor } from 'monaco-editor'
 import type { EditorPlugin } from '../editor-plugin'
 
-const checkBoxListRegex = /^(?<indent>(\s*))(?<checkbox>\[(?:x| )\])(?<space>\s)/
+const checkBoxListRegex = /^(?<indent>(\s*))(?<checkbox>(?<bullet>[-\*]\s)?\[(?:x| )\])(?<space>\s)/
 const numberedListRegex = /^(?<indent>\s*)(?<number>\d+)(?<delimiter>[.)])(?<space>\s)/
 const listItemRegex = /^(?<indent>\s*)(?<symbol>[^\w\s])(?<space>\s)/
 const indentRegex = /^(?<indent>\s*)(?<content>.*)/
@@ -21,6 +21,8 @@ export class ListPlugin implements EditorPlugin {
 						const prevLine = currentLine - 1
 						const prevLineContent = this.monacoEditorModel.getLineContent(prevLine)
 
+						const currentLineContent = this.monacoEditorModel.getLineContent(currentLine)
+
 						const checkboxMatch = checkBoxListRegex.exec(prevLineContent)
 						const numberedListMatch = numberedListRegex.exec(prevLineContent)
 						const listItemMatch = listItemRegex.exec(prevLineContent)
@@ -32,7 +34,7 @@ export class ListPlugin implements EditorPlugin {
 							if (checkboxMatch[0] === prevLineContent) {
 								deletePrevLine = true
 							} else {
-								newContent = `${checkboxMatch.groups.indent}[ ] `
+								newContent = `${checkboxMatch.groups.indent}${checkboxMatch.groups.bullet}[ ] ${currentLineContent}`
 							}
 						} else if (numberedListMatch) {
 							if (numberedListMatch[0] === prevLineContent) {
@@ -40,7 +42,7 @@ export class ListPlugin implements EditorPlugin {
 							} else {
 								const itemNumber = parseInt(numberedListMatch.groups.number)
 								const newLineNumber = itemNumber + 1
-								newContent = `${numberedListMatch.groups.indent}${newLineNumber}${numberedListMatch.groups.delimiter} `
+								newContent = `${numberedListMatch.groups.indent}${newLineNumber}${numberedListMatch.groups.delimiter} ${currentLineContent}`
 								const nextLineContent = this.monacoEditorModel.getLineContent(currentLine + 1)
 								renumber = !!numberedListRegex.exec(nextLineContent)
 							}
@@ -48,7 +50,7 @@ export class ListPlugin implements EditorPlugin {
 							if (listItemMatch[0] === prevLineContent) {
 								deletePrevLine = true
 							} else {
-								newContent = listItemMatch[0]
+								newContent = `${listItemMatch[0]}${currentLineContent}`
 							}
 						}
 
@@ -245,12 +247,12 @@ export class ListPlugin implements EditorPlugin {
 							} else if (numberedListMatch) {
 								return line.replace(
 									`${numberedListMatch.groups.number}${numberedListMatch.groups.delimiter}${numberedListMatch.groups.space}`,
-									'[ ] ',
+									'- [ ] ',
 								)
 							} else if (listItemMatch) {
-								return line.replace(`${listItemMatch.groups.symbol}${listItemMatch.groups.space}`, '[ ] ')
+								return line.replace(`${listItemMatch.groups.symbol}${listItemMatch.groups.space}`, '- [ ] ')
 							}
-							return line.replace(indentRegex, (match, indent, content) => `${indent}[ ] ${content}`)
+							return line.replace(indentRegex, (match, indent, content) => `${indent}- [ ] ${content}`)
 						})
 						.join('\n')
 				} else if (action === 'insert-unordered-list') {
