@@ -1,12 +1,13 @@
 import { mimiriSchema } from './mimiri-schema'
 import type { Node } from 'prosemirror-model'
 
-const headingRegex = /^(#{1,6})\s+(.*)$/
-const listItemRegex = /^(\s*)([-*+]|\d+\.)\s+(?:(\[(?:\s|[xX])\])\s+)?(.*)$/
-const blockquoteRegex = /^(\s*)>\s?(.*)$/
-const codeBlockRegex = /^```(.*)$/
-const indentedTextRegex = /^(\s+)(\S.*)$/
-const orderedRegex = /^(\d+)\./
+const headingRegex = /^(?<hashes>#{1,6})\s+(?<content>.*)$/
+const listItemRegex = /^(?<indent>\s*)(?<marker>[-*+]|\d+\.)\s(?:(?<checkbox>\[(?:\s|[xX])\])\s+)?(?<content>.*)$/
+const nakedCheckItemRegex = /^(?<indent>\s*)(?:(?<checkbox>\[(?:\s|[xX])\])\s+)(?<content>.*)$/
+const blockquoteRegex = /^(?<indent>\s*)>\s?(?<content>.*)$/
+const codeBlockRegex = /^```(?<language>.*)$/
+const indentedTextRegex = /^(?<indent>\s+)(?<content>\S.*)$/
+const orderedRegex = /^(?<number>\d+)\./
 
 interface Token {
 	type: string
@@ -16,6 +17,7 @@ interface Token {
 	checked?: boolean
 	lineEnd: boolean
 	lineStart: boolean
+	hideListMarker?: boolean
 }
 
 interface TreeNode {
@@ -25,6 +27,7 @@ interface TreeNode {
 	value?: string
 	checked?: boolean
 	children: TreeNode[]
+	hideListMarker?: boolean
 }
 
 const indentToDepth = (indent: string) => {
@@ -319,7 +322,14 @@ const tokenize = (text: string): Token[] => {
 		let match
 
 		if ((match = codeBlockRegex.exec(line))) {
-			tokens.push({ type: 'code_block', value: match[1], lineEnd: true, lineStart: true, indent: '', depth: 0 })
+			tokens.push({
+				type: 'code_block',
+				value: match.groups.language,
+				lineEnd: true,
+				lineStart: true,
+				indent: '',
+				depth: 0,
+			})
 			inCodeBlock = !inCodeBlock
 		} else if (inCodeBlock) {
 			// If we're in a code block, treat everything as text without processing markdown
@@ -327,45 +337,57 @@ const tokenize = (text: string): Token[] => {
 		} else if ((match = headingRegex.exec(line))) {
 			tokens.push({
 				type: 'heading',
-				indent: match[1],
-				depth: indentToDepth(match[1]),
+				indent: match.groups.hashes,
+				depth: indentToDepth(match.groups.hashes),
 				lineEnd: false,
 				lineStart: true,
 			})
-			subTokenizeText(tokens, match[2], true, false)
+			subTokenizeText(tokens, match.groups.content, true, false)
 		} else if ((match = listItemRegex.exec(line))) {
-			if (match[3]) {
+			if (match.groups.checkbox) {
 				tokens.push({
 					type: 'list_item',
-					indent: match[1],
-					depth: indentToDepth(match[1]),
-					checked: match[3].toLowerCase() === '[x]',
-					value: match[2],
+					indent: match.groups.indent,
+					depth: indentToDepth(match.groups.indent),
+					checked: match.groups.checkbox.toLowerCase() === '[x]',
+					value: match.groups.marker,
 					lineEnd: false,
 					lineStart: true,
 				})
 			} else {
 				tokens.push({
 					type: 'list_item',
-					indent: match[1],
-					depth: indentToDepth(match[1]),
-					value: match[2],
+					indent: match.groups.indent,
+					depth: indentToDepth(match.groups.indent),
+					value: match.groups.marker,
 					lineEnd: false,
 					lineStart: true,
 				})
 			}
-			subTokenizeText(tokens, match[4], true, false)
+			subTokenizeText(tokens, match.groups.content, true, false)
+		} else if ((match = nakedCheckItemRegex.exec(line))) {
+			tokens.push({
+				type: 'list_item',
+				indent: match.groups.indent,
+				depth: indentToDepth(match.groups.indent),
+				checked: match.groups.checkbox.toLowerCase() === '[x]',
+				value: '-',
+				lineEnd: false,
+				lineStart: true,
+				hideListMarker: true,
+			})
+			subTokenizeText(tokens, match.groups.content, true, false)
 		} else if ((match = blockquoteRegex.exec(line))) {
 			tokens.push({
 				type: 'blockquote',
-				indent: match[1],
-				depth: indentToDepth(match[1]),
+				indent: match.groups.indent,
+				depth: indentToDepth(match.groups.indent),
 				lineEnd: false,
 				lineStart: true,
 			})
-			subTokenizeText(tokens, match[2], true, false)
+			subTokenizeText(tokens, match.groups.content, true, false)
 		} else if ((match = indentedTextRegex.exec(line))) {
-			subTokenizeText(tokens, match[0], true, true, match[1])
+			subTokenizeText(tokens, match[0], true, true, match.groups.indent)
 		} else if (line.trim() === '') {
 			tokens.push({ type: 'blank_line', lineEnd: true, lineStart: true, indent: '', depth: 0 })
 		} else {
@@ -494,6 +516,7 @@ const buildTree = (tokens: Token[]): TreeNode => {
 					indent: token.indent,
 					depth: token.depth,
 					children: [],
+					hideListMarker: token.hideListMarker,
 				}
 				pushChild(listNode)
 				stack.push(listNode)
@@ -543,9 +566,17 @@ const buildProseMirrorNode = (parent: TreeNode, treeNode: TreeNode, index: numbe
 				children,
 			)
 		case 'checkbox_item':
-			return mimiriSchema.node('list_item', { checked: treeNode.checked }, children)
+			return mimiriSchema.node(
+				'list_item',
+				{ checked: treeNode.checked, hideListMarker: treeNode.hideListMarker },
+				children,
+			)
 		case 'bullet_list':
-			return mimiriSchema.node('bullet_list', { indent: treeNode.indent }, children)
+			return mimiriSchema.node(
+				'bullet_list',
+				{ indent: treeNode.indent, hideListMarker: treeNode.hideListMarker },
+				children,
+			)
 		case 'ordered_list':
 			return mimiriSchema.node('ordered_list', { indent: treeNode.indent }, children)
 		case 'blockquote':

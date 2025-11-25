@@ -1,6 +1,6 @@
 import type { Node } from 'prosemirror-model'
 
-const serializeNode = (node: Node, depth: number, indentStyle: string): string => {
+const serializeNode = (node: Node, depth: number, indentStyle: string, hideListMarker: boolean): string => {
 	let text = ''
 	if (node.isText) {
 		if (node.marks.length > 0) {
@@ -32,7 +32,7 @@ const serializeNode = (node: Node, depth: number, indentStyle: string): string =
 		}
 	} else {
 		if (node.type.name === 'list_item') {
-			text += `${indentStyle.repeat(depth)}${node.attrs.marker ?? '-'} ${node.attrs.checked !== null ? (node.attrs.checked ? '[x] ' : '[ ] ') : ''}`
+			text += `${indentStyle.repeat(depth)}${hideListMarker ? '' : `${node.attrs.marker ?? '-'} `}${node.attrs.checked !== null ? (node.attrs.checked ? '[x] ' : '[ ] ') : ''}`
 		}
 		if (node.type.name === 'code_block') {
 			text += `\`\`\`${node.attrs.language ?? ''}\n`
@@ -47,6 +47,7 @@ const serializeNode = (node: Node, depth: number, indentStyle: string): string =
 				node.type.name === 'bullet_list' || node.type.name === 'ordered_list'
 					? (node.attrs.indent ?? indentStyle)
 					: indentStyle,
+				node.attrs.hideListMarker ?? false,
 			)
 		})
 		if (node.type.name === 'paragraph' || node.type.name === 'heading' || node.type.name === 'blockquote') {
@@ -71,7 +72,7 @@ export const serialize = (doc: Node) => {
 	// console.log(doc.type.name)
 	// console.log('serialize')
 	for (const child of doc.content.content) {
-		text += serializeNode(child, 0, doc.attrs.indent ?? '  ')
+		text += serializeNode(child, 0, doc.attrs.indent ?? '  ', false)
 	}
 	return text
 }

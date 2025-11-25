@@ -27,7 +27,7 @@ export const nodes: { [key: string]: NodeSpec } = {
 
 	bullet_list: {
 		content: 'list_item+',
-		attrs: { indent: { default: null } },
+		attrs: { indent: { default: null }, hideListMarker: { default: false } },
 		group: 'block',
 		parseDOM: [{ tag: 'ul' }],
 		toDOM() {
