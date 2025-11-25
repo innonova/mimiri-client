@@ -51,18 +51,13 @@ export class EditorMonaco implements TextEditor {
 		languages.setMonarchTokensProvider('mimiri', {
 			tokenizer: {
 				root: [
+					// Password pattern (kept in tokenizer for syntax highlighting)
 					[/(p`)([^``]+)(`)/, ['directive', 'password', 'directive']],
-					[/^(#{1,3}\s)(.*)/, ['head1', 'head1text']],
 					// Merge conflict markers
 					[/^<{7} .*$/, 'conflict-start'],
 					[/^={7}$/, 'conflict-separator'],
 					[/^>{7} .*$/, 'conflict-end'],
-					[/(___)([^_]+)(___)/, ['bolditalic', 'bolditalictext', 'bolditalic']],
-					[/(?<!_)(__)(?!_)([^_]+)(?<!_)(__)(?!_)/, ['bold', 'boldtext', 'bold']],
-					[/(?<!_)(_)(?!_)([^_]+)(?<!_)(_)(?!_)/, ['italic', 'italictext', 'italic']],
-					[/(\*{3})([^\*]+)(\*{3})/, ['bolditalic', 'bolditalictext', 'bolditalic']],
-					[/(?<!\*)(\*{2})(?!\*)([^\*]+)(?<!\*)(\*{2})(?!\*)/, ['bold', 'boldtext', 'bold']],
-					[/(?<!\*)(\*)(?!\*)([^\*]+)(?<!\*)(\*)(?!\*)/, ['italic', 'italictext', 'italic']],
+					// Code blocks with language embedding
 					[
 						/^```\s*(\w+)\s*$/,
 						{

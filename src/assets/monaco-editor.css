@@ -98,3 +98,41 @@
 .suggest-widget .suggest-icon.codicon {
 	display: none !important;
 }
+
+.monaco-editor .md-heading {
+	color: #000000;
+	font-weight: bold;
+}
+.monaco-editor.vs-dark .md-heading {
+	color: #569cd6;
+	font-weight: bold;
+}
+
+.monaco-editor .md-bold {
+	color: #000000;
+	font-weight: bold;
+}
+.monaco-editor.vs-dark .md-bold {
+	color: #569cd6;
+	font-weight: bold;
+}
+
+.monaco-editor .md-italic {
+	color: #000000;
+	font-style: italic;
+}
+.monaco-editor.vs-dark .md-italic {
+	color: #569cd6;
+	font-style: italic;
+}
+
+.monaco-editor .md-bold-italic {
+	color: #000000;
+	font-weight: bold;
+	font-style: italic;
+}
+.monaco-editor.vs-dark .md-bold-italic {
+	color: #569cd6;
+	font-weight: bold;
+	font-style: italic;
+}

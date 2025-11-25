@@ -121,6 +121,10 @@ export class InlineMarkdownPlugin implements EditorPlugin {
 			const line = model.getLineContent(lineNumber)
 			const decorations: editor.IModelDeltaDecoration[] = []
 
+			// Check for heading pattern
+			const headingMatches = this.findHeadingPatterns(line, lineNumber)
+			decorations.push(...headingMatches)
+
 			// Check for password pattern
 			const passwordMatches = this.findPasswordPatterns(line, lineNumber)
 			decorations.push(...passwordMatches)
@@ -128,6 +132,12 @@ export class InlineMarkdownPlugin implements EditorPlugin {
 			// Check for checkbox pattern
 			const checkboxMatches = this.findCheckboxPatterns(line, lineNumber)
 			decorations.push(...checkboxMatches)
+
+			// Check for bold/italic patterns (only if not in a heading)
+			if (headingMatches.length === 0) {
+				const textStyleMatches = this.findTextStylePatterns(line, lineNumber)
+				decorations.push(...textStyleMatches)
+			}
 
 			// Update decorations for this line
 			const newDecorationIds = model.deltaDecorations(oldDecorationIds, decorations)
@@ -212,6 +222,81 @@ export class InlineMarkdownPlugin implements EditorPlugin {
 					inlineClassName: 'password-delimiter',
 				},
 			})
+		}
+
+		return decorations
+	}
+
+	private findHeadingPatterns(line: string, lineNumber: number): editor.IModelDeltaDecoration[] {
+		const decorations: editor.IModelDeltaDecoration[] = []
+		const regex = /^(#{1,3}\s)(.*)/
+		const match = regex.exec(line)
+
+		if (match) {
+			const startCol = match.index + 1
+			const fullLength = match[0].length
+
+			// Entire heading line
+			decorations.push({
+				range: {
+					startLineNumber: lineNumber,
+					startColumn: startCol,
+					endLineNumber: lineNumber,
+					endColumn: startCol + fullLength,
+				},
+				options: {
+					inlineClassName: 'md-heading',
+				},
+			})
+
+			// Apply text style decorations within the heading text
+			const headingText = match[2]
+			const headingStartCol = startCol + match[1].length
+			const textStyleDecorations = this.findTextStylePatterns(headingText, lineNumber, headingStartCol)
+			decorations.push(...textStyleDecorations)
+		}
+
+		return decorations
+	}
+
+	private findTextStylePatterns(line: string, lineNumber: number, offset: number = 0): editor.IModelDeltaDecoration[] {
+		const decorations: editor.IModelDeltaDecoration[] = []
+
+		// Define patterns in order of precedence (longest matches first)
+		const patterns = [
+			// Bold+Italic with underscores
+			{ regex: /___([^_]+)___/g, className: 'md-bold-italic' },
+			// Bold+Italic with asterisks
+			{ regex: /\*{3}([^\*]+)\*{3}/g, className: 'md-bold-italic' },
+			// Bold with underscores
+			{ regex: /(?<!_)__(?!_)([^_]+)(?<!_)__(?!_)/g, className: 'md-bold' },
+			// Bold with asterisks
+			{ regex: /(?<!\*)\*{2}(?!\*)([^\*]+)(?<!\*)\*{2}(?!\*)/g, className: 'md-bold' },
+			// Italic with underscores
+			{ regex: /(?<!_)_(?!_)([^_]+)(?<!_)_(?!_)/g, className: 'md-italic' },
+			// Italic with asterisks
+			{ regex: /(?<!\*)\*(?!\*)([^\*]+)(?<!\*)\*(?!\*)/g, className: 'md-italic' },
+		]
+
+		for (const pattern of patterns) {
+			let match: RegExpExecArray | null
+			while ((match = pattern.regex.exec(line)) !== null) {
+				const startCol = match.index + 1 + offset
+				const fullLength = match[0].length
+
+				// Entire styled text with delimiters
+				decorations.push({
+					range: {
+						startLineNumber: lineNumber,
+						startColumn: startCol,
+						endLineNumber: lineNumber,
+						endColumn: startCol + fullLength,
+					},
+					options: {
+						inlineClassName: pattern.className,
+					},
+				})
+			}
 		}
 
 		return decorations
