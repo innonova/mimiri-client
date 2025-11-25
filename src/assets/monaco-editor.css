@@ -136,3 +136,54 @@
 	font-weight: bold;
 	font-style: italic;
 }
+
+/* Conflict block styling - Local vs Server */
+.monaco-editor .conflict-marker-line {
+	background-color: #eeeeee;
+	font-weight: bold;
+	mix-blend-mode: multiply;
+}
+.monaco-editor.vs-dark .conflict-marker-line {
+	background-color: #8f8f8f;
+	font-weight: bold;
+	mix-blend-mode: hard-light;
+}
+
+.monaco-editor .conflict-marker-start {
+	color: #1976d2;
+}
+.monaco-editor.vs-dark .conflict-marker-start {
+	color: #64b5f6;
+}
+
+.monaco-editor .conflict-marker-separator {
+	color: #757575;
+}
+.monaco-editor.vs-dark .conflict-marker-separator {
+	color: #9e9e9e;
+}
+
+.monaco-editor .conflict-marker-end {
+	color: #7b1fa2;
+}
+.monaco-editor.vs-dark .conflict-marker-end {
+	color: #ba68c8;
+}
+
+.monaco-editor .conflict-current-line {
+	background-color: #e3f2fd;
+	mix-blend-mode: multiply;
+}
+.monaco-editor.vs-dark .conflict-current-line {
+	background-color: #888888;
+	mix-blend-mode: hard-light;
+}
+
+.monaco-editor .conflict-incoming-line {
+	background-color: #f3e5f5;
+	mix-blend-mode: multiply;
+}
+.monaco-editor.vs-dark .conflict-incoming-line {
+	background-color: #888888;
+	mix-blend-mode: hard-light;
+}

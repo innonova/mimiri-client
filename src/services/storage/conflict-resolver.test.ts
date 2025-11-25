@@ -184,9 +184,9 @@ describe('ConflictResolver', () => {
 			expect(textItem.mergeType).toBe('merged')
 
 			// Should contain conflict markers
-			expect(textItem.data.text).toContain('<<<<<<< HEAD')
+			expect(textItem.data.text).toContain('<<<<<<< Local')
 			expect(textItem.data.text).toContain('=======')
-			expect(textItem.data.text).toContain('>>>>>>> remote')
+			expect(textItem.data.text).toContain('>>>>>>> Server')
 			expect(textItem.data.text).toContain('Local changed line')
 			expect(textItem.data.text).toContain('Remote changed line')
 
@@ -216,9 +216,9 @@ describe('ConflictResolver', () => {
 			expect(textItem.data.text).toBe('Line 1\nLine 2\nLine 3 modified\nLine 4\nLine 5')
 
 			// Should not contain conflict markers
-			expect(textItem.data.text).not.toContain('<<<<<<< HEAD')
+			expect(textItem.data.text).not.toContain('<<<<<<< Local')
 			expect(textItem.data.text).not.toContain('=======')
-			expect(textItem.data.text).not.toContain('>>>>>>> remote')
+			expect(textItem.data.text).not.toContain('>>>>>>> Server')
 		})
 
 		it('should auto-resolve when one side only adds content at the end', () => {
@@ -236,7 +236,7 @@ describe('ConflictResolver', () => {
 			expect(textItem.data.text).toBe('Line 1\nLine 2\nAdded line 3\nAdded line 4')
 
 			// Should not contain conflict markers
-			expect(textItem.data.text).not.toContain('<<<<<<< HEAD')
+			expect(textItem.data.text).not.toContain('<<<<<<< Local')
 		})
 
 		it('should create conflict when both sides extend and modify overlapping areas', () => {
@@ -254,9 +254,9 @@ describe('ConflictResolver', () => {
 			expect(textItem).toBeDefined()
 
 			// This should create conflict markers since it's ambiguous
-			expect(textItem.data.text).toContain('<<<<<<< HEAD')
+			expect(textItem.data.text).toContain('<<<<<<< Local')
 			expect(textItem.data.text).toContain('=======')
-			expect(textItem.data.text).toContain('>>>>>>> remote')
+			expect(textItem.data.text).toContain('>>>>>>> Server')
 		})
 
 		it('should auto-resolve when one modifies middle line and other adds at end', () => {
@@ -274,7 +274,7 @@ describe('ConflictResolver', () => {
 			expect(textItem.data.text).toBe('Line 1\nLine 2 modified\nLine 3\nAdded line 4')
 
 			// Should not contain conflict markers
-			expect(textItem.data.text).not.toContain('<<<<<<< HEAD')
+			expect(textItem.data.text).not.toContain('<<<<<<< Local')
 		})
 
 		it('should preserve trailing empty lines during smart resolution', () => {
@@ -307,9 +307,9 @@ describe('ConflictResolver', () => {
 			expect(textItem.mergeType).toBe('merged')
 
 			// Should contain conflict markers for genuine conflicts
-			expect(textItem.data.text).toContain('<<<<<<< HEAD')
+			expect(textItem.data.text).toContain('<<<<<<< Local')
 			expect(textItem.data.text).toContain('=======')
-			expect(textItem.data.text).toContain('>>>>>>> remote')
+			expect(textItem.data.text).toContain('>>>>>>> Server')
 			expect(textItem.data.text).toContain('Line 2 local change')
 			expect(textItem.data.text).toContain('Line 2 remote change')
 		})
@@ -343,7 +343,7 @@ describe('ConflictResolver', () => {
 			const textItem = result.items.find(item => item.type === 'text') as MergeableTextItem
 			expect(textItem).toBeDefined()
 			expect(textItem.data.text).toBe('Hello modified world\nAdded second line')
-			expect(textItem.data.text).not.toContain('<<<<<<< HEAD')
+			expect(textItem.data.text).not.toContain('<<<<<<< Local')
 		})
 	})
 
@@ -366,7 +366,7 @@ describe('ConflictResolver', () => {
 				expect(textItem.mergeType).toBe('merged')
 
 				// Should have conflict markers but they should be coalesced into fewer blocks
-				const conflictMarkerCount = (textItem.data.text.match(/<<<<<<< HEAD/g) || []).length
+				const conflictMarkerCount = (textItem.data.text.match(/<<<<<<< Local/g) || []).length
 				expect(conflictMarkerCount).toBe(1) // Should be coalesced into a single conflict
 
 				// Both shared lines should appear in both sides of the conflict
@@ -388,7 +388,7 @@ describe('ConflictResolver', () => {
 				const textItem = result.items.find(item => item.type === 'text') as MergeableTextItem
 				expect(textItem).toBeDefined()
 
-				const conflictMarkerCount = (textItem.data.text.match(/<<<<<<< HEAD/g) || []).length
+				const conflictMarkerCount = (textItem.data.text.match(/<<<<<<< Local/g) || []).length
 				expect(conflictMarkerCount).toBe(1) // Should be coalesced
 			})
 
@@ -406,7 +406,7 @@ describe('ConflictResolver', () => {
 				const textItem = result.items.find(item => item.type === 'text') as MergeableTextItem
 				expect(textItem).toBeDefined()
 
-				const conflictMarkerCount = (textItem.data.text.match(/<<<<<<< HEAD/g) || []).length
+				const conflictMarkerCount = (textItem.data.text.match(/<<<<<<< Local/g) || []).length
 				expect(conflictMarkerCount).toBe(1) // Should be coalesced at the limit
 			})
 
@@ -424,7 +424,7 @@ describe('ConflictResolver', () => {
 				const textItem = result.items.find(item => item.type === 'text') as MergeableTextItem
 				expect(textItem).toBeDefined()
 
-				const conflictMarkerCount = (textItem.data.text.match(/<<<<<<< HEAD/g) || []).length
+				const conflictMarkerCount = (textItem.data.text.match(/<<<<<<< Local/g) || []).length
 				expect(conflictMarkerCount).toBe(1) // All conflicts should be coalesced
 			})
 
@@ -442,7 +442,7 @@ describe('ConflictResolver', () => {
 				const textItem = result.items.find(item => item.type === 'text') as MergeableTextItem
 				expect(textItem).toBeDefined()
 
-				const conflictMarkerCount = (textItem.data.text.match(/<<<<<<< HEAD/g) || []).length
+				const conflictMarkerCount = (textItem.data.text.match(/<<<<<<< Local/g) || []).length
 				expect(conflictMarkerCount).toBe(1) // Should be coalesced
 			})
 		})
@@ -462,7 +462,7 @@ describe('ConflictResolver', () => {
 				const textItem = result.items.find(item => item.type === 'text') as MergeableTextItem
 				expect(textItem).toBeDefined()
 
-				const conflictMarkerCount = (textItem.data.text.match(/<<<<<<< HEAD/g) || []).length
+				const conflictMarkerCount = (textItem.data.text.match(/<<<<<<< Local/g) || []).length
 				expect(conflictMarkerCount).toBe(2) // Should remain as separate conflicts
 			})
 
@@ -480,7 +480,7 @@ describe('ConflictResolver', () => {
 				const textItem = result.items.find(item => item.type === 'text') as MergeableTextItem
 				expect(textItem).toBeDefined()
 
-				const conflictMarkerCount = (textItem.data.text.match(/<<<<<<< HEAD/g) || []).length
+				const conflictMarkerCount = (textItem.data.text.match(/<<<<<<< Local/g) || []).length
 				expect(conflictMarkerCount).toBe(2) // Should remain as separate conflicts
 			})
 
@@ -498,7 +498,7 @@ describe('ConflictResolver', () => {
 				const textItem = result.items.find(item => item.type === 'text') as MergeableTextItem
 				expect(textItem).toBeDefined()
 
-				const conflictMarkerCount = (textItem.data.text.match(/<<<<<<< HEAD/g) || []).length
+				const conflictMarkerCount = (textItem.data.text.match(/<<<<<<< Local/g) || []).length
 				expect(conflictMarkerCount).toBe(1) // Single conflict, not coalesced
 			})
 
@@ -516,7 +516,7 @@ describe('ConflictResolver', () => {
 				const textItem = result.items.find(item => item.type === 'text') as MergeableTextItem
 				expect(textItem).toBeDefined()
 
-				const conflictMarkerCount = (textItem.data.text.match(/<<<<<<< HEAD/g) || []).length
+				const conflictMarkerCount = (textItem.data.text.match(/<<<<<<< Local/g) || []).length
 				expect(conflictMarkerCount).toBe(1) // Single conflict
 			})
 
@@ -537,7 +537,7 @@ describe('ConflictResolver', () => {
 				const textItem = result.items.find(item => item.type === 'text') as MergeableTextItem
 				expect(textItem).toBeDefined()
 
-				const conflictMarkerCount = (textItem.data.text.match(/<<<<<<< HEAD/g) || []).length
+				const conflictMarkerCount = (textItem.data.text.match(/<<<<<<< Local/g) || []).length
 				expect(conflictMarkerCount).toBe(2) // Should remain as separate conflicts
 
 				// Verify the shared content appears between conflicts
@@ -561,7 +561,7 @@ describe('ConflictResolver', () => {
 				expect(textItem).toBeDefined()
 
 				// This should create a single conflict, not multiple to coalesce
-				const conflictMarkerCount = (textItem.data.text.match(/<<<<<<< HEAD/g) || []).length
+				const conflictMarkerCount = (textItem.data.text.match(/<<<<<<< Local/g) || []).length
 				expect(conflictMarkerCount).toBe(1) // Single conflict, not coalesced
 			})
 		})
@@ -585,7 +585,7 @@ describe('ConflictResolver', () => {
 				const textItem = result.items.find(item => item.type === 'text') as MergeableTextItem
 				expect(textItem).toBeDefined()
 
-				const conflictMarkerCount = (textItem.data.text.match(/<<<<<<< HEAD/g) || []).length
+				const conflictMarkerCount = (textItem.data.text.match(/<<<<<<< Local/g) || []).length
 				expect(conflictMarkerCount).toBe(2) // First two coalesced, third separate
 			})
 
@@ -603,7 +603,7 @@ describe('ConflictResolver', () => {
 				const textItem = result.items.find(item => item.type === 'text') as MergeableTextItem
 				expect(textItem).toBeDefined()
 				expect(textItem.data.text).toBe(baseText)
-				expect(textItem.data.text).not.toContain('<<<<<<< HEAD')
+				expect(textItem.data.text).not.toContain('<<<<<<< Local')
 			})
 
 			it('should preserve coalesced conflict content correctly', () => {
@@ -628,7 +628,7 @@ describe('ConflictResolver', () => {
 				expect(textItem.data.text).toContain('Shared')
 
 				// Should have single conflict marker set
-				const conflictMarkerCount = (textItem.data.text.match(/<<<<<<< HEAD/g) || []).length
+				const conflictMarkerCount = (textItem.data.text.match(/<<<<<<< Local/g) || []).length
 				expect(conflictMarkerCount).toBe(1)
 			})
 		})
@@ -651,15 +651,15 @@ describe('ConflictResolver', () => {
 			expect(textItem.mergeType).toBe('merged')
 
 			// Should not have the shared blank line in the conflict markers
-			expect(textItem.data.text).not.toMatch(/<<<<<<< HEAD\n\n/)
+			expect(textItem.data.text).not.toMatch(/<<<<<<< Local\n\n/)
 			expect(textItem.data.text).not.toMatch(/=======\n\n/)
 
 			// But should still contain the conflict content
 			expect(textItem.data.text).toContain('Local development settings')
 			expect(textItem.data.text).toContain('Production overrides')
-			expect(textItem.data.text).toContain('<<<<<<< HEAD')
+			expect(textItem.data.text).toContain('<<<<<<< Local')
 			expect(textItem.data.text).toContain('=======')
-			expect(textItem.data.text).toContain('>>>>>>> remote')
+			expect(textItem.data.text).toContain('>>>>>>> Server')
 		})
 
 		it('should remove shared suffix lines from conflict markers', () => {
@@ -678,7 +678,7 @@ describe('ConflictResolver', () => {
 			expect(textItem.mergeType).toBe('merged')
 
 			// Should not have the shared blank line at the end of conflict markers
-			expect(textItem.data.text).not.toMatch(/=======\n.*\n\n>>>>>>> remote/)
+			expect(textItem.data.text).not.toMatch(/=======\n.*\n\n>>>>>>> Server/)
 
 			// But should still contain the conflict content
 			expect(textItem.data.text).toContain('debug: true')
@@ -701,8 +701,8 @@ describe('ConflictResolver', () => {
 			expect(textItem.mergeType).toBe('merged')
 
 			// Should not have shared blank lines in conflict markers
-			expect(textItem.data.text).not.toMatch(/<<<<<<< HEAD\n\n/)
-			expect(textItem.data.text).not.toMatch(/\n\n>>>>>>> remote/)
+			expect(textItem.data.text).not.toMatch(/<<<<<<< Local\n\n/)
+			expect(textItem.data.text).not.toMatch(/\n\n>>>>>>> Server/)
 
 			// Should contain the actual differing content
 			expect(textItem.data.text).toContain('debug: true')
@@ -723,7 +723,7 @@ describe('ConflictResolver', () => {
 			const textItem = result.items.find(item => item.type === 'text') as MergeableTextItem
 			expect(textItem).toBeDefined()
 			expect(textItem.data.text).toBe('\nshared content\n')
-			expect(textItem.data.text).not.toContain('<<<<<<< HEAD')
+			expect(textItem.data.text).not.toContain('<<<<<<< Local')
 		})
 	})
 })
