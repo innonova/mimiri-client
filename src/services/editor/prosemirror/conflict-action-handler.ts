@@ -4,9 +4,21 @@ import { EditorState } from 'prosemirror-state'
 import { mimiriSchema } from './mimiri-schema'
 import { deserialize } from './mimiri-deserializer'
 import { serialize } from './mimiri-serializer'
+import type ConflictBanner from '../../../components/elements/ConflictBanner.vue'
 
 export class ConflictActionHandler {
-	constructor(private onConflictResolved: () => void) {}
+	private _conflictPositions: number[] = []
+	private _currentConflictIndex = 0
+	private _editorView: EditorView | null = null
+
+	constructor(private _conflictBanner: InstanceType<typeof ConflictBanner> | null) {}
+
+	/**
+	 * Set the editor view reference (called after editor is created)
+	 */
+	setEditorView(view: EditorView): void {
+		this._editorView = view
+	}
 
 	/**
 	 * Handle conflict block actions
@@ -162,7 +174,7 @@ export class ConflictActionHandler {
 			}
 
 			// Update banner (either hide it or update count)
-			this.onConflictResolved()
+			this.updateBanner()
 		}, 0)
 	}
 
@@ -234,5 +246,81 @@ export class ConflictActionHandler {
 		}
 
 		return text
+	}
+
+	/**
+	 * Update the conflict banner with current conflict count and position
+	 */
+	public updateBanner(): void {
+		if (!this._conflictBanner || !this._editorView) {
+			return
+		}
+
+		// Find all conflict block positions
+		this._conflictPositions = []
+		this._editorView.state.doc.descendants((node, pos) => {
+			if (node.type.name === 'conflict_block') {
+				this._conflictPositions.push(pos)
+			}
+		})
+
+		const conflictCount = this._conflictPositions.length
+		const wasHidden = !this._conflictBanner.isVisible
+
+		// Ensure current index is valid
+		if (this._currentConflictIndex >= conflictCount) {
+			this._currentConflictIndex = 0
+		}
+
+		// Update the Vue component
+		if (conflictCount === 0) {
+			this._conflictBanner.hide()
+		} else {
+			this._conflictBanner.update(conflictCount, this._currentConflictIndex)
+			this._conflictBanner.show()
+		}
+
+		// Auto-scroll to first conflict if banner just appeared
+		if (wasHidden && conflictCount > 0) {
+			setTimeout(() => this.scrollToCurrentConflict(), 100)
+		}
+	}
+
+	/**
+	 * Navigate to the next or previous conflict
+	 */
+	public navigateConflict(direction: 'prev' | 'next'): void {
+		if (this._conflictPositions.length === 0) {
+			return
+		}
+
+		if (direction === 'next') {
+			this._currentConflictIndex = (this._currentConflictIndex + 1) % this._conflictPositions.length
+		} else {
+			this._currentConflictIndex =
+				(this._currentConflictIndex - 1 + this._conflictPositions.length) % this._conflictPositions.length
+		}
+
+		// Scroll to the conflict and update banner
+		this.scrollToCurrentConflict()
+		this.updateBanner()
+	}
+
+	private scrollToCurrentConflict(): void {
+		if (this._conflictPositions.length === 0 || !this._editorView) {
+			return
+		}
+
+		const pos = this._conflictPositions[this._currentConflictIndex]
+		const coords = this._editorView.coordsAtPos(pos)
+
+		// Scroll with some offset from top
+		const editorRect = this._editorView.dom.getBoundingClientRect()
+		const scrollOffset = coords.top - editorRect.top - 100 // 100px from top
+
+		this._editorView.dom.scrollBy({
+			top: scrollOffset,
+			behavior: 'smooth',
+		})
 	}
 }

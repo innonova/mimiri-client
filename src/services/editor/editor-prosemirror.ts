@@ -30,7 +30,7 @@ import { Plugin } from 'prosemirror-state'
 import { Node as ProseMirrorNode } from 'prosemirror-model'
 import { CodeBlockActionHandler } from './prosemirror/code-block-action-handler'
 import { ConflictActionHandler } from './prosemirror/conflict-action-handler'
-import ConflictBanner from '../../components/elements/ConflictBanner.vue'
+import type ConflictBanner from '../../components/elements/ConflictBanner.vue'
 
 // Plugin to make editor read-only during conflict resolution
 const conflictReadOnlyPlugin = new Plugin({
@@ -52,7 +52,6 @@ const conflictReadOnlyPlugin = new Plugin({
 
 export class EditorProseMirror implements TextEditor {
 	private _domElement: HTMLElement | undefined
-	private _conflictBanner: InstanceType<typeof ConflictBanner> | null = null
 	private _autoComplete: InstanceType<typeof AutoComplete> | undefined
 	private _history: HTMLDivElement | undefined
 	private lastScrollTop: number
@@ -69,8 +68,6 @@ export class EditorProseMirror implements TextEditor {
 		canUnMarkAsPassword: false,
 	}
 	private _editor: EditorView | undefined
-	private _currentConflictIndex = 0
-	private _conflictPositions: number[] = []
 	private _codeBlockActionHandler: CodeBlockActionHandler | undefined
 	private _conflictActionHandler: ConflictActionHandler | undefined
 
@@ -83,12 +80,11 @@ export class EditorProseMirror implements TextEditor {
 	) {
 		this._domElement = domElement
 		this._autoComplete = autoComplete
-		this._conflictBanner = conflictBanner
 		this._domElement.style.display = this._active ? 'flex' : 'none'
 
 		// Initialize action handlers
 		this._codeBlockActionHandler = new CodeBlockActionHandler(clipboardManager, this._autoComplete, this._domElement)
-		this._conflictActionHandler = new ConflictActionHandler(() => this.updateConflictBanner())
+		this._conflictActionHandler = new ConflictActionHandler(conflictBanner)
 
 		await initHighlighter()
 
@@ -200,6 +196,7 @@ export class EditorProseMirror implements TextEditor {
 			// },
 		})
 		this._editor = view
+		this._conflictActionHandler?.setEditorView(view)
 	}
 
 	/**
@@ -277,69 +274,8 @@ export class EditorProseMirror implements TextEditor {
 		}
 	}
 
-	private updateConflictBanner() {
-		if (!this._conflictBanner || !this._editor) {
-			return
-		}
-
-		// Find all conflict block positions
-		this._conflictPositions = []
-		this._editor.state.doc.descendants((node, pos) => {
-			if (node.type.name === 'conflict_block') {
-				this._conflictPositions.push(pos)
-			}
-		})
-
-		const conflictCount = this._conflictPositions.length
-		const wasHidden = !this._conflictBanner.isVisible
-
-		// Ensure current index is valid
-		if (this._currentConflictIndex >= conflictCount) {
-			this._currentConflictIndex = 0
-		}
-
-		// Update the Vue component
-		this._conflictBanner.update(conflictCount, this._currentConflictIndex)
-
-		// Auto-scroll to first conflict if banner just appeared
-		if (wasHidden && conflictCount > 0) {
-			setTimeout(() => this.scrollToCurrentConflict(), 100)
-		}
-	}
-
-	private scrollToCurrentConflict() {
-		if (this._conflictPositions.length === 0 || !this._editor) {
-			return
-		}
-
-		const pos = this._conflictPositions[this._currentConflictIndex]
-		const coords = this._editor.coordsAtPos(pos)
-
-		// Scroll with some offset from top
-		const editorRect = this._editor.dom.getBoundingClientRect()
-		const scrollOffset = coords.top - editorRect.top - 100 // 100px from top
-
-		this._editor.dom.scrollBy({
-			top: scrollOffset,
-			behavior: 'smooth',
-		})
-	}
-
 	public navigateConflict(direction: 'prev' | 'next') {
-		if (this._conflictPositions.length === 0) {
-			return
-		}
-
-		if (direction === 'next') {
-			this._currentConflictIndex = (this._currentConflictIndex + 1) % this._conflictPositions.length
-		} else {
-			this._currentConflictIndex =
-				(this._currentConflictIndex - 1 + this._conflictPositions.length) % this._conflictPositions.length
-		}
-
-		// Scroll to the conflict and update banner
-		this.scrollToCurrentConflict()
-		this.updateConflictBanner()
+		this._conflictActionHandler?.navigateConflict(direction)
 	}
 
 	public show(text: string, _scrollTop: number) {
@@ -355,7 +291,7 @@ export class EditorProseMirror implements TextEditor {
 
 		// Update conflict banner
 		setTimeout(() => {
-			this.updateConflictBanner()
+			this._conflictActionHandler?.updateBanner()
 			this.updateUndoRedoState()
 		}, 0)
 
@@ -378,7 +314,7 @@ export class EditorProseMirror implements TextEditor {
 		this._editor.updateState(newState)
 
 		setTimeout(() => {
-			this.updateConflictBanner()
+			this._conflictActionHandler?.updateBanner()
 			this.updateUndoRedoState()
 		}, 0)
 

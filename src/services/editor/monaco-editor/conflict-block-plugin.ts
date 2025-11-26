@@ -2,6 +2,7 @@ import { editor, languages, type IDisposable, type IRange } from 'monaco-editor'
 import { Debounce } from '../../helpers'
 import type { EditorPlugin } from '../editor-plugin'
 import { MimiriCodeLensProvider, type MimiriCodeLensItem } from './mimiri-code-lens-provider'
+import ConflictBanner from '../../../components/elements/ConflictBanner.vue'
 
 interface ConflictBlockState {
 	start: number // <<<<<<< Local line number
@@ -22,13 +23,13 @@ export class ConflictBlockPlugin implements EditorPlugin {
 	private acceptBothCommandId: string
 	private codeLensProvider: MimiriCodeLensProvider
 	private _currentConflictIndex: number = 0
-	private _onConflictStateChanged: ((count: number, currentIndex: number) => void) | null = null
+	private _conflictBanner: InstanceType<typeof ConflictBanner> | null = null
 
 	constructor(
 		private monacoEditor: editor.IStandaloneCodeEditor,
-		onConflictStateChanged?: (count: number, currentIndex: number) => void,
+		conflictBanner: InstanceType<typeof ConflictBanner> | null,
 	) {
-		this._onConflictStateChanged = onConflictStateChanged ?? null
+		this._conflictBanner = conflictBanner
 		this.monacoEditorModel = this.monacoEditor.getModel()
 
 		// Command: Accept Local changes
@@ -505,23 +506,24 @@ export class ConflictBlockPlugin implements EditorPlugin {
 
 	private refreshCodeLens(): void {
 		this.codeLensProvider.refresh()
-		this.notifyConflictStateChanged()
+		this.updateConflictBanner()
 	}
 
-	private notifyConflictStateChanged(): void {
-		if (this._onConflictStateChanged) {
-			// Ensure index is valid
-			if (this._currentConflictIndex >= this.conflictBlockStates.length) {
-				this._currentConflictIndex = 0
-			}
-			this._onConflictStateChanged(this.conflictBlockStates.length, this._currentConflictIndex)
+	private updateConflictBanner(): void {
+		if (!this._conflictBanner) {
+			return
 		}
-	}
-
-	public setOnConflictStateChanged(callback: (count: number, currentIndex: number) => void): void {
-		this._onConflictStateChanged = callback
-		// Immediately notify with current state
-		this.notifyConflictStateChanged()
+		// Ensure index is valid
+		if (this._currentConflictIndex >= this.conflictBlockStates.length) {
+			this._currentConflictIndex = 0
+		}
+		const count = this.conflictBlockStates.length
+		if (count === 0) {
+			this._conflictBanner.hide()
+		} else {
+			this._conflictBanner.update(count, this._currentConflictIndex)
+			this._conflictBanner.show()
+		}
 	}
 
 	public navigateConflict(direction: 'prev' | 'next'): void {
@@ -542,7 +544,7 @@ export class ConflictBlockPlugin implements EditorPlugin {
 			this.monacoEditor.revealLineInCenter(block.start)
 		}
 
-		this.notifyConflictStateChanged()
+		this.updateConflictBanner()
 	}
 
 	public get conflictCount(): number {
