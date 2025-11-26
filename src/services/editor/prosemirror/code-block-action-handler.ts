@@ -27,6 +27,8 @@ export class CodeBlockActionHandler {
 				return this.handleSelectBlock(view, node, nodePos)
 			case 'copy-next-line':
 				return this.handleCopyNextLine(view, node, nodePos)
+			case 'unwrap-block':
+				return this.handleUnwrapBlock(view, node, nodePos)
 			case 'choose-language':
 				return this.handleChooseLanguage(view, node, nodePos)
 			default:
@@ -37,6 +39,16 @@ export class CodeBlockActionHandler {
 	private handleCopyBlock(node: Node): boolean {
 		const text = node.textContent
 		this.clipboardManager.write(text.replace(/p`([^`]+)`/g, '$1'))
+		return true
+	}
+
+	private handleUnwrapBlock(view: EditorView, node: Node, nodePos: number): boolean {
+		const tr = view.state.tr.replaceWith(
+			nodePos,
+			nodePos + node.nodeSize,
+			view.state.schema.nodes.paragraph.create({}, node.content),
+		)
+		view.dispatch(tr)
 		return true
 	}
 

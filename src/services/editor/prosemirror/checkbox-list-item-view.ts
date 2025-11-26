@@ -66,6 +66,14 @@ export class CheckboxListItemView implements NodeView {
 			return false
 		}
 
+		// If checked state changed between null and non-null, we need to rebuild
+		// the entire view (checkbox needs to be added or removed)
+		const wasCheckbox = this.node.attrs.checked !== null
+		const isCheckbox = node.attrs.checked !== null
+		if (wasCheckbox !== isCheckbox) {
+			return false // Tell ProseMirror to recreate the node view
+		}
+
 		this.node = node
 
 		// Update checkbox state if it exists

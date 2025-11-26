@@ -447,7 +447,12 @@ const tokenize = (text: string, safeMode: boolean = false): Token[] => {
 			})
 		} else if (inCodeBlock) {
 			// If we're in a code block, treat everything as text without processing markdown
-			subTokenizeText(tokens, line, true, true, '', true)
+			if (line === '') {
+				// Preserve blank lines in code blocks
+				tokens.push({ type: 'blank_line', lineEnd: true, lineStart: true, indent: '', depth: 0 })
+			} else {
+				subTokenizeText(tokens, line, true, true, '', true)
+			}
 		} else if ((match = headingRegex.exec(line))) {
 			tokens.push({
 				type: 'heading',
@@ -612,18 +617,36 @@ const buildTree = (tokens: Token[]): TreeNode => {
 			}
 			pushChild(node)
 		} else if (token.type === 'list_item') {
-			if (parentType() === 'list_item' && token.depth === parentDepth()) {
-				stack.pop()
-			}
-			if (parentType() === 'list_item' && token.depth < parentDepth()) {
-				while (
-					stack.length > 1 &&
-					isParent('list_item', 'bullet_list', 'ordered_list') &&
-					parentDepth() >= token.depth
-				) {
-					stack.pop()
+			// Pop back to the correct level in the list hierarchy
+			// We need to find the right parent list for this item's depth
+
+			// First, pop any list_item at the same or greater depth
+			if (parentType() === 'list_item' && token.depth <= parentDepth()) {
+				// Pop back through the stack until we find the right level
+				while (stack.length > 1 && isParent('list_item', 'bullet_list', 'ordered_list')) {
+					const parent = stack[stack.length - 1]
+
+					if (parent.type === 'list_item') {
+						// Pop list items that are at same or deeper level
+						if (parent.depth >= token.depth) {
+							stack.pop()
+						} else {
+							break
+						}
+					} else if (parent.type === 'bullet_list' || parent.type === 'ordered_list') {
+						// Pop lists that are at deeper level than our target
+						if (parent.depth > token.depth) {
+							stack.pop()
+						} else {
+							// Found a list at our level or shallower - stop here
+							break
+						}
+					} else {
+						break
+					}
 				}
 			}
+
 			if (!isParent('bullet_list', 'ordered_list')) {
 				const listNode: TreeNode = {
 					type: orderedRegex.test(token.value) ? 'ordered_list' : 'bullet_list',

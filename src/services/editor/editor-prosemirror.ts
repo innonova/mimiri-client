@@ -31,6 +31,7 @@ import { Node as ProseMirrorNode } from 'prosemirror-model'
 import { CodeBlockActionHandler } from './prosemirror/code-block-action-handler'
 import { ConflictActionHandler } from './prosemirror/conflict-action-handler'
 import type ConflictBanner from '../../components/elements/ConflictBanner.vue'
+import { executeFormatAction } from './prosemirror/format-commands'
 
 // Plugin to make editor read-only during conflict resolution
 const conflictReadOnlyPlugin = new Plugin({
@@ -142,6 +143,7 @@ export class EditorProseMirror implements TextEditor {
 						action === 'copy-block' ||
 						action === 'select-block' ||
 						action === 'copy-next-line' ||
+						action === 'unwrap-block' ||
 						action === 'choose-language' ||
 						action === 'keep-local' ||
 						action === 'keep-server' ||
@@ -256,7 +258,12 @@ export class EditorProseMirror implements TextEditor {
 
 	public markSelectionAsPassword() {}
 
-	public executeFormatAction(_action: string) {}
+	public executeFormatAction(action: string) {
+		if (!this._editor) {
+			return
+		}
+		executeFormatAction(this._editor.state, this._editor.dispatch.bind(this._editor), action)
+	}
 
 	public get active(): boolean {
 		return this._active
@@ -456,6 +463,7 @@ export class EditorProseMirror implements TextEditor {
 	public focus() {
 		if (!this.historyShowing) {
 		}
+		this._editor?.focus()
 	}
 
 	public selectAll() {
