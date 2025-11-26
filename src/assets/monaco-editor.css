@@ -171,19 +171,15 @@
 }
 
 .monaco-editor .conflict-current-line {
-	background-color: #e3f2fd;
-	mix-blend-mode: multiply;
+	background-color: rgba(21, 101, 192, 0.2);
 }
 .monaco-editor.vs-dark .conflict-current-line {
-	background-color: #888888;
-	mix-blend-mode: hard-light;
+	background-color: rgba(21, 101, 192, 0.2);
 }
 
 .monaco-editor .conflict-incoming-line {
-	background-color: #f3e5f5;
-	mix-blend-mode: multiply;
+	background-color: rgba(106, 27, 154, 0.2);
 }
 .monaco-editor.vs-dark .conflict-incoming-line {
-	background-color: #888888;
-	mix-blend-mode: hard-light;
+	background-color: rgba(106, 27, 154, 0.2);
 }

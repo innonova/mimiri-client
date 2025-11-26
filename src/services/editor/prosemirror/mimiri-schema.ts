@@ -110,6 +110,37 @@ export const nodes: { [key: string]: NodeSpec } = {
 		},
 	},
 
+	conflict_block: {
+		attrs: {
+			localContent: { default: '' },
+			serverContent: { default: '' },
+			codeBlockLanguage: { default: null },
+		},
+		group: 'block',
+		atom: true,
+		parseDOM: [{ tag: 'div.conflict-block' }],
+		toDOM(node) {
+			return [
+				'div',
+				{ class: 'conflict-block' },
+				[
+					'conflictlens',
+					{ contenteditable: 'false', 'data-pm-ignore': 'true' },
+					['a', { 'data-action': 'keep-local' }, 'Keep Local'],
+					['div', '|'],
+					['a', { 'data-action': 'keep-server' }, 'Keep Server'],
+					['div', '|'],
+					['a', { 'data-action': 'keep-both' }, 'Keep Both'],
+				],
+				['div', { class: 'conflict-marker conflict-marker-start' }, '<<<<<<< Local'],
+				['div', { class: 'conflict-local-content' }, node.attrs.localContent],
+				['div', { class: 'conflict-marker conflict-marker-separator' }, '======='],
+				['div', { class: 'conflict-server-content' }, node.attrs.serverContent],
+				['div', { class: 'conflict-marker conflict-marker-end' }, '>>>>>>> Server'],
+			]
+		},
+	},
+
 	code_block: {
 		content: 'text*',
 		attrs: {

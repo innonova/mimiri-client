@@ -6,6 +6,10 @@ const listItemRegex = /^(?<indent>\s*)(?<marker>[-*+]|\d+\.)\s(?:(?<checkbox>\[(
 const nakedCheckItemRegex = /^(?<indent>\s*)(?:(?<checkbox>\[(?:\s|[xX])\])\s+)(?<content>.*)$/
 const blockquoteRegex = /^(?<indent>\s*)>\s?(?<content>.*)$/
 const codeBlockRegex = /^```(?<language>.*)$/
+const detectConflictRegex = /^<<<<<<< Local$/m
+const conflictStartRegex = /^<<<<<<< Local$/
+const conflictSeparatorRegex = /^=======$/
+const conflictEndRegex = /^>>>>>>> Server$/
 const indentedTextRegex = /^(?<indent>\s+)(?<content>\S.*)$/
 const orderedRegex = /^(?<number>\d+)\./
 
@@ -313,13 +317,51 @@ const subTokenizeText = (
 	}
 }
 
-const tokenize = (text: string): Token[] => {
+const tokenize = (text: string, safeMode: boolean = false): Token[] => {
 	const lines = text.split('\n') //.slice(0, 10)
 	const tokens: Token[] = []
 	let inCodeBlock = false
+	let codeBlockLanguage = ''
+	let inConflictBlock = false
+	let conflictState: 'none' | 'local' | 'server' = 'none'
 
 	for (const line of lines) {
 		let match
+
+		// In safe mode, only process conflict markers and treat everything else as plain text
+		if (
+			safeMode &&
+			!conflictStartRegex.test(line) &&
+			!conflictSeparatorRegex.test(line) &&
+			!conflictEndRegex.test(line)
+		) {
+			if (inConflictBlock) {
+				// Inside conflict: accumulate content
+				tokens.push({
+					type: conflictState === 'local' ? 'conflict_local_content' : 'conflict_server_content',
+					value: line,
+					lineEnd: true,
+					lineStart: true,
+					indent: '',
+					depth: 0,
+				})
+			} else {
+				// Outside conflict: plain paragraph text (no markdown parsing)
+				if (line.trim() === '') {
+					tokens.push({ type: 'blank_line', lineEnd: true, lineStart: true, indent: '', depth: 0 })
+				} else {
+					tokens.push({
+						type: 'text',
+						value: line,
+						lineEnd: true,
+						lineStart: true,
+						indent: '',
+						depth: 0,
+					})
+				}
+			}
+			continue
+		}
 
 		if ((match = codeBlockRegex.exec(line))) {
 			tokens.push({
@@ -330,7 +372,79 @@ const tokenize = (text: string): Token[] => {
 				indent: '',
 				depth: 0,
 			})
-			inCodeBlock = !inCodeBlock
+			if (inCodeBlock) {
+				inCodeBlock = false
+				codeBlockLanguage = ''
+			} else {
+				inCodeBlock = true
+				codeBlockLanguage = match.groups.language
+			}
+		} else if (conflictStartRegex.test(line)) {
+			// Track code block language if we're inside one
+			const savedCodeBlockLanguage = inCodeBlock ? codeBlockLanguage : ''
+			// If we're in a code block, close it before starting conflict
+			if (inCodeBlock) {
+				tokens.push({
+					type: 'code_block',
+					value: codeBlockLanguage,
+					lineEnd: true,
+					lineStart: true,
+					indent: '',
+					depth: 0,
+				})
+				inCodeBlock = false
+			}
+			tokens.push({
+				type: 'conflict_start',
+				value: savedCodeBlockLanguage,
+				lineEnd: true,
+				lineStart: true,
+				indent: '',
+				depth: 0,
+			})
+			inConflictBlock = true
+			conflictState = 'local'
+		} else if (conflictSeparatorRegex.test(line) && inConflictBlock) {
+			tokens.push({
+				type: 'conflict_separator',
+				lineEnd: true,
+				lineStart: true,
+				indent: '',
+				depth: 0,
+			})
+			conflictState = 'server'
+		} else if (conflictEndRegex.test(line) && inConflictBlock) {
+			tokens.push({
+				type: 'conflict_end',
+				lineEnd: true,
+				lineStart: true,
+				indent: '',
+				depth: 0,
+			})
+			inConflictBlock = false
+			conflictState = 'none'
+			// If we were in a code block before the conflict, reopen it
+			if (codeBlockLanguage) {
+				tokens.push({
+					type: 'code_block',
+					value: codeBlockLanguage,
+					lineEnd: true,
+					lineStart: true,
+					indent: '',
+					depth: 0,
+				})
+				inCodeBlock = true
+			}
+		} else if (inConflictBlock) {
+			// Content within conflict block
+			tokens.push({
+				type: conflictState === 'local' ? 'conflict_local_content' : 'conflict_server_content',
+				value: line,
+				lineEnd: true,
+				lineStart: true,
+				indent: '',
+				depth: 0,
+			})
 		} else if (inCodeBlock) {
 			// If we're in a code block, treat everything as text without processing markdown
 			subTokenizeText(tokens, line, true, true, '', true)
@@ -523,6 +637,38 @@ const buildTree = (tokens: Token[]): TreeNode => {
 			}
 			pushChild(node)
 			stack.push(node)
+		} else if (token.type === 'conflict_start') {
+			const conflictNode: TreeNode = {
+				type: 'conflict_block',
+				indent: token.value || '',
+				depth: 0,
+				children: [],
+				value: '',
+			}
+			pushChild(conflictNode)
+			stack.push(conflictNode)
+		} else if (token.type === 'conflict_local_content' && parentType() === 'conflict_block') {
+			// Accumulate local content
+			const parent = stack[stack.length - 1]
+			parent.value = parent.value ? parent.value + '\n' + token.value : token.value
+		} else if (token.type === 'conflict_separator' && parentType() === 'conflict_block') {
+			// Mark transition to server content
+			const separatorNode: TreeNode = {
+				type: 'conflict_separator',
+				indent: '',
+				depth: 0,
+				children: [],
+			}
+			pushChild(separatorNode)
+		} else if (token.type === 'conflict_server_content' && parentType() === 'conflict_block') {
+			// Accumulate server content in the separator node
+			const parent = stack[stack.length - 1]
+			const separatorNode = parent.children[parent.children.length - 1]
+			if (separatorNode && separatorNode.type === 'conflict_separator') {
+				separatorNode.value = separatorNode.value ? separatorNode.value + '\n' + token.value : token.value
+			}
+		} else if (token.type === 'conflict_end' && parentType() === 'conflict_block') {
+			stack.pop()
 		} else if (['heading', 'blockquote', 'code_block'].includes(token.type)) {
 			if (token.type === 'code_block' && parentType() === 'code_block') {
 				stack.pop()
@@ -548,10 +694,17 @@ const buildTree = (tokens: Token[]): TreeNode => {
 	return root
 }
 
-const buildProseMirrorNode = (parent: TreeNode, treeNode: TreeNode, index: number): Node => {
+const buildProseMirrorNode = (parent: TreeNode, treeNode: TreeNode, index: number): Node | null => {
 	const children: Node[] = []
-	for (let i = 0; i < treeNode.children.length; i++) {
-		children.push(buildProseMirrorNode(treeNode, treeNode.children[i], i))
+
+	// Don't build children for conflict blocks since they're atom nodes
+	if (treeNode.type !== 'conflict_block') {
+		for (let i = 0; i < treeNode.children.length; i++) {
+			const child = buildProseMirrorNode(treeNode, treeNode.children[i], i)
+			if (child) {
+				children.push(child)
+			}
+		}
 	}
 
 	switch (treeNode.type) {
@@ -585,6 +738,21 @@ const buildProseMirrorNode = (parent: TreeNode, treeNode: TreeNode, index: numbe
 			return mimiriSchema.node('paragraph', null, children)
 		case 'code_block':
 			return mimiriSchema.node('code_block', { language: treeNode.value }, children)
+		case 'conflict_block': {
+			// Extract local and server content from children
+			const localContent = treeNode.value || ''
+			const separatorNode = treeNode.children.find(c => c.type === 'conflict_separator')
+			const serverContent = separatorNode?.value || ''
+			const codeBlockLanguage = treeNode.indent || null
+			return mimiriSchema.node('conflict_block', {
+				localContent,
+				serverContent,
+				codeBlockLanguage,
+			})
+		}
+		case 'conflict_separator':
+			// Skip separator nodes when building (handled in conflict_block)
+			return null
 		case 'blank_line':
 			if (parent?.type === 'code_block') {
 				return mimiriSchema.text('\n')
@@ -594,42 +762,74 @@ const buildProseMirrorNode = (parent: TreeNode, treeNode: TreeNode, index: numbe
 				return mimiriSchema.node('paragraph', null, [])
 			}
 		case 'text':
+			// ProseMirror doesn't allow empty text nodes - return null to skip
+			if (!treeNode.value) {
+				return null
+			}
 			if (parent?.type === 'code_block') {
 				if (index > 0) {
 					return mimiriSchema.text(`\n${treeNode.value}`)
 				} else {
-					return mimiriSchema.text(treeNode.value ?? '')
+					return mimiriSchema.text(treeNode.value)
 				}
 			} else {
 				// Text is always inline, no paragraph wrapping here
-				return mimiriSchema.text(treeNode.value ?? '')
+				return mimiriSchema.text(treeNode.value)
 			}
 		case 'strong':
+			if (!treeNode.value) {
+				return null
+			}
 			// Create text node with strong mark (always inline)
-			return mimiriSchema.text(treeNode.value ?? '', [mimiriSchema.mark('strong')])
+			return mimiriSchema.text(treeNode.value, [mimiriSchema.mark('strong')])
 		case 'emphasis':
+			if (!treeNode.value) {
+				return null
+			}
 			// Create text node with em mark (always inline)
-			return mimiriSchema.text(treeNode.value ?? '', [mimiriSchema.mark('em')])
+			return mimiriSchema.text(treeNode.value, [mimiriSchema.mark('em')])
 		case 'strong_emphasis':
+			if (!treeNode.value) {
+				return null
+			}
 			// Create text node with strong and em marks (always inline)
-			return mimiriSchema.text(treeNode.value ?? '', [mimiriSchema.mark('strong'), mimiriSchema.mark('em')])
+			return mimiriSchema.text(treeNode.value, [mimiriSchema.mark('strong'), mimiriSchema.mark('em')])
 		case 'code':
+			if (!treeNode.value) {
+				return null
+			}
 			// Create text node with code mark (always inline)
-			return mimiriSchema.text(treeNode.value ?? '', [mimiriSchema.mark('code')])
-		case 'link':
+			return mimiriSchema.text(treeNode.value, [mimiriSchema.mark('code')])
+		case 'link': {
 			// Parse link data and create text node with link mark (always inline)
 			const linkData = JSON.parse(treeNode.value ?? '{"text":"","url":""}')
+			if (linkData.text.length === 0) {
+				return null
+			}
 			return mimiriSchema.text(linkData.text, [mimiriSchema.mark('link', { href: linkData.url, title: null })])
+		}
 		case 'password':
+			if (!treeNode.value) {
+				return null
+			}
 			// Create text node with password mark (always inline)
-			return mimiriSchema.text(treeNode.value ?? '', [mimiriSchema.mark('password')])
+			return mimiriSchema.text(treeNode.value, [mimiriSchema.mark('password')])
 		default:
 			throw new Error(`Unknown node type: ${treeNode.type}`)
 	}
 }
 
+export const hasConflicts = (text: string): boolean => {
+	return detectConflictRegex.test(text)
+}
+
 export const deserialize = (text: string) => {
-	const tokens = tokenize(text.replace(/\r\n/g, '\n').replace(/\r/g, '\n'))
+	const normalizedText = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n')
+
+	// Use safe mode if conflicts are detected
+	const safeMode = hasConflicts(normalizedText)
+
+	const tokens = tokenize(normalizedText, safeMode)
 	// console.log('tokens', tokens)
 	const tree = buildTree(tokens)
 	// console.log('tree', tree)

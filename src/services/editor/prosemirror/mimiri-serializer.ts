@@ -31,6 +31,14 @@ const serializeNode = (node: Node, depth: number, indentStyle: string, hideListM
 			text += node.text
 		}
 	} else {
+		if (node.type.name === 'conflict_block') {
+			text += `<<<<<<< Local\n`
+			text += node.attrs.localContent
+			text += `\n=======\n`
+			text += node.attrs.serverContent
+			text += `\n>>>>>>> Server\n`
+			return text
+		}
 		if (node.type.name === 'list_item') {
 			text += `${indentStyle.repeat(depth)}${hideListMarker ? '' : `${node.attrs.marker ?? '-'} `}${node.attrs.checked !== null ? (node.attrs.checked ? '[x] ' : '[ ] ') : ''}`
 		}
