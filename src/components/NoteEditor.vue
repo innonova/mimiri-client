@@ -117,6 +117,7 @@
 			<div v-if="historyVisible && selectedHistoryItem" class="px-2 py-1 bg-info-bar cursor-default text-size-menu">
 				{{ selectedHistoryItem.username }} - {{ formatDate(selectedHistoryItem.timestamp) }} (read-only)
 			</div>
+			<ConflictBanner ref="conflictBanner" @navigate="onConflictNavigate" />
 			<div
 				class="overflow-hidden flex-1"
 				style="display: none"
@@ -185,12 +186,14 @@ import { useEventListener } from '@vueuse/core'
 import CloseButton from './elements/CloseButton.vue'
 import { mimiriApi } from '../services/storage/mimiri-api'
 import AutoComplete from './elements/AutoComplete.vue'
+import ConflictBanner from './elements/ConflictBanner.vue'
 
 let activeViewModelStopWatch: WatchStopHandle = undefined
 let activeViewModel: NoteViewModel = undefined
 const monacoContainer = ref(null)
 const proseMirrorContainer = ref(null)
 const proseMirrorPopup = ref<InstanceType<typeof AutoComplete> | null>(null)
+const conflictBanner = ref<InstanceType<typeof ConflictBanner> | null>(null)
 const windowFocus = ref(true)
 const historyVisible = ref(false)
 const selectedHistoryItem = computed(() => mimiriEditor.history.state.selectedHistoryItem)
@@ -296,8 +299,12 @@ const setActiveViewModel = viewModel => {
 	}
 }
 
+function onConflictNavigate(direction: 'prev' | 'next') {
+	mimiriEditor.navigateConflict(direction)
+}
+
 onMounted(() => {
-	mimiriEditor.init(monacoContainer.value, proseMirrorContainer.value, proseMirrorPopup.value)
+	mimiriEditor.init(monacoContainer.value, proseMirrorContainer.value, proseMirrorPopup.value, conflictBanner.value)
 	mimiriEditor.onSave(() => save())
 	mimiriEditor.onSearchAll(() => titleBar.value?.searchAllNotes())
 	mimiriEditor.onBlur(() => save())

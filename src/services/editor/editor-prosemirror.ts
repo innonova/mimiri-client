@@ -1,7 +1,7 @@
 import { settingsManager } from '../settings-manager'
 import type { MimiriEditorState, SelectionExpansion, TextEditor, TextEditorListener } from './type'
 
-import { EditorState, TextSelection } from 'prosemirror-state'
+import { EditorState } from 'prosemirror-state'
 import { EditorView } from 'prosemirror-view'
 import { dropCursor } from 'prosemirror-dropcursor'
 import { gapCursor } from 'prosemirror-gapcursor'
@@ -25,9 +25,12 @@ import { initHighlighter, syntaxHighlightPlugin } from './prosemirror/syntax-hig
 import { getThemeById } from './theme-manager'
 import { clipboardManager } from '../../global'
 import AutoComplete from '../../components/elements/AutoComplete.vue'
-import { getLanguageSuggestions } from './language-suggestions'
 import { CheckboxListItemView } from './prosemirror/checkbox-list-item-view'
 import { Plugin } from 'prosemirror-state'
+import { Node as ProseMirrorNode } from 'prosemirror-model'
+import { CodeBlockActionHandler } from './prosemirror/code-block-action-handler'
+import { ConflictActionHandler } from './prosemirror/conflict-action-handler'
+import ConflictBanner from '../../components/elements/ConflictBanner.vue'
 
 // Plugin to make editor read-only during conflict resolution
 const conflictReadOnlyPlugin = new Plugin({
@@ -49,7 +52,7 @@ const conflictReadOnlyPlugin = new Plugin({
 
 export class EditorProseMirror implements TextEditor {
 	private _domElement: HTMLElement | undefined
-	private _conflictBanner: HTMLDivElement | undefined
+	private _conflictBanner: InstanceType<typeof ConflictBanner> | null = null
 	private _autoComplete: InstanceType<typeof AutoComplete> | undefined
 	private _history: HTMLDivElement | undefined
 	private lastScrollTop: number
@@ -68,19 +71,24 @@ export class EditorProseMirror implements TextEditor {
 	private _editor: EditorView | undefined
 	private _currentConflictIndex = 0
 	private _conflictPositions: number[] = []
+	private _codeBlockActionHandler: CodeBlockActionHandler | undefined
+	private _conflictActionHandler: ConflictActionHandler | undefined
 
 	constructor(private listener: TextEditorListener) {}
 
-	public async init(domElement: HTMLElement, autoComplete: InstanceType<typeof AutoComplete>) {
+	public async init(
+		domElement: HTMLElement,
+		autoComplete: InstanceType<typeof AutoComplete>,
+		conflictBanner: InstanceType<typeof ConflictBanner> | null,
+	) {
 		this._domElement = domElement
 		this._autoComplete = autoComplete
+		this._conflictBanner = conflictBanner
 		this._domElement.style.display = this._active ? 'flex' : 'none'
 
-		// Create conflict banner
-		this._conflictBanner = document.createElement('div')
-		this._conflictBanner.className = 'conflict-resolution-banner'
-		this._conflictBanner.style.display = 'none'
-		this._domElement.insertBefore(this._conflictBanner, this._domElement.firstChild)
+		// Initialize action handlers
+		this._codeBlockActionHandler = new CodeBlockActionHandler(clipboardManager, this._autoComplete, this._domElement)
+		this._conflictActionHandler = new ConflictActionHandler(() => this.updateConflictBanner())
 
 		await initHighlighter()
 
@@ -166,351 +174,21 @@ export class EditorProseMirror implements TextEditor {
 						return false
 					}
 
-					const $pos = view.state.doc.resolve(pos.pos)
-					let node = null
-					let nodePos = -1
-					let nodeType = null
-
-					// Walk up the tree to find the code_block or conflict_block node
-					for (let d = $pos.depth; d > 0; d--) {
-						const n = $pos.node(d)
-
-						if (n.type.name === 'code_block' || n.type.name === 'conflict_block') {
-							node = n
-							nodePos = $pos.before(d)
-							nodeType = n.type.name
-							break
-						}
-					}
-
-					// For atom nodes (like conflict_block), check the node before or at the current position
-					if (!node) {
-						// Check if we're right after an atom node
-						if (pos.pos > 0) {
-							const nodeBefore = view.state.doc.nodeAt(pos.pos - 1)
-							if (nodeBefore?.type.name === 'conflict_block') {
-								node = nodeBefore
-								nodePos = pos.pos - 1
-								nodeType = 'conflict_block'
-							}
-						}
-						// Check if there's an atom node at the current position
-						if (!node) {
-							const nodeAt = view.state.doc.nodeAt(pos.pos)
-							if (nodeAt?.type.name === 'conflict_block') {
-								node = nodeAt
-								nodePos = pos.pos
-								nodeType = 'conflict_block'
-							}
-						}
-					}
-
-					if (!node) {
+					// Resolve the target node
+					const target = this.resolveActionTarget(view, pos.pos)
+					if (!target) {
 						return false
 					}
 
-					// Handle conflict block actions
+					const { node, nodePos, nodeType } = target
+
+					// Delegate to appropriate handler
 					if (nodeType === 'conflict_block') {
-						let content = ''
-						if (action === 'keep-local') {
-							content = node.attrs.localContent
-						} else if (action === 'keep-server') {
-							content = node.attrs.serverContent
-						} else if (action === 'keep-both') {
-							const localContent = node.attrs.localContent
-							const serverContent = node.attrs.serverContent
-
-							// Special case: if both local and server contain exactly one code block delimiter,
-							// remove one to avoid duplicates (language may differ, e.g. ```js vs ```javascript)
-							const codeBlockDelimiterRegex = /^```[\w]*\s*$/gm
-
-							const localMatches = Array.from(localContent.matchAll(codeBlockDelimiterRegex))
-							const serverMatches = Array.from(serverContent.matchAll(codeBlockDelimiterRegex))
-
-							// Simple case: both have exactly one delimiter
-							if (localMatches.length === 1 && serverMatches.length === 1) {
-								// Remove the delimiter from server content
-								content = localContent + '\n' + serverContent.replace(codeBlockDelimiterRegex, '')
-							} else {
-								content = localContent + '\n' + serverContent
-							}
-						} else {
-							return false
-						}
-
-						// Check if this conflict was inside a code block
-						const codeBlockLang = node.attrs.codeBlockLanguage
-
-						if (codeBlockLang) {
-							// This conflict was inside a code block, reconstitute it
-							// Find the actual sibling blocks before and after
-							const $pos = view.state.doc.resolve(nodePos)
-							const depth = $pos.depth
-							const index = $pos.index(depth)
-							const parent = $pos.node(depth)
-
-							const nodeBefore = index > 0 ? parent.child(index - 1) : null
-							const nodeAfter = index < parent.childCount - 1 ? parent.child(index + 1) : null
-							const nodeBeforePos = index > 0 ? nodePos - nodeBefore.nodeSize : -1
-							const nodeAfterPos = index < parent.childCount - 1 ? nodePos + node.nodeSize : -1
-
-							const hasCodeBefore =
-								nodeBefore?.type.name === 'code_block' && nodeBefore.attrs.language === codeBlockLang
-							const hasCodeAfter = nodeAfter?.type.name === 'code_block' && nodeAfter.attrs.language === codeBlockLang
-
-							// Merge all parts back into a single code block
-							if (hasCodeBefore && hasCodeAfter) {
-								const beforeText = nodeBefore.textContent
-								const afterText = nodeAfter.textContent
-								const mergedText = beforeText + '\n' + content + '\n' + afterText
-
-								const newCodeBlock = view.state.schema.nodes.code_block.create(
-									{ language: codeBlockLang },
-									view.state.schema.text(mergedText),
-								)
-
-								const tr = view.state.tr.replaceWith(nodeBeforePos, nodeAfterPos + nodeAfter.nodeSize, newCodeBlock)
-								view.dispatch(tr)
-							} else if (hasCodeBefore) {
-								// Only merge with before
-								const beforeText = nodeBefore.textContent
-								const mergedText = beforeText + '\n' + content
-
-								const newCodeBlock = view.state.schema.nodes.code_block.create(
-									{ language: codeBlockLang },
-									view.state.schema.text(mergedText),
-								)
-
-								const tr = view.state.tr.replaceWith(nodeBeforePos, nodePos + node.nodeSize, newCodeBlock)
-								view.dispatch(tr)
-							} else if (hasCodeAfter) {
-								// Only merge with after
-								const afterText = nodeAfter.textContent
-								const mergedText = content + '\n' + afterText
-
-								const newCodeBlock = view.state.schema.nodes.code_block.create(
-									{ language: codeBlockLang },
-									view.state.schema.text(mergedText),
-								)
-
-								const tr = view.state.tr.replaceWith(nodePos, nodeAfterPos + nodeAfter.nodeSize, newCodeBlock)
-								view.dispatch(tr)
-							} else {
-								// No surrounding code blocks found, create new one
-								const newCodeBlock = view.state.schema.nodes.code_block.create(
-									{ language: codeBlockLang },
-									view.state.schema.text(content),
-								)
-
-								const tr = view.state.tr.replaceWith(nodePos, nodePos + node.nodeSize, newCodeBlock)
-								view.dispatch(tr)
-							}
-						} else {
-							// Not in a code block, just replace with text
-							const tr = view.state.tr.replaceWith(nodePos, nodePos + node.nodeSize, view.state.schema.text(content))
-							view.dispatch(tr)
-						}
-
-						// Check if there are any remaining conflicts after this resolution
-						// If not, re-parse the document in normal mode to restore full formatting
-						setTimeout(() => {
-							let currentText = serialize(view.state.doc)
-
-							if (!currentText.includes('<<<<<<< Local')) {
-								// No more conflicts - fix any code block delimiter issues
-								// We're post-conflict, so we started from a valid state
-								// Any delimiter with language is definitively a block start
-								const lines = currentText.split('\n')
-								const delimiterPattern = /^```([\w]*)?\s*$/
-								let inCodeBlock = false
-								let lastDelimiterIndex = -1
-								let lastDelimiterHadLanguage = false
-								const modifications: Array<{ index: number; action: 'remove' | 'insert-before' }> = []
-
-								for (let i = 0; i < lines.length; i++) {
-									const match = lines[i].match(delimiterPattern)
-									if (match) {
-										const hasLanguage = match[1] && match[1].length > 0
-
-										if (!inCodeBlock) {
-											// Start of a code block
-											inCodeBlock = true
-											lastDelimiterIndex = i
-											lastDelimiterHadLanguage = hasLanguage
-										} else {
-											// Already in a code block, expecting closing delimiter
-											if (hasLanguage) {
-												// Found a start delimiter when expecting close - something went wrong
-												if (lastDelimiterHadLanguage) {
-													// Previous was also a start - insert closing before this one
-													modifications.push({ index: i, action: 'insert-before' })
-													console.warn('⚠️ Inserting closing delimiter before unexpected opening')
-												} else {
-													// Previous was plain delimiter that should have closed - remove it
-													modifications.push({ index: lastDelimiterIndex, action: 'remove' })
-													console.warn('⚠️ Removing orphaned delimiter')
-												}
-												// Current delimiter becomes the new opening
-												lastDelimiterIndex = i
-												lastDelimiterHadLanguage = true
-												// Stay in code block mode
-											} else {
-												// Proper closing delimiter
-												inCodeBlock = false
-												lastDelimiterIndex = i
-												lastDelimiterHadLanguage = false
-											}
-										}
-									}
-								}
-
-								// If still in code block at end, add closing delimiter
-								if (inCodeBlock) {
-									modifications.push({ index: lines.length, action: 'insert-before' })
-									console.warn('⚠️ Adding closing delimiter at end')
-								}
-
-								// Apply modifications in reverse order to preserve indices
-								for (let i = modifications.length - 1; i >= 0; i--) {
-									const mod = modifications[i]
-									if (mod.action === 'remove') {
-										lines.splice(mod.index, 1)
-									} else if (mod.action === 'insert-before') {
-										lines.splice(mod.index, 0, '```')
-									}
-								}
-
-								if (modifications.length > 0) {
-									currentText = lines.join('\n')
-								}
-
-								// Re-parse with full formatting
-								const newDoc = deserialize(currentText)
-								const newState = EditorState.create({
-									schema: mimiriSchema,
-									doc: newDoc,
-									plugins: view.state.plugins,
-								})
-								view.updateState(newState)
-								console.log('✅ All conflicts resolved - full formatting restored')
-
-								// Update banner to hide it
-								this.updateConflictBanner()
-							} else {
-								// Still have conflicts - update banner with new count
-								this.updateConflictBanner()
-							}
-						}, 0)
-
-						return true
+						return this._conflictActionHandler.handle(action, view, node, nodePos)
 					}
 
-					if (nodeType !== 'code_block') {
-						return false
-					}
-
-					if (action === 'copy-block') {
-						const text = node.textContent
-						clipboardManager.write(text.replace(/p`([^`]+)`/g, '$1'))
-						return true
-					} else if (action === 'select-block') {
-						// Select all the content of the code block
-						const from = nodePos + 1
-						const to = nodePos + node.nodeSize - 1
-						const tr = view.state.tr.setSelection(TextSelection.create(view.state.doc, from, to))
-						view.dispatch(tr)
-						return true
-					} else if (action === 'copy-next-line') {
-						// Get current selection within the code block
-						const { from, to } = view.state.selection
-						const text = node.textContent
-						const lines = text.split('\n')
-						const blockStart = nodePos + 1
-
-						// Find which line is currently selected (if any)
-						let currentLineIndex = -1
-						let charCount = blockStart
-
-						if (to > from) {
-							for (let i = 0; i < lines.length; i++) {
-								const lineStart = charCount
-								const lineEnd = charCount + lines[i].length
-								// Check if selection is within this line
-								if (from >= lineStart && from <= lineEnd && to >= lineStart && to <= lineEnd) {
-									currentLineIndex = i
-									break
-								}
-								charCount = lineEnd + 1 // +1 for newline
-							}
-						}
-
-						// Select next line, or first line if none selected or we're at the last line
-						let nextLineIndex
-						if (currentLineIndex === -1 || currentLineIndex === lines.length - 1) {
-							nextLineIndex = 0
-						} else {
-							nextLineIndex = currentLineIndex + 1
-						}
-
-						// Find the next line with actual content (skip blank lines)
-						let attempts = 0
-						while (lines[nextLineIndex].trim() === '' && attempts < lines.length) {
-							nextLineIndex = (nextLineIndex + 1) % lines.length
-							attempts++
-						}
-
-						// If all lines are blank, just use the calculated nextLineIndex
-						const nextLine = lines[nextLineIndex]
-
-						// Copy the line to clipboard
-						clipboardManager.write(nextLine.replace(/p`([^`]+)`/g, '$1'))
-
-						// Calculate position of the next line
-						let lineStart = blockStart
-						for (let i = 0; i < nextLineIndex; i++) {
-							lineStart += lines[i].length + 1
-						}
-						const lineEnd = lineStart + nextLine.length
-
-						// Select the line
-						const tr = view.state.tr.setSelection(TextSelection.create(view.state.doc, lineStart, lineEnd))
-						view.dispatch(tr)
-						return true
-					} else if (action === 'choose-language') {
-						const rect = (event.target as HTMLElement).getBoundingClientRect()
-						const containerRect = this._domElement.getBoundingClientRect()
-
-						// Calculate position relative to container
-						const relativeLeft = rect.left - containerRect.left
-						const relativeBottom = rect.bottom - containerRect.top
-						const relativeTop = rect.top - containerRect.top
-
-						// Estimate autocomplete height (rough estimate based on typical item count)
-						const estimatedHeight = 250 // Approximate max height for autocomplete
-						const spaceBelow = containerRect.height - relativeBottom
-						const showAbove = spaceBelow < estimatedHeight && relativeTop > estimatedHeight
-
-						this._autoComplete.show(
-							relativeLeft,
-							showAbove ? relativeTop : relativeBottom,
-							node.attrs.language ?? '',
-							(query: string) => {
-								return getLanguageSuggestions(query).map(suggestion => suggestion.label)
-							},
-							(item: string) => {
-								// Update the code block's language attribute
-								const tr = view.state.tr.setNodeMarkup(nodePos, null, {
-									...node.attrs,
-									language: item,
-								})
-								view.dispatch(tr)
-								this._autoComplete.hide()
-							},
-							() => {
-								this._autoComplete.hide()
-							},
-							showAbove,
-						)
+					if (nodeType === 'code_block') {
+						return this._codeBlockActionHandler.handle(action, view, node, nodePos)
 					}
 
 					return false
@@ -522,6 +200,59 @@ export class EditorProseMirror implements TextEditor {
 			// },
 		})
 		this._editor = view
+	}
+
+	/**
+	 * Resolves the target node for an action from a position in the document
+	 */
+	private resolveActionTarget(
+		view: EditorView,
+		posValue: number,
+	): { node: ProseMirrorNode; nodePos: number; nodeType: string } | null {
+		const $pos = view.state.doc.resolve(posValue)
+		let node: ProseMirrorNode | null = null
+		let nodePos = -1
+		let nodeType: string | null = null
+
+		// Walk up the tree to find the code_block or conflict_block node
+		for (let d = $pos.depth; d > 0; d--) {
+			const n = $pos.node(d)
+
+			if (n.type.name === 'code_block' || n.type.name === 'conflict_block') {
+				node = n
+				nodePos = $pos.before(d)
+				nodeType = n.type.name
+				break
+			}
+		}
+
+		// For atom nodes (like conflict_block), check the node before or at the current position
+		if (!node) {
+			// Check if we're right after an atom node
+			if (posValue > 0) {
+				const nodeBefore = view.state.doc.nodeAt(posValue - 1)
+				if (nodeBefore?.type.name === 'conflict_block') {
+					node = nodeBefore
+					nodePos = posValue - 1
+					nodeType = 'conflict_block'
+				}
+			}
+			// Check if there's an atom node at the current position
+			if (!node) {
+				const nodeAt = view.state.doc.nodeAt(posValue)
+				if (nodeAt?.type.name === 'conflict_block') {
+					node = nodeAt
+					nodePos = posValue
+					nodeType = 'conflict_block'
+				}
+			}
+		}
+
+		if (!node) {
+			return null
+		}
+
+		return { node, nodePos, nodeType }
 	}
 
 	public unMarkSelectionAsPassword() {}
@@ -560,50 +291,15 @@ export class EditorProseMirror implements TextEditor {
 		})
 
 		const conflictCount = this._conflictPositions.length
-		const wasHidden = this._conflictBanner.style.display === 'none'
-
-		if (conflictCount === 0) {
-			this._conflictBanner.style.display = 'none'
-			this._currentConflictIndex = 0
-			return
-		}
-
-		// Show banner with conflict info
-		this._conflictBanner.style.display = 'flex'
+		const wasHidden = !this._conflictBanner.isVisible
 
 		// Ensure current index is valid
 		if (this._currentConflictIndex >= conflictCount) {
 			this._currentConflictIndex = 0
 		}
 
-		this._conflictBanner.innerHTML = `
-			<div class="conflict-banner-content">
-				<span class="conflict-banner-icon">⚠️</span>
-				<span class="conflict-banner-text">
-					${conflictCount} conflict${conflictCount > 1 ? 's' : ''} found - document is read-only until resolved
-				</span>
-				<div class="conflict-banner-actions">
-					<button class="conflict-nav-btn conflict-prev-btn" ${conflictCount <= 1 ? 'disabled' : ''}>
-						← Previous
-					</button>
-					<span class="conflict-counter">${this._currentConflictIndex + 1} / ${conflictCount}</span>
-					<button class="conflict-nav-btn conflict-next-btn" ${conflictCount <= 1 ? 'disabled' : ''}>
-						Next →
-					</button>
-				</div>
-			</div>
-		`
-
-		// Add event listeners
-		const prevBtn = this._conflictBanner.querySelector('.conflict-prev-btn') as HTMLButtonElement
-		const nextBtn = this._conflictBanner.querySelector('.conflict-next-btn') as HTMLButtonElement
-
-		if (prevBtn) {
-			prevBtn.onclick = () => this.navigateToConflict('prev')
-		}
-		if (nextBtn) {
-			nextBtn.onclick = () => this.navigateToConflict('next')
-		}
+		// Update the Vue component
+		this._conflictBanner.update(conflictCount, this._currentConflictIndex)
 
 		// Auto-scroll to first conflict if banner just appeared
 		if (wasHidden && conflictCount > 0) {
@@ -629,7 +325,7 @@ export class EditorProseMirror implements TextEditor {
 		})
 	}
 
-	private navigateToConflict(direction: 'prev' | 'next') {
+	public navigateConflict(direction: 'prev' | 'next') {
 		if (this._conflictPositions.length === 0) {
 			return
 		}

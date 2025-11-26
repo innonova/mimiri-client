@@ -21,8 +21,14 @@ export class ConflictBlockPlugin implements EditorPlugin {
 	private acceptIncomingCommandId: string
 	private acceptBothCommandId: string
 	private codeLensProvider: MimiriCodeLensProvider
+	private _currentConflictIndex: number = 0
+	private _onConflictStateChanged: ((count: number, currentIndex: number) => void) | null = null
 
-	constructor(private monacoEditor: editor.IStandaloneCodeEditor) {
+	constructor(
+		private monacoEditor: editor.IStandaloneCodeEditor,
+		onConflictStateChanged?: (count: number, currentIndex: number) => void,
+	) {
+		this._onConflictStateChanged = onConflictStateChanged ?? null
 		this.monacoEditorModel = this.monacoEditor.getModel()
 
 		// Command: Accept Local changes
@@ -499,5 +505,47 @@ export class ConflictBlockPlugin implements EditorPlugin {
 
 	private refreshCodeLens(): void {
 		this.codeLensProvider.refresh()
+		this.notifyConflictStateChanged()
+	}
+
+	private notifyConflictStateChanged(): void {
+		if (this._onConflictStateChanged) {
+			// Ensure index is valid
+			if (this._currentConflictIndex >= this.conflictBlockStates.length) {
+				this._currentConflictIndex = 0
+			}
+			this._onConflictStateChanged(this.conflictBlockStates.length, this._currentConflictIndex)
+		}
+	}
+
+	public setOnConflictStateChanged(callback: (count: number, currentIndex: number) => void): void {
+		this._onConflictStateChanged = callback
+		// Immediately notify with current state
+		this.notifyConflictStateChanged()
+	}
+
+	public navigateConflict(direction: 'prev' | 'next'): void {
+		if (this.conflictBlockStates.length === 0) {
+			return
+		}
+
+		if (direction === 'next') {
+			this._currentConflictIndex = (this._currentConflictIndex + 1) % this.conflictBlockStates.length
+		} else {
+			this._currentConflictIndex =
+				(this._currentConflictIndex - 1 + this.conflictBlockStates.length) % this.conflictBlockStates.length
+		}
+
+		// Scroll to the conflict
+		const block = this.conflictBlockStates[this._currentConflictIndex]
+		if (block) {
+			this.monacoEditor.revealLineInCenter(block.start)
+		}
+
+		this.notifyConflictStateChanged()
+	}
+
+	public get conflictCount(): number {
+		return this.conflictBlockStates.length
 	}
 }

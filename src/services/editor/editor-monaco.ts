@@ -10,6 +10,7 @@ import { ConflictBlockPlugin } from './monaco-editor/conflict-block-plugin'
 import { InlineMarkdownPlugin } from './monaco-editor/inline-markdown-plugin'
 import { clipboardManager } from '../../global'
 import { getThemeById } from './theme-manager'
+import ConflictBanner from '../../components/elements/ConflictBanner.vue'
 
 export class EditorMonaco implements TextEditor {
 	private monacoEditor: editor.IStandaloneCodeEditor
@@ -36,6 +37,8 @@ export class EditorMonaco implements TextEditor {
 	private _selectionHistory: Selection[] = []
 	private _preClickSelection: Selection | undefined
 	private _plugins: any[] = []
+	private _conflictBanner: InstanceType<typeof ConflictBanner> | null = null
+	private _conflictBlockPlugin: ConflictBlockPlugin | null = null
 
 	constructor(private listener: TextEditorListener) {
 		this.styleElement = document.getElementById('mimiri-style-overrides') as HTMLStyleElement
@@ -76,8 +79,9 @@ export class EditorMonaco implements TextEditor {
 		})
 	}
 
-	public init(domElement: HTMLElement) {
+	public init(domElement: HTMLElement, conflictBanner: InstanceType<typeof ConflictBanner> | null) {
 		this._domElement = domElement
+		this._conflictBanner = conflictBanner
 		this.backgroundElement = document.getElementById('mimiri-background-editor') as HTMLDivElement
 		if (this.backgroundElement) {
 			this.backgroundElement.remove()
@@ -142,7 +146,10 @@ export class EditorMonaco implements TextEditor {
 		this._plugins.push(new ListPlugin(this.monacoEditor))
 		this._plugins.push(new HeadingPlugin(this.monacoEditor))
 		this._plugins.push(new CodeBlockPlugin(this.monacoEditor))
-		this._plugins.push(new ConflictBlockPlugin(this.monacoEditor))
+		this._conflictBlockPlugin = new ConflictBlockPlugin(this.monacoEditor, (count, currentIndex) => {
+			this.updateConflictBanner(count, currentIndex)
+		})
+		this._plugins.push(this._conflictBlockPlugin)
 		this._plugins.push(new InlineMarkdownPlugin(this.monacoEditor))
 
 		this.monacoEditor.onKeyDown(e => {
@@ -825,4 +832,22 @@ export class EditorMonaco implements TextEditor {
 	// public get changed() {
 	// 	return this._state.changed
 	// }
+
+	private updateConflictBanner(count: number, currentIndex: number) {
+		if (!this._conflictBanner) {
+			return
+		}
+		if (count === 0) {
+			this._conflictBanner.hide()
+		} else {
+			this._conflictBanner.update(count, currentIndex)
+			this._conflictBanner.show()
+		}
+	}
+
+	public navigateConflict(direction: 'prev' | 'next') {
+		if (this._conflictBlockPlugin) {
+			this._conflictBlockPlugin.navigateConflict(direction)
+		}
+	}
 }

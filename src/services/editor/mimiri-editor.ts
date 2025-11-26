@@ -8,6 +8,7 @@ import { clipboardManager, debug, noteManager, saveEmptyNodeDialog } from '../..
 import { VersionConflictError } from '../storage/mimiri-client'
 import { EditorProseMirror } from './editor-prosemirror'
 import AutoComplete from '../../components/elements/AutoComplete.vue'
+import ConflictBanner from '../../components/elements/ConflictBanner.vue'
 
 export class MimiriEditor {
 	private _history = new NoteHistory(this)
@@ -20,6 +21,7 @@ export class MimiriEditor {
 	private _monacoElement: HTMLElement
 	private _proseMirrorElement: HTMLElement
 	private _proseMirrorAutoComplete: any
+	private _conflictBanner: InstanceType<typeof ConflictBanner> | null = null
 	private _monacoInitialized: boolean = false
 	private _proseMirrorInitialized: boolean = false
 	private _initialText: string = ''
@@ -94,7 +96,7 @@ export class MimiriEditor {
 	private activateMonaco() {
 		if (!this._monacoInitialized) {
 			this._monacoInitialized = true
-			this._editorMonaco.init(this._monacoElement)
+			this._editorMonaco.init(this._monacoElement, this._conflictBanner)
 		}
 		this._editorMonaco.active = true
 		this._editorProseMirror.active = false
@@ -106,7 +108,7 @@ export class MimiriEditor {
 	private async activateProseMirror() {
 		if (!this._proseMirrorInitialized) {
 			this._proseMirrorInitialized = true
-			await this._editorProseMirror.init(this._proseMirrorElement, this._proseMirrorAutoComplete)
+			await this._editorProseMirror.init(this._proseMirrorElement, this._proseMirrorAutoComplete, this._conflictBanner)
 		}
 		this._editorMonaco.active = false
 		this._editorProseMirror.active = true
@@ -127,6 +129,7 @@ export class MimiriEditor {
 		monacoElement: HTMLElement,
 		proseMirrorElement: HTMLElement,
 		proseMirrorAutoComplete: InstanceType<typeof AutoComplete>,
+		conflictBanner: InstanceType<typeof ConflictBanner> | null,
 	) {
 		this.infoElement = document.getElementById('mimiri-editor-info') as HTMLDivElement
 		if (!this.infoElement) {
@@ -143,8 +146,17 @@ export class MimiriEditor {
 		this._monacoElement = monacoElement
 		this._proseMirrorElement = proseMirrorElement
 		this._proseMirrorAutoComplete = proseMirrorAutoComplete
+		this._conflictBanner = conflictBanner
 
 		this.activateSource()
+	}
+
+	public navigateConflict(direction: 'prev' | 'next') {
+		if (this._editorProseMirror.active) {
+			this._editorProseMirror.navigateConflict(direction)
+		} else if (this._editorMonaco.active) {
+			this._editorMonaco.navigateConflict(direction)
+		}
 	}
 
 	public async toggleEditMode() {
