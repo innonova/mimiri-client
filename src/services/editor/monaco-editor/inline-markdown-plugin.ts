@@ -229,7 +229,7 @@ export class InlineMarkdownPlugin implements EditorPlugin {
 
 	private findHeadingPatterns(line: string, lineNumber: number): editor.IModelDeltaDecoration[] {
 		const decorations: editor.IModelDeltaDecoration[] = []
-		const regex = /^(#{1,3}\s)(.*)/
+		const regex = /^(#{1,6}\s)(.*)/
 		const match = regex.exec(line)
 
 		if (match) {

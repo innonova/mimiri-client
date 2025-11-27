@@ -16,9 +16,11 @@ export class HeadingPlugin implements EditorPlugin {
 
 			let newText = ''
 			if (!lineContent.startsWith('#')) {
-				newText = '# '
-			} else if (!lineContent.startsWith('###')) {
-				newText = '#'
+				newText = `# ${lineContent}`
+			} else if (!lineContent.startsWith('######')) {
+				newText = `#${lineContent}`
+			} else {
+				newText = lineContent.replace(/^#+\s*/, '')
 			}
 			if (newText) {
 				this.monacoEditor.executeEdits(undefined, [
@@ -27,7 +29,7 @@ export class HeadingPlugin implements EditorPlugin {
 							startLineNumber: selection.startLineNumber,
 							startColumn: 1,
 							endLineNumber: selection.startLineNumber,
-							endColumn: 1,
+							endColumn: this.monacoEditorModel.getLineMaxColumn(selection.startLineNumber),
 						},
 						text: newText,
 					},

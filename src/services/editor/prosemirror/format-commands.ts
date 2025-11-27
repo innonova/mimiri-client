@@ -48,7 +48,7 @@ function executeInsertHeading(state: EditorState, dispatch: (tr: Transaction) =>
 	if (parentNode.type === mimiriSchema.nodes.heading) {
 		// Cycle through heading levels or convert back to paragraph
 		const currentLevel = parentNode.attrs.level
-		if (currentLevel < 3) {
+		if (currentLevel < 6) {
 			// Increase heading level
 			const tr = state.tr.setBlockType(
 				$from.before($from.depth),
@@ -57,8 +57,9 @@ function executeInsertHeading(state: EditorState, dispatch: (tr: Transaction) =>
 				{ level: currentLevel + 1 },
 			)
 			dispatch(tr)
+		} else if (currentLevel === 6) {
+			setBlockType(mimiriSchema.nodes.paragraph)(state, dispatch)
 		}
-		// At level 3, do nothing (or could convert to paragraph)
 	} else {
 		// Convert to heading level 1
 		setBlockType(mimiriSchema.nodes.heading, { level: 1 })(state, dispatch)
