@@ -9,12 +9,17 @@ const indentRegex = /^(?<indent>\s*)(?<content>.*)/
 export class ListPlugin implements EditorPlugin {
 	private _active: boolean = true
 	private monacoEditorModel: editor.ITextModel
+	private skipNextEnterUp: boolean = false
 
 	constructor(private monacoEditor: editor.IStandaloneCodeEditor) {
 		this.monacoEditorModel = this.monacoEditor.getModel()
 		this.monacoEditor.onKeyUp(e => {
 			if (this._active) {
 				if (e.keyCode === KeyCode.Enter) {
+					if (this.skipNextEnterUp) {
+						this.skipNextEnterUp = false
+						return
+					}
 					const selection = this.monacoEditor.getSelection()
 					if (selection.startLineNumber === selection.endLineNumber) {
 						const currentLine = selection.startLineNumber
@@ -104,6 +109,45 @@ export class ListPlugin implements EditorPlugin {
 							e.preventDefault()
 							this.renumberListFromLine(currentLine)
 						}
+					}
+				}
+
+				if (e.keyCode === KeyCode.Enter) {
+					const selection = this.monacoEditor.getSelection()
+					const currentLine = selection.startLineNumber
+					const lineContent = this.monacoEditorModel.getLineContent(currentLine)
+
+					const checkboxMatch = checkBoxListRegex.exec(lineContent)
+					const numberedListMatch = numberedListRegex.exec(lineContent)
+					const listItemMatch = listItemRegex.exec(lineContent)
+					let leaveList = false
+					if (checkboxMatch) {
+						if (checkboxMatch[0] === lineContent) {
+							leaveList = true
+						}
+					} else if (numberedListMatch) {
+						if (numberedListMatch[0] === lineContent) {
+							leaveList = true
+						}
+					} else if (listItemMatch) {
+						if (listItemMatch[0] === lineContent) {
+							leaveList = true
+						}
+					}
+					if (leaveList) {
+						this.skipNextEnterUp = true
+						e.stopPropagation()
+						e.preventDefault()
+						const action = {
+							range: {
+								startLineNumber: currentLine,
+								startColumn: 1,
+								endLineNumber: currentLine,
+								endColumn: this.monacoEditorModel.getLineMaxColumn(currentLine),
+							},
+							text: '',
+						}
+						this.monacoEditor.executeEdits(undefined, [action])
 					}
 				}
 			}
