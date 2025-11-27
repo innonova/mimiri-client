@@ -28,15 +28,6 @@
 			/>
 			<div class="inline-block h-4/5 w-0 border border-solid border-toolbar-separator m-0.5" />
 			<ToolbarIcon
-				:icon="settingsManager.wordwrap ? 'wordwrap-on' : 'wordwrap-off'"
-				:hoverEffect="true"
-				:disabled="noteManager.tree.selectedNoteRef().value?.isSystem"
-				:title="settingsManager.wordwrap ? 'Disable Word Wrap' : 'Enable Word Wrap'"
-				:toggledOn="settingsManager.wordwrap"
-				@click="toggleWordWrap"
-				data-testid="editor-toggle-wordwrap"
-			/>
-			<ToolbarIcon
 				icon="undo"
 				:hoverEffect="true"
 				:disabled="!mimiriEditor.canUndo"
@@ -111,6 +102,17 @@
 				title="Ordered List"
 				@click="insertOrderedList"
 				data-testid="editor-insert-ordered-list"
+			/>
+			<div class="inline-block h-4/5 w-0 border border-solid border-toolbar-separator m-0.5" />
+			<ToolbarIcon
+				v-if="showWordWrap"
+				:icon="settingsManager.wordwrap ? 'wordwrap-on' : 'wordwrap-off'"
+				:hoverEffect="true"
+				:disabled="noteManager.tree.selectedNoteRef().value?.isSystem"
+				:title="settingsManager.wordwrap ? 'Disable Word Wrap' : 'Enable Word Wrap'"
+				:toggledOn="settingsManager.wordwrap"
+				@click="toggleWordWrap"
+				data-testid="editor-toggle-wordwrap"
 			/>
 		</div>
 		<div class="relative flex-auto flex flex-col items-stretch overflow-hidden">
@@ -386,6 +388,10 @@ const showHistory = () => {
 const saveEnabled = computed(() => {
 	const winFocus = windowFocus.value // ensure that compute knows to trigger on this even if the first part of the next statement is false - AEK
 	return mimiriEditor.changed && winFocus && !!activeViewModel
+})
+
+const showWordWrap = computed(() => {
+	return mimiriEditor.supportsWordWrap
 })
 
 const save = async () => {

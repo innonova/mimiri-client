@@ -209,6 +209,7 @@ export class MimiriEditor {
 	}
 
 	public async save(): Promise<string> {
+		return // TODO disable saving for now
 		let result = 'success'
 		const noteId = this.note?.id
 		const targetText = this._activeEditor.text
@@ -407,5 +408,9 @@ export class MimiriEditor {
 
 	public get mode() {
 		return this._state.mode
+	}
+
+	public get supportsWordWrap(): boolean {
+		return this._state.mode === 'advanced'
 	}
 }

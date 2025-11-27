@@ -1,7 +1,5 @@
 import type { Node } from 'prosemirror-model'
 import type { EditorView } from 'prosemirror-view'
-import { EditorState } from 'prosemirror-state'
-import { mimiriSchema } from './mimiri-schema'
 import { deserialize } from './mimiri-deserializer'
 import { serialize } from './mimiri-serializer'
 import type ConflictBanner from '../../../components/elements/ConflictBanner.vue'
@@ -164,12 +162,10 @@ export class ConflictActionHandler {
 
 				// Re-parse with full formatting
 				const newDoc = deserialize(currentText)
-				const newState = EditorState.create({
-					schema: mimiriSchema,
-					doc: newDoc,
-					plugins: view.state.plugins,
-				})
-				view.updateState(newState)
+
+				// Replace entire document content via transaction so dispatchTransaction is called
+				const tr = view.state.tr.replaceWith(0, view.state.doc.content.size, newDoc.content)
+				view.dispatch(tr)
 				console.log('✅ All conflicts resolved - full formatting restored')
 			}
 

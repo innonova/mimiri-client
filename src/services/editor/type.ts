@@ -55,5 +55,6 @@ export interface TextEditor {
 	get scrollTop(): number
 	// get initialText(): string
 	get text(): string
-	// get changed(): boolean
+	get changed(): boolean
+	get supportsWordWrap(): boolean
 }

@@ -6,7 +6,7 @@ import { EditorView } from 'prosemirror-view'
 import { dropCursor } from 'prosemirror-dropcursor'
 import { gapCursor } from 'prosemirror-gapcursor'
 import { keymap } from 'prosemirror-keymap'
-import { history, redo, undo } from 'prosemirror-history'
+import { history, redo, undo, undoDepth, redoDepth } from 'prosemirror-history'
 import {
 	baseKeymap,
 	chainCommands,
@@ -62,15 +62,17 @@ export class EditorProseMirror implements TextEditor {
 	private _active = true
 	private _wordWrap = true
 	private _activePasswordEntry: { node: Node; start: number; end: number } | undefined
-	private _state: Omit<MimiriEditorState, 'mode' | 'changed'> = {
+	private _state: Omit<MimiriEditorState, 'mode'> = {
 		canUndo: true,
 		canRedo: true,
 		canMarkAsPassword: false,
 		canUnMarkAsPassword: false,
+		changed: false,
 	}
 	private _editor: EditorView | undefined
 	private _codeBlockActionHandler: CodeBlockActionHandler | undefined
 	private _conflictActionHandler: ConflictActionHandler | undefined
+	private _initialDoc: ProseMirrorNode | undefined
 
 	constructor(private listener: TextEditorListener) {}
 
@@ -126,11 +128,10 @@ export class EditorProseMirror implements TextEditor {
 					return undefined
 				},
 			},
-			dispatchTransaction(transaction) {
+			dispatchTransaction: transaction => {
 				const newState = view.state.apply(transaction)
 				view.updateState(newState)
-
-				// console.log(serialize(view.state.doc))
+				this.updateState()
 			},
 
 			handleDOMEvents: {
@@ -182,13 +183,16 @@ export class EditorProseMirror implements TextEditor {
 
 					// Delegate to appropriate handler
 					if (nodeType === 'conflict_block') {
-						return this._conflictActionHandler.handle(action, view, node, nodePos)
+						const result = this._conflictActionHandler.handle(action, view, node, nodePos)
+						this.updateState()
+						return result
 					}
 
 					if (nodeType === 'code_block') {
-						return this._codeBlockActionHandler.handle(action, view, node, nodePos)
+						const result = this._codeBlockActionHandler.handle(action, view, node, nodePos)
+						this.updateState()
+						return result
 					}
-
 					return false
 				},
 			},
@@ -201,9 +205,6 @@ export class EditorProseMirror implements TextEditor {
 		this._conflictActionHandler?.setEditorView(view)
 	}
 
-	/**
-	 * Resolves the target node for an action from a position in the document
-	 */
 	private resolveActionTarget(
 		view: EditorView,
 		posValue: number,
@@ -254,6 +255,13 @@ export class EditorProseMirror implements TextEditor {
 		return { node, nodePos, nodeType }
 	}
 
+	private updateState() {
+		this._state.changed = !!this._initialDoc && !this._editor?.state.doc.eq(this._initialDoc)
+		this._state.canUndo = this._editor ? undoDepth(this._editor.state) > 0 : false
+		this._state.canRedo = this._editor ? redoDepth(this._editor.state) > 0 : false
+		this.listener.onStateUpdated(this._state)
+	}
+
 	public unMarkSelectionAsPassword() {}
 
 	public markSelectionAsPassword() {}
@@ -296,10 +304,12 @@ export class EditorProseMirror implements TextEditor {
 
 		this._editor.updateState(newState)
 
+		this._initialDoc = this._editor.state.doc
+
 		// Update conflict banner
 		setTimeout(() => {
 			this._conflictActionHandler?.updateBanner()
-			this.updateUndoRedoState()
+			this.updateState()
 		}, 0)
 
 		// this.lastScrollTop = scrollTop
@@ -320,9 +330,11 @@ export class EditorProseMirror implements TextEditor {
 
 		this._editor.updateState(newState)
 
+		this._initialDoc = this._editor.state.doc
+
 		setTimeout(() => {
 			this._conflictActionHandler?.updateBanner()
-			this.updateUndoRedoState()
+			this.updateState()
 		}, 0)
 
 		// this._state.changed = false
@@ -395,11 +407,17 @@ export class EditorProseMirror implements TextEditor {
 		// }
 	}
 
-	private updateUndoRedoState() {}
+	public undo() {
+		if (this._editor) {
+			undo(this._editor.state, this._editor.dispatch)
+		}
+	}
 
-	public undo() {}
-
-	public redo() {}
+	public redo() {
+		if (this._editor) {
+			redo(this._editor.state, this._editor.dispatch)
+		}
+	}
 
 	public clearSearchHighlights() {}
 	public setSearchHighlights(_text: string) {}
@@ -508,7 +526,10 @@ export class EditorProseMirror implements TextEditor {
 		return serialize(this._editor.state.doc)
 	}
 
-	// public get changed(): boolean {
-	// 	return this._state.changed
-	// }
+	public get changed(): boolean {
+		return this._state.changed
+	}
+	public get supportsWordWrap(): boolean {
+		return false
+	}
 }

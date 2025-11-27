@@ -19,18 +19,19 @@ export class EditorMonaco implements TextEditor {
 	private decorations: string[] = []
 	private styleElement: HTMLStyleElement
 	private backgroundElement: HTMLDivElement
-	private _state: Omit<MimiriEditorState, 'mode' | 'changed'> = {
+	private _state: Omit<MimiriEditorState, 'mode'> = {
 		canUndo: false,
 		canRedo: false,
 		canMarkAsPassword: false,
 		canUnMarkAsPassword: false,
+		changed: false,
 	}
 	private skipScrollUntil = 0
 	private historyShowing = false
 	private lastScrollTop = 0
 	private lastSelection: Selection | null = null
 	private _text: string = ''
-	// private _initialText: string = ''
+	private _initialText: string = ''
 	private _domElement: HTMLElement | undefined
 	private _active = true
 	private _mouseDownPosition: { lineNumber: number; column: number } | undefined
@@ -230,7 +231,7 @@ export class EditorMonaco implements TextEditor {
 				this._text = this.monacoEditorModel.getValue()
 				this._state.canUndo = (this.monacoEditorModel as any).canUndo()
 				this._state.canRedo = (this.monacoEditorModel as any).canRedo()
-				// this._state.changed = this._text !== this._initialText
+				this._state.changed = this._text !== this._initialText
 				this.listener.onStateUpdated(this._state)
 			}
 		})
@@ -489,9 +490,9 @@ export class EditorMonaco implements TextEditor {
 	}
 
 	public show(text: string, scrollTop: number) {
-		// this._initialText = text
+		this._initialText = text
 		this._text = text
-		// this._state.changed = false
+		this._state.changed = false
 		this.monacoEditorModel.setValue(text)
 		this._plugins.forEach(plugin => {
 			plugin.show()
@@ -509,9 +510,9 @@ export class EditorMonaco implements TextEditor {
 	}
 
 	public updateText(text: string) {
-		// this._initialText = text
+		this._initialText = text
 		this._text = text
-		// this._state.changed = false
+		this._state.changed = false
 		if (this.monacoEditorModel.getValue() !== text) {
 			this.monacoEditorModel.setValue(text)
 			this._plugins.forEach(plugin => {
@@ -532,9 +533,9 @@ export class EditorMonaco implements TextEditor {
 	// }
 
 	public clear() {
-		// this._initialText = ''
+		this._initialText = ''
 		this._text = ''
-		// this._state.changed = false
+		this._state.changed = false
 		this._state.canUndo = false
 		this._state.canRedo = false
 		this.monacoEditorModel.setValue('')
@@ -817,21 +818,25 @@ export class EditorMonaco implements TextEditor {
 		return this.monacoEditor.getScrollTop()
 	}
 
-	// get initialText(): string {
-	// 	return this._initialText
-	// }
+	get initialText(): string {
+		return this._initialText
+	}
 
 	public get text() {
 		return this._text
 	}
 
-	// public get changed() {
-	// 	return this._state.changed
-	// }
+	public get changed() {
+		return this._state.changed
+	}
 
 	public navigateConflict(direction: 'prev' | 'next') {
 		if (this._conflictBlockPlugin) {
 			this._conflictBlockPlugin.navigateConflict(direction)
 		}
+	}
+
+	public get supportsWordWrap(): boolean {
+		return true
 	}
 }
