@@ -390,8 +390,8 @@ export class EditorMonaco implements TextEditor {
 		this.monacoEditor.onMouseDown(e => {
 			if (
 				Date.now() - mouseInfo.time < 500 &&
-				mouseInfo.line === e.target.position.lineNumber &&
-				mouseInfo.column === e.target.position.column
+				mouseInfo.line === e.target.position?.lineNumber &&
+				mouseInfo.column === e.target.position?.column
 			) {
 				mouseInfo.count++
 			} else if (e.target?.position) {
