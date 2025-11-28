@@ -39,6 +39,9 @@ const conflictReadOnlyPlugin = new Plugin({
 		editable(state) {
 			// Check if document contains any conflict blocks
 			let hasConflictBlocks = false
+			if (state.doc.attrs.history) {
+				return false
+			}
 			state.doc.descendants(node => {
 				if (node.type.name === 'conflict_block') {
 					hasConflictBlocks = true
@@ -70,6 +73,8 @@ export class EditorProseMirror implements TextEditor {
 		changed: false,
 	}
 	private _editor: EditorView | undefined
+	private _documentState: EditorState | undefined
+	private _historyState: EditorState | undefined
 	private _codeBlockActionHandler: CodeBlockActionHandler | undefined
 	private _conflictActionHandler: ConflictActionHandler | undefined
 	private _initialDoc: ProseMirrorNode | undefined
@@ -136,6 +141,9 @@ export class EditorProseMirror implements TextEditor {
 
 			handleDOMEvents: {
 				mousedown: (view, event) => {
+					if (event.button !== 0) {
+						return false
+					}
 					const target = event.target as HTMLElement
 					const action = target.getAttribute('data-action')
 
@@ -160,6 +168,9 @@ export class EditorProseMirror implements TextEditor {
 					return false
 				},
 				mouseup: (view, event) => {
+					if (event.button !== 0) {
+						return false
+					}
 					const element = event.target as HTMLElement
 					const action = element.getAttribute('data-action')
 
@@ -296,19 +307,19 @@ export class EditorProseMirror implements TextEditor {
 	public show(text: string, _scrollTop: number) {
 		const newDoc = deserialize(text)
 
-		const newState = EditorState.create({
+		this._documentState = EditorState.create({
 			schema: mimiriSchema,
 			doc: newDoc,
 			plugins: this._editor.state.plugins,
 		})
 
-		this._editor.updateState(newState)
+		this._editor.updateState(this._documentState)
 
 		this._initialDoc = this._editor.state.doc
 
 		// Update conflict banner
 		setTimeout(() => {
-			this._conflictActionHandler?.updateBanner()
+			this._conflictActionHandler?.updateBanner(this.historyShowing)
 			this.updateState()
 		}, 0)
 
@@ -322,18 +333,18 @@ export class EditorProseMirror implements TextEditor {
 	public updateText(text: string) {
 		const newDoc = deserialize(text)
 
-		const newState = EditorState.create({
+		this._documentState = EditorState.create({
 			schema: mimiriSchema,
 			doc: newDoc,
 			plugins: this._editor.state.plugins,
 		})
 
-		this._editor.updateState(newState)
+		this._editor.updateState(this._documentState)
 
 		this._initialDoc = this._editor.state.doc
 
 		setTimeout(() => {
-			this._conflictActionHandler?.updateBanner()
+			this._conflictActionHandler?.updateBanner(this.historyShowing)
 			this.updateState()
 		}, 0)
 
@@ -368,43 +379,34 @@ export class EditorProseMirror implements TextEditor {
 		// }
 	}
 
-	public setHistoryText(_text: string) {
-		// this._history.innerText = text
+	public setHistoryText(text: string) {
+		const newDoc = deserialize(text, true)
+
+		this._historyState = EditorState.create({
+			schema: mimiriSchema,
+			doc: newDoc,
+			plugins: this._editor.state.plugins,
+		})
+		this._editor.updateState(this._historyState)
+
+		setTimeout(() => {
+			this._conflictActionHandler?.updateBanner(this.historyShowing)
+			this.updateState()
+		}, 0)
 	}
 
 	public hideHistory() {
-		// if (this.historyShowing) {
-		// 	const scrollTop = this.lastScrollTop
-		// 	this._history.contentEditable = 'plaintext-only'
-		// 	this._history.focus()
-		// 	this._history.blur()
-		// 	this._history.contentEditable = 'false'
-		// 	this._history.style.display = 'none'
-		// 	this._element.style.display = 'flex'
-		// 	this._state.canUndo = true
-		// 	this._state.canRedo = true
-		// 	this.listener.onStateUpdated(this._state)
-		// 	this.historyShowing = false
-		// 	this.focus()
-		// 	setTimeout(() => {
-		// 		this._element.scrollTop = scrollTop
-		// 	})
-		// }
+		if (this.historyShowing) {
+			this.historyShowing = false
+			this._domElement.classList.remove('history-active')
+		}
 	}
 
 	public showHistory() {
-		// if (!this.historyShowing) {
-		// 	this._history.contentEditable = 'plaintext-only'
-		// 	this._element.style.display = 'none'
-		// 	this._history.style.display = 'flex'
-		// 	this._history.focus()
-		// 	this._history.blur()
-		// 	this._history.contentEditable = 'false'
-		// 	this._state.canUndo = false
-		// 	this._state.canRedo = false
-		// 	this.listener.onStateUpdated(this._state)
-		// 	this.historyShowing = true
-		// }
+		if (!this.historyShowing) {
+			this.historyShowing = true
+			this._domElement.classList.add('history-active')
+		}
 	}
 
 	public undo() {

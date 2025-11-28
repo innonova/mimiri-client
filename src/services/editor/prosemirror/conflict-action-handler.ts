@@ -170,7 +170,7 @@ export class ConflictActionHandler {
 			}
 
 			// Update banner (either hide it or update count)
-			this.updateBanner()
+			this.updateBanner(false)
 		}, 0)
 	}
 
@@ -247,8 +247,12 @@ export class ConflictActionHandler {
 	/**
 	 * Update the conflict banner with current conflict count and position
 	 */
-	public updateBanner(): void {
+	public updateBanner(historyActive: boolean): void {
 		if (!this._conflictBanner || !this._editorView) {
+			return
+		}
+		if (historyActive) {
+			this._conflictBanner.hide()
 			return
 		}
 
@@ -299,7 +303,7 @@ export class ConflictActionHandler {
 
 		// Scroll to the conflict and update banner
 		this.scrollToCurrentConflict()
-		this.updateBanner()
+		this.updateBanner(false)
 	}
 
 	private scrollToCurrentConflict(): void {

@@ -11,6 +11,7 @@ import { InlineMarkdownPlugin } from './monaco-editor/inline-markdown-plugin'
 import { clipboardManager } from '../../global'
 import { getThemeById } from './theme-manager'
 import type ConflictBanner from '../../components/elements/ConflictBanner.vue'
+import { MimiriCodeLensProvider } from './monaco-editor/mimiri-code-lens-provider'
 
 export class EditorMonaco implements TextEditor {
 	private monacoEditor: editor.IStandaloneCodeEditor
@@ -564,11 +565,15 @@ export class EditorMonaco implements TextEditor {
 			this.monacoEditor.setSelection(this.lastSelection)
 		}
 		this.historyShowing = false
+		this._conflictBlockPlugin.resume()
+		MimiriCodeLensProvider.suspended = false
 	}
 
 	public showHistory() {
 		this.lastSelection = this.monacoEditor.getSelection()
 		this.historyShowing = true
+		this._conflictBlockPlugin.suspend()
+		MimiriCodeLensProvider.suspended = true
 		this.monacoEditor.setModel(this.monacoEditorHistoryModel)
 	}
 

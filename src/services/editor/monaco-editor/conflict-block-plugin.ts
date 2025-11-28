@@ -13,6 +13,7 @@ interface ConflictBlockState {
 
 export class ConflictBlockPlugin implements EditorPlugin {
 	private _active: boolean = true
+	private _suspended: boolean = false
 	private monacoEditorModel: editor.ITextModel
 	private conflictBlockStates: ConflictBlockState[] = []
 	private pendingBlocks: Set<ConflictBlockState> = new Set()
@@ -513,6 +514,10 @@ export class ConflictBlockPlugin implements EditorPlugin {
 		if (!this._conflictBanner) {
 			return
 		}
+		if (this._suspended) {
+			this._conflictBanner.hide()
+			return
+		}
 		// Ensure index is valid
 		if (this._currentConflictIndex >= this.conflictBlockStates.length) {
 			this._currentConflictIndex = 0
@@ -544,6 +549,16 @@ export class ConflictBlockPlugin implements EditorPlugin {
 			this.monacoEditor.revealLineInCenter(block.start)
 		}
 
+		this.updateConflictBanner()
+	}
+
+	public suspend(): void {
+		this._suspended = true
+		this.updateConflictBanner()
+	}
+
+	public resume(): void {
+		this._suspended = false
 		this.updateConflictBanner()
 	}
 

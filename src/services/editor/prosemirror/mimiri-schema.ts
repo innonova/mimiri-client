@@ -3,7 +3,7 @@ import { Schema, type NodeSpec, type MarkSpec } from 'prosemirror-model'
 export const nodes: { [key: string]: NodeSpec } = {
 	doc: {
 		content: 'block+',
-		attrs: { indent: { default: null } },
+		attrs: { indent: { default: null }, history: { default: false } },
 	},
 
 	paragraph: {

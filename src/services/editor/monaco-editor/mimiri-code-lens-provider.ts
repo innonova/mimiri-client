@@ -16,12 +16,19 @@ export interface MimiriCodeLensProviderOptions {
 }
 
 export class MimiriCodeLensProvider implements languages.CodeLensProvider {
+	public static suspended: boolean = false
 	private readonly changeEmitter = new Emitter<void>()
 	public readonly onDidChange = this.changeEmitter.event
 
 	constructor(private readonly options: MimiriCodeLensProviderOptions) {}
 
 	provideCodeLenses(model: editor.ITextModel): languages.CodeLensList {
+		if (MimiriCodeLensProvider.suspended) {
+			return {
+				lenses: [],
+				dispose: () => {},
+			}
+		}
 		const lenses: languages.CodeLens[] = []
 		const items = this.options.getItems()
 

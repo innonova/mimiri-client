@@ -6,10 +6,10 @@ const listItemRegex = /^(?<indent>\s*)(?<marker>[-*+]|\d+\.)\s(?:(?<checkbox>\[(
 const nakedCheckItemRegex = /^(?<indent>\s*)(?:(?<checkbox>\[(?:\s|[xX])\])\s+)(?<content>.*)$/
 const blockquoteRegex = /^(?<indent>\s*)>\s?(?<content>.*)$/
 const codeBlockRegex = /^```(?<language>.*)$/
-const detectConflictRegex = /^<<<<<<< Local$/m
-const conflictStartRegex = /^<<<<<<< Local$/
+const detectConflictRegex = /^<<<<<<< (?:Local|HEAD)$/m
+const conflictStartRegex = /^<<<<<<< (?:Local|HEAD)$/
 const conflictSeparatorRegex = /^=======$/
-const conflictEndRegex = /^>>>>>>> Server$/
+const conflictEndRegex = /^>>>>>>> (?:Server|remote)$/
 const indentedTextRegex = /^(?<indent>\s+)(?<content>\S.*)$/
 const orderedRegex = /^(?<number>\d+)\./
 
@@ -717,13 +717,13 @@ const buildTree = (tokens: Token[]): TreeNode => {
 	return root
 }
 
-const buildProseMirrorNode = (parent: TreeNode, treeNode: TreeNode, index: number): Node | null => {
+const buildProseMirrorNode = (parent: TreeNode, treeNode: TreeNode, index: number, history: boolean): Node | null => {
 	const children: Node[] = []
 
 	// Don't build children for conflict blocks since they're atom nodes
 	if (treeNode.type !== 'conflict_block') {
 		for (let i = 0; i < treeNode.children.length; i++) {
-			const child = buildProseMirrorNode(treeNode, treeNode.children[i], i)
+			const child = buildProseMirrorNode(treeNode, treeNode.children[i], i, history)
 			if (child) {
 				children.push(child)
 			}
@@ -732,7 +732,7 @@ const buildProseMirrorNode = (parent: TreeNode, treeNode: TreeNode, index: numbe
 
 	switch (treeNode.type) {
 		case 'doc':
-			return mimiriSchema.node('doc', { indent: treeNode.indent }, children)
+			return mimiriSchema.node('doc', { indent: treeNode.indent, history }, children)
 		case 'heading':
 			return mimiriSchema.node('heading', { level: treeNode.depth || 1 }, children)
 		case 'list_item':
@@ -846,7 +846,7 @@ export const hasConflicts = (text: string): boolean => {
 	return detectConflictRegex.test(text)
 }
 
-export const deserialize = (text: string) => {
+export const deserialize = (text: string, history: boolean = false) => {
 	const normalizedText = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n')
 
 	// Use safe mode if conflicts are detected
@@ -856,7 +856,7 @@ export const deserialize = (text: string) => {
 	// console.log('tokens', tokens)
 	const tree = buildTree(tokens)
 	// console.log('tree', tree)
-	const doc = buildProseMirrorNode(null, tree, 0)
+	const doc = buildProseMirrorNode(null, tree, 0, history)
 	// console.log('des', doc2)
 	return doc
 }

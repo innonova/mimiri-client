@@ -303,3 +303,11 @@ li[data-item-type='task'][data-checked='true'] .list-item-content p {
 .ProseMirror .conflict-server-content {
 	background-color: rgba(106, 27, 154, 0.2);
 }
+
+.history-active .ProseMirror conflictlens {
+	display: none;
+}
+
+.history-active .ProseMirror codelens {
+	display: none;
+}
