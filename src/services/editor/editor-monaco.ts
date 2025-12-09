@@ -31,7 +31,8 @@ export class EditorMonaco implements TextEditor {
 	private historyShowing = false
 	private lastScrollTop = 0
 	private lastSelection: Selection | null = null
-	private _text: string = ''
+	private _cleanVersions: number[] = []
+	private _checkNextChangeForClean = false
 	private _initialText: string = ''
 	private _domElement: HTMLElement | undefined
 	private _active = true
@@ -229,11 +230,15 @@ export class EditorMonaco implements TextEditor {
 
 		this.monacoEditorModel.onDidChangeContent(() => {
 			if (this._active) {
-				this._text = this.monacoEditorModel.getValue()
-				this._state.canUndo = (this.monacoEditorModel as any).canUndo()
-				this._state.canRedo = (this.monacoEditorModel as any).canRedo()
-				this._state.changed = this._text !== this._initialText
-				this.listener.onStateUpdated(this._state)
+				if (this._cleanVersions.length === 0) {
+					this._cleanVersions.push(this.monacoEditorModel.getAlternativeVersionId())
+				} else if (this._checkNextChangeForClean) {
+					if (this.monacoEditorModel.getValue() === this._initialText) {
+						this._cleanVersions.push(this.monacoEditorModel.getAlternativeVersionId())
+					}
+				}
+				this._checkNextChangeForClean = false
+				this.updateState()
 			}
 		})
 
@@ -352,12 +357,6 @@ export class EditorMonaco implements TextEditor {
 				}
 			}
 			this.updateAbilities()
-		})
-
-		this.monacoEditor.onDidBlurEditorText(() => {
-			if (!this.historyShowing) {
-				this.listener.onEditorBlur()
-			}
 		})
 
 		const scrollDebounce = new Debounce(async () => {
@@ -490,11 +489,22 @@ export class EditorMonaco implements TextEditor {
 		}
 	}
 
+	private updateState() {
+		this._state.canUndo = (this.monacoEditorModel as any).canUndo()
+		this._state.canRedo = (this.monacoEditorModel as any).canRedo()
+		this._state.changed =
+			this._cleanVersions.length === 0 ||
+			!this._cleanVersions.includes(this.monacoEditorModel.getAlternativeVersionId())
+
+		this.listener.onStateUpdated(this._state)
+	}
+
 	public show(text: string, scrollTop: number) {
-		this._initialText = text
-		this._text = text
 		this._state.changed = false
+		this._cleanVersions = []
+		this._initialText = text
 		this.monacoEditorModel.setValue(text)
+
 		this._plugins.forEach(plugin => {
 			plugin.show()
 		})
@@ -511,10 +521,11 @@ export class EditorMonaco implements TextEditor {
 	}
 
 	public updateText(text: string) {
-		this._initialText = text
-		this._text = text
+		// TODO consider when update is called
 		this._state.changed = false
 		if (this.monacoEditorModel.getValue() !== text) {
+			this._cleanVersions = []
+			this._initialText = text
 			this.monacoEditorModel.setValue(text)
 			this._plugins.forEach(plugin => {
 				plugin.updateText()
@@ -525,17 +536,39 @@ export class EditorMonaco implements TextEditor {
 		}
 	}
 
-	// public resetChanged() {
-	// 	// this._initialText = this._text
-	// 	this._state.changed = false
-	// 	if (this._active) {
-	// 		this.listener.onStateUpdated(this._state)
-	// 	}
-	// }
+	public switchTo(text: string) {
+		if (this.monacoEditorModel.getValue() !== text) {
+			const fullRange = this.monacoEditorModel.getFullModelRange()
+			this._checkNextChangeForClean = true
+			this.monacoEditorModel.pushEditOperations(
+				[],
+				[
+					{
+						range: fullRange,
+						text,
+					},
+				],
+				() => null,
+			)
+			this._plugins.forEach(plugin => {
+				plugin.updateText()
+			})
+		}
+		if (this._active) {
+			this.updateState()
+		}
+	}
+
+	public resetChanged() {
+		this._cleanVersions = [this.monacoEditorModel.getAlternativeVersionId()]
+		this._state.changed = false
+		if (this._active) {
+			this.listener.onStateUpdated(this._state)
+		}
+	}
 
 	public clear() {
-		this._initialText = ''
-		this._text = ''
+		this._cleanVersions = []
 		this._state.changed = false
 		this._state.canUndo = false
 		this._state.canRedo = false
@@ -548,10 +581,12 @@ export class EditorMonaco implements TextEditor {
 
 	public undo() {
 		;(this.monacoEditorModel as any).undo()
+		this.updateState()
 	}
 
 	public redo() {
 		;(this.monacoEditorModel as any).redo()
+		this.updateState()
 	}
 
 	public setHistoryText(text: string) {
@@ -823,12 +858,8 @@ export class EditorMonaco implements TextEditor {
 		return this.monacoEditor.getScrollTop()
 	}
 
-	get initialText(): string {
-		return this._initialText
-	}
-
 	public get text() {
-		return this._text
+		return this.monacoEditor.getValue()
 	}
 
 	public get changed() {
@@ -843,5 +874,9 @@ export class EditorMonaco implements TextEditor {
 
 	public get supportsWordWrap(): boolean {
 		return true
+	}
+
+	get hasOpenDocument(): boolean {
+		return this._cleanVersions.length !== 0
 	}
 }

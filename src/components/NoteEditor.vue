@@ -291,10 +291,10 @@ const setActiveViewModel = viewModel => {
 		}
 		activeViewModel = viewModel
 		if (activeViewModel) {
-			mimiriEditor.open(noteManager.tree.getNoteById(activeViewModel.id))
+			void mimiriEditor.open(noteManager.tree.getNoteById(activeViewModel.id))
 			activeViewModelStopWatch = watch(activeViewModel, () => {
 				if (activeViewModel && activeViewModel.id === mimiriEditor.note?.id) {
-					mimiriEditor.open(noteManager.tree.getNoteById(activeViewModel.id))
+					void mimiriEditor.open(noteManager.tree.getNoteById(activeViewModel.id))
 				}
 			})
 		}
@@ -309,7 +309,26 @@ onMounted(() => {
 	mimiriEditor.init(monacoContainer.value, proseMirrorContainer.value, proseMirrorPopup.value, conflictBanner.value)
 	mimiriEditor.onSave(() => save())
 	mimiriEditor.onSearchAll(() => titleBar.value?.searchAllNotes())
-	mimiriEditor.onBlur(() => save())
+	mimiriEditor.onError(error => {
+		if (error === 'note-size') {
+			limitDialog.value.show('save-note-size')
+		} else if (error === 'total-size') {
+			limitDialog.value.show('save-total-size')
+		} else if (error === 'lost-update') {
+			infoDialog.value.show(
+				'Note was changed',
+				`The note you just saved appears to have been changed outside the editor while you were editing it.
+
+This may happen if you edited the note in another tab or device.
+
+This may also happen if your connection is unstable.
+
+Or if this is a shared note: another user may have edited it.
+
+You can view all changes in the history.`,
+			)
+		}
+	})
 	setActiveViewModel(noteManager.tree.selectedViewModel())
 
 	watch(settingsManager.state, () => {
@@ -398,28 +417,7 @@ const save = async () => {
 	if (activeViewModel && saveEnabled.value && !saveInProgress) {
 		saveInProgress = true
 		try {
-			const result = await mimiriEditor.save()
-
-			if (result === 'note-size') {
-				noteManager.tree.select(activeViewModel.id)
-				limitDialog.value.show('save-note-size')
-			} else if (result === 'total-size') {
-				noteManager.tree.select(activeViewModel.id)
-				limitDialog.value.show('save-total-size')
-			} else if (result === 'lost-update') {
-				infoDialog.value.show(
-					'Note was changed',
-					`The note you just saved appears to have been changed outside the editor while you were editing it.
-
-This may happen if you edited the note in another tab or device.
-
-This may also happen if your connection is unstable.
-
-Or if this is a shared note: another user may have edited it.
-
-You can view all changes in the history.`,
-				)
-			}
+			await mimiriEditor.save()
 		} finally {
 			saveInProgress = false
 		}

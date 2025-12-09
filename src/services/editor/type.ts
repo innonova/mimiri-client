@@ -19,7 +19,6 @@ export enum SelectionExpansion {
 export interface TextEditorListener {
 	onSaveRequested()
 	onSearchAllRequested()
-	onEditorBlur()
 	onScroll(position: number)
 	onPasswordClicked(top: number, left: number, text: string)
 	onStateUpdated(state: Omit<MimiriEditorState, 'mode' | 'changed'>)
@@ -28,8 +27,9 @@ export interface TextEditorListener {
 export interface TextEditor {
 	show(text: string, scrollTop: number)
 	updateText(text: string)
+	switchTo(text: string)
 	clear()
-	// resetChanged()
+	resetChanged()
 	setHistoryText(text: string)
 	hideHistory()
 	showHistory()
@@ -57,4 +57,5 @@ export interface TextEditor {
 	get text(): string
 	get changed(): boolean
 	get supportsWordWrap(): boolean
+	get hasOpenDocument(): boolean
 }

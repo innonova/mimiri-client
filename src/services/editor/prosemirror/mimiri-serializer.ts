@@ -82,5 +82,5 @@ export const serialize = (doc: Node) => {
 	for (const child of doc.content.content) {
 		text += serializeNode(child, 0, doc.attrs.indent ?? '  ', false)
 	}
-	return text
+	return text.substring(0, text.length - 1) // Remove the last newline added
 }

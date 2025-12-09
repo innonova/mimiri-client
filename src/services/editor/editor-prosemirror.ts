@@ -65,6 +65,7 @@ export class EditorProseMirror implements TextEditor {
 	private _active = true
 	private _wordWrap = true
 	private _activePasswordEntry: { node: Node; start: number; end: number } | undefined
+	private _hasOpenDocument: boolean = false
 	private _state: Omit<MimiriEditorState, 'mode'> = {
 		canUndo: true,
 		canRedo: true,
@@ -305,6 +306,7 @@ export class EditorProseMirror implements TextEditor {
 	}
 
 	public show(text: string, _scrollTop: number) {
+		this._hasOpenDocument = true
 		const newDoc = deserialize(text)
 
 		this._documentState = EditorState.create({
@@ -331,6 +333,7 @@ export class EditorProseMirror implements TextEditor {
 	}
 
 	public updateText(text: string) {
+		this._hasOpenDocument = true
 		const newDoc = deserialize(text)
 
 		this._documentState = EditorState.create({
@@ -357,16 +360,30 @@ export class EditorProseMirror implements TextEditor {
 		// 	this.listener.onStateUpdated(this._state)
 		// }
 	}
+	public switchTo(text: string) {
+		if (this.text !== text) {
+			const newDoc = deserialize(text)
+			const tr = this._editor.state.tr
+			tr.replaceWith(0, this._editor.state.doc.content.size, newDoc.content)
+			this._editor.dispatch(tr)
+
+			setTimeout(() => {
+				this._conflictActionHandler?.updateBanner(this.historyShowing)
+				this.updateState()
+			}, 0)
+		}
+	}
 
 	public resetChanged() {
-		// this._initialText = this._element.innerText
-		// this._state.changed = false
-		// if (this._active) {
-		// 	this.listener.onStateUpdated(this._state)
-		// }
+		this._initialDoc = this._editor.state.doc
+		this._state.changed = false
+		if (this._active) {
+			this.listener.onStateUpdated(this._state)
+		}
 	}
 
 	public clear() {
+		this._hasOpenDocument = false
 		// Clear formatting detector
 		// this._initialText = ''
 		// this._state.changed = false
@@ -531,7 +548,12 @@ export class EditorProseMirror implements TextEditor {
 	public get changed(): boolean {
 		return this._state.changed
 	}
+
 	public get supportsWordWrap(): boolean {
 		return false
+	}
+
+	get hasOpenDocument(): boolean {
+		return this._hasOpenDocument
 	}
 }

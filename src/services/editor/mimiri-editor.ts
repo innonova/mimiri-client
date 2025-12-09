@@ -10,6 +10,8 @@ import { EditorProseMirror } from './editor-prosemirror'
 import AutoComplete from '../../components/elements/AutoComplete.vue'
 import ConflictBanner from '../../components/elements/ConflictBanner.vue'
 
+declare type SaveError = 'success' | 'note-size' | 'total-size' | 'lost-update' | 'not-saved-empty'
+
 export class MimiriEditor {
 	private _history = new NoteHistory(this)
 	private _note: MimerNote
@@ -36,9 +38,9 @@ export class MimiriEditor {
 		this.searchAllListener = listener
 	}
 
-	private blurListener: () => void
-	public onBlur(listener: () => void) {
-		this.blurListener = listener
+	private errorListener: (error: SaveError) => void
+	public onError(listener: (error: SaveError) => void) {
+		this.errorListener = listener
 	}
 
 	constructor() {
@@ -59,9 +61,6 @@ export class MimiriEditor {
 			},
 			onSearchAllRequested: () => {
 				this.searchAllListener?.()
-			},
-			onEditorBlur: () => {
-				this.blurListener?.()
 			},
 			onScroll: (position: number) => {
 				if (this.note) {
@@ -162,16 +161,33 @@ export class MimiriEditor {
 	public async toggleEditMode() {
 		if (this._editorProseMirror.active) {
 			this.activateMonaco()
-			this._editorMonaco.updateText(this._editorProseMirror.text)
+			if (!this._editorMonaco.hasOpenDocument) {
+				this._editorMonaco.show(this.note.text, this.note.scrollTop)
+			}
+			this._editorMonaco.switchTo(this._editorProseMirror.text)
 			this._editorMonaco.readonly = this._editorProseMirror.readonly
 		} else {
 			await this.activateProseMirror()
-			this._editorProseMirror.updateText(this._editorMonaco.text)
+			if (!this._editorProseMirror.hasOpenDocument) {
+				this._editorProseMirror.show(this.note.text, this.note.scrollTop)
+			}
+			this._editorProseMirror.switchTo(this._editorMonaco.text)
 			this._editorProseMirror.readonly = this._editorMonaco.readonly
 		}
 	}
 
-	public open(note: MimerNote) {
+	public async open(note: MimerNote) {
+		if (this.note && this.note.id !== note.id && this._state.changed) {
+			const result = await this.internal_save()
+			if (result !== 'success') {
+				setTimeout(async () => {
+					await this.note.select()
+					this.errorListener?.(result as SaveError)
+				}, 0)
+				return
+			}
+		}
+
 		if (this.note && this.note.id !== note?.id) {
 			this.note.scrollTop = this._activeEditor.scrollTop
 		}
@@ -194,6 +210,11 @@ export class MimiriEditor {
 			this._state.changed = false
 			this._activeEditor.show(note.text, this.note.scrollTop)
 			this._activeEditor.readonly = note.isSystem
+			if (this._editorProseMirror.active) {
+				this._editorMonaco.clear()
+			} else {
+				this._editorProseMirror.clear()
+			}
 		} else {
 			if (!this._state.changed) {
 				this._initialText = note.text
@@ -208,19 +229,29 @@ export class MimiriEditor {
 		}
 	}
 
-	public async save(): Promise<string> {
-		return // TODO disable saving for now
-		let result = 'success'
+	public async save() {
+		const result = await this.internal_save()
+		if (result !== 'success') {
+			setTimeout(async () => {
+				await this.note.select()
+				this.errorListener?.(result as SaveError)
+			}, 0)
+		}
+	}
+
+	private async internal_save(): Promise<SaveError> {
+		let result: SaveError = 'success'
 		const noteId = this.note?.id
 		const targetText = this._activeEditor.text
 		// const initialText = this._activeEditor.initialText
 		if (noteId && targetText !== this._initialText) {
-			if (targetText.length === 0 && this._initialText.length > 5) {
-				const doSave = await saveEmptyNodeDialog.value.show(noteManager.tree.getNoteById(noteId))
-				if (!doSave) {
-					return 'not-saved-empty'
-				}
-			}
+			// TODO reconsider empty note saving
+			// if (targetText.length === 0 && this._initialText.length > 5) {
+			// 	const doSave = await saveEmptyNodeDialog.value.show(noteManager.tree.getNoteById(noteId))
+			// 	if (!doSave) {
+			// 		return 'not-saved-empty'
+			// 	}
+			// }
 			while (true) {
 				try {
 					const note = noteManager.tree.getNoteById(noteId)
@@ -228,13 +259,14 @@ export class MimiriEditor {
 						if (note.id === this.note.id) {
 							this._initialText = note.text
 							this._state.changed = false
-							// this.resetChanged()
+							this.resetChanged()
 						}
 						return 'success'
 					}
 					if (this._initialText !== note.text) {
 						result = 'lost-update'
 					}
+					// TODO consider size limits
 					// const sizeBefore = note.size
 					note.text = targetText
 					// const sizeAfter = note.size
@@ -251,7 +283,7 @@ export class MimiriEditor {
 					if (note.id === this.note.id) {
 						this._initialText = note.text
 						this._state.changed = false
-						// this.resetChanged()
+						this.resetChanged()
 					}
 					// }
 					break
@@ -280,10 +312,10 @@ export class MimiriEditor {
 		}
 	}
 
-	// public resetChanged() {
-	// 	this._activeEditor.resetChanged()
-	// 	this._activeEditor.readonly = this.note.isSystem
-	// }
+	public resetChanged() {
+		this._activeEditor.resetChanged()
+		this._activeEditor.readonly = this.note.isSystem
+	}
 
 	public setHistoryText(text: string) {
 		this._activeEditor.setHistoryText(text)
@@ -400,10 +432,6 @@ export class MimiriEditor {
 
 	public get changed() {
 		return this._state.changed
-	}
-
-	public get text() {
-		return this._activeEditor.text
 	}
 
 	public get mode() {
