@@ -425,5 +425,17 @@
 		"license": "CC0",
 		"attribution": "",
 		"collection": "https://www.svgrepo.com/collection/ui-oval-interface-icons/"
+	},
+	"code": {
+		"url": "https://www.svgrepo.com/download/471213/code-02.svg",
+		"license": "CC0",
+		"attribution": "",
+		"collection": "https://www.svgrepo.com/collection/ui-oval-interface-icons/"
+	},
+	"wysiwyg": {
+		"url": "https://www.svgrepo.com/download/471384/file-02.svg",
+		"license": "CC0",
+		"attribution": "",
+		"collection": "https://www.svgrepo.com/collection/ui-oval-interface-icons/"
 	}
 }

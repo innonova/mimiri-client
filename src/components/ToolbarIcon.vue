@@ -59,6 +59,8 @@ import NumberListIcon from '../icons/number-list.vue'
 import AnnouncementIcon from '../icons/announcement.vue'
 import HeadingIcon from '../icons/heading.vue'
 import CodeBlockIcon from '../icons/code-block.vue'
+import CodeIcon from '../icons/code.vue'
+import WysiwygIcon from '../icons/wysiwyg.vue'
 import { mimiriPlatform } from '../services/mimiri-platform'
 
 const props = defineProps<{
@@ -178,6 +180,12 @@ const getComponent = () => {
 	}
 	if (props.icon === 'code-block') {
 		return CodeBlockIcon
+	}
+	if (props.icon === 'code') {
+		return CodeIcon
+	}
+	if (props.icon === 'wysiwyg') {
+		return WysiwygIcon
 	}
 }
 
