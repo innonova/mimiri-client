@@ -4,14 +4,11 @@ import { Debounce } from '../../helpers'
 
 export class InlineMarkdownPlugin implements EditorPlugin {
 	private _active: boolean = true
-	private monacoEditorModel: editor.ITextModel
 	private lineDecorations: Map<number, string[]> = new Map() // line number -> decoration IDs
 	private pendingLines: Set<number> = new Set() // Accumulate affected lines across multiple changes
 	private debounce: Debounce
 
-	constructor(private monacoEditor: editor.IStandaloneCodeEditor) {
-		this.monacoEditorModel = this.monacoEditor.getModel()
-
+	constructor(private monacoEditorModel: editor.ITextModel) {
 		this.debounce = new Debounce(
 			() => {
 				const linesToUpdate = Array.from(this.pendingLines)
@@ -376,16 +373,16 @@ export class InlineMarkdownPlugin implements EditorPlugin {
 			})
 		}
 
-		if (decorations.length > 0) {
-			console.log('checkbox decos', decorations)
-		}
-
 		return decorations
 	}
 
 	show(): void {}
 
 	updateText(): void {}
+
+	getSupportedActions(): string[] {
+		return []
+	}
 
 	executeFormatAction(_action: string): boolean {
 		return false

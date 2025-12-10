@@ -1,11 +1,214 @@
 import type { EditorState, Transaction } from 'prosemirror-state'
-import type { ResolvedPos } from 'prosemirror-model'
+import type { ResolvedPos, Node as ProseMirrorNode } from 'prosemirror-model'
 import { TextSelection } from 'prosemirror-state'
 import { setBlockType } from 'prosemirror-commands'
 import { mimiriSchema } from './mimiri-schema'
 import { insertList } from './list-commands'
 import { serialize } from './mimiri-serializer'
 import { deserialize } from './mimiri-deserializer'
+
+/**
+ * Get list of supported format actions for the current selection
+ */
+export function getSupportedActions(from: number, to: number, doc: ProseMirrorNode): string[] {
+	const actions: string[] = [
+		'insert-heading',
+		'insert-code-block',
+		'insert-checkbox-list',
+		'insert-unordered-list',
+		'insert-ordered-list',
+	]
+	const node = doc.nodeAt(from)
+	let canMarkAsPassword = false
+	let canUnMarkAsPassword = from === to && !!node?.marks?.find(mark => mark.type.name === 'password')
+
+	if (from !== to) {
+		const $from = doc.resolve(from)
+		const $to = doc.resolve(to)
+		const isSingleLine = $from.parent === $to.parent && ['paragraph', 'code_block'].includes($from.parent.type.name)
+		const isCodeBlock = $from.parent.type.name === 'code_block'
+
+		if (isSingleLine) {
+			if (isCodeBlock) {
+				// In code blocks, check if selection is exactly a p`...` password pattern
+				const selectedText = doc.textBetween(from, to)
+				const textBefore = from > $from.start() ? doc.textBetween(from - 2, from) : ''
+				const textAfter = to < $from.end() ? doc.textBetween(to, to + 1) : ''
+
+				// Can unmark if selection is wrapped with p` and `
+				if (textBefore === 'p`' && textAfter === '`') {
+					canUnMarkAsPassword = true
+				}
+
+				// Can mark if no backticks in selection and not already a password
+				if (!selectedText.includes('`') && textBefore !== 'p`') {
+					canMarkAsPassword = true
+				}
+			} else {
+				// Regular paragraph - check for marks
+				let foundMark = false
+				$from.parent.descendants((child, pos) => {
+					const nodeStart = pos + $from.start()
+					const nodeEnd = nodeStart + child.nodeSize
+					if (nodeEnd > from && nodeStart < to) {
+						if (child.marks.length > 0) {
+							foundMark = true
+							// Check if selection exactly matches a password-marked node
+							const hasPasswordMark = child.marks.find(m => m.type.name === 'password')
+							if (hasPasswordMark && nodeStart === from && nodeEnd === to) {
+								canUnMarkAsPassword = true
+							}
+						}
+					}
+				})
+				canMarkAsPassword = !foundMark
+			}
+		}
+	} else {
+		// Cursor position (no selection) - check for code block password pattern
+		const $pos = doc.resolve(from)
+		if ($pos.parent.type.name === 'code_block') {
+			// In code block, check if cursor is inside a p`...` pattern
+			const parentText = $pos.parent.textContent
+			const offset = from - $pos.start()
+
+			// Find if we're inside a p`...` pattern
+			let inPassword = false
+			let i = 0
+			while (i < parentText.length) {
+				if (parentText[i] === 'p' && parentText[i + 1] === '`') {
+					const start = i
+					let end = parentText.indexOf('`', i + 2)
+					if (end !== -1) {
+						end++ // Include the closing backtick
+						if (offset > start && offset < end) {
+							inPassword = true
+							break
+						}
+						i = end
+						continue
+					}
+				}
+				i++
+			}
+			canUnMarkAsPassword = inPassword
+		}
+	}
+
+	if (canMarkAsPassword) {
+		actions.push('mark-password')
+	}
+	if (canUnMarkAsPassword) {
+		actions.push('unmark-password')
+	}
+
+	return actions
+}
+
+/**
+ * Mark the current selection as a password
+ */
+export function markSelectionAsPassword(state: EditorState, dispatch: (tr: Transaction) => void): void {
+	const from = state.selection.from
+	let to = state.selection.to
+	const $from = state.doc.resolve(from)
+
+	// Trim trailing whitespace from selection
+	const selectedText = state.doc.textBetween(from, to)
+	const trimmedText = selectedText.replace(/\s+$/, '')
+	if (trimmedText.length < selectedText.length) {
+		to = from + trimmedText.length
+	}
+
+	// Don't mark if nothing left after trimming
+	if (from >= to) {
+		return
+	}
+
+	// Handle code block differently - insert p` and ` wrapper around text
+	if ($from.parent.type.name === 'code_block') {
+		const tr = state.tr
+		tr.insertText('`', to)
+		tr.insertText('p`', from)
+		tr.setSelection(TextSelection.create(tr.doc, from + 2, to + 2))
+		dispatch(tr)
+		return
+	}
+
+	// Regular paragraph - add password mark
+	const passwordMark = mimiriSchema.marks.password
+	const tr = state.tr.addMark(from, to, passwordMark.create())
+	tr.setSelection(TextSelection.create(tr.doc, from, to))
+	dispatch(tr)
+}
+
+/**
+ * Remove password marking from the current selection or cursor position
+ */
+export function unmarkSelectionAsPassword(state: EditorState, dispatch: (tr: Transaction) => void): void {
+	const { from, to } = state.selection
+	const $pos = state.doc.resolve(from)
+	const parent = $pos.parent
+
+	// Handle code block differently - remove p` and ` wrapper from text
+	if (parent.type.name === 'code_block') {
+		if (from !== to) {
+			// Selection mode: remove p` before and ` after selection
+			const tr = state.tr
+			tr.delete(to, to + 1) // Remove closing `
+			tr.delete(from - 2, from) // Remove p`
+			tr.setSelection(TextSelection.create(tr.doc, from - 2, to - 2))
+			dispatch(tr)
+			return
+		} else {
+			// Cursor mode: find the p`...` pattern and remove wrappers
+			const parentText = parent.textContent
+			const offset = from - $pos.start()
+
+			let i = 0
+			while (i < parentText.length) {
+				if (parentText[i] === 'p' && parentText[i + 1] === '`') {
+					const start = i
+					const end = parentText.indexOf('`', i + 2)
+					if (end !== -1 && offset > start && offset <= end + 1) {
+						// Found the password pattern containing cursor
+						const absoluteStart = $pos.start() + start
+						const absoluteEnd = $pos.start() + end + 1
+						const tr = state.tr
+						tr.delete(absoluteEnd - 1, absoluteEnd) // Remove closing `
+						tr.delete(absoluteStart, absoluteStart + 2) // Remove p`
+						dispatch(tr)
+						return
+					}
+					i = end !== -1 ? end + 1 : i + 1
+					continue
+				}
+				i++
+			}
+		}
+		return
+	}
+
+	// Regular paragraph - remove password mark
+	const passwordMark = mimiriSchema.marks.password
+	let markStart = from
+	let markEnd = from
+
+	parent.descendants((child, pos) => {
+		const nodeStart = pos + $pos.start()
+		const nodeEnd = nodeStart + child.nodeSize
+		if (nodeEnd > from && nodeStart <= from) {
+			if (child.marks.find(m => m.type === passwordMark)) {
+				markStart = nodeStart
+				markEnd = nodeEnd
+			}
+		}
+	})
+
+	// Remove the password mark from the range
+	const tr = state.tr.removeMark(markStart, markEnd, passwordMark)
+	dispatch(tr)
+}
 
 /**
  * Execute a format action on the current selection
@@ -15,6 +218,16 @@ export function executeFormatAction(state: EditorState, dispatch: (tr: Transacti
 	const { $from, $to } = selection
 
 	switch (action) {
+		case 'mark-password': {
+			markSelectionAsPassword(state, dispatch)
+			break
+		}
+
+		case 'unmark-password': {
+			unmarkSelectionAsPassword(state, dispatch)
+			break
+		}
+
 		case 'insert-heading': {
 			executeInsertHeading(state, dispatch, $from)
 			break

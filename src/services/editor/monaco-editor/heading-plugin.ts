@@ -9,6 +9,10 @@ export class HeadingPlugin implements EditorPlugin {
 		this.monacoEditorModel = this.monacoEditor.getModel()
 	}
 
+	public getSupportedActions(): string[] {
+		return ['insert-heading']
+	}
+
 	public executeFormatAction(action: string): boolean {
 		if (action === 'insert-heading') {
 			const selection = this.monacoEditor.getSelection()

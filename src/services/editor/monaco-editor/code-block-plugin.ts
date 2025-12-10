@@ -387,6 +387,10 @@ export class CodeBlockPlugin implements EditorPlugin {
 
 	updateText(): void {}
 
+	getSupportedActions(): string[] {
+		return ['insert-code-block']
+	}
+
 	executeFormatAction(action: string): boolean {
 		if (action === 'insert-code-block') {
 			const selection = this.monacoEditor.getSelection()

@@ -254,6 +254,10 @@ export class ListPlugin implements EditorPlugin {
 		}
 	}
 
+	public getSupportedActions(): string[] {
+		return ['insert-checkbox-list', 'insert-unordered-list', 'insert-ordered-list']
+	}
+
 	public executeFormatAction(action: string): boolean {
 		if (action === 'insert-checkbox-list' || action === 'insert-unordered-list' || action === 'insert-ordered-list') {
 			const selection = this.monacoEditor.getSelection()

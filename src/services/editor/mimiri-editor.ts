@@ -49,8 +49,7 @@ export class MimiriEditor {
 			canUndo: false,
 			canRedo: false,
 			changed: false,
-			canMarkAsPassword: false,
-			canUnMarkAsPassword: false,
+			supportedActions: [],
 			mode: '',
 		})
 
@@ -248,7 +247,11 @@ export class MimiriEditor {
 		const noteId = this.note?.id
 		const targetText = this._activeEditor.text
 		// const initialText = this._activeEditor.initialText
-		if (noteId && targetText !== this._initialText) {
+		if (noteId) {
+			if (targetText === this._initialText) {
+				this.resetChanged()
+				return 'success'
+			}
 			// TODO reconsider empty note saving
 			// if (targetText.length === 0 && this._initialText.length > 5) {
 			// 	const doSave = await saveEmptyNodeDialog.value.show(noteManager.tree.getNoteById(noteId))
@@ -389,10 +392,10 @@ export class MimiriEditor {
 	}
 
 	public toggleSelectionAsPassword() {
-		if (this.canUnMarkAsPassword) {
-			this._activeEditor.unMarkSelectionAsPassword()
-		} else if (this.canMarkAsPassword) {
-			this._activeEditor.markSelectionAsPassword()
+		if (this._state.supportedActions.includes('unmark-password')) {
+			this._activeEditor.executeFormatAction('unmark-password')
+		} else if (this._state.supportedActions.includes('mark-password')) {
+			this._activeEditor.executeFormatAction('mark-password')
 		}
 	}
 
@@ -420,12 +423,12 @@ export class MimiriEditor {
 		return this._history
 	}
 
-	public get canMarkAsPassword() {
-		return this._state.canMarkAsPassword
+	public isActionSupported(action: string): boolean {
+		return this._state.supportedActions.includes(action)
 	}
 
-	public get canUnMarkAsPassword() {
-		return this._state.canUnMarkAsPassword
+	public get supportedActions(): string[] {
+		return this._state.supportedActions
 	}
 
 	public get changed() {

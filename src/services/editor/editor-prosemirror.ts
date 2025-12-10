@@ -1,7 +1,7 @@
 import { settingsManager } from '../settings-manager'
 import type { MimiriEditorState, SelectionExpansion, TextEditor, TextEditorListener } from './type'
 
-import { EditorState } from 'prosemirror-state'
+import { EditorState, TextSelection, Transaction } from 'prosemirror-state'
 import { EditorView } from 'prosemirror-view'
 import { dropCursor } from 'prosemirror-dropcursor'
 import { gapCursor } from 'prosemirror-gapcursor'
@@ -31,7 +31,7 @@ import { Node as ProseMirrorNode } from 'prosemirror-model'
 import { CodeBlockActionHandler } from './prosemirror/code-block-action-handler'
 import { ConflictActionHandler } from './prosemirror/conflict-action-handler'
 import type ConflictBanner from '../../components/elements/ConflictBanner.vue'
-import { executeFormatAction } from './prosemirror/format-commands'
+import { executeFormatAction, getSupportedActions } from './prosemirror/format-commands'
 
 export class EditorProseMirror implements TextEditor {
 	private _domElement: HTMLElement | undefined
@@ -47,8 +47,13 @@ export class EditorProseMirror implements TextEditor {
 	private _state: Omit<MimiriEditorState, 'mode'> = {
 		canUndo: true,
 		canRedo: true,
-		canMarkAsPassword: false,
-		canUnMarkAsPassword: false,
+		supportedActions: [
+			'insert-heading',
+			'insert-code-block',
+			'insert-checkbox-list',
+			'insert-unordered-list',
+			'insert-ordered-list',
+		],
 		changed: false,
 	}
 	private _editor: EditorView | undefined
@@ -97,6 +102,15 @@ export class EditorProseMirror implements TextEditor {
 			},
 		})
 
+		const updateCapsPlugin = new Plugin({
+			filterTransaction: (tr: Transaction) => {
+				if (tr.selectionSet) {
+					this.updateSupportedActions(tr.selection.from, tr.selection.to, tr.doc)
+				}
+				return true
+			},
+		})
+
 		const state = EditorState.create({
 			schema: mimiriSchema,
 			plugins: [
@@ -118,6 +132,7 @@ export class EditorProseMirror implements TextEditor {
 				syntaxHighlightPlugin(() => {
 					return getThemeById(settingsManager.state.editorTheme, settingsManager.darkMode).shikiTheme
 				}),
+				updateCapsPlugin,
 			],
 			doc,
 		})
@@ -140,12 +155,35 @@ export class EditorProseMirror implements TextEditor {
 				}
 				this.updateState()
 			},
+			handleDoubleClick: (view, pos, event) => {
+				const target = event.target as HTMLElement
+				if (target.tagName === 'SPAN' && target.classList.contains('password-content')) {
+					const coords = view.coordsAtPos(pos)
+					this.listener.onPasswordClicked(coords.top, coords.left, target.innerHTML)
+				} else if (target.tagName === 'PASSWORD') {
+					event.preventDefault()
+					const coords = view.coordsAtPos(pos)
+					this.listener.onPasswordClicked(coords.top, coords.left, target.innerHTML)
 
+					const $pos = view.state.doc.resolve(pos)
+					const start = $pos.parent.childAfter($pos.parentOffset)
+
+					if (start.node) {
+						const markStart = $pos.start() + start.offset
+						const markEnd = markStart + start.node.nodeSize
+						const tr = view.state.tr.setSelection(TextSelection.create(view.state.doc, markStart, markEnd))
+						view.dispatch(tr)
+					}
+					return true
+				}
+				return false
+			},
 			handleDOMEvents: {
 				mousedown: (view, event) => {
 					if (event.button !== 0) {
 						return false
 					}
+
 					const target = event.target as HTMLElement
 					const action = target.getAttribute('data-action')
 
@@ -275,15 +313,32 @@ export class EditorProseMirror implements TextEditor {
 		this.listener.onStateUpdated(this._state)
 	}
 
-	public unMarkSelectionAsPassword() {}
+	private updateSupportedActions(from: number, to: number, doc: ProseMirrorNode) {
+		const supportedActions = getSupportedActions(from, to, doc)
 
-	public markSelectionAsPassword() {}
+		// Check if actions changed (compare arrays)
+		const actionsChanged =
+			supportedActions.length !== this._state.supportedActions.length ||
+			supportedActions.some((action, i) => action !== this._state.supportedActions[i])
+
+		if (actionsChanged) {
+			this._state.supportedActions = supportedActions
+			this.listener.onStateUpdated(this._state)
+		}
+	}
 
 	public executeFormatAction(action: string) {
 		if (!this._editor) {
 			return
 		}
+
+		if (!this._state.supportedActions.includes(action)) {
+			return
+		}
+
 		executeFormatAction(this._editor.state, this._editor.dispatch.bind(this._editor), action)
+		const { from, to } = this._editor.state.selection
+		this.updateSupportedActions(from, to, this._editor.state.doc)
 	}
 
 	public get active(): boolean {

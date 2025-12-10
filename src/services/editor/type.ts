@@ -2,8 +2,7 @@ export interface MimiriEditorState {
 	canUndo: boolean
 	canRedo: boolean
 	changed: boolean
-	canMarkAsPassword: boolean
-	canUnMarkAsPassword: boolean
+	supportedActions: string[]
 	mode: string
 }
 
@@ -46,8 +45,6 @@ export interface TextEditor {
 	cut()
 	copy()
 	paste(text: string)
-	unMarkSelectionAsPassword()
-	markSelectionAsPassword()
 	executeFormatAction(action: string)
 
 	get readonly()

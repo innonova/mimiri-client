@@ -8,6 +8,7 @@ import { HeadingPlugin } from './monaco-editor/heading-plugin'
 import { CodeBlockPlugin } from './monaco-editor/code-block-plugin'
 import { ConflictBlockPlugin } from './monaco-editor/conflict-block-plugin'
 import { InlineMarkdownPlugin } from './monaco-editor/inline-markdown-plugin'
+import { PasswordPlugin } from './monaco-editor/password-plugin'
 import { clipboardManager } from '../../global'
 import { getThemeById } from './theme-manager'
 import type ConflictBanner from '../../components/elements/ConflictBanner.vue'
@@ -23,8 +24,7 @@ export class EditorMonaco implements TextEditor {
 	private _state: Omit<MimiriEditorState, 'mode'> = {
 		canUndo: false,
 		canRedo: false,
-		canMarkAsPassword: false,
-		canUnMarkAsPassword: false,
+		supportedActions: [],
 		changed: false,
 	}
 	private skipScrollUntil = 0
@@ -149,7 +149,9 @@ export class EditorMonaco implements TextEditor {
 		this._plugins.push(new CodeBlockPlugin(this.monacoEditor))
 		this._conflictBlockPlugin = new ConflictBlockPlugin(this.monacoEditor, conflictBanner)
 		this._plugins.push(this._conflictBlockPlugin)
-		this._plugins.push(new InlineMarkdownPlugin(this.monacoEditor))
+		this._plugins.push(new PasswordPlugin(this.monacoEditor))
+		this._plugins.push(new InlineMarkdownPlugin(this.monacoEditorModel))
+		this._plugins.push(new InlineMarkdownPlugin(this.monacoEditorHistoryModel))
 
 		this.monacoEditor.onKeyDown(e => {
 			if (this._active) {
@@ -436,53 +438,19 @@ export class EditorMonaco implements TextEditor {
 	}
 
 	private updateAbilities() {
-		const selection = this.monacoEditor.getSelection()
-
-		let canUnMarkAsPassword = false
-		let canMarkAsPassword = false
-
-		if (selection.startLineNumber === selection.endLineNumber) {
-			const lineContent = this.monacoEditorModel.getLineContent(selection.startLineNumber)
-
-			if (lineContent.includes('p`')) {
-				const startIndex = selection.startColumn - 1
-				const endIndex = selection.endColumn - 1
-				const selectedText = lineContent.substring(startIndex, endIndex)
-				if (!selectedText.includes('`')) {
-					let afterPwStart = false
-					for (let s = startIndex; s > 0; s--) {
-						if (lineContent[s] === '`') {
-							if (lineContent[s - 1] === 'p') {
-								afterPwStart = true
-							}
-							break
-						}
-					}
-					let beforeTagEnd = false
-					for (let e = endIndex; e < lineContent.length; e++) {
-						if (lineContent[e] === '`') {
-							beforeTagEnd = true
-							break
-						}
-					}
-					if (afterPwStart && beforeTagEnd) {
-						canUnMarkAsPassword = true
-					}
-				}
-			}
-
-			canMarkAsPassword =
-				!canUnMarkAsPassword &&
-				!lineContent.includes('`') &&
-				!selection.isEmpty() &&
-				selection.startColumn !== selection.endColumn
+		// Build supportedActions array from all plugins
+		const supportedActions: string[] = []
+		for (const plugin of this._plugins) {
+			supportedActions.push(...plugin.getSupportedActions())
 		}
-		if (
-			this._state.canMarkAsPassword !== canMarkAsPassword ||
-			this._state.canUnMarkAsPassword !== canUnMarkAsPassword
-		) {
-			this._state.canMarkAsPassword = canMarkAsPassword
-			this._state.canUnMarkAsPassword = canUnMarkAsPassword
+
+		// Check if actions changed (use Set for order-independent comparison)
+		const currentSet = new Set(this._state.supportedActions)
+		const newSet = new Set(supportedActions)
+		const actionsChanged = currentSet.size !== newSet.size || supportedActions.some(action => !currentSet.has(action))
+
+		if (actionsChanged) {
+			this._state.supportedActions = supportedActions
 			if (this._active) {
 				this.listener.onStateUpdated(this._state)
 			}
@@ -560,7 +528,13 @@ export class EditorMonaco implements TextEditor {
 	}
 
 	public resetChanged() {
-		this._cleanVersions = [this.monacoEditorModel.getAlternativeVersionId()]
+		const text = this.monacoEditorModel.getValue()
+		if (text !== this._initialText) {
+			this._initialText = text
+			this._cleanVersions = [this.monacoEditorModel.getAlternativeVersionId()]
+		} else {
+			this._cleanVersions.push(this.monacoEditorModel.getAlternativeVersionId())
+		}
 		this._state.changed = false
 		if (this._active) {
 			this.listener.onStateUpdated(this._state)
@@ -689,61 +663,10 @@ export class EditorMonaco implements TextEditor {
 		this.monacoEditor.executeEdits(undefined, [action])
 	}
 
-	public markSelectionAsPassword() {
-		const selection = this.monacoEditor.getSelection()
-		const text = this.monacoEditor.getModel().getValueInRange(selection)
-		const action = { range: selection, text: 'p`' + text + '`', forceMoveMarkers: true }
-		this.monacoEditor.executeEdits(undefined, [action])
-		this.monacoEditor.setSelection({
-			startLineNumber: selection.startLineNumber,
-			startColumn: selection.startColumn + 2,
-			endLineNumber: selection.startLineNumber,
-			endColumn: selection.endColumn + 2,
-		})
-		this.monacoEditor.focus()
-	}
-
-	public unMarkSelectionAsPassword() {
-		const selection = this.monacoEditor.getSelection()
-		const lineContent = this.monacoEditor.getModel().getLineContent(selection.startLineNumber)
-
-		let start = -1
-		let end = -1
-		for (let s = selection.startColumn - 1; s > 0; s--) {
-			if (lineContent[s] === '`') {
-				if (lineContent[s - 1] === 'p') {
-					start = s - 1
-				}
-				break
-			}
-		}
-		for (let e = selection.endColumn - 1; e < lineContent.length; e++) {
-			if (lineContent[e] === '`') {
-				end = e + 1
-				break
-			}
-		}
-		if (start >= 0 && end >= 0) {
-			this.monacoEditor.setSelection({
-				startLineNumber: selection.startLineNumber,
-				startColumn: start + 1,
-				endLineNumber: selection.startLineNumber,
-				endColumn: end + 1,
-			})
-			const editSelection = this.monacoEditor.getSelection()
-			const text = this.monacoEditor.getModel().getValueInRange(editSelection)
-			const action = { range: editSelection, text: text.substring(2, text.length - 1), forceMoveMarkers: true }
-			this.monacoEditor.executeEdits(undefined, [action])
-			this.monacoEditor.setSelection({
-				startLineNumber: selection.startLineNumber,
-				startColumn: editSelection.startColumn,
-				endLineNumber: selection.startLineNumber,
-				endColumn: editSelection.endColumn - 3,
-			})
-		}
-	}
-
 	public executeFormatAction(action: string) {
+		if (!this._state.supportedActions.includes(action)) {
+			return
+		}
 		for (const plugin of this._plugins) {
 			if (plugin.executeFormatAction && plugin.executeFormatAction(action)) {
 				break

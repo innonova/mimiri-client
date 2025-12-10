@@ -437,6 +437,10 @@ export class ConflictBlockPlugin implements EditorPlugin {
 
 	updateText(): void {}
 
+	getSupportedActions(): string[] {
+		return []
+	}
+
 	executeFormatAction(_action: string): boolean {
 		// Future: Could add actions like "insert-conflict-block" for testing
 		return false

@@ -50,7 +50,9 @@
 			<ToolbarIcon
 				icon="hide"
 				:hoverEffect="true"
-				:disabled="!mimiriEditor.canMarkAsPassword && !mimiriEditor.canUnMarkAsPassword"
+				:disabled="
+					!mimiriEditor.isActionSupported('mark-password') && !mimiriEditor.isActionSupported('unmark-password')
+				"
 				title="Mark as Password Ctrl+Shift+C"
 				@click="markAsPassword"
 				data-testid="editor-mark-as-password"
