@@ -39,7 +39,7 @@ export class ListPlugin implements EditorPlugin {
 							if (checkboxMatch[0] === prevLineContent) {
 								deletePrevLine = true
 							} else {
-								newContent = `${checkboxMatch.groups.indent}${checkboxMatch.groups.bullet}[ ] ${currentLineContent}`
+								newContent = `${checkboxMatch.groups.indent}${checkboxMatch.groups.bullet ?? ''}[ ] ${currentLineContent}`
 							}
 						} else if (numberedListMatch) {
 							if (numberedListMatch[0] === prevLineContent) {

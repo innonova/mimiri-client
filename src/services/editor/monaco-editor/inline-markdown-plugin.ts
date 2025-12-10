@@ -44,7 +44,7 @@ export class InlineMarkdownPlugin implements EditorPlugin {
 				// Adjust line numbers for decorations below the change
 				const lineDelta = newLineCount - oldLineCount
 				if (lineDelta !== 0) {
-					this.adjustLineNumbers(endLine, lineDelta)
+					this.adjustLineNumbers(startLine, endLine, lineDelta)
 				}
 			}
 
@@ -53,17 +53,21 @@ export class InlineMarkdownPlugin implements EditorPlugin {
 		})
 	}
 
-	private adjustLineNumbers(afterLine: number, delta: number): void {
+	private adjustLineNumbers(startLine: number, afterLine: number, delta: number): void {
 		if (delta === 0) {
 			return
 		}
 
 		const newMap = new Map<number, string[]>()
 		const newPendingLines = new Set<number>()
+		const decorationsToRemove: string[] = []
 
 		// Adjust line numbers in the decoration map
 		for (const [lineNumber, decorationIds] of this.lineDecorations.entries()) {
-			if (lineNumber > afterLine) {
+			if (delta < 0 && lineNumber >= startLine && lineNumber <= afterLine) {
+				// Lines being deleted - collect their decorations for removal
+				decorationsToRemove.push(...decorationIds)
+			} else if (lineNumber > afterLine) {
 				// Move decoration tracking to new line number
 				newMap.set(lineNumber + delta, decorationIds)
 			} else {
@@ -72,9 +76,17 @@ export class InlineMarkdownPlugin implements EditorPlugin {
 			}
 		}
 
+		// Remove decorations from deleted lines
+		if (decorationsToRemove.length > 0) {
+			this.monacoEditorModel.deltaDecorations(decorationsToRemove, [])
+		}
+
 		// Adjust line numbers in pending updates
 		for (const lineNumber of this.pendingLines) {
-			if (lineNumber > afterLine) {
+			if (delta < 0 && lineNumber >= startLine && lineNumber <= afterLine) {
+				// Skip pending updates for deleted lines
+				continue
+			} else if (lineNumber > afterLine) {
 				newPendingLines.add(lineNumber + delta)
 			} else {
 				newPendingLines.add(lineNumber)
@@ -362,6 +374,10 @@ export class InlineMarkdownPlugin implements EditorPlugin {
 					inlineClassName: 'checkbox-interactive',
 				},
 			})
+		}
+
+		if (decorations.length > 0) {
+			console.log('checkbox decos', decorations)
 		}
 
 		return decorations
