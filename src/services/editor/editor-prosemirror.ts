@@ -33,37 +33,15 @@ import { ConflictActionHandler } from './prosemirror/conflict-action-handler'
 import type ConflictBanner from '../../components/elements/ConflictBanner.vue'
 import { executeFormatAction } from './prosemirror/format-commands'
 
-// Plugin to make editor read-only during conflict resolution
-const conflictReadOnlyPlugin = new Plugin({
-	props: {
-		editable(state) {
-			// Check if document contains any conflict blocks
-			let hasConflictBlocks = false
-			if (state.doc.attrs.history) {
-				return false
-			}
-			state.doc.descendants(node => {
-				if (node.type.name === 'conflict_block') {
-					hasConflictBlocks = true
-					return false // Stop iteration
-				}
-			})
-			// Document is editable only if no conflicts exist
-			return !hasConflictBlocks
-		},
-	},
-})
-
 export class EditorProseMirror implements TextEditor {
 	private _domElement: HTMLElement | undefined
 	private _autoComplete: InstanceType<typeof AutoComplete> | undefined
-	private _history: HTMLDivElement | undefined
 	private lastScrollTop: number
 	private historyShowing: boolean = false
 	private lastSelection: { startNode: Node; start: number; endNode: Node; end: number } | undefined | undefined
 	private skipScrollOnce = false
 	private _active = true
-	private _wordWrap = true
+	private _readonly = false
 	private _activePasswordEntry: { node: Node; start: number; end: number } | undefined
 	private _hasOpenDocument: boolean = false
 	private _state: Omit<MimiriEditorState, 'mode'> = {
@@ -98,6 +76,26 @@ export class EditorProseMirror implements TextEditor {
 		await initHighlighter()
 
 		const doc = deserialize('')
+
+		const conflictReadOnlyPlugin = new Plugin({
+			props: {
+				editable: state => {
+					// Check if document contains any conflict blocks
+					let hasConflictBlocks = false
+					if (state.doc.attrs.history || this._readonly) {
+						return false
+					}
+					state.doc.descendants(node => {
+						if (node.type.name === 'conflict_block') {
+							hasConflictBlocks = true
+							return false // Stop iteration
+						}
+					})
+					// Document is editable only if no conflicts exist
+					return !hasConflictBlocks
+				},
+			},
+		})
 
 		const state = EditorState.create({
 			schema: mimiriSchema,
@@ -137,6 +135,9 @@ export class EditorProseMirror implements TextEditor {
 			dispatchTransaction: transaction => {
 				const newState = view.state.apply(transaction)
 				view.updateState(newState)
+				if (!newState.doc.attrs.history) {
+					this._documentState = newState
+				}
 				this.updateState()
 			},
 
@@ -169,7 +170,7 @@ export class EditorProseMirror implements TextEditor {
 					return false
 				},
 				mouseup: (view, event) => {
-					if (event.button !== 0) {
+					if (event.button !== 0 || this.historyShowing) {
 						return false
 					}
 					const element = event.target as HTMLElement
@@ -268,7 +269,7 @@ export class EditorProseMirror implements TextEditor {
 	}
 
 	private updateState() {
-		this._state.changed = !!this._initialDoc && !this._editor?.state.doc.eq(this._initialDoc)
+		this._state.changed = !!this._initialDoc && !this._editor?.state.doc.eq(this._initialDoc) && !this.historyShowing
 		this._state.canUndo = this._editor ? undoDepth(this._editor.state) > 0 : false
 		this._state.canRedo = this._editor ? redoDepth(this._editor.state) > 0 : false
 		this.listener.onStateUpdated(this._state)
@@ -306,6 +307,7 @@ export class EditorProseMirror implements TextEditor {
 	}
 
 	public show(text: string, _scrollTop: number) {
+		console.log('show')
 		this._hasOpenDocument = true
 		const newDoc = deserialize(text)
 
@@ -416,6 +418,20 @@ export class EditorProseMirror implements TextEditor {
 		if (this.historyShowing) {
 			this.historyShowing = false
 			this._domElement.classList.remove('history-active')
+			console.log('restore document state')
+
+			this._editor.updateState(this._documentState)
+
+			if (this._editor) {
+				const tr = this._editor.state.tr
+				tr.setMeta('forceUpdate', true)
+				this._editor.dispatch(tr)
+			}
+
+			setTimeout(() => {
+				this._conflictActionHandler?.updateBanner(this.historyShowing)
+				this.updateState()
+			}, 0)
 		}
 	}
 
@@ -524,13 +540,20 @@ export class EditorProseMirror implements TextEditor {
 			document.execCommand('paste')
 		} catch {}
 	}
+
 	public get readonly() {
-		return false
-		// return this._element.contentEditable === 'false'
+		return this._readonly
 	}
 
 	public set readonly(value: boolean) {
-		// this._element.contentEditable = value ? 'false' : 'plaintext-only'
+		if (this._readonly !== value) {
+			this._readonly = value
+			if (this._editor) {
+				const tr = this._editor.state.tr
+				tr.setMeta('forceUpdate', true)
+				this._editor.dispatch(tr)
+			}
+		}
 	}
 	public get scrollTop(): number {
 		return 0

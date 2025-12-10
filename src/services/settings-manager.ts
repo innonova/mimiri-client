@@ -49,6 +49,8 @@ export interface MimerConfiguration {
 	debugEnabled?: boolean
 	startCount: number
 	systemTheme: string
+	defaultEditor: string | undefined
+	defaultEditorMobile: string
 }
 
 class SettingsManager {
@@ -89,6 +91,8 @@ class SettingsManager {
 		debugEnabled: undefined,
 		startCount: 0,
 		systemTheme: 'light',
+		defaultEditor: undefined,
+		defaultEditorMobile: 'wysiwyg',
 	})
 
 	constructor() {
@@ -132,6 +136,10 @@ class SettingsManager {
 		if (this.state.isNewInstall === undefined) {
 			if (this.state.lastRunHostVersion !== '0.0.0') {
 				this.state.isNewInstall = false
+				if (this.state.defaultEditor === undefined) {
+					// TODO implement selection prompt
+					this.state.defaultEditor = 'code'
+				}
 			} else {
 				this.state.isNewInstall = true
 			}
@@ -438,6 +446,24 @@ class SettingsManager {
 
 	public get startCount() {
 		return this.state.startCount || 0
+	}
+
+	public get defaultEditor() {
+		return this.state.defaultEditor
+	}
+
+	public set defaultEditor(value: string | undefined) {
+		this.state.defaultEditor = value
+		void this.save()
+	}
+
+	public get defaultEditorMobile() {
+		return this.state.defaultEditorMobile
+	}
+
+	public set defaultEditorMobile(value: string) {
+		this.state.defaultEditorMobile = value
+		void this.save()
 	}
 }
 

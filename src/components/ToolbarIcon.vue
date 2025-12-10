@@ -192,10 +192,14 @@ const getComponent = () => {
 const emit = defineEmits(['click', 'mouseenter'])
 
 const onClick = event => {
-	emit('click', event)
+	if (!props.disabled) {
+		emit('click', event)
+	}
 }
 
 const onMouseenter = event => {
-	emit('mouseenter', event)
+	if (!props.disabled) {
+		emit('mouseenter', event)
+	}
 }
 </script>

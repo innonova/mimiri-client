@@ -4,11 +4,12 @@ import { mimiriPlatform } from '../mimiri-platform'
 import { EditorMonaco } from './editor-monaco'
 import type { MimiriEditorState, SelectionExpansion, TextEditor, TextEditorListener } from './type'
 import { reactive } from 'vue'
-import { clipboardManager, debug, noteManager, saveEmptyNodeDialog } from '../../global'
+import { clipboardManager, debug, noteManager } from '../../global'
 import { VersionConflictError } from '../storage/mimiri-client'
 import { EditorProseMirror } from './editor-prosemirror'
 import AutoComplete from '../../components/elements/AutoComplete.vue'
 import ConflictBanner from '../../components/elements/ConflictBanner.vue'
+import { settingsManager } from '../settings-manager'
 
 declare type SaveError = 'success' | 'note-size' | 'total-size' | 'lost-update' | 'not-saved-empty'
 
@@ -116,14 +117,6 @@ export class MimiriEditor {
 		this._activeEditor.syncSettings()
 	}
 
-	private activateSource() {
-		this.activateMonaco()
-	}
-
-	private activateWysiwyg() {
-		void this.activateProseMirror()
-	}
-
 	public init(
 		monacoElement: HTMLElement,
 		proseMirrorElement: HTMLElement,
@@ -147,7 +140,14 @@ export class MimiriEditor {
 		this._proseMirrorAutoComplete = proseMirrorAutoComplete
 		this._conflictBanner = conflictBanner
 
-		this.activateSource()
+		// TODO store choice per note ?
+		const mode = mimiriPlatform.isDesktop ? settingsManager.defaultEditor : settingsManager.defaultEditorMobile
+
+		if (mode === 'code') {
+			this.activateMonaco()
+		} else {
+			void this.activateProseMirror()
+		}
 	}
 
 	public navigateConflict(direction: 'prev' | 'next') {
@@ -166,6 +166,11 @@ export class MimiriEditor {
 			}
 			this._editorMonaco.switchTo(this._editorProseMirror.text)
 			this._editorMonaco.readonly = this._editorProseMirror.readonly
+			if (mimiriPlatform.isDesktop) {
+				settingsManager.defaultEditor = 'code'
+			} else {
+				settingsManager.defaultEditorMobile = 'code'
+			}
 		} else {
 			await this.activateProseMirror()
 			if (!this._editorProseMirror.hasOpenDocument) {
@@ -173,6 +178,11 @@ export class MimiriEditor {
 			}
 			this._editorProseMirror.switchTo(this._editorMonaco.text)
 			this._editorProseMirror.readonly = this._editorMonaco.readonly
+			if (mimiriPlatform.isDesktop) {
+				settingsManager.defaultEditor = 'wysiwyg'
+			} else {
+				settingsManager.defaultEditorMobile = 'wysiwyg'
+			}
 		}
 	}
 
@@ -198,12 +208,6 @@ export class MimiriEditor {
 			return
 		}
 		if (note.id !== this.note?.id) {
-			// TODO store choice per note
-			if (mimiriPlatform.isDesktop) {
-				this.activateSource()
-			} else {
-				this.activateWysiwyg()
-			}
 			this._note = note
 			this.history.reset()
 			this._initialText = note.text
@@ -297,12 +301,6 @@ export class MimiriEditor {
 			}
 		}
 		return result
-	}
-
-	public activateEdit() {
-		this.activateSource()
-		this._activeEditor.show(this.note.text, this.note.scrollTop)
-		this._activeEditor.readonly = this.note.isSystem
 	}
 
 	public reloadNode() {

@@ -111,6 +111,7 @@
 			<ToolbarIcon
 				:icon="mimiriEditor.mode === 'advanced' ? 'wysiwyg' : 'code'"
 				:hoverEffect="true"
+				:disabled="historyVisible"
 				title="Toggle Edit Mode"
 				@click="toggleEditModeClicked"
 				data-testid="editor-toggle-edit-mode-button"

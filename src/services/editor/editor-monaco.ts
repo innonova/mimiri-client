@@ -572,7 +572,7 @@ export class EditorMonaco implements TextEditor {
 		this._state.changed = false
 		this._state.canUndo = false
 		this._state.canRedo = false
-		this.monacoEditorModel.setValue('')
+		this.monacoEditorModel?.setValue('')
 		this.readonly = true
 		if (this._active) {
 			this.listener.onStateUpdated(this._state)
@@ -851,7 +851,7 @@ export class EditorMonaco implements TextEditor {
 	}
 
 	public set readonly(value: boolean) {
-		this.monacoEditor.updateOptions({ readOnly: value })
+		this.monacoEditor?.updateOptions({ readOnly: value })
 	}
 
 	public get scrollTop() {

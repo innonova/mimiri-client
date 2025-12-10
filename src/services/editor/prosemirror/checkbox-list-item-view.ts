@@ -47,12 +47,16 @@ export class CheckboxListItemView implements NodeView {
 
 	private handleCheckboxChange = (event: Event) => {
 		event.preventDefault()
+		const checked = (event.target as HTMLInputElement).checked
+		if (!this.view.editable) {
+			;(event.target as HTMLInputElement).checked = !checked
+			return
+		}
 		const pos = this.getPos()
 		if (pos === undefined) {
 			return
 		}
 
-		const checked = (event.target as HTMLInputElement).checked
 		const tr = this.view.state.tr.setNodeMarkup(pos, null, {
 			...this.node.attrs,
 			checked,
