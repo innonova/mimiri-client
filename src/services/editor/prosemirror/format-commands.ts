@@ -4,6 +4,8 @@ import { TextSelection } from 'prosemirror-state'
 import { setBlockType } from 'prosemirror-commands'
 import { mimiriSchema } from './mimiri-schema'
 import { insertList } from './list-commands'
+import { serialize } from './mimiri-serializer'
+import { deserialize } from './mimiri-deserializer'
 
 /**
  * Execute a format action on the current selection
@@ -79,28 +81,35 @@ function executeInsertCodeBlock(
 	const startPos = $from.before($from.depth)
 	const endPos = $to.after($to.depth)
 
-	// Collect text content from selection
-	let textContent = ''
-	state.doc.nodesBetween($from.pos, $to.pos, node => {
-		if (node.isTextblock) {
-			if (textContent) {
-				textContent += '\n'
+	// Collect nodes from the selection and serialize them to preserve markdown formatting
+	const nodes: any[] = []
+	state.doc.nodesBetween(startPos, endPos, (node, pos) => {
+		// Only collect top-level block nodes within the range
+		if (node.isBlock && pos >= startPos && pos < endPos) {
+			const parent = state.doc.resolve(pos).parent
+			if (parent.type.name === 'doc') {
+				nodes.push(node)
+				return false // Don't descend into children
 			}
-			textContent += node.textContent
 		}
+		return true
 	})
 
-	// Create code block with collected content
-	const codeBlock = mimiriSchema.nodes.code_block.create(
-		{ language: null },
-		textContent ? mimiriSchema.text(textContent) : null,
-	)
+	// Create a temporary doc with just the selected nodes to serialize
+	let textContent = ''
+	if (nodes.length > 0) {
+		const tempDoc = mimiriSchema.nodes.doc.create({}, nodes)
+		textContent = serialize(tempDoc)
+	}
 
-	// Replace selection with code block
-	const tr = state.tr.replaceWith(startPos, endPos, codeBlock)
+	// Wrap the content in code fence syntax and deserialize to get proper code block
+	const codeBlockMarkdown = '```\n' + textContent + '\n```'
+	const parsedDoc = deserialize(codeBlockMarkdown)
 
-	// Position cursor inside the code block for language input
-	// The cursor should be at the start of the code block content
+	// Replace selection with the parsed code block
+	const tr = state.tr.replaceWith(startPos, endPos, parsedDoc.content)
+
+	// Position cursor inside the code block
 	const newPos = startPos + 1
 	tr.setSelection(TextSelection.create(tr.doc, newPos))
 

@@ -3,6 +3,7 @@ import type { EditorView } from 'prosemirror-view'
 import { TextSelection } from 'prosemirror-state'
 import type AutoComplete from '../../../components/elements/AutoComplete.vue'
 import { getLanguageSuggestions } from '../language-suggestions'
+import { deserialize } from './mimiri-deserializer'
 
 export interface ClipboardManager {
 	write(text: string): void
@@ -43,11 +44,9 @@ export class CodeBlockActionHandler {
 	}
 
 	private handleUnwrapBlock(view: EditorView, node: Node, nodePos: number): boolean {
-		const tr = view.state.tr.replaceWith(
-			nodePos,
-			nodePos + node.nodeSize,
-			view.state.schema.nodes.paragraph.create({}, node.content),
-		)
+		const textContent = node.textContent
+		const parsedDoc = deserialize(textContent)
+		const tr = view.state.tr.replaceWith(nodePos, nodePos + node.nodeSize, parsedDoc.content)
 		view.dispatch(tr)
 		return true
 	}
@@ -146,7 +145,7 @@ export class CodeBlockActionHandler {
 				// Update the code block's language attribute
 				const tr = view.state.tr.setNodeMarkup(nodePos, null, {
 					...node.attrs,
-					language: item,
+					language: item === '(none)' ? '' : item,
 				})
 				view.dispatch(tr)
 				this.autoComplete.hide()

@@ -39,104 +39,112 @@ export const syntaxHighlightPlugin = (getTheme: () => string) => {
 	})
 }
 
-const identifyPasswordPattern = (line, startIndex: number, startOffset: number) => {
-	const token = line[startIndex]
-	let searchIdx: number
-	let searchOffset: number
+const identifyPasswordPatterns = (text: string, baseOffset: number) => {
+	const patterns: Array<{
+		prefix: { from: number; to: number }
+		content: { from: number; to: number }
+		closing: { from: number; to: number }
+	}> = []
 
-	if (token.content === 'p' && startIndex + 1 < line.length && line[startIndex + 1].content.startsWith('`')) {
-		const advance = line[startIndex + 1].content.length === 1 ? 2 : 1
-		searchIdx = startIndex + advance
-		searchOffset = startOffset + advance
-	} else if (token.content.startsWith('p`')) {
-		if (token.content.length <= 2) {
-			searchIdx = startIndex + 1
-			searchOffset = startOffset + 2
-		}
-	} else {
-		return null
-	}
+	let i = 0
+	while (i < text.length - 2) {
+		// Look for p` pattern
+		if (text[i] === 'p' && text[i + 1] === '`') {
+			const startOffset = baseOffset + i
+			const contentFrom = startOffset + 2
+			let j = i + 2
 
-	const contentFrom = startOffset + 2
+			// Find closing backtick
+			while (j < text.length && text[j] !== '`' && text[j] !== '\n') {
+				j++
+			}
 
-	while (searchIdx < line.length) {
-		const tokenText = line[searchIdx].content
-		if (tokenText.endsWith('`')) {
-			const contentLen = searchOffset + tokenText.length - 1 - contentFrom
-			return {
-				prefix: {
-					from: startOffset,
-					to: startOffset + 2,
-				},
-				content: {
-					from: contentFrom,
-					to: contentFrom + contentLen,
-				},
-				closing: {
-					from: contentFrom + contentLen,
-					to: contentFrom + contentLen + 1,
-				},
-				consumedChars: searchOffset + tokenText.length - startOffset,
-				consumedTokens: searchIdx + 1 - startIndex,
+			if (j < text.length && text[j] === '`') {
+				const contentTo = baseOffset + j
+				patterns.push({
+					prefix: { from: startOffset, to: startOffset + 2 },
+					content: { from: contentFrom, to: contentTo },
+					closing: { from: contentTo, to: contentTo + 1 },
+				})
+				i = j + 1
+				continue
 			}
 		}
-		searchOffset += tokenText.length
-		searchIdx++
+		i++
 	}
 
-	return null
+	return patterns
 }
 
 const createDecorations = (doc, theme: string) => {
-	const decorations = []
+	const decorations: Decoration[] = []
 
 	doc.descendants((node, pos) => {
-		if (node.type.name === 'code_block' && node.attrs.language) {
+		if (node.type.name === 'code_block') {
 			const code = node.textContent
 			const lang = node.attrs.language
-			let offset = pos + 1
+			const baseOffset = pos + 1
 
-			try {
-				const { tokens } = highlighter.codeToTokens(code, { lang, theme })
+			// Always detect password patterns first (language-independent)
+			const passwordPatterns = identifyPasswordPatterns(code, baseOffset)
 
-				tokens.forEach(line => {
-					for (let i = 0; i < line.length; ) {
-						const passwordPattern = identifyPasswordPattern(line, i, offset)
-						if (passwordPattern) {
-							decorations.push(
-								Decoration.inline(passwordPattern.prefix.from, passwordPattern.prefix.to, {
-									class: 'password-delimiter',
-								}),
-							)
-							if (passwordPattern.content.from < passwordPattern.content.to) {
+			// Build a set of ranges covered by password patterns for exclusion
+			const passwordRanges = passwordPatterns.flatMap(p => [
+				{ from: p.prefix.from, to: p.prefix.to },
+				{ from: p.content.from, to: p.content.to },
+				{ from: p.closing.from, to: p.closing.to },
+			])
+
+			// Add password decorations
+			for (const pattern of passwordPatterns) {
+				decorations.push(
+					Decoration.inline(pattern.prefix.from, pattern.prefix.to, {
+						class: 'password-delimiter',
+					}),
+				)
+				if (pattern.content.from < pattern.content.to) {
+					decorations.push(
+						Decoration.inline(pattern.content.from, pattern.content.to, {
+							class: 'password-content',
+						}),
+					)
+				}
+				decorations.push(
+					Decoration.inline(pattern.closing.from, pattern.closing.to, {
+						class: 'password-delimiter',
+					}),
+				)
+			}
+
+			// Apply language syntax highlighting if available
+			if (lang) {
+				try {
+					const { tokens } = highlighter.codeToTokens(code, { lang, theme })
+					let offset = baseOffset
+
+					tokens.forEach(line => {
+						for (const token of line) {
+							const tokenStart = offset
+							const tokenEnd = offset + token.content.length
+
+							// Skip tokens that overlap with password patterns
+							const overlapsPassword = passwordRanges.some(range => tokenStart < range.to && tokenEnd > range.from)
+
+							if (!overlapsPassword) {
 								decorations.push(
-									Decoration.inline(passwordPattern.content.from, passwordPattern.content.to, {
-										class: 'password-content',
+									Decoration.inline(tokenStart, tokenEnd, {
+										style: `color: ${token.color}`,
 									}),
 								)
 							}
-							decorations.push(
-								Decoration.inline(passwordPattern.closing.from, passwordPattern.closing.to, {
-									class: 'password-delimiter ',
-								}),
-							)
-							offset += passwordPattern.consumedChars
-							i += passwordPattern.consumedTokens
-						} else {
-							const token = line[i]
-							decorations.push(
-								Decoration.inline(offset, offset + token.content.length, {
-									style: `color: ${token.color}`,
-								}),
-							)
-							offset += token.content.length
-							i++
+
+							offset = tokenEnd
 						}
-					}
-					offset++ // newline
-				})
-			} catch (e) {
-				console.warn(`Highlighting failed for ${lang}:`, e)
+						offset++ // newline
+					})
+				} catch (e) {
+					console.warn(`Highlighting failed for ${lang}:`, e)
+				}
 			}
 		}
 	})
