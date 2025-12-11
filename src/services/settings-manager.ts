@@ -136,13 +136,13 @@ class SettingsManager {
 		if (this.state.isNewInstall === undefined) {
 			if (this.state.lastRunHostVersion !== '0.0.0') {
 				this.state.isNewInstall = false
-				if (this.state.defaultEditor === undefined) {
-					// TODO implement selection prompt
-					this.state.defaultEditor = 'code'
-				}
 			} else {
 				this.state.isNewInstall = true
 			}
+		}
+		if (this.state.defaultEditor === undefined && !this.state.isNewInstall) {
+			// TODO implement selection prompt
+			this.state.defaultEditor = 'code'
 		}
 		this.state.startCount = (this.state.startCount || 0) + 1
 		await this.save()
