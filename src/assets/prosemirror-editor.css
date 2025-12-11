@@ -162,11 +162,11 @@ li[data-item-type='task'][data-checked='true'] .list-item-content p {
 }
 
 li[data-item-type='task'] {
-	@apply mobile:leading-5.5;
+	@apply mobile:leading-8;
 }
 
 .ProseMirror input[type='checkbox'] {
-	@apply mobile:w-4 mobile:h-4 mt-0.5;
+	@apply mobile:w-6 mobile:h-6 mt-0.5;
 	accent-color: var(--color-checkbox);
 }
 
