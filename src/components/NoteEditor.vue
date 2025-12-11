@@ -9,7 +9,7 @@
 				@click="onBack"
 				data-testid="editor-back-button"
 			/>
-			<div class="inline-block h-4 w-0 border border-solid border-toolbar-separator m-0.5 desktop:hidden" />
+			<div class="inline-block h-4/5 w-0 border border-solid border-toolbar-separator m-0.5 desktop:hidden" />
 			<ToolbarIcon
 				icon="save"
 				:hoverEffect="true"
@@ -19,96 +19,98 @@
 				data-testid="editor-save-button"
 			/>
 
-			<div class="inline-block h-4/5 w-0 border border-solid border-toolbar-separator m-0.5" />
-			<ToolbarIcon
-				icon="undo"
-				:hoverEffect="true"
-				:disabled="!mimiriEditor.canUndo"
-				title="Undo"
-				@click="undo"
-				data-testid="editor-undo-button"
-			/>
-			<ToolbarIcon
-				icon="redo"
-				:hoverEffect="true"
-				:disabled="!mimiriEditor.canRedo"
-				title="Redo"
-				@click="redo"
-				data-testid="editor-redo-button"
-			/>
-			<div class="inline-block h-4/5 w-0 border border-solid border-toolbar-separator m-0.5" />
-			<ToolbarIcon
-				icon="history"
-				:hoverEffect="true"
-				:title="historyVisible ? 'Hide History' : 'Show History'"
-				:disabled="noteManager.tree.selectedNoteRef().value?.isSystem"
-				:toggledOn="historyVisible"
-				@click="showHistory"
-				data-testid="editor-history-button"
-			/>
-			<div class="inline-block h-4/5 w-0 border border-solid border-toolbar-separator m-0.5" />
-			<ToolbarIcon
-				icon="hide"
-				:hoverEffect="true"
-				:disabled="
-					!mimiriEditor.isActionSupported('mark-password') && !mimiriEditor.isActionSupported('unmark-password')
-				"
-				title="Mark as Password Ctrl+Shift+C"
-				@click="markAsPassword"
-				data-testid="editor-mark-as-password"
-			/>
-			<ToolbarIcon
-				icon="heading"
-				:hoverEffect="true"
-				:disabled="false"
-				title="Heading"
-				@click="insertHeading"
-				data-testid="editor-insert-heading"
-			/>
-			<ToolbarIcon
-				icon="code-block"
-				:hoverEffect="true"
-				:disabled="false"
-				title="Code Block"
-				@click="insertCodeBlock"
-				data-testid="editor-insert-code-block"
-			/>
-			<div class="inline-block h-4/5 w-0 border border-solid border-toolbar-separator m-0.5" />
-			<ToolbarIcon
-				icon="check-list"
-				:hoverEffect="true"
-				:disabled="false"
-				title="Checkbox"
-				@click="insertCheckboxList"
-				data-testid="editor-insert-checkbox"
-			/>
-			<ToolbarIcon
-				icon="list"
-				:hoverEffect="true"
-				:disabled="false"
-				title="List"
-				@click="insertUnorderedList"
-				data-testid="editor-insert-unordered-list"
-			/>
-			<ToolbarIcon
-				icon="number-list"
-				:hoverEffect="true"
-				:disabled="false"
-				title="Ordered List"
-				@click="insertOrderedList"
-				data-testid="editor-insert-ordered-list"
-			/>
-			<div class="inline-block h-4/5 w-0 border border-solid border-toolbar-separator m-0.5" />
-			<ToolbarIcon
-				v-if="showWordWrap"
-				:icon="settingsManager.wordwrap ? 'wordwrap-on' : 'wordwrap-off'"
-				:hoverEffect="true"
-				:disabled="noteManager.tree.selectedNoteRef().value?.isSystem"
-				:title="settingsManager.wordwrap ? 'Disable Word Wrap' : 'Enable Word Wrap'"
-				:toggledOn="settingsManager.wordwrap"
-				@click="toggleWordWrap"
-				data-testid="editor-toggle-wordwrap"
-			/>
+			<div class="flex overflow-auto h-full">
+				<div class="inline-block h-4/5 w-0 border border-solid border-toolbar-separator mx-0.5 mt-[0.275rem]" />
+				<ToolbarIcon
+					icon="undo"
+					:hoverEffect="true"
+					:disabled="!mimiriEditor.canUndo"
+					title="Undo"
+					@click="undo"
+					data-testid="editor-undo-button"
+				/>
+				<ToolbarIcon
+					icon="redo"
+					:hoverEffect="true"
+					:disabled="!mimiriEditor.canRedo"
+					title="Redo"
+					@click="redo"
+					data-testid="editor-redo-button"
+				/>
+				<div class="inline-block h-4/5 w-0 border border-solid border-toolbar-separator mx-0.5 mt-[0.275rem]" />
+				<ToolbarIcon
+					icon="history"
+					:hoverEffect="true"
+					:title="historyVisible ? 'Hide History' : 'Show History'"
+					:disabled="noteManager.tree.selectedNoteRef().value?.isSystem"
+					:toggledOn="historyVisible"
+					@click="showHistory"
+					data-testid="editor-history-button"
+				/>
+				<div class="inline-block h-4/5 w-0 border border-solid border-toolbar-separator mx-0.5 mt-[0.275rem]" />
+				<ToolbarIcon
+					icon="hide"
+					:hoverEffect="true"
+					:disabled="
+						!mimiriEditor.isActionSupported('mark-password') && !mimiriEditor.isActionSupported('unmark-password')
+					"
+					title="Mark as Password Ctrl+Shift+C"
+					@click="markAsPassword"
+					data-testid="editor-mark-as-password"
+				/>
+				<ToolbarIcon
+					icon="heading"
+					:hoverEffect="true"
+					:disabled="false"
+					title="Heading"
+					@click="insertHeading"
+					data-testid="editor-insert-heading"
+				/>
+				<ToolbarIcon
+					icon="code-block"
+					:hoverEffect="true"
+					:disabled="false"
+					title="Code Block"
+					@click="insertCodeBlock"
+					data-testid="editor-insert-code-block"
+				/>
+				<div class="inline-block h-4/5 w-0 border border-solid border-toolbar-separator m-0.5" />
+				<ToolbarIcon
+					icon="check-list"
+					:hoverEffect="true"
+					:disabled="false"
+					title="Checkbox"
+					@click="insertCheckboxList"
+					data-testid="editor-insert-checkbox"
+				/>
+				<ToolbarIcon
+					icon="list"
+					:hoverEffect="true"
+					:disabled="false"
+					title="List"
+					@click="insertUnorderedList"
+					data-testid="editor-insert-unordered-list"
+				/>
+				<ToolbarIcon
+					icon="number-list"
+					:hoverEffect="true"
+					:disabled="false"
+					title="Ordered List"
+					@click="insertOrderedList"
+					data-testid="editor-insert-ordered-list"
+				/>
+				<div class="inline-block h-4/5 w-0 border border-solid border-toolbar-separator m-0.5" />
+				<ToolbarIcon
+					v-if="showWordWrap"
+					:icon="settingsManager.wordwrap ? 'wordwrap-on' : 'wordwrap-off'"
+					:hoverEffect="true"
+					:disabled="noteManager.tree.selectedNoteRef().value?.isSystem"
+					:title="settingsManager.wordwrap ? 'Disable Word Wrap' : 'Enable Word Wrap'"
+					:toggledOn="settingsManager.wordwrap"
+					@click="toggleWordWrap"
+					data-testid="editor-toggle-wordwrap"
+				/>
+			</div>
 			<div class="flex-1"></div>
 			<ToolbarIcon
 				:icon="mimiriEditor.mode === 'advanced' ? 'wysiwyg' : 'code'"
