@@ -8,7 +8,8 @@
 		"playwright.config.*",
 		"playwright.*.config.*",
 		"playwright/**/*",
-		"eslint.config.js"
+		"eslint.config.js",
+		"scripts/**/*.js"
 	],
 	"compilerOptions": {
 		"composite": true,
