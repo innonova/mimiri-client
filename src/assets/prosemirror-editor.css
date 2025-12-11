@@ -149,14 +149,6 @@ li[data-item-type='task'] {
 	flex-shrink: 0;
 }
 
-/* Actual checkbox styling */
-.task-checkbox {
-	width: 1rem;
-	height: 1rem;
-	cursor: pointer;
-	accent-color: #2196f3;
-}
-
 /* Content container */
 .list-item-content {
 	flex: 1;
@@ -167,6 +159,15 @@ li[data-item-type='task'] {
 li[data-item-type='task'][data-checked='true'] .list-item-content p {
 	text-decoration: line-through;
 	color: #999;
+}
+
+li[data-item-type='task'] {
+	@apply mobile:leading-5.5;
+}
+
+.ProseMirror input[type='checkbox'] {
+	@apply mobile:w-4 mobile:h-4 mt-0.5;
+	accent-color: var(--color-checkbox);
 }
 
 /* Password field styling - inline editable approach */
