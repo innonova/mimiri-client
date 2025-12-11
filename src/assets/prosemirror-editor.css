@@ -2,7 +2,6 @@
 	position: relative;
 	overflow-y: auto;
 	padding: 10px 5px;
-	padding-bottom: 50rem;
 	outline: none;
 	background-color: var(--color-input);
 	flex: 1;
@@ -12,6 +11,12 @@
 	-webkit-font-variant-ligatures: none;
 	font-variant-ligatures: none;
 	font-feature-settings: 'liga' 0;
+}
+
+.ProseMirror::after {
+	content: '';
+	display: block;
+	height: 50rem;
 }
 
 /* Read-only mode during conflict resolution */

@@ -131,7 +131,7 @@
 				data-testid="editor-monaco-container"
 			/>
 			<div
-				class="overflow-auto flex-1 flex-col relative"
+				class="overflow-hidden flex-col relative"
 				style="display: none"
 				ref="proseMirrorContainer"
 				data-testid="editor-prosemirror-container"
