@@ -273,16 +273,16 @@ export class InlineMarkdownPlugin implements EditorPlugin {
 
 		// Define patterns in order of precedence (longest matches first)
 		const patterns = [
-			// Bold+Italic with underscores
-			{ regex: /___([^_]+)___/g, className: 'md-bold-italic' },
+			// Bold+Italic with underscores (only at word boundaries)
+			{ regex: /(?<!\w)___([^_]+)___(?!\w)/g, className: 'md-bold-italic' },
 			// Bold+Italic with asterisks
 			{ regex: /\*{3}([^\*]+)\*{3}/g, className: 'md-bold-italic' },
-			// Bold with underscores
-			{ regex: /(?<!_)__(?!_)([^_]+)(?<!_)__(?!_)/g, className: 'md-bold' },
+			// Bold with underscores (only at word boundaries)
+			{ regex: /(?<!\w)__(?!_)([^_]+)(?<!_)__(?!\w)/g, className: 'md-bold' },
 			// Bold with asterisks
 			{ regex: /(?<!\*)\*{2}(?!\*)([^\*]+)(?<!\*)\*{2}(?!\*)/g, className: 'md-bold' },
-			// Italic with underscores
-			{ regex: /(?<!_)_(?!_)([^_]+)(?<!_)_(?!_)/g, className: 'md-italic' },
+			// Italic with underscores (only at word boundaries)
+			{ regex: /(?<!\w)_(?!_)([^_]+)(?<!_)_(?!\w)/g, className: 'md-italic' },
 			// Italic with asterisks
 			{ regex: /(?<!\*)\*(?!\*)([^\*]+)(?<!\*)\*(?!\*)/g, className: 'md-italic' },
 		]

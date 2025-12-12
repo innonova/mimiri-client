@@ -171,14 +171,31 @@ const subTokenizeText = (
 				continue
 			}
 		}
+		// Helper to check if a character is a word character
+		const isWordChar = (ch: string | undefined): boolean => {
+			return ch !== undefined && /\w/.test(ch)
+		}
+
 		// Check for strong emphasis: ***text*** or ___text___
 		if (
 			(char === '*' && text[i + 1] === '*' && text[i + 2] === '*') ||
 			(char === '_' && text[i + 1] === '_' && text[i + 2] === '_')
 		) {
+			// For underscores, check word boundaries
+			if (char === '_' && isWordChar(text[i - 1])) {
+				currentText += char
+				i++
+				continue
+			}
 			const delimiter = char + text[i + 1] + text[i + 2]
 			const closingIdx = findClosing(i, delimiter)
 			if (closingIdx !== -1) {
+				// For underscores, check that closing is not followed by word char
+				if (char === '_' && isWordChar(text[closingIdx + delimiter.length])) {
+					currentText += char
+					i++
+					continue
+				}
 				flushText()
 				const content = text.substring(i + delimiter.length, closingIdx)
 				tokens.push({
@@ -198,9 +215,21 @@ const subTokenizeText = (
 
 		// Check for strong: **text** or __text__
 		if ((char === '*' && text[i + 1] === '*') || (char === '_' && text[i + 1] === '_')) {
+			// For underscores, check word boundaries
+			if (char === '_' && isWordChar(text[i - 1])) {
+				currentText += char
+				i++
+				continue
+			}
 			const delimiter = char + text[i + 1]
 			const closingIdx = findClosing(i, delimiter)
 			if (closingIdx !== -1) {
+				// For underscores, check that closing is not followed by word char
+				if (char === '_' && isWordChar(text[closingIdx + delimiter.length])) {
+					currentText += char
+					i++
+					continue
+				}
 				flushText()
 				const content = text.substring(i + delimiter.length, closingIdx)
 				tokens.push({
@@ -218,8 +247,20 @@ const subTokenizeText = (
 
 		// Check for emphasis: *text* or _text_
 		if (char === '*' || char === '_') {
+			// For underscores, check word boundaries
+			if (char === '_' && isWordChar(text[i - 1])) {
+				currentText += char
+				i++
+				continue
+			}
 			const closingIdx = findClosing(i, char)
 			if (closingIdx !== -1) {
+				// For underscores, check that closing is not followed by word char
+				if (char === '_' && isWordChar(text[closingIdx + 1])) {
+					currentText += char
+					i++
+					continue
+				}
 				flushText()
 				const content = text.substring(i + 1, closingIdx)
 				tokens.push({
