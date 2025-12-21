@@ -74,6 +74,10 @@ export class EditorProseMirror implements TextEditor {
 		this._autoComplete = autoComplete
 		this._domElement.style.display = this._active ? 'flex' : 'none'
 
+		this._domElement.addEventListener('contextmenu', event => {
+			// event.stopPropagation()
+		})
+
 		// Initialize action handlers
 		this._codeBlockActionHandler = new CodeBlockActionHandler(clipboardManager, this._autoComplete, this._domElement)
 		this._conflictActionHandler = new ConflictActionHandler(conflictBanner)
@@ -139,6 +143,9 @@ export class EditorProseMirror implements TextEditor {
 
 		const view = new EditorView(this._domElement, {
 			state,
+			attributes: {
+				spellcheck: 'false',
+			},
 			nodeViews: {
 				list_item: (node, view, getPos) => {
 					if (node.attrs.checked !== null) {
