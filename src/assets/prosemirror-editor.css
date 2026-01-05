@@ -364,9 +364,11 @@ li[data-item-type='task'] {
 	line-height: 1.4;
 }
 
-/* Links - pointer cursor only when Ctrl/Cmd is pressed */
-.ProseMirror.ctrl-pressed a {
+/* Links - pointer cursor and blue color when Ctrl/Cmd is pressed and hovered */
+.ProseMirror.ctrl-pressed a:hover {
+	color: #4e94ce;
 	cursor: pointer;
+	text-decoration: underline;
 }
 
 /* Keep underline on links when hovering */
