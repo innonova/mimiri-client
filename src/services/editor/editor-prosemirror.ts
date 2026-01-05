@@ -16,7 +16,7 @@ import {
 	splitBlock,
 } from 'prosemirror-commands'
 import { mimiriSchema } from './prosemirror/mimiri-schema'
-import { mimiriInputRules } from './prosemirror/mimiri-input-rules'
+import { convertUrlAtCursor, mimiriInputRules } from './prosemirror/mimiri-input-rules'
 import { liftListItem, sinkListItem, splitListItem } from 'prosemirror-schema-list'
 import { deserialize } from './prosemirror/mimiri-deserializer'
 import { serialize } from './prosemirror/mimiri-serializer'
@@ -44,6 +44,7 @@ export class EditorProseMirror implements TextEditor {
 	private _readonly = false
 	private _activePasswordEntry: { node: Node; start: number; end: number } | undefined
 	private _hasOpenDocument: boolean = false
+	private _longPressTimer: number | null = null
 	private _state: Omit<MimiriEditorState, 'mode'> = {
 		canUndo: true,
 		canRedo: true,
@@ -123,7 +124,7 @@ export class EditorProseMirror implements TextEditor {
 				keymap({
 					'Mod-z': undo,
 					'Mod-y': redo,
-					Enter: splitListItem(mimiriSchema.nodes.list_item),
+					Enter: chainCommands(convertUrlAtCursor(mimiriSchema.marks.link), splitListItem(mimiriSchema.nodes.list_item)),
 					Tab: sinkListItem(mimiriSchema.nodes.list_item),
 					'Shift-Tab': liftListItem(mimiriSchema.nodes.list_item),
 					'Shift-Enter': chainCommands(newlineInCode, createParagraphNear, liftEmptyBlock, splitBlock),
@@ -186,6 +187,69 @@ export class EditorProseMirror implements TextEditor {
 				return false
 			},
 			handleDOMEvents: {
+				click: (_view, event) => {
+					// Handle link clicks - open in browser with Ctrl/Cmd+Click
+					const target = event.target as HTMLElement
+					const anchor = target.closest('a')
+					if (anchor && (event.ctrlKey || event.metaKey)) {
+						const href = anchor.getAttribute('href')
+						if (href) {
+							event.preventDefault()
+							window.open(href, '_blank')
+							return true
+						}
+					}
+					return false
+				},
+				// Long press to open links on touch devices
+				touchstart: (_view, event) => {
+					const anchor = (event.target as HTMLElement).closest('a')
+					const href = anchor?.getAttribute('href')
+					if (!href) return false
+
+					this._longPressTimer = window.setTimeout(() => {
+						this._longPressTimer = -1 // Mark as triggered
+						anchor.classList.add('long-press-active')
+						window.open(href, '_blank')
+					}, 500)
+					return false
+				},
+				touchmove: () => {
+					if (this._longPressTimer && this._longPressTimer !== -1) {
+						clearTimeout(this._longPressTimer)
+						this._longPressTimer = null
+					}
+					return false
+				},
+				touchend: (_view, event) => {
+					if (this._longPressTimer === -1) {
+						event.preventDefault()
+						;(event.target as HTMLElement).closest('a')?.classList.remove('long-press-active')
+						this._longPressTimer = null
+						return true
+					}
+					if (this._longPressTimer) {
+						clearTimeout(this._longPressTimer)
+						this._longPressTimer = null
+					}
+					return false
+				},
+				keydown: (view, event) => {
+					if (event.key === 'Control' || event.key === 'Meta') {
+						view.dom.classList.add('ctrl-pressed')
+					}
+					return false
+				},
+				keyup: (view, event) => {
+					if (event.key === 'Control' || event.key === 'Meta') {
+						view.dom.classList.remove('ctrl-pressed')
+					}
+					return false
+				},
+				blur: view => {
+					view.dom.classList.remove('ctrl-pressed')
+					return false
+				},
 				mousedown: (view, event) => {
 					if (event.button !== 0) {
 						return false

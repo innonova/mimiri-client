@@ -53,7 +53,7 @@
 	user-select: text;
 }
 
-.ProseMirror-selectednode {
+.ProseMirror-selectednode:not(:has(a)) {
 	outline: 2px solid #8cf;
 }
 
@@ -362,4 +362,22 @@ li[data-item-type='task'] {
 	text-transform: uppercase;
 	letter-spacing: 0.05em;
 	line-height: 1.4;
+}
+
+/* Links - pointer cursor and blue color when Ctrl/Cmd is pressed and hovered */
+.ProseMirror.ctrl-pressed a:hover {
+	color: #4e94ce;
+	cursor: pointer;
+	text-decoration: underline;
+}
+
+/* Keep underline on links when hovering */
+.ProseMirror a:hover {
+	text-decoration: underline;
+}
+
+/* Long press visual feedback on touch devices */
+.ProseMirror a.long-press-active {
+	color: #3794ff;
+	text-decoration: underline;
 }
