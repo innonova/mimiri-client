@@ -29,6 +29,7 @@ export class CheckboxListItemView implements NodeView {
 			this.checkbox.type = 'checkbox'
 			this.checkbox.checked = node.attrs.checked
 			this.checkbox.className = 'task-checkbox'
+			this.checkbox.style.cursor = 'pointer'
 
 			// Handle checkbox changes
 			this.checkbox.addEventListener('change', this.handleCheckboxChange)

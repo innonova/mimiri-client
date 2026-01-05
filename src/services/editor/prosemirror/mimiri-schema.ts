@@ -231,7 +231,9 @@ export const marks: { [key: string]: MarkSpec } = {
 		],
 		toDOM(node) {
 			const { href, title } = node.attrs
-			return ['a', { href, title }, 0]
+			const isMac = typeof navigator !== 'undefined' && navigator.platform.includes('Mac')
+			const tooltip = title || `Follow link (${isMac ? 'Cmd' : 'Ctrl'} + click)`
+			return ['a', { href, title: tooltip }, 0]
 		},
 	},
 
