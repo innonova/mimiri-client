@@ -1,5 +1,6 @@
 import { mimiriSchema } from './mimiri-schema'
 import type { Node } from 'prosemirror-model'
+import { cleanUrl, urlPatternBase } from './url-utils'
 
 const headingRegex = /^(?<hashes>#{1,6})\s+(?<content>.*)$/
 const listItemRegex = /^(?<indent>\s*)(?<marker>[-*+]|\d+\.)\s(?:(?<checkbox>\[(?:\s|[xX])\])\s+)?(?<content>.*)$/
@@ -330,6 +331,29 @@ const subTokenizeText = (
 					depth: 0,
 				})
 				i = linkEnd.urlEnd + 1
+				continue
+			}
+		}
+
+		// Check for plain URLs: https://... or http://...
+		if (
+			char === 'h' &&
+			text[i + 1] === 't' &&
+			(text.substring(i, i + 8) === 'https://' || text.substring(i, i + 7) === 'http://')
+		) {
+			const urlMatch = text.substring(i).match(new RegExp('^' + urlPatternBase.source))
+			if (urlMatch) {
+				flushText()
+				const url = cleanUrl(urlMatch[1])
+				tokens.push({
+					type: 'link',
+					value: JSON.stringify({ text: url, url: url }),
+					lineEnd: false,
+					lineStart: false,
+					indent: '',
+					depth: 0,
+				})
+				i += url.length
 				continue
 			}
 		}

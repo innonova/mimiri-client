@@ -16,7 +16,7 @@ import {
 	splitBlock,
 } from 'prosemirror-commands'
 import { mimiriSchema } from './prosemirror/mimiri-schema'
-import { mimiriInputRules } from './prosemirror/mimiri-input-rules'
+import { convertUrlAtCursor, mimiriInputRules } from './prosemirror/mimiri-input-rules'
 import { liftListItem, sinkListItem, splitListItem } from 'prosemirror-schema-list'
 import { deserialize } from './prosemirror/mimiri-deserializer'
 import { serialize } from './prosemirror/mimiri-serializer'
@@ -123,7 +123,7 @@ export class EditorProseMirror implements TextEditor {
 				keymap({
 					'Mod-z': undo,
 					'Mod-y': redo,
-					Enter: splitListItem(mimiriSchema.nodes.list_item),
+					Enter: chainCommands(convertUrlAtCursor(mimiriSchema.marks.link), splitListItem(mimiriSchema.nodes.list_item)),
 					Tab: sinkListItem(mimiriSchema.nodes.list_item),
 					'Shift-Tab': liftListItem(mimiriSchema.nodes.list_item),
 					'Shift-Enter': chainCommands(newlineInCode, createParagraphNear, liftEmptyBlock, splitBlock),
@@ -186,6 +186,36 @@ export class EditorProseMirror implements TextEditor {
 				return false
 			},
 			handleDOMEvents: {
+				click: (_view, event) => {
+					// Handle link clicks - open in browser with Ctrl/Cmd+Click
+					const target = event.target as HTMLElement
+					const anchor = target.closest('a')
+					if (anchor && (event.ctrlKey || event.metaKey)) {
+						const href = anchor.getAttribute('href')
+						if (href) {
+							event.preventDefault()
+							window.open(href, '_blank')
+							return true
+						}
+					}
+					return false
+				},
+				keydown: (view, event) => {
+					if (event.key === 'Control' || event.key === 'Meta') {
+						view.dom.classList.add('ctrl-pressed')
+					}
+					return false
+				},
+				keyup: (view, event) => {
+					if (event.key === 'Control' || event.key === 'Meta') {
+						view.dom.classList.remove('ctrl-pressed')
+					}
+					return false
+				},
+				blur: view => {
+					view.dom.classList.remove('ctrl-pressed')
+					return false
+				},
 				mousedown: (view, event) => {
 					if (event.button !== 0) {
 						return false

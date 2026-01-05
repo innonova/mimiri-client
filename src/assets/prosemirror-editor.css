@@ -53,7 +53,7 @@
 	user-select: text;
 }
 
-.ProseMirror-selectednode {
+.ProseMirror-selectednode:not(:has(a)) {
 	outline: 2px solid #8cf;
 }
 
@@ -378,4 +378,14 @@ li[data-item-type='task'] {
 .ProseMirror h5 + *,
 .ProseMirror h6 + * {
 	margin-top: 0.15em;
+}
+
+/* Links - pointer cursor only when Ctrl/Cmd is pressed */
+.ProseMirror.ctrl-pressed a {
+	cursor: pointer;
+}
+
+/* Keep underline on links when hovering */
+.ProseMirror a:hover {
+	text-decoration: underline;
 }
