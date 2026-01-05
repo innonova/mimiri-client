@@ -375,3 +375,9 @@ li[data-item-type='task'] {
 .ProseMirror a:hover {
 	text-decoration: underline;
 }
+
+/* Long press visual feedback on touch devices */
+.ProseMirror a.long-press-active {
+	color: #3794ff;
+	text-decoration: underline;
+}
