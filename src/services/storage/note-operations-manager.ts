@@ -297,7 +297,9 @@ export class NoteOperationsManager {
 					await multiAction.changeNoteKey(affectedNote.id, sharedKey.name)
 				}
 			}
-			await multiAction.commit()
+			if (multiAction.hasActions()) {
+				await multiAction.commit()
+			}
 			this.syncService.queueSync()
 			await this.syncService.waitForSync(15000)
 			const response = await this.api.shareNote(recipient, sharedKey.name, mimerNote.id, mimerNote.title, pow)
@@ -357,13 +359,14 @@ export class NoteOperationsManager {
 					await this.syncService.waitForSync(15000)
 				}
 
-				if (!parent.note.getItem('metadata').notes.includes(share.noteId)) {
-					parent.note.changeItem('metadata').notes.push(share.noteId)
+				const targetParent = parent ?? this.treeManager.root
+				if (!targetParent.note.getItem('metadata').notes.includes(share.noteId)) {
+					targetParent.note.changeItem('metadata').notes.push(share.noteId)
 				}
-				await parent.save()
+				await targetParent.save()
 				this.syncService.queueSync()
 				await this.syncService.waitForSync(15000)
-				await parent?.expand()
+				await targetParent.expand()
 				const note = await this.treeManager.getNoteById(share.noteId)
 				if (note) {
 					await note.select()
