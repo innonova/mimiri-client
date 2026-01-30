@@ -3,7 +3,7 @@ import type { EditorPlugin } from '../editor-plugin'
 
 const checkBoxListRegex = /^(?<indent>(\s*))(?<checkbox>\[(?:x| )\])(?<space>\s)/
 const numberedListRegex = /^(?<indent>\s*)(?<number>\d+)(?<delimiter>[.)])(?<space>\s)/
-const listItemRegex = /^(?<indent>\s*)(?<symbol>[^\w\s])(?<space>\s)/
+const listItemRegex = /^(?<indent>\s*)(?<symbol>[^\w\s#])(?<space>\s)/
 const indentRegex = /^(?<indent>\s*)(?<content>.*)/
 
 export class ListPlugin implements EditorPlugin {
