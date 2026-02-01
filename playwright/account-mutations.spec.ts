@@ -181,7 +181,7 @@ test.describe('account-mutations', () => {
 			await expect(aboutView.username()).toHaveText(mimiri().config.username)
 			await expect(aboutView.accountType()).toHaveText('local')
 			await verifyTestTree(miniTestTree)
-			await mimiri().pause()
+			// await mimiri().pause()
 		})
 	})
 
@@ -382,7 +382,7 @@ test.describe('account-mutations', () => {
 			await settingNodes.controlPanel().click()
 			await expect(aboutView.accountType()).toHaveText('cloud')
 			await expect(aboutView.username()).toHaveText(mimiri().config.username)
-			await mimiri().pause()
+			// await mimiri().pause()
 		})
 	})
 
@@ -411,7 +411,7 @@ test.describe('account-mutations', () => {
 			await settingNodes.controlPanel().click()
 			await expect(aboutView.accountType()).toHaveText('cloud')
 			await expect(aboutView.username()).toHaveText(mimiri().config.username)
-			await mimiri().pause()
+			// await mimiri().pause()
 		})
 	})
 
@@ -442,7 +442,7 @@ test.describe('account-mutations', () => {
 			await settingNodes.controlPanel().click()
 			await expect(aboutView.accountType()).toHaveText('cloud')
 			await expect(aboutView.username()).toHaveText(mimiri().config.username)
-			await mimiri().pause()
+			// await mimiri().pause()
 		})
 	})
 })

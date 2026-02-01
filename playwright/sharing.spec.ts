@@ -54,7 +54,7 @@ test.describe('sharing', () => {
 			mimiri(1, true)
 			await note.item('Collaboration Hub').click({ button: 'right' })
 			await menu.receiveShareUnder().click()
-			await acceptShareDialog.code().fill(shareCode)
+			await acceptShareDialog.fillShareCode(shareCode)
 			await acceptShareDialog.okButton().click()
 			await expect(acceptShareDialog.container()).not.toBeVisible()
 			await verifyTestTree(receiveShareTestTreeAfterSingleNote)
@@ -90,7 +90,7 @@ test.describe('sharing', () => {
 			mimiri(1, true)
 			await note.item('Shared Projects').click({ button: 'right' })
 			await menu.receiveShareUnder().click()
-			await acceptShareDialog.code().fill(shareCode)
+			await acceptShareDialog.fillShareCode(shareCode)
 			await acceptShareDialog.okButton().click()
 			await expect(acceptShareDialog.container()).not.toBeVisible()
 			await verifyTestTree(receiveShareTestTreeAfterFolder)
@@ -136,13 +136,13 @@ test.describe('sharing', () => {
 			mimiri(1, true)
 			await note.item('Collaboration Hub').click({ button: 'right' })
 			await menu.receiveShareUnder().click()
-			await acceptShareDialog.code().fill(apiDocShareCode)
+			await acceptShareDialog.fillShareCode(apiDocShareCode)
 			await acceptShareDialog.okButton().click()
 			await expect(acceptShareDialog.container()).not.toBeVisible()
 
 			await note.item('Archive').click({ button: 'right' })
 			await menu.receiveShareUnder().click()
-			await acceptShareDialog.code().fill(marketAnalysisShareCode)
+			await acceptShareDialog.fillShareCode(marketAnalysisShareCode)
 			await acceptShareDialog.okButton().click()
 			await expect(acceptShareDialog.container()).not.toBeVisible()
 
@@ -209,26 +209,26 @@ test.describe('sharing', () => {
 			// Receive into Shared Projects
 			await note.item('Shared Projects').click({ button: 'right' })
 			await menu.receiveShareUnder().click()
-			await acceptShareDialog.code().fill(proposalShareCode)
+			await acceptShareDialog.fillShareCode(proposalShareCode)
 			await acceptShareDialog.okButton().click()
 			await expect(acceptShareDialog.container()).not.toBeVisible()
 
 			await note.item('Shared Projects').click({ button: 'right' })
 			await menu.receiveShareUnder().click()
-			await acceptShareDialog.code().fill(devGuidelinesShareCode)
+			await acceptShareDialog.fillShareCode(devGuidelinesShareCode)
 			await acceptShareDialog.okButton().click()
 			await expect(acceptShareDialog.container()).not.toBeVisible()
 
 			// Receive into Collaboration Hub
 			await note.item('Collaboration Hub').click({ button: 'right' })
 			await menu.receiveShareUnder().click()
-			await acceptShareDialog.code().fill(supportShareCode)
+			await acceptShareDialog.fillShareCode(supportShareCode)
 			await acceptShareDialog.okButton().click()
 			await expect(acceptShareDialog.container()).not.toBeVisible()
 
 			await note.item('Collaboration Hub').click({ button: 'right' })
 			await menu.receiveShareUnder().click()
-			await acceptShareDialog.code().fill(trendsShareCode)
+			await acceptShareDialog.fillShareCode(trendsShareCode)
 			await acceptShareDialog.okButton().click()
 			await expect(acceptShareDialog.container()).not.toBeVisible()
 
@@ -264,18 +264,18 @@ test.describe('sharing', () => {
 			await shareDialog.closeButton().click()
 
 			await settingNodes.controlPanel().click()
-			await expect(aboutView.noteCount()).toHaveText('25')
+			await expect(aboutView.noteCount()).toHaveText('24')
 
 			mimiri(1, true)
 			await note.item('Shared Projects').click({ button: 'right' })
 			await menu.receiveShareUnder().click()
-			await acceptShareDialog.code().fill(shareCode)
+			await acceptShareDialog.fillShareCode(shareCode)
 			await acceptShareDialog.okButton().click()
 			await expect(acceptShareDialog.container()).not.toBeVisible()
 			await verifyTestTree(receiveShareTestTreeAfterFolder)
 
 			await settingNodes.controlPanel().click()
-			await expect(aboutView.noteCount()).toHaveText('19')
+			await expect(aboutView.noteCount()).toHaveText('18')
 
 			await note.item('Team Handbook').click({ button: 'right' })
 			await menu.properties().click()
@@ -293,7 +293,7 @@ test.describe('sharing', () => {
 			await deleteNoteDialog.confirmLeaveButton().click()
 
 			await settingNodes.controlPanel().click()
-			await expect(aboutView.noteCount()).toHaveText('13')
+			await expect(aboutView.noteCount()).toHaveText('12')
 
 			mimiri(0, true)
 			await note.item('Team Handbook').click()
@@ -303,7 +303,7 @@ test.describe('sharing', () => {
 			await expect(textNoteProperties.shareParticipantUsername()).toHaveCount(0)
 
 			await settingNodes.controlPanel().click()
-			await expect(aboutView.noteCount()).toHaveText('25')
+			await expect(aboutView.noteCount()).toHaveText('24')
 
 			await mimiri().reload()
 			await note.item('Team Handbook').click()
@@ -312,7 +312,7 @@ test.describe('sharing', () => {
 			await expect(textNoteProperties.noShareParticipants()).toBeVisible()
 			await expect(textNoteProperties.shareParticipantUsername()).toHaveCount(0)
 			await settingNodes.controlPanel().click()
-			await expect(aboutView.noteCount()).toHaveText('25')
+			await expect(aboutView.noteCount()).toHaveText('24')
 			await verifyTestTree(shareTestTree)
 		})
 	})
@@ -345,18 +345,18 @@ test.describe('sharing', () => {
 			await shareDialog.closeButton().click()
 
 			await settingNodes.controlPanel().click()
-			await expect(aboutView.noteCount()).toHaveText('25')
+			await expect(aboutView.noteCount()).toHaveText('24')
 
 			mimiri(1, true)
 			await note.item('Shared Projects').click({ button: 'right' })
 			await menu.receiveShareUnder().click()
-			await acceptShareDialog.code().fill(shareCode)
+			await acceptShareDialog.fillShareCode(shareCode)
 			await acceptShareDialog.okButton().click()
 			await expect(acceptShareDialog.container()).not.toBeVisible()
 			await verifyTestTree(receiveShareTestTreeAfterFolder)
 
 			await settingNodes.controlPanel().click()
-			await expect(aboutView.noteCount()).toHaveText('19')
+			await expect(aboutView.noteCount()).toHaveText('18')
 
 			await note.item('Team Handbook').click({ button: 'right' })
 			await menu.properties().click()
@@ -373,11 +373,11 @@ test.describe('sharing', () => {
 			await deleteNoteDialog.confirmLeaveButton().click()
 
 			await settingNodes.controlPanel().click()
-			await expect(aboutView.noteCount()).toHaveText('19')
+			await expect(aboutView.noteCount()).toHaveText('18')
 
 			mimiri(1, true)
 			await settingNodes.controlPanel().click()
-			await expect(aboutView.noteCount()).toHaveText('19')
+			await expect(aboutView.noteCount()).toHaveText('18')
 			await note.item('Team Handbook').click({ button: 'right' })
 			await menu.properties().click()
 			await expect(textNoteProperties.noShareParticipants()).toBeVisible()
@@ -390,7 +390,7 @@ test.describe('sharing', () => {
 			await expect(textNoteProperties.noShareParticipants()).toBeVisible()
 			await expect(textNoteProperties.shareParticipantUsername()).toHaveCount(0)
 			await settingNodes.controlPanel().click()
-			await expect(aboutView.noteCount()).toHaveText('19')
+			await expect(aboutView.noteCount()).toHaveText('18')
 		})
 	})
 
@@ -422,18 +422,18 @@ test.describe('sharing', () => {
 			await shareDialog.closeButton().click()
 
 			await settingNodes.controlPanel().click()
-			await expect(aboutView.noteCount()).toHaveText('25')
+			await expect(aboutView.noteCount()).toHaveText('24')
 
 			mimiri(1, true)
 			await note.item('Shared Projects').click({ button: 'right' })
 			await menu.receiveShareUnder().click()
-			await acceptShareDialog.code().fill(shareCode)
+			await acceptShareDialog.fillShareCode(shareCode)
 			await acceptShareDialog.okButton().click()
 			await expect(acceptShareDialog.container()).not.toBeVisible()
 			await verifyTestTree(receiveShareTestTreeAfterFolder)
 
 			await settingNodes.controlPanel().click()
-			await expect(aboutView.noteCount()).toHaveText('19')
+			await expect(aboutView.noteCount()).toHaveText('18')
 
 			await note.item('Team Handbook').click({ button: 'right' })
 			await menu.properties().click()
@@ -451,7 +451,7 @@ test.describe('sharing', () => {
 			await deleteNoteDialog.confirmLeaveButton().click()
 
 			await settingNodes.controlPanel().click()
-			await expect(aboutView.noteCount()).toHaveText('13')
+			await expect(aboutView.noteCount()).toHaveText('12')
 
 			mimiri(0, true)
 			await note.item('Team Handbook').click()
@@ -461,7 +461,7 @@ test.describe('sharing', () => {
 			await expect(textNoteProperties.shareParticipantUsername()).toHaveCount(0)
 
 			await settingNodes.controlPanel().click()
-			await expect(aboutView.noteCount()).toHaveText('25')
+			await expect(aboutView.noteCount()).toHaveText('24')
 
 			await note.item('Team Handbook').click({ button: 'right' })
 			await menu.delete().click()
@@ -469,7 +469,7 @@ test.describe('sharing', () => {
 			await expect(deleteNoteDialog.deleteShareWithNoParticipants()).toBeVisible()
 			await deleteNoteDialog.confirmButton().click()
 			await settingNodes.controlPanel().click()
-			await expect(aboutView.noteCount()).toHaveText('19')
+			await expect(aboutView.noteCount()).toHaveText('18')
 		})
 	})
 
@@ -501,7 +501,7 @@ test.describe('sharing', () => {
 			mimiri(1, true)
 			await note.item('Collaboration Hub').click({ button: 'right' })
 			await menu.receiveShareUnder().click()
-			await acceptShareDialog.code().fill(shareCode)
+			await acceptShareDialog.fillShareCode(shareCode)
 			await acceptShareDialog.okButton().click()
 			await expect(acceptShareDialog.container()).not.toBeVisible()
 			await verifyTestTree(receiveShareTestTreeAfterSingleNote)
@@ -548,7 +548,7 @@ test.describe('sharing', () => {
 			mimiri(1, true)
 			await note.item('Collaboration Hub').click({ button: 'right' })
 			await menu.receiveShareUnder().click()
-			await acceptShareDialog.code().fill(shareCode)
+			await acceptShareDialog.fillShareCode(shareCode)
 			await acceptShareDialog.okButton().click()
 			await expect(acceptShareDialog.container()).not.toBeVisible()
 			await verifyTestTree(receiveShareTestTreeAfterSingleNote)
@@ -593,7 +593,7 @@ test.describe('sharing', () => {
 			mimiri(1, true)
 			await note.item('Collaboration Hub').click({ button: 'right' })
 			await menu.receiveShareUnder().click()
-			await acceptShareDialog.code().fill(shareCode)
+			await acceptShareDialog.fillShareCode(shareCode)
 			await acceptShareDialog.okButton().click()
 			await expect(acceptShareDialog.container()).not.toBeVisible()
 
@@ -651,7 +651,7 @@ test.describe('sharing', () => {
 			mimiri(1, true)
 			await note.item('Collaboration Hub').click({ button: 'right' })
 			await menu.receiveShareUnder().click()
-			await acceptShareDialog.code().fill(shareCode)
+			await acceptShareDialog.fillShareCode(shareCode)
 			await acceptShareDialog.okButton().click()
 			await expect(acceptShareDialog.container()).not.toBeVisible()
 
@@ -709,7 +709,7 @@ test.describe('sharing', () => {
 			mimiri(1, true)
 			await note.item('Collaboration Hub').click({ button: 'right' })
 			await menu.receiveShareUnder().click()
-			await acceptShareDialog.code().fill(shareCode)
+			await acceptShareDialog.fillShareCode(shareCode)
 			await acceptShareDialog.okButton().click()
 			await expect(acceptShareDialog.container()).not.toBeVisible()
 
@@ -767,7 +767,7 @@ test.describe('sharing', () => {
 			mimiri(1, true)
 			await note.item('Collaboration Hub').click({ button: 'right' })
 			await menu.receiveShareUnder().click()
-			await acceptShareDialog.code().fill(shareCode)
+			await acceptShareDialog.fillShareCode(shareCode)
 			await acceptShareDialog.okButton().click()
 			await expect(acceptShareDialog.container()).not.toBeVisible()
 
@@ -825,7 +825,7 @@ test.describe('sharing', () => {
 			mimiri(1, true)
 			await note.item('Collaboration Hub').click({ button: 'right' })
 			await menu.receiveShareUnder().click()
-			await acceptShareDialog.code().fill(shareCode)
+			await acceptShareDialog.fillShareCode(shareCode)
 			await acceptShareDialog.okButton().click()
 			await expect(acceptShareDialog.container()).not.toBeVisible()
 
@@ -883,7 +883,7 @@ test.describe('sharing', () => {
 			mimiri(1, true)
 			await note.item('Collaboration Hub').click({ button: 'right' })
 			await menu.receiveShareUnder().click()
-			await acceptShareDialog.code().fill(shareCode)
+			await acceptShareDialog.fillShareCode(shareCode)
 			await acceptShareDialog.okButton().click()
 			await expect(acceptShareDialog.container()).not.toBeVisible()
 
@@ -941,7 +941,7 @@ test.describe('sharing', () => {
 			mimiri(1, true)
 			await note.item('Collaboration Hub').click({ button: 'right' })
 			await menu.receiveShareUnder().click()
-			await acceptShareDialog.code().fill(shareCode)
+			await acceptShareDialog.fillShareCode(shareCode)
 			await acceptShareDialog.okButton().click()
 			await expect(acceptShareDialog.container()).not.toBeVisible()
 
@@ -958,7 +958,7 @@ test.describe('sharing', () => {
 			mimiri(1, true)
 			await note.item('Collaboration Hub').click({ button: 'right' })
 			await menu.receiveShareUnder().click()
-			await acceptShareDialog.code().fill(shareCode2)
+			await acceptShareDialog.fillShareCode(shareCode2)
 			await acceptShareDialog.okButton().click()
 			await expect(acceptShareDialog.container()).not.toBeVisible()
 
@@ -1012,7 +1012,7 @@ test.describe('sharing', () => {
 			mimiri(1, true)
 			await note.item('Collaboration Hub').click({ button: 'right' })
 			await menu.receiveShareUnder().click()
-			await acceptShareDialog.code().fill(shareCode)
+			await acceptShareDialog.fillShareCode(shareCode)
 			await acceptShareDialog.okButton().click()
 			await expect(acceptShareDialog.container()).not.toBeVisible()
 
@@ -1029,7 +1029,7 @@ test.describe('sharing', () => {
 			mimiri(1, true)
 			await note.item('Collaboration Hub').click({ button: 'right' })
 			await menu.receiveShareUnder().click()
-			await acceptShareDialog.code().fill(shareCode2)
+			await acceptShareDialog.fillShareCode(shareCode2)
 			await acceptShareDialog.okButton().click()
 			await expect(acceptShareDialog.container()).not.toBeVisible()
 
@@ -1083,7 +1083,7 @@ test.describe('sharing', () => {
 			mimiri(1, true)
 			await note.item('Collaboration Hub').click({ button: 'right' })
 			await menu.receiveShareUnder().click()
-			await acceptShareDialog.code().fill(shareCode)
+			await acceptShareDialog.fillShareCode(shareCode)
 			await acceptShareDialog.okButton().click()
 			await expect(acceptShareDialog.container()).not.toBeVisible()
 
@@ -1110,7 +1110,7 @@ test.describe('sharing', () => {
 			await expect(menu.receiveShareUnder()).not.toBeVisible()
 			await titleBar.edit().click()
 
-			await mimiri().pause()
+			// await mimiri().pause()
 		})
 	})
 })

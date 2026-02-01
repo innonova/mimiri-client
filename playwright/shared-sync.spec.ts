@@ -36,7 +36,7 @@ test.describe('shared note live sync tests', () => {
 			mimiri(1, true)
 			await note.item('Collaboration Hub').click({ button: 'right' })
 			await menu.receiveShareUnder().click()
-			await acceptShareDialog.code().fill(shareCode)
+			await acceptShareDialog.fillShareCode(shareCode)
 			await acceptShareDialog.okButton().click()
 			await expect(acceptShareDialog.container()).not.toBeVisible()
 
@@ -91,7 +91,7 @@ test.describe('shared note live sync tests', () => {
 			mimiri(1, true)
 			await note.item('Collaboration Hub').click({ button: 'right' })
 			await menu.receiveShareUnder().click()
-			await acceptShareDialog.code().fill(shareCode)
+			await acceptShareDialog.fillShareCode(shareCode)
 			await acceptShareDialog.okButton().click()
 			await expect(acceptShareDialog.container()).not.toBeVisible()
 
@@ -161,7 +161,7 @@ test.describe('shared note live sync tests', () => {
 			mimiri(1, true)
 			await note.item('Collaboration Hub').click({ button: 'right' })
 			await menu.receiveShareUnder().click()
-			await acceptShareDialog.code().fill(shareCode)
+			await acceptShareDialog.fillShareCode(shareCode)
 			await acceptShareDialog.okButton().click()
 			await expect(acceptShareDialog.container()).not.toBeVisible()
 

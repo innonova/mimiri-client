@@ -10,6 +10,7 @@
 				inputmode="numeric"
 				pattern="[0-9]*"
 				maxlength="1"
+				:data-testid="'pin-input-digit-' + index"
 				:class="[
 					'w-9 h-12 text-center text-lg font-semibold border-2 rounded-lg transition-all duration-200 ease-in-out focus:outline-none caret-transparent',
 					'bg-input text-input-text border-info',

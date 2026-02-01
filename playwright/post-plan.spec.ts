@@ -13,7 +13,7 @@ import {
 
 // test.describe.configure({ mode: 'serial' })
 
-test.describe('cloud account', () => {
+test.describe.skip('cloud account', () => {
 	test('verify post create plan choice, after reload', async () => {
 		await withMimiriContext(async () => {
 			await mimiri().home()

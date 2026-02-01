@@ -133,7 +133,7 @@ class MenuManager {
 				ipcClient.menu.hide()
 			}
 		} else if (itemId === 'logout') {
-			if (mimiriPlatform.isWeb) {
+			if (mimiriPlatform.isWeb && noteManager.state.accountType === AccountType.Cloud) {
 				deleteLocalDataDialog.value.show()
 			} else {
 				await noteManager.session.logout(true)

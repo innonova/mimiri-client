@@ -417,10 +417,15 @@ export const shareDialog = {
 
 export const acceptShareDialog = {
 	container: () => tid(`accept-share-dialog`),
-	code: () => tid(`accept-share-dialog`).getByTestId(`share-code-input`),
 	okButton: () => tid(`accept-share-dialog`).getByTestId(`share-ok-button`),
 	cancelButton: () => tid(`accept-share-dialog`).getByTestId(`share-cancel-button`),
 	limitsExceeded: () => tid(`accept-share-dialog`).getByTestId(`share-limits-exceeded`),
+	pinInputDigit: (no: number) => tid(`accept-share-dialog`).getByTestId(`pin-input-digit-${no}`),
+	fillShareCode: async (code: string) => {
+		for (let i = 0; i < code.length; i++) {
+			await acceptShareDialog.pinInputDigit(i).fill(code[i])
+		}
+	},
 }
 
 export const emptyRecycleBinDialog = {
@@ -506,4 +511,10 @@ export const initialPlanChooser = {
 
 export const lockScreen = {
 	container: () => tid(`lock-screen`),
+}
+
+export const clearLocalDataDialog = {
+	container: () => tid(`clear-local-data-dialog`),
+	clearButton: () => tid(`clear-local-data-clear`),
+	logoutButton: () => tid(`clear-local-data-logout`),
 }
