@@ -538,11 +538,11 @@ export class EditorAdvanced implements TextEditor {
 	}
 
 	public show(text: string, scrollTop: number) {
-		const normalizedText = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n')
-		this._initialText = normalizedText
-		this._text = normalizedText
+		// const normalizedText = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n')
+		this._initialText = text
+		this._text = text
 		this._state.changed = false
-		this.monacoEditorModel.setValue(normalizedText)
+		this.monacoEditorModel.setValue(text)
 		this._plugins.forEach(plugin => {
 			plugin.show()
 		})
@@ -559,12 +559,12 @@ export class EditorAdvanced implements TextEditor {
 	}
 
 	public updateText(text: string) {
-		const normalizedText = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n')
-		this._initialText = normalizedText
-		this._text = normalizedText
+		// const normalizedText = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n')
+		this._initialText = text
+		this._text = text
 		this._state.changed = false
-		if (this.monacoEditorModel.getValue() !== normalizedText) {
-			this.monacoEditorModel.setValue(normalizedText)
+		if (this.monacoEditorModel.getValue() !== text) {
+			this.monacoEditorModel.setValue(text)
 			this._plugins.forEach(plugin => {
 				plugin.updateText()
 			})
