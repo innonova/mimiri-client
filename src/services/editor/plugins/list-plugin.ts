@@ -12,73 +12,76 @@ export class ListPlugin implements EditorPlugin {
 
 	constructor(private monacoEditor: editor.IStandaloneCodeEditor) {
 		this.monacoEditorModel = this.monacoEditor.getModel()
+
 		this.monacoEditor.onKeyUp(e => {
 			if (this._active) {
 				if (e.keyCode === KeyCode.Enter) {
-					const selection = this.monacoEditor.getSelection()
-					if (selection.startLineNumber === selection.endLineNumber) {
-						const currentLine = selection.startLineNumber
-						const prevLine = currentLine - 1
-						const prevLineContent = this.monacoEditorModel.getLineContent(prevLine)
+					requestAnimationFrame(() => {
+						const selection = this.monacoEditor.getSelection()
+						if (selection.startLineNumber === selection.endLineNumber) {
+							const currentLine = selection.startLineNumber
+							const prevLine = currentLine - 1
+							const prevLineContent = this.monacoEditorModel.getLineContent(prevLine)
 
-						const checkboxMatch = checkBoxListRegex.exec(prevLineContent)
-						const numberedListMatch = numberedListRegex.exec(prevLineContent)
-						const listItemMatch = listItemRegex.exec(prevLineContent)
+							const checkboxMatch = checkBoxListRegex.exec(prevLineContent)
+							const numberedListMatch = numberedListRegex.exec(prevLineContent)
+							const listItemMatch = listItemRegex.exec(prevLineContent)
 
-						let newContent = ''
-						let deletePrevLine = false
-						let renumber = false
-						if (checkboxMatch) {
-							if (checkboxMatch[0] === prevLineContent) {
-								deletePrevLine = true
-							} else {
-								newContent = `${checkboxMatch.groups.indent}[ ] `
+							let newContent = ''
+							let deletePrevLine = false
+							let renumber = false
+							if (checkboxMatch) {
+								if (checkboxMatch[0] === prevLineContent) {
+									deletePrevLine = true
+								} else {
+									newContent = `${checkboxMatch.groups.indent}[ ] `
+								}
+							} else if (numberedListMatch) {
+								if (numberedListMatch[0] === prevLineContent) {
+									deletePrevLine = true
+								} else {
+									const itemNumber = parseInt(numberedListMatch.groups.number)
+									const newLineNumber = itemNumber + 1
+									newContent = `${numberedListMatch.groups.indent}${newLineNumber}${numberedListMatch.groups.delimiter} `
+									const nextLineContent = this.monacoEditorModel.getLineContent(currentLine + 1)
+									renumber = !!numberedListRegex.exec(nextLineContent)
+								}
+							} else if (listItemMatch) {
+								if (listItemMatch[0] === prevLineContent) {
+									deletePrevLine = true
+								} else {
+									newContent = listItemMatch[0]
+								}
 							}
-						} else if (numberedListMatch) {
-							if (numberedListMatch[0] === prevLineContent) {
-								deletePrevLine = true
-							} else {
-								const itemNumber = parseInt(numberedListMatch.groups.number)
-								const newLineNumber = itemNumber + 1
-								newContent = `${numberedListMatch.groups.indent}${newLineNumber}${numberedListMatch.groups.delimiter} `
-								const nextLineContent = this.monacoEditorModel.getLineContent(currentLine + 1)
-								renumber = !!numberedListRegex.exec(nextLineContent)
-							}
-						} else if (listItemMatch) {
-							if (listItemMatch[0] === prevLineContent) {
-								deletePrevLine = true
-							} else {
-								newContent = listItemMatch[0]
+
+							if (deletePrevLine) {
+								const action = {
+									range: {
+										startLineNumber: prevLine,
+										startColumn: 1,
+										endLineNumber: prevLine,
+										endColumn: this.monacoEditorModel.getLineMaxColumn(prevLine),
+									},
+									text: '',
+								}
+								this.monacoEditor.executeEdits(undefined, [action])
+							} else if (newContent) {
+								const action = {
+									range: {
+										startLineNumber: currentLine,
+										startColumn: 1,
+										endLineNumber: currentLine,
+										endColumn: this.monacoEditorModel.getLineContent(currentLine).length + 1,
+									},
+									text: newContent,
+								}
+								this.monacoEditor.executeEdits(undefined, [action])
+								if (renumber) {
+									this.renumberListFromLine(currentLine)
+								}
 							}
 						}
-
-						if (deletePrevLine) {
-							const action = {
-								range: {
-									startLineNumber: prevLine,
-									startColumn: 1,
-									endLineNumber: prevLine,
-									endColumn: this.monacoEditorModel.getLineMaxColumn(prevLine),
-								},
-								text: '',
-							}
-							this.monacoEditor.executeEdits(undefined, [action])
-						} else if (newContent) {
-							const action = {
-								range: {
-									startLineNumber: currentLine,
-									startColumn: 1,
-									endLineNumber: currentLine,
-									endColumn: this.monacoEditorModel.getLineContent(currentLine).length + 1,
-								},
-								text: newContent,
-							}
-							this.monacoEditor.executeEdits(undefined, [action])
-							if (renumber) {
-								this.renumberListFromLine(currentLine)
-							}
-						}
-					}
+					})
 				}
 			}
 		})

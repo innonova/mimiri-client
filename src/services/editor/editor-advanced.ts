@@ -39,6 +39,7 @@ export class EditorAdvanced implements TextEditor {
 	private _selectionHistory: Selection[] = []
 	private _preClickSelection: Selection | undefined
 	private _plugins: any[] = []
+	private _layoutDebounce: Debounce
 
 	constructor(private listener: TextEditorListener) {
 		this.styleElement = document.getElementById('mimiri-style-overrides') as HTMLStyleElement
@@ -266,6 +267,12 @@ export class EditorAdvanced implements TextEditor {
 			}
 		})
 
+		this._layoutDebounce = new Debounce(() => {
+			if (this._active && !this.historyShowing) {
+				this.monacoEditor.layout()
+			}
+		}, 150)
+
 		this.monacoEditorModel.onDidChangeContent(e => {
 			if (this._active) {
 				this._text = this.monacoEditorModel.getValue()
@@ -273,6 +280,7 @@ export class EditorAdvanced implements TextEditor {
 				this._state.canRedo = (this.monacoEditorModel as any).canRedo()
 				this._state.changed = this._text !== this._initialText
 				this.listener.onStateUpdated(this._state)
+				this._layoutDebounce.activate()
 			}
 		})
 
@@ -530,10 +538,11 @@ export class EditorAdvanced implements TextEditor {
 	}
 
 	public show(text: string, scrollTop: number) {
-		this._initialText = text
-		this._text = text
+		const normalizedText = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n')
+		this._initialText = normalizedText
+		this._text = normalizedText
 		this._state.changed = false
-		this.monacoEditorModel.setValue(text)
+		this.monacoEditorModel.setValue(normalizedText)
 		this._plugins.forEach(plugin => {
 			plugin.show()
 		})
@@ -550,11 +559,12 @@ export class EditorAdvanced implements TextEditor {
 	}
 
 	public updateText(text: string) {
-		this._initialText = text
-		this._text = text
+		const normalizedText = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n')
+		this._initialText = normalizedText
+		this._text = normalizedText
 		this._state.changed = false
-		if (this.monacoEditorModel.getValue() !== text) {
-			this.monacoEditorModel.setValue(text)
+		if (this.monacoEditorModel.getValue() !== normalizedText) {
+			this.monacoEditorModel.setValue(normalizedText)
 			this._plugins.forEach(plugin => {
 				plugin.updateText()
 			})
