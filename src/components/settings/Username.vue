@@ -7,6 +7,7 @@
 				<UsernameInput
 					:display-current="true"
 					:check-username="noteManager.state.accountType === AccountType.Cloud"
+					:suffix="noteManager.state.accountType === AccountType.Cloud ? '@mimiri.io' : undefined"
 					v-model:value="username"
 					v-model:valid="canSave"
 				/>

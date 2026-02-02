@@ -43,6 +43,7 @@
 					<UsernameInput
 						:display-current="false"
 						:check-username="createMode === 'cloud'"
+						:suffix="createMode === 'cloud' ? '@mimiri.io' : undefined"
 						v-model:value="username"
 						v-model:valid="usernameValid"
 					/>

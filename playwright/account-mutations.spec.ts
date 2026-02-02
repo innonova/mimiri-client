@@ -7,6 +7,8 @@ import {
 	connectCloudView,
 	createAccountView,
 	deleteView,
+	loginCtrl,
+	menu,
 	passwordDialog,
 	settingNodes,
 	titleBar,
@@ -443,6 +445,54 @@ test.describe('account-mutations', () => {
 			await expect(aboutView.accountType()).toHaveText('cloud')
 			await expect(aboutView.username()).toHaveText(mimiri().config.username)
 			// await mimiri().pause()
+		})
+	})
+
+	test('reserved username "local" shows invalid', async () => {
+		await withMimiriContext(async () => {
+			await mimiri().home()
+			await expect(titleBar.accountButton()).toBeVisible()
+			if (await settingNodes.controlPanelClosed().isVisible()) {
+				await settingNodes.controlPanel().dblclick()
+			}
+			await settingNodes.createAccount().click()
+			await createAccountView.cloudTab().click()
+			await createAccountView.username().fill('local')
+			await expect(usernameInput.invalid()).toBeVisible()
+		})
+	})
+
+	test('reserved username starting with "mimiri" shows invalid', async () => {
+		await withMimiriContext(async () => {
+			await mimiri().home()
+			await expect(titleBar.accountButton()).toBeVisible()
+			if (await settingNodes.controlPanelClosed().isVisible()) {
+				await settingNodes.controlPanel().dblclick()
+			}
+			await settingNodes.createAccount().click()
+			await createAccountView.cloudTab().click()
+			await createAccountView.username().fill('mimiritest')
+			await expect(usernameInput.invalid()).toBeVisible()
+		})
+	})
+
+	test('login accepts username with @mimiri.io suffix', async () => {
+		await withMimiriContext(async () => {
+			await mimiri().home()
+			await expect(titleBar.accountButton()).toBeVisible()
+			await createCloudAccount()
+			await logout()
+			if (!(await loginCtrl.container().isVisible())) {
+				await titleBar.accountButton().click()
+				await menu.login().click()
+			}
+			await expect(loginCtrl.container()).toBeVisible()
+			await loginCtrl.username().fill(mimiri().config.username + '@mimiri.io')
+			await loginCtrl.password().fill(mimiri().config.password)
+			await loginCtrl.button().click()
+			await mimiri().waitForTimeout(1000)
+			await settingNodes.controlPanel().click()
+			await expect(aboutView.username()).toHaveText(mimiri().config.username)
 		})
 	})
 })
