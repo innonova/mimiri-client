@@ -1,6 +1,15 @@
 <template>
 	<div class="relative desktop:flex">
-		<input v-model="username" tabindex="1" type="text" class="basic-input" autofocus data-testid="username-input" />
+		<input
+			v-model="username"
+			@input="filterUsername"
+			tabindex="1"
+			type="text"
+			class="basic-input"
+			autofocus
+			data-testid="username-input"
+		/>
+		<span v-if="suffix" class="text-text-secondary ml-1 flex items-center">{{ suffix }}</span>
 		<div v-if="username" class="desktop:w-0 desktop:h-0 pt-0.5 overflow-visible" data-testid="username-status">
 			<div v-if="usernameCurrent && checkUsername" class="flex items-center w-52 desktop:ml-2 mt-1.5 desktop:mt-0.5">
 				<AvailableIcon class="w-5 h-5 mr-1 inline-block" data-testid="username-current" /> Current
@@ -35,12 +44,13 @@ import AvailableIcon from '../../icons/available.vue'
 import UnavailableIcon from '../../icons/unavailable.vue'
 import { AccountType } from '../../services/storage/type'
 
-// const disallowString = '!"#$:%&@\'()*/=?[]{}~^`'
-const disallowRegex = /[!"#$:%&@'()*/=?[\]{}~\^\\`\s]/
+// Only allow alphanumeric, underscore, dot, and hyphen
+const filterRegex = /[^a-zA-Z0-9_.\\-]/g
 
 const props = defineProps<{
 	displayCurrent: boolean
 	checkUsername: boolean
+	suffix?: string
 }>()
 
 const username = defineModel<string>('value')
@@ -56,6 +66,12 @@ const usernameUnavailable = ref(false)
 const usernameInProgress = ref(false)
 
 let lastUsernameChecked = ''
+
+const filterUsername = () => {
+	if (username.value) {
+		username.value = username.value.replace(filterRegex, '')
+	}
+}
 
 const checkUsernameDebounce = new Debounce(async () => {
 	if (lastUsernameChecked === username.value) {
@@ -79,14 +95,7 @@ const checkUsernameDebounce = new Debounce(async () => {
 			usernameUnavailable.value = false
 			return
 		}
-		if (disallowRegex.test(username.value) || username.value === 'local') {
-			usernameInvalid.value = true
-			usernameInProgress.value = false
-			usernameAvailable.value = false
-			usernameUnavailable.value = false
-			return
-		}
-		if (username.value?.toLowerCase().startsWith('mimiri')) {
+		if (username.value === 'local' || username.value?.toLowerCase().startsWith('mimiri')) {
 			usernameInvalid.value = true
 			usernameInProgress.value = false
 			usernameAvailable.value = false
