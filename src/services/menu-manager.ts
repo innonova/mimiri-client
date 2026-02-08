@@ -353,15 +353,12 @@ class MenuManager {
 
 	private toItems(items: MenuItems[], separatorAsItem = true) {
 		let showShare = true
-		let showAcceptShare = true
 		if (noteManager.tree.selectedNote()?.isShared) {
 			const note = noteManager.tree.getNoteById(noteManager.tree.selectedNote().id)
 			showShare = note.isShareRoot
-			showAcceptShare = false
 		}
 		if (!noteManager.state.isOnline || noteManager.tree.selectedNote()?.isSystem) {
 			showShare = false
-			showAcceptShare = false
 		}
 
 		const result: ContextMenuItem[] = []
@@ -502,8 +499,8 @@ class MenuManager {
 						id: 'receive-share',
 						title: 'Accept Share',
 						icon: 'note-shared',
-						visible: showAcceptShare,
-						enabled: noteManager.state.isLoggedIn && showAcceptShare,
+						visible: noteManager.state.isLoggedIn && noteManager.state.isOnline,
+						enabled: noteManager.state.isLoggedIn && noteManager.state.isOnline,
 					})
 					break
 				case MenuItems.ReceiveShareUnder:
@@ -511,8 +508,8 @@ class MenuManager {
 						id: 'receive-share-under',
 						title: 'Accept Share Here',
 						icon: 'note-shared',
-						visible: showAcceptShare,
-						enabled: noteManager.state.isLoggedIn && showAcceptShare,
+						visible: noteManager.state.isLoggedIn && noteManager.state.isOnline,
+						enabled: noteManager.state.isLoggedIn && noteManager.state.isOnline,
 					})
 					break
 				case MenuItems.Refresh:
@@ -873,12 +870,11 @@ class MenuManager {
 			return [MenuItems.NewRootNote, MenuItems.NewNote]
 		}
 
-		const showShare = noteManager.state.isOnline
-
 		return [
 			MenuItems.NewRootNote,
 			MenuItems.NewNote,
-			...(showShare ? [MenuItems.Separator, MenuItems.ReceiveShare] : []),
+			MenuItems.Separator,
+			MenuItems.ReceiveShare,
 			MenuItems.Separator,
 			MenuItems.CreatePassword,
 			MenuItems.Login,
