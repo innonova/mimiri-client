@@ -539,6 +539,7 @@ export class EditorAdvanced implements TextEditor {
 
 	public show(text: string, scrollTop: number) {
 		// const normalizedText = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n')
+		editor.remeasureFonts()
 		this._initialText = text
 		this._text = text
 		this._state.changed = false
