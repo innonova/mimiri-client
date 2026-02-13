@@ -19,55 +19,57 @@
 				</select>
 			</div>
 			<div v-if="!mimiriPlatform.isDesktop || !alwaysEdit || env.DEV" class="p-1 pt-2 m-auto text-left">
-				<label>
+				<label title="When disabled, notes open in read-only mode and editing must be explicitly enabled">
 					<input type="checkbox" v-model="alwaysEdit" class="mr-1 relative top-0.5" />
 					Always edit
 				</label>
 			</div>
 			<div v-if="!mimiriPlatform.isDesktop || simpleEditor || env.DEV" class="p-1 pt-2 m-auto text-left">
-				<label>
+				<label title="A simpler editor intended for mobile devices, where the advanced editor may not work reliably">
 					<input type="checkbox" v-model="simpleEditor" class="mr-1 relative top-0.5" />
 					Use simplified editor
 				</label>
 			</div>
 			<div v-if="mimiriPlatform.isDesktop && !mimiriPlatform.isWeb" class="p-1 pt-2 m-auto text-left">
-				<label>
+				<label title="Automatically start Mimiri Notes when you log in to your computer">
 					<input type="checkbox" v-model="openAtLogin" class="mr-1 relative top-0.5" />
 					Launch Mimiri Notes on Login
 				</label>
 			</div>
 			<div v-if="mimiriPlatform.isWindowsApp" class="p-1 pt-2 m-auto text-left">
-				<label>
+				<label
+					title="Show Mimiri Notes in the taskbar when the window is open, instead of only showing the system tray icon"
+				>
 					<input type="checkbox" v-model="showInTaskBar" class="mr-1 relative top-0.5" />
 					Show in Taskbar
 				</label>
 			</div>
 			<div v-if="mimiriPlatform.isWindowsApp" class="p-1 pt-2 m-auto text-left">
-				<label>
+				<label title="Prevent the system tray icon from being hidden in the overflow area">
 					<input type="checkbox" v-model="keepTrayIconVisible" class="mr-1 relative top-0.5" />
 					Keep Tray Icon Visible
 				</label>
 			</div>
 			<div v-if="mimiriPlatform.isElectron" class="p-1 pt-2 m-auto text-left">
-				<label>
+				<label title="Fully quit the application instead of minimizing to the system tray when closing the window">
 					<input type="checkbox" v-model="closeOnX" class="mr-1 relative top-0.5" />
 					Quit when closing application window
 				</label>
 			</div>
 			<div class="p-1 pt-2 m-auto text-left">
-				<label>
+				<label title="Show chevrons in the tree instead of plus/minus icons to indicate expandable items">
 					<input type="checkbox" v-model="useChevrons" class="mr-1 relative top-0.5" />
 					Use chevrons in tree view
 				</label>
 			</div>
-			<div class="p-1 pt-2 m-auto text-left">
-				<label>
+			<div v-if="mimiriPlatform.isDesktop" class="p-1 pt-2 m-auto text-left">
+				<label title="Display vertical lines in the tree view to indicate nesting depth">
 					<input type="checkbox" v-model="showVerticalGuides" class="mr-1 relative top-0.5" />
 					Show vertical guides
 				</label>
 			</div>
 			<div class="p-1 pt-2 m-auto text-left">
-				<label>
+				<label title="If you find the developer blog annoying, you can choose to hide it">
 					<input type="checkbox" v-model="disableDevBlog" class="mr-1 relative top-0.5" />
 					Disable Dev Blog
 				</label>

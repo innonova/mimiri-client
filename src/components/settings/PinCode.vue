@@ -3,18 +3,26 @@
 		<TabBar :items="['PIN Code']" />
 		<div class="overflow-y-auto pb-10">
 			<div class="flex flex-col items-center mt-10 max-w-110">
-				<div class="flex">
-					<div class="border-2 w-10 h-16 rounded-lg flex items-center justify-center mr-2">
-						<h1 v-if="pin.length > 0" class="mt-1">*</h1>
+				<div class="flex flex-col items-start">
+					<div
+						class="mb-4"
+						title="Set a 4-digit PIN Code to lock Mimiri after a small period of inactivity and use the code to quickly resume the session"
+					>
+						Set or change your PIN code:
 					</div>
-					<div class="border-2 w-10 h-16 rounded-lg flex items-center justify-center mr-2">
-						<h1 v-if="pin.length > 1" class="mt-1">*</h1>
-					</div>
-					<div class="border-2 w-10 h-16 rounded-lg flex items-center justify-center mr-2">
-						<h1 v-if="pin.length > 2" class="mt-1">*</h1>
-					</div>
-					<div class="border-2 w-10 h-16 rounded-lg flex items-center justify-center">
-						<h1 v-if="pin.length > 3" class="mt-1">*</h1>
+					<div class="flex">
+						<div class="border-2 w-10 h-16 rounded-lg flex items-center justify-center mr-2">
+							<h1 v-if="pin.length > 0" class="mt-1">*</h1>
+						</div>
+						<div class="border-2 w-10 h-16 rounded-lg flex items-center justify-center mr-2">
+							<h1 v-if="pin.length > 1" class="mt-1">*</h1>
+						</div>
+						<div class="border-2 w-10 h-16 rounded-lg flex items-center justify-center mr-2">
+							<h1 v-if="pin.length > 2" class="mt-1">*</h1>
+						</div>
+						<div class="border-2 w-10 h-16 rounded-lg flex items-center justify-center">
+							<h1 v-if="pin.length > 3" class="mt-1">*</h1>
+						</div>
 					</div>
 				</div>
 			</div>
