@@ -164,6 +164,7 @@ export class MimiriEditor {
 	public mobileClosing() {
 		if (!settingsManager.alwaysEdit && this.note.text.trim().length > 0) {
 			this.activateDisplay()
+			this._activeEditor.show(this.note.text, this.note.scrollTop)
 		}
 	}
 
