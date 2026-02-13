@@ -37,7 +37,9 @@
 				</label>
 			</div>
 			<div v-if="mimiriPlatform.isWindowsApp" class="p-1 pt-2 m-auto text-left">
-				<label title="Show the application icon in the taskbar for quick access">
+				<label
+					title="Show Mimiri Notes in the taskbar when the window is open, instead of only showing the system tray icon"
+				>
 					<input type="checkbox" v-model="showInTaskBar" class="mr-1 relative top-0.5" />
 					Show in Taskbar
 				</label>
@@ -55,7 +57,7 @@
 				</label>
 			</div>
 			<div class="p-1 pt-2 m-auto text-left">
-				<label title="Show chevron arrows instead of triangles for expanding and collapsing notes in the tree">
+				<label title="Show chevrons in the tree instead of plus/minus icons to indicate expandable items">
 					<input type="checkbox" v-model="useChevrons" class="mr-1 relative top-0.5" />
 					Use chevrons in tree view
 				</label>
