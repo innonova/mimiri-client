@@ -165,7 +165,6 @@ export class MimiriEditor {
 		if (!settingsManager.alwaysEdit && this.note.text.trim().length > 0) {
 			this.activateDisplay()
 			this._activeEditor.show(this.note.text, this.note.scrollTop)
-			this._activeEditor.readonly = this.note.isSystem
 		}
 	}
 
