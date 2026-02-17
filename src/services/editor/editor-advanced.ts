@@ -179,7 +179,7 @@ export class EditorAdvanced implements TextEditor {
 
 		this._plugins.push(new ListPlugin(this.monacoEditor))
 		this._plugins.push(new HeadingPlugin(this.monacoEditor))
-		this._plugins.push(new CodeBlockPlugin(this.monacoEditor))
+		this._plugins.push(new CodeBlockPlugin(this.monacoEditor, this.listener))
 		this._plugins.push(new InlineMarkdownPlugin(this.monacoEditor))
 
 		this.monacoEditor.onKeyDown(e => {

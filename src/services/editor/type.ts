@@ -22,6 +22,7 @@ export interface TextEditorListener {
 	onEditorBlur()
 	onScroll(position: number)
 	onPasswordClicked(top: number, left: number, text: string)
+	onCopyNotification(top: number, left: number)
 	onStateUpdated(state: Omit<EditorState, 'mode'>)
 }
 
