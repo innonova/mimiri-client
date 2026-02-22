@@ -69,7 +69,11 @@ export class MimiriEditor {
 				}
 			},
 			onPasswordClicked: (top: number, left: number, text: string) => {
-				this.animateNotification(top, left, text)
+				clipboardManager.write(text)
+				this.animateNotification(top, left)
+			},
+			onCopyNotification: (top: number, left: number) => {
+				this.animateNotification(top, left)
 			},
 			onStateUpdated: state => {
 				Object.assign(this._state, state)
@@ -81,15 +85,22 @@ export class MimiriEditor {
 		this._editorDisplay = new EditorDisplay(editorListener)
 	}
 
-	private animateNotification(top: number, left: number, text: string) {
-		clipboardManager.write(text)
+	private animateNotification(top: number, left: number) {
 		if (!mimiriPlatform.isAndroidApp) {
+			if (this.infoElement) {
+				this.infoElement.remove()
+			}
+			this.infoElement = document.createElement('div')
+			this.infoElement.className = 'bg-warning p-1 rounded-sm shadow-sm animate-ping'
+			this.infoElement.style.position = 'absolute'
+			this.infoElement.style.zIndex = '10000'
+			this.infoElement.textContent = 'copied'
+			document.body.appendChild(this.infoElement)
 			this.infoElement.style.top = `${top - this.infoElement.offsetHeight}px`
 			this.infoElement.style.left = `${left}px`
-			this.infoElement.classList.add('animate-ping')
+			const element = this.infoElement
 			setTimeout(() => {
-				this.infoElement.style.left = '-2000px'
-				this.infoElement.classList.remove('animate-ping')
+				element.remove()
 			}, 900)
 		}
 	}
@@ -142,18 +153,6 @@ export class MimiriEditor {
 	}
 
 	public init(monacoElement: HTMLElement, simpleElement: HTMLElement, displayElement: HTMLElement) {
-		this.infoElement = document.getElementById('mimiri-editor-info') as HTMLDivElement
-		if (!this.infoElement) {
-			this.infoElement = document.createElement('div')
-			this.infoElement.id = 'mimiri-editor-info'
-			this.infoElement.style.position = 'absolute'
-			this.infoElement.style.left = '-2000px'
-			this.infoElement.style.top = '0'
-			this.infoElement.className = 'bg-warning p-1 rounded-sm shadow-sm'
-			this.infoElement.innerHTML = 'copied'
-			document.body.appendChild(this.infoElement)
-		}
-
 		this._monacoElement = monacoElement
 		this._simpleElement = simpleElement
 		this._displayElement = displayElement
