@@ -63,7 +63,7 @@ class SettingsManager {
 		titleBarColor: '#f4f4f4',
 		titleBarSymbolColor: '#000',
 		titleBarHeight: 36,
-		wordwrap: mimiriPlatform.isPhone,
+		wordwrap: true,
 		channel: 'stable',
 		lastRunHostVersion: '0.0.0',
 		mainWindowSize: { width: 0, height: 0 },
