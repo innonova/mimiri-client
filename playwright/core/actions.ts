@@ -2,6 +2,7 @@ import { expect } from '@playwright/test'
 import {
 	aboutView,
 	appMain,
+	clearLocalDataDialog,
 	connectCloudView,
 	createAccountView,
 	editor,
@@ -35,6 +36,7 @@ export const createLocalAccount = async () => {
 	await expect(settingNodes.controlPanel()).toBeVisible()
 	await settingNodes.controlPanel().click()
 	await expect(aboutView.username()).toHaveText(mimiri().config.username)
+	await mimiri().waitForTimeout(500)
 }
 
 export const connectLocalAccount = async () => {
@@ -53,6 +55,7 @@ export const connectLocalAccount = async () => {
 	await expect(settingNodes.controlPanel()).toBeVisible()
 	await settingNodes.controlPanel().click()
 	await expect(aboutView.username()).toHaveText(mimiri().config.username)
+	await mimiri().waitForTimeout(500)
 }
 
 export const createCloudAccount = async () => {
@@ -73,11 +76,15 @@ export const createCloudAccount = async () => {
 	await settingNodes.subscriptionGroup().dblclick()
 	await settingNodes.controlPanel().dblclick()
 	await expect(aboutView.username()).toHaveText(mimiri().config.username)
+	await mimiri().waitForTimeout(500)
 }
 
 export const logout = async () => {
 	await titleBar.accountButton().click()
 	await menu.logout().click()
+	if (await clearLocalDataDialog.container().isVisible()) {
+		await clearLocalDataDialog.logoutButton().click()
+	}
 	await expect(loginCtrl.container()).toBeVisible()
 	// await settingNodes.controlPanel().click()
 	// await expect(aboutView.username()).toHaveText('local')
@@ -105,6 +112,7 @@ export const login = async () => {
 	await mimiri().waitForTimeout(1000)
 	await settingNodes.controlPanel().click()
 	await expect(aboutView.username()).toHaveText(mimiri().config.username)
+	await mimiri().waitForTimeout(500)
 }
 
 export const loginFail = async () => {

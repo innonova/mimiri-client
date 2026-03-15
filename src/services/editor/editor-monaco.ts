@@ -41,6 +41,7 @@ export class EditorMonaco implements TextEditor {
 	private _preClickSelection: Selection | undefined
 	private _plugins: any[] = []
 	private _conflictBlockPlugin: ConflictBlockPlugin | null = null
+	private _layoutDebounce: Debounce
 
 	constructor(private listener: TextEditorListener) {
 		this.styleElement = document.getElementById('mimiri-style-overrides') as HTMLStyleElement
@@ -146,7 +147,7 @@ export class EditorMonaco implements TextEditor {
 
 		this._plugins.push(new ListPlugin(this.monacoEditor))
 		this._plugins.push(new HeadingPlugin(this.monacoEditor))
-		this._plugins.push(new CodeBlockPlugin(this.monacoEditor))
+		this._plugins.push(new CodeBlockPlugin(this.monacoEditor, this.listener))
 		this._conflictBlockPlugin = new ConflictBlockPlugin(this.monacoEditor, conflictBanner)
 		this._plugins.push(this._conflictBlockPlugin)
 		this._plugins.push(new PasswordPlugin(this.monacoEditor))
@@ -243,6 +244,12 @@ export class EditorMonaco implements TextEditor {
 				this.updateState()
 			}
 		})
+
+		this._layoutDebounce = new Debounce(() => {
+			if (this._active && !this.historyShowing) {
+				this.monacoEditor.layout()
+			}
+		}, 150)
 
 		this.monacoEditor.onMouseDown(e => {
 			if (this._selectionHistory.length > 1) {
@@ -468,6 +475,8 @@ export class EditorMonaco implements TextEditor {
 	}
 
 	public show(text: string, scrollTop: number) {
+		// const normalizedText = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n')
+		editor.remeasureFonts()
 		this._state.changed = false
 		this._cleanVersions = []
 		this._initialText = text
@@ -490,6 +499,8 @@ export class EditorMonaco implements TextEditor {
 
 	public updateText(text: string) {
 		// TODO consider when update is called
+		// const normalizedText = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n')
+		this._initialText = text
 		this._state.changed = false
 		if (this.monacoEditorModel.getValue() !== text) {
 			this._cleanVersions = []

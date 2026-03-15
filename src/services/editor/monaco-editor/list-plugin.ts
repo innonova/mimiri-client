@@ -3,7 +3,7 @@ import type { EditorPlugin } from '../editor-plugin'
 
 const checkBoxListRegex = /^(?<indent>(\s*))(?<checkbox>(?<bullet>[-\*]\s)?\[(?:x| )\])(?<space>\s)/
 const numberedListRegex = /^(?<indent>\s*)(?<number>\d+)(?<delimiter>[.)])(?<space>\s)/
-const listItemRegex = /^(?<indent>\s*)(?<symbol>[^\w\s])(?<space>\s)/
+const listItemRegex = /^(?<indent>\s*)(?<symbol>[^\w\s#])(?<space>\s)/
 const indentRegex = /^(?<indent>\s*)(?<content>.*)/
 
 export class ListPlugin implements EditorPlugin {
@@ -13,6 +13,7 @@ export class ListPlugin implements EditorPlugin {
 
 	constructor(private monacoEditor: editor.IStandaloneCodeEditor) {
 		this.monacoEditorModel = this.monacoEditor.getModel()
+
 		this.monacoEditor.onKeyUp(e => {
 			if (this._active) {
 				if (e.keyCode === KeyCode.Enter) {
@@ -20,72 +21,74 @@ export class ListPlugin implements EditorPlugin {
 						this.skipNextEnterUp = false
 						return
 					}
-					const selection = this.monacoEditor.getSelection()
-					if (selection.startLineNumber === selection.endLineNumber) {
-						const currentLine = selection.startLineNumber
-						const prevLine = currentLine - 1
-						const prevLineContent = this.monacoEditorModel.getLineContent(prevLine)
+					requestAnimationFrame(() => {
+						const selection = this.monacoEditor.getSelection()
+						if (selection.startLineNumber === selection.endLineNumber) {
+							const currentLine = selection.startLineNumber
+							const prevLine = currentLine - 1
+							const prevLineContent = this.monacoEditorModel.getLineContent(prevLine)
 
-						const currentLineContent = this.monacoEditorModel.getLineContent(currentLine)
+							const currentLineContent = this.monacoEditorModel.getLineContent(currentLine)
 
-						const checkboxMatch = checkBoxListRegex.exec(prevLineContent)
-						const numberedListMatch = numberedListRegex.exec(prevLineContent)
-						const listItemMatch = listItemRegex.exec(prevLineContent)
+							const checkboxMatch = checkBoxListRegex.exec(prevLineContent)
+							const numberedListMatch = numberedListRegex.exec(prevLineContent)
+							const listItemMatch = listItemRegex.exec(prevLineContent)
 
-						let newContent = ''
-						let deletePrevLine = false
-						let renumber = false
-						if (checkboxMatch) {
-							if (checkboxMatch[0] === prevLineContent) {
-								deletePrevLine = true
-							} else {
-								newContent = `${checkboxMatch.groups.indent}${checkboxMatch.groups.bullet ?? ''}[ ] ${currentLineContent}`
+							let newContent = ''
+							let deletePrevLine = false
+							let renumber = false
+							if (checkboxMatch) {
+								if (checkboxMatch[0] === prevLineContent) {
+									deletePrevLine = true
+								} else {
+									newContent = `${checkboxMatch.groups.indent}${checkboxMatch.groups.bullet ?? ''}[ ] ${currentLineContent}`
+								}
+							} else if (numberedListMatch) {
+								if (numberedListMatch[0] === prevLineContent) {
+									deletePrevLine = true
+								} else {
+									const itemNumber = parseInt(numberedListMatch.groups.number)
+									const newLineNumber = itemNumber + 1
+									newContent = `${numberedListMatch.groups.indent}${newLineNumber}${numberedListMatch.groups.delimiter} ${currentLineContent}`
+									const nextLineContent = this.monacoEditorModel.getLineContent(currentLine + 1)
+									renumber = !!numberedListRegex.exec(nextLineContent)
+								}
+							} else if (listItemMatch) {
+								if (listItemMatch[0] === prevLineContent) {
+									deletePrevLine = true
+								} else {
+									newContent = `${listItemMatch[0]}${currentLineContent}`
+								}
 							}
-						} else if (numberedListMatch) {
-							if (numberedListMatch[0] === prevLineContent) {
-								deletePrevLine = true
-							} else {
-								const itemNumber = parseInt(numberedListMatch.groups.number)
-								const newLineNumber = itemNumber + 1
-								newContent = `${numberedListMatch.groups.indent}${newLineNumber}${numberedListMatch.groups.delimiter} ${currentLineContent}`
-								const nextLineContent = this.monacoEditorModel.getLineContent(currentLine + 1)
-								renumber = !!numberedListRegex.exec(nextLineContent)
-							}
-						} else if (listItemMatch) {
-							if (listItemMatch[0] === prevLineContent) {
-								deletePrevLine = true
-							} else {
-								newContent = `${listItemMatch[0]}${currentLineContent}`
+
+							if (deletePrevLine) {
+								const action = {
+									range: {
+										startLineNumber: prevLine,
+										startColumn: 1,
+										endLineNumber: prevLine,
+										endColumn: this.monacoEditorModel.getLineMaxColumn(prevLine),
+									},
+									text: '',
+								}
+								this.monacoEditor.executeEdits(undefined, [action])
+							} else if (newContent) {
+								const action = {
+									range: {
+										startLineNumber: currentLine,
+										startColumn: 1,
+										endLineNumber: currentLine,
+										endColumn: this.monacoEditorModel.getLineContent(currentLine).length + 1,
+									},
+									text: newContent,
+								}
+								this.monacoEditor.executeEdits(undefined, [action])
+								if (renumber) {
+									this.renumberListFromLine(currentLine)
+								}
 							}
 						}
-
-						if (deletePrevLine) {
-							const action = {
-								range: {
-									startLineNumber: prevLine,
-									startColumn: 1,
-									endLineNumber: prevLine,
-									endColumn: this.monacoEditorModel.getLineMaxColumn(prevLine),
-								},
-								text: '',
-							}
-							this.monacoEditor.executeEdits(undefined, [action])
-						} else if (newContent) {
-							const action = {
-								range: {
-									startLineNumber: currentLine,
-									startColumn: 1,
-									endLineNumber: currentLine,
-									endColumn: this.monacoEditorModel.getLineContent(currentLine).length + 1,
-								},
-								text: newContent,
-							}
-							this.monacoEditor.executeEdits(undefined, [action])
-							if (renumber) {
-								this.renumberListFromLine(currentLine)
-							}
-						}
-					}
+					})
 				}
 			}
 		})

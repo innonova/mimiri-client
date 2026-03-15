@@ -241,7 +241,12 @@ useEventListener(
 	document,
 	'contextmenu',
 	e => {
-		if ((e.target as HTMLElement).tagName !== 'INPUT' && (e.target as HTMLElement).tagName !== 'TEXTAREA') {
+		if (
+			(e.target as HTMLElement).tagName !== 'INPUT' &&
+			(e.target as HTMLElement).tagName !== 'TEXTAREA' &&
+			!mimiriPlatform.isAndroid &&
+			!mimiriPlatform.isIos
+		) {
 			e.preventDefault()
 		}
 	},

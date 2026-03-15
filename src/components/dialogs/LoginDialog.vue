@@ -121,7 +121,12 @@ const login = async () => {
 	error.value = false
 	await noteManager.session.logout()
 	try {
-		if (await noteManager.session.login(username.value?.trim(), password.value)) {
+		let loginUsername = username.value?.trim()
+		// Allow users to enter username@mimiri.io and strip the suffix
+		if (loginUsername?.toLowerCase().endsWith('@mimiri.io')) {
+			loginUsername = loginUsername.slice(0, -10)
+		}
+		if (await noteManager.session.login(loginUsername, password.value)) {
 			loading.value = false
 			await noteManager.tree.loadState()
 			showVersion.value = false

@@ -21,6 +21,7 @@ export interface TextEditorListener {
 	onScroll(position: number)
 	onPasswordClicked(top: number, left: number, text: string)
 	onStateUpdated(state: Omit<MimiriEditorState, 'mode' | 'changed'>)
+	onCopyNotification(top: number, left: number)
 }
 
 export interface TextEditor {

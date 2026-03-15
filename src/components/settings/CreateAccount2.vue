@@ -39,10 +39,11 @@
 						</div>
 					</div>
 					<ItemHeader class="col-span-2">Choose your credentials</ItemHeader>
-					<div class="flex items-center">Username:</div>
+					<div class="flex items-start">Username:</div>
 					<UsernameInput
 						:display-current="false"
 						:check-username="createMode === 'cloud'"
+						:suffix="createMode === 'cloud' ? '@mimiri.io' : undefined"
 						v-model:value="username"
 						v-model:valid="usernameValid"
 					/>

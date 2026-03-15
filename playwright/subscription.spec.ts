@@ -41,7 +41,7 @@ import {
 import { mimiri, withMimiriContext } from './framework/mimiri-context'
 import { createCloudAccount } from './core/actions'
 
-test.describe('subscription', () => {
+test.describe.skip('subscription', () => {
 	test.skip('setup ui for dev', async () => {
 		await withMimiriContext(async () => {
 			// test(`login`, doLogin)

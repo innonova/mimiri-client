@@ -4,6 +4,7 @@ import type { EditorPlugin } from '../editor-plugin'
 import { mimiriCompletionProvider } from './mimiri-provider'
 import { MimiriCodeLensProvider, type MimiriCodeLensItem } from './mimiri-code-lens-provider'
 import { clipboardManager } from '../../../global'
+import type { TextEditorListener } from '../type'
 
 interface CodeBlockState {
 	start: number // Opening fence line number
@@ -23,8 +24,17 @@ export class CodeBlockPlugin implements EditorPlugin {
 	private selectCodeBlockCommandId: string
 	private copyNextLineCommandId: string
 	private codeLensProvider: MimiriCodeLensProvider
-	constructor(private monacoEditor: editor.IStandaloneCodeEditor) {
+	private lastMouseX: number = 0
+
+	constructor(
+		private monacoEditor: editor.IStandaloneCodeEditor,
+		private listener: TextEditorListener,
+	) {
 		this.monacoEditorModel = this.monacoEditor.getModel()
+
+		this.monacoEditor.getDomNode()?.addEventListener('mousemove', (e: MouseEvent) => {
+			this.lastMouseX = e.clientX
+		})
 
 		this.completionProvider = languages.registerCompletionItemProvider(
 			this.monacoEditorModel.getLanguageId(),
@@ -50,6 +60,7 @@ export class CodeBlockPlugin implements EditorPlugin {
 			}
 
 			clipboardManager.write(text.replace(/p`([^`]+)`/g, '$1'))
+			this.showCopiedNotification(block.start)
 		})
 
 		this.selectCodeBlockCommandId = this.monacoEditor.addCommand(0, (_, args?: MimiriCodeLensItem) => {
@@ -107,6 +118,7 @@ export class CodeBlockPlugin implements EditorPlugin {
 				return
 			}
 			clipboardManager.write(text.replace(/p`([^`]+)`/g, '$1'))
+			this.showCopiedNotification(block.start)
 		})
 
 		this.codeLensProvider = new MimiriCodeLensProvider({
@@ -484,6 +496,14 @@ export class CodeBlockPlugin implements EditorPlugin {
 		}
 
 		this.codeLensProvider.dispose()
+	}
+
+	private showCopiedNotification(lineNumber: number) {
+		const rect = this.monacoEditor.getDomNode().getBoundingClientRect()
+		const lineTop = this.monacoEditor.getTopForLineNumber(lineNumber)
+		const top = lineTop + rect.top - this.monacoEditor.getScrollTop() - 15
+		const left = this.lastMouseX + 30
+		this.listener.onCopyNotification(top, left)
 	}
 
 	private findBlockByStartLine(startLine: number): CodeBlockState | undefined {

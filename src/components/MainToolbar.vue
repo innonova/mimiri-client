@@ -198,7 +198,7 @@ const showMobileMenu = () => {
 		...(!isSystem && isInRecycleBin ? [MenuItems.Separator, MenuItems.Cut, MenuItems.Copy] : []),
 		MenuItems.Separator,
 		...(!isSystem && !isInRecycleBin && showShare ? [MenuItems.Share] : []),
-		...(!isSystem && !isInRecycleBin && showAcceptShare ? [MenuItems.ReceiveShare] : []),
+		MenuItems.ReceiveShare,
 		MenuItems.Refresh,
 		...(!isSystem && !isInRecycleBin ? [MenuItems.Separator, MenuItems.Rename, MenuItems.Recycle] : []),
 		...(!isSystem && isInRecycleBin ? [MenuItems.Separator, MenuItems.Delete] : []),

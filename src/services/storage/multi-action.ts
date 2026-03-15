@@ -39,6 +39,10 @@ export class MultiAction {
 		this.actions.push(await this.noteService.createChangeKeyAction(noteId, newKeyName))
 	}
 
+	hasActions(): boolean {
+		return this.actions.length > 0
+	}
+
 	async commit(): Promise<Guid[]> {
 		if (this.actions.length === 0) {
 			throw new Error('No actions to commit')

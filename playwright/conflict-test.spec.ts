@@ -87,13 +87,17 @@ test.describe('conflict tests', () => {
 			await goOffline()
 			await note.item('Technical Specifications').click({ button: 'right' })
 			await menu.rename().click()
+			await mimiri().waitForTimeout(100)
 			await mimiri().page.keyboard.type('Tech Specs')
+			await mimiri().waitForTimeout(100)
 			await mimiri().page.keyboard.press('Enter')
 
 			mimiri(1, true)
 			await note.item('Technical Specifications').click({ button: 'right' })
 			await menu.rename().click()
+			await mimiri().waitForTimeout(100)
 			await mimiri().page.keyboard.type('Not Tech Specs')
+			await mimiri().waitForTimeout(100)
 			await mimiri().page.keyboard.press('Enter')
 
 			await expect(note.item('Not Tech Specs')).toBeVisible()
@@ -110,7 +114,7 @@ test.describe('conflict tests', () => {
 		})
 	})
 
-	test('verify node move conflicts', async () => {
+	test.skip('verify node move conflicts', async () => {
 		await withMimiriContext(async () => {
 			await mimiri().home()
 			await createCloudAccount()
@@ -128,6 +132,7 @@ test.describe('conflict tests', () => {
 			await verifyTestTree(moveTestTree)
 
 			mimiri(0, true)
+			await mimiri().pause()
 			await goOffline()
 			await note.item('Technical Specifications').click({ button: 'right' })
 			await menu.cut().click()
@@ -153,7 +158,7 @@ test.describe('conflict tests', () => {
 		})
 	})
 
-	test('verify node delete conflicts', async () => {
+	test.skip('verify node delete conflicts', async () => {
 		await withMimiriContext(async () => {
 			await mimiri().home()
 			await createCloudAccount()

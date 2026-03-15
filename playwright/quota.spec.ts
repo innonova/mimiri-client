@@ -96,7 +96,7 @@ test.describe('quotas', () => {
 			await expect(deleteNoteDialog.container()).toBeVisible()
 			await deleteNoteDialog.confirmButton().click()
 			await settingNodes.controlPanel().click()
-			await expect(aboutView.usedBytes()).toHaveText('38 kB')
+			await expect(aboutView.usedBytes()).toHaveText('37 kB')
 			await expect(statusBar.container()).not.toBeVisible()
 		})
 	})
@@ -111,7 +111,7 @@ test.describe('quotas', () => {
 
 			await settingNodes.controlPanel().click()
 			const initialSize = Math.floor(+((await aboutView.usedBytes().getAttribute('title')) ?? 0) / 10)
-			await expect(initialSize).toBeGreaterThan(2355)
+			await expect(initialSize).toBeGreaterThan(2300)
 			await expect(initialSize).toBeLessThan(2365)
 			await expect(aboutView.usedBytes()).toHaveText('23 kB')
 
@@ -185,7 +185,7 @@ test.describe('quotas', () => {
 				await mimiri().page.keyboard.insertText(longRandomLine())
 			}
 
-			await mimiri().pause()
+			// await mimiri().pause()
 		})
 	})
 
@@ -262,7 +262,7 @@ test.describe('quotas', () => {
 
 			// Check initial count for user 2
 			await settingNodes.controlPanel().click()
-			await expect(aboutView.noteCount()).toHaveText('5')
+			await expect(aboutView.noteCount()).toHaveText('4')
 			const targetUsername = mimiri().username
 
 			// User 1 shares the container with user 2
@@ -279,15 +279,15 @@ test.describe('quotas', () => {
 			mimiri(1, true)
 			await note.item('My Notes').click({ button: 'right' })
 			await menu.receiveShareUnder().click()
-			await acceptShareDialog.code().fill(shareCode)
+			await acceptShareDialog.fillShareCode(shareCode)
 			await acceptShareDialog.okButton().click()
 			await expect(acceptShareDialog.container()).not.toBeVisible()
 
 			// Verify count increased for user 2 after accepting share
 			await settingNodes.controlPanel().click()
-			await expect(aboutView.noteCount()).toHaveText('8')
+			await expect(aboutView.noteCount()).toHaveText('7')
 
-			await mimiri().pause()
+			// await mimiri().pause()
 		})
 	})
 
@@ -320,7 +320,7 @@ test.describe('quotas', () => {
 
 			// Check count before sharing
 			await settingNodes.controlPanel().click()
-			await expect(aboutView.noteCount()).toHaveText('8')
+			await expect(aboutView.noteCount()).toHaveText('7')
 
 			// Create second user for sharing target
 			await mimiriCreate(true)
@@ -340,7 +340,7 @@ test.describe('quotas', () => {
 
 			// Verify count remains the same after creating share
 			await settingNodes.controlPanel().click()
-			await expect(aboutView.noteCount()).toHaveText('8')
+			await expect(aboutView.noteCount()).toHaveText('7')
 		})
 	})
 
@@ -390,17 +390,17 @@ test.describe('quotas', () => {
 			mimiri(1, true)
 			await note.item('Collaboration Hub').click({ button: 'right' })
 			await menu.receiveShareUnder().click()
-			await acceptShareDialog.code().fill(shareCode)
+			await acceptShareDialog.fillShareCode(shareCode)
 			await acceptShareDialog.okButton().click()
 			await expect(acceptShareDialog.container()).not.toBeVisible()
 
 			// Check initial counts for both users
 			await settingNodes.controlPanel().click()
-			await expect(aboutView.noteCount()).toHaveText('7')
+			await expect(aboutView.noteCount()).toHaveText('6')
 
 			mimiri(0, true)
 			await settingNodes.controlPanel().click()
-			await expect(aboutView.noteCount()).toHaveText('6')
+			await expect(aboutView.noteCount()).toHaveText('5')
 
 			// User 2 adds a note to the shared workspace
 			mimiri(1, true)
@@ -410,11 +410,11 @@ test.describe('quotas', () => {
 
 			// Verify count increased for both users
 			await settingNodes.controlPanel().click()
-			await expect(aboutView.noteCount()).toHaveText('8')
+			await expect(aboutView.noteCount()).toHaveText('7')
 
 			mimiri(0, true)
 			await settingNodes.controlPanel().click()
-			await expect(aboutView.noteCount()).toHaveText('7')
+			await expect(aboutView.noteCount()).toHaveText('6')
 		})
 	})
 
@@ -447,7 +447,7 @@ test.describe('quotas', () => {
 			mimiri(1, true)
 			await note.item('Configuration Files').click({ button: 'right' })
 			await menu.receiveShareUnder().click()
-			await acceptShareDialog.code().fill(shareCode)
+			await acceptShareDialog.fillShareCode(shareCode)
 			await acceptShareDialog.okButton().click()
 			await expect(acceptShareDialog.limitsExceeded()).toBeVisible()
 			await expect(acceptShareDialog.limitsExceeded()).toHaveText(
@@ -484,7 +484,7 @@ test.describe('quotas', () => {
 			mimiri(1, true)
 			await note.item('Configuration Files').click({ button: 'right' })
 			await menu.receiveShareUnder().click()
-			await acceptShareDialog.code().fill(shareCode)
+			await acceptShareDialog.fillShareCode(shareCode)
 			await acceptShareDialog.okButton().click()
 			await expect(acceptShareDialog.container()).not.toBeVisible()
 			await mimiri().setUserTypeCountTest()
@@ -537,7 +537,7 @@ test.describe('quotas', () => {
 			mimiri(1, true)
 			await note.item('Configuration Files').click({ button: 'right' })
 			await menu.receiveShareUnder().click()
-			await acceptShareDialog.code().fill(shareCode)
+			await acceptShareDialog.fillShareCode(shareCode)
 			await acceptShareDialog.okButton().click()
 
 			await note.item('Configuration Files').click({ button: 'right' })

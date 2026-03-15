@@ -216,6 +216,7 @@ export class InlineMarkdownPlugin implements EditorPlugin {
 				},
 				options: {
 					inlineClassName: 'password-content',
+					hoverMessage: { value: 'Double-click to copy' },
 				},
 			})
 
