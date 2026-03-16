@@ -97,7 +97,7 @@
 .ProseMirror pre {
 	background-color: #2d2d2d;
 	/* mix-blend-mode: hard-light; */
-	padding: 0 0 0.25rem 0.25rem;
+	padding: 0.25rem;
 	margin: 0 0 0.5rem 0;
 	overflow-x: auto;
 }
@@ -117,7 +117,7 @@
 	display: flex;
 	font-size: 0.75rem;
 	margin-bottom: -0.125rem;
-	padding-left: 0.25rem;
+	padding: 0.25rem;
 	a {
 		color: #999999;
 		cursor: pointer;
@@ -322,44 +322,60 @@ li[data-item-type='task'] {
 
 .ProseMirror h1 {
 	font-size: 1.875em;
-	margin: 0.5em 0 0.25em;
+	margin-top: 0.5em;
 	font-weight: 600;
 	line-height: 1.2;
 }
 
 .ProseMirror h2 {
 	font-size: 1.5em;
-	margin: 0.5em 0 0.25em;
+	margin-top: 0.5em;
 	font-weight: 600;
 	line-height: 1.25;
 }
 
 .ProseMirror h3 {
 	font-size: 1.25em;
-	margin: 0.4em 0 0.2em;
+	margin-top: 0.4em;
 	font-weight: 600;
 	line-height: 1.3;
 }
 
 .ProseMirror h4 {
 	font-size: 1.125em;
-	margin: 0.4em 0 0.2em;
+	margin-top: 0.4em;
 	font-weight: 600;
 	line-height: 1.35;
 }
 
 .ProseMirror h5 {
 	font-size: 1em;
-	margin: 0.3em 0 0.15em;
+	margin-top: 0.3em;
 	font-weight: 600;
 	line-height: 1.4;
 }
 
 .ProseMirror h6 {
 	font-size: 0.875em;
-	margin: 0.3em 0 0.15em;
+	margin-top: 0.3em;
 	font-weight: 600;
 	text-transform: uppercase;
 	letter-spacing: 0.05em;
 	line-height: 1.4;
+}
+
+/* Prevents double spacing scenarios by always setting margin-top rather than combining with margin-bottom. */
+.ProseMirror h1 + *,
+.ProseMirror h2 + * {
+	margin-top: 0.4em;
+}
+
+.ProseMirror h3 + *,
+.ProseMirror h4 + * {
+	margin-top: 0.25em;
+}
+
+.ProseMirror h5 + *,
+.ProseMirror h6 + * {
+	margin-top: 0.15em;
 }
