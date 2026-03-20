@@ -396,6 +396,13 @@ const handleShortcut = event => {
 			}
 		}
 	}
+	if (event.key === 'a' && ctrlActive) {
+		if (treeViewShortCutsActive) {
+			event.preventDefault()
+			event.stopPropagation()
+			mimiriEditor.selectAll()
+		}
+	}
 	if (event.key === 's' && ctrlActive) {
 		if (isSystemNote) {
 			return
