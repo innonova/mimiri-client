@@ -157,7 +157,7 @@ export const nodes: { [key: string]: NodeSpec } = {
 				[
 					'codelens',
 					{ contenteditable: 'false', 'data-pm-ignore': 'true' },
-					['a', { 'data-action': 'copy-block' }, 'Copy '],
+					['a', { 'data-action': 'copy-block' }, 'Copy'],
 					['div', '|'],
 					['a', { 'data-action': 'select-block' }, 'Select'],
 					['div', '|'],
