@@ -50,10 +50,12 @@ export class CheckboxListItemView implements NodeView {
 		const checked = (event.target as HTMLInputElement).checked
 		if (!this.view.editable) {
 			;(event.target as HTMLInputElement).checked = !checked
+			this.view.focus()
 			return
 		}
 		const pos = this.getPos()
 		if (pos === undefined) {
+			this.view.focus()
 			return
 		}
 
@@ -62,6 +64,7 @@ export class CheckboxListItemView implements NodeView {
 			checked,
 		})
 		this.view.dispatch(tr)
+		this.view.focus()
 	}
 
 	update(node: Node): boolean {

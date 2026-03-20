@@ -1,4 +1,5 @@
 import type { Node as ProseMirrorNode } from 'prosemirror-model'
+import { TextSelection } from 'prosemirror-state'
 import type { EditorState, Transaction } from 'prosemirror-state'
 import { mimiriSchema } from './mimiri-schema'
 
@@ -365,6 +366,7 @@ function createNewList(
 	// Build nested list structure based on indentation
 	const rootList = buildNestedList(blocks, targetListNodeType, targetListItemAttrs)
 	const tr = state.tr.replaceWith(startPos, endPos, rootList)
+	tr.setSelection(TextSelection.near(tr.doc.resolve(startPos + 3)))
 	dispatch(tr)
 }
 

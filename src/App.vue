@@ -308,7 +308,7 @@ const handleShortcut = event => {
 		if (isSystemNote) {
 			return
 		}
-		if (treeViewShortCutsActive) {
+		if (treeViewShortCutsActive && !window.getSelection()?.toString()) {
 			event.preventDefault()
 			event.stopPropagation()
 			if (noteTreeView.value) {
