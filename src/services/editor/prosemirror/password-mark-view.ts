@@ -1,5 +1,5 @@
 import type { ClipboardManager } from './code-block-action-handler'
-import { COPY_SVG, EYE_SVG, EYE_OFF_SVG } from './prosemirror-icons'
+import { COPY_SVG, EYE_SVG, EYE_OFF_SVG } from '../editor-icons'
 
 export function createPasswordMarkViewFactory(
 	clipboardManager: ClipboardManager,

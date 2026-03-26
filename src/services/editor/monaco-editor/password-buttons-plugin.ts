@@ -3,7 +3,7 @@ import type { EditorPlugin } from '../editor-plugin'
 import type { TextEditorListener } from '../type'
 import type { InlineMarkdownPlugin } from './inline-markdown-plugin'
 import { clipboardManager } from '../../../global'
-import { COPY_SVG, EYE_SVG, EYE_OFF_SVG } from '../prosemirror/prosemirror-icons'
+import { COPY_SVG, EYE_SVG, EYE_OFF_SVG } from '../editor-icons'
 
 interface PasswordRange {
 	lineNumber: number
