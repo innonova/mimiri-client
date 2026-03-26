@@ -9,6 +9,7 @@ import { CodeBlockPlugin } from './monaco-editor/code-block-plugin'
 import { ConflictBlockPlugin } from './monaco-editor/conflict-block-plugin'
 import { InlineMarkdownPlugin } from './monaco-editor/inline-markdown-plugin'
 import { PasswordPlugin } from './monaco-editor/password-plugin'
+import { PasswordButtonsPlugin } from './monaco-editor/password-buttons-plugin'
 import { clipboardManager } from '../../global'
 import { getThemeById } from './theme-manager'
 import type ConflictBanner from '../../components/elements/ConflictBanner.vue'
@@ -151,7 +152,11 @@ export class EditorMonaco implements TextEditor {
 		this._conflictBlockPlugin = new ConflictBlockPlugin(this.monacoEditor, conflictBanner)
 		this._plugins.push(this._conflictBlockPlugin)
 		this._plugins.push(new PasswordPlugin(this.monacoEditor))
-		this._plugins.push(new InlineMarkdownPlugin(this.monacoEditorModel))
+		const inlinePlugin = new InlineMarkdownPlugin(this.monacoEditorModel)
+		const passwordButtonsPlugin = new PasswordButtonsPlugin(this.monacoEditor, this.listener, inlinePlugin)
+		inlinePlugin.visiblePasswords = passwordButtonsPlugin.visiblePasswords
+		this._plugins.push(passwordButtonsPlugin)
+		this._plugins.push(inlinePlugin)
 		this._plugins.push(new InlineMarkdownPlugin(this.monacoEditorHistoryModel))
 
 		this.monacoEditor.onKeyDown(e => {
@@ -431,7 +436,7 @@ export class EditorMonaco implements TextEditor {
 							const text = line.substring(tokenStart - 1, tokenEnd - 1)
 							const rect = this.monacoEditor.getDomNode().getBoundingClientRect()
 							const lineTop = this.monacoEditor.getTopForLineNumber(mouseInfo.line)
-							const columnOffset = this.monacoEditor.getOffsetForColumn(mouseInfo.line, tokenEnd)
+							const columnOffset = this.monacoEditor.getOffsetForColumn(mouseInfo.line, mouseInfo.column)
 							const left = columnOffset + rect.left - this.monacoEditor.getScrollLeft()
 							const top = lineTop + rect.top - this.monacoEditor.getScrollTop()
 							this.listener.onPasswordClicked(top, left, text)

@@ -7,6 +7,7 @@ export class InlineMarkdownPlugin implements EditorPlugin {
 	private lineDecorations: Map<number, string[]> = new Map() // line number -> decoration IDs
 	private pendingLines: Set<number> = new Set() // Accumulate affected lines across multiple changes
 	private debounce: Debounce
+	public visiblePasswords?: Set<string>
 
 	constructor(private monacoEditorModel: editor.ITextModel) {
 		this.debounce = new Debounce(
@@ -182,6 +183,10 @@ export class InlineMarkdownPlugin implements EditorPlugin {
 		this.updateLines(allLines)
 	}
 
+	public refreshLine(lineNumber: number): void {
+		this.scheduleUpdate([lineNumber])
+	}
+
 	private findPasswordPatterns(line: string, lineNumber: number): editor.IModelDeltaDecoration[] {
 		const decorations: editor.IModelDeltaDecoration[] = []
 		const regex = /p`([^`]+)`/g
@@ -192,6 +197,7 @@ export class InlineMarkdownPlugin implements EditorPlugin {
 			const delimiterLength = 2 // p`
 			const contentLength = match[1].length
 			const endDelimiterStart = startCol + delimiterLength + contentLength
+			const isVisible = this.visiblePasswords?.has(`${lineNumber}:${startCol}`) ?? false
 
 			// Opening delimiter `p`
 			decorations.push({
@@ -206,7 +212,7 @@ export class InlineMarkdownPlugin implements EditorPlugin {
 				},
 			})
 
-			// Password content (will be masked with CSS)
+			// Password content — masked by default, revealed when in visiblePasswords
 			decorations.push({
 				range: {
 					startLineNumber: lineNumber,
@@ -215,8 +221,7 @@ export class InlineMarkdownPlugin implements EditorPlugin {
 					endColumn: endDelimiterStart,
 				},
 				options: {
-					inlineClassName: 'password-content',
-					hoverMessage: { value: 'Double-click to copy' },
+					inlineClassName: isVisible ? 'password-content-visible' : 'password-content',
 				},
 			})
 
