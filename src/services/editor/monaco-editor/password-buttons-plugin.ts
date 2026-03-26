@@ -41,8 +41,8 @@ export class PasswordButtonsPlugin implements EditorPlugin {
 				target.classList.contains('password-delimiter')
 
 			if (!isOnPassword) {
-			// Mouse moved off password area — schedule hide (unless caret is still inside)
-			if (this.currentKey && !this.caretInPassword) this.scheduleHide()
+				// Mouse moved off password area — schedule hide (unless caret is still inside)
+				if (this.currentKey && !this.caretInPassword) this.scheduleHide()
 			}
 
 			const hit = this.monacoEditor.getTargetAtClientPoint(e.clientX, e.clientY)
