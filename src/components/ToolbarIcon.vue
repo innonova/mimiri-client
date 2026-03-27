@@ -1,5 +1,11 @@
 <template>
-	<button class="inline-block group" @mousedown.prevent @click="onClick" @mouseenter="onMouseenter" :title="props.title">
+	<button
+		class="inline-block group"
+		@mousedown.prevent
+		@click="onClick"
+		@mouseenter="onMouseenter"
+		:title="props.title"
+	>
 		<component
 			:is="getComponent()"
 			:class="{
