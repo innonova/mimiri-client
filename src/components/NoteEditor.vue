@@ -247,7 +247,9 @@ const selectHistoryItem = (index: number) => {
 
 const navigateHistory = (delta: number) => {
 	const items = historyItems.value
-	if (!items?.length) return
+	if (!items?.length) {
+		return
+	}
 	const current = mimiriEditor.history.state.selectedHistoryIndex ?? 0
 	const next = Math.max(0, Math.min(items.length - 1, current + delta))
 	if (next !== current) {

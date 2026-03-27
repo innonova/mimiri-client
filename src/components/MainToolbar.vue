@@ -167,15 +167,12 @@ const showMobileMenu = () => {
 	const isInRecycleBin = !!noteManager.tree.selectedNote()?.isInRecycleBin
 
 	let showShare = true
-	let showAcceptShare = true
 	if (!!noteManager.tree.selectedNote()?.isShared) {
 		const note = noteManager.tree.selectedNote()
 		showShare = note.isShareRoot
-		showAcceptShare = false
 	}
 	if (!noteManager.state.isOnline) {
 		showShare = false
-		showAcceptShare = false
 	}
 
 	const whenSelectedNote = [

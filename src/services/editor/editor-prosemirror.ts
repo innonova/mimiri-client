@@ -74,7 +74,7 @@ export class EditorProseMirror implements TextEditor {
 		this._autoComplete = autoComplete
 		this._domElement.style.display = this._active ? 'flex' : 'none'
 
-		this._domElement.addEventListener('contextmenu', event => {
+		this._domElement.addEventListener('contextmenu', _event => {
 			// event.stopPropagation()
 		})
 

@@ -2,7 +2,6 @@ import { reactive } from 'vue'
 import { fontManager, ipcClient } from '../global'
 import { menuManager } from './menu-manager'
 import { toRaw } from 'vue'
-import { mimiriPlatform } from './mimiri-platform'
 import { delay } from './helpers'
 import { emptyGuid, type Guid } from './types/guid'
 
