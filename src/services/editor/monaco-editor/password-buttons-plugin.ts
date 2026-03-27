@@ -33,7 +33,9 @@ export class PasswordButtonsPlugin implements EditorPlugin {
 		this.monacoEditorModel = this.monacoEditor.getModel()
 
 		this.monacoEditor.getDomNode()?.addEventListener('mousemove', (e: MouseEvent) => {
-			if (!this._active) return
+			if (!this._active) {
+				return
+			}
 			const target = e.target as HTMLElement
 			const isOnPassword =
 				target.classList.contains('password-content') ||
@@ -42,16 +44,22 @@ export class PasswordButtonsPlugin implements EditorPlugin {
 
 			if (!isOnPassword) {
 				// Mouse moved off password area — schedule hide (unless caret is still inside)
-				if (this.currentKey && !this.caretInPassword) this.scheduleHide()
+				if (this.currentKey && !this.caretInPassword) {
+					this.scheduleHide()
+				}
 			}
 
 			const hit = this.monacoEditor.getTargetAtClientPoint(e.clientX, e.clientY)
-			if (!hit?.position) return
+			if (!hit?.position) {
+				return
+			}
 
 			const { lineNumber, column } = hit.position
 			const line = this.monacoEditorModel.getLineContent(lineNumber)
 			const pw = this.findPasswordAtColumn(line, lineNumber, column)
-			if (!pw) return
+			if (!pw) {
+				return
+			}
 
 			const key = `${pw.lineNumber}:${pw.startColumn}`
 			if (key !== this.currentKey) {
@@ -68,7 +76,9 @@ export class PasswordButtonsPlugin implements EditorPlugin {
 		})
 
 		this.cursorDisposable = this.monacoEditor.onDidChangeCursorPosition(e => {
-			if (!this._active) return
+			if (!this._active) {
+				return
+			}
 			const { lineNumber, column } = e.position
 			const line = this.monacoEditorModel.getLineContent(lineNumber)
 			const pw = this.findPasswordAtColumn(line, lineNumber, column)
@@ -157,7 +167,9 @@ export class PasswordButtonsPlugin implements EditorPlugin {
 	}
 
 	private positionWidget() {
-		if (!this.widgetEl || !this.currentPw) return
+		if (!this.widgetEl || !this.currentPw) {
+			return
+		}
 
 		const pos = this.monacoEditor.getScrolledVisiblePosition({
 			lineNumber: this.currentPw.lineNumber,
@@ -220,7 +232,9 @@ export class PasswordButtonsPlugin implements EditorPlugin {
 	set active(value: boolean) {
 		if (this._active !== value) {
 			this._active = value
-			if (!this._active) this.hideWidget()
+			if (!this._active) {
+				this.hideWidget()
+			}
 		}
 	}
 
