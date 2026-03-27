@@ -18,7 +18,9 @@ export const passwordCursorPlugin = new Plugin({
 				const hasPasswordInSelection =
 					$from.pos !== $to.pos && view.state.doc.rangeHasMark($from.pos, $to.pos, passwordMark)
 
-				if (!hasPasswordAtCursor && !hasPasswordInSelection) return
+				if (!hasPasswordAtCursor && !hasPasswordInSelection) {
+					return
+				}
 
 				// Walk up from the cursor's DOM position to find the wrapper element
 				try {
