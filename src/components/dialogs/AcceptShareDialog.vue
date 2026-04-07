@@ -6,7 +6,7 @@
 		@close="isOpen = false"
 	>
 		<div v-if="isOpen" class="grid grid-rows-[auto_1fr_auto]">
-			<DialogTitle @close="close">Accept Share</DialogTitle>
+			<DialogTitle @close="close">{{ $t('acceptShareDialog.title') }}</DialogTitle>
 			<form @submit.prevent="submitDialog" class="mx-2 mt-5 mb-2 mobile:mx-8">
 				<div class="grid grid-cols-[4rem_10.2rem] mobile:grid-cols-[4rem_auto] items-center gap-2 mx-2 mb-2">
 					<div class="col-span-2">
@@ -15,14 +15,12 @@
 
 					<div class="col-span-2 flex flex-col items-center">
 						<div class="info mt-2">
-							<div class="text-left leading-5">Enter the one time code to accept a share.</div>
-							<div class="text-left leading-5 mt-3">
-								We do not recommend accepting shares from users you do not know.
-							</div>
+							<div class="text-left leading-5">{{ $t('acceptShareDialog.enterCode') }}</div>
+							<div class="text-left leading-5 mt-3">{{ $t('acceptShareDialog.warning') }}</div>
 						</div>
 					</div>
 					<div v-if="invalid" />
-					<div v-if="invalid" class="text-error leading-4">No share found</div>
+					<div v-if="invalid" class="text-error leading-4">{{ $t('acceptShareDialog.noShareFound') }}</div>
 					<div
 						v-if="limitsExceeded"
 						class="text-error leading-4.5 col-span-2 whitespace-pre-line"
@@ -39,9 +37,11 @@
 							@click="submitDialog"
 							data-testid="share-ok-button"
 						>
-							OK
+							{{ $t('acceptShareDialog.ok') }}
 						</button>
-						<button class="secondary" @click="close" data-testid="share-cancel-button">Cancel</button>
+						<button class="secondary" @click="close" data-testid="share-cancel-button">
+							{{ $t('acceptShareDialog.cancel') }}
+						</button>
 					</div>
 				</div>
 			</form>
@@ -51,7 +51,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { noteManager } from '../../global'
+import { noteManager, $t } from '../../global'
 import DialogTitle from '../elements/DialogTitle.vue'
 import type { MimerNote } from '../../services/types/mimer-note'
 import LoadingIcon from '../../icons/loading.vue'
@@ -103,15 +103,17 @@ const submitDialog = async () => {
 		if (error instanceof LimitError) {
 			console.error('Error accepting share:', error.limits)
 			if (error.limits.noteCount - SYSTEM_NOTE_COUNT > error.limits.maxNoteCount) {
-				limitsExceeded.value = `Cannot accept share!\nNew note count (${
-					error.limits.noteCount - SYSTEM_NOTE_COUNT
-				}) would exceed current maximum (${error.limits.maxNoteCount})`
+				limitsExceeded.value = $t('acceptShareDialog.cannotAcceptNoteCount', {
+					count: error.limits.noteCount - SYSTEM_NOTE_COUNT,
+					max: error.limits.maxNoteCount,
+				})
 			} else if (error.limits.size > error.limits.maxTotalBytes) {
-				limitsExceeded.value = `Cannot accept share!\nNew data usage (${formatBytes(
-					error.limits.size,
-				)}) would exceed current maximum (${formatBytes(error.limits.maxTotalBytes)})`
+				limitsExceeded.value = $t('acceptShareDialog.cannotAcceptDataUsage', {
+					size: formatBytes(error.limits.size),
+					max: formatBytes(error.limits.maxTotalBytes),
+				})
 			} else {
-				limitsExceeded.value = `Limit exceeded: ${error.message}`
+				limitsExceeded.value = $t('acceptShareDialog.limitExceeded', { message: error.message })
 			}
 		} else {
 			throw error

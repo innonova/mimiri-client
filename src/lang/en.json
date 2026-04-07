@@ -1,0 +1,13 @@
+{
+	"acceptShareDialog": {
+		"title": "Accept Share",
+		"enterCode": "Enter the one time code to accept a share.",
+		"warning": "We do not recommend accepting shares from users you do not know.",
+		"noShareFound": "No share found",
+		"ok": "OK",
+		"cancel": "Cancel",
+		"cannotAcceptNoteCount": "Cannot accept share!\nNew note count ({count}) would exceed current maximum ({max})",
+		"cannotAcceptDataUsage": "Cannot accept share!\nNew data usage ({size}) would exceed current maximum ({max})",
+		"limitExceeded": "Limit exceeded: {message}"
+	}
+}
