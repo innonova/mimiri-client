@@ -12,7 +12,9 @@
 			<TreeNode v-for="node of noteManager.tree.rootRef().value?.viewModel.children" :node="node" :key="node.id" />
 		</template>
 		<NewTreeNode v-if="createNewRootNode" />
-		<div v-if="noSearchResults" class="text-center text-text text-size-menu mt-2 cursor-default">No results found</div>
+		<div v-if="noSearchResults" class="text-center text-text text-size-menu mt-2 cursor-default">
+			{{ $t('noteTreeView.noResultsFound') }}
+		</div>
 	</div>
 </template>
 

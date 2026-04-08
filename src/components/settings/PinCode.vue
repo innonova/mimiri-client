@@ -1,14 +1,11 @@
 <template>
 	<div class="flex flex-col h-full" data-testid="pin-code-container">
-		<TabBar :items="['PIN Code']" />
+		<TabBar :items="[$t('settingsPinCode.tab')]" />
 		<div class="overflow-y-auto pb-10">
 			<div class="flex flex-col items-center mt-10 max-w-110">
 				<div class="flex flex-col items-start">
-					<div
-						class="mb-4"
-						title="Set a 4-digit PIN Code to lock Mimiri after a small period of inactivity and use the code to quickly resume the session"
-					>
-						Set or change your PIN code:
+					<div class="mb-4" :title="$t('settingsPinCode.setOrChangeTooltip')">
+						{{ $t('settingsPinCode.setOrChange') }}
 					</div>
 					<div class="flex">
 						<div class="border-2 w-10 h-16 rounded-lg flex items-center justify-center mr-2">
@@ -30,9 +27,11 @@
 				<hr />
 				<div class="w-full flex justify-end mt-2 gap-2">
 					<button :disabled="!localAuth.pinEnabled" @click="clear" class="secondary" data-testid="clear-pin">
-						Clear
+						{{ $t('settingsPinCode.clear') }}
 					</button>
-					<button :disabled="!canSave" @click="save" class="primary" data-testid="save-pin">Save</button>
+					<button :disabled="!canSave" @click="save" class="primary" data-testid="save-pin">
+						{{ $t('settingsPinCode.save') }}
+					</button>
 				</div>
 			</div>
 		</div>

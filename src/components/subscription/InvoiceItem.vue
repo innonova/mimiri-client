@@ -1,47 +1,53 @@
 <template>
 	<div class="flex">
 		<div class="grid grid-cols-[8rem_8rem_6rem] gap-4 border shadow-sm p-2" :data-testid="`invoice-${invoice.no}`">
-			<div>Invoice No: {{ invoice.no }}</div>
-			<div>Issued: {{ formatInvoiceDate(invoice.issued) }}</div>
+			<div>{{ $t('subInvoiceItem.invoiceNo') }} {{ invoice.no }}</div>
+			<div>{{ $t('subInvoiceItem.issued') }} {{ formatInvoiceDate(invoice.issued) }}</div>
 			<div v-if="invoice.status === 'paid'" class="text-right" :data-testid="`invoice-${invoice.no}-status-paid`">
-				Status: <span class="text-good font-bold">PAID</span>
+				{{ $t('subInvoiceItem.status') }} <span class="text-good font-bold">{{ $t('subInvoiceItem.paid') }}</span>
 			</div>
 			<div
 				v-if="invoice.status === 'issued' && !overdue"
 				class="text-right"
 				:data-testid="`invoice-${invoice.no}-status-open`"
 			>
-				Status: <span class="text-good font-bold">OPEN</span>
+				{{ $t('subInvoiceItem.status') }} <span class="text-good font-bold">{{ $t('subInvoiceItem.open') }}</span>
 			</div>
 			<div v-if="overdue" class="text-right" :data-testid="`invoice-${invoice.no}-status-overdue`">
-				Status: <span class="text-bad font-bold">OVERDUE</span>
+				{{ $t('subInvoiceItem.status') }} <span class="text-bad font-bold">{{ $t('subInvoiceItem.overdue') }}</span>
 			</div>
 			<div
 				v-if="invoice.status === 'credited'"
 				class="text-right"
 				:data-testid="`invoice-${invoice.no}-status-credited`"
 			>
-				Status: <span class="text-good font-bold">CREDITED</span>
+				{{ $t('subInvoiceItem.status') }} <span class="text-good font-bold">{{ $t('subInvoiceItem.credited') }}</span>
 			</div>
 			<div
 				v-if="invoice.status === 'credit-note'"
 				class="text-right"
 				:data-testid="`invoice-${invoice.no}-status-credit-note`"
 			>
-				Status: <span class="text-good font-bold">CREDIT NOTE</span>
+				{{ $t('subInvoiceItem.status') }} <span class="text-good font-bold">{{ $t('subInvoiceItem.creditNote') }}</span>
 			</div>
 			<div v-if="invoice.status === 'issued'" />
-			<div v-if="invoice.status === 'issued'">Due: {{ formatInvoiceDate(invoice.due) }}</div>
+			<div v-if="invoice.status === 'issued'">{{ $t('subInvoiceItem.due') }} {{ formatInvoiceDate(invoice.due) }}</div>
 			<div v-if="invoice.status === 'issued'" class="text-right">
-				<button class="primary" @click="payNow" :data-testid="`invoice-${invoice.no}-pay-now`">Pay Now</button>
+				<button class="primary" @click="payNow" :data-testid="`invoice-${invoice.no}-pay-now`">
+					{{ $t('subInvoiceItem.payNow') }}
+				</button>
 			</div>
 			<div v-if="invoice.status === 'issued' && autoPay && !overdue" class="col-span-full text-right italic">
-				Will be paid automatically on {{ formatInvoiceDate(invoice.due) }}
+				{{ $t('subInvoiceItem.willBePaidAutomatically') }} {{ formatInvoiceDate(invoice.due) }}
 			</div>
 
 			<div class="flex gap-2 col-span-2">
-				<button class="primary" @click="showInvoice" :data-testid="`invoice-${invoice.no}-view-link`">View</button>
-				<button class="primary" @click="showInvoicePdf" :data-testid="`invoice-${invoice.no}-pdf-link`">PDF</button>
+				<button class="primary" @click="showInvoice" :data-testid="`invoice-${invoice.no}-view-link`">
+					{{ $t('subInvoiceItem.view') }}
+				</button>
+				<button class="primary" @click="showInvoicePdf" :data-testid="`invoice-${invoice.no}-pdf-link`">
+					{{ $t('subInvoiceItem.pdf') }}
+				</button>
 			</div>
 			<div class="text-right" :data-testid="`invoice-${invoice.no}-total`">
 				{{ invoice.currency }} {{ formatCurrency(invoice.data.total) }}

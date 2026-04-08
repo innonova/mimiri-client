@@ -8,7 +8,7 @@
 		<div class="text-right">{{ method.name }}</div>
 		<div />
 		<div class="text-right">
-			<span v-if="method.expiry">Expires: {{ method.expiry }}</span>
+			<span v-if="method.expiry">{{ $t('subPaymentMethodItem.expires') }} {{ method.expiry }}</span>
 		</div>
 		<div v-if="!isDefault && showActions" class="pt-3">
 			<button
@@ -17,11 +17,11 @@
 				:data-testid="`payment-method-${method.name}-make-default`"
 				class="primary"
 			>
-				Make default
+				{{ $t('subPaymentMethodItem.makeDefault') }}
 			</button>
 		</div>
 		<div v-if="isDefault && showActions" class="pt-3" :data-testid="`payment-method-${method.name}-is-default`">
-			Default
+			{{ $t('subPaymentMethodItem.default') }}
 		</div>
 		<div v-if="showActions" class="text-right pt-3">
 			<button
@@ -30,7 +30,7 @@
 				:disabled="disabled"
 				:data-testid="`payment-method-${method.name}-delete`"
 			>
-				Delete
+				{{ $t('subPaymentMethodItem.delete') }}
 			</button>
 		</div>
 	</div>

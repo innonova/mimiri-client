@@ -54,7 +54,7 @@
 					'text-error': !shouldShow,
 				}"
 			>
-				Recycle Bin
+				{{ $t('recycleBin.recycleBin') }}
 			</div>
 			<div class="desktop:hidden pl-14 flex justify-end" @click="selectNode(true)">
 				<OpenIcon class="w-[23px] h-[23px] p-0.5" />

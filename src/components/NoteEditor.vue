@@ -4,7 +4,7 @@
 			<ToolbarIcon
 				icon="back"
 				:hoverEffect="true"
-				title="Back"
+				:title="$t('noteEditor.back')"
 				class="desktop:hidden"
 				@click="onBack"
 				data-testid="editor-back-button"
@@ -14,7 +14,7 @@
 				icon="save"
 				:hoverEffect="true"
 				:disabled="!saveEnabled"
-				title="Save Note"
+				:title="$t('noteEditor.saveNote')"
 				@click="saveClicked"
 				data-testid="editor-save-button"
 			/>
@@ -25,7 +25,7 @@
 					icon="undo"
 					:hoverEffect="true"
 					:disabled="!mimiriEditor.canUndo"
-					title="Undo"
+					:title="$t('noteEditor.undo')"
 					@click="undo"
 					data-testid="editor-undo-button"
 				/>
@@ -33,7 +33,7 @@
 					icon="redo"
 					:hoverEffect="true"
 					:disabled="!mimiriEditor.canRedo"
-					title="Redo"
+					:title="$t('noteEditor.redo')"
 					@click="redo"
 					data-testid="editor-redo-button"
 				/>
@@ -41,7 +41,7 @@
 				<ToolbarIcon
 					icon="history"
 					:hoverEffect="true"
-					:title="historyVisible ? 'Hide History' : 'Show History'"
+					:title="historyVisible ? $t('noteEditor.hideHistory') : $t('noteEditor.showHistory')"
 					:disabled="noteManager.tree.selectedNoteRef().value?.isSystem"
 					:toggledOn="historyVisible"
 					@click="showHistory"
@@ -54,7 +54,7 @@
 					:disabled="
 						!mimiriEditor.isActionSupported('mark-password') && !mimiriEditor.isActionSupported('unmark-password')
 					"
-					title="Mark as Password Ctrl+Shift+C"
+					:title="$t('noteEditor.markAsPassword')"
 					@click="markAsPassword"
 					data-testid="editor-mark-as-password"
 				/>
@@ -62,7 +62,7 @@
 					icon="heading"
 					:hoverEffect="true"
 					:disabled="false"
-					title="Heading"
+					:title="$t('noteEditor.heading')"
 					@click="insertHeading"
 					data-testid="editor-insert-heading"
 				/>
@@ -70,7 +70,7 @@
 					icon="code-block"
 					:hoverEffect="true"
 					:disabled="false"
-					title="Code Block"
+					:title="$t('noteEditor.codeBlock')"
 					@click="insertCodeBlock"
 					data-testid="editor-insert-code-block"
 				/>
@@ -79,7 +79,7 @@
 					icon="check-list"
 					:hoverEffect="true"
 					:disabled="false"
-					title="Checkbox"
+					:title="$t('noteEditor.checkbox')"
 					@click="insertCheckboxList"
 					data-testid="editor-insert-checkbox"
 				/>
@@ -87,7 +87,7 @@
 					icon="list"
 					:hoverEffect="true"
 					:disabled="false"
-					title="List"
+					:title="$t('noteEditor.list')"
 					@click="insertUnorderedList"
 					data-testid="editor-insert-unordered-list"
 				/>
@@ -95,7 +95,7 @@
 					icon="number-list"
 					:hoverEffect="true"
 					:disabled="false"
-					title="Ordered List"
+					:title="$t('noteEditor.orderedList')"
 					@click="insertOrderedList"
 					data-testid="editor-insert-ordered-list"
 				/>
@@ -105,7 +105,7 @@
 					:icon="settingsManager.wordwrap ? 'wordwrap-on' : 'wordwrap-off'"
 					:hoverEffect="true"
 					:disabled="noteManager.tree.selectedNoteRef().value?.isSystem"
-					:title="settingsManager.wordwrap ? 'Disable Word Wrap' : 'Enable Word Wrap'"
+					:title="settingsManager.wordwrap ? $t('noteEditor.disableWordWrap') : $t('noteEditor.enableWordWrap')"
 					:toggledOn="settingsManager.wordwrap"
 					@click="toggleWordWrap"
 					data-testid="editor-toggle-wordwrap"
@@ -116,14 +116,15 @@
 				:icon="mimiriEditor.mode === 'advanced' ? 'wysiwyg' : 'code'"
 				:hoverEffect="true"
 				:disabled="historyVisible"
-				title="Toggle Edit Mode"
+				:title="$t('noteEditor.toggleEditMode')"
 				@click="toggleEditModeClicked"
 				data-testid="editor-toggle-edit-mode-button"
 			/>
 		</div>
 		<div class="relative flex-auto min-h-0 flex flex-col items-stretch overflow-hidden">
 			<div v-if="historyVisible && selectedHistoryItem" class="px-2 py-1 bg-info-bar cursor-default text-size-menu">
-				{{ selectedHistoryItem.username }} - {{ formatDate(selectedHistoryItem.timestamp) }} (read-only)
+				{{ selectedHistoryItem.username }} - {{ formatDate(selectedHistoryItem.timestamp) }}
+				{{ $t('noteEditor.readOnly') }}
 			</div>
 			<ConflictBanner ref="conflictBanner" @navigate="onConflictNavigate" />
 			<div
@@ -149,7 +150,7 @@
 				<div
 					class="flex items-center justify-between bg-toolbar border-b border-solid border-toolbar cursor-default text-size-menu p-0.5"
 				>
-					<div>History entries:</div>
+					<div>{{ $t('noteEditor.historyEntries') }}</div>
 					<CloseButton @click="showHistory" class="w-6 h-6" />
 				</div>
 				<div
@@ -182,7 +183,7 @@
 					:disabled="!mimiriEditor.history.note.viewModel.hasMoreHistory"
 					@click="loadMoreHistory"
 				>
-					Read More Entries
+					{{ $t('noteEditor.readMoreEntries') }}
 				</button>
 			</div>
 		</div>
@@ -191,7 +192,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch, nextTick, type WatchStopHandle } from 'vue'
-import { env, infoDialog, limitDialog, mimiriEditor, noteManager, showSearchBox, titleBar } from '../global'
+import { env, infoDialog, limitDialog, mimiriEditor, noteManager, showSearchBox, titleBar, $t } from '../global'
 import type { NoteViewModel } from '../services/types/mimer-note'
 import { searchManager } from '../services/search-manager'
 import ToolbarIcon from './ToolbarIcon.vue'

@@ -1,18 +1,20 @@
 <template>
 	<div class="flex flex-col h-full">
-		<TabBar :items="['Recycle Bin']" />
+		<TabBar :items="[$t('settingsRecycleBin.tab')]" />
 		<div class="overflow-y-auto pb-10">
-			<div class="p-1">Permanently delete all items in the Recycle Bin</div>
+			<div class="p-1">{{ $t('settingsRecycleBin.description') }}</div>
 			<div class="mt-5 max-w-110 mr-2">
 				<hr />
 				<div class="w-full flex justify-between mt-2 gap-2">
-					<button @click="scanForInconsistencies" class="primary">Scan for inconsistencies</button>
+					<button @click="scanForInconsistencies" class="primary">
+						{{ $t('settingsRecycleBin.scanForInconsistencies') }}
+					</button>
 					<button
 						:disabled="noteManager.tree.selectedNote()?.viewModel?.children.length === 0"
 						@click="empty"
 						class="primary"
 					>
-						Empty Recycle Bin
+						{{ $t('settingsRecycleBin.emptyRecycleBin') }}
 					</button>
 				</div>
 			</div>

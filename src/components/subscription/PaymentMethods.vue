@@ -1,7 +1,9 @@
 <template>
 	<div class="flex flex-col h-full">
-		<TabBar :items="['Payment Methods']" />
-		<div v-if="!methods?.length" class="m-5" data-testid="payment-methods-none">No Payments Methods Yet</div>
+		<TabBar :items="[$t('subPaymentMethods.tab')]" />
+		<div v-if="!methods?.length" class="m-5" data-testid="payment-methods-none">
+			{{ $t('subPaymentMethods.noMethodsYet') }}
+		</div>
 		<div class="flex flex-col gap-3 items-start overflow-y-auto">
 			<template v-for="method of methods" :key="method.id">
 				<PaymentMethodItem
@@ -13,7 +15,7 @@
 				/>
 			</template>
 			<div v-if="showCreate" class="py-8 px-2 text-right w-[18rem]">
-				<button class="primary" @click="createNew">Create New</button>
+				<button class="primary" @click="createNew">{{ $t('subPaymentMethods.createNew') }}</button>
 			</div>
 		</div>
 	</div>

@@ -4,7 +4,7 @@
 		class="flex flex-col items-center select-none"
 		data-testid="lock-screen"
 	>
-		<h2 class="mb-4">Enter PIN to unlock</h2>
+		<h2 class="mb-4">{{ $t('lockScreen.enterPin') }}</h2>
 		<div class="flex">
 			<div class="border-2 w-10 h-16 rounded-lg flex items-center justify-center mr-2">
 				<h1 v-if="pin.length > 0">*</h1>
@@ -17,7 +17,7 @@
 			</div>
 			<div class="border-2 w-10 h-16 rounded-lg flex items-center justify-center"><h1 v-if="pin.length > 3">*</h1></div>
 		</div>
-		<div class="mt-5">Attempts remaining: 1</div>
+		<div class="mt-5">{{ $t('lockScreen.attemptsRemaining') }}</div>
 	</div>
 	<div v-if="!localAuth.elapsed" class="bg-input h-full w-full" />
 </template>

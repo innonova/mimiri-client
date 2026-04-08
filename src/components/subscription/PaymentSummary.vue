@@ -1,6 +1,6 @@
 <template>
-	<ItemHeader>Summary</ItemHeader>
-	<div class="mb-0.5">Items</div>
+	<ItemHeader>{{ $t('subPaymentSummary.summary') }}</ItemHeader>
+	<div class="mb-0.5">{{ $t('subPaymentSummary.items') }}</div>
 	<template v-for="item of items" :key="item.sku">
 		<div class="flex flex-row justify-between border-t border-b py-3">
 			<div>{{ item.sku }} - {{ item.text }}</div>
@@ -9,26 +9,26 @@
 	</template>
 	<div class="my-5">
 		<div class="flex justify-between">
-			<div>Total amount to be paid now:</div>
+			<div>{{ $t('subPaymentSummary.total') }}</div>
 			<div data-testid="upgrade-total" class="font-bold">
 				{{ formatCurrency(total, currency) }}
 			</div>
 		</div>
 		<div v-if="vatRate(countryCode) > 0" class="flex justify-between mt-1">
-			<div>Of this VAT:</div>
+			<div>{{ $t('subPaymentSummary.vat') }}</div>
 			<div data-testid="upgrade-vat">
 				{{ formatCurrency(calculateReverseVat(total, vatRate(countryCode)), currency) }}
 			</div>
 		</div>
 		<div class="flex justify-between mt-1">
-			<div>Currency:</div>
+			<div>{{ $t('subPaymentSummary.currency') }}</div>
 			<div data-testid="upgrade-currency">{{ currency }}</div>
 		</div>
 	</div>
 	<div class="mb-5">
 		<label class="flex items-center gap-2 justify-end">
-			I have read and accept the
-			<a href="https://mimiri.io/terms" target="_blank">Terms & Conditions</a
+			{{ $t('subPaymentSummary.acceptTerms') }}
+			<a href="https://mimiri.io/terms" target="_blank">{{ $t('subPaymentSummary.termsAndConditions') }}</a
 			><input
 				v-model="termsAccepted"
 				name="accept-terms"
@@ -38,7 +38,8 @@
 				data-testid="accept-terms"
 		/></label>
 		<label class="flex items-center mt-1.5 gap-2 justify-end"
-			>I have read and accept the <a href="https://mimiri.io/privacy" target="_blank">Privacy Policy</a
+			>{{ $t('subPaymentSummary.acceptPrivacy') }}
+			<a href="https://mimiri.io/privacy" target="_blank">{{ $t('subPaymentSummary.privacyPolicy') }}</a
 			><input
 				v-model="privacyAccepted"
 				name="accept-privacy"

@@ -1,71 +1,69 @@
 <template>
 	<div class="flex flex-col h-full">
-		<TabBar :items="['General']" />
+		<TabBar :items="[$t('settingsGeneral.tab')]" />
 		<div class="overflow-y-auto pb-10">
 			<div class="p-1 pt-2 m-auto text-left flex items-center">
-				<div class="w-15">Theme</div>
+				<div class="w-15">{{ $t('settingsGeneral.theme') }}</div>
 				<select v-model="theme" class="ml-1">
-					<option value="default">System</option>
-					<option value="light">Light</option>
-					<option value="dark">Dark</option>
+					<option value="default">{{ $t('settingsGeneral.themeSystem') }}</option>
+					<option value="light">{{ $t('settingsGeneral.themeLight') }}</option>
+					<option value="dark">{{ $t('settingsGeneral.themeDark') }}</option>
 				</select>
 			</div>
 			<div v-if="mimiriPlatform.isLinuxApp || env.DEV" class="p-1 pt-2 m-auto text-left flex items-center">
-				<div class="w-15">Tray Icon</div>
+				<div class="w-15">{{ $t('settingsGeneral.trayIcon') }}</div>
 				<select v-model="trayIcon" class="ml-1">
-					<option value="system">System</option>
-					<option value="white">White</option>
-					<option value="black">Black</option>
+					<option value="system">{{ $t('settingsGeneral.trayIconSystem') }}</option>
+					<option value="white">{{ $t('settingsGeneral.trayIconWhite') }}</option>
+					<option value="black">{{ $t('settingsGeneral.trayIconBlack') }}</option>
 				</select>
 			</div>
 			<div v-if="mimiriPlatform.isDesktop && !mimiriPlatform.isWeb" class="p-1 pt-2 m-auto text-left">
-				<label title="Automatically start Mimiri Notes when you log in to your computer">
+				<label :title="$t('settingsGeneral.launchOnLoginTooltip')">
 					<input type="checkbox" v-model="openAtLogin" class="mr-1 relative top-0.5" />
-					Launch Mimiri Notes on Login
+					{{ $t('settingsGeneral.launchOnLogin') }}
 				</label>
 			</div>
 			<div v-if="mimiriPlatform.isWindowsApp" class="p-1 pt-2 m-auto text-left">
-				<label
-					title="Show Mimiri Notes in the taskbar when the window is open, instead of only showing the system tray icon"
-				>
+				<label :title="$t('settingsGeneral.showInTaskbarTooltip')">
 					<input type="checkbox" v-model="showInTaskBar" class="mr-1 relative top-0.5" />
-					Show in Taskbar
+					{{ $t('settingsGeneral.showInTaskbar') }}
 				</label>
 			</div>
 			<div v-if="mimiriPlatform.isWindowsApp" class="p-1 pt-2 m-auto text-left">
-				<label title="Prevent the system tray icon from being hidden in the overflow area">
+				<label :title="$t('settingsGeneral.keepTrayVisibleTooltip')">
 					<input type="checkbox" v-model="keepTrayIconVisible" class="mr-1 relative top-0.5" />
-					Keep Tray Icon Visible
+					{{ $t('settingsGeneral.keepTrayVisible') }}
 				</label>
 			</div>
 			<div v-if="mimiriPlatform.isElectron" class="p-1 pt-2 m-auto text-left">
-				<label title="Fully quit the application instead of minimizing to the system tray when closing the window">
+				<label :title="$t('settingsGeneral.quitOnCloseTooltip')">
 					<input type="checkbox" v-model="closeOnX" class="mr-1 relative top-0.5" />
-					Quit when closing application window
+					{{ $t('settingsGeneral.quitOnClose') }}
 				</label>
 			</div>
 			<div class="p-1 pt-2 m-auto text-left">
-				<label title="Show chevrons in the tree instead of plus/minus icons to indicate expandable items">
+				<label :title="$t('settingsGeneral.useChevronsTooltip')">
 					<input type="checkbox" v-model="useChevrons" class="mr-1 relative top-0.5" />
-					Use chevrons in tree view
+					{{ $t('settingsGeneral.useChevrons') }}
 				</label>
 			</div>
 			<div v-if="mimiriPlatform.isDesktop" class="p-1 pt-2 m-auto text-left">
-				<label title="Display vertical lines in the tree view to indicate nesting depth">
+				<label :title="$t('settingsGeneral.showVerticalGuidesTooltip')">
 					<input type="checkbox" v-model="showVerticalGuides" class="mr-1 relative top-0.5" />
-					Show vertical guides
+					{{ $t('settingsGeneral.showVerticalGuides') }}
 				</label>
 			</div>
 			<div class="p-1 pt-2 m-auto text-left">
-				<label title="If you find the developer blog annoying, you can choose to hide it">
+				<label :title="$t('settingsGeneral.disableDevBlogTooltip')">
 					<input type="checkbox" v-model="disableDevBlog" class="mr-1 relative top-0.5" />
-					Disable Dev Blog
+					{{ $t('settingsGeneral.disableDevBlog') }}
 				</label>
 			</div>
 			<div class="mt-10 max-w-110 mr-2">
 				<hr />
 				<div class="w-full flex justify-end mt-2 gap-2">
-					<button :disabled="!canSave" @click="save" class="primary">Save</button>
+					<button :disabled="!canSave" @click="save" class="primary">{{ $t('settingsGeneral.save') }}</button>
 				</div>
 			</div>
 		</div>

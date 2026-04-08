@@ -1,6 +1,6 @@
 <template>
 	<div class="flex flex-col h-full">
-		<TabBar :items="['Current Plan']" />
+		<TabBar :items="[$t('subNewSubscriptionView.tab')]" />
 		<div v-if="ready" class="flex flex-col overflow-y-auto">
 			<div class="p-1 pt-2 flex" :data-testid="populated ? 'home-view' : ''">
 				<SubscriptionItem

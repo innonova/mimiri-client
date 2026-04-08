@@ -5,16 +5,20 @@
 		@close="isOpen = false"
 	>
 		<div v-if="isOpen" class="grid grid-rows-[auto_1fr_auto] gap-6">
-			<DialogTitle @close="close">Mimiri Notes</DialogTitle>
+			<DialogTitle @close="close">{{ $t('checkUpdateDialog.title') }}</DialogTitle>
 			<main>
 				<div class="p-2">
-					<div v-if="!updateManager.latestVersion">No update found</div>
-					<div v-if="updateManager.latestVersion">Update found: {{ updateManager.latestVersion }}</div>
+					<div v-if="!updateManager.latestVersion">{{ $t('checkUpdateDialog.noUpdateFound') }}</div>
+					<div v-if="updateManager.latestVersion">
+						{{ $t('checkUpdateDialog.updateFound', { version: updateManager.latestVersion }) }}
+					</div>
 				</div>
 			</main>
 			<footer class="flex justify-end mobile:justify-center gap-2 pt-3 pr-2 pb-2">
-				<button class="primary" v-if="updateManager.latestVersion" @click="update">Update</button>
-				<button class="secondary" @click="close">Close</button>
+				<button class="primary" v-if="updateManager.latestVersion" @click="update">
+					{{ $t('checkUpdateDialog.update') }}
+				</button>
+				<button class="secondary" @click="close">{{ $t('checkUpdateDialog.close') }}</button>
 			</footer>
 		</div>
 	</dialog>

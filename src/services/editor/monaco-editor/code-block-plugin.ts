@@ -3,7 +3,7 @@ import { Debounce } from '../../helpers'
 import type { EditorPlugin } from '../editor-plugin'
 import { mimiriCompletionProvider } from './mimiri-provider'
 import { MimiriCodeLensProvider, type MimiriCodeLensItem } from './mimiri-code-lens-provider'
-import { clipboardManager } from '../../../global'
+import { clipboardManager, $t } from '../../../global'
 import type { TextEditorListener } from '../type'
 
 interface CodeBlockState {
@@ -124,9 +124,9 @@ export class CodeBlockPlugin implements EditorPlugin {
 		this.codeLensProvider = new MimiriCodeLensProvider({
 			getItems: () => this.codeBlockStates.map(block => ({ startLine: block.start })),
 			commands: [
-				{ title: 'Copy block', commandId: this.copyCodeBlockCommandId },
-				{ title: 'Select block', commandId: this.selectCodeBlockCommandId },
-				{ title: 'Copy Next Line', commandId: this.copyNextLineCommandId },
+				{ title: $t('editor.copyBlock'), commandId: this.copyCodeBlockCommandId },
+				{ title: $t('editor.selectBlock'), commandId: this.selectCodeBlockCommandId },
+				{ title: $t('editor.copyNextLine'), commandId: this.copyNextLineCommandId },
 			],
 		})
 

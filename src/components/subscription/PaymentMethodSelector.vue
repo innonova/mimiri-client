@@ -1,5 +1,5 @@
 <template>
-	<ItemHeader v-if="methods?.length > 0">Choose payment method</ItemHeader>
+	<ItemHeader v-if="methods?.length > 0">{{ $t('subPaymentMethodSelector.chooseMethod') }}</ItemHeader>
 	<div
 		v-if="methods?.length > 0"
 		class="flex flex-col gap-2 mb-4 items-end w-[26rem] pr-[0.85rem]"
@@ -16,7 +16,7 @@
 				:disabled="disabled"
 				data-testid="payment-method-NEW"
 			/>
-			<div class="border shadow-sm px-3 pt-3 pb-4 w-80">Create new payment method</div></label
+			<div class="border shadow-sm px-3 pt-3 pb-4 w-80">{{ $t('subPaymentMethodSelector.createNew') }}</div></label
 		>
 		<template v-for="method of methods" :key="method.id">
 			<label class="p-2 flex gap-1 cursor-pointer items-start"

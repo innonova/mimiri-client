@@ -1,10 +1,12 @@
 <template>
 	<div ref="containerElement" class="relative">
 		<div ref="menuElement" class="menu-pos bg-toolbar w-full h-30 absolute flex flex-col">
-			<div class="text-center p-3 active:bg-toolbar-hover" @click="selectAll">Select All</div>
-			<div class="text-center p-3 active:bg-toolbar-hover" @click="cut">Cut</div>
-			<div class="text-center p-3 active:bg-toolbar-hover" @click="copy">Copy</div>
-			<div class="text-center p-3 active:bg-toolbar-hover" @click="paste">Paste</div>
+			<div class="text-center p-3 active:bg-toolbar-hover" @click="selectAll">
+				{{ $t('selectionControl.selectAll') }}
+			</div>
+			<div class="text-center p-3 active:bg-toolbar-hover" @click="cut">{{ $t('selectionControl.cut') }}</div>
+			<div class="text-center p-3 active:bg-toolbar-hover" @click="copy">{{ $t('selectionControl.copy') }}</div>
+			<div class="text-center p-3 active:bg-toolbar-hover" @click="paste">{{ $t('selectionControl.paste') }}</div>
 		</div>
 		<div ref="toolbarElement" class="toolbar-pos bg-toolbar flex justify-between w-full absolute h-14">
 			<LineUp @click="lineUp" class="active:bg-toolbar-hover" />
@@ -26,7 +28,7 @@ import MenuIcon from '../icons/menu.vue'
 import ShrinkRight from '../icons/shrink-right.vue'
 import ExpandRight from '../icons/expand-right.vue'
 import LineDown from '../icons/line-down.vue'
-import { mimiriEditor } from '../global'
+import { mimiriEditor, $t } from '../global'
 import { SelectionExpansion } from '../services/editor/type'
 import { ref } from 'vue'
 import { mimiriPlatform } from '../services/mimiri-platform'

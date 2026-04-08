@@ -6,13 +6,17 @@
 		@close="isOpen = false"
 	>
 		<div v-if="isOpen" class="grid grid-rows-[auto_1fr_auto] gap-6">
-			<DialogTitle @close="close">Empty Recycle Bin</DialogTitle>
+			<DialogTitle @close="close">{{ $t('emptyRecycleBinDialog.title') }}</DialogTitle>
 			<main class="px-2">
-				<div>Are you sure you want to permanently delete all items int the recycle bin?</div>
+				<div>{{ $t('emptyRecycleBinDialog.question') }}</div>
 			</main>
 			<footer class="flex justify-end mobile:justify-center gap-2 pr-2 pb-2">
-				<button class="primary" @click="submitDialog" data-testid="empty-recycle-bin-yes">Yes</button>
-				<button class="secondary" @click="close" data-testid="empty-recycle-bin-no">No</button>
+				<button class="primary" @click="submitDialog" data-testid="empty-recycle-bin-yes">
+					{{ $t('emptyRecycleBinDialog.yes') }}
+				</button>
+				<button class="secondary" @click="close" data-testid="empty-recycle-bin-no">
+					{{ $t('emptyRecycleBinDialog.no') }}
+				</button>
 			</footer>
 		</div>
 	</dialog>

@@ -31,28 +31,28 @@
 				<PlusIcon
 					v-if="!settingsManager.useChevrons && !node.expanded"
 					:data-testid="`${dataTestId}-closed`"
-					title="Expand"
+					:title="$t('common.expand')"
 					class="h-5 w-5 desktop:h-4 desktop:w-4 mt-px"
 					:class="{ invisible: !hasChildren }"
 				/>
 				<MinusIcon
 					v-if="!settingsManager.useChevrons && node.expanded"
 					:data-testid="`${dataTestId}-open`"
-					title="Collapse"
+					:title="$t('common.collapse')"
 					class="h-5 w-5 desktop:h-4 desktop:w-4 mt-px"
 					:class="{ invisible: !hasChildren }"
 				/>
 				<ChevronRightIcon
 					v-if="settingsManager.useChevrons && !node.expanded"
 					:data-testid="`${dataTestId}-closed`"
-					title="Expand"
+					:title="$t('common.expand')"
 					class="h-5 w-5 desktop:h-4 desktop:w-4 mt-px"
 					:class="{ invisible: !hasChildren }"
 				/>
 				<ChevronDownIcon
 					v-if="settingsManager.useChevrons && node.expanded"
 					:data-testid="`${dataTestId}-open`"
-					title="Collapse"
+					:title="$t('common.collapse')"
 					class="h-5 w-5 desktop:h-4 desktop:w-4 mt-px"
 					:class="{ invisible: !hasChildren }"
 				/>

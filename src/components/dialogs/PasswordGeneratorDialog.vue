@@ -5,14 +5,14 @@
 		@close="isOpen = false"
 	>
 		<div v-if="isOpen" class="grid grid-rows-[auto_1fr_auto] gap-6">
-			<DialogTitle @close="close">Generate Password</DialogTitle>
+			<DialogTitle @close="close">{{ $t('passwordGeneratorDialog.title') }}</DialogTitle>
 			<main class="px-3">
 				<PasswordGeneratorComp ref="passwordGenerator" mode="3rdp" @password="onPasswordGenerated" />
 				<div class="p-1 mt-2">
-					<a href="https://mimiri.io/passwords" target="_blank">How is this calculated?</a>
+					<a href="https://mimiri.io/passwords" target="_blank">{{ $t('passwordGeneratorDialog.howCalculated') }}</a>
 				</div>
 				<div class="p-1 mt-4 m-aut0 flex">
-					<div class="w-24 flex items-center">Password:</div>
+					<div class="w-24 flex items-center">{{ $t('passwordGeneratorDialog.password') }}</div>
 					<div class="w-48 text-right relative desktop:flex">
 						<input v-model="password" tabindex="2" :type="passwordFieldType" class="basic-input" autofocus />
 						<div class="w-0 h-0 pt-1 overflow-visible select-none">
@@ -29,8 +29,8 @@
 				</div>
 			</main>
 			<footer class="flex justify-end mobile:justify-center items-center gap-2 pr-2 pb-2">
-				<button class="primary" @click="copyPassword">Copy</button>
-				<button class="secondary" @click="close">Close</button>
+				<button class="primary" @click="copyPassword">{{ $t('passwordGeneratorDialog.copy') }}</button>
+				<button class="secondary" @click="close">{{ $t('passwordGeneratorDialog.close') }}</button>
 			</footer>
 		</div>
 	</dialog>

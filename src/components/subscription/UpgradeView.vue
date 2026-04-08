@@ -1,31 +1,33 @@
 <template>
 	<div class="flex flex-col h-full">
 		<div class="flex select-none">
-			<div class="py-2 px-4 bg-info cursor-default">Upgrade</div>
+			<div class="py-2 px-4 bg-info cursor-default">{{ $t('subUpgradeView.tab') }}</div>
 		</div>
 		<div class="bg-info w-full h-2 mb-4" />
 		<div class="flex flex-col overflow-y-auto pr-2" data-testid="upgrade-view">
 			<form @submit.prevent="submit" class="max-w-110 relative">
-				<ItemHeader>Chosen Plan</ItemHeader>
+				<ItemHeader>{{ $t('subUpgradeView.chosenPlan') }}</ItemHeader>
 				<div class="grid grid-cols-[9em_18em] gap-x-3 gap-y-1 pb-5">
-					<div class="text-right">Plan</div>
+					<div class="text-right">{{ $t('subUpgradeView.plan') }}</div>
 					<div>Mimiri Tier 1</div>
-					<div class="text-right">Monthly</div>
+					<div class="text-right">{{ $t('subUpgradeView.monthly') }}</div>
 					<div v-if="isMonthly">
 						{{ formatCurrency(monthlyPrice, currency) }}
 					</div>
 					<div v-else class="text-size-secondary italic">({{ formatCurrency(monthlyPrice, currency) }})</div>
-					<div class="text-right">Yearly</div>
+					<div class="text-right">{{ $t('subUpgradeView.yearly') }}</div>
 					<div v-if="!isMonthly">{{ formatCurrency(yearlyPrice, currency) }}</div>
 					<div v-else class="text-size-secondary italic">({{ formatCurrency(yearlyPrice, currency) }})</div>
-					<div class="text-right">Recurring</div>
-					<div>{{ isMonthly ? 'Monthly' : 'Yearly' }}</div>
+					<div class="text-right">{{ $t('subUpgradeView.recurring') }}</div>
+					<div>{{ isMonthly ? $t('subUpgradeView.monthly') : $t('subUpgradeView.yearly') }}</div>
 					<div class="text-right"></div>
 					<div class="pt-4">
-						<button class="primary" @click="changePlan" :data-testid="`sub-${product.sku}-change`">Change</button>
+						<button class="primary" @click="changePlan" :data-testid="`sub-${product.sku}-change`">
+							{{ $t('subUpgradeView.change') }}
+						</button>
 					</div>
 				</div>
-				<ItemHeader>Billing address</ItemHeader>
+				<ItemHeader>{{ $t('subUpgradeView.billingAddress') }}</ItemHeader>
 				<CustomerData
 					ref="customerElement"
 					mode="create"
@@ -52,7 +54,7 @@
 						:disabled="!valid || !termsAccepted || !privacyAccepted || !method || payInProgress"
 						data-testid="pay-button"
 					>
-						Pay now
+						{{ $t('subUpgradeView.payNow') }}
 					</button>
 				</div>
 			</form>

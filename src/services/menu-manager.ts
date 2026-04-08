@@ -1,5 +1,6 @@
 import { reactive } from 'vue'
 import {
+	$t,
 	acceptShareDialog,
 	clipboardNote,
 	contextMenu,
@@ -386,7 +387,7 @@ class MenuManager {
 				case MenuItems.NewNote:
 					result.push({
 						id: 'new-note',
-						title: 'New Note',
+						title: $t('contextMenu.newNote'),
 						icon: 'add-note',
 						shortcut: ipcClient.isAvailable ? 'Ctrl+N' : undefined,
 						enabled:
@@ -399,7 +400,7 @@ class MenuManager {
 				case MenuItems.NewChildNote:
 					result.push({
 						id: 'new-child-note',
-						title: 'New Child Note',
+						title: $t('contextMenu.newChildNote'),
 						icon: 'add-note',
 						enabled:
 							noteManager.state.isLoggedIn &&
@@ -411,7 +412,7 @@ class MenuManager {
 				case MenuItems.NewSiblingNote:
 					result.push({
 						id: 'new-sibling-note',
-						title: 'New Sibling Note',
+						title: $t('contextMenu.newSiblingNote'),
 						icon: 'add-sibling-note',
 						enabled:
 							noteManager.state.isLoggedIn &&
@@ -423,7 +424,7 @@ class MenuManager {
 				case MenuItems.NewRootNote:
 					result.push({
 						id: 'new-root-note',
-						title: 'New Root Note',
+						title: $t('contextMenu.newRootNote'),
 						icon: 'add-root-note',
 						enabled: noteManager.state.isLoggedIn,
 					})
@@ -431,7 +432,7 @@ class MenuManager {
 				case MenuItems.Duplicate:
 					result.push({
 						id: 'duplicate',
-						title: 'Duplicate',
+						title: $t('contextMenu.duplicate'),
 						shortcut: 'Ctrl+D',
 						enabled:
 							noteManager.state.isLoggedIn &&
@@ -443,7 +444,7 @@ class MenuManager {
 				case MenuItems.Cut:
 					result.push({
 						id: 'cut',
-						title: 'Cut',
+						title: $t('contextMenu.cut'),
 						shortcut: 'Ctrl+X',
 						enabled:
 							noteManager.state.isLoggedIn &&
@@ -454,7 +455,7 @@ class MenuManager {
 				case MenuItems.Copy:
 					result.push({
 						id: 'copy',
-						title: 'Copy',
+						title: $t('contextMenu.copy'),
 						shortcut: 'Ctrl+C',
 						enabled:
 							noteManager.state.isLoggedIn &&
@@ -465,7 +466,7 @@ class MenuManager {
 				case MenuItems.Paste:
 					result.push({
 						id: 'paste',
-						title: 'Paste',
+						title: $t('contextMenu.paste'),
 						shortcut: 'Ctrl+V',
 						enabled:
 							noteManager.state.isLoggedIn &&
@@ -478,7 +479,7 @@ class MenuManager {
 				case MenuItems.CopyPath:
 					result.push({
 						id: 'copy-path',
-						title: 'Copy Path',
+						title: $t('contextMenu.copyPath'),
 						enabled:
 							noteManager.state.isLoggedIn &&
 							!!noteManager.tree.selectedNote() &&
@@ -489,7 +490,7 @@ class MenuManager {
 				case MenuItems.Share:
 					result.push({
 						id: 'share',
-						title: 'Share',
+						title: $t('contextMenu.share'),
 						icon: 'note-shared',
 						visible: showShare,
 						enabled:
@@ -503,7 +504,7 @@ class MenuManager {
 				case MenuItems.ReceiveShare:
 					result.push({
 						id: 'receive-share',
-						title: 'Accept Share',
+						title: $t('contextMenu.acceptShare'),
 						icon: 'note-shared',
 						visible: noteManager.state.isLoggedIn && noteManager.state.isOnline,
 						enabled: noteManager.state.isLoggedIn && noteManager.state.isOnline,
@@ -512,7 +513,7 @@ class MenuManager {
 				case MenuItems.ReceiveShareUnder:
 					result.push({
 						id: 'receive-share-under',
-						title: 'Accept Share Here',
+						title: $t('contextMenu.acceptShareHere'),
 						icon: 'note-shared',
 						visible: noteManager.state.isLoggedIn && noteManager.state.isOnline,
 						enabled: noteManager.state.isLoggedIn && noteManager.state.isOnline,
@@ -521,7 +522,7 @@ class MenuManager {
 				case MenuItems.Refresh:
 					result.push({
 						id: 'refresh',
-						title: 'Refresh',
+						title: $t('contextMenu.refresh'),
 						icon: 'refresh',
 						enabled: noteManager.state.isLoggedIn && !!noteManager.tree.selectedNote(),
 					})
@@ -529,7 +530,7 @@ class MenuManager {
 				case MenuItems.RefreshRoot:
 					result.push({
 						id: 'refresh-root',
-						title: 'Refresh',
+						title: $t('contextMenu.refresh'),
 						icon: 'refresh',
 						enabled: noteManager.state.isLoggedIn,
 					})
@@ -537,7 +538,7 @@ class MenuManager {
 				case MenuItems.Rename:
 					result.push({
 						id: 'rename',
-						title: 'Rename',
+						title: $t('contextMenu.rename'),
 						shortcut: 'F2',
 						icon: 'rename-note',
 						enabled:
@@ -550,7 +551,7 @@ class MenuManager {
 				case MenuItems.Delete:
 					result.push({
 						id: 'delete',
-						title: 'Delete',
+						title: $t('contextMenu.delete'),
 						shortcut: 'Del',
 						icon: 'delete-note',
 						enabled:
@@ -562,7 +563,7 @@ class MenuManager {
 				case MenuItems.Recycle:
 					result.push({
 						id: 'recycle',
-						title: 'Delete',
+						title: $t('contextMenu.delete'),
 						shortcut: 'Del',
 						icon: 'delete-note',
 						enabled:
@@ -575,7 +576,7 @@ class MenuManager {
 				case MenuItems.FindInNotes:
 					result.push({
 						id: 'find-in-notes',
-						title: 'Find in Notes',
+						title: $t('contextMenu.findInNotes'),
 						shortcut: 'Ctrl+Shift+F',
 						icon: 'search-all-notes',
 						enabled: noteManager.state.isLoggedIn,
@@ -584,7 +585,7 @@ class MenuManager {
 				case MenuItems.Find:
 					result.push({
 						id: 'find',
-						title: 'Find',
+						title: $t('contextMenu.find'),
 						shortcut: 'Ctrl+F',
 						icon: 'search-note',
 						enabled:
@@ -596,7 +597,7 @@ class MenuManager {
 				case MenuItems.History:
 					result.push({
 						id: 'history',
-						title: 'History',
+						title: $t('contextMenu.history'),
 						icon: 'history',
 						enabled:
 							noteManager.state.isLoggedIn &&
@@ -607,7 +608,7 @@ class MenuManager {
 				case MenuItems.ShareOffers:
 					result.push({
 						id: 'share-offers',
-						title: 'Share Offers',
+						title: $t('contextMenu.shareOffers'),
 						icon: 'note-shared',
 						enabled: noteManager.state.isLoggedIn,
 					})
@@ -615,7 +616,7 @@ class MenuManager {
 				case MenuItems.DarkMode:
 					result.push({
 						id: 'dark-mode',
-						title: 'Dark Mode',
+						title: $t('contextMenu.darkMode'),
 						type: 'checkbox',
 						checked: settingsManager.darkMode,
 						icon: settingsManager.darkMode ? 'checkmark' : '',
@@ -624,42 +625,42 @@ class MenuManager {
 				case MenuItems.About:
 					result.push({
 						id: 'about',
-						title: 'About',
+						title: $t('contextMenu.about'),
 						icon: 'note',
 					})
 					break
 				case MenuItems.ShowDevTools:
 					result.push({
 						id: 'show-dev-tools',
-						title: 'Show Dev Tools',
+						title: $t('contextMenu.showDevTools'),
 						visible: (env.DEV || settingsManager.developerMode) && ipcClient.isAvailable,
 					})
 					break
 				case MenuItems.ChangeUsername:
 					result.push({
 						id: 'change-username',
-						title: 'Change Username',
+						title: $t('contextMenu.changeUsername'),
 						enabled: noteManager.state.isLoggedIn && noteManager.state.isOnline,
 					})
 					break
 				case MenuItems.ChangePassword:
 					result.push({
 						id: 'change-password',
-						title: 'Change Password',
+						title: $t('contextMenu.changePassword'),
 						enabled: noteManager.state.isLoggedIn && noteManager.state.isOnline,
 					})
 					break
 				case MenuItems.DeleteAccount:
 					result.push({
 						id: 'delete-account',
-						title: 'Delete Account',
+						title: $t('contextMenu.deleteAccount'),
 						enabled: noteManager.state.isLoggedIn && noteManager.state.isOnline,
 					})
 					break
 				case MenuItems.ManageSubscription:
 					result.push({
 						id: 'manage-subscription',
-						title: 'Plan',
+						title: $t('contextMenu.plan'),
 						enabled: noteManager.state.isLoggedIn && noteManager.state.isOnline,
 						visible: noteManager.state.accountType === AccountType.Cloud,
 					})
@@ -667,14 +668,14 @@ class MenuManager {
 				case MenuItems.SetPin:
 					result.push({
 						id: 'set-pin',
-						title: 'Set PIN',
+						title: $t('contextMenu.setPin'),
 						enabled: noteManager.state.isLoggedIn && noteManager.state.isOnline,
 					})
 					break
 				case MenuItems.Logout:
 					result.push({
 						id: 'logout',
-						title: 'Logout',
+						title: $t('contextMenu.logout'),
 						icon: 'logout',
 						enabled: noteManager.state.isLoggedIn,
 						visible: noteManager.state.accountType !== AccountType.None,
@@ -683,7 +684,7 @@ class MenuManager {
 				case MenuItems.Login:
 					result.push({
 						id: 'login',
-						title: 'Log In / Switch User',
+						title: $t('contextMenu.loginSwitchUser'),
 						icon: 'login',
 						enabled: noteManager.state.isLoggedIn,
 						visible: noteManager.state.accountType === AccountType.None || noteManager.state.isAnonymous,
@@ -692,14 +693,14 @@ class MenuManager {
 				case MenuItems.CreateAccount:
 					result.push({
 						id: 'create-account',
-						title: 'Create Account',
+						title: $t('contextMenu.createAccount'),
 						icon: 'account',
 					})
 					break
 				case MenuItems.CreatePassword:
 					result.push({
 						id: 'create-password',
-						title: 'Create Password',
+						title: $t('contextMenu.createPassword'),
 						icon: 'account',
 						visible: noteManager.state.isAnonymous,
 					})
@@ -707,21 +708,21 @@ class MenuManager {
 				case MenuItems.Quit:
 					result.push({
 						id: 'quit',
-						title: 'Quit',
+						title: $t('contextMenu.quit'),
 						visible: ipcClient.isAvailable,
 					})
 					break
 				case MenuItems.GoOnline:
 					result.push({
 						id: 'go-online',
-						title: 'Go Online',
+						title: $t('contextMenu.goOnline'),
 						enabled: noteManager.state.isLoggedIn && !noteManager.state.isOnline,
 					})
 					break
 				case MenuItems.WordWrap:
 					result.push({
 						id: 'word-wrap',
-						title: 'Word Wrap',
+						title: $t('contextMenu.wordWrap'),
 						type: 'checkbox',
 						checked: settingsManager.wordwrap,
 						icon: settingsManager.wordwrap ? 'checkmark' : '',
@@ -734,55 +735,55 @@ class MenuManager {
 				case MenuItems.UpdateAvailable:
 					result.push({
 						id: 'update-available',
-						title: 'Update Available',
+						title: $t('contextMenu.updateAvailable'),
 					})
 					break
 				case MenuItems.MarkAsRead:
 					result.push({
 						id: 'mark-as-read',
-						title: 'Mark as Read',
+						title: $t('contextMenu.markAsRead'),
 					})
 					break
 				case MenuItems.CheckForUpdate:
 					result.push({
 						id: 'check-for-update',
-						title: 'Check for Updates',
+						title: $t('contextMenu.checkForUpdates'),
 					})
 					break
 				case MenuItems.AddGettingStarted:
 					result.push({
 						id: 'add-getting-started',
-						title: 'Add Getting Started',
+						title: $t('contextMenu.addGettingStarted'),
 					})
 					break
 				case MenuItems.EmptyRecycleBin:
 					result.push({
 						id: 'empty-recycle-bin',
-						title: 'Empty',
+						title: $t('contextMenu.emptyRecycleBin'),
 					})
 					break
 				case MenuItems.PasswordGenerator:
 					result.push({
 						id: 'password-generator',
-						title: 'Password Generator',
+						title: $t('contextMenu.passwordGenerator'),
 					})
 					break
 				case MenuItems.Settings:
 					result.push({
 						id: 'settings',
-						title: 'Settings',
+						title: $t('contextMenu.settings'),
 					})
 					break
 				case MenuItems.Properties:
 					result.push({
 						id: 'properties',
-						title: 'Properties',
+						title: $t('contextMenu.properties'),
 					})
 					break
 				case MenuItems.WorkOffline:
 					result.push({
 						id: 'work-offline',
-						title: 'Work Offline',
+						title: $t('contextMenu.workOffline'),
 						checked: noteManager.state.workOffline,
 					})
 			}
@@ -800,13 +801,13 @@ class MenuManager {
 				[
 					{
 						id: 'show',
-						title: 'Show',
+						title: $t('contextMenu.trayShow'),
 					},
 					...(!(isGnome && isWayland)
 						? [
 								{
 									id: 'show-dev-tools',
-									title: 'Dev Tools',
+									title: $t('contextMenu.trayDevTools'),
 								},
 							]
 						: []),
@@ -814,7 +815,7 @@ class MenuManager {
 						? [
 								{
 									id: 'toggle-screen-sharing',
-									title: 'Allow Screen Sharing',
+									title: $t('contextMenu.trayAllowScreenSharing'),
 									type: 'checkbox',
 									checked: settingsManager.allowScreenSharing,
 								},
@@ -824,13 +825,13 @@ class MenuManager {
 						? [
 								{
 									id: 'toggle-notify-promoted',
-									title: 'Keep Tray Icon Visible',
+									title: $t('contextMenu.trayKeepTrayVisible'),
 									type: 'checkbox',
 									checked: settingsManager.keepTrayIconVisible,
 								},
 								{
 									id: 'toggle-show-in-taskbar',
-									title: 'Show In Taskbar',
+									title: $t('contextMenu.trayShowInTaskbar'),
 									type: 'checkbox',
 									checked: settingsManager.showInTaskBar,
 								},
@@ -838,14 +839,14 @@ class MenuManager {
 						: []),
 					{
 						id: 'open-at-login',
-						title: 'Launch on Startup',
+						title: $t('contextMenu.trayLaunchOnStartup'),
 						type: 'checkbox',
 						checked: settingsManager.openAtLogin,
 					},
 					{ type: 'separator' },
 					{
 						id: 'quit',
-						title: 'Quit',
+						title: $t('contextMenu.quit'),
 					},
 				],
 				{
@@ -930,23 +931,23 @@ class MenuManager {
 		if (ipcClient.isAvailable && mimiriPlatform.isMacApp) {
 			ipcClient.menu.setAppMenu([
 				{
-					title: 'Mimiri Notes',
+					title: $t('contextMenu.menuMimiriNotes'),
 					submenu: this.toItems(this.appleMenu),
 				},
 				{
-					title: 'File',
+					title: $t('contextMenu.menuFile'),
 					submenu: this.toItems(this.fileMenu),
 				},
 				{
-					title: 'Edit',
+					title: $t('contextMenu.menuEdit'),
 					submenu: this.toItems(this.editMenu),
 				},
 				{
-					title: 'View',
+					title: $t('contextMenu.menuView'),
 					submenu: this.toItems(this.viewMenu),
 				},
 				{
-					title: 'Help',
+					title: $t('contextMenu.menuHelp'),
 					submenu: this.toItems(this.helpMenu),
 				},
 			])

@@ -1,6 +1,6 @@
 <template>
 	<div class="flex gap-3 items-center">
-		<div>Payment period:</div>
+		<div>{{ $t('subPeriodSelector.paymentPeriod') }}</div>
 		<label class="flex items-center gap-1">
 			<input
 				v-model="model"
@@ -10,11 +10,11 @@
 				:value="Period.Month"
 				data-testid="period-month"
 			/>
-			Month
+			{{ $t('subPeriodSelector.month') }}
 		</label>
 		<label class="flex items-center gap-1">
 			<input v-model="model" type="radio" class="mt-0.5" name="period" :value="Period.Year" data-testid="period-year" />
-			Year
+			{{ $t('subPeriodSelector.year') }}
 		</label>
 	</div>
 </template>

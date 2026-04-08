@@ -39,6 +39,7 @@ import tsWorker from 'monaco-editor/esm/vs/language/typescript/ts.worker?worker'
 async function initializeEditor() {
 	localization.register('en', enLocale)
 	localization.register('zh', zhLocale)
+	localization.setLocale('zh')
 	// Initialize TextMate grammars first (required for Monaco themes to work with TextMate)
 	await initializeTextMateGrammars()
 

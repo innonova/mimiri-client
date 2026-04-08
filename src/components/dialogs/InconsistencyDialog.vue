@@ -6,14 +6,18 @@
 		@close="isOpen = false"
 	>
 		<div v-if="isOpen" class="grid grid-rows-[auto_1fr_auto] gap-6">
-			<DialogTitle @close="close">Inconsistency Detected</DialogTitle>
+			<DialogTitle @close="close">{{ $t('inconsistencyDialog.title') }}</DialogTitle>
 			<main class="px-2 leading-5">
-				<div class="mb-2">An inconsistency was detected and corrected during synchronization.</div>
-				<div class="mb-2">Reloading is recommended.</div>
+				<div class="mb-2">{{ $t('inconsistencyDialog.detected') }}</div>
+				<div class="mb-2">{{ $t('inconsistencyDialog.reloadRecommended') }}</div>
 			</main>
 			<footer class="flex justify-end mobile:justify-center gap-2 pr-2 pb-2">
-				<button class="primary" @click="reload" data-testid="inconsistency-dialog-reload">Reload</button>
-				<button class="secondary" @click="close" data-testid="inconsistency-dialog-cancel">Cancel</button>
+				<button class="primary" @click="reload" data-testid="inconsistency-dialog-reload">
+					{{ $t('inconsistencyDialog.reload') }}
+				</button>
+				<button class="secondary" @click="close" data-testid="inconsistency-dialog-cancel">
+					{{ $t('inconsistencyDialog.cancel') }}
+				</button>
 			</footer>
 		</div>
 	</dialog>

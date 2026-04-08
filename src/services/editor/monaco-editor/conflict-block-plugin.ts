@@ -1,5 +1,6 @@
 import { editor, languages, type IDisposable, type IRange } from 'monaco-editor'
 import { Debounce } from '../../helpers'
+import { $t } from '../../../global'
 import type { EditorPlugin } from '../editor-plugin'
 import { MimiriCodeLensProvider, type MimiriCodeLensItem } from './mimiri-code-lens-provider'
 import ConflictBanner from '../../../components/elements/ConflictBanner.vue'
@@ -72,9 +73,9 @@ export class ConflictBlockPlugin implements EditorPlugin {
 		this.codeLensProvider = new MimiriCodeLensProvider({
 			getItems: () => this.conflictBlockStates.map(block => ({ startLine: block.start })),
 			commands: [
-				{ title: 'Keep Local', commandId: this.acceptCurrentCommandId },
-				{ title: 'Keep Server', commandId: this.acceptIncomingCommandId },
-				{ title: 'Keep Both', commandId: this.acceptBothCommandId },
+				{ title: $t('editor.keepLocal'), commandId: this.acceptCurrentCommandId },
+				{ title: $t('editor.keepServer'), commandId: this.acceptIncomingCommandId },
+				{ title: $t('editor.keepBoth'), commandId: this.acceptBothCommandId },
 			],
 		})
 

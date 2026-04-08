@@ -12,11 +12,11 @@
 		<div v-if="secondPassed" class="flex flex-col items-center justify-center h-full pb-10">
 			<img v-if="!mimiriPlatform.isElectron" class="ml-1.5 mr-1 mt-px p-1 w-32 h-32" src="/img/logo-big.png" />
 			<div class="flex text-size-header">
-				<div>Initializing</div>
+				<div>{{ $t('app.initializing') }}</div>
 				<div class="w-0">{{ activity }}</div>
 			</div>
 			<div class="text-size-title mt-5 px-5 leading-6 text-center max-w-96">
-				This might take a moment if this is the first time you are starting Mimiri Notes
+				{{ $t('app.firstTimeMessage') }}
 			</div>
 		</div>
 	</div>

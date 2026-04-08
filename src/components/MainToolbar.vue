@@ -17,7 +17,7 @@
 		<ToolbarIcon
 			icon="plus-small"
 			:hoverEffect="true"
-			title="New Root Note"
+			:title="$t('mainToolbar.newRootNote')"
 			@click="showCreateMenu"
 			data-testid="toolbar-create-menu"
 		/>
@@ -29,7 +29,11 @@
 				noteManager.tree.selectedNoteRef().value.isInRecycleBin
 			"
 			:hoverEffect="true"
-			:title="settingsManager.lastNoteCreateType === 'child' ? 'New Child Note' : 'New Sibling Note'"
+			:title="
+				settingsManager.lastNoteCreateType === 'child'
+					? $t('mainToolbar.newChildNote')
+					: $t('mainToolbar.newSiblingNote')
+			"
 			@click="createChildNote"
 			data-testid="toolbar-create-sub-note"
 		/>
@@ -38,7 +42,7 @@
 			class="desktop:hidden"
 			icon="search-all-notes"
 			:hoverEffect="true"
-			title="Search All Notes"
+			:title="$t('mainToolbar.searchAllNotes')"
 			@click="toggleSearchAllNotes"
 			data-testid="toolbar-toggle-search"
 		/>
@@ -46,7 +50,7 @@
 			class="hidden! desktop:block!"
 			icon="search-all-notes"
 			:hoverEffect="true"
-			title="Search All Notes"
+			:title="$t('mainToolbar.searchAllNotes')"
 			@click="gotoSearchAllNotes"
 			data-testid="toolbar-goto-search"
 		/>
@@ -60,7 +64,7 @@
 			:class="{ 'mt-0.5': notificationManager.unread === 0 }"
 			:hoverEffect="true"
 			:disabled="notificationManager.count === 0"
-			title="Notifications"
+			:title="$t('mainToolbar.notifications')"
 			@click="notificationsClick"
 			data-testid="toolbar-notifications"
 		/>
@@ -68,7 +72,7 @@
 			v-if="mimiriPlatform.isPhone"
 			:icon="accountIcon"
 			:hoverEffect="true"
-			title="Account"
+			:title="$t('mainToolbar.account')"
 			@click="accountClick"
 			data-testid="toolbar-account"
 		/>
@@ -77,7 +81,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { noteManager, showSearchBox, ipcClient, searchInput, env } from '../global'
+import { noteManager, showSearchBox, ipcClient, searchInput, env, $t } from '../global'
 import ToolbarIcon from './ToolbarIcon.vue'
 import { MenuItems, menuManager } from '../services/menu-manager'
 import { mimiriPlatform } from '../services/mimiri-platform'
