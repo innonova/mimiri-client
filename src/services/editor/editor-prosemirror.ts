@@ -30,6 +30,8 @@ import { Plugin } from 'prosemirror-state'
 import { Node as ProseMirrorNode } from 'prosemirror-model'
 import { CodeBlockActionHandler } from './prosemirror/code-block-action-handler'
 import { ConflictActionHandler } from './prosemirror/conflict-action-handler'
+import { createPasswordMarkViewFactory } from './prosemirror/password-mark-view'
+import { passwordCursorPlugin } from './prosemirror/password-cursor-plugin'
 import type ConflictBanner from '../../components/elements/ConflictBanner.vue'
 import { executeFormatAction, getSupportedActions } from './prosemirror/format-commands'
 
@@ -137,6 +139,7 @@ export class EditorProseMirror implements TextEditor {
 					return getThemeById(settingsManager.state.editorTheme, settingsManager.darkMode).shikiTheme
 				}),
 				updateCapsPlugin,
+				passwordCursorPlugin,
 			],
 			doc,
 		})
@@ -153,6 +156,11 @@ export class EditorProseMirror implements TextEditor {
 					}
 					return undefined
 				},
+			},
+			markViews: {
+				password: createPasswordMarkViewFactory(clipboardManager, (top, left) =>
+					this.listener.onCopyNotification(top, left),
+				),
 			},
 			dispatchTransaction: transaction => {
 				const newState = view.state.apply(transaction)
@@ -249,6 +257,9 @@ export class EditorProseMirror implements TextEditor {
 					if (nodeType === 'code_block') {
 						const result = this._codeBlockActionHandler.handle(action, view, node, nodePos)
 						this.updateState()
+						if (result && action === 'copy-block') {
+							this.listener.onCopyNotification(event.clientY, event.clientX + 30)
+						}
 						return result
 					}
 					return false
