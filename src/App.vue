@@ -308,7 +308,7 @@ const handleShortcut = event => {
 		if (isSystemNote) {
 			return
 		}
-		if (treeViewShortCutsActive) {
+		if (treeViewShortCutsActive && !window.getSelection()?.toString()) {
 			event.preventDefault()
 			event.stopPropagation()
 			if (noteTreeView.value) {
@@ -394,6 +394,13 @@ const handleShortcut = event => {
 			if (noteTreeView.value) {
 				noteTreeView.value.moveSelectionRight()
 			}
+		}
+	}
+	if (event.key === 'a' && ctrlActive) {
+		if (treeViewShortCutsActive) {
+			event.preventDefault()
+			event.stopPropagation()
+			mimiriEditor.selectAll()
 		}
 	}
 	if (event.key === 's' && ctrlActive) {

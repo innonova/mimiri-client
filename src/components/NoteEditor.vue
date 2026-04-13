@@ -121,7 +121,7 @@
 				data-testid="editor-toggle-edit-mode-button"
 			/>
 		</div>
-		<div class="relative flex-auto flex flex-col items-stretch overflow-hidden">
+		<div class="relative flex-auto min-h-0 flex flex-col items-stretch overflow-hidden">
 			<div v-if="historyVisible && selectedHistoryItem" class="px-2 py-1 bg-info-bar cursor-default text-size-menu">
 				{{ selectedHistoryItem.username }} - {{ formatDate(selectedHistoryItem.timestamp) }} (read-only)
 			</div>
@@ -133,7 +133,7 @@
 				data-testid="editor-monaco-container"
 			/>
 			<div
-				class="overflow-hidden flex-col relative"
+				class="overflow-hidden flex-1 flex-col relative"
 				style="display: none"
 				ref="proseMirrorContainer"
 				data-testid="editor-prosemirror-container"
@@ -152,7 +152,14 @@
 					<div>History entries:</div>
 					<CloseButton @click="showHistory" class="w-6 h-6" />
 				</div>
-				<div class="flex-auto overflow-y-auto h-0 pb-5 w-full bg-input" data-testid="editor-history-scroll-container">
+				<div
+					ref="historyScrollContainer"
+					class="flex-auto overflow-y-auto h-0 pb-5 w-full bg-input"
+					data-testid="editor-history-scroll-container"
+					tabindex="0"
+					@keydown.up.prevent="navigateHistory(-1)"
+					@keydown.down.prevent="navigateHistory(1)"
+				>
 					<div class="grid grid-cols-[auto_auto_1fr] gap-x-2">
 						<template v-for="(historyItem, index) of historyItems" :key="historyItem.timestamp">
 							<div
@@ -183,7 +190,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch, type WatchStopHandle } from 'vue'
+import { ref, computed, onMounted, watch, nextTick, type WatchStopHandle } from 'vue'
 import { env, infoDialog, limitDialog, mimiriEditor, noteManager, showSearchBox, titleBar } from '../global'
 import type { NoteViewModel } from '../services/types/mimer-note'
 import { searchManager } from '../services/search-manager'
@@ -198,6 +205,7 @@ import ConflictBanner from './elements/ConflictBanner.vue'
 
 let activeViewModelStopWatch: WatchStopHandle = undefined
 let activeViewModel: NoteViewModel = undefined
+const historyScrollContainer = ref<HTMLElement | null>(null)
 const monacoContainer = ref(null)
 const proseMirrorContainer = ref(null)
 const proseMirrorPopup = ref<InstanceType<typeof AutoComplete> | null>(null)
@@ -234,6 +242,24 @@ const loadMoreHistory = async () => {
 
 const selectHistoryItem = (index: number) => {
 	mimiriEditor.history.selectHistoryItem(index)
+	historyScrollContainer.value?.focus()
+}
+
+const navigateHistory = (delta: number) => {
+	const items = historyItems.value
+	if (!items?.length) {
+		return
+	}
+	const current = mimiriEditor.history.state.selectedHistoryIndex ?? 0
+	const next = Math.max(0, Math.min(items.length - 1, current + delta))
+	if (next !== current) {
+		selectHistoryItem(next)
+		void nextTick(() => {
+			historyScrollContainer.value
+				?.querySelector(`[data-testid="editor-history-item-${next}"]`)
+				?.scrollIntoView({ block: 'nearest' })
+		})
+	}
 }
 
 const checkLoadHistory = async () => {

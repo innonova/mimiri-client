@@ -74,7 +74,7 @@ export class EditorProseMirror implements TextEditor {
 		this._autoComplete = autoComplete
 		this._domElement.style.display = this._active ? 'flex' : 'none'
 
-		this._domElement.addEventListener('contextmenu', event => {
+		this._domElement.addEventListener('contextmenu', _event => {
 			// event.stopPropagation()
 		})
 
@@ -582,7 +582,15 @@ export class EditorProseMirror implements TextEditor {
 	}
 
 	public selectAll() {
-		// document.getSelection().selectAllChildren(this._element)
+		if (this.historyShowing && this._editor) {
+			const selection = window.getSelection()
+			if (selection) {
+				const range = document.createRange()
+				range.selectNodeContents(this._editor.dom)
+				selection.removeAllRanges()
+				selection.addRange(range)
+			}
+		}
 	}
 
 	public cut() {

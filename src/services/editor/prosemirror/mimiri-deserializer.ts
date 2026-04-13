@@ -737,6 +737,13 @@ const buildTree = (tokens: Token[]): TreeNode => {
 			if (token.type === 'code_block' && parentType() === 'code_block') {
 				stack.pop()
 			} else {
+				// Headings (and fresh blockquotes/code blocks) are block-level and cannot
+				// be children of a list_item — pop any open list context first.
+				if (token.type === 'heading') {
+					while (isParent('list_item', 'bullet_list', 'ordered_list')) {
+						stack.pop()
+					}
+				}
 				pushChild(node)
 				stack.push(node)
 			}
@@ -776,18 +783,24 @@ const buildProseMirrorNode = (parent: TreeNode, treeNode: TreeNode, index: numbe
 			return mimiriSchema.node('doc', { indent: treeNode.indent, history }, children)
 		case 'heading':
 			return mimiriSchema.node('heading', { level: treeNode.depth || 1 }, children)
-		case 'list_item':
+		case 'list_item': {
+			// schema requires at least one paragraph child; empty items produce no tokens - causing an error
+			const listItemChildren = children.length === 0 ? [mimiriSchema.node('paragraph', null, [])] : children
 			return mimiriSchema.node(
 				'list_item',
 				{ checked: treeNode.checked, marker: treeNode.value, indent: treeNode.depth },
-				children,
+				listItemChildren,
 			)
-		case 'checkbox_item':
+		}
+		case 'checkbox_item': {
+			// schema requires at least one paragraph child; empty items produce no tokens - causing an error
+			const checkboxItemChildren = children.length === 0 ? [mimiriSchema.node('paragraph', null, [])] : children
 			return mimiriSchema.node(
 				'list_item',
 				{ checked: treeNode.checked, hideListMarker: treeNode.hideListMarker },
-				children,
+				checkboxItemChildren,
 			)
+		}
 		case 'bullet_list':
 			return mimiriSchema.node(
 				'bullet_list',
