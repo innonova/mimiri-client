@@ -1,4 +1,8 @@
 {
+	"notes": {
+		"recycleBin": "Recycle Bin",
+		"system": "System"
+	},
 	"app": {
 		"initializing": "Initializing",
 		"firstTimeMessage": "This might take a moment if this is the first time you are starting Mimiri Notes"
@@ -273,6 +277,8 @@
 		"sourceGitHub": "Source on GitHub",
 		"issueTracker": "Issue Tracker on GitHub",
 		"attributions": "Attributions:",
+		"iconAttribution0": "Vectors and icons by <a href=\"https://dazzleui.gumroad.com/l/dazzleiconsfree?ref=svgrepo.com\" target=\"_blank\">Dazzle Ui</a> in CC Attribution License via <a href=\"https://www.svgrepo.com/\" target=\"_blank\">SVG Repo</a>",
+		"iconAttribution1": "Vectors and icons by <a href=\"https://www.figma.com/@leonid?ref=svgrepo.com\" target=\"_blank\">Leonid Tsvetkov</a> in CC Attribution License via <a href=\"https://www.svgrepo.com/\" target=\"_blank\">SVG Repo</a>",
 		"fontLicenses": "Font Licenses:",
 		"fontLicensesText": "All fonts are directly referenced either from the operating system or fonts.mimiri.io\nLicenses and project links for fonts referenced from fonts.mimiri.io listed below",
 		"chooseFontLicense": "Choose font to view license",

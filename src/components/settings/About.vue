@@ -64,9 +64,8 @@
 				<div @click="resetBoxClicks" class="flex flex-col items-start">
 					<div class="flex info flex-col mx-4 mt-4 bg-info">
 						<b>{{ $t('settingsAbout.attributions') }}</b>
-						<template v-for="att of iconAttributions" :key="att">
-							<div class="mt-2 leading-5" v-html="att" />
-						</template>
+						<div class="mt-2 leading-5" v-html="$t('settingsAbout.iconAttribution0')" />
+						<div class="mt-2 leading-5" v-html="$t('settingsAbout.iconAttribution1')" />
 					</div>
 					<div class="flex info flex-col mx-4 mt-4 mb-10 bg-info">
 						<b>{{ $t('settingsAbout.fontLicenses') }}</b>
@@ -116,7 +115,6 @@
 import { ref, watch } from 'vue'
 import { ipcClient, noteManager, updateManager } from '../../global'
 import { settingsManager } from '../../services/settings-manager'
-import { iconAttributions } from '../../icons/attributions'
 import { mimiriPlatform } from '../../services/mimiri-platform'
 import TabBar from '../elements/TabBar.vue'
 import { fontManager } from '../../global'

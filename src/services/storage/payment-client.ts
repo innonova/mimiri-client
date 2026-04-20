@@ -8,7 +8,7 @@ import type {
 import type { Country, Invoice, PaymentMethod, Subscription, SubscriptionProduct } from '../types/subscription'
 import type { Guid } from '../types/guid'
 import { add } from 'date-fns'
-import { updateManager } from '../../global'
+import { updateManager, localization } from '../../global'
 import { HttpRequestError } from './http-client-base'
 import type { AuthenticationManager } from './authentication-manager'
 import type { SharedState } from './type'
@@ -16,6 +16,7 @@ import type { SharedState } from './type'
 export class PaymentClient {
 	private _countries: Country[] | undefined
 	private _subscriptionProduct: SubscriptionProduct[] | undefined
+	private _subscriptionProductLocale: string | undefined
 
 	constructor(
 		private authManager: AuthenticationManager,
@@ -90,8 +91,11 @@ export class PaymentClient {
 	}
 
 	public async getSubscriptionProducts() {
-		if (!this._subscriptionProduct) {
-			this._subscriptionProduct = await this.get<SubscriptionProduct[]>(`/product/subscription`)
+		if (!this._subscriptionProduct || this._subscriptionProductLocale !== localization.currentLocale) {
+			this._subscriptionProductLocale = localization.currentLocale
+			this._subscriptionProduct = await this.get<SubscriptionProduct[]>(
+				`/product/subscription?lang=${localization.currentLocale}`,
+			)
 		}
 		return this._subscriptionProduct
 	}
@@ -101,7 +105,10 @@ export class PaymentClient {
 	}
 
 	public async getCurrentSubscriptionProduct() {
-		return await this.post<SubscriptionProduct>(`/subscription/current-product`, await this.sign({}))
+		return await this.post<SubscriptionProduct>(
+			`/subscription/current-product?lang=${localization.currentLocale}`,
+			await this.sign({}),
+		)
 	}
 
 	public async getCurrentSubscription() {

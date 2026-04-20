@@ -1,4 +1,8 @@
 {
+	"notes": {
+		"recycleBin": "回收站",
+		"system": "系统"
+	},
 	"app": {
 		"initializing": "正在初始化",
 		"firstTimeMessage": "如果这是您第一次启动 Mimiri Notes，可能需要片刻时间"
@@ -273,6 +277,8 @@
 		"sourceGitHub": "GitHub 源码",
 		"issueTracker": "GitHub 问题追踪",
 		"attributions": "致谢：",
+		"iconAttribution0": "矢量图和图标来自 <a href=\"https://dazzleui.gumroad.com/l/dazzleiconsfree?ref=svgrepo.com\" target=\"_blank\">Dazzle Ui</a>，在 CC 署名许可证下通过 <a href=\"https://www.svgrepo.com/\" target=\"_blank\">SVG Repo</a> 提供",
+		"iconAttribution1": "矢量图和图标来自 <a href=\"https://www.figma.com/@leonid?ref=svgrepo.com\" target=\"_blank\">Leonid Tsvetkov</a>，在 CC 署名许可证下通过 <a href=\"https://www.svgrepo.com/\" target=\"_blank\">SVG Repo</a> 提供",
 		"fontLicenses": "字体许可证：",
 		"fontLicensesText": "所有字体直接引用自操作系统或 fonts.mimiri.io\n以下列出了从 fonts.mimiri.io 引用的字体的许可证和项目链接",
 		"chooseFontLicense": "选择字体以查看许可证",

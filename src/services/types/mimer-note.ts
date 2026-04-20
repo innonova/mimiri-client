@@ -700,10 +700,10 @@ export class MimerNote {
 
 	public get title() {
 		if (this.isRecycleBin) {
-			return 'Recycle Bin'
+			return $t('notes.recycleBin')
 		}
 		if (this.isControlPanel) {
-			return 'System'
+			return $t('notes.system')
 		}
 		return (this.note.getItem('metadata').title as string) ?? '[MISSING TITLE]'
 	}
