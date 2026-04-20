@@ -1,0 +1,13 @@
+{
+	"acceptShareDialog": {
+		"title": "接受分享",
+		"enterCode": "请输入一次性验证码以接受分享。",
+		"warning": "我们不建议接受来自陌生用户的分享。",
+		"noShareFound": "未找到分享",
+		"ok": "确定",
+		"cancel": "取消",
+		"cannotAcceptNoteCount": "无法接受分享！\n新笔记数量（{count}）将超过当前上限（{max}）",
+		"cannotAcceptDataUsage": "无法接受分享！\n新数据用量（{size}）将超过当前上限（{max}）",
+		"limitExceeded": "已超出限制：{message}"
+	}
+}

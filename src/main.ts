@@ -2,6 +2,9 @@ import './assets/main.css'
 
 import { createApp } from 'vue'
 import App from './App.vue'
+import { $t, localization } from './global'
+import enLocale from './lang/en.json'
+import zhLocale from './lang/zh.json'
 import { initializeMonacoThemes } from './services/editor/theme-manager'
 import { initializeTextMateGrammars } from './services/editor/textmate-setup'
 
@@ -32,8 +35,10 @@ import tsWorker from 'monaco-editor/esm/vs/language/typescript/ts.worker?worker'
 	},
 }
 
-// Initialize TextMate grammars and Monaco themes before creating the app
+// Initialize localization, TextMate grammars and Monaco themes before creating the app
 async function initializeEditor() {
+	localization.register('en', enLocale)
+	localization.register('zh', zhLocale)
 	// Initialize TextMate grammars first (required for Monaco themes to work with TextMate)
 	await initializeTextMateGrammars()
 
@@ -42,6 +47,7 @@ async function initializeEditor() {
 
 	// Finally mount the app
 	const app = createApp(App)
+	app.config.globalProperties.$t = $t
 	app.mount('#app')
 }
 

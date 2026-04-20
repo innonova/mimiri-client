@@ -15,6 +15,7 @@ import { BlogManager } from './services/blog-manager'
 import { DebugManager } from './services/debug-manager'
 import { Currency, type SubscriptionProduct } from './services/types/subscription'
 import { DevTools } from './services/dev-tools'
+import { LocalizationProvider } from './services/localization'
 
 export const env = import.meta.env
 const host = env.VITE_MIMER_API_HOST
@@ -86,6 +87,9 @@ export const mimiriEditor = new MimiriEditor()
 export const clipboardManager = new ClipboardManager()
 
 export const devTools = new DevTools(env)
+
+export const localization = new LocalizationProvider()
+export const $t = localization.t.bind(localization)
 
 export const features = []
 
