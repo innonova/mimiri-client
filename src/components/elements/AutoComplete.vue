@@ -25,7 +25,9 @@
 		>
 			{{ item }}
 		</div>
-		<div v-if="filteredItems.length === 0" class="px-1 opacity-50 cursor-default italic">No results</div>
+		<div v-if="filteredItems.length === 0" class="px-1 opacity-50 cursor-default italic">
+			{{ $t('autoComplete.noResults') }}
+		</div>
 	</div>
 </template>
 

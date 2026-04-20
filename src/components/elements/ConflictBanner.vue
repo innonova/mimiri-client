@@ -7,7 +7,7 @@
 		<div class="flex items-center gap-3 text-black">
 			<span class="text-xl flex-shrink-0">⚠️</span>
 			<span class="font-medium">
-				{{ conflictCount }} conflict{{ conflictCount > 1 ? 's' : '' }} found - document is read-only until resolved
+				{{ $t('conflictBanner.conflicts', { count: conflictCount }) }}
 			</span>
 		</div>
 		<div class="flex items-center gap-3 flex-shrink-0">
@@ -17,18 +17,18 @@
 				@click="navigate('prev')"
 				data-testid="conflict-prev-btn"
 			>
-				← Previous
+				{{ $t('conflictBanner.previous') }}
 			</button>
-			<span class="text-sm font-semibold min-w-[60px] text-center text-black"
-				>{{ currentIndex + 1 }} / {{ conflictCount }}</span
-			>
+			<span class="text-sm font-semibold min-w-[60px] text-center text-black">{{
+				$t('conflictBanner.counter', { current: currentIndex + 1, total: conflictCount })
+			}}</span>
 			<button
 				class="px-3 py-1.5 bg-black/80 text-white border border-black/20 rounded text-sm font-medium cursor-pointer hover:bg-black disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
 				:disabled="conflictCount <= 1"
 				@click="navigate('next')"
 				data-testid="conflict-next-btn"
 			>
-				Next →
+				{{ $t('conflictBanner.next') }}
 			</button>
 		</div>
 	</div>

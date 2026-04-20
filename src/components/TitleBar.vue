@@ -26,7 +26,7 @@
 			@click="menuClick($event, 'file')"
 			@mouseenter="menuHover($event, 'file')"
 		>
-			File
+			{{ $t('titleBar.file') }}
 		</div>
 		<div
 			v-if="mimiriPlatform.isDesktop && !mimiriPlatform.isMacApp"
@@ -35,7 +35,7 @@
 			@click="menuClick($event, 'edit')"
 			@mouseenter="menuHover($event, 'edit')"
 		>
-			Edit
+			{{ $t('titleBar.edit') }}
 		</div>
 		<div
 			v-if="mimiriPlatform.isDesktop && !mimiriPlatform.isMacApp"
@@ -44,7 +44,7 @@
 			@click="menuClick($event, 'view')"
 			@mouseenter="menuHover($event, 'view')"
 		>
-			View
+			{{ $t('titleBar.view') }}
 		</div>
 		<div
 			v-if="mimiriPlatform.isDesktop && !mimiriPlatform.isMacApp"
@@ -53,7 +53,7 @@
 			@click="menuClick($event, 'tools')"
 			@mouseenter="menuHover($event, 'tools')"
 		>
-			Tools
+			{{ $t('titleBar.tools') }}
 		</div>
 		<div
 			v-if="mimiriPlatform.isDesktop && !mimiriPlatform.isMacApp"
@@ -62,7 +62,7 @@
 			@click="menuClick($event, 'help')"
 			@mouseenter="menuHover($event, 'help')"
 		>
-			Help
+			{{ $t('titleBar.help') }}
 		</div>
 		<div
 			class="w-full flex mr-30 h-full py-[5px]"
@@ -74,7 +74,7 @@
 			<input
 				ref="searchInput"
 				type="text"
-				placeholder="Search Notes"
+				:placeholder="$t('titleBar.searchNotes')"
 				:value="searchManager.state.term"
 				:disabled="!noteManager.state.isLoggedIn"
 				class="bg-input rounded-md text-center no-drag text-size-base h-full pb-1 outline-none"
@@ -91,9 +91,7 @@
 			class="h-full min-w-[44px] w-[55px] flex items-center justify-center hover:bg-toolbar-hover active:bg-toolbar-hover"
 			@click="toggleScreenSharing()"
 			:title="
-				settingsManager.allowScreenSharing
-					? 'Warning: Visible to screen sharing/shot!'
-					: 'Invisible to screen sharing/shot'
+				settingsManager.allowScreenSharing ? $t('titleBar.screenSharingVisible') : $t('titleBar.screenSharingInvisible')
 			"
 		>
 			<ScreenShareEnabledIcon
@@ -113,7 +111,7 @@
 				'w-14 ml-2': !mimiriPlatform.isDesktop,
 			}"
 			@click="notificationsClick()"
-			title="Notifications"
+			:title="$t('titleBar.notifications')"
 		>
 			<NotificationIcon
 				v-if="notificationManager.unread === 0"
@@ -152,7 +150,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { noteManager, searchInput, showSearchBox, ipcClient, notificationManager } from '../global'
+import { noteManager, searchInput, showSearchBox, ipcClient, notificationManager, $t } from '../global'
 import ScreenShareEnabledIcon from '../icons/screen-sharing-enabled.vue'
 import ScreenShareDisabledIcon from '../icons/screen-sharing-disabled.vue'
 import AccountIcon from '../icons/account.vue'
@@ -199,21 +197,21 @@ const title = computed(() => {
 	const accountType = noteManager.state.accountType
 
 	if (!isLoggedIn) {
-		return 'Account (Offline)'
+		return $t('titleBar.accountOffline')
 	}
 
 	if (accountType !== AccountType.Cloud) {
-		return 'Account (Offline)'
+		return $t('titleBar.accountOffline')
 	}
 
 	if (isOnline) {
-		return 'Account (Online)'
+		return $t('titleBar.accountOnline')
 	}
 
 	if (workOffline) {
-		return 'Account (Offline)'
+		return $t('titleBar.accountOffline')
 	}
-	return 'Account (Connecting)'
+	return $t('titleBar.accountConnecting')
 })
 
 const updateTitleBar = () => {

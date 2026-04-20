@@ -2,56 +2,56 @@
 	<div>
 		<div class="mt-1">
 			<select v-model="preset" class="w-full p-1">
-				<option v-if="mode === 'mimiri'" value="0">Recommended Settings</option>
-				<option v-if="mode === 'mimiri'" value="1">Nudge it up a bit</option>
-				<option v-if="mode === 'mimiri'" value="2">My memory isn't so good</option>
-				<option v-if="mode === 'mimiri'" value="3">I'm a target</option>
-				<option v-if="mode === 'mimiri'" value="4">I cosplay as Mata Hari</option>
+				<option v-if="mode === 'mimiri'" value="0">{{ $t('passwordGenerator.recommendedSettings') }}</option>
+				<option v-if="mode === 'mimiri'" value="1">{{ $t('passwordGenerator.nudgeUp') }}</option>
+				<option v-if="mode === 'mimiri'" value="2">{{ $t('passwordGenerator.poorMemory') }}</option>
+				<option v-if="mode === 'mimiri'" value="3">{{ $t('passwordGenerator.imATarget') }}</option>
+				<option v-if="mode === 'mimiri'" value="4">{{ $t('passwordGenerator.cosplayMataHari') }}</option>
 
-				<option v-if="mode === '3rdp'" value="5">Recommended Settings</option>
-				<option v-if="mode === '3rdp'" value="6">Nudge it up a bit</option>
-				<option v-if="mode === '3rdp'" value="7">Make it easier to type</option>
-				<option v-if="mode === '3rdp'" value="8">I'm a target</option>
-				<option v-if="mode === '3rdp'" value="9">I cosplay as Mata Hari</option>
+				<option v-if="mode === '3rdp'" value="5">{{ $t('passwordGenerator.recommendedSettings') }}</option>
+				<option v-if="mode === '3rdp'" value="6">{{ $t('passwordGenerator.nudgeUp') }}</option>
+				<option v-if="mode === '3rdp'" value="7">{{ $t('passwordGenerator.easierToType') }}</option>
+				<option v-if="mode === '3rdp'" value="8">{{ $t('passwordGenerator.imATarget') }}</option>
+				<option v-if="mode === '3rdp'" value="9">{{ $t('passwordGenerator.cosplayMataHari') }}</option>
 
-				<option value="100">Custom</option>
+				<option value="100">{{ $t('passwordGenerator.custom') }}</option>
 			</select>
 		</div>
 		<div v-if="showDetails || custom" class="mb-3">
 			<div class="mt-1">
 				<label>
 					<input type="checkbox" v-model="includeLowerCase" :disabled="!custom" class="mr-1 relative top-0.5" />
-					Include lower case <code>a-z</code>
+					{{ $t('passwordGenerator.includeLowerCase') }} <code>a-z</code>
 				</label>
 			</div>
 			<div class="mt-1">
 				<label>
 					<input type="checkbox" v-model="includeUpperCase" :disabled="!custom" class="mr-1 relative top-0.5" />
-					Include upper case <code>A-Z</code>
+					{{ $t('passwordGenerator.includeUpperCase') }} <code>A-Z</code>
 				</label>
 			</div>
 			<div class="mt-1">
 				<label>
 					<input type="checkbox" v-model="includeNumbers" :disabled="!custom" class="mr-1 relative top-0.5" />
-					Include numbers <code>0-9</code>
+					{{ $t('passwordGenerator.includeNumbers') }} <code>0-9</code>
 				</label>
 			</div>
 			<div class="mt-1">
 				<label>
 					<input type="checkbox" v-model="includeFriendlySymbols" :disabled="!custom" class="mr-1 relative top-0.5" />
-					Include friendly symbols <code>{{ generator.friendlySymbols }}</code>
+					{{ $t('passwordGenerator.includeFriendlySymbols') }} <code>{{ generator.friendlySymbols }}</code>
 				</label>
 			</div>
 			<div class="mt-1">
 				<label>
 					<input type="checkbox" v-model="includeExtendedSymbols" :disabled="!custom" class="mr-1 relative top-0.5" />
-					Include extended symbols <code>{{ generator.extendedSymbols }}</code>
+					{{ $t('passwordGenerator.includeExtendedSymbols') }} <code>{{ generator.extendedSymbols }}</code>
 				</label>
 			</div>
 			<div class="mt-1">
 				<label>
 					<input type="checkbox" v-model="includeDifficultSymbols" :disabled="!custom" class="mr-1 relative top-0.5" />
-					Include difficult symbols <code>{{ generator.difficultSymbols }}</code>
+					{{ $t('passwordGenerator.includeDifficultSymbols') }} <code>{{ generator.difficultSymbols }}</code>
 				</label>
 			</div>
 			<div class="mt-1">
@@ -62,11 +62,11 @@
 						:disabled="!custom || noSymbolsSelected"
 						class="mr-1 relative top-0.5"
 					/>
-					Include exactly 1 Symbol
+					{{ $t('passwordGenerator.includeExactlyOneSymbol') }}
 				</label>
 			</div>
 			<div class="mt-1">
-				Number of characters
+				{{ $t('passwordGenerator.numberOfCharacters') }}
 				<select v-model="characterCount" :disabled="!custom">
 					<option value="7">7</option>
 					<option value="8">8</option>
@@ -81,7 +81,7 @@
 				</select>
 			</div>
 			<div v-if="mode === 'mimiri'">
-				Work factor (iterations):
+				{{ $t('passwordGenerator.workFactor') }}
 				<select v-model="iterations" :disabled="!custom">
 					<option value="1000000">1M ({{ time1M }}) (default)</option>
 					<option value="2000000">2M ({{ time2M }})</option>
@@ -91,13 +91,15 @@
 			</div>
 			<div class="mt-2">
 				<i
-					>Possible Combinations: 10<sup>{{ formatPermutations(complexity.permutations) }}</sup></i
+					>{{ $t('passwordGenerator.possibleCombinations') }} 10<sup>{{
+						formatPermutations(complexity.permutations)
+					}}</sup></i
 				>
 			</div>
 		</div>
 		<div v-if="!custom" class="flex justify-between mt-1.5 px-1">
 			<div v-if="!showDetails && props.mode === 'mimiri'">
-				Time to log in:
+				{{ $t('passwordGenerator.timeToLogin') }}
 				<span v-if="iterations === 1000000">{{ time1M }}</span>
 				<span v-if="iterations === 2000000">{{ time2M }}</span>
 				<span v-if="iterations === 10000000">{{ time10M }}</span>
@@ -105,45 +107,41 @@
 			</div>
 			<div v-if="showDetails || props.mode !== 'mimiri'" />
 			<div class="underline cursor-pointer" @click="toggleDetails">
-				<span v-if="!showDetails" />
-				<span v-if="showDetails">hide</span>
-				details
+				{{ showDetails ? $t('passwordGenerator.hideDetails') : $t('passwordGenerator.showDetails') }}
 			</div>
 		</div>
 		<div v-if="props.mode === 'mimiri'" class="info mt-4">
-			<div class="mt-1 mb-1.5 font-bold">How likely to be cracked in case of:</div>
+			<div class="mt-1 mb-1.5 font-bold">{{ $t('passwordGenerator.howLikelyToBeCracked') }}</div>
 			<div class="mt-1 pl-1 pr-1 flex justify-between">
-				<div>Large scale breach:</div>
+				<div>{{ $t('passwordGenerator.largeScaleBreach') }}</div>
 				{{ breachLikelyHood }}
 			</div>
 			<div class="mt-2 pl-1 pr-1 flex justify-between">
-				<div>Targeted attack:</div>
+				<div>{{ $t('passwordGenerator.targetedAttack') }}</div>
 				{{ targetedLikelyHood }}
 			</div>
 			<div v-if="showInvestmentDetails || custom">
 				<span v-if="props.mode === 'mimiri'">
-					<div class="mt-4 mb-1.5 font-bold">Investment required to crack in less than:</div>
-					<div class="mt-1 pl-1">1 year: {{ formatCurrency(complexity.year) }}</div>
-					<div class="mt-2 pl-1">1 month: {{ formatCurrency(complexity.month) }}</div>
-					<div class="mt-2 pl-1">1 week: {{ formatCurrency(complexity.week) }}</div>
+					<div class="mt-4 mb-1.5 font-bold">{{ $t('passwordGenerator.investmentRequired') }}</div>
+					<div class="mt-1 pl-1">{{ $t('passwordGenerator.oneYear') }} {{ formatCurrency(complexity.year) }}</div>
+					<div class="mt-2 pl-1">{{ $t('passwordGenerator.oneMonth') }} {{ formatCurrency(complexity.month) }}</div>
+					<div class="mt-2 pl-1">{{ $t('passwordGenerator.oneWeek') }} {{ formatCurrency(complexity.week) }}</div>
 				</span>
 			</div>
 			<div v-if="!custom" class="flex justify-end mt-1.5 px-1">
 				<div class="underline cursor-pointer" @click="toggleInvestmentDetails">
-					<span v-if="!showInvestmentDetails" />
-					<span v-if="showInvestmentDetails">hide</span>
-					details
+					{{ showInvestmentDetails ? $t('passwordGenerator.hideDetails') : $t('passwordGenerator.showDetails') }}
 				</div>
 			</div>
 		</div>
 		<div v-if="props.mode === '3rdp'" class="info mt-4 rounded-sm">
-			<div class="mb-1.5 font-bold">How likely to be cracked in case of:</div>
+			<div class="mb-1.5 font-bold">{{ $t('passwordGenerator.howLikelyToBeCracked') }}</div>
 			<div class="mt-1 pl-1 flex justify-between w-76">
-				<div>Online attack:</div>
-				not happening
+				<div>{{ $t('passwordGenerator.onlineAttack') }}</div>
+				{{ $t('passwordGenerator.notHappening') }}
 			</div>
 			<div class="mt-2 pl-1 flex justify-between w-76">
-				<div>Data breach:</div>
+				<div>{{ $t('passwordGenerator.dataBreach') }}</div>
 				{{ breachLikelyHood }}
 			</div>
 		</div>
@@ -152,6 +150,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref, watch, watchEffect } from 'vue'
+import { $t } from '../../global'
 import { PasswordGenerator, passwordTimeFactor, type PasswordComplexity } from '../../services/password-generator'
 import { passwordHasher } from '../../services/password-hasher'
 import { SymmetricCrypt } from '../../services/symmetric-crypt'
@@ -405,21 +404,21 @@ const formatPermutations = (value: number) => {
 const calculateLikelyHood = (costYear, investment) => {
 	const factor = costYear / investment
 	if (factor > 100) {
-		return 'not happening'
+		return $t('passwordGenerator.notHappening')
 	}
 	if (factor > 1) {
-		return 'very unlikely'
+		return $t('passwordGenerator.veryUnlikely')
 	}
 	if (factor < 0.01) {
-		return 'certainty'
+		return $t('passwordGenerator.certainty')
 	}
 	if (factor < 0.1) {
-		return 'likely'
+		return $t('passwordGenerator.likely')
 	}
 	if (factor < 1) {
-		return 'plausible'
+		return $t('passwordGenerator.plausible')
 	}
-	return 'unknown'
+	return $t('passwordGenerator.unknown')
 }
 
 onMounted(() => {

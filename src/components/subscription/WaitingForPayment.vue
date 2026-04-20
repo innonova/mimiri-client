@@ -1,29 +1,32 @@
 <template>
 	<div class="flex select-none">
-		<div class="py-2 px-4 bg-info cursor-default">Payment in progress</div>
+		<div class="py-2 px-4 bg-info cursor-default">{{ $t('subWaitingForPayment.tab') }}</div>
 	</div>
 	<div class="bg-info w-full h-2 mb-2" />
 	<div class="p-1 pt-2 mt-5 text-center max-w-110" data-testid="waiting-view">
 		<div v-if="waitingForUser">
-			<div>Waiting for payment to be completed in browser window</div>
+			<div>{{ $t('subWaitingForPayment.waitingBrowser') }}</div>
 			<div class="mt-2">
-				If a new window did not open in your browser <a :href="link" target="_blank">click here</a>
+				{{ $t('subWaitingForPayment.noWindowOpened') }}
+				<a :href="link" target="_blank">{{ $t('subWaitingForPayment.clickHere') }}</a>
 			</div>
 		</div>
-		<div v-if="!waitingForUser">Waiting for payment to complete (this will happen automatically)</div>
+		<div v-if="!waitingForUser">{{ $t('subWaitingForPayment.waitingAutomatic') }}</div>
 		<div class="flex items-center justify-center my-6">
 			<LoadingIcon class="animate-spin w-8 h-8 mr-2 inline-block" /> {{ status }}
 		</div>
 		<div v-if="running" class="flex justify-center gap-2 mt-8">
-			<button class="primary" @click="check" data-testid="waiting-check">Check</button>
-			<button class="primary" @click="emit('close')" data-testid="waiting-cancel">Cancel</button>
+			<button class="primary" @click="check" data-testid="waiting-check">{{ $t('subWaitingForPayment.check') }}</button>
+			<button class="primary" @click="emit('close')" data-testid="waiting-cancel">
+				{{ $t('subWaitingForPayment.cancel') }}
+			</button>
 		</div>
 	</div>
 </template>
 
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref } from 'vue'
-import { noteManager } from '../../global'
+import { noteManager, $t } from '../../global'
 import LoadingIcon from '../../icons/loading.vue'
 import type { Guid } from '../../services/types/guid'
 
@@ -35,25 +38,25 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits(['close'])
-const status = ref('Waiting...')
+const status = ref($t('subWaitingForPayment.waiting'))
 const running = ref(false)
 
 let timerActive = false
 
 const check = async () => {
-	status.value = 'Checking...'
+	status.value = $t('subWaitingForPayment.checking')
 	if (props.invoiceId) {
 		const inv = await noteManager.payment.getInvoicePaymentStatus(props.invoiceId)
 		if (inv.status === 'confirmed') {
 			running.value = false
-			status.value = 'Success'
+			status.value = $t('subWaitingForPayment.success')
 			await new Promise(resolve => setTimeout(resolve, 1000))
 			await noteManager.session.updateUserStats()
 			emit('close')
 			return
 		} else if (inv.status !== 'pending') {
 			running.value = false
-			status.value = 'Failure'
+			status.value = $t('subWaitingForPayment.failure')
 			await new Promise(resolve => setTimeout(resolve, 1000))
 			emit('close')
 			return
@@ -62,7 +65,7 @@ const check = async () => {
 		const methods = await noteManager.payment.getPaymentMethods()
 		if (methods.length === props.expectedMethodCount) {
 			running.value = false
-			status.value = 'Success'
+			status.value = $t('subWaitingForPayment.success')
 			await new Promise(resolve => setTimeout(resolve, 1000))
 			await noteManager.session.updateUserStats()
 			emit('close')
@@ -91,7 +94,7 @@ onUnmounted(() => {
 })
 
 onMounted(async () => {
-	status.value = 'Waiting...'
+	status.value = $t('subWaitingForPayment.waiting')
 	running.value = true
 	nextCheck()
 })

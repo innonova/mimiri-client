@@ -11,7 +11,7 @@
 				<div class="leading-5 max-w-86 whitespace-pre-wrap">{{ infoText }}</div>
 			</main>
 			<footer class="flex justify-end mobile:justify-center gap-2 pr-2 pb-2">
-				<button class="primary" @click="close" data-testid="info-dialog-ok">OK</button>
+				<button class="primary" @click="close" data-testid="info-dialog-ok">{{ $t('infoDialog.ok') }}</button>
 			</footer>
 		</div>
 	</dialog>

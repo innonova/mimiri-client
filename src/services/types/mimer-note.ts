@@ -5,7 +5,7 @@ import { type Guid } from './guid'
 import type { Note } from './note'
 import { fromBase64, toBase64 } from '../hex-base64'
 import { persistedState } from '../persisted-state'
-import { blogManager, debug, updateManager } from '../../global'
+import { blogManager, debug, $t, updateManager } from '../../global'
 import { settingsManager, UpdateMode } from '../settings-manager'
 import { MimiriException, MimiriExceptionType } from './exceptions'
 import { differenceInHours } from 'date-fns'
@@ -160,7 +160,7 @@ export class MimerNote {
 					id: childId,
 					type: '',
 					icon: '',
-					title: 'Loading...',
+					title: $t('controlPanel.loading'),
 					text: '',
 					children: [],
 					history: [],

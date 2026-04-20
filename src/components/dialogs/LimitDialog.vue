@@ -10,7 +10,7 @@
 				<div>{{ text }}</div>
 			</main>
 			<footer class="flex justify-end mobile:justify-center gap-2 pr-2 pb-2">
-				<button class="primary" @click="close">OK</button>
+				<button class="primary" @click="close">{{ $t('limitDialog.ok') }}</button>
 			</footer>
 		</div>
 	</dialog>
@@ -18,7 +18,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { noteManager } from '../../global'
+import { noteManager, $t } from '../../global'
 import DialogTitle from '../elements/DialogTitle.vue'
 const dialog = ref(null)
 const title = ref('')
@@ -31,20 +31,25 @@ const toMB = bytes => {
 
 const show = (limit: string) => {
 	if (limit === 'create-note-count') {
-		title.value = 'Note Limit Reached'
-		text.value = `You have created ${noteManager.state.userStats.noteCount} of your ${noteManager.state.userStats.maxNoteCount} notes`
+		title.value = $t('limitDialog.noteCountTitle')
+		text.value = $t('limitDialog.noteCountText', {
+			count: noteManager.state.userStats.noteCount,
+			max: noteManager.state.userStats.maxNoteCount,
+		})
 	}
 	if (limit === 'create-note-size' || limit === 'save-total-size') {
-		title.value = 'Data Limit Reached'
-		text.value = `You have used ${toMB(noteManager.state.userStats.size)} of your ${toMB(
-			noteManager.state.userStats.maxTotalBytes,
-		)}`
+		title.value = $t('limitDialog.dataSizeTitle')
+		text.value = $t('limitDialog.dataSizeText', {
+			used: toMB(noteManager.state.userStats.size),
+			max: toMB(noteManager.state.userStats.maxTotalBytes),
+		})
 	}
 	if (limit === 'save-note-size') {
-		title.value = 'Note Exceeds Max Size'
-		text.value = `The note you are trying to save is ${toMB(
-			noteManager.tree.selectedNote()?.size ?? 0,
-		)} the maximum allowed is ${toMB(noteManager.state.userStats.maxNoteBytes)}`
+		title.value = $t('limitDialog.noteSizeTitle')
+		text.value = $t('limitDialog.noteSizeText', {
+			size: toMB(noteManager.tree.selectedNote()?.size ?? 0),
+			max: toMB(noteManager.state.userStats.maxNoteBytes),
+		})
 	}
 	isOpen.value = true
 	dialog.value.showModal()

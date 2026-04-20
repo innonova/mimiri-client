@@ -7,14 +7,17 @@
 	>
 		<div v-if="isOpen" class="grid grid-rows-[auto_1fr_auto] gap-3 content-between">
 			<DialogTitle @close="cancel" :disabled="loading"
-				>Login <span v-if="neededForServer" data-testid="server-indicator">&nbsp;(Server)</span></DialogTitle
+				>{{ $t('loginDialog.title') }}
+				<span v-if="neededForServer" data-testid="server-indicator"
+					>&nbsp;{{ $t('loginDialog.serverIndicator') }}</span
+				></DialogTitle
 			>
 			<form @submit.prevent="login" class="mx-2 mobile:mx-8">
 				<div v-if="neededForServer" class="mx-1 mb-2 max-w-72">
-					Please enter your username and password to reauthenticate with the server.
+					{{ $t('loginDialog.serverReauth') }}
 				</div>
 				<div class="grid grid-cols-[4rem_10rem] mobile:grid-cols-[4rem_auto] items-center gap-2 mx-2 mb-2">
-					<div>Username:</div>
+					<div>{{ $t('loginDialog.username') }}</div>
 					<input
 						ref="usernameInput"
 						v-model="username"
@@ -24,7 +27,7 @@
 						data-testid="username-input"
 						autofocus
 					/>
-					<div>Password:</div>
+					<div>{{ $t('loginDialog.password') }}</div>
 					<input
 						v-model="password"
 						tabindex="2"
@@ -34,15 +37,15 @@
 						@keydown="pwKeyDown"
 					/>
 					<div v-if="capsLockOn" />
-					<div v-if="capsLockOn" class="ml-2">Caps Lock is on!</div>
+					<div v-if="capsLockOn" class="ml-2">{{ $t('loginDialog.capsLock') }}</div>
 				</div>
 				<div class="text-right pr-1" v-if="error" data-testid="login-error">
-					<div class="text-error text-right">Incorrect username or password</div>
+					<div class="text-error text-right">{{ $t('loginDialog.incorrectCredentials') }}</div>
 				</div>
 				<div v-if="loading" class="flex items-center justify-end m-1 pr-1 mt-2">
 					<LoadingIcon class="animate-spin w-8 h-8 mr-2 inline-block" />
 					<div class="flex flex-col items-center">
-						<div>Please wait</div>
+						<div>{{ $t('loginDialog.pleaseWait') }}</div>
 						<div v-if="longTime" class="mt-1">{{ timeElapsed }}</div>
 					</div>
 				</div>
@@ -54,17 +57,19 @@
 						class="primary"
 						type="submit"
 					>
-						Login
+						{{ $t('loginDialog.login') }}
 					</button>
 					<button :disabled="loading" class="secondary" type="button" data-testid="cancel-button" @click="cancel">
-						Cancel
+						{{ $t('loginDialog.cancel') }}
 					</button>
 				</div>
-				<div v-if="neededForServer" class="mx-1 mt-4 mb-1 max-w-72 font-bold">Why are you seeing this?</div>
+				<div v-if="neededForServer" class="mx-1 mt-4 mb-1 max-w-72 font-bold">
+					{{ $t('loginDialog.whySeeingThis') }}
+				</div>
 				<div v-if="neededForServer" class="mx-1 mt-1 mb-2 max-w-72">
-					<li>You changed password on another device</li>
-					<li>You updated from a version prior to 2.5.0</li>
-					<li>Something unexpected went wrong</li>
+					<li>{{ $t('loginDialog.reason1') }}</li>
+					<li>{{ $t('loginDialog.reason2') }}</li>
+					<li>{{ $t('loginDialog.reason3') }}</li>
 				</div>
 			</form>
 		</div>

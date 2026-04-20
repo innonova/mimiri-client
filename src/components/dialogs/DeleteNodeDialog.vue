@@ -6,9 +6,9 @@
 		@close="isOpen = false"
 	>
 		<div v-if="isOpen && mode === 'delete'" class="grid grid-rows-[auto_1fr_auto] gap-6" data-testid="delete-note">
-			<DialogTitle @close="close">Delete Note</DialogTitle>
+			<DialogTitle @close="close">{{ $t('deleteNodeDialog.deleteTitle') }}</DialogTitle>
 			<main class="px-2 mobile:text-center">
-				<div>Are you sure you want to delete:</div>
+				<div>{{ $t('deleteNodeDialog.deleteQuestion') }}</div>
 				<div class="mt-3 ml-3 mb-1 italic">
 					{{ noteManager.tree.selectedViewModelRef().value?.title }}
 				</div>
@@ -17,69 +17,83 @@
 					class="mt-5"
 					data-testid="delete-share-with-no-participants"
 				>
-					No other users have access to this note
+					{{ $t('deleteNodeDialog.noOtherUsers') }}
 				</div>
 			</main>
 			<footer class="flex justify-end mobile:justify-center gap-2 pr-2 pb-2 mobile:mt-5">
-				<button class="primary" @click="submitDialog" data-testid="delete-dialog-confirm">Delete</button>
-				<button class="secondary" @click="close" data-testid="delete-dialog-cancel">Cancel</button>
+				<button class="primary" @click="submitDialog" data-testid="delete-dialog-confirm">
+					{{ $t('deleteNodeDialog.delete') }}
+				</button>
+				<button class="secondary" @click="close" data-testid="delete-dialog-cancel">
+					{{ $t('deleteNodeDialog.cancel') }}
+				</button>
 			</footer>
 		</div>
 		<div v-if="isOpen && mode === 'leave-share'" class="grid grid-rows-[auto_1fr_auto] gap-6" data-testid="leave-share">
-			<DialogTitle @close="close">Leave Share</DialogTitle>
+			<DialogTitle @close="close">{{ $t('deleteNodeDialog.leaveShareTitle') }}</DialogTitle>
 			<main class="px-2 mobile:text-center">
-				<div>Are you sure you want to leave this share:</div>
+				<div>{{ $t('deleteNodeDialog.leaveQuestion') }}</div>
 				<div class="mt-3 ml-3 mb-1 italic">
 					{{ noteManager.tree.selectedViewModelRef().value?.title }}
 				</div>
-				<div class="mt-5">This note will remain be accessible to:</div>
+				<div class="mt-5">{{ $t('deleteNodeDialog.remainAccessible') }}</div>
 				<template v-if="shareParticipants.length < 5">
 					<div v-for="participant in shareParticipants" :key="participant.username" class="mt-3 ml-3 mb-1 italic">
 						{{ participant.username }}
 					</div>
 				</template>
 				<div v-if="shareParticipants.length >= 5" class="mt-3 ml-3 mb-1 italic">
-					{{ shareParticipants.length }} other users
+					{{ $t('deleteNodeDialog.otherUsers', { count: shareParticipants.length }) }}
 				</div>
 			</main>
 			<footer class="flex justify-end mobile:justify-center gap-2 pr-2 pb-2 mobile:mt-5">
-				<button class="primary" @click="submitDialog" data-testid="leave-dialog-confirm">Leave</button>
-				<button class="secondary" @click="close" data-testid="leave-dialog-cancel">Cancel</button>
+				<button class="primary" @click="submitDialog" data-testid="leave-dialog-confirm">
+					{{ $t('deleteNodeDialog.leave') }}
+				</button>
+				<button class="secondary" @click="close" data-testid="leave-dialog-cancel">
+					{{ $t('deleteNodeDialog.cancel') }}
+				</button>
 			</footer>
 		</div>
 		<div v-if="mode === 'delete-share'" class="grid grid-rows-[auto_1fr_auto] gap-6" data-testid="delete-share">
-			<DialogTitle @close="close">Delete Note</DialogTitle>
+			<DialogTitle @close="close">{{ $t('deleteNodeDialog.deleteTitle') }}</DialogTitle>
 			<main class="px-2 mobile:text-center">
-				<div>Are you sure you want to delete:</div>
+				<div>{{ $t('deleteNodeDialog.deleteQuestion') }}</div>
 				<div class="mt-3 ml-3 mb-1 italic">
 					{{ noteManager.tree.selectedViewModelRef().value?.title }}
 				</div>
-				<div class="mt-5">This note will also be deleted for:</div>
+				<div class="mt-5">{{ $t('deleteNodeDialog.alsoDeleted') }}</div>
 				<template v-if="shareParticipants.length < 5">
 					<div v-for="participant in shareParticipants" :key="participant.username" class="mt-3 ml-3 mb-1 italic">
 						{{ participant.username }}
 					</div>
 				</template>
 				<div v-if="shareParticipants.length >= 5" class="mt-3 ml-3 mb-1 italic">
-					{{ shareParticipants.length }} other users
+					{{ $t('deleteNodeDialog.otherUsers', { count: shareParticipants.length }) }}
 				</div>
 			</main>
 			<footer class="flex justify-end mobile:justify-center gap-2 pr-2 pb-2 mobile:mt-5">
-				<button class="primary" @click="submitDialog" data-testid="delete-dialog-confirm">Delete</button>
-				<button class="secondary" @click="close" data-testid="delete-dialog-cancel">Cancel</button>
+				<button class="primary" @click="submitDialog" data-testid="delete-dialog-confirm">
+					{{ $t('deleteNodeDialog.delete') }}
+				</button>
+				<button class="secondary" @click="close" data-testid="delete-dialog-cancel">
+					{{ $t('deleteNodeDialog.cancel') }}
+				</button>
 			</footer>
 		</div>
 		<div v-if="mode === 'cannot-delete'" class="grid grid-rows-[auto_1fr_auto] gap-6" data-testid="delete-share">
-			<DialogTitle @close="close">Cannot Delete</DialogTitle>
+			<DialogTitle @close="close">{{ $t('deleteNodeDialog.cannotDeleteTitle') }}</DialogTitle>
 			<main class="px-2 mobile:text-center">
 				<div class="leading-5">
-					Cannot delete note containing shared notes. <br />
-					Please remove shared notes before deleting.
+					{{ $t('deleteNodeDialog.cannotDeleteLine1') }} <br />
+					{{ $t('deleteNodeDialog.cannotDeleteLine2') }}
 				</div>
 				<div></div>
 			</main>
 			<footer class="flex justify-end mobile:justify-center gap-2 pr-2 pb-2 mobile:mt-5">
-				<button class="primary" @click="close" data-testid="delete-dialog-cancel">Ok</button>
+				<button class="primary" @click="close" data-testid="delete-dialog-cancel">
+					{{ $t('deleteNodeDialog.ok') }}
+				</button>
 			</footer>
 		</div>
 	</dialog>

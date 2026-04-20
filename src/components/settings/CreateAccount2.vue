@@ -5,41 +5,45 @@
 		<form @submit.prevent="createAccount" class="overflow-y-auto pb-20">
 			<div v-if="stage === 'create-account'" class="pl-2 mt-1">
 				<div class="grid grid-cols-[5rem_15rem] gap-2">
-					<ItemHeader v-if="createMode === 'cloud'" class="col-span-2">Cloud Account</ItemHeader>
+					<ItemHeader v-if="createMode === 'cloud'" class="col-span-2">{{
+						$t('settingsCreateAccount2.cloudAccountHeader')
+					}}</ItemHeader>
 					<div v-if="createMode === 'cloud'" class="col-span-2">
 						<div class="pl-6">
 							<ul class="list-disc">
-								<li class="py-0.5">Access notes from anywhere</li>
-								<li class="py-0.5">Notes backed up in cloud</li>
-								<li class="py-0.5">End-to-end encryption</li>
-								<li class="py-0.5">On-device encryption</li>
-								<li class="py-0.5">End-to-end encrypted sharing with other users</li>
-								<li class="py-0.5">Unlimited note hierarchy</li>
-								<li class="py-0.5">Unlimited device sync on Windows, Linux, macOS, Android, iOS and web</li>
-								<li class="py-0.5">Offline read/write access</li>
-								<li class="py-0.5">Automatic conflict resolution</li>
-								<li class="py-0.5">Unlimited version history</li>
-								<li class="py-0.5">100 MB & 2000 notes for free</li>
+								<li class="py-0.5">{{ $t('settingsCreateAccount2.cloudFeature1') }}</li>
+								<li class="py-0.5">{{ $t('settingsCreateAccount2.cloudFeature2') }}</li>
+								<li class="py-0.5">{{ $t('settingsCreateAccount2.cloudFeature3') }}</li>
+								<li class="py-0.5">{{ $t('settingsCreateAccount2.cloudFeature4') }}</li>
+								<li class="py-0.5">{{ $t('settingsCreateAccount2.cloudFeature5') }}</li>
+								<li class="py-0.5">{{ $t('settingsCreateAccount2.cloudFeature6') }}</li>
+								<li class="py-0.5">{{ $t('settingsCreateAccount2.cloudFeature7') }}</li>
+								<li class="py-0.5">{{ $t('settingsCreateAccount2.cloudFeature8') }}</li>
+								<li class="py-0.5">{{ $t('settingsCreateAccount2.cloudFeature9') }}</li>
+								<li class="py-0.5">{{ $t('settingsCreateAccount2.cloudFeature10') }}</li>
+								<li class="py-0.5">{{ $t('settingsCreateAccount2.cloudFeature11') }}</li>
 							</ul>
 							<div v-if="!noteManager.state.isMobile" class="mt-4">
-								<a href="https://mimiri.io/pricing" target="_blank">See pricing for additional space</a>
+								<a href="https://mimiri.io/pricing" target="_blank">{{ $t('settingsCreateAccount2.seePricing') }}</a>
 							</div>
 						</div>
 					</div>
-					<ItemHeader v-if="createMode !== 'cloud'" class="col-span-2">Local Account</ItemHeader>
+					<ItemHeader v-if="createMode !== 'cloud'" class="col-span-2">{{
+						$t('settingsCreateAccount2.localAccountHeader')
+					}}</ItemHeader>
 					<div v-if="createMode !== 'cloud'" class="col-span-2">
 						<div class="pl-6">
 							<ul class="list-disc">
-								<li class="py-0.5">On-device encryption</li>
-								<li class="py-0.5">Unlimited note hierarchy</li>
-								<li class="py-0.5">Offline read/write access</li>
-								<li class="py-0.5">Unlimited storage (locally)</li>
-								<li class="py-0.5">Notes stored exclusively on this device</li>
+								<li class="py-0.5">{{ $t('settingsCreateAccount2.localFeature1') }}</li>
+								<li class="py-0.5">{{ $t('settingsCreateAccount2.localFeature2') }}</li>
+								<li class="py-0.5">{{ $t('settingsCreateAccount2.localFeature3') }}</li>
+								<li class="py-0.5">{{ $t('settingsCreateAccount2.localFeature4') }}</li>
+								<li class="py-0.5">{{ $t('settingsCreateAccount2.localFeature5') }}</li>
 							</ul>
 						</div>
 					</div>
-					<ItemHeader class="col-span-2">Choose your credentials</ItemHeader>
-					<div class="flex items-start">Username:</div>
+					<ItemHeader class="col-span-2">{{ $t('settingsCreateAccount2.chooseCredentials') }}</ItemHeader>
+					<div class="flex items-start">{{ $t('settingsCreateAccount2.username') }}</div>
 					<UsernameInput
 						:display-current="false"
 						:check-username="createMode === 'cloud'"
@@ -48,7 +52,9 @@
 						v-model:valid="usernameValid"
 					/>
 					<div v-if="showPasswordGenerator" class="col-span-2 text-right mb-[-0.5rem] mt-0.5">
-						<button type="button" class="underline cursor-pointer" @click="helpChoosePassword">Hide generator</button>
+						<button type="button" class="underline cursor-pointer" @click="helpChoosePassword">
+							{{ $t('settingsCreateAccount2.hideGenerator') }}
+						</button>
 					</div>
 					<PasswordGenerator
 						v-if="showPasswordGenerator"
@@ -57,22 +63,28 @@
 						class="col-span-2"
 						@password="passwordGenerated"
 					/>
-					<div class="flex items-center">Password:</div>
+					<div class="flex items-center">{{ $t('settingsCreateAccount2.password') }}</div>
 					<PasswordInput v-if="!showPasswordGenerator" :display-current="false" v-model:value="password" />
 					<PasswordGenInput v-if="showPasswordGenerator" v-model:value="password" @refresh="refreshPassword" />
 					<div v-if="!showPasswordGenerator" class="col-span-2 text-right">
-						<button type="button" class="underline cursor-pointer" @click="helpChoosePassword">Help me choose</button>
+						<button type="button" class="underline cursor-pointer" @click="helpChoosePassword">
+							{{ $t('settingsCreateAccount2.helpMeChoose') }}
+						</button>
 					</div>
-					<div class="flex items-center">Repeat:</div>
+					<div class="flex items-center">{{ $t('settingsCreateAccount2.repeat') }}</div>
 					<PasswordRepeatInput :display-current="false" :value="password" v-model:match="passwordMatch" />
 					<div />
-					<PrimaryButton :enabled="canCreate" :loading="loading" data-testid="create-button">Create</PrimaryButton>
+					<PrimaryButton :enabled="canCreate" :loading="loading" data-testid="create-button">{{
+						$t('settingsCreateAccount2.create')
+					}}</PrimaryButton>
 					<Faq :items="faqItems" class="mt-6 col-span-2" />
 					<div class="col-span-2 text-text-secondary text-size-small mt-4 flex flex-col gap-1">
-						<a href="https://mimiri.io/userguide-security" target="_blank"
-							>Read more about how we keep your data secure</a
-						>
-						<a href="https://mimiri.io/userguide-passwords" target="_blank">Read more about password selection</a>
+						<a href="https://mimiri.io/userguide-security" target="_blank">{{
+							$t('settingsCreateAccount2.readMoreSecurity')
+						}}</a>
+						<a href="https://mimiri.io/userguide-passwords" target="_blank">{{
+							$t('settingsCreateAccount2.readMorePassword')
+						}}</a>
 					</div>
 				</div>
 			</div>
@@ -82,7 +94,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
-import { blockUserInput, noteManager } from '../../global'
+import { blockUserInput, noteManager, $t } from '../../global'
 import UsernameInput from '../elements/UsernameInput.vue'
 import PasswordInput from '../elements/PasswordInput.vue'
 import PasswordRepeatInput from '../elements/PasswordRepeatInput.vue'
@@ -99,7 +111,7 @@ import type { Guid } from '../../services/types/guid'
 const loading = ref(false)
 const createMode = ref('cloud')
 const stage = ref('create-account')
-const tabBarItems = ref(['Cloud Account', 'Local Account'])
+const tabBarItems = computed(() => [$t('settingsCreateAccount2.cloudTab'), $t('settingsCreateAccount2.localTab')])
 const username = ref('')
 const usernameValid = ref(false)
 const password = ref('')
@@ -128,34 +140,26 @@ const refreshPassword = () => {
 	passwordGenerator.value?.regeneratePassword()
 }
 
-const faqItems = ref([
+const faqItems = computed(() => [
 	{
-		question: 'Is the Cloud Account free?',
-		answer: `Yes up to 2000 notes and 100MB.`,
+		question: $t('settingsCreateAccount2.faq1Question'),
+		answer: $t('settingsCreateAccount2.faq1Answer'),
 	},
 	{
-		question: 'Do I need a Cloud Account?',
-		answer: `If you want to access your notes from multiple devices or you wish to share notes with other users, then yes.
-
-		If you want to keep your notes only on this device and not sync them anywhere, then no.`,
+		question: $t('settingsCreateAccount2.faq2Question'),
+		answer: $t('settingsCreateAccount2.faq2Answer'),
 	},
 	{
-		question: 'Is my data safe in the Cloud?',
-		answer: `Your data is encrypted before it leaves your device and even we cannot access your data.`,
+		question: $t('settingsCreateAccount2.faq3Question'),
+		answer: $t('settingsCreateAccount2.faq3Answer'),
 	},
 	{
-		question: 'Can you help me recover my password?',
-		answer: `No, unfortunately we cannot help you recover your password.
-
-		Making this possible would substantially weaken your data security.`,
+		question: $t('settingsCreateAccount2.faq4Question'),
+		answer: $t('settingsCreateAccount2.faq4Answer'),
 	},
 	{
-		question: 'Is my data safer with a Local Account?',
-		answer: `Technically a Local Account offers stronger privacy guarantees. However, with a well-chosen password the difference is academic.
-
-		And a Local Account does not help ensure your own access to the data in case of device loss or in an emergency situation.
-
-		Ultimately it depends on what you are trying to achieve.`,
+		question: $t('settingsCreateAccount2.faq5Question'),
+		answer: $t('settingsCreateAccount2.faq5Answer'),
 	},
 ])
 
@@ -194,7 +198,7 @@ const createAccount = async () => {
 }
 
 const tabSelected = item => {
-	if (item === 'Cloud Account') {
+	if (item === $t('settingsCreateAccount2.cloudTab')) {
 		createMode.value = 'cloud'
 	} else {
 		createMode.value = 'local'

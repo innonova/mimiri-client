@@ -1,12 +1,12 @@
 <template>
 	<div class="flex flex-col h-full">
 		<div class="flex select-none">
-			<div class="py-2 px-4 bg-info cursor-default">Pay Invoice</div>
+			<div class="py-2 px-4 bg-info cursor-default">{{ $t('subPayInvoice.tab') }}</div>
 		</div>
 		<div class="bg-info w-full h-2 mb-4" />
 		<div class="flex flex-col overflow-y-auto pr-2" data-testid="pay-invoice-view">
 			<form @submit.prevent="submit" class="max-w-110">
-				<ItemHeader>Billing address</ItemHeader>
+				<ItemHeader>{{ $t('subPayInvoice.billingAddress') }}</ItemHeader>
 				<CustomerData
 					ref="customerElement"
 					mode="create"
@@ -29,7 +29,7 @@
 						class="primary"
 						data-testid="pay-button"
 					>
-						Pay now
+						{{ $t('subPayInvoice.payNow') }}
 					</button>
 				</div>
 			</form>

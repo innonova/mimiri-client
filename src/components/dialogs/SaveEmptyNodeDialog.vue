@@ -5,16 +5,16 @@
 		@close="isOpen = false"
 	>
 		<div v-if="isOpen" class="grid grid-rows-[auto_1fr_auto] gap-6">
-			<DialogTitle @close="close">Save Empty Note</DialogTitle>
+			<DialogTitle @close="close">{{ $t('saveEmptyNodeDialog.title') }}</DialogTitle>
 			<main class="px-2">
-				<div>Are you sure you want to save empty version of node:</div>
+				<div>{{ $t('saveEmptyNodeDialog.question') }}</div>
 				<div class="mt-3 ml-3 mb-1 italic">
 					{{ noteItem?.title }}
 				</div>
 			</main>
 			<footer class="flex justify-end gap-2 pr-2 pb-2">
-				<button class="primary" @click="submitDialog">Yes</button>
-				<button class="secondary" @click="close">No</button>
+				<button class="primary" @click="submitDialog">{{ $t('saveEmptyNodeDialog.yes') }}</button>
+				<button class="secondary" @click="close">{{ $t('saveEmptyNodeDialog.no') }}</button>
 			</footer>
 		</div>
 	</dialog>

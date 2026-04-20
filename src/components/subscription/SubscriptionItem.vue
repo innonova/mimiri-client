@@ -10,24 +10,24 @@
 		</div>
 		<div class="text-center h-10">
 			<div v-if="product.data.period === Period.Month" :data-testid="`sub-${product.sku}-per-month`">
-				{{ formatCurrency(product.price, currency) }}<span class="px-px">/</span>month
+				{{ formatCurrency(product.price, currency) }}{{ $t('subSubscriptionItem.perMonth') }}
 			</div>
 			<div
 				v-if="product.data.period === Period.Month"
 				class="italic text-size-secondary font-light mt-0.5"
 				:data-testid="`sub-${product.sku}-per-year-derived`"
 			>
-				{{ formatCurrency(product.price * 12, currency) }}<span class="px-px">/</span>year
+				{{ formatCurrency(product.price * 12, currency) }}{{ $t('subSubscriptionItem.perYear') }}
 			</div>
 			<div v-if="product.data.period === Period.Year" :data-testid="`sub-${product.sku}-per-year`">
-				{{ formatCurrency(product.price, currency) }}<span class="px-px">/</span>year
+				{{ formatCurrency(product.price, currency) }}{{ $t('subSubscriptionItem.perYear') }}
 			</div>
 			<div
 				v-if="product.data.period === Period.Year"
 				:data-testid="`sub-${product.sku}-per-month-derived`"
 				class="italic text-size-secondary font-light mt-0.5"
 			>
-				{{ formatCurrency(product.price / 12, currency) }}<span class="px-px">/</span>month
+				{{ formatCurrency(product.price / 12, currency) }}{{ $t('subSubscriptionItem.perMonth') }}
 			</div>
 		</div>
 		<hr v-if="showFeatures" class="w-[95%] mt-1 compact:mt-0" />
@@ -44,7 +44,7 @@
 			data-testid="subscription-ends"
 		>
 			<hr class="w-[95%]" />
-			<div class="text-bad py-2">Ends on:</div>
+			<div class="text-bad py-2">{{ $t('subSubscriptionItem.endsOn') }}</div>
 			<div class="text-bad pb-3" data-testid="subscription-end-date">
 				{{ formatExpirationDate(subscription.paidUntil) }}
 			</div>
@@ -55,7 +55,7 @@
 			data-testid="subscription-ends"
 		>
 			<hr class="w-[95%]" />
-			<div class="py-2">Ended on:</div>
+			<div class="py-2">{{ $t('subSubscriptionItem.endedOn') }}</div>
 			<div class="pb-3" data-testid="subscription-end-date">
 				{{ formatExpirationDate(subscription.paidUntil) }}
 			</div>
@@ -66,15 +66,19 @@
 			data-testid="subscription-renews-automatically"
 		>
 			<hr class="w-[95%]" />
-			<div class="text-good py-2">Renews automatically on:</div>
+			<div class="text-good py-2">{{ $t('subSubscriptionItem.renewsAutomatically') }}</div>
 			<div class="text-good pb-3" data-testid="subscription-end-date">
 				{{ formatExpirationDate(subscription.paidUntil) }}
 			</div>
 		</div>
 		<div v-if="overdue" class="pt-2 flex-1 w-full flex flex-col items-center" data-testid="subscription-overdue">
 			<hr class="w-[95%]" />
-			<div class="text-bad py-2">Payment overdue!</div>
-			<div class="pb-3"><button @click="payNow" data-testid="subscription-overdue-pay-now">Pay Now</button></div>
+			<div class="text-bad py-2">{{ $t('subSubscriptionItem.paymentOverdue') }}</div>
+			<div class="pb-3">
+				<button @click="payNow" data-testid="subscription-overdue-pay-now">
+					{{ $t('subSubscriptionItem.payNow') }}
+				</button>
+			</div>
 		</div>
 		<div
 			v-if="subscription?.renewalType === RenewalType.Manual"
@@ -82,7 +86,7 @@
 			data-testid="renews-manually"
 		>
 			<hr class="w-[95%]" />
-			<div class="text-good py-2">Manually renew before:</div>
+			<div class="text-good py-2">{{ $t('subSubscriptionItem.manuallyRenewBefore') }}</div>
 			<div class="text-good pb-3" data-testid="subscription-end-date">
 				{{ formatExpirationDate(subscription.paidUntil) }}
 			</div>
@@ -103,7 +107,7 @@
 					class="primary"
 					:data-testid="`sub-${product.sku}-resume`"
 				>
-					Resume
+					{{ $t('subSubscriptionItem.resume') }}
 				</button>
 				<button
 					v-if="showBuy"
@@ -112,7 +116,7 @@
 					class="primary"
 					:data-testid="`sub-${product.sku}-buy`"
 				>
-					Buy
+					{{ $t('subSubscriptionItem.buy') }}
 				</button>
 				<button
 					v-if="showChoose"
@@ -121,7 +125,7 @@
 					class="primary"
 					:data-testid="`sub-${product.sku}-choose`"
 				>
-					Choose
+					{{ $t('subSubscriptionItem.choose') }}
 				</button>
 				<button
 					v-if="showUpgrade"
@@ -130,7 +134,7 @@
 					class="primary"
 					:data-testid="`sub-${product.sku}-upgrade`"
 				>
-					Upgrade
+					{{ $t('subSubscriptionItem.upgrade') }}
 				</button>
 				<button
 					v-if="showChange"
@@ -139,7 +143,7 @@
 					class="primary"
 					:data-testid="`sub-${product.sku}-change`"
 				>
-					Change
+					{{ $t('subSubscriptionItem.change') }}
 				</button>
 				<button
 					v-if="showChangeTo"
@@ -148,7 +152,7 @@
 					class="primary"
 					:data-testid="`sub-${product.sku}-change-to`"
 				>
-					Change to
+					{{ $t('subSubscriptionItem.changeTo') }}
 				</button>
 				<button
 					v-if="showCancel"
@@ -157,9 +161,9 @@
 					class="primary"
 					:data-testid="`sub-${product.sku}-cancel`"
 				>
-					Cancel
+					{{ $t('subSubscriptionItem.cancel') }}
 				</button>
-				<div v-if="showCurrent" class="font-bold">Current</div>
+				<div v-if="showCurrent" class="font-bold">{{ $t('subSubscriptionItem.current') }}</div>
 			</div>
 		</div>
 	</div>

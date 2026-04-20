@@ -1,6 +1,6 @@
 <template>
 	<div v-if="!settingsManager.disableDevBlog" class="flex flex-col h-full">
-		<TabBar :items="['Dev Blog']" />
+		<TabBar :items="[$t('settingsDevBlog.tab')]" />
 		<div class="w-full h-full">
 			<iframe
 				ref="blogFrame"

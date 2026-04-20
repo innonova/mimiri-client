@@ -14,24 +14,27 @@
 		</div>
 		<div v-if="username" class="desktop:w-0 desktop:h-0 pt-0.5 overflow-visible" data-testid="username-status">
 			<div v-if="usernameCurrent && checkUsername" class="flex items-center w-52 desktop:ml-2 mt-1.5 desktop:mt-0.5">
-				<AvailableIcon class="w-5 h-5 mr-1 inline-block" data-testid="username-current" /> Current
+				<AvailableIcon class="w-5 h-5 mr-1 inline-block" data-testid="username-current" />
+				{{ $t('usernameInput.current') }}
 			</div>
 			<div v-if="usernameInProgress && checkUsername" class="flex items-center w-52 desktop:ml-2 mt-1.5 desktop:mt-0">
 				<LoadingIcon class="animate-spin w-5 h-5 mr-1 inline-block" data-testid="username-checking" />
-				Checking
+				{{ $t('usernameInput.checking') }}
 			</div>
 			<div v-if="usernameAvailable && checkUsername" class="flex items-center w-52 desktop:ml-2 mt-1.5 desktop:mt-0.5">
-				<AvailableIcon class="w-5 h-5 mr-1 inline-block" data-testid="username-available" /> Available
+				<AvailableIcon class="w-5 h-5 mr-1 inline-block" data-testid="username-available" />
+				{{ $t('usernameInput.available') }}
 			</div>
 			<div
 				v-if="usernameUnavailable && checkUsername"
 				class="flex items-center w-52 desktop:ml-2 mt-1.5 desktop:mt-0.5"
 			>
 				<UnavailableIcon class="w-5 h-5 mr-1 inline-block" data-testid="username-unavailable" />
-				Unavailable
+				{{ $t('usernameInput.unavailable') }}
 			</div>
 			<div v-if="usernameInvalid" class="flex items-center w-52 desktop:ml-2 mt-1.5 desktop:mt-0.5">
-				<UnavailableIcon class="w-5 h-5 mr-1 inline-block" data-testid="username-invalid" /> Invalid
+				<UnavailableIcon class="w-5 h-5 mr-1 inline-block" data-testid="username-invalid" />
+				{{ $t('usernameInput.invalid') }}
 			</div>
 		</div>
 	</div>

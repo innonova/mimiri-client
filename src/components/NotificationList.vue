@@ -17,7 +17,7 @@
 				@click="markAllRead"
 				@mouseup="stopPropagation"
 			>
-				Mark All Read
+				{{ $t('notificationList.markAllRead') }}
 			</button>
 		</div>
 	</div>

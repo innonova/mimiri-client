@@ -1,16 +1,16 @@
 <template>
 	<div class="flex flex-col h-full">
-		<TabBar :items="['Create Password']" />
+		<TabBar :items="[$t('settingsPromoteAccount.tab')]" />
 		<div class="overflow-y-auto pb-10">
 			<div class="px-1 pt-3 pb-5 max-w-[20rem] leading-5">
-				Choose a username and password to allow you to access your data from anywhere
+				{{ $t('settingsPromoteAccount.description') }}
 			</div>
 			<div class="max-w-110" data-testid="promote-account-view">
 				<form class="w-96" @submit.prevent="createAccount">
 					<div class="grid grid-cols-[5rem_12rem] gap-3 items-baseline">
-						<div class="flex items-center">Username:</div>
+						<div class="flex items-center">{{ $t('settingsPromoteAccount.username') }}</div>
 						<UsernameInput :display-current="false" :check-username="true" @changed="usernameChanged" />
-						<div class="flex items-center">Password:</div>
+						<div class="flex items-center">{{ $t('settingsPromoteAccount.password') }}</div>
 						<div class="text-right relative desktop:flex">
 							<input
 								v-model="password"
@@ -35,23 +35,25 @@
 									v-if="passwordQuality === 'free-access'"
 									class="flex items-center w-52 h-7 desktop:ml-2 mt-1.5 desktop:mt-0 text-left"
 								>
-									<FreeAccessIcon class="w-5 h-5 mr-1 inline-block" /> Not really a password
+									<FreeAccessIcon class="w-5 h-5 mr-1 inline-block" />
+									{{ $t('settingsPromoteAccount.notReallyAPassword') }}
 								</div>
 								<div
 									v-if="passwordQuality === 'casual-use-only'"
 									class="flex items-center w-52 h-7 desktop:ml-2 mt-1.5 desktop:mt-0 text-left"
 								>
-									<CasualOnlyIcon class="w-5 h-5 mr-1 inline-block" /> Very limited security
+									<CasualOnlyIcon class="w-5 h-5 mr-1 inline-block" />
+									{{ $t('settingsPromoteAccount.veryLimitedSecurity') }}
 								</div>
 								<div
 									v-if="passwordQuality === 'acceptable-security'"
 									class="flex items-center w-52 h-7 desktop:ml-2 mt-1.5 desktop:mt-0 text-left"
 								>
-									<LightSecurityIcon class="w-5 h-5 mr-1 inline-block" /> Acceptable
+									<LightSecurityIcon class="w-5 h-5 mr-1 inline-block" /> {{ $t('settingsPromoteAccount.acceptable') }}
 								</div>
 							</div>
 						</div>
-						<div class="flex items-center">Repeat:</div>
+						<div class="flex items-center">{{ $t('settingsPromoteAccount.repeat') }}</div>
 						<div class="text-right relative desktop:flex">
 							<input
 								v-model="passwordRepeat"
@@ -63,23 +65,23 @@
 							/>
 							<div v-if="password" class="desktop:w-0 desktop:h-0 pt-0.5 overflow-visible">
 								<div v-if="passwordMatch" class="flex items-center w-52 desktop:ml-2 mt-1.5 desktop:mt-0.5">
-									<AvailableIcon class="w-5 h-5 mr-1 inline-block" /> Matching
+									<AvailableIcon class="w-5 h-5 mr-1 inline-block" /> {{ $t('settingsPromoteAccount.matching') }}
 								</div>
 								<div v-if="!passwordMatch" class="flex items-center w-52 desktop:ml-2 mt-1.5 desktop:mt-0.5">
-									<UnavailableIcon class="w-5 h-5 mr-1 inline-block" /> Not matching
+									<UnavailableIcon class="w-5 h-5 mr-1 inline-block" /> {{ $t('settingsPromoteAccount.notMatching') }}
 								</div>
 							</div>
 						</div>
 						<div v-if="capsLockOn" />
-						<div v-if="capsLockOn">Caps Lock is on!</div>
+						<div v-if="capsLockOn">{{ $t('settingsPromoteAccount.capsLock') }}</div>
 					</div>
 					<div v-if="advancedSettingsVisible" class="p-1 m-auto flex">
-						<div class="w-24 flex items-center">Iterations:</div>
+						<div class="w-24 flex items-center">{{ $t('settingsPromoteAccount.iterations') }}</div>
 						<select v-model="iterations">
-							<option value="1000000">1M ({{ time1M }}) (default)</option>
-							<option value="2000000">2M ({{ time2M }})</option>
-							<option value="10000000">10M ({{ time10M }})</option>
-							<option value="20000000">20M ({{ time20M }})</option>
+							<option value="1000000">{{ $t('settingsPromoteAccount.option1M', { time: time1M }) }}</option>
+							<option value="2000000">{{ $t('settingsPromoteAccount.option2M', { time: time2M }) }}</option>
+							<option value="10000000">{{ $t('settingsPromoteAccount.option10M', { time: time10M }) }}</option>
+							<option value="20000000">{{ $t('settingsPromoteAccount.option20M', { time: time20M }) }}</option>
 						</select>
 					</div>
 					<div class="p-1 pt-3 pb-5 m-auto text-left">
@@ -91,8 +93,7 @@
 									class="mr-1 relative top-0.5"
 									data-testid="no-recover-checkbox"
 								/>
-								I understand that I am solely responsible for remembering my password and innonova GmbH has
-								<b>no way</b> to recover my data or account if I lose my password
+								<span v-html="$t('settingsPromoteAccount.noRecoveryWarning')" />
 							</label>
 						</div>
 					</div>
@@ -111,7 +112,7 @@
 						<div class="inline-block w-52 text-right create-account-submit">
 							<div v-if="loading" class="flex items-center justify-end">
 								<LoadingIcon class="animate-spin w-8 h-8 mr-2 inline-block" />
-								Please wait
+								{{ $t('settingsPromoteAccount.pleaseWait') }}
 							</div>
 							<button
 								v-if="!loading"
@@ -121,7 +122,7 @@
 								type="submit"
 								data-testid="create-button"
 							>
-								Create
+								{{ $t('settingsPromoteAccount.create') }}
 							</button>
 						</div>
 					</div>

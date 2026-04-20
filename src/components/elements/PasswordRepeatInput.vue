@@ -10,10 +10,10 @@
 		/>
 		<div v-if="value" class="desktop:w-0 desktop:h-0 pt-0.5 overflow-visible">
 			<div v-if="passwordMatch" class="flex items-center w-52 desktop:ml-2 mt-1.5 desktop:mt-0.5">
-				<AvailableIcon class="w-5 h-5 mr-1 inline-block" /> Matching
+				<AvailableIcon class="w-5 h-5 mr-1 inline-block" /> {{ $t('passwordRepeatInput.matching') }}
 			</div>
 			<div v-if="!passwordMatch" class="flex items-center w-52 desktop:ml-2 mt-1.5 desktop:mt-0.5">
-				<UnavailableIcon class="w-5 h-5 mr-1 inline-block" /> Not matching
+				<UnavailableIcon class="w-5 h-5 mr-1 inline-block" /> {{ $t('passwordRepeatInput.notMatching') }}
 			</div>
 		</div>
 	</div>
