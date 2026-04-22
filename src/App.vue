@@ -149,6 +149,7 @@ import {
 	blockUserInput,
 	appStatus,
 	inconsistencyDialog,
+	localization,
 } from './global'
 import { settingsManager } from './services/settings-manager'
 import LoadingIcon from './icons/loading.vue'
@@ -467,6 +468,7 @@ onMounted(async () => {
 		progressActivity()
 
 		await settingsManager.load()
+		localization.setLocale(settingsManager.language)
 		debug.init()
 		debug.log(`App Loading ${settingsManager.channel} ${updateManager.currentVersion}`)
 		if (settingsManager.mainWindowSize.width > 100 && settingsManager.mainWindowSize.height > 100) {

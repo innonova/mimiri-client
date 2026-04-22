@@ -50,6 +50,7 @@ export interface MimerConfiguration {
 	systemTheme: string
 	defaultEditor: string | undefined
 	defaultEditorMobile: string
+	language: string
 }
 
 class SettingsManager {
@@ -92,6 +93,7 @@ class SettingsManager {
 		systemTheme: 'light',
 		defaultEditor: undefined,
 		defaultEditorMobile: 'wysiwyg',
+		language: 'en',
 	})
 
 	constructor() {
@@ -462,6 +464,15 @@ class SettingsManager {
 
 	public set defaultEditorMobile(value: string) {
 		this.state.defaultEditorMobile = value
+		void this.save()
+	}
+
+	public get language() {
+		return this.state.language || 'en'
+	}
+
+	public set language(value: string) {
+		this.state.language = value
 		void this.save()
 	}
 }

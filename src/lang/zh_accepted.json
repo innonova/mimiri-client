@@ -1,0 +1,947 @@
+{
+	"acceptShareDialog.cannotAcceptDataUsage": {
+		"en": "Cannot accept share!\nNew data usage ({size}) would exceed current maximum ({max})",
+		"zh": "无法接受共享！\n新数据用量（{size}）将超过当前上限（{max}）",
+		"zh_en": "Cannot accept share!\nNew data usage ({size}) will exceed the current limit ({max})",
+		"_note": "Same pattern as cannotAcceptNoteCount: \"would\" → \"will\", \"maximum\" → \"limit\". Equivalent meaning.",
+		"_recommendation": "accept"
+	},
+	"acceptShareDialog.cannotAcceptNoteCount": {
+		"en": "Cannot accept share!\nNew note count ({count}) would exceed current maximum ({max})",
+		"zh": "无法接受共享！\n新笔记数量（{count}）将超过当前上限（{max}）",
+		"zh_en": "Cannot accept share!\nNew note count ({count}) will exceed the current limit ({max})",
+		"_note": "\"would exceed current maximum\" → \"will exceed the current limit\". Minor modal/word choice difference; meaning equivalent.",
+		"_recommendation": "accept"
+	},
+	"acceptShareDialog.enterCode": {
+		"en": "Enter the one time code to accept a share.",
+		"zh": "输入一次性代码以接受共享。",
+		"zh_en": "Enter the one-time code to accept a share.",
+		"_note": "\"one time\" (en) → \"one-time\" (zh) — hyphenation only.",
+		"_recommendation": "accept"
+	},
+	"app.firstTimeMessage": {
+		"en": "This might take a moment if this is the first time you are starting Mimiri Notes",
+		"zh": "如果这是您第一次启动 Mimiri Notes，可能需要片刻时间",
+		"zh_en": "If this is your first time starting Mimiri Notes, it may take a moment",
+		"_note": "Sentence reordered (condition moved to front). Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.logout": {
+		"en": "Logout",
+		"zh": "退出登录",
+		"zh_en": "Log Out",
+		"_note": "\"Logout\" (one word) → \"Log Out\" (two words). Both correct; zh uses the two-word verb form.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.shareOffers": {
+		"en": "Share Offers",
+		"zh": "共享邀请",
+		"zh_en": "Share Invitations",
+		"_note": "\"Share Offers\" → \"Share Invitations\". In the note-sharing context, both refer to pending share offers. \"Invitations\" is arguably clearer.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.showDevTools": {
+		"en": "Show Dev Tools",
+		"zh": "显示开发者工具",
+		"zh_en": "Show Developer Tools",
+		"_note": "\"Dev Tools\" → \"Developer Tools\". Expanded abbreviation.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.trayDevTools": {
+		"en": "Dev Tools",
+		"zh": "开发者工具",
+		"zh_en": "Developer Tools",
+		"_note": "Same as showDevTools — \"Dev Tools\" → \"Developer Tools\".",
+		"_recommendation": "accept"
+	},
+	"contextMenu.trayShowInTaskbar": {
+		"en": "Show In Taskbar",
+		"zh": "在任务栏中显示",
+		"zh_en": "Show in Taskbar",
+		"_note": "\"In\" capitalised in en (title case); \"in\" lowercase in zh back-translation. Minor capitalisation.",
+		"_recommendation": "accept"
+	},
+	"deleteHistoryDialog.deleteAll": {
+		"en": "Are you sure you want to delete ALL history",
+		"zh": "您确定要删除全部历史记录吗",
+		"zh_en": "Are you sure you want to delete all history",
+		"_note": "\"ALL\" (caps emphasis in en) rendered as normal in zh. Caps emphasis does not translate naturally to Chinese.",
+		"_recommendation": "accept"
+	},
+	"deleteHistoryDialog.sharedWith": {
+		"en": "This note is shared with:",
+		"zh": "此笔记已共享给：",
+		"zh_en": "This note has been shared with:",
+		"_note": "\"is shared\" → \"has been shared\" — slight aspect/tense difference. Meaning equivalent.",
+		"_recommendation": "accept"
+	},
+	"deleteLocalDataDialog.encryptedWarning": {
+		"en": "While your data is encrypted leaving it lying around does make it more exposed to potential attacks.",
+		"zh": "尽管您的数据已加密，但将其留在设备上仍会增加潜在攻击的风险。",
+		"zh_en": "Although your data is encrypted, leaving it on the device still increases the risk of potential attacks.",
+		"_note": "\"lying around\" → \"on the device\" (more precise); \"more exposed to\" → \"increases the risk of\". Same meaning, slightly more formal.",
+		"_recommendation": "accept"
+	},
+	"deleteLocalDataDialog.leaveImprovePerformance": {
+		"en": "Leaving it will improve performance the next time you log in on this device.",
+		"zh": "保留数据将在您下次登录此设备时提升性能。",
+		"zh_en": "Keeping the data will improve performance the next time you log in on this device.",
+		"_note": "\"Leaving it\" → \"Keeping the data\" — more explicit subject. Same meaning.",
+		"_recommendation": "accept"
+	},
+	"deleteLocalDataDialog.moreInfo": {
+		"en": "more info",
+		"zh": "更多信息",
+		"zh_en": "More information",
+		"_note": "\"more info\" (informal abbreviation) → \"More information\" (formal, expanded, capitalised).",
+		"_recommendation": "accept"
+	},
+	"deleteLocalDataDialog.notPersonalDevice": {
+		"en": "If this is not your personal device, removing this data is advisable.",
+		"zh": "如果这不是您的个人设备，建议删除此数据。",
+		"zh_en": "If this is not your personal device, it is advisable to delete this data.",
+		"_note": "\"removing this data is advisable\" → \"it is advisable to delete this data\". Rephrased; same meaning.",
+		"_recommendation": "accept"
+	},
+	"deleteLocalDataDialog.question": {
+		"en": "Do you want to remove locally cached data?",
+		"zh": "您是否要删除本地缓存的数据？",
+		"zh_en": "Do you want to delete locally cached data?",
+		"_note": "\"remove\" (en) → \"delete\" (zh). Both words are valid; zh prefers the more explicit form.",
+		"_recommendation": "accept"
+	},
+	"deleteLocalDataDialog.removeData": {
+		"en": "Remove data",
+		"zh": "删除数据",
+		"zh_en": "Delete data",
+		"_note": "\"Remove\" → \"Delete\" — consistent with zh preference for the more explicit term.",
+		"_recommendation": "accept"
+	},
+	"deleteNodeDialog.alsoDeleted": {
+		"en": "This note will also be deleted for:",
+		"zh": "此笔记也将对以下用户删除：",
+		"zh_en": "This note will also be deleted for the following users:",
+		"_note": "zh adds \"the following users\" for clarity. En leaves the list implicit.",
+		"_recommendation": "accept"
+	},
+	"deleteNodeDialog.cannotDeleteLine1": {
+		"en": "Cannot delete note containing shared notes.",
+		"zh": "无法删除包含共享笔记的笔记。",
+		"zh_en": "Cannot delete a note containing shared notes.",
+		"_note": "Added article \"a\". Grammatically more correct than en.",
+		"_recommendation": "accept"
+	},
+	"deleteNodeDialog.noOtherUsers": {
+		"en": "No other users have access to this note",
+		"zh": "没有其他用户可以访问此笔记",
+		"zh_en": "No other users can access this note",
+		"_note": "\"have access to\" → \"can access\". Same meaning.",
+		"_recommendation": "accept"
+	},
+	"deleteNodeDialog.ok": {
+		"en": "Ok",
+		"zh": "确定",
+		"zh_en": "OK",
+		"_note": "\"Ok\" (en) → \"OK\" (zh) — standard all-caps form. Both acceptable.",
+		"_recommendation": "accept"
+	},
+	"editor.copyBlock": {
+		"en": "Copy block",
+		"zh": "复制代码块",
+		"zh_en": "Copy code block",
+		"_note": "\"block\" → \"code block\". zh adds \"code\" for specificity. In context this is a code block action, so the addition is appropriate.",
+		"_recommendation": "accept"
+	},
+	"editor.selectBlock": {
+		"en": "Select block",
+		"zh": "选择代码块",
+		"zh_en": "Select code block",
+		"_note": "Same as copyBlock — \"block\" → \"code block\".",
+		"_recommendation": "accept"
+	},
+	"inconsistencyDialog.reloadRecommended": {
+		"en": "Reloading is recommended.",
+		"zh": "建议重新加载。",
+		"zh_en": "Reload is recommended.",
+		"_note": "\"Reloading\" → \"Reload\" — nominal vs gerund form; same meaning.",
+		"_recommendation": "accept"
+	},
+	"limitDialog.dataSizeText": {
+		"en": "You have used {used} of your {max}",
+		"zh": "您已使用 {used} / {max}",
+		"zh_en": "You have used {used} / {max}",
+		"_note": "Same \"/\" vs \"of your\" pattern as noteCountText. Equivalent.",
+		"_recommendation": "accept"
+	},
+	"limitDialog.noteCountText": {
+		"en": "You have created {count} of your {max} notes",
+		"zh": "您已创建 {count} / {max} 条笔记",
+		"zh_en": "You have created {count} / {max} notes",
+		"_note": "\"of your\" pattern replaced with \"/\" separator — common in Chinese UI for quota display. Meaning equivalent.",
+		"_recommendation": "accept"
+	},
+	"limitDialog.noteSizeText": {
+		"en": "The note you are trying to save is {size} the maximum allowed is {max}",
+		"zh": "您尝试保存的笔记大小为 {size}，最大允许为 {max}",
+		"zh_en": "The note you are trying to save is {size}, the maximum allowed is {max}",
+		"_note": "zh adds a comma between the two clauses, improving readability. Same meaning.",
+		"_recommendation": "accept"
+	},
+	"limitDialog.noteSizeTitle": {
+		"en": "Note Exceeds Max Size",
+		"zh": "笔记超过最大大小",
+		"zh_en": "Note Exceeds Maximum Size",
+		"_note": "\"Max\" (abbreviated) → \"Maximum\" (full form).",
+		"_recommendation": "accept"
+	},
+	"loginDialog.reason1": {
+		"en": "You changed password on another device",
+		"zh": "您在其他设备上更改了密码",
+		"zh_en": "You changed your password on another device",
+		"_note": "zh adds \"your\" — grammatically more correct than en.",
+		"_recommendation": "accept"
+	},
+	"loginDialog.reason2": {
+		"en": "You updated from a version prior to 2.5.0",
+		"zh": "您从 2.5.0 之前的版本升级",
+		"zh_en": "You upgraded from a version prior to 2.5.0",
+		"_note": "\"updated\" → \"upgraded\". Both valid; \"upgraded\" is more natural for version migration.",
+		"_recommendation": "accept"
+	},
+	"loginDialog.reason3": {
+		"en": "Something unexpected went wrong",
+		"zh": "发生了意外错误",
+		"zh_en": "An unexpected error occurred",
+		"_note": "\"Something unexpected went wrong\" (informal) → \"An unexpected error occurred\" (more formal/technical). Same meaning.",
+		"_recommendation": "accept"
+	},
+	"loginDialog.serverReauth": {
+		"en": "Please enter your username and password to reauthenticate with the server.",
+		"zh": "请输入您的用户名和密码以重新向服务器验证身份。",
+		"zh_en": "Please enter your username and password to re-authenticate with the server.",
+		"_note": "\"reauthenticate\" → \"re-authenticate\" — hyphenation variant only. Same meaning.",
+		"_recommendation": "accept"
+	},
+	"loginDialog.whySeeingThis": {
+		"en": "Why are you seeing this?",
+		"zh": "为什么会看到此提示？",
+		"zh_en": "Why are you seeing this prompt?",
+		"_note": "zh adds \"prompt\" (此提示) for clarity.",
+		"_recommendation": "accept"
+	},
+	"noteEditor.readMoreEntries": {
+		"en": "Read More Entries",
+		"zh": "加载更多条目",
+		"zh_en": "Load More Entries",
+		"_note": "\"Read\" → \"Load\" — semantic shift. \"Load\" (加载) is more accurate for a lazy-loading action that fetches data from storage. The zh translation is arguably better.",
+		"_recommendation": "accept — consider updating en to \"Load More Entries\" for consistency"
+	},
+	"notificationList.markAllRead": {
+		"en": "Mark All Read",
+		"zh": "全部标为已读",
+		"zh_en": "Mark All as Read",
+		"_note": "zh adds \"as\" — grammatically more complete than en.",
+		"_recommendation": "accept"
+	},
+	"passwordDialog.title": {
+		"en": "Verify that it is you",
+		"zh": "验证您的身份",
+		"zh_en": "Verify your identity",
+		"_note": "Tone shift: \"Verify that it is you\" is personal/conversational; \"Verify your identity\" is formal/institutional. The zh opts for the standard formal phrasing used in Chinese security UIs.",
+		"_recommendation": "accept — formal tone is appropriate and conventional in Chinese UI"
+	},
+	"passwordGenerator.cosplayMataHari": {
+		"en": "I cosplay as Mata Hari",
+		"zh": "我需要顶级安全",
+		"zh_en": "I need top-level security",
+		"_note": "Cultural reference entirely replaced. \"Mata Hari\" was a WWI spy — the en phrase implies extreme security needs through a cultural allusion. The zh replaces it with a direct functional statement. The humour and cultural flavour of the original are lost.",
+		"_recommendation": "accept — cultural reference is untranslatable as-is; direct functional statement is the pragmatic choice"
+	},
+	"passwordGenerator.imATarget": {
+		"en": "I'm a target",
+		"zh": "我是攻击目标",
+		"zh_en": "I am an attack target",
+		"_note": "\"I am a target\" (informal) → \"I am an attack target\" (explicit). zh makes clear it means a security attack target. More descriptive but loses informal brevity.",
+		"_recommendation": "accept"
+	},
+	"passwordGenerator.includeDifficultSymbols": {
+		"en": "Include difficult symbols",
+		"zh": "包含复杂符号",
+		"zh_en": "Include complex symbols",
+		"_note": "\"difficult\" → \"complex\". Slightly different nuance but functionally the same in context.",
+		"_recommendation": "accept"
+	},
+	"passwordGenerator.includeExactlyOneSymbol": {
+		"en": "Include exactly 1 Symbol",
+		"zh": "恰好包含 1 个符号",
+		"zh_en": "Include exactly 1 symbol",
+		"_note": "\"Symbol\" (capitalised in en) → \"symbol\" (lowercase). Minor capitalisation.",
+		"_recommendation": "accept"
+	},
+	"passwordGenerator.includeFriendlySymbols": {
+		"en": "Include friendly symbols",
+		"zh": "包含易用符号",
+		"zh_en": "Include easy-to-use symbols",
+		"_note": "Modified from 包含常用符号 (include common symbols) to 包含易用符号 (include easy-to-use symbols) — preserves the \"friendly\" (easy to type/read) connotation rather than just \"frequently used\".",
+		"_recommendation": "accept"
+	},
+	"passwordGenerator.includeLowerCase": {
+		"en": "Include lower case",
+		"zh": "包含小写字母",
+		"zh_en": "Include lowercase letters",
+		"_note": "\"lower case\" → \"lowercase letters\". zh is more explicit (adds \"letters\").",
+		"_recommendation": "accept"
+	},
+	"passwordGenerator.includeUpperCase": {
+		"en": "Include upper case",
+		"zh": "包含大写字母",
+		"zh_en": "Include uppercase letters",
+		"_note": "Same as includeLowerCase.",
+		"_recommendation": "accept"
+	},
+	"passwordGenerator.notHappening": {
+		"en": "not happening",
+		"zh": "不可能发生",
+		"zh_en": "not possible",
+		"_note": "\"not happening\" (colloquial: this will not occur) → \"not possible\" (literal). The zh loses the informal tone but the meaning is functionally equivalent in a probability-label context.",
+		"_recommendation": "accept"
+	},
+	"passwordGenerator.option10M": {
+		"en": "10M ({time})",
+		"zh": "1000万（{time}）",
+		"zh_en": "10 million ({time})",
+		"_note": "Same number expansion.",
+		"_recommendation": "accept"
+	},
+	"passwordGenerator.option1M": {
+		"en": "1M ({time}) (default)",
+		"zh": "100万（{time}）（默认）",
+		"zh_en": "1 million ({time}) (default)",
+		"_note": "Same number expansion pattern as settingsPassword.option1M.",
+		"_recommendation": "accept"
+	},
+	"passwordGenerator.option20M": {
+		"en": "20M ({time})",
+		"zh": "2000万（{time}）",
+		"zh_en": "20 million ({time})",
+		"_note": "Same number expansion.",
+		"_recommendation": "accept"
+	},
+	"passwordGenerator.option2M": {
+		"en": "2M ({time})",
+		"zh": "200万（{time}）",
+		"zh_en": "2 million ({time})",
+		"_note": "Same number expansion.",
+		"_recommendation": "accept"
+	},
+	"passwordGenerator.possibleCombinations": {
+		"en": "Possible Combinations:",
+		"zh": "可能的组合数：",
+		"zh_en": "Possible combinations:",
+		"_note": "\"Combinations\" (capitalised in en) → \"combinations\" (lowercase). Capitalisation only.",
+		"_recommendation": "accept"
+	},
+	"passwordInput.notReallyAPassword": {
+		"en": "Not really a password",
+		"zh": "这算不上密码",
+		"zh_en": "This barely counts as a password",
+		"_note": "Same as settingsPassword.notReallyAPassword — different phrasing, same meaning.",
+		"_recommendation": "accept"
+	},
+	"saveEmptyNodeDialog.question": {
+		"en": "Are you sure you want to save empty version of node:",
+		"zh": "您确定要保存此节点的空版本吗：",
+		"zh_en": "Are you sure you want to save an empty version of this node:",
+		"_note": "zh adds article \"a\" → \"an\" and determiner \"this\" — both improvements over the en grammar.",
+		"_recommendation": "accept"
+	},
+	"settingsAbout.chooseFontLicense": {
+		"en": "Choose font to view license",
+		"zh": "选择字体以查看许可证",
+		"zh_en": "Choose a font to view its license",
+		"_note": "zh adds article \"a\" and possessive \"its\" — grammatically more complete than en.",
+		"_recommendation": "accept"
+	},
+	"settingsAbout.discord": {
+		"en": "Join us on Discord",
+		"zh": "加入 Discord",
+		"zh_en": "Join Discord",
+		"_note": "\"Join us on Discord\" → \"Join Discord\" — \"us on\" dropped. Slightly less welcoming but concise.",
+		"_recommendation": "accept"
+	},
+	"settingsAbout.fontLicensesText": {
+		"en": "All fonts are directly referenced either from the operating system or fonts.mimiri.io\nLicenses and project links for fonts referenced from fonts.mimiri.io listed below",
+		"zh": "所有字体直接引用自操作系统或 fonts.mimiri.io\n以下列出了从 fonts.mimiri.io 引用的字体的许可证和项目链接",
+		"zh_en": "All fonts are directly referenced either from the operating system or fonts.mimiri.io\nBelow lists the licenses and project links for fonts referenced from fonts.mimiri.io",
+		"_note": "Second sentence restructured: \"listed below\" → \"Below lists ...\". Same meaning, different word order.",
+		"_recommendation": "accept"
+	},
+	"settingsAbout.iconAttribution0": {
+		"en": "Vectors and icons by <a href=\"https://dazzleui.gumroad.com/l/dazzleiconsfree?ref=svgrepo.com\" target=\"_blank\">Dazzle Ui</a> in CC Attribution License via <a href=\"https://www.svgrepo.com/\" target=\"_blank\">SVG Repo</a>",
+		"zh": "矢量图和图标来自 <a href=\"https://dazzleui.gumroad.com/l/dazzleiconsfree?ref=svgrepo.com\" target=\"_blank\">Dazzle Ui</a>，在 CC 署名许可证下通过 <a href=\"https://www.svgrepo.com/\" target=\"_blank\">SVG Repo</a> 提供",
+		"zh_en": "Vectors and icons from <a href=\"https://dazzleui.gumroad.com/l/dazzleiconsfree?ref=svgrepo.com\" target=\"_blank\">Dazzle Ui</a>, under CC Attribution License via <a href=\"https://www.svgrepo.com/\" target=\"_blank\">SVG Repo</a>",
+		"_note": "\"by\" → \"from\"; \"in CC\" → \"under CC\". Both are valid preposition choices for attribution. Same meaning.",
+		"_recommendation": "accept"
+	},
+	"settingsAbout.iconAttribution1": {
+		"en": "Vectors and icons by <a href=\"https://www.figma.com/@leonid?ref=svgrepo.com\" target=\"_blank\">Leonid Tsvetkov</a> in CC Attribution License via <a href=\"https://www.svgrepo.com/\" target=\"_blank\">SVG Repo</a>",
+		"zh": "矢量图和图标来自 <a href=\"https://www.figma.com/@leonid?ref=svgrepo.com\" target=\"_blank\">Leonid Tsvetkov</a>，在 CC 署名许可证下通过 <a href=\"https://www.svgrepo.com/\" target=\"_blank\">SVG Repo</a> 提供",
+		"zh_en": "Vectors and icons from <a href=\"https://www.figma.com/@leonid?ref=svgrepo.com\" target=\"_blank\">Leonid Tsvetkov</a>, under CC Attribution License via <a href=\"https://www.svgrepo.com/\" target=\"_blank\">SVG Repo</a>",
+		"_note": "Same preposition changes as iconAttribution0.",
+		"_recommendation": "accept"
+	},
+	"settingsAbout.issueTracker": {
+		"en": "Issue Tracker on GitHub",
+		"zh": "GitHub 问题追踪",
+		"zh_en": "GitHub issue tracker",
+		"_note": "Word order changed; capitalisation difference. Same meaning.",
+		"_recommendation": "accept"
+	},
+	"settingsAbout.reddit": {
+		"en": "Join us on Reddit",
+		"zh": "加入 Reddit",
+		"zh_en": "Join Reddit",
+		"_note": "Same as discord: \"us on\" dropped.",
+		"_recommendation": "accept"
+	},
+	"settingsAbout.released": {
+		"en": "Released:",
+		"zh": "发布时间：",
+		"zh_en": "Release date:",
+		"_note": "\"Released:\" → \"Release date:\" — zh makes the label more explicit.",
+		"_recommendation": "accept"
+	},
+	"settingsAbout.reload": {
+		"en": "reload",
+		"zh": "重新加载",
+		"zh_en": "Reload",
+		"_note": "\"reload\" (lowercase in en) → \"Reload\" (capitalised). zh uses standard title case for a button label.",
+		"_recommendation": "accept"
+	},
+	"settingsAbout.sourceGitHub": {
+		"en": "Source on GitHub",
+		"zh": "GitHub 源码",
+		"zh_en": "GitHub source code",
+		"_note": "Word order changed; \"source\" expanded to \"source code\". Same meaning.",
+		"_recommendation": "accept"
+	},
+	"settingsCreateAccount2.cloudFeature11": {
+		"en": "100 MB & 2000 notes for free",
+		"zh": "免费 100 MB 及 2000 条笔记",
+		"zh_en": "100 MB and 2000 notes for free",
+		"_note": "\"&\" → \"and\". Minor symbol/word difference.",
+		"_recommendation": "accept"
+	},
+	"settingsCreateAccount2.cloudFeature2": {
+		"en": "Notes backed up in cloud",
+		"zh": "笔记备份至云端",
+		"zh_en": "Notes backed up to cloud",
+		"_note": "\"in cloud\" → \"to cloud\" — preposition difference. Both acceptable.",
+		"_recommendation": "accept"
+	},
+	"settingsCreateAccount2.faq1Answer": {
+		"en": "Yes up to 2000 notes and 100MB.",
+		"zh": "最多 2000 条笔记和 100MB 是免费的。",
+		"zh_en": "Up to 2000 notes and 100MB is free.",
+		"_note": "Opening \"Yes\" dropped; sentence restructured. Same information.",
+		"_recommendation": "accept"
+	},
+	"settingsCreateAccount2.faq2Answer": {
+		"en": "If you want to access your notes from multiple devices or you wish to share notes with other users, then yes.\n\nIf you want to keep your notes only on this device and not sync them anywhere, then no.",
+		"zh": "如果您想从多台设备访问笔记或与其他用户共享笔记，则需要。\n\n如果您只想将笔记保存在此设备上而不同步到任何地方，则不需要。",
+		"zh_en": "If you want to access your notes from multiple devices or share notes with other users, then yes.\n\nIf you only want to keep your notes on this device and not sync them anywhere, then no.",
+		"_note": "\"or you wish to\" → \"or\". Streamlined conjunction. Same meaning.",
+		"_recommendation": "accept"
+	},
+	"settingsCreateAccount2.faq3Answer": {
+		"en": "Your data is encrypted before it leaves your device and even we cannot access your data.",
+		"zh": "您的数据在离开设备之前就已加密，即使是我们也无法访问您的数据。",
+		"zh_en": "Your data is encrypted before it leaves your device, and even we cannot access your data.",
+		"_note": "Comma added between clauses. Minor punctuation improvement.",
+		"_recommendation": "accept"
+	},
+	"settingsCreateAccount2.faq4Answer": {
+		"en": "No, unfortunately we cannot help you recover your password.\n\nMaking this possible would substantially weaken your data security.",
+		"zh": "很遗憾，我们无法帮您恢复密码。\n\n实现这一功能将会大幅降低您的数据安全性。",
+		"zh_en": "Unfortunately, we cannot help you recover your password.\n\nMaking this possible would substantially weaken your data security.",
+		"_note": "\"No, unfortunately\" → \"Unfortunately\" — the leading \"No\" is dropped. zh uses 很遗憾 which implies the negative answer without stating it explicitly.",
+		"_recommendation": "accept"
+	},
+	"settingsCreateAccount2.faq5Answer": {
+		"en": "Technically a Local Account offers stronger privacy guarantees. However, with a well-chosen password the difference is academic.\n\nAnd a Local Account does not help ensure your own access to the data in case of device loss or in an emergency situation.\n\nUltimately it depends on what you are trying to achieve.",
+		"zh": "从技术上讲，本地账户提供更强的隐私保障。但选择了好密码后，这种差别实际上无关紧要。\n\n而且本地账户在设备丢失或紧急情况下无法保证您访问自己的数据。\n\n最终取决于您想要实现什么目的。",
+		"zh_en": "Technically, a Local Account offers stronger privacy guarantees. However, with a well-chosen password this difference is practically irrelevant.\n\nAnd a Local Account does not ensure your own access to the data in case of device loss or an emergency.\n\nUltimately it depends on what you want to achieve.",
+		"_note": "Modified 差别其实可以忽略不计 (negligible) → 这种差别实际上无关紧要 (practically irrelevant), preserving the \"academic\" idiom — the difference exists but does not matter in practice.",
+		"_recommendation": "accept"
+	},
+	"settingsCreateAccount2.seePricing": {
+		"en": "See pricing for additional space",
+		"zh": "查看额外空间的定价",
+		"zh_en": "View pricing for additional space",
+		"_note": "\"See\" → \"View\". Both are natural UI verbs.",
+		"_recommendation": "accept"
+	},
+	"settingsDeleteAccount.iUnderstandThat": {
+		"en": "I understand that",
+		"zh": "我了解以下情况：",
+		"zh_en": "I understand the following:",
+		"_note": "Modified from 我了解 to 我了解以下情况：— restores the grammatical link to the dependent items via an explicit colon. The zh now functions as a label introducing the acknowledgement list.",
+		"_recommendation": "accept"
+	},
+	"settingsDeleteAccount.noWayToRecover": {
+		"en": "that there is no way to recover my data",
+		"zh": "我的数据将无法恢复",
+		"zh_en": "my data cannot be recovered",
+		"_note": "Standalone declarative form. With iUnderstandThat updated to end with a colon, the zh items now read naturally as completions of the introductory label.",
+		"_recommendation": "accept"
+	},
+	"settingsFontsColors.boldItalicText": {
+		"en": "bold italic text",
+		"zh": "粗斜体文本",
+		"zh_en": "Bold italic text",
+		"_note": "Capitalisation difference only.",
+		"_recommendation": "accept"
+	},
+	"settingsFontsColors.boldText": {
+		"en": "bold text",
+		"zh": "粗体文本",
+		"zh_en": "Bold text",
+		"_note": "Capitalisation difference only.",
+		"_recommendation": "accept"
+	},
+	"settingsFontsColors.italicText": {
+		"en": "italic text",
+		"zh": "斜体文本",
+		"zh_en": "Italic text",
+		"_note": "Capitalisation difference only.",
+		"_recommendation": "accept"
+	},
+	"settingsFontsColors.normalText": {
+		"en": "normal text",
+		"zh": "普通文本",
+		"zh_en": "Normal text",
+		"_note": "Capitalisation: en uses lowercase for sample text labels; zh uses title case.",
+		"_recommendation": "accept"
+	},
+	"settingsGeneral.languageChinese": {
+		"en": "Chinese (中文)",
+		"zh": "中文",
+		"zh_en": "Chinese",
+		"_note": "en shows script in parentheses \"(中文)\"; zh shows only 中文 (no parenthetical needed since the UI is already in Chinese). The asymmetry is intentional.",
+		"_recommendation": "accept — intentional localisation pattern"
+	},
+	"settingsGeneral.languageEnglish": {
+		"en": "English",
+		"zh": "英语 (English)",
+		"zh_en": "English (English)",
+		"_note": "zh adds the English name in parentheses: 英语 (English). Intentional — Chinese users see both the Chinese name and the English name for clarity when selecting a language.",
+		"_recommendation": "accept — intentional localisation pattern"
+	},
+	"settingsGeneral.useChevrons": {
+		"en": "Use chevrons in tree view",
+		"zh": "在树视图中使用箭头图标",
+		"zh_en": "Use arrow icons in tree view",
+		"_note": "\"chevrons\" (specific shape term) → \"arrow icons\" (descriptive). 箭头图标 literally means \"arrow icons\". The zh is more universally understood but loses the specific chevron shape.",
+		"_recommendation": "accept — \"arrow icons\" is clearer for a Chinese audience unfamiliar with \"chevron\""
+	},
+	"settingsGeneral.useChevronsTooltip": {
+		"en": "Show chevrons in the tree instead of plus/minus icons to indicate expandable items",
+		"zh": "在树视图中使用箭头图标代替加减号图标来表示可展开项目",
+		"zh_en": "Show arrow icons in the tree instead of plus/minus icons to indicate expandable items",
+		"_note": "Same \"chevrons\" → \"arrow icons\" substitution as useChevrons.",
+		"_recommendation": "accept"
+	},
+	"settingsPassword.iterations": {
+		"en": "Iterations:",
+		"zh": "迭代次数：",
+		"zh_en": "Number of iterations:",
+		"_note": "\"Iterations:\" → \"Number of iterations:\" — zh expands to be more descriptive.",
+		"_recommendation": "accept"
+	},
+	"settingsPassword.new": {
+		"en": "New:",
+		"zh": "新密码：",
+		"zh_en": "New Password:",
+		"_note": "\"New:\" → \"New Password:\" — zh is more explicit. The added context is helpful in a form with multiple fields.",
+		"_recommendation": "accept"
+	},
+	"settingsPassword.notReallyAPassword": {
+		"en": "Not really a password",
+		"zh": "这算不上密码",
+		"zh_en": "This barely counts as a password",
+		"_note": "Rephrased but same dismissive meaning.",
+		"_recommendation": "accept"
+	},
+	"settingsPassword.option10M": {
+		"en": "10M ({time})",
+		"zh": "1000万（{time}）",
+		"zh_en": "10 million ({time})",
+		"_note": "Same number expansion pattern.",
+		"_recommendation": "accept"
+	},
+	"settingsPassword.option1M": {
+		"en": "1M ({time}) (default)",
+		"zh": "100万（{time}）（默认）",
+		"zh_en": "1 million ({time}) (default)",
+		"_note": "\"1M\" → \"1 million\" (100万). Chinese UI conventionally spells out large numbers rather than using abbreviations.",
+		"_recommendation": "accept"
+	},
+	"settingsPassword.option20M": {
+		"en": "20M ({time})",
+		"zh": "2000万（{time}）",
+		"zh_en": "20 million ({time})",
+		"_note": "Same number expansion pattern.",
+		"_recommendation": "accept"
+	},
+	"settingsPassword.option2M": {
+		"en": "2M ({time})",
+		"zh": "200万（{time}）",
+		"zh_en": "2 million ({time})",
+		"_note": "Same number expansion pattern as option1M.",
+		"_recommendation": "accept"
+	},
+	"settingsPinCode.setOrChangeTooltip": {
+		"en": "Set a 4-digit PIN Code to lock Mimiri after a small period of inactivity and use the code to quickly resume the session",
+		"zh": "设置 4 位 PIN 码，在一段时间不活动后锁定 Mimiri，并使用该码快速恢复会话",
+		"zh_en": "Set a 4-digit PIN code to lock Mimiri after a period of inactivity, and use the code to quickly resume the session",
+		"_note": "\"a small period\" → \"a period\" — \"small\" dropped. Minor.",
+		"_recommendation": "accept"
+	},
+	"settingsPromoteAccount.description": {
+		"en": "Choose a username and password to allow you to access your data from anywhere",
+		"zh": "选择用户名和密码，以便从任何地方访问您的数据",
+		"zh_en": "Choose a username and password to access your data from anywhere",
+		"_note": "\"to allow you to\" simplified to \"to\". Same meaning.",
+		"_recommendation": "accept"
+	},
+	"settingsPromoteAccount.iterations": {
+		"en": "Iterations:",
+		"zh": "迭代次数：",
+		"zh_en": "Number of iterations:",
+		"_note": "Same as settingsPassword.iterations.",
+		"_recommendation": "accept"
+	},
+	"settingsPromoteAccount.notReallyAPassword": {
+		"en": "Not really a password",
+		"zh": "这算不上密码",
+		"zh_en": "This barely counts as a password",
+		"_note": "Same as settingsPassword.notReallyAPassword.",
+		"_recommendation": "accept"
+	},
+	"settingsPromoteAccount.option10M": {
+		"en": "10M ({time})",
+		"zh": "1000万（{time}）",
+		"zh_en": "10 million ({time})",
+		"_note": "Same number expansion.",
+		"_recommendation": "accept"
+	},
+	"settingsPromoteAccount.option1M": {
+		"en": "1M ({time}) (default)",
+		"zh": "100万（{time}）（默认）",
+		"zh_en": "1 million ({time}) (default)",
+		"_note": "Same number expansion as settingsPassword.option1M.",
+		"_recommendation": "accept"
+	},
+	"settingsPromoteAccount.option20M": {
+		"en": "20M ({time})",
+		"zh": "2000万（{time}）",
+		"zh_en": "20 million ({time})",
+		"_note": "Same number expansion.",
+		"_recommendation": "accept"
+	},
+	"settingsPromoteAccount.option2M": {
+		"en": "2M ({time})",
+		"zh": "200万（{time}）",
+		"zh_en": "2 million ({time})",
+		"_note": "Same number expansion.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.descAndroidPlay": {
+		"en": "Larger updates will happen like normal through Google Play",
+		"zh": "较大的更新将照常通过 Google Play 进行",
+		"zh_en": "Larger updates will happen as normal through Google Play",
+		"_note": "Same \"like normal\" → \"as normal\" as descIosAppStore.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.descAndroidStill": {
+		"en": "Larger updates will still happen like normal through Google Play (outside our control)",
+		"zh": "较大的更新仍将照常通过 Google Play 进行（不在我们控制范围内）",
+		"zh_en": "Larger updates will still happen as normal through Google Play (outside our control)",
+		"_note": "Same as descIosStill.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.descFlatHubStill": {
+		"en": "If you have installed via FlatHub or Snap Store updates to the Electron host application will still happen through the normal flow here.",
+		"zh": "如果您通过 FlatHub 或 Snap Store 安装，Electron 宿主应用的更新仍将在此按正常流程进行。",
+		"zh_en": "If you installed via FlatHub or Snap Store, updates to the Electron host application will still happen through the normal process here.",
+		"_note": "Same pattern as descLinuxFlatHub.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.descInSystemArea": {
+		"en": "in the System area in the treeview",
+		"zh": "在树视图的系统区域中",
+		"zh_en": "in the System area in the tree view",
+		"_note": "\"treeview\" (one word) → \"tree view\" (two words). Both acceptable.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.descInTitlebar": {
+		"en": "in the titlebar and like this",
+		"zh": "在标题栏中，以及以这种方式",
+		"zh_en": "in the title bar, and like this",
+		"_note": "\"titlebar\" (one word) → \"title bar\" (two words). Both acceptable spellings.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.descIosAppStore": {
+		"en": "Larger updates will happen like normal through the AppStore",
+		"zh": "较大的更新将照常通过 AppStore 进行",
+		"zh_en": "Larger updates will happen as normal through the AppStore",
+		"_note": "\"like normal\" → \"as normal\". Both idiomatic; \"as normal\" is slightly more standard.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.descIosStill": {
+		"en": "Larger updates will still happen like normal through the AppStore (outside our control)",
+		"zh": "较大的更新仍将照常通过 AppStore 进行（不在我们控制范围内）",
+		"zh_en": "Larger updates will still happen as normal through the AppStore (outside our control)",
+		"_note": "\"like normal\" → \"as normal\". Same as descIosAppStore.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.descLinuxFlatHub": {
+		"en": "If you have installed via FlatHub or Snap Store updates to the Electron host application will happen through the normal flow here.",
+		"zh": "如果您通过 FlatHub 或 Snap Store 安装，Electron 宿主应用的更新将在此按正常流程进行。",
+		"zh_en": "If you installed via FlatHub or Snap Store, updates to the Electron host application will happen through the normal process here.",
+		"_note": "\"have installed\" → \"installed\"; \"normal flow\" → \"normal process\". Minor phrasing differences.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.descLinuxManual": {
+		"en": "If you have installed the application manually you will be notified when an update to the Electron host is available.",
+		"zh": "如果您手动安装了应用，当 Electron 宿主有更新时将收到通知。",
+		"zh_en": "If you manually installed the application, you will be notified when an update to the Electron host is available.",
+		"_note": "\"have installed ... manually\" → \"manually installed\". Reordered adverb. Same meaning.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.descNoNotification": {
+		"en": "No notification will be shown, you will need to manually check for updates from here",
+		"zh": "不会显示通知，您需要从此处手动检查更新",
+		"zh_en": "No notification will be shown; you will need to manually check for updates from here",
+		"_note": "Comma replaced with semicolon between independent clauses. Grammatically more correct.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.descNoRestartAuto": {
+		"en": "Updates that do not require restart will happen automatically when you are not actively using the app.",
+		"zh": "不需要重启的更新将在您未主动使用应用时自动进行。",
+		"zh_en": "Updates that do not require a restart will happen automatically when you are not actively using the app.",
+		"_note": "zh adds article \"a\" before \"restart\". Grammatically more correct.",
+		"_recommendation": "accept"
+	},
+	"shareDialog.acceptInstruction": {
+		"en": "{name} will need to accept the share using the menu item 'Accept Share'",
+		"zh": "{name} 需要使用菜单项\"接受共享\"来接受共享",
+		"zh_en": "{name} needs to accept the share using the menu item \"Accept Share\"",
+		"_note": "\"will need to\" → \"needs to\". Modal tense simplification. Same meaning.",
+		"_recommendation": "accept"
+	},
+	"shareDialog.codeHint": {
+		"en": "Then share the provided one time code with them so they can accept the share.",
+		"zh": "然后将提供的一次性代码分享给对方，让他们接受共享。",
+		"zh_en": "Then share the provided one-time code with them so they can accept the share.",
+		"_note": "\"one time\" → \"one-time\" — hyphenation only.",
+		"_recommendation": "accept"
+	},
+	"shareDialog.codeInstruction": {
+		"en": "Share this one time code with {name} to complete the share of {noteName}",
+		"zh": "将此一次性代码分享给 {name} 以完成 {noteName} 的共享",
+		"zh_en": "Share this one-time code with {name} to complete sharing of {noteName}",
+		"_note": "\"one time\" → \"one-time\" (hyphenation); \"the share of\" → \"sharing of\" (naturalisation). Meaning equivalent.",
+		"_recommendation": "accept"
+	},
+	"shareDialog.multipleUsersHint": {
+		"en": "If you wish to share this note with multiple people you will need to repeat this process for each user.",
+		"zh": "如果您希望与多人共享此笔记，需要为每位用户重复此操作。",
+		"zh_en": "If you wish to share this note with multiple people, you need to repeat this process for each user.",
+		"_note": "\"will need to\" → \"need to\". Minor simplification. Same meaning.",
+		"_recommendation": "accept"
+	},
+	"shareDialog.shareFailed": {
+		"en": "Unable to share, please verify username and internet connection.",
+		"zh": "无法共享，请验证用户名和网络连接。",
+		"zh_en": "Unable to share, please verify the username and network connection.",
+		"_note": "zh adds article \"the\"; \"internet connection\" → \"network connection\". Minor.",
+		"_recommendation": "accept"
+	},
+	"statusBar.syncErrorLimitExceeded": {
+		"en": "Sync Error: Limit exceeded (see details)",
+		"zh": "同步错误：超出限制（查看详情）",
+		"zh_en": "Synchronization Error: Limit exceeded (see details)",
+		"_note": "\"Sync\" expanded to \"Synchronization\". Full form used consistently in zh.",
+		"_recommendation": "accept"
+	},
+	"statusBar.syncErrorNoteSize": {
+		"en": "Sync Error: Note size exceeded (see details)",
+		"zh": "同步错误：笔记大小超限（查看详情）",
+		"zh_en": "Synchronization Error: Note size exceeded (see details)",
+		"_note": "Same \"Sync\" → \"Synchronization\" expansion.",
+		"_recommendation": "accept"
+	},
+	"statusBar.syncErrorServerRejection": {
+		"en": "Sync Error: Server rejection (see details)",
+		"zh": "同步错误：服务器拒绝（查看详情）",
+		"zh_en": "Synchronization Error: Server rejection (see details)",
+		"_note": "Same \"Sync\" → \"Synchronization\" expansion.",
+		"_recommendation": "accept"
+	},
+	"subCustomerData.recommendFillOut": {
+		"en": "We recommend filling out all relevant fields if you need a tax invoice",
+		"zh": "如果您需要税务发票，建议填写所有相关字段",
+		"zh_en": "If you need a tax invoice, we recommend filling out all relevant fields",
+		"_note": "Clause order reversed (condition moved to front). Same meaning.",
+		"_recommendation": "accept"
+	},
+	"subCustomerData.stateProvince": {
+		"en": "State/Province",
+		"zh": "省/州",
+		"zh_en": "Province/State",
+		"_note": "Order reversed: \"State/Province\" → \"Province/State\". In China, Province (省) is the primary administrative division, so it naturally comes first.",
+		"_recommendation": "accept — order reflects Chinese administrative conventions"
+	},
+	"subCustomerData.whyAsk": {
+		"en": "Why do we ask for this information?",
+		"zh": "我们为什么需要这些信息？",
+		"zh_en": "Why do we need this information?",
+		"_note": "\"ask for\" → \"need\". Slightly different framing; same intent.",
+		"_recommendation": "accept"
+	},
+	"subCustomerData.whyAskInfo": {
+		"en": "We need your country of residence to manage VAT (this has no impact on the price you pay - the price you are shown is the final price).<br /><br />We will use your email address solely to send you receipts, notifications of failed payments, and reminders prior to renewal. Your email address also serves as a last resort for canceling your subscription in case you lose access to your account.<br /><br />We will never use your email address for marketing purposes, newsletters, or any other kind of unsolicited communication.<br /><br />The above data is shared with our payment provider to process your payment, primarily for fraud prevention.<br /><br />We will, however, never share your data with any other parties. See our <a href=\"https://mimiri.io/privacy\" target=\"_blank\">Privacy Policy</a> for details.<br /><br />All data is handled in compliance with both GDPR and Swiss data protection laws, regardless of your country of residence.",
+		"zh": "我们需要您的居住国来管理增值税（这不会影响您支付的价格——您看到的价格即为最终价格）。<br /><br />我们仅用您的电子邮件地址发送收据、付款失败通知以及续订前的提醒。您的电子邮件地址也是在您失去账户访问权时取消订阅的最后手段。<br /><br />我们绝不会将您的电子邮件地址用于营销、通讯或任何未经请求的通信。<br /><br />上述数据与我们的支付提供商共享以处理您的付款，主要用于防止欺诈。<br /><br />但是，我们绝不会将您的数据与任何其他第三方共享。详情请查看我们的<a href=\"https://mimiri.io/privacy\" target=\"_blank\">隐私政策</a>。<br /><br />无论您居住在哪个国家，所有数据均依据 GDPR 及瑞士数据保护法进行处理。",
+		"zh_en": "We need your country of residence to manage VAT (this has no impact on the price you pay - the price shown is the final price).<br /><br />We will use your email address solely to send you receipts, notifications of failed payments, and reminders before renewal. Your email address also serves as a last resort for canceling your subscription if you lose access to your account.<br /><br />We will never use your email address for marketing, newsletters, or any other unsolicited communication.<br /><br />The above data is shared with our payment provider to process your payment, primarily for fraud prevention.<br /><br />However, we will never share your data with any other third parties. See our <a href=\"https://mimiri.io/privacy\" target=\"_blank\">Privacy Policy</a> for details.<br /><br />All data is handled in compliance with both GDPR and Swiss data protection laws, regardless of your country of residence.",
+		"_note": "Multiple minor differences throughout: \"prior to\" → \"before\"; \"any other parties\" → \"any other third parties\" (zh more specific); \"marketing purposes\" → \"marketing\" (simplified). All functionally equivalent.",
+		"_recommendation": "accept"
+	},
+	"subInvoiceItem.creditNote": {
+		"en": "CREDIT NOTE",
+		"zh": "贷项通知单",
+		"zh_en": "Credit Note",
+		"_note": "Capitalisation only: en uses all-caps; zh uses title case in back-translation. 贷项通知单 is the correct accounting term.",
+		"_recommendation": "accept"
+	},
+	"subInvoiceItem.credited": {
+		"en": "CREDITED",
+		"zh": "已抵扣",
+		"zh_en": "CREDITED / OFFSET",
+		"_note": "Modified from 已退款 (REFUNDED) to 已抵扣 (credited / offset) — preserves the accounting distinction between a credit applied to the account vs cash refunded to the customer.",
+		"_recommendation": "accept"
+	},
+	"subInvoiceItem.due": {
+		"en": "Due:",
+		"zh": "到期日：",
+		"zh_en": "Due date:",
+		"_note": "\"Due:\" → \"Due date:\" — zh adds \"date\" for clarity.",
+		"_recommendation": "accept"
+	},
+	"subInvoiceItem.issued": {
+		"en": "Issued:",
+		"zh": "开具日期：",
+		"zh_en": "Issue date:",
+		"_note": "\"Issued:\" → \"Issue date:\" — zh is more explicit.",
+		"_recommendation": "accept"
+	},
+	"subInvoiceItem.open": {
+		"en": "OPEN",
+		"zh": "待付款",
+		"zh_en": "PENDING PAYMENT",
+		"_note": "Modified from 未付款 (UNPAID) to 待付款 (pending payment) — more neutral, closer to the OPEN invoice status meaning (outstanding, not necessarily overdue).",
+		"_recommendation": "accept"
+	},
+	"subNewSubscriptionView.promoCopy": {
+		"en": "The free tier isn't a trial - it's built to be fully usable and will always be here. \nBut it's our subscribers who make it possible for Mimiri Notes to keep moving forward for everyone.",
+		"zh": "免费套餐不是试用版——它是完全可用的，并将永远存在。\n但正是我们的订阅用户让 Mimiri Notes 能够持续为所有人前进。",
+		"zh_en": "The free tier is not a trial — it is fully usable and will always be here. \nBut it is our subscribers who make it possible for Mimiri Notes to keep moving forward for everyone.",
+		"_note": "Contractions expanded; \"built to be fully usable\" → \"is fully usable\" — \"built to be\" dropped. The zh is slightly less emphatic on the intentional design choice, but functionally equivalent.",
+		"_recommendation": "accept"
+	},
+	"subPaymentMethodItem.makeDefault": {
+		"en": "Make default",
+		"zh": "设为默认",
+		"zh_en": "Set as default",
+		"_note": "\"Make default\" → \"Set as default\". Both natural.",
+		"_recommendation": "accept"
+	},
+	"subPaymentSummary.vat": {
+		"en": "Of this VAT:",
+		"zh": "其中增值税：",
+		"zh_en": "Of which VAT:",
+		"_note": "\"Of this\" → \"Of which\". Minor phrasing difference; same meaning.",
+		"_recommendation": "accept"
+	},
+	"subSubscriptionItem.manuallyRenewBefore": {
+		"en": "Manually renew before:",
+		"zh": "手动续订截止日期：",
+		"zh_en": "Manual renewal deadline:",
+		"_note": "\"Manually renew before:\" → \"Manual renewal deadline:\". Restructured; same meaning.",
+		"_recommendation": "accept"
+	},
+	"subSubscriptionItem.renewsAutomatically": {
+		"en": "Renews automatically on:",
+		"zh": "自动续订日期：",
+		"zh_en": "Auto-renewal date:",
+		"_note": "\"Renews automatically on:\" → \"Auto-renewal date:\". Restructured; same meaning.",
+		"_recommendation": "accept"
+	},
+	"subUpgradeView.chosenPlan": {
+		"en": "Chosen Plan",
+		"zh": "已选套餐",
+		"zh_en": "Selected Plan",
+		"_note": "\"Chosen\" → \"Selected\". Synonymous.",
+		"_recommendation": "accept"
+	},
+	"subWaitingForPayment.waitingAutomatic": {
+		"en": "Waiting for payment to complete (this will happen automatically)",
+		"zh": "等待支付完成（将自动进行）",
+		"zh_en": "Waiting for payment to complete (will happen automatically)",
+		"_note": "\"this will happen\" → \"will happen\" — \"this\" dropped. Minor.",
+		"_recommendation": "accept"
+	},
+	"syncErrorDialog.dataLimitText": {
+		"en": "You have created {used} of your {max} data\n\nYou can either delete some data or upgrade your account to increase the limit.",
+		"zh": "您已创建 {used} / {max} 数据\n\n您可以删除一些数据或升级账户以提高上限。",
+		"zh_en": "You have created {used} / {max} data\n\nYou can delete some data or upgrade your account to increase the limit.",
+		"_note": "Same two differences as noteLimitText: \"/\" format and dropped \"either\".",
+		"_recommendation": "accept"
+	},
+	"syncErrorDialog.noteLimitText": {
+		"en": "You have created {count} of your {max} notes\nYou can either delete some notes or upgrade your account to increase the limit.",
+		"zh": "您已创建 {count} / {max} 条笔记\n您可以删除一些笔记或升级账户以提高上限。",
+		"zh_en": "You have created {count} / {max} notes\nYou can delete some notes or upgrade your account to increase the limit.",
+		"_note": "Two differences: (1) \"of your\" → \"/\" format — equivalent; (2) \"either\" dropped from \"either... or\". Dropping \"either\" slightly reduces emphasis on binary choice but meaning is functionally the same.",
+		"_recommendation": "accept"
+	},
+	"syncErrorDialog.noteSizeLimitText": {
+		"en": "The Note '{title}' ({size})\nexceeds the size limit ({max})\n\nYou can either split the note into smaller notes or upgrade your account to increase the limit.\n\nYou can also try deleting note history to reduce the size of the note. (This can be done in the note properties)",
+		"zh": "笔记\"{title}\"（{size}）\n超过了大小限制（{max}）\n\n您可以将笔记拆分为更小的笔记，或升级账户以提高上限。\n\n您也可以尝试删除笔记历史记录以减小笔记大小。（可在笔记属性中操作）",
+		"zh_en": "Note \"{title}\" ({size})\nexceeds the size limit ({max})\n\nYou can split the note into smaller notes, or upgrade your account to increase the limit.\n\nYou can also try deleting note history to reduce the size of the note. (This can be done in note properties)",
+		"_note": "\"either\" dropped; \"in the note properties\" → \"in note properties\"; article \"The\" dropped before Note. All minor; meaning equivalent.",
+		"_recommendation": "accept"
+	},
+	"syncErrorDialog.serverRejectionText": {
+		"en": "The server rejected the synchronization request.\n\nThis is likely a result of a temporary issue, if it persists please contact support.",
+		"zh": "服务器拒绝了同步请求。\n\n这可能是临时问题所致，如持续发生请联系支持。",
+		"zh_en": "The server rejected the synchronization request.\n\nThis may be due to a temporary issue; if it persists please contact support.",
+		"_note": "\"likely a result of\" → \"may be due to\". Slightly less assertive but equivalent meaning.",
+		"_recommendation": "accept"
+	},
+	"syncErrorDialog.syncErrorText": {
+		"en": "An unexpected error occurred while attempting to synchronize.\n\nCheck your internet connection or try again later.",
+		"zh": "尝试同步时发生意外错误。\n\n请检查网络连接或稍后重试。",
+		"zh_en": "An unexpected error occurred while attempting to synchronize.\n\nPlease check your network connection or try again later.",
+		"_note": "zh adds \"Please\" (polite); \"internet connection\" → \"network connection\". Minor.",
+		"_recommendation": "accept"
+	},
+	"textNoteProperties.sharedWith": {
+		"en": "This note is shared with:",
+		"zh": "此笔记已共享给：",
+		"zh_en": "This note has been shared with:",
+		"_note": "\"is shared\" → \"has been shared\". Tense/aspect difference; same meaning.",
+		"_recommendation": "accept"
+	}
+}

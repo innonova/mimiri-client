@@ -3,6 +3,13 @@
 		<TabBar :items="[$t('settingsGeneral.tab')]" />
 		<div class="overflow-y-auto pb-10">
 			<div class="p-1 pt-2 m-auto text-left flex items-center">
+				<div class="w-15">{{ $t('settingsGeneral.language') }}</div>
+				<select v-model="language" class="ml-1">
+					<option value="en">{{ $t('settingsGeneral.languageEnglish') }}</option>
+					<option value="zh">{{ $t('settingsGeneral.languageChinese') }}</option>
+				</select>
+			</div>
+			<div class="p-1 pt-2 m-auto text-left flex items-center">
 				<div class="w-15">{{ $t('settingsGeneral.theme') }}</div>
 				<select v-model="theme" class="ml-1">
 					<option value="default">{{ $t('settingsGeneral.themeSystem') }}</option>
@@ -75,8 +82,9 @@ import { computed, onMounted, ref } from 'vue'
 import { settingsManager } from '../../services/settings-manager'
 import { mimiriPlatform } from '../../services/mimiri-platform'
 import TabBar from '../elements/TabBar.vue'
-import { env } from '../../global'
+import { env, localization } from '../../global'
 
+const language = ref('en')
 const theme = ref('default')
 const openAtLogin = ref(false)
 const showInTaskBar = ref(false)
@@ -89,6 +97,7 @@ const showVerticalGuides = ref(false)
 
 const canSave = computed(
 	() =>
+		language.value !== settingsManager.language ||
 		theme.value !== settingsManager.theme ||
 		keepTrayIconVisible.value !== settingsManager.keepTrayIconVisible ||
 		showInTaskBar.value !== settingsManager.showInTaskBar ||
@@ -101,6 +110,7 @@ const canSave = computed(
 )
 
 onMounted(() => {
+	language.value = settingsManager.language
 	theme.value = settingsManager.theme
 	keepTrayIconVisible.value = settingsManager.keepTrayIconVisible
 	showInTaskBar.value = settingsManager.showInTaskBar
@@ -113,6 +123,8 @@ onMounted(() => {
 })
 
 const save = async () => {
+	settingsManager.language = language.value
+	localization.setLocale(language.value)
 	settingsManager.theme = theme.value
 	settingsManager.keepTrayIconVisible = keepTrayIconVisible.value
 	settingsManager.showInTaskBar = showInTaskBar.value

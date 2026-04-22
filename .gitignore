@@ -1,3 +1,6 @@
+# Project specific
+/src/lang/*.review*.json
+
 # Logs
 logs
 *.log
