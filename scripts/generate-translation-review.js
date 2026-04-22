@@ -19,12 +19,23 @@
  *   - { status: "stale", <lang> }      — key in target only
  *
  * <lang>_accepted.json shape:
- *   { "key.path": { "en": "...", "<lang>": "..." }, ... }
- *   The en + <lang> values are snapshotted at harvest time so that if either
- *   later changes, the entry re-appears in the diff for re-review.
+ *   {
+ *     "key.path": {
+ *       "en": "...",
+ *       "<lang>": "...",
+ *       "<lang>_en": "...",        // back-translation captured at harvest time
+ *       "_note": "...",            // reviewer note from the diff entry
+ *       "_recommendation": "..."   // reviewer recommendation (accept/modify/flag/...)
+ *     },
+ *     ...
+ *   }
+ *   Drift detection is keyed on en + <lang> only — if either later changes, the entry
+ *   re-appears in the diff for re-review. The other fields are kept as a record of the
+ *   prior decision and are not used for matching.
  *
- * diff.json is generated from an annotated review.json. Entries with matching en and
- * <lang>_en (meaning equivalent) are excluded. Remaining entries keep <lang>_en and _note.
+ * diff.json is generated from an annotated review.json. Entries whose <lang>_en is
+ * empty or exactly equal to en are excluded (the AI signals "equivalent" by leaving
+ * <lang>_en blank or copying en verbatim). Remaining entries keep <lang>_en and _note.
  */
 
 import { existsSync, readFileSync, writeFileSync } from 'fs'

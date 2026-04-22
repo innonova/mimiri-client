@@ -23,7 +23,7 @@ Given a target language JSON file (e.g. `src/lang/zh.json`), identify translatio
 
 3. Run `node scripts/generate-translation-review.js <language> --diff`.
    - Reads the annotated review file and writes `src/lang/<language>.review-diff.json`.
-   - Entries where the normalized `<lang>_en` is equivalent to `en` are excluded automatically by the script.
+   - Entries where `<lang>_en` is empty or exactly equals `en` are excluded automatically by the script.
    - Entries already in `src/lang/<language>_accepted.json` (with matching `en` + `<lang>`) are also excluded.
    - Remaining entries form the diff file.
 
@@ -40,7 +40,7 @@ Given a target language JSON file (e.g. `src/lang/zh.json`), identify translatio
 
 5. After all entries in the diff file have a `_recommendation`, run `node scripts/generate-translation-review.js <language> --harvest [statuses]` to record those decisions.
    - Default `statuses` is `accept,flag,modify` (i.e. every entry that has been judged).
-   - For each matching entry, the script appends `{ key: { en, <lang> } }` to `src/lang/<language>_accepted.json` (snapshotting the exact `en` and `<lang>` values reviewed) and removes the entry from `<language>.review-diff.json`.
+   - For each matching entry, the script appends `{ key: { en, <lang>, <lang>_en, _note, _recommendation } }` to `src/lang/<language>_accepted.json` (snapshotting the exact `en` and `<lang>` values reviewed, along with the back-translation and review annotations as a record of the decision) and removes the entry from `<language>.review-diff.json`. Re-surfacing on drift is keyed on `en` + `<lang>` only.
    - On the next review cycle, those keys are skipped automatically. If either the `en` source or the `<lang>` translation later changes, the snapshot mismatch causes the entry to re-surface in the diff for re-review.
    - To harvest only a subset, pass a comma-separated list, e.g. `--harvest accept` to record only the unambiguous accepts and leave `flag` / `modify` entries in the diff for follow-up.
 
