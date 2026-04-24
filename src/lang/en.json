@@ -59,7 +59,7 @@
 		"deleteQuestion": "Are you sure you want to delete:",
 		"leaveQuestion": "Are you sure you want to leave this share:",
 		"noOtherUsers": "No other users have access to this note",
-		"remainAccessible": "This note will remain be accessible to:",
+		"remainAccessible": "This note will remain accessible to:",
 		"alsoDeleted": "This note will also be deleted for:",
 		"cannotDeleteLine1": "Cannot delete note containing shared notes.",
 		"cannotDeleteLine2": "Please remove shared notes before deleting.",
@@ -224,8 +224,8 @@
 		"tools": "Tools",
 		"help": "Help",
 		"searchNotes": "Search Notes",
-		"screenSharingVisible": "Warning: Visible to screen sharing/shot!",
-		"screenSharingHidden": "Invisible to screen sharing/shot",
+		"screenSharingVisible": "Warning: Visible to screen sharing/screenshot!",
+		"screenSharingHidden": "Invisible to screen sharing/screenshot",
 		"notifications": "Notifications",
 		"accountOffline": "Account (Offline)",
 		"accountOnline": "Account (Online)",
@@ -311,6 +311,9 @@
 	},
 	"settingsGeneral": {
 		"tab": "General",
+		"language": "Language",
+		"languageEnglish": "English",
+		"languageChinese": "Chinese (中文)",
 		"theme": "Theme",
 		"themeSystem": "System",
 		"themeLight": "Light",
@@ -420,7 +423,7 @@
 	"settingsUpgrade": {
 		"tab": "Connect Cloud",
 		"chooseCredentials": "Choose your credentials",
-		"currentLocalUser": "You current local user is:",
+		"currentLocalUser": "Your current local user is:",
 		"username": "Username:",
 		"currentPassword": "Current Password:",
 		"chooseNewPassword": "Choose a new password",
@@ -562,7 +565,7 @@
 	},
 	"subPaymentMethods": {
 		"tab": "Payment Methods",
-		"noMethodsYet": "No Payments Methods Yet",
+		"noMethodsYet": "No Payment Methods Yet",
 		"createNew": "Create New"
 	},
 	"subPaymentMethodItem": {

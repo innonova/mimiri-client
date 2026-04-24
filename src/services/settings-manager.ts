@@ -5,6 +5,13 @@ import { toRaw } from 'vue'
 import { delay } from './helpers'
 import { emptyGuid, type Guid } from './types/guid'
 
+export const SUPPORTED_LOCALES = ['en', 'zh'] as const
+export type SupportedLocale = (typeof SUPPORTED_LOCALES)[number]
+export const DEFAULT_LOCALE: SupportedLocale = 'en'
+
+export const isSupportedLocale = (value: unknown): value is SupportedLocale =>
+	typeof value === 'string' && (SUPPORTED_LOCALES as readonly string[]).includes(value)
+
 export enum UpdateMode {
 	AutomaticOnIdle = 'auto-idle',
 	AutomaticOnStart = 'auto-start',
@@ -50,6 +57,7 @@ export interface MimerConfiguration {
 	systemTheme: string
 	defaultEditor: string | undefined
 	defaultEditorMobile: string
+	language: SupportedLocale
 }
 
 class SettingsManager {
@@ -92,6 +100,7 @@ class SettingsManager {
 		systemTheme: 'light',
 		defaultEditor: undefined,
 		defaultEditorMobile: 'wysiwyg',
+		language: DEFAULT_LOCALE,
 	})
 
 	constructor() {
@@ -462,6 +471,21 @@ class SettingsManager {
 
 	public set defaultEditorMobile(value: string) {
 		this.state.defaultEditorMobile = value
+		void this.save()
+	}
+
+	public get language(): SupportedLocale {
+		if (isSupportedLocale(this.state.language)) {
+			return this.state.language
+		}
+		// Persisted value is unsupported (legacy/unregistered locale).
+		this.state.language = DEFAULT_LOCALE
+		void this.save()
+		return DEFAULT_LOCALE
+	}
+
+	public set language(value: string) {
+		this.state.language = isSupportedLocale(value) ? value : DEFAULT_LOCALE
 		void this.save()
 	}
 }
