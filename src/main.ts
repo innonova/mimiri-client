@@ -5,6 +5,7 @@ import App from './App.vue'
 import { $t, localization } from './global'
 import enLocale from './lang/en.json'
 import zhLocale from './lang/zh.json'
+import daLocale from './lang/da.json'
 import { initializeMonacoThemes } from './services/editor/theme-manager'
 import { initializeTextMateGrammars } from './services/editor/textmate-setup'
 
@@ -39,6 +40,7 @@ import tsWorker from 'monaco-editor/esm/vs/language/typescript/ts.worker?worker'
 async function initializeEditor() {
 	localization.register('en', enLocale)
 	localization.register('zh', zhLocale)
+	localization.register('da', daLocale)
 	// Initialize TextMate grammars first (required for Monaco themes to work with TextMate)
 	await initializeTextMateGrammars()
 

@@ -7,6 +7,7 @@
 				<select v-model="language" class="ml-1">
 					<option value="en">{{ $t('settingsGeneral.languageEnglish') }}</option>
 					<option value="zh">{{ $t('settingsGeneral.languageChinese') }}</option>
+					<option value="da">{{ $t('settingsGeneral.languageDanish') }}</option>
 				</select>
 			</div>
 			<div class="p-1 pt-2 m-auto text-left flex items-center">
