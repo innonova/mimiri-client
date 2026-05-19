@@ -312,8 +312,9 @@
 	"settingsGeneral": {
 		"tab": "通用",
 		"language": "语言",
-		"languageEnglish": "英语 (English)",
+		"languageEnglish": "English",
 		"languageChinese": "中文",
+		"languageDanish": "Dansk",
 		"theme": "主题",
 		"themeSystem": "系统",
 		"themeLight": "浅色",

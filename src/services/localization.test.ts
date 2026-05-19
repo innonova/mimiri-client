@@ -25,7 +25,7 @@ const enLocale: LocaleData = {
 		title: 'Delete Note',
 		confirm: 'Are you sure you want to delete:',
 		leaveShareTitle: 'Leave Share',
-		remainsAccessibleTo: 'This note will remain be accessible to:',
+		remainAccessible: 'This note will remain accessible to:',
 	},
 }
 
