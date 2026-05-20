@@ -343,6 +343,7 @@
 		"languageEnglish": "Language option label for English. Always the native name only ('English') across all locales — language picker shows each language in its own script so users can recognise their language regardless of the current UI language.",
 		"languageChinese": "Language option label for Chinese. Always the native name only ('中文') across all locales.",
 		"languageDanish": "Language option label for Danish. Always the native name only ('Dansk') across all locales.",
+		"languageGerman": "Language option label for German. Always the native name only ('Deutsch') across all locales.",
 		"theme": "Section label for the theme selector.",
 		"themeSystem": "Theme option: follow the OS dark/light setting.",
 		"themeLight": "Theme option: always light.",

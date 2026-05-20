@@ -307,6 +307,10 @@ export class MimerNote {
 		return this.owner.note.shareMimerNote(this, username)
 	}
 
+	public refreshTitle() {
+		this.viewModel.title = this.title
+	}
+
 	public async save() {
 		if (this.beforeChangeText !== this.text) {
 			await MimerNote.addHistoryEntry(this.note, this.text, this.owner.state.username, dateTimeNow())

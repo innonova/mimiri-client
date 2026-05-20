@@ -8,6 +8,7 @@
 					<option value="en">{{ $t('settingsGeneral.languageEnglish') }}</option>
 					<option value="zh">{{ $t('settingsGeneral.languageChinese') }}</option>
 					<option value="da">{{ $t('settingsGeneral.languageDanish') }}</option>
+					<option value="de">{{ $t('settingsGeneral.languageGerman') }}</option>
 				</select>
 			</div>
 			<div class="p-1 pt-2 m-auto text-left flex items-center">
@@ -83,7 +84,7 @@ import { computed, onMounted, ref } from 'vue'
 import { settingsManager } from '../../services/settings-manager'
 import { mimiriPlatform } from '../../services/mimiri-platform'
 import TabBar from '../elements/TabBar.vue'
-import { env, localization } from '../../global'
+import { env, localization, noteManager } from '../../global'
 
 const language = ref('en')
 const theme = ref('default')
@@ -126,6 +127,7 @@ onMounted(() => {
 const save = async () => {
 	settingsManager.language = language.value
 	localization.setLocale(language.value)
+	noteManager.tree.refreshSystemNoteTitles()
 	settingsManager.theme = theme.value
 	settingsManager.keepTrayIconVisible = keepTrayIconVisible.value
 	settingsManager.showInTaskBar = showInTaskBar.value

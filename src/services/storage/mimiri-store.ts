@@ -242,6 +242,7 @@ export class MimiriStore {
 		selectedNote: () => this.treeManager.selectedNote,
 		selectedViewModelRef: () => this.treeManager.selectedViewModelRef,
 		selectedViewModel: () => this.treeManager.selectedViewModel,
+		refreshSystemNoteTitles: () => this.treeManager.refreshSystemNoteTitles(),
 	}
 
 	public readonly operations = {

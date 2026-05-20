@@ -21,7 +21,7 @@
 		/>
 		<div
 			v-if="mimiriPlatform.isDesktop && !mimiriPlatform.isMacApp"
-			class="hover:bg-title-hover cursor-default rounded-sm px-2 no-drag"
+			class="hover:bg-title-hover cursor-default rounded-sm px-2 no-drag whitespace-nowrap"
 			data-testid="title-menu-file"
 			@click="menuClick($event, 'file')"
 			@mouseenter="menuHover($event, 'file')"
@@ -30,7 +30,7 @@
 		</div>
 		<div
 			v-if="mimiriPlatform.isDesktop && !mimiriPlatform.isMacApp"
-			class="hover:bg-title-hover cursor-default rounded-sm px-2 no-drag"
+			class="hover:bg-title-hover cursor-default rounded-sm px-2 no-drag whitespace-nowrap"
 			data-testid="title-menu-edit"
 			@click="menuClick($event, 'edit')"
 			@mouseenter="menuHover($event, 'edit')"
@@ -39,7 +39,7 @@
 		</div>
 		<div
 			v-if="mimiriPlatform.isDesktop && !mimiriPlatform.isMacApp"
-			class="hover:bg-title-hover cursor-default rounded-sm px-2 no-drag"
+			class="hover:bg-title-hover cursor-default rounded-sm px-2 no-drag whitespace-nowrap"
 			data-testid="title-menu-view"
 			@click="menuClick($event, 'view')"
 			@mouseenter="menuHover($event, 'view')"
@@ -48,7 +48,7 @@
 		</div>
 		<div
 			v-if="mimiriPlatform.isDesktop && !mimiriPlatform.isMacApp"
-			class="hover:bg-title-hover cursor-default rounded-sm px-2 no-drag"
+			class="hover:bg-title-hover cursor-default rounded-sm px-2 no-drag whitespace-nowrap"
 			data-testid="title-menu-tools"
 			@click="menuClick($event, 'tools')"
 			@mouseenter="menuHover($event, 'tools')"
@@ -57,7 +57,7 @@
 		</div>
 		<div
 			v-if="mimiriPlatform.isDesktop && !mimiriPlatform.isMacApp"
-			class="hover:bg-title-hover cursor-default rounded-sm px-2 no-drag"
+			class="hover:bg-title-hover cursor-default rounded-sm px-2 no-drag whitespace-nowrap"
 			data-testid="title-menu-help"
 			@click="menuClick($event, 'help')"
 			@mouseenter="menuHover($event, 'help')"

@@ -11,7 +11,7 @@ import { differenceInHours } from 'date-fns'
 export interface VirtualTree {
 	id: Guid
 	type: string
-	title: string
+	title: () => string
 	icon: string
 	children: VirtualTree[]
 }
@@ -106,7 +106,7 @@ export class VirtualNote extends MimerNote {
 	}
 
 	public get title() {
-		return this._tree?.title
+		return this._tree?.title?.() ?? ''
 	}
 
 	public set title(value: string) {}

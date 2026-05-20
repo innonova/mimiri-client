@@ -6,6 +6,7 @@ import { $t, localization } from './global'
 import enLocale from './lang/en.json'
 import zhLocale from './lang/zh.json'
 import daLocale from './lang/da.json'
+import deLocale from './lang/de.json'
 import { initializeMonacoThemes } from './services/editor/theme-manager'
 import { initializeTextMateGrammars } from './services/editor/textmate-setup'
 
@@ -41,6 +42,8 @@ async function initializeEditor() {
 	localization.register('en', enLocale)
 	localization.register('zh', zhLocale)
 	localization.register('da', daLocale)
+	localization.register('de', deLocale)
+
 	// Initialize TextMate grammars first (required for Monaco themes to work with TextMate)
 	await initializeTextMateGrammars()
 
