@@ -229,13 +229,13 @@
 				</ul>
 				<div class="mt-5 mb-1 font-semibold">{{ $t('settingsUpdate.newFeaturesAndChanges') }}</div>
 				<ul class="list-disc ml-5">
-					<template v-for="item of updateManager.features" :key="item.id">
+					<template v-for="(item, index) of updateManager.features" :key="index">
 						<li class="py-1">{{ item.text }}</li>
 					</template>
 				</ul>
 				<div class="mt-4 mb-1 font-semibold">{{ $t('settingsUpdate.fixes') }}</div>
 				<ul class="list-disc ml-5">
-					<template v-for="item of updateManager.fixes" :key="item.id">
+					<template v-for="(item, index) of updateManager.fixes" :key="index">
 						<li class="py-1">{{ item.text }}</li>
 					</template>
 				</ul>
