@@ -16,7 +16,7 @@
 				<div v-if="neededForServer" class="mx-1 mb-2 max-w-72">
 					{{ $t('loginDialog.serverReauth') }}
 				</div>
-				<div class="grid grid-cols-[4rem_10rem] mobile:grid-cols-[4rem_auto] items-center gap-2 mx-2 mb-2">
+				<div class="grid grid-cols-[5.5rem_10rem] mobile:grid-cols-[5.5rem_auto] items-center gap-2 mx-2 mb-2">
 					<div>{{ $t('loginDialog.username') }}</div>
 					<input
 						ref="usernameInput"
