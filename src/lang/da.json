@@ -479,7 +479,7 @@
 		"descLinuxManual": "Hvis du har installeret programmet manuelt, får du besked, når en opdatering af Electron-værten er tilgængelig.",
 		"descPreservePosition": "Din nuværende træ- og noteposition bevares.",
 		"descNoUnsaved": "Opdateringer sker aldrig, hvis du har ikke-gemte data.",
-		"descSeamless": "Oplevelsen sigter mod at være helt sømløs.",
+		"descSeamless": "Oplevelsen er designet til at være helt gnidningsløs.",
 		"descOnRestart": "Opdaterer automatisk, når du genstarter programmet.",
 		"descNotificationShown": "Notifikationen vises sådan her",
 		"descInTitlebar": "i titellinjen og sådan her",

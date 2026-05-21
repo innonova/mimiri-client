@@ -13,7 +13,7 @@
 						<option :value="UpdateMode.Off">{{ $t('settingsUpdate.off') }}</option>
 					</select>
 				</div>
-				<div v-if="settingsManager.updateMode === UpdateMode.AutomaticOnIdle" class="mt-1 px-2">
+				<ul v-if="settingsManager.updateMode === UpdateMode.AutomaticOnIdle" class="mt-1 pl-6 list-disc">
 					<li>
 						{{ $t('settingsUpdate.descNoRestartAuto') }}
 					</li>
@@ -31,8 +31,8 @@
 					<li>{{ $t('settingsUpdate.descPreservePosition') }}</li>
 					<li>{{ $t('settingsUpdate.descNoUnsaved') }}</li>
 					<li>{{ $t('settingsUpdate.descSeamless') }}</li>
-				</div>
-				<div v-if="settingsManager.updateMode === UpdateMode.AutomaticOnStart" class="mt-1 px-2">
+				</ul>
+				<ul v-if="settingsManager.updateMode === UpdateMode.AutomaticOnStart" class="mt-1 pl-6 list-disc">
 					<li>{{ $t('settingsUpdate.descOnRestart') }}</li>
 					<li v-if="isIos">{{ $t('settingsUpdate.descIosAppStore') }}</li>
 					<li v-if="isAndroid">{{ $t('settingsUpdate.descAndroidPlay') }}</li>
@@ -42,8 +42,8 @@
 					<li v-if="isLinux">
 						{{ $t('settingsUpdate.descLinuxManual') }}
 					</li>
-				</div>
-				<div v-if="settingsManager.updateMode === UpdateMode.StrongNotify" class="mt-1 px-2">
+				</ul>
+				<ul v-if="settingsManager.updateMode === UpdateMode.StrongNotify" class="mt-1 pl-6 list-disc">
 					<li>
 						{{ $t('settingsUpdate.descNotificationShown') }}
 						<div class="inline-block relative ml-2 top-1">
@@ -71,8 +71,8 @@
 					<li v-if="isLinux">
 						{{ $t('settingsUpdate.descLinuxManual') }}
 					</li>
-				</div>
-				<div v-if="settingsManager.updateMode === UpdateMode.DiscreteNotify" class="mt-1 px-2">
+				</ul>
+				<ul v-if="settingsManager.updateMode === UpdateMode.DiscreteNotify" class="mt-1 pl-6 list-disc">
 					<li>
 						{{ $t('settingsUpdate.descNotificationShown') }}
 						<div class="inline-block relative ml-2 top-1">
@@ -94,8 +94,8 @@
 					<li v-if="isLinux">
 						{{ $t('settingsUpdate.descLinuxManual') }}
 					</li>
-				</div>
-				<div v-if="settingsManager.updateMode === UpdateMode.ManualOnly" class="mt-1 px-2">
+				</ul>
+				<ul v-if="settingsManager.updateMode === UpdateMode.ManualOnly" class="mt-1 pl-6 list-disc">
 					<li>{{ $t('settingsUpdate.descNoNotification') }}</li>
 					<li v-if="isLinux">
 						{{ $t('settingsUpdate.descFlatHubStill') }}
@@ -104,7 +104,7 @@
 					<li v-if="isAndroid">
 						{{ $t('settingsUpdate.descAndroidStill') }}
 					</li>
-				</div>
+				</ul>
 				<div v-if="settingsManager.updateMode === UpdateMode.Off" class="mt-1 px-2">
 					<p v-if="isLinux">
 						{{ $t('settingsUpdate.descFlatHubStill') }}
