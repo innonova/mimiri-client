@@ -4,7 +4,7 @@
 		ref="dialog"
 		@close="isOpen = false"
 	>
-		<div v-if="isOpen" class="grid grid-rows-[auto_1fr_auto] gap-6">
+		<div v-show="isOpen" class="grid grid-rows-[auto_1fr_auto] gap-6">
 			<DialogTitle @close="close">{{ $t('passwordGeneratorDialog.title') }}</DialogTitle>
 			<main class="px-3">
 				<PasswordGeneratorComp ref="passwordGenerator" mode="3rdp" @password="onPasswordGenerated" />
@@ -20,7 +20,7 @@
 						</div>
 
 						<div class="desktop:w-0 desktop:h-0 overflow-visible">
-							<div class="absolute right-2 invisible desktop:visible" @mousedown="showPassword" @mouseup="hidePassword">
+							<div class="absolute right-2 invisible desktop:visible" @click="togglePassword">
 								<ShowPasswordIcon v-if="passwordFieldType === 'password'" class="w-5 h-5 mt-1" />
 								<ShowingPasswordIcon v-if="passwordFieldType === 'text'" class="w-5 h-5 mt-1" />
 							</div>
@@ -69,17 +69,14 @@ const regeneratePassword = () => {
 	passwordGenerator.value.regeneratePassword()
 }
 
-const showPassword = () => {
-	passwordFieldType.value = 'text'
-}
-
-const hidePassword = () => {
-	passwordFieldType.value = 'password'
+const togglePassword = () => {
+	passwordFieldType.value = passwordFieldType.value === 'password' ? 'text' : 'password'
 }
 
 const show = () => {
 	isOpen.value = true
 	dialog.value.showModal()
+	passwordGenerator.value.regeneratePassword()
 }
 
 const close = () => {

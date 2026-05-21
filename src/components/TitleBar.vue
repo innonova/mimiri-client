@@ -91,7 +91,7 @@
 			class="h-full min-w-[44px] w-[55px] flex items-center justify-center hover:bg-toolbar-hover active:bg-toolbar-hover"
 			@click="toggleScreenSharing()"
 			:title="
-				settingsManager.allowScreenSharing ? $t('titleBar.screenSharingVisible') : $t('titleBar.screenSharingInvisible')
+				settingsManager.allowScreenSharing ? $t('titleBar.screenSharingVisible') : $t('titleBar.screenSharingHidden')
 			"
 		>
 			<ScreenShareEnabledIcon
