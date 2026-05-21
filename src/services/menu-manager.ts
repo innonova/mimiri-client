@@ -75,6 +75,7 @@ export enum MenuItems {
 	Settings = 'settings',
 	Properties = 'properties',
 	WorkOffline = 'work-offline',
+	ExportNotes = 'export-notes',
 }
 
 class MenuManager {
@@ -176,6 +177,8 @@ class MenuManager {
 			noteManager.tree.openNote(noteManager.tree.controlPanelId())
 		} else if (itemId === 'show-dev-tools') {
 			ipcClient.menu.showDevTools()
+		} else if (itemId === 'export-notes') {
+			await noteManager.operations.exportAllNotes()
 		}
 		if (itemId === 'new-note') {
 			noteManager.ui.newNote()
@@ -786,6 +789,15 @@ class MenuManager {
 						title: $t('contextMenu.workOffline'),
 						checked: noteManager.state.workOffline,
 					})
+					break
+				case MenuItems.ExportNotes:
+					result.push({
+						id: 'export-notes',
+						title: $t('contextMenu.exportNotes'),
+						enabled: noteManager.state.isLoggedIn,
+						visible: ipcClient.isAvailable,
+					})
+					break
 			}
 		}
 		return result
@@ -874,12 +886,14 @@ class MenuManager {
 
 	public get fileMenu() {
 		if (mimiriPlatform.isMacApp) {
-			return [MenuItems.NewRootNote, MenuItems.NewNote]
+			return [MenuItems.NewRootNote, MenuItems.NewNote, MenuItems.Separator, MenuItems.ExportNotes]
 		}
 
 		return [
 			MenuItems.NewRootNote,
 			MenuItems.NewNote,
+			MenuItems.Separator,
+			MenuItems.ExportNotes,
 			MenuItems.Separator,
 			MenuItems.ReceiveShare,
 			MenuItems.Separator,

@@ -795,6 +795,8 @@
 		"trayShowInTaskbar": "Vis i proceslinjen",
 		"trayLaunchOnStartup": "Start ved opstart",
 		"menuMimiriNotes": "Mimiri Notes",
+		"exportNotes": "Eksportér alle noter",
+		"exportNotesComplete": "Eksporterede {count} noter",
 		"menuFile": "Filer",
 		"menuEdit": "Rediger",
 		"menuView": "Vis",

@@ -795,6 +795,8 @@
 		"trayShowInTaskbar": "在任务栏中显示",
 		"trayLaunchOnStartup": "开机启动",
 		"menuMimiriNotes": "Mimiri Notes",
+		"exportNotes": "导出所有笔记",
+		"exportNotesComplete": "已成功导出 {count} 条笔记",
 		"menuFile": "文件",
 		"menuEdit": "编辑",
 		"menuView": "视图",

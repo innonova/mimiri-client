@@ -4,7 +4,9 @@ import type { MimerNote } from '../types/mimer-note'
 import { newGuid } from '../types/guid'
 import { dateTimeNow } from '../types/date-time'
 import { MultiAction } from './multi-action'
-import { debug } from '../../global'
+import { debug, ipcClient, infoDialog, $t } from '../../global'
+import { toBase64 } from '../hex-base64'
+
 import type { NoteService } from './note-service'
 import type { SynchronizationService } from './synchronization-service'
 import type { MimiriClient } from './mimiri-client'
@@ -380,5 +382,58 @@ export class NoteOperationsManager {
 	public async deleteKey(name: Guid): Promise<void> {
 		await this.cryptoManager.deleteKey(name)
 		this.syncService.queueSync()
+	}
+
+	public async exportAllNotes(): Promise<void> {
+		const root = this.treeManager.root
+		if (!root) return
+
+		const sanitizeTitle = (title: string) =>
+			title
+				.replace(/[^\p{L}\p{N}\s\-_.,()[\]']/gu, '_')
+				.trim()
+				.replace(/\.+$/, '') || 'Untitled'
+		const encoder = new TextEncoder()
+
+		const files: { path: string; isFolder: boolean; content: string }[] = []
+
+		const collectNotes = async (note: MimerNote, pathParts: string[]) => {
+			await note.ensureChildren()
+			const usedNames = new Set<string>()
+			for (const child of note.children) {
+				if (child.isSystem) {
+					continue
+				}
+				let safeName = sanitizeTitle(child.title ?? 'Untitled')
+				if (usedNames.has(safeName)) {
+					let counter = 2
+					while (usedNames.has(`${safeName} (${counter})`)) {
+						counter++
+					}
+					safeName = `${safeName} (${counter})`
+				}
+				usedNames.add(safeName)
+				const childPath = [...pathParts, safeName]
+				const hasChildren = child.hasChildren
+				if (hasChildren) {
+					files.push({ path: childPath.join('/'), isFolder: true, content: '' })
+				}
+				files.push({
+					path: childPath.join('/') + '.md',
+					isFolder: false,
+					content: toBase64(encoder.encode(child.text ?? '')),
+				})
+				if (hasChildren) {
+					await collectNotes(child, childPath)
+				}
+			}
+		}
+
+		await collectNotes(root, [])
+		const saved = await ipcClient.fileSystem.saveFolder(files, { title: $t('contextMenu.exportNotes') })
+		if (saved) {
+			const noteCount = files.filter(f => !f.isFolder).length
+			infoDialog.value.show($t('contextMenu.exportNotes'), $t('contextMenu.exportNotesComplete', { count: noteCount }))
+		}
 	}
 }
