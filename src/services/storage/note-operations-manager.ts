@@ -5,7 +5,7 @@ import { newGuid } from '../types/guid'
 import { dateTimeNow } from '../types/date-time'
 import { MultiAction } from './multi-action'
 import { debug, ipcClient, infoDialog, $t } from '../../global'
-import { toBase64 } from '../hex-base64'
+import { fromBase64, toBase64 } from '../hex-base64'
 
 import type { NoteService } from './note-service'
 import type { SynchronizationService } from './synchronization-service'
@@ -382,6 +382,96 @@ export class NoteOperationsManager {
 	public async deleteKey(name: Guid): Promise<void> {
 		await this.cryptoManager.deleteKey(name)
 		this.syncService.queueSync()
+	}
+
+	private importTimestamp(): string {
+		const now = new Date()
+		const pad = (n: number) => String(n).padStart(2, '0')
+		return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`
+	}
+
+	private async createChildNote(parent: Note, title: string, text?: string): Promise<Note> {
+		const note = new Note()
+		note.keyName = parent.keyName
+		note.changeItem('metadata').notes = []
+		note.changeItem('metadata').title = title
+		note.changeItem('metadata').created = dateTimeNow()
+		if (text !== undefined) {
+			note.changeItem('text').text = text
+		}
+		await this.createNote(note)
+		parent.changeItem('metadata').notes.push(note.id)
+		await this.writeNote(parent)
+		return note
+	}
+
+	public async importAllNotes(): Promise<void> {
+		const root = this.treeManager.root
+		if (!root) return
+
+		const files = await ipcClient.fileSystem.loadFolder({ title: $t('contextMenu.importNotes') })
+		if (!files || files.length === 0) return
+
+		this.uiManager.beginAction()
+		try {
+			const decoder = new TextDecoder()
+
+			// Parse each raw FileData path once into structured fields so the
+			// loops below never need to do string manipulation themselves.
+			type ParsedFile = { dir: string; name: string; depth: number; content: string; isFolder: boolean }
+			const parse = (f: { path: string; isFolder: boolean; content: string }): ParsedFile => {
+				const parts = f.path.split('/')
+				return { dir: parts.slice(0, -1).join('/'), name: parts.at(-1)!, depth: parts.length, content: f.content, isFolder: f.isFolder }
+			}
+			const byDepth = (a: ParsedFile, b: ParsedFile) => a.depth - b.depth || a.name.localeCompare(b.name)
+
+			const parsed = files.map(parse)
+
+			// All imported notes live under a single timestamped root note.
+			const importRootNote = await this.createChildNote(
+				root.note,
+				$t('contextMenu.importedRootNoteTitle', { date: this.importTimestamp() }),
+			)
+
+			// noteMap tracks path → Note for every note created during import so
+			// that child notes can look up their parent and so that pass 2 can
+			// detect when a .md file corresponds to an already-created folder note.
+			const noteMap = new Map<string, Note>()
+			noteMap.set('', importRootNote)
+			const resolveParent = (dir: string) => noteMap.get(dir) ?? importRootNote
+
+			// Pass 1: create a note for every exported folder, shallowest first so
+			// each parent note is always in noteMap before its children are processed.
+			for (const folder of parsed.filter(f => f.isFolder).sort(byDepth)) {
+				noteMap.set(`${folder.dir ? folder.dir + '/' : ''}${folder.name}`, await this.createChildNote(resolveParent(folder.dir), folder.name))
+			}
+
+			// Pass 2: process .md files. Notes that also have children were exported
+			// as both a folder and a sibling .md file — in that case noteMap already
+			// has the note from pass 1 and we just attach the text. Otherwise we
+			// create a new leaf note.
+			const mdFiles = parsed.filter(f => !f.isFolder && f.name.endsWith('.md')).sort(byDepth)
+
+			for (const file of mdFiles) {
+				const nameWithoutExt = file.name.slice(0, -3)
+				const key = `${file.dir ? file.dir + '/' : ''}${nameWithoutExt}`
+				const text = decoder.decode(fromBase64(file.content))
+				const existingNote = noteMap.get(key)
+				if (existingNote) {
+					existingNote.changeItem('text').text = text
+					await this.writeNote(existingNote)
+				} else {
+					noteMap.set(key, await this.createChildNote(resolveParent(file.dir), nameWithoutExt, text))
+				}
+			}
+
+			await root.expand()
+			await this.treeManager.getNoteById(importRootNote.id)?.select()
+
+			infoDialog.value.show($t('contextMenu.importNotes'), $t('contextMenu.importNotesComplete', { count: mdFiles.length }))
+		} finally {
+			this.uiManager.endAction()
+		}
 	}
 
 	public async exportAllNotes(): Promise<void> {
