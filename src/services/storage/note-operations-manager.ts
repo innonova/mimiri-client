@@ -438,22 +438,40 @@ export class NoteOperationsManager {
 			// detect when a .md file corresponds to an already-created folder note.
 			const noteMap = new Map<string, Note>()
 			noteMap.set('', importRootNote)
+			// If loadFolder included the selected folder itself as a top-level entry,
+			// pre-map it to importRootNote so it is transparent to the rest of the logic.
+			const topSegments = new Set(parsed.map(f => (f.dir || f.name).split('/')[0]))
+			if (topSegments.size === 1) noteMap.set([...topSegments][0], importRootNote)
 			const resolveParent = (dir: string) => noteMap.get(dir) ?? importRootNote
 
-			// Pass 1: create a note for every exported folder, shallowest first so
-			// each parent note is always in noteMap before its children are processed.
-			for (const folder of parsed.filter(f => f.isFolder).sort(byDepth)) {
-				noteMap.set(`${folder.dir ? folder.dir + '/' : ''}${folder.name}`, await this.createChildNote(resolveParent(folder.dir), folder.name))
+			// Pass 1: create a note for every exported folder that has content,
+			// shallowest first so each parent note is always in noteMap before its
+			// children are processed. A folder is skipped when it has no matching
+			// sibling .md/.txt file and no text-file descendants (i.e. truly empty).
+			const textFiles = parsed.filter(f => !f.isFolder && (f.name.endsWith('.md') || f.name.endsWith('.txt')))
+			const folderHasContent = (folder: ParsedFile): boolean => {
+				const fp = `${folder.dir ? folder.dir + '/' : ''}${folder.name}`
+				return textFiles.some(
+					f =>
+						f.dir === fp ||
+						f.dir.startsWith(fp + '/') ||
+						(f.dir === folder.dir && (f.name === folder.name + '.md' || f.name === folder.name + '.txt')),
+				)
+			}
+			for (const folder of parsed.filter(f => f.isFolder && folderHasContent(f)).sort(byDepth)) {
+				const fp = `${folder.dir ? folder.dir + '/' : ''}${folder.name}`
+				if (!noteMap.has(fp)) noteMap.set(fp, await this.createChildNote(resolveParent(folder.dir), folder.name))
 			}
 
-			// Pass 2: process .md files. Notes that also have children were exported
-			// as both a folder and a sibling .md file — in that case noteMap already
-			// has the note from pass 1 and we just attach the text. Otherwise we
-			// create a new leaf note.
-			const mdFiles = parsed.filter(f => !f.isFolder && f.name.endsWith('.md')).sort(byDepth)
+			// Pass 2: process .md and .txt files. Notes that also have children were
+			// exported as both a folder and a sibling .md file — in that case noteMap
+			// already has the note from pass 1 and we just attach the text. Otherwise
+			// we create a new leaf note.
+			const mdFiles = parsed.filter(f => !f.isFolder && (f.name.endsWith('.md') || f.name.endsWith('.txt'))).sort(byDepth)
 
 			for (const file of mdFiles) {
-				const nameWithoutExt = file.name.slice(0, -3)
+				const extLen = file.name.endsWith('.md') ? 3 : 4
+				const nameWithoutExt = file.name.slice(0, -extLen)
 				const key = `${file.dir ? file.dir + '/' : ''}${nameWithoutExt}`
 				const text = decoder.decode(fromBase64(file.content))
 				const existingNote = noteMap.get(key)
