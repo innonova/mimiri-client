@@ -795,6 +795,8 @@
 		"trayShowInTaskbar": "In Taskleiste anzeigen",
 		"trayLaunchOnStartup": "Beim Start starten",
 		"menuMimiriNotes": "Mimiri Notes",
+		"exportNotes": "Alle Notizen exportieren",
+		"exportNotesComplete": "{count} Notizen erfolgreich exportiert",
 		"menuFile": "Datei",
 		"menuEdit": "Bearbeiten",
 		"menuView": "Ansicht",

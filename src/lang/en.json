@@ -788,6 +788,8 @@
 		"settings": "Settings",
 		"properties": "Properties",
 		"workOffline": "Work Offline",
+		"exportNotes": "Export All Notes",
+		"exportNotesComplete": "Exported {count} notes successfully",
 		"trayShow": "Show",
 		"trayDevTools": "Dev Tools",
 		"trayAllowScreenSharing": "Allow Screen Sharing",

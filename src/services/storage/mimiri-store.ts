@@ -256,6 +256,7 @@ export class MimiriStore {
 		move: (sourceId: Guid, targetId: Guid, mimerNote: MimerNote, index: number, keepKey: boolean, select: boolean) =>
 			this.operationsManager.move(sourceId, targetId, mimerNote, index, keepKey, select, this.treeManager.root.id),
 		deleteKey: (keyName: Guid) => this.operationsManager.deleteKey(keyName),
+		exportAllNotes: () => this.operationsManager.exportAllNotes(),
 	}
 
 	public readonly session = {
