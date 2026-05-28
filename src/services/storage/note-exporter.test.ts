@@ -125,7 +125,11 @@ describe('NoteExporter', () => {
 
 		it('disambiguates duplicate sibling titles', async () => {
 			const root = node({
-				children: [node({ title: 'same', text: '1' }), node({ title: 'same', text: '2' }), node({ title: 'same', text: '3' })],
+				children: [
+					node({ title: 'same', text: '1' }),
+					node({ title: 'same', text: '2' }),
+					node({ title: 'same', text: '3' }),
+				],
 			})
 			const files = await collect(root)
 			expect(files.map(f => f.path).sort()).toEqual(['same (2).md', 'same (3).md', 'same.md'])
