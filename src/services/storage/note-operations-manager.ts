@@ -16,11 +16,13 @@ import { ProofOfWork } from '../proof-of-work'
 import type { CryptographyManager } from './cryptography-manager'
 import type { NoteShareInfo } from '../types/note-share-info'
 import { DEFAULT_PROOF_BITS } from './mimiri-store'
-import { NoteImportExportManager } from './note-import-export-manager'
+import { NoteImporter } from './note-importer'
+import { NoteExporter } from './note-exporter'
 
 export class NoteOperationsManager {
 	private _proofBits = DEFAULT_PROOF_BITS
-	private importExport: NoteImportExportManager
+	private importer: NoteImporter
+	private exporter: NoteExporter
 
 	constructor(
 		private state: SharedState,
@@ -31,7 +33,8 @@ export class NoteOperationsManager {
 		private treeManager: NoteTreeManager,
 		private cryptoManager: CryptographyManager,
 	) {
-		this.importExport = new NoteImportExportManager(this, uiManager, treeManager)
+		this.importer = new NoteImporter(this, uiManager, treeManager)
+		this.exporter = new NoteExporter(treeManager)
 	}
 
 	public async createNote(note: Note): Promise<void> {
@@ -388,11 +391,11 @@ export class NoteOperationsManager {
 	}
 
 	public importAllNotes(): Promise<void> {
-		return this.importExport.importAllNotes()
+		return this.importer.importAllNotes()
 	}
 
 	public exportAllNotes(): Promise<void> {
-		return this.importExport.exportAllNotes()
+		return this.exporter.exportAllNotes()
 	}
 }
 
