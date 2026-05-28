@@ -398,4 +398,3 @@ export class NoteOperationsManager {
 		return this.exporter.exportAllNotes()
 	}
 }
-
