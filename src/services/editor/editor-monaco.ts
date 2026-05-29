@@ -34,7 +34,7 @@ export class EditorMonaco implements TextEditor {
 	private lastSelection: Selection | null = null
 	private _cleanVersions: number[] = []
 	private _checkNextChangeForClean = false
-	private _initialText: string = ''
+	private _baselineText: string = ''
 	private _domElement: HTMLElement | undefined
 	private _active = true
 	private _mouseDownPosition: { lineNumber: number; column: number } | undefined
@@ -241,7 +241,7 @@ export class EditorMonaco implements TextEditor {
 				if (this._cleanVersions.length === 0) {
 					this._cleanVersions.push(this.monacoEditorModel.getAlternativeVersionId())
 				} else if (this._checkNextChangeForClean) {
-					if (this.monacoEditorModel.getValue() === this._initialText) {
+					if (this.monacoEditorModel.getValue() === this._baselineText) {
 						this._cleanVersions.push(this.monacoEditorModel.getAlternativeVersionId())
 					}
 				}
@@ -479,17 +479,22 @@ export class EditorMonaco implements TextEditor {
 		this.listener.onStateUpdated(this._state)
 	}
 
-	public show(text: string, scrollTop: number) {
-		// const normalizedText = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n')
+	public setText(text: string) {
 		editor.remeasureFonts()
 		this._state.changed = false
 		this._cleanVersions = []
-		this._initialText = text
+		this._baselineText = text
 		this.monacoEditorModel.setValue(text)
 
 		this._plugins.forEach(plugin => {
 			plugin.show()
 		})
+		if (this._active) {
+			this.listener.onStateUpdated(this._state)
+		}
+	}
+
+	public setScrollTop(scrollTop: number) {
 		this.skipScrollUntil = Date.now() + 500
 		this.lastScrollTop = scrollTop
 		this.monacoEditor.setScrollTop(scrollTop, editor.ScrollType.Immediate)
@@ -497,30 +502,9 @@ export class EditorMonaco implements TextEditor {
 			this.skipScrollUntil = Date.now() + 500
 			this.monacoEditor.setScrollTop(scrollTop, editor.ScrollType.Immediate)
 		})
-		if (this._active) {
-			this.listener.onStateUpdated(this._state)
-		}
 	}
 
-	public updateText(text: string) {
-		// TODO consider when update is called
-		// const normalizedText = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n')
-		this._initialText = text
-		this._state.changed = false
-		if (this.monacoEditorModel.getValue() !== text) {
-			this._cleanVersions = []
-			this._initialText = text
-			this.monacoEditorModel.setValue(text)
-			this._plugins.forEach(plugin => {
-				plugin.updateText()
-			})
-		}
-		if (this._active) {
-			this.listener.onStateUpdated(this._state)
-		}
-	}
-
-	public switchTo(text: string) {
+	public replaceText(text: string) {
 		if (this.monacoEditorModel.getValue() !== text) {
 			const fullRange = this.monacoEditorModel.getFullModelRange()
 			this._checkNextChangeForClean = true
@@ -543,27 +527,15 @@ export class EditorMonaco implements TextEditor {
 		}
 	}
 
-	public resetChanged() {
+	public resetBaseline() {
 		const text = this.monacoEditorModel.getValue()
-		if (text !== this._initialText) {
-			this._initialText = text
+		if (text !== this._baselineText) {
+			this._baselineText = text
 			this._cleanVersions = [this.monacoEditorModel.getAlternativeVersionId()]
 		} else {
 			this._cleanVersions.push(this.monacoEditorModel.getAlternativeVersionId())
 		}
 		this._state.changed = false
-		if (this._active) {
-			this.listener.onStateUpdated(this._state)
-		}
-	}
-
-	public clear() {
-		this._cleanVersions = []
-		this._state.changed = false
-		this._state.canUndo = false
-		this._state.canRedo = false
-		this.monacoEditorModel?.setValue('')
-		this.readonly = true
 		if (this._active) {
 			this.listener.onStateUpdated(this._state)
 		}
@@ -813,9 +785,5 @@ export class EditorMonaco implements TextEditor {
 
 	public get supportsWordWrap(): boolean {
 		return true
-	}
-
-	get hasOpenDocument(): boolean {
-		return this._cleanVersions.length !== 0
 	}
 }

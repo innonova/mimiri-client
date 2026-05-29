@@ -126,7 +126,10 @@ export class EditorProseMirror implements TextEditor {
 				keymap({
 					'Mod-z': undo,
 					'Mod-y': redo,
-					Enter: chainCommands(convertUrlAtCursor(mimiriSchema.marks.link), splitListItem(mimiriSchema.nodes.list_item)),
+					Enter: chainCommands(
+						convertUrlAtCursor(mimiriSchema.marks.link),
+						splitListItem(mimiriSchema.nodes.list_item),
+					),
 					Tab: sinkListItem(mimiriSchema.nodes.list_item),
 					'Shift-Tab': liftListItem(mimiriSchema.nodes.list_item),
 					'Shift-Enter': chainCommands(newlineInCode, createParagraphNear, liftEmptyBlock, splitBlock),
@@ -443,36 +446,7 @@ export class EditorProseMirror implements TextEditor {
 		this._conflictActionHandler?.navigateConflict(direction)
 	}
 
-	public show(text: string, _scrollTop: number) {
-		console.log('show')
-		this._hasOpenDocument = true
-		const newDoc = deserialize(text)
-
-		this._documentState = EditorState.create({
-			schema: mimiriSchema,
-			doc: newDoc,
-			plugins: this._editor.state.plugins,
-		})
-
-		this._editor.updateState(this._documentState)
-
-		this._initialDoc = this._editor.state.doc
-
-		// Update conflict banner
-		setTimeout(() => {
-			this._conflictActionHandler?.updateBanner(this.historyShowing)
-			this.updateState()
-		}, 0)
-
-		// this.lastScrollTop = scrollTop
-		// this._element.scrollTop = scrollTop
-		// if (this._active) {
-		// 	this.listener.onStateUpdated(this._state)
-		// }
-	}
-
-	public updateText(text: string) {
-		this._hasOpenDocument = true
+	public setText(text: string) {
 		const newDoc = deserialize(text)
 
 		this._documentState = EditorState.create({
@@ -489,17 +463,13 @@ export class EditorProseMirror implements TextEditor {
 			this._conflictActionHandler?.updateBanner(this.historyShowing)
 			this.updateState()
 		}, 0)
-
-		// this._state.changed = false
-		// if (this._element.innerText !== text) {
-		// 	this._element.innerText = text
-		// 	this._initialText = this._element.innerText
-		// }
-		// if (this._active) {
-		// 	this.listener.onStateUpdated(this._state)
-		// }
 	}
-	public switchTo(text: string) {
+
+	public setScrollTop(_scrollTop: number) {
+		// ProseMirror scroll management not yet implemented
+	}
+
+	public replaceText(text: string) {
 		if (this.text !== text) {
 			const newDoc = deserialize(text)
 			const tr = this._editor.state.tr
@@ -513,26 +483,12 @@ export class EditorProseMirror implements TextEditor {
 		}
 	}
 
-	public resetChanged() {
+	public resetBaseline() {
 		this._initialDoc = this._editor.state.doc
 		this._state.changed = false
 		if (this._active) {
 			this.listener.onStateUpdated(this._state)
 		}
-	}
-
-	public clear() {
-		this._hasOpenDocument = false
-		// Clear formatting detector
-		// this._initialText = ''
-		// this._state.changed = false
-		// this._state.canUndo = false
-		// this._state.canRedo = false
-		// this._element.innerText = ''
-		// this.readonly = true
-		// if (this._active) {
-		// 	this.listener.onStateUpdated(this._state)
-		// }
 	}
 
 	public setHistoryText(text: string) {
@@ -719,9 +675,5 @@ export class EditorProseMirror implements TextEditor {
 
 	public get supportsWordWrap(): boolean {
 		return false
-	}
-
-	get hasOpenDocument(): boolean {
-		return this._hasOpenDocument
 	}
 }

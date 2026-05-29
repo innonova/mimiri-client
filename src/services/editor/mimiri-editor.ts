@@ -28,6 +28,8 @@ export class MimiriEditor {
 	private _monacoInitialized: boolean = false
 	private _proseMirrorInitialized: boolean = false
 	private _initialText: string = ''
+	private _monacoHasDocument: boolean = false
+	private _proseMirrorHasDocument: boolean = false
 
 	private saveListener: () => void
 	public onSave(listener: () => void) {
@@ -169,13 +171,22 @@ export class MimiriEditor {
 	}
 
 	public async toggleEditMode() {
+		const currentText = this._activeEditor.text
+		const currentScrollTop = this._activeEditor.scrollTop
+		const currentReadonly = this._activeEditor.readonly
+
 		if (this._editorProseMirror.active) {
 			this.activateMonaco()
-			if (!this._editorMonaco.hasOpenDocument) {
-				this._editorMonaco.show(this.note.text, this.note.scrollTop)
+			if (!this._monacoHasDocument) {
+				this._monacoHasDocument = true
+				this._editorMonaco.setText(this._initialText)
 			}
-			this._editorMonaco.switchTo(this._editorProseMirror.text)
-			this._editorMonaco.readonly = this._editorProseMirror.readonly
+			this._editorMonaco.setScrollTop(currentScrollTop)
+			this._editorMonaco.replaceText(currentText)
+			if (currentText === this._initialText) {
+				this._editorMonaco.resetBaseline()
+			}
+			this._editorMonaco.readonly = currentReadonly
 			if (mimiriPlatform.isDesktop) {
 				settingsManager.defaultEditor = 'code'
 			} else {
@@ -183,11 +194,16 @@ export class MimiriEditor {
 			}
 		} else {
 			await this.activateProseMirror()
-			if (!this._editorProseMirror.hasOpenDocument) {
-				this._editorProseMirror.show(this.note.text, this.note.scrollTop)
+			if (!this._proseMirrorHasDocument) {
+				this._proseMirrorHasDocument = true
+				this._editorProseMirror.setText(this._initialText)
 			}
-			this._editorProseMirror.switchTo(this._editorMonaco.text)
-			this._editorProseMirror.readonly = this._editorMonaco.readonly
+			this._editorProseMirror.setScrollTop(currentScrollTop)
+			this._editorProseMirror.replaceText(currentText)
+			if (currentText === this._initialText) {
+				this._editorProseMirror.resetBaseline()
+			}
+			this._editorProseMirror.readonly = currentReadonly
 			if (mimiriPlatform.isDesktop) {
 				settingsManager.defaultEditor = 'wysiwyg'
 			} else {
@@ -213,26 +229,31 @@ export class MimiriEditor {
 		}
 		if (!note) {
 			this._note = undefined
+			this._monacoHasDocument = false
+			this._proseMirrorHasDocument = false
 			this.history.reset()
-			this._activeEditor.clear()
+			this._activeEditor.setText('')
 			return
 		}
 		if (note.id !== this.note?.id) {
 			this._note = note
+			this._monacoHasDocument = false
+			this._proseMirrorHasDocument = false
 			this.history.reset()
 			this._initialText = note.text
 			this._state.changed = false
-			this._activeEditor.show(note.text, this.note.scrollTop)
+			this._activeEditor.setText(note.text)
+			this._activeEditor.setScrollTop(this.note.scrollTop)
 			this._activeEditor.readonly = note.isSystem
-			if (this._editorProseMirror.active) {
-				this._editorMonaco.clear()
+			if (this._activeEditor === this._editorMonaco) {
+				this._monacoHasDocument = true
 			} else {
-				this._editorProseMirror.clear()
+				this._proseMirrorHasDocument = true
 			}
 		} else {
 			if (!this._state.changed) {
 				this._initialText = note.text
-				this._activeEditor.updateText(note.text)
+				this._activeEditor.setText(note.text)
 			} else {
 				if (note.text === this._activeEditor.text) {
 					this._initialText = note.text
@@ -319,13 +340,13 @@ export class MimiriEditor {
 
 	public reloadNode() {
 		if (this.note) {
-			this._activeEditor.updateText(this.note.text)
+			this._activeEditor.setText(this.note.text)
 			this._activeEditor.readonly = this.note.isSystem
 		}
 	}
 
 	public resetChanged() {
-		this._activeEditor.resetChanged()
+		this._activeEditor.resetBaseline()
 		this._activeEditor.readonly = this.note.isSystem
 	}
 
