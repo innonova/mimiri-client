@@ -31,6 +31,13 @@ export class NoteImporter {
 			const parsed = files.map(f => this.parseFile(f))
 			const textFiles = parsed.filter(f => this.isTextFile(f))
 
+			// Nothing to import: don't create the root note or run a sync cycle
+			// for a folder that has no supported text files.
+			if (textFiles.length === 0) {
+				infoDialog.value.show($t('contextMenu.importNotes'), $t('contextMenu.importNotesEmpty'))
+				return
+			}
+
 			// Notes are built in-memory first and committed as a single batched
 			// MultiAction at the end so the sync service runs one cycle for the
 			// whole import instead of one per note.
@@ -175,17 +182,39 @@ export class NoteImporter {
 	): void {
 		const decoder = new TextDecoder()
 		const resolveParent = (dir: string) => noteMap.get(dir) ?? noteMap.get('')!
+		// Tracks keys whose text was already supplied by a text file, so a
+		// second sibling file (e.g. foo.txt after foo.md) is detected as a
+		// collision instead of silently overwriting the first note's text.
+		const textKeys = new Set<string>()
 		for (const file of [...textFiles].sort(this.byDepth)) {
 			const nameWithoutExt = this.stripTextExt(file.name)
 			const key = this.joinPath(file.dir, nameWithoutExt)
 			const text = decoder.decode(fromBase64(file.content))
 			const existingNote = noteMap.get(key)
-			if (existingNote) {
+			if (existingNote && !textKeys.has(key)) {
+				// A folder note from pass 1: attach the sibling file's text to it.
 				existingNote.changeItem('text').text = text
-			} else {
+				textKeys.add(key)
+			} else if (!existingNote) {
 				noteMap.set(key, buildNote(resolveParent(file.dir), nameWithoutExt, text))
+				textKeys.add(key)
+			} else {
+				// Collision: another text file already owns this key (e.g. both
+				// foo.md and foo.txt exist). Disambiguate by keeping the full
+				// file name so neither note's text is silently lost.
+				const uniqueKey = this.uniqueKey(this.joinPath(file.dir, file.name), noteMap)
+				noteMap.set(uniqueKey, buildNote(resolveParent(file.dir), file.name, text))
 			}
 		}
+	}
+
+	// Returns key unchanged if free, otherwise appends an incrementing suffix
+	// until an unused key is found, guarding against repeated collisions.
+	private uniqueKey(key: string, noteMap: Map<string, Note>): string {
+		if (!noteMap.has(key)) return key
+		let i = 2
+		while (noteMap.has(`${key} (${i})`)) i++
+		return `${key} (${i})`
 	}
 
 	// Commit all created notes plus the single parent update in one batched

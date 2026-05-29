@@ -846,6 +846,7 @@
 		"exportNotesComplete": "InfoDialog message shown after a successful export. Variable: {count} = number of .md files written. Use natural phrasing; the dialog title is the same as 'exportNotes'.",
 		"importNotes": "File menu item (Electron desktop only): import notes from a folder of .md files. Keep short — it is a menu label.",
 		"importNotesComplete": "InfoDialog message shown after a successful import. Variable: {count} = number of .md files read. Use natural phrasing; the dialog title is the same as 'importNotes'.",
+		"importNotesEmpty": "InfoDialog message shown when the selected folder contains no supported text files (.md/.txt) to import. The dialog title is the same as 'importNotes'. Keep the file extensions '.md/.txt' as-is.",
 		"importedRootNoteTitle": "Title of the root note created during import. Variable: {date} = local date-time string in YYYY-MM-DD HH:MM:SS format. Translate only the word meaning 'Imported'; keep {date} as-is.",
 		"menuMimiriNotes": "OS app menu (macOS): the application name menu.",
 		"menuFile": "OS menu bar: File menu name.",

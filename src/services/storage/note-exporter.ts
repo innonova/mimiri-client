@@ -8,6 +8,8 @@ import type { NoteTreeManager } from './note-tree-manager'
 type ExportedFile = { path: string; isFolder: boolean; content: string }
 
 export class NoteExporter {
+	private encoder = new TextEncoder()
+
 	constructor(private treeManager: NoteTreeManager) {}
 
 	public async exportAllNotes(): Promise<void> {
@@ -48,7 +50,6 @@ export class NoteExporter {
 	// and one .md entry per note (including parents, so their text is preserved).
 	private async collectNotesForExport(note: MimerNote, pathParts: string[], files: ExportedFile[]): Promise<void> {
 		await note.ensureChildren()
-		const encoder = new TextEncoder()
 		const usedNames = new Set<string>()
 		for (const child of note.children) {
 			if (child.isSystem) continue
@@ -62,7 +63,7 @@ export class NoteExporter {
 			files.push({
 				path: joined + '.md',
 				isFolder: false,
-				content: toBase64(encoder.encode(child.text ?? '')),
+				content: toBase64(this.encoder.encode(child.text ?? '')),
 			})
 			if (child.hasChildren) {
 				await this.collectNotesForExport(child, childPath, files)
