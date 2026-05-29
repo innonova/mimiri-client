@@ -20,16 +20,15 @@ export interface TextEditorListener {
 	onSearchAllRequested()
 	onScroll(position: number)
 	onPasswordClicked(top: number, left: number, text: string)
-	onStateUpdated(state: Omit<MimiriEditorState, 'mode' | 'changed'>)
+	onStateUpdated(state: Omit<MimiriEditorState, 'mode'>)
 	onCopyNotification(top: number, left: number)
 }
 
 export interface TextEditor {
-	show(text: string, scrollTop: number)
-	updateText(text: string)
-	switchTo(text: string)
-	clear()
-	resetChanged()
+	setText(text: string)
+	replaceText(text: string)
+	resetBaseline()
+	setScrollTop(scrollTop: number)
 	setHistoryText(text: string)
 	hideHistory()
 	showHistory()
@@ -51,9 +50,7 @@ export interface TextEditor {
 	get readonly()
 	set readonly(value: boolean)
 	get scrollTop(): number
-	// get initialText(): string
 	get text(): string
 	get changed(): boolean
 	get supportsWordWrap(): boolean
-	get hasOpenDocument(): boolean
 }
