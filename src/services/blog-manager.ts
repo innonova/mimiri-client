@@ -18,6 +18,7 @@ export interface BlogState {
 
 export class BlogManager {
 	private noteManager: MimiriStore
+	private isNewAccount = false
 	public state: BlogState
 
 	constructor(noteManager: MimiriStore) {
@@ -112,6 +113,13 @@ export class BlogManager {
 		}
 	}
 
+	// Called when a new account is initially created. A freshly created account can't
+	// have missed any post, so the dev blog tree entry is not highlighted for the rest
+	// of this session. It will highlight again on the next launch (flag is in-memory).
+	public markNewAccount(): void {
+		this.isNewAccount = true
+	}
+
 	public markAsRead(): void {
 		settingsManager.lastReadBlogPostId = this.state.latestPostId
 		notificationManager.blogRead()
@@ -119,7 +127,10 @@ export class BlogManager {
 
 	public get hasNewPost() {
 		return computed(
-			() => this.state.latestPostId !== emptyGuid() && this.state.latestPostId !== settingsManager.lastReadBlogPostId,
+			() =>
+				!this.isNewAccount &&
+				this.state.latestPostId !== emptyGuid() &&
+				this.state.latestPostId !== settingsManager.lastReadBlogPostId,
 		)
 	}
 }

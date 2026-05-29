@@ -545,6 +545,7 @@ export class AuthenticationManager {
 				},
 				userData: this._userData,
 			})
+			blogManager.markNewAccount()
 		} else {
 			this.cryptoManager.rootCrypt = await SymmetricCrypt.fromKeyString(
 				initializationData.rootCrypt.algorithm,
