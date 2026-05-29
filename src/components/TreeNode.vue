@@ -409,6 +409,7 @@ const showContextMenu = async e => {
 			...(isInRecycleBin ? [] : [MenuItems.Rename]),
 			e.shiftKey || isInRecycleBin || props.node.shared ? MenuItems.Delete : MenuItems.Recycle,
 			MenuItems.Separator,
+			...(isInRecycleBin ? [] : [MenuItems.ExportSubtree, MenuItems.Separator]),
 			MenuItems.Properties,
 		])
 	}

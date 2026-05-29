@@ -844,6 +844,8 @@
 		"trayLaunchOnStartup": "Tray menu toggle: launch on OS startup.",
 		"exportNotes": "File menu item (Electron desktop only): export all notes to the filesystem as .md files. Keep short — it is a menu label.",
 		"exportNotesComplete": "InfoDialog message shown after a successful export. Variable: {count} = number of .md files written. Use natural phrasing; the dialog title is the same as 'exportNotes'.",
+		"exportSubtree": "Context menu item on a note in the tree (Electron desktop only): export only that note and its descendants as .md files. Keep short — it is a menu label.",
+		"exportSubtreeComplete": "InfoDialog message shown after a successful subtree export. Variable: {count} = number of .md files written. Use natural phrasing; the dialog title is the same as 'exportSubtree'.",
 		"importNotes": "File menu item (Electron desktop only): import notes from a folder of .md files. Keep short — it is a menu label.",
 		"importNotesComplete": "InfoDialog message shown after a successful import. Variable: {count} = number of .md files read. Use natural phrasing; the dialog title is the same as 'importNotes'.",
 		"importNotesEmpty": "InfoDialog message shown when the selected folder contains no supported text files (.md/.txt) to import. The dialog title is the same as 'importNotes'. Keep the file extensions '.md/.txt' as-is.",

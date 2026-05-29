@@ -26,6 +26,32 @@ export class NoteExporter {
 		}
 	}
 
+	public async exportSubtree(note: MimerNote): Promise<void> {
+		const files: ExportedFile[] = []
+		const safeName = this.sanitizeTitle(note.title ?? 'Untitled')
+
+		if (note.hasChildren) {
+			files.push({ path: safeName, isFolder: true, content: '' })
+		}
+		files.push({
+			path: safeName + '.md',
+			isFolder: false,
+			content: toBase64(this.encoder.encode(note.text ?? '')),
+		})
+		if (note.hasChildren) {
+			await this.collectNotesForExport(note, [safeName], files)
+		}
+
+		const saved = await ipcClient.fileSystem.saveFolder(files, { title: $t('contextMenu.exportSubtree') })
+		if (saved) {
+			const noteCount = files.filter(f => !f.isFolder).length
+			infoDialog.value.show(
+				$t('contextMenu.exportSubtree'),
+				$t('contextMenu.exportSubtreeComplete', { count: noteCount }),
+			)
+		}
+	}
+
 	// Convert a note title into a safe cross-platform file/folder name. Uses a
 	// Unicode-aware allow-list (keeps letters/numbers of any script, e.g. Chinese
 	// or accented characters) since illegal characters vary by OS; trailing dots

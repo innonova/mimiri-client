@@ -797,6 +797,8 @@
 		"menuMimiriNotes": "Mimiri Notes",
 		"exportNotes": "Alle Notizen exportieren",
 		"exportNotesComplete": "{count} Notizen erfolgreich exportiert",
+		"exportSubtree": "Teilbaum exportieren",
+		"exportSubtreeComplete": "{count} Notizen erfolgreich exportiert",
 		"importNotes": "Notizen importieren",
 		"importNotesComplete": "{count} Notizen erfolgreich importiert",
 		"importNotesEmpty": "Im ausgewählten Ordner wurden keine unterstützten Notizen (.md/.txt) gefunden",

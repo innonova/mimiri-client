@@ -790,6 +790,8 @@
 		"workOffline": "Work Offline",
 		"exportNotes": "Export All Notes",
 		"exportNotesComplete": "Exported {count} notes successfully",
+		"exportSubtree": "Export Subtree",
+		"exportSubtreeComplete": "Exported {count} notes successfully",
 		"importNotes": "Import Notes",
 		"importNotesComplete": "Imported {count} notes successfully",
 		"importNotesEmpty": "No supported notes (.md/.txt) were found in the selected folder",

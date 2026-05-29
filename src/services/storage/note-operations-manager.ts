@@ -397,4 +397,8 @@ export class NoteOperationsManager {
 	public exportAllNotes(): Promise<void> {
 		return this.exporter.exportAllNotes()
 	}
+
+	public exportSubtree(note: MimerNote): Promise<void> {
+		return this.exporter.exportSubtree(note)
+	}
 }

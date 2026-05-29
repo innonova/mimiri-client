@@ -797,6 +797,8 @@
 		"menuMimiriNotes": "Mimiri Notes",
 		"exportNotes": "Eksportér alle noter",
 		"exportNotesComplete": "Eksporterede {count} noter",
+		"exportSubtree": "Eksportér undertræ",
+		"exportSubtreeComplete": "Eksporterede {count} noter",
 		"importNotes": "Importér noter",
 		"importNotesComplete": "Importerede {count} noter",
 		"importNotesEmpty": "Der blev ikke fundet nogen understøttede noter (.md/.txt) i den valgte mappe",

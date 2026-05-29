@@ -76,6 +76,7 @@ export enum MenuItems {
 	Properties = 'properties',
 	WorkOffline = 'work-offline',
 	ExportNotes = 'export-notes',
+	ExportSubtree = 'export-subtree',
 	ImportNotes = 'import-notes',
 }
 
@@ -180,6 +181,10 @@ class MenuManager {
 			ipcClient.menu.showDevTools()
 		} else if (itemId === 'export-notes') {
 			await noteManager.operations.exportAllNotes()
+		} else if (itemId === 'export-subtree') {
+			if (noteManager.tree.selectedNote()) {
+				await noteManager.operations.exportSubtree(noteManager.tree.selectedNote())
+			}
 		} else if (itemId === 'import-notes') {
 			await noteManager.operations.importAllNotes()
 		}
@@ -801,6 +806,17 @@ class MenuManager {
 						visible: ipcClient.isAvailable,
 					})
 					break
+				case MenuItems.ExportSubtree:
+					result.push({
+						id: 'export-subtree',
+						title: $t('contextMenu.exportSubtree'),
+						enabled:
+							noteManager.state.isLoggedIn &&
+							!!noteManager.tree.selectedNote() &&
+							!noteManager.tree.selectedNote().isSystem,
+						visible: ipcClient.isAvailable,
+					})
+					break
 				case MenuItems.ImportNotes:
 					result.push({
 						id: 'import-notes',
@@ -897,7 +913,13 @@ class MenuManager {
 
 	public get fileMenu() {
 		if (mimiriPlatform.isMacApp) {
-			return [MenuItems.NewRootNote, MenuItems.NewNote, MenuItems.Separator, MenuItems.ExportNotes, MenuItems.ImportNotes]
+			return [
+				MenuItems.NewRootNote,
+				MenuItems.NewNote,
+				MenuItems.Separator,
+				MenuItems.ExportNotes,
+				MenuItems.ImportNotes,
+			]
 		}
 
 		return [
