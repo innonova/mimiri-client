@@ -26,8 +26,10 @@ export class NoteExporter {
 		}
 	}
 
-	// Strip filesystem-unsafe characters from a note title. Falls back to
-	// 'Untitled' when the result would be empty.
+	// Convert a note title into a safe cross-platform file/folder name. Uses a
+	// Unicode-aware allow-list (keeps letters/numbers of any script, e.g. Chinese
+	// or accented characters) since illegal characters vary by OS; trailing dots
+	// are stripped for Windows.
 	private sanitizeTitle(title: string): string {
 		return (
 			title
