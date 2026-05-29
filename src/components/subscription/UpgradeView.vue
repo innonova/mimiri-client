@@ -31,6 +31,7 @@
 				<CustomerData
 					ref="customerElement"
 					mode="create"
+					v-model="subscriptionCustomerDraft"
 					v-model:changed="changed"
 					v-model:valid="valid"
 					v-model:country-code="countryCode"
@@ -68,7 +69,7 @@ import CustomerData from './CustomerData.vue'
 import PaymentMethodSelector from './PaymentMethodSelector.vue'
 import ItemHeader from './ItemHeader.vue'
 import { Currency, Period, RenewalType, type SubscriptionProduct } from '../../services/types/subscription'
-import { noteManager } from '../../global'
+import { noteManager, subscriptionCustomerDraft } from '../../global'
 import { assertGuid } from '../../services/types/guid'
 import PaymentSummary from './PaymentSummary.vue'
 import LoadingIcon from '../../icons/loading.vue'

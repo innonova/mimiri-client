@@ -33,7 +33,7 @@ import CurrencySelector from './CurrencySelector.vue'
 import PeriodSelector from './PeriodSelector.vue'
 import { noteManager } from '../../global'
 
-const period = ref(Period.Year)
+const period = ref(Period.Month)
 const products = ref<SubscriptionProduct[]>([])
 const currency = ref(Currency.CHF)
 

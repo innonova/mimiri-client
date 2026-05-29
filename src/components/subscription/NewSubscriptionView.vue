@@ -50,7 +50,7 @@ import Faq from '../elements/Faq.vue'
 let currentLoaded = false
 const currentProduct = ref<SubscriptionProduct>()
 const currentSubscription = ref<Subscription>()
-const period = ref(Period.Year)
+const period = ref(Period.Month)
 const products = ref<SubscriptionProduct[]>([])
 const currency = ref(Currency.CHF)
 const ready = ref(false)

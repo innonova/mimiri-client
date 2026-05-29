@@ -248,7 +248,7 @@ const cancel = async () => {
 
 const loadCustomer = async () => {
 	customer.value = await noteManager.payment.getCustomerData()
-	if (customer.value) {
+	if (customer.value?.id) {
 		readonly.value = true
 		givenName.value = customer.value.givenName
 		familyName.value = customer.value.familyName
@@ -261,12 +261,27 @@ const loadCustomer = async () => {
 		address.value = customer.value.address
 		emailVerified.value = customer.value.emailVerified
 		emailVerificationEmailSent.value = false
+	} else {
+		customer.value = undefined
 	}
 	readonly.value = false
 }
 
 onMounted(async () => {
 	await loadCustomer()
+	if (!customer.value && model.value) {
+		const draft = model.value
+		givenName.value = draft.givenName ?? ''
+		familyName.value = draft.familyName ?? ''
+		company.value = draft.company ?? ''
+		email.value = draft.email ?? ''
+		countryCode.value = draft.countryCode ?? ''
+		countryName.value = draft.country ?? ''
+		stateCode.value = draft.stateCode ?? ''
+		city.value = draft.city ?? ''
+		postalCode.value = draft.postalCode ?? ''
+		address.value = draft.address ?? ''
+	}
 })
 
 watch(

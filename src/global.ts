@@ -13,7 +13,7 @@ import { ClipboardManager } from './services/clipboard-manager'
 import { FontManager } from './services/font-manager'
 import { BlogManager } from './services/blog-manager'
 import { DebugManager } from './services/debug-manager'
-import { Currency, type SubscriptionProduct } from './services/types/subscription'
+import { Currency, type Customer, type SubscriptionProduct } from './services/types/subscription'
 import { DevTools } from './services/dev-tools'
 import { LocalizationProvider } from './services/localization'
 
@@ -73,6 +73,8 @@ export const treeHover = ref(false)
 export const subscriptionStage = ref('subscription')
 export const subscriptionNewProduct = ref<SubscriptionProduct>()
 export const subscriptionCurrency = ref<Currency>(Currency.CHF)
+// Session-only draft of the billing address entered during a new subscription, so it survives navigating back to the plan overview
+export const subscriptionCustomerDraft = ref<Partial<Customer>>()
 
 export const blockUserInput = ref(false)
 
