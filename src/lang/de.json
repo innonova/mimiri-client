@@ -456,6 +456,7 @@
 		"tab": "Papierkorb",
 		"description": "Alle Elemente im Papierkorb dauerhaft löschen",
 		"scanForInconsistencies": "Nach Inkonsistenzen suchen",
+		"noInconsistenciesFound": "Alles sieht gut aus - keine Inkonsistenzen gefunden",
 		"emptyRecycleBin": "Papierkorb leeren"
 	},
 	"settingsUsername": {

@@ -456,6 +456,7 @@
 		"tab": "回收站",
 		"description": "永久删除回收站中的所有项目",
 		"scanForInconsistencies": "扫描不一致",
+		"noInconsistenciesFound": "一切正常 - 未发现不一致",
 		"emptyRecycleBin": "清空回收站"
 	},
 	"settingsUsername": {

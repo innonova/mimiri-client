@@ -456,6 +456,7 @@
 		"tab": "Papirkurv",
 		"description": "Slet alle elementer i papirkurven permanent",
 		"scanForInconsistencies": "Scan for uoverensstemmelser",
+		"noInconsistenciesFound": "Alt ser godt ud - ingen uoverensstemmelser fundet",
 		"emptyRecycleBin": "Tøm papirkurv"
 	},
 	"settingsUsername": {

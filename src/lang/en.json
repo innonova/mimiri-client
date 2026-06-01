@@ -456,6 +456,7 @@
 		"tab": "Recycle Bin",
 		"description": "Permanently delete all items in the Recycle Bin",
 		"scanForInconsistencies": "Scan for inconsistencies",
+		"noInconsistenciesFound": "Everything looks good - no inconsistencies found",
 		"emptyRecycleBin": "Empty Recycle Bin"
 	},
 	"settingsUsername": {

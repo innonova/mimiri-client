@@ -23,7 +23,7 @@
 </template>
 
 <script setup lang="ts">
-import { emptyRecycleBinDialog, inconsistencyDialog, noteManager } from '../../global'
+import { $t, emptyRecycleBinDialog, inconsistencyDialog, infoDialog, noteManager } from '../../global'
 import TabBar from '../elements/TabBar.vue'
 
 const empty = () => {
@@ -33,6 +33,11 @@ const empty = () => {
 const scanForInconsistencies = async () => {
 	if (await noteManager.checkForConsistency()) {
 		inconsistencyDialog.value.show()
+	} else {
+		infoDialog.value.show(
+			$t('settingsRecycleBin.scanForInconsistencies'),
+			$t('settingsRecycleBin.noInconsistenciesFound'),
+		)
 	}
 }
 </script>

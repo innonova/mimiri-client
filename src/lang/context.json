@@ -476,6 +476,7 @@
 		"tab": "Tab label.",
 		"description": "Short description at the top of the tab.",
 		"scanForInconsistencies": "Button to scan for and fix data inconsistencies.",
+		"noInconsistenciesFound": "Message shown when the scan completes and no inconsistencies were found.",
 		"emptyRecycleBin": "Button to permanently delete all items in the recycle bin."
 	},
 	"settingsUsername": {
