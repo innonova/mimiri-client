@@ -33,6 +33,7 @@ export class CheckboxListItemView implements NodeView {
 
 			// Handle checkbox changes
 			this.checkbox.addEventListener('change', this.handleCheckboxChange)
+			this.checkbox.addEventListener('touchend', this.handleCheckboxTouch)
 
 			checkboxContainer.appendChild(this.checkbox)
 			li.appendChild(checkboxContainer)
@@ -44,6 +45,19 @@ export class CheckboxListItemView implements NodeView {
 		li.appendChild(this.contentDOM)
 
 		this.dom = li
+	}
+
+	private handleCheckboxTouch = (event: TouchEvent) => {
+		event.preventDefault()
+		event.stopPropagation()
+		const pos = this.getPos()
+		if (pos === undefined) return
+		const checked = !this.node.attrs.checked
+		const tr = this.view.state.tr.setNodeMarkup(pos, null, {
+			...this.node.attrs,
+			checked,
+		})
+		this.view.dispatch(tr)
 	}
 
 	private handleCheckboxChange = (event: Event) => {
