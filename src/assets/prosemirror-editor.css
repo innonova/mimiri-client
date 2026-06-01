@@ -147,6 +147,7 @@ li[data-item-type='task'] {
 	align-items: center;
 	padding-top: 0.125rem;
 	flex-shrink: 0;
+	@apply mobile:p-2 mobile:-m-2;
 }
 
 /* Content container */
@@ -166,7 +167,7 @@ li[data-item-type='task'] {
 }
 
 .ProseMirror input[type='checkbox'] {
-	@apply mobile:w-6 mobile:h-6 mt-0.5;
+	@apply w-5 h-5 mobile:w-6 mobile:h-6 mt-0.5;
 	accent-color: var(--color-checkbox);
 }
 

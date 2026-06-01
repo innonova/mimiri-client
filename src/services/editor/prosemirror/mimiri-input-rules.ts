@@ -8,6 +8,7 @@ import {
 	wrappingInputRule,
 } from 'prosemirror-inputrules'
 import type { MarkType, NodeType, Schema } from 'prosemirror-model'
+import { findWrapping } from 'prosemirror-transform'
 import { cleanUrl, urlPatternBase } from './url-utils'
 
 const blockQuoteRule = (nodeType: NodeType) => {
@@ -27,6 +28,47 @@ const bulletListRule = (nodeType: NodeType) => {
 	return wrappingInputRule(/^\s*([-+*])\s$/, nodeType)
 }
 
+const checkboxListRule = (bulletListType: NodeType, listItemType: NodeType) => {
+	// Matches [ ] or [x] at the start of a textblock (the preceding "- " is consumed by bulletListRule)
+	return new InputRule(/^\[([ xX])\]\s$/, (state, match, start, end) => {
+		const checked = match[1].toLowerCase() === 'x'
+		const tr = state.tr.delete(start, end)
+
+		// Re-resolve after deletion
+		const mappedStart = tr.mapping.map(start)
+		const $start = tr.doc.resolve(mappedStart)
+
+		// If already inside a list_item (e.g. after typing "- " first), just update its attrs
+		for (let d = $start.depth; d > 0; d--) {
+			const node = $start.node(d)
+			if (node.type === listItemType) {
+				tr.setNodeMarkup($start.before(d), null, { ...node.attrs, checked, marker: '-' })
+				return tr
+			}
+		}
+
+		// Otherwise wrap the paragraph in bullet_list > list_item
+		const range = $start.blockRange()
+		if (!range) return null
+		const wrapping = findWrapping(range, bulletListType, {})
+		if (!wrapping) return null
+		tr.wrap(range, wrapping)
+
+		// Find the newly inserted list_item and set its attrs
+		const mappedStart2 = tr.mapping.map(start)
+		const $after = tr.doc.resolve(mappedStart2)
+		for (let d = $after.depth; d > 0; d--) {
+			const node = $after.node(d)
+			if (node.type === listItemType) {
+				tr.setNodeMarkup($after.before(d), null, { ...node.attrs, checked, marker: '-' })
+				break
+			}
+		}
+
+		return tr
+	})
+}
+
 const codeBlockRule = (nodeType: NodeType) => {
 	return textblockTypeInputRule(/^```$/, nodeType)
 }
@@ -39,7 +81,10 @@ const headingRule = (nodeType: NodeType, maxLevel: number) => {
 
 // Check if position already has a link mark
 const hasLinkMark = (state, pos: number, markType: MarkType): boolean => {
-	return state.doc.resolve(pos).marks().some(mark => mark.type === markType)
+	return state.doc
+		.resolve(pos)
+		.marks()
+		.some(mark => mark.type === markType)
 }
 
 // Input rule to convert plain URLs to links when space is pressed
@@ -91,6 +136,7 @@ export const mimiriInputRules = (schema: Schema) => {
 		rules.push(orderedListRule(type))
 	}
 	if ((type = schema.nodes.bullet_list)) {
+		rules.push(checkboxListRule(type, schema.nodes.list_item))
 		rules.push(bulletListRule(type))
 	}
 	if ((type = schema.nodes.code_block)) {
