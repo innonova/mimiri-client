@@ -282,6 +282,22 @@ function executeInsertHeading(state: EditorState, dispatch: (tr: Transaction) =>
 }
 
 /**
+ * Find the depth of the top-level block (direct child of doc) containing the position.
+ * This ensures we replace entire blocks instead of nested content, which would break
+ * document structure rules (e.g., replacing a paragraph inside a list item).
+ */
+function getTopLevelBlockDepth($pos: ResolvedPos): number {
+	let depth = $pos.depth
+	while (depth > 0) {
+		if ($pos.node(depth - 1).type.name === 'doc') {
+			return depth
+		}
+		depth--
+	}
+	return 1 // Fallback to depth 1
+}
+
+/**
  * Insert a code block from the current selection, or apply inline code mark for single-line selections
  */
 function executeInsertCodeBlock(
@@ -292,12 +308,12 @@ function executeInsertCodeBlock(
 ) {
 	const { from, to } = state.selection
 
-	// Check if selection is within a single paragraph (inline selection)
+	// Check if selection is within a single text block (inline selection)
 	const isSameParagraph = $from.parent === $to.parent
-	const isInlineable = isSameParagraph && $from.parent.type.name === 'paragraph'
+	const isInlineable = isSameParagraph && $from.parent.type.name !== 'code_block'
 	const hasSelection = from !== to
 
-	// If user has selected text within a single paragraph, check if it's single-line for inline code
+	// If user has selected text within a single text block, check if it's single-line for inline code
 	if (hasSelection && isInlineable) {
 		const selectedText = state.doc.textBetween(from, to)
 		const isMultiLine = selectedText.includes('\n')
@@ -305,15 +321,18 @@ function executeInsertCodeBlock(
 		// For single-line selection, toggle inline code mark
 		if (!isMultiLine) {
 			const codeMark = mimiriSchema.marks.code
-			if (toggleMark(codeMark)(state, dispatch)) {
-				return
-			}
+			toggleMark(codeMark)(state, dispatch)
+			return
 		} else {
-			// Multi-line selection within single paragraph - create code block with selected text
-			const startPos = $from.before($from.depth)
-			const endPos = $to.after($to.depth)
+			// Multi-line selection within single paragraph - create code block preserving all paragraph text
+			const fromDepth = getTopLevelBlockDepth($from)
+			const toDepth = getTopLevelBlockDepth($to)
+			const startPos = $from.before(fromDepth)
+			const endPos = $to.after(toDepth)
 
-			const codeBlockMarkdown = '```\n' + selectedText + '\n```'
+			// Get all text from the block range to avoid losing unselected content
+			const textContent = state.doc.textBetween(startPos, endPos, '\n', '\n')
+			const codeBlockMarkdown = '```\n' + textContent + '\n```'
 			const parsedDoc = deserialize(codeBlockMarkdown)
 
 			const tr = state.tr.replaceWith(startPos, endPos, parsedDoc.content)
@@ -325,16 +344,14 @@ function executeInsertCodeBlock(
 	}
 
 	// Otherwise, insert a code block
-	// Get the range of selected blocks
-	const startPos = $from.before($from.depth)
-	const endPos = $to.after($to.depth)
+	// Get the range of selected blocks at the top-level block depth
+	const fromDepth = getTopLevelBlockDepth($from)
+	const toDepth = getTopLevelBlockDepth($to)
+	const startPos = $from.before(fromDepth)
+	const endPos = $to.after(toDepth)
 
-	// If there's a selection, get the full text content from the affected blocks
-	let textContent = ''
-	if (hasSelection) {
-		// Get all text from the selected block range
-		textContent = state.doc.textBetween(startPos, endPos, '\n', '\n')
-	}
+	// Get the full text content from the affected blocks (preserves content even with collapsed cursor)
+	const textContent = state.doc.textBetween(startPos, endPos, '\n', '\n')
 
 	// Wrap the content in code fence syntax and deserialize to get proper code block
 	const codeBlockMarkdown = '```\n' + textContent + '\n```'

@@ -14,7 +14,6 @@ import {
 	liftEmptyBlock,
 	newlineInCode,
 	splitBlock,
-	toggleMark,
 } from 'prosemirror-commands'
 import { mimiriSchema } from './prosemirror/mimiri-schema'
 import { convertUrlAtCursor, mimiriInputRules } from './prosemirror/mimiri-input-rules'
@@ -127,7 +126,12 @@ export class EditorProseMirror implements TextEditor {
 				keymap({
 					'Mod-z': undo,
 					'Mod-y': redo,
-					'Mod-e': toggleMark(mimiriSchema.marks.code),
+					'Mod-e': (state, dispatch) => {
+						if (dispatch) {
+							executeFormatAction(state, dispatch, 'insert-code-block')
+						}
+						return true
+					},
 					Enter: chainCommands(
 						exitCodeBlock,
 						convertUrlAtCursor(mimiriSchema.marks.link),

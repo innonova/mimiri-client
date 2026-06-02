@@ -410,7 +410,6 @@ export class CodeBlockPlugin implements EditorPlugin {
 			// Check if selection is single-line and not empty
 			if (!selection.isEmpty() && selection.startLineNumber === selection.endLineNumber) {
 				// Apply inline code formatting
-				const selectedText = this.monacoEditorModel.getValueInRange(selection)
 
 				// Check if already wrapped in backticks - if so, remove them
 				const line = this.monacoEditorModel.getLineContent(selection.startLineNumber)
@@ -486,11 +485,20 @@ export class CodeBlockPlugin implements EditorPlugin {
 				endColumn: this.monacoEditorModel.getLineMaxColumn(selection.endLineNumber),
 			}
 			if (selection.isEmpty()) {
-				// Insert code block and position cursor for language input
+				// Get the current line content to preserve it in the code block
+				const lineContent = this.monacoEditorModel.getLineContent(selection.startLineNumber)
+				const lineRange = {
+					startLineNumber: selection.startLineNumber,
+					startColumn: 1,
+					endLineNumber: selection.startLineNumber,
+					endColumn: this.monacoEditorModel.getLineMaxColumn(selection.startLineNumber),
+				}
+
+				// Replace the entire line with a code block containing the line's content
 				this.monacoEditor.executeEdits(undefined, [
 					{
-						range: selection,
-						text: '```\n\n```\n',
+						range: lineRange,
+						text: lineContent ? `\`\`\`\n${lineContent}\n\`\`\`` : '```\n\n```',
 					},
 				])
 
