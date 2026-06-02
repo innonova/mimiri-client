@@ -1,5 +1,6 @@
 import { computed, reactive } from 'vue'
 import type { MimiriStore } from '../storage/mimiri-store'
+import { AccountType } from '../storage/type'
 import { dateTimeNow, type DateTime } from './date-time'
 import { type Guid } from './guid'
 import type { Note } from './note'
@@ -659,7 +660,7 @@ export class MimerNote {
 				() =>
 					(updateManager.isUpdateAvailable && settingsManager.updateMode === UpdateMode.StrongNotify) ||
 					(blogManager.hasNewPost.value && settingsManager.blogPostNotificationLevel === 'clearly') ||
-					!this.owner.state.flags['create-account-read'],
+					(!this.owner.state.flags['create-account-read'] && this.owner.state.accountType === AccountType.None),
 			)
 		}
 		return false

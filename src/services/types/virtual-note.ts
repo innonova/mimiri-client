@@ -2,6 +2,7 @@ import { computed } from 'vue'
 import { blogManager, updateManager } from '../../global'
 import type { MimiriStore } from '../storage/mimiri-store'
 import { settingsManager, UpdateMode } from '../settings-manager'
+import { AccountType } from '../storage/type'
 import { dateTimeNow } from './date-time'
 import type { Guid } from './guid'
 import { MimerNote } from './mimer-note'
@@ -92,7 +93,9 @@ export class VirtualNote extends MimerNote {
 			return computed(() => blogManager.hasNewPost.value && settingsManager.blogPostNotificationLevel !== 'never')
 		}
 		if (this.id === 'settings-create-account') {
-			return computed(() => !this.owner.state.flags['create-account-read'])
+			return computed(
+				() => !this.owner.state.flags['create-account-read'] && this.owner.state.accountType === AccountType.None,
+			)
 		}
 		if (this.id === 'settings-create-password' || this.id === 'settings-account') {
 			return computed(() => !this.owner.state.flags['create-account-read'] && this.owner.state.isAnonymous)
