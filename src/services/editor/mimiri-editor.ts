@@ -155,7 +155,7 @@ export class MimiriEditor {
 		// TODO store choice per note ?
 		const mode = mimiriPlatform.isDesktop ? settingsManager.defaultEditor : settingsManager.defaultEditorMobile
 
-		if (mode === 'code') {
+		if (mode === 'code' && (mimiriPlatform.isDesktop || settingsManager.allowMonacoOnMobile)) {
 			this.activateMonaco()
 		} else {
 			void this.activateProseMirror()

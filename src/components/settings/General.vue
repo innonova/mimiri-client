@@ -69,6 +69,12 @@
 					{{ $t('settingsGeneral.disableDevBlog') }}
 				</label>
 			</div>
+			<div v-if="!mimiriPlatform.isDesktop" class="p-1 pt-2 m-auto text-left">
+				<label :title="$t('settingsGeneral.allowMonacoOnMobileTooltip')">
+					<input type="checkbox" v-model="allowMonacoOnMobile" class="mr-1 relative top-0.5" />
+					{{ $t('settingsGeneral.allowMonacoOnMobile') }}
+				</label>
+			</div>
 			<div class="mt-10 max-w-110 mr-2">
 				<hr />
 				<div class="w-full flex justify-end mt-2 gap-2">
@@ -96,6 +102,7 @@ const trayIcon = ref('system')
 const disableDevBlog = ref(false)
 const useChevrons = ref(false)
 const showVerticalGuides = ref(false)
+const allowMonacoOnMobile = ref(false)
 
 const canSave = computed(
 	() =>
@@ -108,7 +115,8 @@ const canSave = computed(
 		trayIcon.value !== settingsManager.trayIcon ||
 		disableDevBlog.value !== settingsManager.disableDevBlog ||
 		useChevrons.value !== settingsManager.useChevrons ||
-		showVerticalGuides.value !== settingsManager.showVerticalGuides,
+		showVerticalGuides.value !== settingsManager.showVerticalGuides ||
+		allowMonacoOnMobile.value !== settingsManager.allowMonacoOnMobile,
 )
 
 onMounted(() => {
@@ -122,6 +130,7 @@ onMounted(() => {
 	disableDevBlog.value = settingsManager.disableDevBlog
 	useChevrons.value = settingsManager.useChevrons
 	showVerticalGuides.value = settingsManager.showVerticalGuides
+	allowMonacoOnMobile.value = settingsManager.allowMonacoOnMobile
 })
 
 const save = async () => {
@@ -138,6 +147,7 @@ const save = async () => {
 	settingsManager.disableDevBlog = disableDevBlog.value
 	settingsManager.useChevrons = useChevrons.value
 	settingsManager.showVerticalGuides = showVerticalGuides.value
+	settingsManager.allowMonacoOnMobile = allowMonacoOnMobile.value
 	if (reload) {
 		window.location.reload()
 	}

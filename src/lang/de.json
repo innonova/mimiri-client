@@ -338,6 +338,8 @@
 		"showVerticalGuidesTooltip": "Vertikale Linien in der Baumansicht anzeigen, um die Einschachtelungstiefe anzuzeigen",
 		"disableDevBlog": "Entwicklerblog deaktivieren",
 		"disableDevBlogTooltip": "Falls du den Entwicklerblog störend findest, kannst du ihn ausblenden",
+		"allowMonacoOnMobile": "Code-Editor auf Mobilgeräten aktivieren",
+		"allowMonacoOnMobileTooltip": "Code-Editor auf Mobilgeräten aktivieren (nicht empfohlen, da der Code-Editor nicht für Mobilgeräte optimiert ist)",
 		"save": "Speichern"
 	},
 	"settingsPassword": {

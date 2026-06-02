@@ -366,6 +366,8 @@
 		"showVerticalGuidesTooltip": "Tooltip for showVerticalGuides.",
 		"disableDevBlog": "Toggle label: hide the dev blog section from the control panel.",
 		"disableDevBlogTooltip": "Tooltip for disableDevBlog.",
+		"allowMonacoOnMobile": "Toggle label: enable Monaco/code editor on mobile devices.",
+		"allowMonacoOnMobileTooltip": "Tooltip for allowMonacoOnMobile.",
 		"save": "Save settings button."
 	},
 	"settingsPassword": {

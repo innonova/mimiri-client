@@ -113,6 +113,7 @@
 			</div>
 			<div class="flex-1"></div>
 			<ToolbarIcon
+				v-if="mimiriPlatform.isDesktop || settingsManager.state.allowMonacoOnMobile"
 				:icon="mimiriEditor.mode === 'advanced' ? 'wysiwyg' : 'code'"
 				:hoverEffect="true"
 				:disabled="historyVisible"
@@ -198,6 +199,7 @@ import { searchManager } from '../services/search-manager'
 import ToolbarIcon from './ToolbarIcon.vue'
 import SelectionControl from './SelectionControl.vue'
 import { settingsManager } from '../services/settings-manager'
+import { mimiriPlatform } from '../services/mimiri-platform'
 import { useEventListener } from '@vueuse/core'
 import CloseButton from './elements/CloseButton.vue'
 import { mimiriApi } from '../services/storage/mimiri-api'

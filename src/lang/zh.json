@@ -338,6 +338,8 @@
 		"showVerticalGuidesTooltip": "在树视图中显示垂直线以表示嵌套深度",
 		"disableDevBlog": "禁用开发博客",
 		"disableDevBlogTooltip": "如果您觉得开发博客有干扰，可以选择隐藏它",
+		"allowMonacoOnMobile": "在移动端启用代码编辑器",
+		"allowMonacoOnMobileTooltip": "在移动端启用代码编辑器（不推荐，因为代码编辑器未针对移动端优化）",
 		"save": "保存"
 	},
 	"settingsPassword": {

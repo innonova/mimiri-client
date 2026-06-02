@@ -57,6 +57,7 @@ export interface MimerConfiguration {
 	systemTheme: string
 	defaultEditor: string | undefined
 	defaultEditorMobile: string
+	allowMonacoOnMobile: boolean
 	language: SupportedLocale
 }
 
@@ -100,6 +101,7 @@ class SettingsManager {
 		systemTheme: 'light',
 		defaultEditor: undefined,
 		defaultEditorMobile: 'wysiwyg',
+		allowMonacoOnMobile: false,
 		language: DEFAULT_LOCALE,
 	})
 
@@ -471,6 +473,15 @@ class SettingsManager {
 
 	public set defaultEditorMobile(value: string) {
 		this.state.defaultEditorMobile = value
+		void this.save()
+	}
+
+	public get allowMonacoOnMobile() {
+		return !!this.state.allowMonacoOnMobile
+	}
+
+	public set allowMonacoOnMobile(value: boolean) {
+		this.state.allowMonacoOnMobile = value
 		void this.save()
 	}
 

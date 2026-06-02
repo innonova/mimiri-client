@@ -338,6 +338,8 @@
 		"showVerticalGuidesTooltip": "Display vertical lines in the tree view to indicate nesting depth",
 		"disableDevBlog": "Disable Dev Blog",
 		"disableDevBlogTooltip": "If you find the developer blog annoying, you can choose to hide it",
+		"allowMonacoOnMobile": "Enable code editor on Mobile",
+		"allowMonacoOnMobileTooltip": "Enable code editor on Mobile (discouraged as the code editor is not mobile optimized)",
 		"save": "Save"
 	},
 	"settingsPassword": {
