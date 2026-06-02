@@ -28,19 +28,11 @@
 }
 
 .ProseMirror ::selection {
-	background-color: #add6ff;
+	background-color: var(--color-editor-selection-bg);
 }
 
 .ProseMirror ::-moz-selection {
-	background-color: #add6ff;
-}
-
-html[data-theme='dark'] .ProseMirror ::selection {
-	background-color: #264f78;
-}
-
-html[data-theme='dark'] .ProseMirror ::-moz-selection {
-	background-color: #264f78;
+	background-color: var(--color-editor-selection-bg);
 }
 
 .ProseMirror pre {
@@ -62,7 +54,7 @@ html[data-theme='dark'] .ProseMirror ::-moz-selection {
 }
 
 .ProseMirror-selectednode:not(:has(a)) {
-	outline: 2px solid #8cf;
+	outline: 2px solid var(--color-editor-selection-outline);
 }
 
 .ProseMirror img.ProseMirror-separator {
@@ -103,29 +95,20 @@ html[data-theme='dark'] .ProseMirror ::-moz-selection {
 
 /* Code blocks */
 .ProseMirror pre {
-	background-color: #f5f5f5;
+	background-color: var(--color-editor-code-block-bg);
 	padding: 0.25rem;
 	margin: 0 0 0.5rem 0;
 	overflow-x: auto;
-}
-
-html[data-theme='dark'] .ProseMirror pre {
-	background-color: #2d2d2d;
 }
 
 /* Inline code */
 .ProseMirror code {
 	font-family: Consolas, 'Courier New', monospace;
 	font-size: 0.9em;
-	background-color: rgba(175, 184, 193, 0.2);
+	background-color: var(--color-editor-inline-code-bg);
 	padding: 0.1em 0.3em;
 	margin: 0;
 	border-radius: 3px;
-}
-
-/* Dark mode inline code */
-html[data-theme='dark'] .ProseMirror code {
-	background-color: rgba(110, 118, 129, 0.4);
 }
 
 .ProseMirror pre code {
@@ -137,29 +120,24 @@ html[data-theme='dark'] .ProseMirror code {
 	white-space: pre-wrap;
 }
 
-/* Ensure code blocks don't get inline code background in dark mode */
-html[data-theme='dark'] .ProseMirror pre code {
-	background: none;
-}
-
 .ProseMirror codelens {
 	display: flex;
 	font-size: 0.75rem;
 	margin-bottom: -0.125rem;
 	padding: 0.25rem;
 	a {
-		color: #999999;
+		color: var(--color-text-secondary);
 		cursor: pointer;
 		text-decoration: none;
 	}
 	div {
 		margin: 0 0.25rem;
-		color: #999999;
+		color: var(--color-text-secondary);
 	}
 }
 
 .ProseMirror codelens a:hover {
-	color: #4e94ce;
+	color: var(--color-editor-link-hover);
 }
 
 /* Task list items with real checkboxes */
@@ -188,7 +166,7 @@ li[data-item-type='task'] {
 /* Strike through checked items */
 li[data-item-type='task'][data-checked='true'] .list-item-content p {
 	text-decoration: line-through;
-	color: #999;
+	color: var(--color-text-secondary);
 }
 
 li[data-item-type='task'] {
@@ -217,6 +195,7 @@ li[data-item-type='task'] {
 
 .ProseMirror password {
 	-webkit-text-security: disc;
+	color: var(--color-editor-password-content) !important;
 }
 
 .ProseMirror .password-wrapper {
@@ -275,23 +254,25 @@ li[data-item-type='task'] {
 }
 
 .ProseMirror .password-btn:hover {
-	color: #4e94ce;
+	color: var(--color-editor-link-hover);
 	background: var(--color-toolbar-hover);
 }
 
 .ProseMirror .password-delimiter {
-	color: #888888;
+	opacity: 0.6;
+	font-weight: bold;
+	color: var(--color-editor-code-fence-text);
 }
 .ProseMirror .password-content {
 	-webkit-text-security: disc;
 	text-security: disc;
-	color: #aaaaaa;
+	color: var(--color-editor-password-content) !important;
 }
 
 /* Conflict block styling */
 .ProseMirror .conflict-block {
 	margin: 0.5rem 0;
-	border: 1px solid #757575;
+	border: 1px solid var(--color-editor-conflict-separator);
 	border-radius: 4px;
 	overflow: hidden;
 }
@@ -300,21 +281,21 @@ li[data-item-type='task'] {
 	display: flex;
 	font-size: 0.75rem;
 	padding: 0.25rem 0.5rem;
-	background-color: #e0e0e0;
+	background-color: var(--color-editor-conflict-lens-bg);
 	a {
-		color: #1976d2;
+		color: var(--color-editor-conflict-local);
 		cursor: pointer;
 		text-decoration: none;
 		font-weight: 500;
 	}
 	div {
 		margin: 0 0.5rem;
-		color: #757575;
+		color: var(--color-editor-conflict-separator);
 	}
 }
 
 .ProseMirror conflictlens a:hover {
-	color: #1565c0;
+	color: var(--color-editor-conflict-local);
 	text-decoration: underline;
 }
 
@@ -323,32 +304,32 @@ li[data-item-type='task'] {
 	font-size: 0.9em;
 	padding: 0.25rem 0.5rem;
 	font-weight: bold;
-	background-color: #f5f5f5;
+	background-color: var(--color-editor-conflict-marker-bg);
 	cursor: default;
 }
 
 .ProseMirror .conflict-marker-start {
-	color: #1976d2;
-	border-bottom: 1px solid #e3f2fd;
+	color: var(--color-editor-conflict-local);
+	border-bottom: 1px solid var(--color-editor-conflict-local);
 	cursor: default;
 }
 
 .ProseMirror .conflict-marker-separator {
-	color: #757575;
-	border-top: 1px solid #f5f5f5;
-	border-bottom: 1px solid #f5f5f5;
+	color: var(--color-editor-conflict-separator);
+	border-top: 1px solid var(--color-editor-conflict-marker-bg);
+	border-bottom: 1px solid var(--color-editor-conflict-marker-bg);
 	cursor: default;
 }
 
 .ProseMirror .conflict-marker-end {
-	color: #7b1fa2;
-	border-top: 1px solid #f3e5f5;
+	color: var(--color-editor-conflict-server);
+	border-top: 1px solid var(--color-editor-conflict-server);
 	cursor: default;
 }
 
 .ProseMirror .conflict-local-content {
 	padding: 0.5rem;
-	background-color: #e3f2fd;
+	background-color: var(--color-editor-conflict-local-bg);
 	font-family: monospace;
 	white-space: pre-wrap;
 	min-height: 1.5rem;
@@ -357,49 +338,11 @@ li[data-item-type='task'] {
 
 .ProseMirror .conflict-server-content {
 	padding: 0.5rem;
-	background-color: #f3e5f5;
+	background-color: var(--color-editor-conflict-server-bg);
 	font-family: monospace;
 	white-space: pre-wrap;
 	min-height: 1.5rem;
 	cursor: default;
-}
-
-.ProseMirror conflictlens {
-	background-color: #404040;
-	a {
-		color: #64b5f6;
-	}
-}
-
-.ProseMirror conflictlens a:hover {
-	color: #90caf9;
-}
-
-.ProseMirror .conflict-marker {
-	background-color: #2d2d2d;
-}
-
-.ProseMirror .conflict-marker-start {
-	color: #64b5f6;
-	border-bottom-color: #1565c0;
-}
-
-.ProseMirror .conflict-marker-separator {
-	color: #9e9e9e;
-	border-color: #424242;
-}
-
-.ProseMirror .conflict-marker-end {
-	color: #ba68c8;
-	border-top-color: #6a1b9a;
-}
-
-.ProseMirror .conflict-local-content {
-	background-color: rgba(21, 101, 192, 0.2);
-}
-
-.ProseMirror .conflict-server-content {
-	background-color: rgba(106, 27, 154, 0.2);
 }
 
 .history-active .ProseMirror conflictlens {
@@ -472,7 +415,7 @@ li[data-item-type='task'] {
 
 /* Links - pointer cursor and blue color when Ctrl/Cmd is pressed and hovered */
 .ProseMirror.ctrl-pressed a:hover {
-	color: #4e94ce;
+	color: var(--color-editor-link-hover);
 	cursor: pointer;
 	text-decoration: underline;
 }
@@ -484,6 +427,6 @@ li[data-item-type='task'] {
 
 /* Long press visual feedback on touch devices */
 .ProseMirror a.long-press-active {
-	color: #3794ff;
+	color: var(--color-editor-link-hover);
 	text-decoration: underline;
 }
