@@ -4,7 +4,6 @@ import { TextSelection } from 'prosemirror-state'
 import { setBlockType, toggleMark } from 'prosemirror-commands'
 import { mimiriSchema } from './mimiri-schema'
 import { insertList } from './list-commands'
-import { serialize } from './mimiri-serializer'
 import { deserialize } from './mimiri-deserializer'
 
 /**
@@ -369,7 +368,9 @@ function executeInsertCodeBlock(
 
 /**
  * Exit a code block by creating a new paragraph after it when pressing Enter on an empty line at the end.
- * Only triggers if there's no content after the code block.
+ * This solves the problem where users are trapped in a code block at the end of the document with no
+ * way to exit and continue writing normal text. Only triggers when there's no content after the code
+ * block, since users can otherwise navigate to existing content below.
  * Returns true if the command was applicable and executed.
  */
 export function exitCodeBlock(state: EditorState, dispatch?: (tr: Transaction) => void): boolean {

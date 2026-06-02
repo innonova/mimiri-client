@@ -14,7 +14,9 @@ export class NoteExporter {
 
 	public async exportAllNotes(): Promise<void> {
 		const root = this.treeManager.root
-		if (!root) return
+		if (!root) {
+			return
+		}
 
 		const files: ExportedFile[] = []
 		await this.collectNotesForExport(root, [], files)
@@ -68,9 +70,13 @@ export class NoteExporter {
 	// Disambiguate a name against siblings already used at the same level by
 	// appending " (2)", " (3)", … until a free slot is found.
 	private uniqueName(base: string, usedNames: Set<string>): string {
-		if (!usedNames.has(base)) return base
+		if (!usedNames.has(base)) {
+			return base
+		}
 		let counter = 2
-		while (usedNames.has(`${base} (${counter})`)) counter++
+		while (usedNames.has(`${base} (${counter})`)) {
+			counter++
+		}
 		return `${base} (${counter})`
 	}
 
@@ -80,7 +86,9 @@ export class NoteExporter {
 		await note.ensureChildren()
 		const usedNames = new Set<string>()
 		for (const child of note.children) {
-			if (child.isSystem) continue
+			if (child.isSystem) {
+				continue
+			}
 			const safeName = this.uniqueName(this.sanitizeTitle(child.title ?? 'Untitled'), usedNames)
 			usedNames.add(safeName)
 			const childPath = [...pathParts, safeName]

@@ -38,14 +38,9 @@ import { executeFormatAction, getSupportedActions, exitCodeBlock } from './prose
 export class EditorProseMirror implements TextEditor {
 	private _domElement: HTMLElement | undefined
 	private _autoComplete: InstanceType<typeof AutoComplete> | undefined
-	private lastScrollTop: number
 	private historyShowing: boolean = false
-	private lastSelection: { startNode: Node; start: number; endNode: Node; end: number } | undefined | undefined
-	private skipScrollOnce = false
 	private _active = true
 	private _readonly = false
-	private _activePasswordEntry: { node: Node; start: number; end: number } | undefined
-	private _hasOpenDocument: boolean = false
 	private _longPressTimer: number | null = null
 	private _state: Omit<MimiriEditorState, 'mode'> = {
 		canUndo: true,
@@ -223,7 +218,9 @@ export class EditorProseMirror implements TextEditor {
 				touchstart: (_view, event) => {
 					const anchor = (event.target as HTMLElement).closest('a')
 					const href = anchor?.getAttribute('href')
-					if (!href) return false
+					if (!href) {
+						return false
+					}
 
 					this._longPressTimer = window.setTimeout(() => {
 						this._longPressTimer = -1 // Mark as triggered

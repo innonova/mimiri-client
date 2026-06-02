@@ -40,7 +40,7 @@ const close = () => {
 }
 
 const submitDialog = async () => {
-	if (isDeleting.value) return
+	if (isDeleting.value) {return}
 	isDeleting.value = true
 	try {
 		await noteManager.tree.recycleBin().deleteChildren()

@@ -51,7 +51,9 @@ export class CheckboxListItemView implements NodeView {
 		event.preventDefault()
 		event.stopPropagation()
 		const pos = this.getPos()
-		if (pos === undefined) return
+		if (pos === undefined) {
+			return
+		}
 		const checked = !this.node.attrs.checked
 		const tr = this.view.state.tr.setNodeMarkup(pos, null, {
 			...this.node.attrs,

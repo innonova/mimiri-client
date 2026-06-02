@@ -49,9 +49,13 @@ const checkboxListRule = (bulletListType: NodeType, listItemType: NodeType) => {
 
 		// Otherwise wrap the paragraph in bullet_list > list_item
 		const range = $start.blockRange()
-		if (!range) return null
+		if (!range) {
+			return null
+		}
 		const wrapping = findWrapping(range, bulletListType, {})
-		if (!wrapping) return null
+		if (!wrapping) {
+			return null
+		}
 		tr.wrap(range, wrapping)
 
 		// Find the newly inserted list_item and set its attrs
@@ -93,7 +97,9 @@ const urlInputRule = (markType: MarkType) => {
 
 	return new InputRule(urlRegex, (state, match, start) => {
 		const url = cleanUrl(match[1])
-		if (hasLinkMark(state, start, markType)) return null
+		if (hasLinkMark(state, start, markType)) {
+			return null
+		}
 
 		const urlEnd = start + url.length
 		return state.tr
@@ -134,17 +140,23 @@ const inlineCodeRule = (markType: MarkType) => {
 export const convertUrlAtCursor = (markType: MarkType) => {
 	return (state, dispatch) => {
 		const { $cursor } = state.selection
-		if (!$cursor) return false
+		if (!$cursor) {
+			return false
+		}
 
 		const textBefore = $cursor.parent.textBetween(0, $cursor.parentOffset, undefined, '\ufffc')
 		const urlMatch = textBefore.match(new RegExp(urlPatternBase.source + '$'))
-		if (!urlMatch) return false
+		if (!urlMatch) {
+			return false
+		}
 
 		const url = cleanUrl(urlMatch[1])
 		const start = $cursor.pos - urlMatch[1].length
 		const end = start + url.length
 
-		if (hasLinkMark(state, start, markType)) return false
+		if (hasLinkMark(state, start, markType)) {
+			return false
+		}
 
 		if (dispatch) {
 			dispatch(state.tr.addMark(start, end, markType.create({ href: url })))

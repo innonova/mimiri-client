@@ -43,33 +43,47 @@ export class LocalizationProvider {
 	t(key: string, params?: InterpolationParams): string {
 		const value = this.resolve(key, this.state.currentLocale) ?? this.resolve(key, this.state.fallbackLocale)
 
-		if (value === undefined) return key
-		if (typeof value !== 'string') return key
+		if (value === undefined) {
+			return key
+		}
+		if (typeof value !== 'string') {
+			return key
+		}
 
 		return this.interpolate(value, params)
 	}
 
 	private resolve(key: string, locale: string): LocaleScalar | undefined {
 		const data = this.locales.get(locale)
-		if (!data) return undefined
+		if (!data) {
+			return undefined
+		}
 
 		const parts = key.split('.')
 		let current: LocaleScalar | LocaleData = data
 
 		for (const part of parts) {
-			if (typeof current !== 'object' || Array.isArray(current)) return undefined
+			if (typeof current !== 'object' || Array.isArray(current)) {
+				return undefined
+			}
 			const next = (current as LocaleData)[part]
-			if (next === undefined) return undefined
+			if (next === undefined) {
+				return undefined
+			}
 			current = next
 		}
 
-		if (typeof current === 'object' && !Array.isArray(current)) return undefined
+		if (typeof current === 'object' && !Array.isArray(current)) {
+			return undefined
+		}
 
 		return current as LocaleScalar
 	}
 
 	private interpolate(template: string, params?: InterpolationParams): string {
-		if (!params) return template
+		if (!params) {
+			return template
+		}
 		return template.replace(/\{(\w+)\}/g, (match, key: string) => (key in params ? String(params[key]) : match))
 	}
 }

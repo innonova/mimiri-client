@@ -21,10 +21,14 @@ export class NoteImporter {
 
 	public async importAllNotes(): Promise<void> {
 		const root = this.treeManager.root
-		if (!root) return
+		if (!root) {
+			return
+		}
 
 		const files = await ipcClient.fileSystem.loadFolder({ title: $t('contextMenu.importNotes') })
-		if (!files || files.length === 0) return
+		if (!files || files.length === 0) {
+			return
+		}
 
 		this.uiManager.beginAction()
 		try {
@@ -129,7 +133,9 @@ export class NoteImporter {
 		// If loadFolder included the selected folder itself as a top-level entry,
 		// pre-map it to importRootNote so it is transparent to the rest of the logic.
 		const topSegments = new Set(parsed.map(f => (f.dir || f.name).split('/')[0]))
-		if (topSegments.size === 1) noteMap.set([...topSegments][0], importRootNote)
+		if (topSegments.size === 1) {
+			noteMap.set([...topSegments][0], importRootNote)
+		}
 		return noteMap
 	}
 
@@ -167,7 +173,9 @@ export class NoteImporter {
 			.sort(this.byDepth)
 		for (const folder of folders) {
 			const fp = this.joinPath(folder.dir, folder.name)
-			if (!noteMap.has(fp)) noteMap.set(fp, buildNote(resolveParent(folder.dir), folder.name))
+			if (!noteMap.has(fp)) {
+				noteMap.set(fp, buildNote(resolveParent(folder.dir), folder.name))
+			}
 		}
 	}
 
@@ -211,9 +219,13 @@ export class NoteImporter {
 	// Returns key unchanged if free, otherwise appends an incrementing suffix
 	// until an unused key is found, guarding against repeated collisions.
 	private uniqueKey(key: string, noteMap: Map<string, Note>): string {
-		if (!noteMap.has(key)) return key
+		if (!noteMap.has(key)) {
+			return key
+		}
 		let i = 2
-		while (noteMap.has(`${key} (${i})`)) i++
+		while (noteMap.has(`${key} (${i})`)) {
+			i++
+		}
 		return `${key} (${i})`
 	}
 
