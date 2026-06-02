@@ -8,7 +8,6 @@ import { persistedState } from '../persisted-state'
 import { blogManager, debug, $t, updateManager } from '../../global'
 import { settingsManager, UpdateMode } from '../settings-manager'
 import { MimiriException, MimiriExceptionType } from './exceptions'
-import { differenceInHours } from 'date-fns'
 
 const zip = async (text: string) => {
 	return toBase64(
@@ -660,9 +659,7 @@ export class MimerNote {
 				() =>
 					(updateManager.isUpdateAvailable && settingsManager.updateMode === UpdateMode.StrongNotify) ||
 					(blogManager.hasNewPost.value && settingsManager.blogPostNotificationLevel === 'clearly') ||
-					(!this.owner.state.flags['create-account-read'] &&
-						differenceInHours(new Date(), this.owner.state.created) > 24) ||
-					(!this.owner.state.flags['create-account-read'] && this.owner.state.isAnonymous),
+				!this.owner.state.flags['create-account-read'],
 			)
 		}
 		return false
