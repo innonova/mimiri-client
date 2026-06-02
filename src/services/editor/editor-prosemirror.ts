@@ -14,6 +14,7 @@ import {
 	liftEmptyBlock,
 	newlineInCode,
 	splitBlock,
+	toggleMark,
 } from 'prosemirror-commands'
 import { mimiriSchema } from './prosemirror/mimiri-schema'
 import { convertUrlAtCursor, mimiriInputRules } from './prosemirror/mimiri-input-rules'
@@ -33,7 +34,7 @@ import { ConflictActionHandler } from './prosemirror/conflict-action-handler'
 import { createPasswordMarkViewFactory } from './prosemirror/password-mark-view'
 import { passwordCursorPlugin } from './prosemirror/password-cursor-plugin'
 import type ConflictBanner from '../../components/elements/ConflictBanner.vue'
-import { executeFormatAction, getSupportedActions } from './prosemirror/format-commands'
+import { executeFormatAction, getSupportedActions, exitCodeBlock } from './prosemirror/format-commands'
 
 export class EditorProseMirror implements TextEditor {
 	private _domElement: HTMLElement | undefined
@@ -126,7 +127,9 @@ export class EditorProseMirror implements TextEditor {
 				keymap({
 					'Mod-z': undo,
 					'Mod-y': redo,
+					'Mod-e': toggleMark(mimiriSchema.marks.code),
 					Enter: chainCommands(
+						exitCodeBlock,
 						convertUrlAtCursor(mimiriSchema.marks.link),
 						splitListItem(mimiriSchema.nodes.list_item),
 					),

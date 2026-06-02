@@ -28,10 +28,18 @@
 }
 
 .ProseMirror ::selection {
-	background-color: #264f78;
+	background-color: #add6ff;
 }
 
 .ProseMirror ::-moz-selection {
+	background-color: #add6ff;
+}
+
+html[data-theme='dark'] .ProseMirror ::selection {
+	background-color: #264f78;
+}
+
+html[data-theme='dark'] .ProseMirror ::-moz-selection {
 	background-color: #264f78;
 }
 
@@ -95,15 +103,29 @@
 
 /* Code blocks */
 .ProseMirror pre {
-	background-color: #2d2d2d;
-	/* mix-blend-mode: hard-light; */
+	background-color: #f5f5f5;
 	padding: 0.25rem;
 	margin: 0 0 0.5rem 0;
 	overflow-x: auto;
 }
 
+html[data-theme='dark'] .ProseMirror pre {
+	background-color: #2d2d2d;
+}
+
+/* Inline code */
 .ProseMirror code {
+	font-family: Consolas, 'Courier New', monospace;
 	font-size: 0.9em;
+	background-color: rgba(175, 184, 193, 0.2);
+	padding: 0.1em 0.3em;
+	margin: 0;
+	border-radius: 3px;
+}
+
+/* Dark mode inline code */
+html[data-theme='dark'] .ProseMirror code {
+	background-color: rgba(110, 118, 129, 0.4);
 }
 
 .ProseMirror pre code {
@@ -111,6 +133,13 @@
 	font-size: 14px;
 	background: none;
 	padding: 0;
+	border-radius: 0;
+	white-space: pre-wrap;
+}
+
+/* Ensure code blocks don't get inline code background in dark mode */
+html[data-theme='dark'] .ProseMirror pre code {
+	background: none;
 }
 
 .ProseMirror codelens {

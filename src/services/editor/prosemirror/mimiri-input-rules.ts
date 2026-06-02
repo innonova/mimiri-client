@@ -103,6 +103,33 @@ const urlInputRule = (markType: MarkType) => {
 	})
 }
 
+// Input rule for inline code with backticks
+const inlineCodeRule = (markType: MarkType) => {
+	// Match text surrounded by backticks: `code`
+	return new InputRule(/`([^`]+)`$/, (state, match, start, end) => {
+		const $start = state.doc.resolve(start)
+
+		// Don't apply in code blocks
+		if ($start.parent.type.spec.code) {
+			return null
+		}
+
+		// Check if we already have a code mark here
+		const hasCode = state.doc.rangeHasMark(start, end, markType)
+		if (hasCode) {
+			return null
+		}
+
+		const textContent = match[1]
+
+		return state.tr
+			.delete(start, start + 1) // Remove opening backtick
+			.delete(start + textContent.length, start + textContent.length + 1) // Remove closing backtick (adjusted for first deletion)
+			.addMark(start, start + textContent.length, markType.create())
+			.removeStoredMark(markType)
+	})
+}
+
 // Helper to convert URL at cursor position to link (used by Enter key handler)
 export const convertUrlAtCursor = (markType: MarkType) => {
 	return (state, dispatch) => {
@@ -148,6 +175,9 @@ export const mimiriInputRules = (schema: Schema) => {
 	let markType
 	if ((markType = schema.marks.link)) {
 		rules.push(urlInputRule(markType))
+	}
+	if ((markType = schema.marks.code)) {
+		rules.push(inlineCodeRule(markType))
 	}
 	return inputRules({ rules })
 }

@@ -143,6 +143,12 @@ export class InlineMarkdownPlugin implements EditorPlugin {
 			const checkboxMatches = this.findCheckboxPatterns(line, lineNumber)
 			decorations.push(...checkboxMatches)
 
+			// Check for inline code pattern (but not code fences)
+			if (!line.trim().startsWith('```')) {
+				const inlineCodeMatches = this.findInlineCodePatterns(line, lineNumber)
+				decorations.push(...inlineCodeMatches)
+			}
+
 			// Check for bold/italic patterns (only if not in a heading)
 			if (headingMatches.length === 0) {
 				const textStyleMatches = this.findTextStylePatterns(line, lineNumber)
@@ -235,6 +241,60 @@ export class InlineMarkdownPlugin implements EditorPlugin {
 				},
 				options: {
 					inlineClassName: 'password-delimiter',
+				},
+			})
+		}
+
+		return decorations
+	}
+
+	private findInlineCodePatterns(line: string, lineNumber: number): editor.IModelDeltaDecoration[] {
+		const decorations: editor.IModelDeltaDecoration[] = []
+		// Match single backticks that are not part of password pattern (p`) or code fences (```)
+		const regex = /(?<!p)(`([^`\n]+)`)/g
+		let match: RegExpExecArray | null
+
+		while ((match = regex.exec(line)) !== null) {
+			const startCol = match.index + 1
+			const contentLength = match[2].length
+			const contentStartCol = startCol + 1 // After opening backtick
+
+			// Opening backtick
+			decorations.push({
+				range: {
+					startLineNumber: lineNumber,
+					startColumn: startCol,
+					endLineNumber: lineNumber,
+					endColumn: startCol + 1,
+				},
+				options: {
+					inlineClassName: 'inline-code-delimiter',
+				},
+			})
+
+			// Content
+			decorations.push({
+				range: {
+					startLineNumber: lineNumber,
+					startColumn: contentStartCol,
+					endLineNumber: lineNumber,
+					endColumn: contentStartCol + contentLength,
+				},
+				options: {
+					inlineClassName: 'md-inline-code',
+				},
+			})
+
+			// Closing backtick
+			decorations.push({
+				range: {
+					startLineNumber: lineNumber,
+					startColumn: contentStartCol + contentLength,
+					endLineNumber: lineNumber,
+					endColumn: contentStartCol + contentLength + 1,
+				},
+				options: {
+					inlineClassName: 'inline-code-delimiter',
 				},
 			})
 		}

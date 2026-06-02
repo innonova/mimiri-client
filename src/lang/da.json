@@ -191,7 +191,7 @@
 		"showHistory": "Vis historik",
 		"markAsPassword": "Marker som adgangskode Ctrl+Shift+C",
 		"heading": "Overskrift",
-		"codeBlock": "Kodeblok",
+		"codeBlock": "Marker valgt tekst som kode, eller indsæt kodeblok",
 		"checkbox": "Afkrydsningsfelt",
 		"list": "Liste",
 		"orderedList": "Nummereret liste",
