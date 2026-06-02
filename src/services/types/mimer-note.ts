@@ -659,7 +659,7 @@ export class MimerNote {
 				() =>
 					(updateManager.isUpdateAvailable && settingsManager.updateMode === UpdateMode.StrongNotify) ||
 					(blogManager.hasNewPost.value && settingsManager.blogPostNotificationLevel === 'clearly') ||
-				!this.owner.state.flags['create-account-read'],
+					!this.owner.state.flags['create-account-read'],
 			)
 		}
 		return false
