@@ -191,7 +191,7 @@
 		"showHistory": "显示历史记录",
 		"markAsPassword": "标记为密码 Ctrl+Shift+C",
 		"heading": "标题",
-		"codeBlock": "代码块",
+		"codeBlock": "将选定文本标记为代码，或插入代码块",
 		"checkbox": "复选框",
 		"list": "列表",
 		"orderedList": "有序列表",

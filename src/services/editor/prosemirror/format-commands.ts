@@ -1,7 +1,7 @@
 import type { EditorState, Transaction } from 'prosemirror-state'
 import type { ResolvedPos, Node as ProseMirrorNode } from 'prosemirror-model'
 import { TextSelection } from 'prosemirror-state'
-import { setBlockType } from 'prosemirror-commands'
+import { setBlockType, toggleMark } from 'prosemirror-commands'
 import { mimiriSchema } from './mimiri-schema'
 import { insertList } from './list-commands'
 import { serialize } from './mimiri-serializer'
@@ -282,7 +282,23 @@ function executeInsertHeading(state: EditorState, dispatch: (tr: Transaction) =>
 }
 
 /**
- * Insert a code block from the current selection
+ * Find the depth of the top-level block (direct child of doc) containing the position.
+ * This ensures we replace entire blocks instead of nested content, which would break
+ * document structure rules (e.g., replacing a paragraph inside a list item).
+ */
+function getTopLevelBlockDepth($pos: ResolvedPos): number {
+	let depth = $pos.depth
+	while (depth > 0) {
+		if ($pos.node(depth - 1).type.name === 'doc') {
+			return depth
+		}
+		depth--
+	}
+	return 1 // Fallback to depth 1
+}
+
+/**
+ * Insert a code block from the current selection, or apply inline code mark for single-line selections
  */
 function executeInsertCodeBlock(
 	state: EditorState,
@@ -290,30 +306,52 @@ function executeInsertCodeBlock(
 	$from: ResolvedPos,
 	$to: ResolvedPos,
 ) {
-	// Get the range of selected blocks
-	const startPos = $from.before($from.depth)
-	const endPos = $to.after($to.depth)
+	const { from, to } = state.selection
 
-	// Collect nodes from the selection and serialize them to preserve markdown formatting
-	const nodes: any[] = []
-	state.doc.nodesBetween(startPos, endPos, (node, pos) => {
-		// Only collect top-level block nodes within the range
-		if (node.isBlock && pos >= startPos && pos < endPos) {
-			const parent = state.doc.resolve(pos).parent
-			if (parent.type.name === 'doc') {
-				nodes.push(node)
-				return false // Don't descend into children
-			}
+	// Check if selection is within a single text block (inline selection)
+	const isSameParagraph = $from.parent === $to.parent
+	const isInlineable = isSameParagraph && $from.parent.type.name !== 'code_block'
+	const hasSelection = from !== to
+
+	// If user has selected text within a single text block, check if it's single-line for inline code
+	if (hasSelection && isInlineable) {
+		const selectedText = state.doc.textBetween(from, to)
+		const isMultiLine = selectedText.includes('\n')
+
+		// For single-line selection, toggle inline code mark
+		if (!isMultiLine) {
+			const codeMark = mimiriSchema.marks.code
+			toggleMark(codeMark)(state, dispatch)
+			return
+		} else {
+			// Multi-line selection within single paragraph - create code block preserving all paragraph text
+			const fromDepth = getTopLevelBlockDepth($from)
+			const toDepth = getTopLevelBlockDepth($to)
+			const startPos = $from.before(fromDepth)
+			const endPos = $to.after(toDepth)
+
+			// Get all text from the block range to avoid losing unselected content
+			const textContent = state.doc.textBetween(startPos, endPos, '\n', '\n')
+			const codeBlockMarkdown = '```\n' + textContent + '\n```'
+			const parsedDoc = deserialize(codeBlockMarkdown)
+
+			const tr = state.tr.replaceWith(startPos, endPos, parsedDoc.content)
+			const newPos = startPos + 1
+			tr.setSelection(TextSelection.create(tr.doc, newPos))
+			dispatch(tr)
+			return
 		}
-		return true
-	})
-
-	// Create a temporary doc with just the selected nodes to serialize
-	let textContent = ''
-	if (nodes.length > 0) {
-		const tempDoc = mimiriSchema.nodes.doc.create({}, nodes)
-		textContent = serialize(tempDoc)
 	}
+
+	// Otherwise, insert a code block
+	// Get the range of selected blocks at the top-level block depth
+	const fromDepth = getTopLevelBlockDepth($from)
+	const toDepth = getTopLevelBlockDepth($to)
+	const startPos = $from.before(fromDepth)
+	const endPos = $to.after(toDepth)
+
+	// Get the full text content from the affected blocks (preserves content even with collapsed cursor)
+	const textContent = state.doc.textBetween(startPos, endPos, '\n', '\n')
 
 	// Wrap the content in code fence syntax and deserialize to get proper code block
 	const codeBlockMarkdown = '```\n' + textContent + '\n```'
@@ -327,4 +365,75 @@ function executeInsertCodeBlock(
 	tr.setSelection(TextSelection.create(tr.doc, newPos))
 
 	dispatch(tr)
+}
+
+/**
+ * Exit a code block by creating a new paragraph after it when pressing Enter on an empty line at the end.
+ * Only triggers if there's no content after the code block.
+ * Returns true if the command was applicable and executed.
+ */
+export function exitCodeBlock(state: EditorState, dispatch?: (tr: Transaction) => void): boolean {
+	const { $from, $to } = state.selection
+
+	// Only handle if cursor (not selection) is in a code block
+	if ($from.parent.type.name !== 'code_block' || $from.pos !== $to.pos) {
+		return false
+	}
+
+	// Check if there's any content after the code block
+	const codeBlockEnd = $from.after()
+	const docEnd = state.doc.content.size
+	const hasContentAfter = codeBlockEnd < docEnd - 1 // -1 because doc end position is after closing tag
+
+	// Only exit if there's no content after the code block
+	if (hasContentAfter) {
+		return false
+	}
+
+	// Check if we're at the end of the code block on an empty line
+	const codeBlock = $from.parent
+	const textContent = codeBlock.textContent
+	const cursorOffset = $from.parentOffset
+
+	// Check if the line we're on is empty (only whitespace or nothing after cursor to end)
+	const textAfterCursor = textContent.slice(cursorOffset)
+	const textBeforeCursor = textContent.slice(0, cursorOffset)
+	const lastNewline = textBeforeCursor.lastIndexOf('\n')
+	const currentLine = lastNewline >= 0 ? textBeforeCursor.slice(lastNewline + 1) : textBeforeCursor
+
+	// Exit if current line is empty (only whitespace) and we're at the end of the block or next line is empty
+	const currentLineEmpty = currentLine.trim() === ''
+	const atEndOfBlock = textAfterCursor === '' || textAfterCursor === '\n'
+
+	if (currentLineEmpty && atEndOfBlock) {
+		if (dispatch) {
+			// Remove the empty line from the code block if it exists
+			let codeBlockEnd = $from.after()
+			if (textAfterCursor === '\n') {
+				// Remove the trailing newline
+				const tr = state.tr.delete($from.pos, $from.pos + 1)
+				codeBlockEnd = tr.doc.resolve($from.pos).after()
+
+				// Insert a new paragraph after the code block
+				const paragraph = state.schema.nodes.paragraph.create()
+				tr.insert(codeBlockEnd, paragraph)
+
+				// Move cursor to the new paragraph
+				tr.setSelection(TextSelection.create(tr.doc, codeBlockEnd + 1))
+				dispatch(tr)
+			} else {
+				// Just insert a paragraph after the code block
+				const tr = state.tr
+				const paragraph = state.schema.nodes.paragraph.create()
+				tr.insert(codeBlockEnd, paragraph)
+
+				// Move cursor to the new paragraph
+				tr.setSelection(TextSelection.create(tr.doc, codeBlockEnd + 1))
+				dispatch(tr)
+			}
+		}
+		return true
+	}
+
+	return false
 }

@@ -191,7 +191,7 @@
 		"showHistory": "Show History",
 		"markAsPassword": "Mark as Password Ctrl+Shift+C",
 		"heading": "Heading",
-		"codeBlock": "Code Block",
+		"codeBlock": "Mark selected text as code, or insert code block",
 		"checkbox": "Checkbox",
 		"list": "List",
 		"orderedList": "Ordered List",

@@ -209,7 +209,7 @@
 		"showHistory": "Toggle button label when history panel is closed.",
 		"markAsPassword": "Toolbar button tooltip — formats selected text as masked password text. Keyboard shortcut is appended in the English string.",
 		"heading": "Toolbar button: insert/format a heading.",
-		"codeBlock": "Toolbar button: insert a code block.",
+		"codeBlock": "Toolbar button: mark single-line selection as inline code, or wrap multi-line selection/insert code block.",
 		"checkbox": "Toolbar button: insert a checkbox.",
 		"list": "Toolbar button: insert an unordered list.",
 		"orderedList": "Toolbar button: insert an ordered/numbered list.",

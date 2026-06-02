@@ -167,6 +167,10 @@ export class EditorMonaco implements TextEditor {
 				if (e.keyCode === KeyCode.KeyF && e.ctrlKey && e.shiftKey) {
 					this.listener.onSearchAllRequested()
 				}
+				if (e.keyCode === KeyCode.KeyE && e.ctrlKey) {
+					e.preventDefault()
+					this.executeFormatAction('insert-code-block')
+				}
 			}
 		})
 

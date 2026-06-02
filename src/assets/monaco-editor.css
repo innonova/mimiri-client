@@ -180,6 +180,24 @@
 	font-style: italic;
 }
 
+/* Inline code */
+.inline-code-delimiter {
+	opacity: 0.4;
+	color: #888888;
+}
+.monaco-editor.vs-dark .inline-code-delimiter {
+	color: #eeeeee;
+}
+
+.monaco-editor .md-inline-code {
+	background-color: rgba(175, 184, 193, 0.2);
+	/* Note: Only background color to avoid cursor position issues in Monaco */
+	/* Font changes (family, size) can cause cursor misalignment */
+}
+.monaco-editor.vs-dark .md-inline-code {
+	background-color: rgba(110, 118, 129, 0.4);
+}
+
 /* Conflict block styling - Local vs Server */
 .monaco-editor .conflict-marker-line {
 	background-color: #eeeeee;

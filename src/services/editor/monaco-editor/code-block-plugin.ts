@@ -406,17 +406,99 @@ export class CodeBlockPlugin implements EditorPlugin {
 	executeFormatAction(action: string): boolean {
 		if (action === 'insert-code-block') {
 			const selection = this.monacoEditor.getSelection()
+
+			// Check if selection is single-line and not empty
+			if (!selection.isEmpty() && selection.startLineNumber === selection.endLineNumber) {
+				// Apply inline code formatting
+
+				// Check if already wrapped in backticks - if so, remove them
+				const line = this.monacoEditorModel.getLineContent(selection.startLineNumber)
+				const charBefore = selection.startColumn > 1 ? line[selection.startColumn - 2] : ''
+				const charAfter = selection.endColumn <= line.length ? line[selection.endColumn - 1] : ''
+
+				if (charBefore === '`' && charAfter === '`') {
+					// Remove backticks
+					this.monacoEditor.executeEdits(undefined, [
+						{
+							range: {
+								startLineNumber: selection.startLineNumber,
+								startColumn: selection.endColumn,
+								endLineNumber: selection.endLineNumber,
+								endColumn: selection.endColumn + 1,
+							},
+							text: '',
+						},
+						{
+							range: {
+								startLineNumber: selection.startLineNumber,
+								startColumn: selection.startColumn - 1,
+								endLineNumber: selection.startLineNumber,
+								endColumn: selection.startColumn,
+							},
+							text: '',
+						},
+					])
+					// Adjust selection
+					this.monacoEditor.setSelection({
+						startLineNumber: selection.startLineNumber,
+						startColumn: selection.startColumn - 1,
+						endLineNumber: selection.endLineNumber,
+						endColumn: selection.endColumn - 1,
+					})
+				} else {
+					// Add backticks
+					this.monacoEditor.executeEdits(undefined, [
+						{
+							range: {
+								startLineNumber: selection.endLineNumber,
+								startColumn: selection.endColumn,
+								endLineNumber: selection.endLineNumber,
+								endColumn: selection.endColumn,
+							},
+							text: '`',
+						},
+						{
+							range: {
+								startLineNumber: selection.startLineNumber,
+								startColumn: selection.startColumn,
+								endLineNumber: selection.startLineNumber,
+								endColumn: selection.startColumn,
+							},
+							text: '`',
+						},
+					])
+					// Adjust selection to include backticks
+					this.monacoEditor.setSelection({
+						startLineNumber: selection.startLineNumber,
+						startColumn: selection.startColumn + 1,
+						endLineNumber: selection.endLineNumber,
+						endColumn: selection.endColumn + 1,
+					})
+				}
+				return true
+			}
+
+			// Multi-line or empty selection - insert code block
 			const expandedSelection = {
 				...selection,
 				startColumn: 1,
 				endColumn: this.monacoEditorModel.getLineMaxColumn(selection.endLineNumber),
 			}
 			if (selection.isEmpty()) {
-				// Insert code block and position cursor for language input
+				// Get the current line content to preserve it in the code block
+				const lineContent = this.monacoEditorModel.getLineContent(selection.startLineNumber)
+				const lineRange = {
+					startLineNumber: selection.startLineNumber,
+					startColumn: 1,
+					endLineNumber: selection.startLineNumber,
+					endColumn: this.monacoEditorModel.getLineMaxColumn(selection.startLineNumber),
+				}
+
+				// Replace the entire line with a code block containing the line's content
 				this.monacoEditor.executeEdits(undefined, [
 					{
-						range: selection,
-						text: '```\n\n```\n',
+						range: lineRange,
+						text: lineContent ? `\`\`\`\n${lineContent}\n\`\`\`` : '```\n\n```',
 					},
 				])
 
