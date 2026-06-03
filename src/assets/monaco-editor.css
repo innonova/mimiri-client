@@ -40,14 +40,14 @@
 .password-content {
 	-webkit-text-security: disc;
 	text-security: disc;
-	@apply !text-editor-password-content;
+	@apply text-editor-password-content!;
 }
 
 /* Revealed password state */
 .password-content-visible {
 	-webkit-text-security: none;
 	text-security: none;
-	@apply !text-editor-password-content;
+	@apply text-editor-password-content!;
 }
 
 /* Password hover buttons widget */
@@ -85,16 +85,16 @@
 .suggest-widget .monaco-list-row .label-name,
 .suggest-widget .monaco-list-row .monaco-highlighted-label,
 .suggest-widget .monaco-list-row * {
-	@apply !no-underline;
+	@apply no-underline!;
 }
 
 .suggest-widget .monaco-list-row {
-	@apply !pt-[2px] !pl-1;
+	@apply pt-[2px]! pl-1!;
 }
 
 /* Hide or simplify the icon */
 .suggest-widget .suggest-icon.codicon {
-	@apply !hidden;
+	@apply hidden!;
 }
 
 .monaco-editor .md-heading {

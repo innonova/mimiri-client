@@ -49,7 +49,7 @@
 }
 
 .ProseMirror img.ProseMirror-separator {
-	@apply !inline !border-none !m-0;
+	@apply inline! border-none! m-0!;
 }
 
 /* Lists */
@@ -157,7 +157,7 @@ li[data-item-type='task'] {
 .ProseMirror password {
 	-webkit-text-security: disc;
 	text-security: disc;
-	@apply !text-editor-password-content;
+	@apply text-editor-password-content!;
 }
 
 .ProseMirror .password-wrapper {
@@ -200,7 +200,7 @@ li[data-item-type='task'] {
 .ProseMirror .password-content {
 	-webkit-text-security: disc;
 	text-security: disc;
-	@apply !text-editor-password-content;
+	@apply text-editor-password-content!;
 }
 
 /* Conflict block styling */
