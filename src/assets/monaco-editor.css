@@ -1,5 +1,6 @@
 .password-secret-content {
 	-webkit-text-security: disc;
+	text-security: disc;
 }
 
 .clickable-checkbox {

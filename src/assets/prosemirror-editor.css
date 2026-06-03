@@ -191,10 +191,12 @@ li[data-item-type='task'] {
 
 .password-inline-code.password-hidden {
 	-webkit-text-security: disc;
+	text-security: disc;
 }
 
 .ProseMirror password {
 	-webkit-text-security: disc;
+	text-security: disc;
 	color: var(--color-editor-password-content) !important;
 }
 
@@ -205,6 +207,7 @@ li[data-item-type='task'] {
 
 .ProseMirror .password-wrapper.password-visible password {
 	-webkit-text-security: none;
+	text-security: none;
 }
 
 .ProseMirror .password-buttons {
