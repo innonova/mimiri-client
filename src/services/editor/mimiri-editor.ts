@@ -187,6 +187,7 @@ export class MimiriEditor {
 				this._editorMonaco.resetBaseline()
 			}
 			this._editorMonaco.readonly = currentReadonly
+			this._editorMonaco.focus()
 			if (mimiriPlatform.isDesktop) {
 				settingsManager.defaultEditor = 'code'
 			} else {
@@ -204,6 +205,7 @@ export class MimiriEditor {
 				this._editorProseMirror.resetBaseline()
 			}
 			this._editorProseMirror.readonly = currentReadonly
+			this._editorProseMirror.focus()
 			if (mimiriPlatform.isDesktop) {
 				settingsManager.defaultEditor = 'wysiwyg'
 			} else {
