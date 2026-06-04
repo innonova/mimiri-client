@@ -1,34 +1,31 @@
 import type { MimerNote } from '../types/mimer-note'
-import { ipcClient, infoDialog, $t } from '../../global'
-import { toBase64 } from '../hex-base64'
+import { ipcClient, $t } from '../../global'
+import { fromBase64, toBase64 } from '../hex-base64'
 import type { NoteTreeManager } from './note-tree-manager'
+import { createZip, type ZipEntry } from './zip-writer'
 
 // One file entry produced by export, matching the FileData shape expected by
 // ipcClient.fileSystem.saveFolder.
-type ExportedFile = { path: string; isFolder: boolean; content: string }
+export type ExportedFile = { path: string; isFolder: boolean; content: string }
 
 export class NoteExporter {
 	private encoder = new TextEncoder()
 
 	constructor(private treeManager: NoteTreeManager) {}
 
-	public async exportAllNotes(): Promise<void> {
+	/** Collect all notes starting from the tree root into ExportedFile entries. */
+	public async collectAllFiles(onProgress?: (count: number) => void): Promise<ExportedFile[]> {
 		const root = this.treeManager.root
 		if (!root) {
-			return
+			return []
 		}
-
 		const files: ExportedFile[] = []
-		await this.collectNotesForExport(root, [], files)
-
-		const saved = await ipcClient.fileSystem.saveFolder(files, { title: $t('contextMenu.exportNotes') })
-		if (saved) {
-			const noteCount = files.filter(f => !f.isFolder).length
-			infoDialog.value.show($t('contextMenu.exportNotes'), $t('contextMenu.exportNotesComplete', { count: noteCount }))
-		}
+		await this.collectNotesForExport(root, [], files, onProgress)
+		return files
 	}
 
-	public async exportSubtree(note: MimerNote): Promise<void> {
+	/** Collect a single note and all its descendants into ExportedFile entries. */
+	public async collectSubtreeFiles(note: MimerNote, onProgress?: (count: number) => void): Promise<ExportedFile[]> {
 		const files: ExportedFile[] = []
 		const safeName = this.sanitizeTitle(note.title ?? 'Untitled')
 
@@ -40,18 +37,34 @@ export class NoteExporter {
 			isFolder: false,
 			content: toBase64(this.encoder.encode(note.text ?? '')),
 		})
+		if (onProgress) {
+			onProgress(1)
+		}
 		if (note.hasChildren) {
-			await this.collectNotesForExport(note, [safeName], files)
+			await this.collectNotesForExport(note, [safeName], files, onProgress)
 		}
+		return files
+	}
 
-		const saved = await ipcClient.fileSystem.saveFolder(files, { title: $t('contextMenu.exportSubtree') })
-		if (saved) {
-			const noteCount = files.filter(f => !f.isFolder).length
-			infoDialog.value.show(
-				$t('contextMenu.exportSubtree'),
-				$t('contextMenu.exportSubtreeComplete', { count: noteCount }),
-			)
-		}
+	/** Show the OS folder-picker and write files to the chosen directory. */
+	public async saveToFolder(files: ExportedFile[], dialogTitle: string): Promise<boolean> {
+		return ipcClient.fileSystem.saveFolder(files, { title: dialogTitle })
+	}
+
+	/** Create a ZIP archive in-memory and save it via the OS file-picker. */
+	public async saveToZip(files: ExportedFile[], defaultName: string, dialogTitle: string): Promise<boolean> {
+		const zipEntries: ZipEntry[] = files
+			.filter(f => !f.isFolder)
+			.map(f => ({ name: f.path, data: fromBase64(f.content) }))
+		const zipData = await createZip(zipEntries)
+		return ipcClient.fileSystem.saveFile(
+			{ path: '', isFolder: false, content: toBase64(zipData) },
+			{
+				title: dialogTitle,
+				defaultName,
+				filters: [{ name: $t('exportDialog.zipFilterName'), extensions: ['zip'] }],
+			},
+		)
 	}
 
 	// Convert a note title into a safe cross-platform file/folder name. Uses a
@@ -82,7 +95,12 @@ export class NoteExporter {
 
 	// Recursively walk the note tree, pushing one folder entry per parent note
 	// and one .md entry per note (including parents, so their text is preserved).
-	private async collectNotesForExport(note: MimerNote, pathParts: string[], files: ExportedFile[]): Promise<void> {
+	private async collectNotesForExport(
+		note: MimerNote,
+		pathParts: string[],
+		files: ExportedFile[],
+		onProgress?: (count: number) => void,
+	): Promise<void> {
 		await note.ensureChildren()
 		const usedNames = new Set<string>()
 		for (const child of note.children) {
@@ -101,8 +119,11 @@ export class NoteExporter {
 				isFolder: false,
 				content: toBase64(this.encoder.encode(child.text ?? '')),
 			})
+			if (onProgress) {
+				onProgress(files.filter(f => !f.isFolder).length)
+			}
 			if (child.hasChildren) {
-				await this.collectNotesForExport(child, childPath, files)
+				await this.collectNotesForExport(child, childPath, files, onProgress)
 			}
 		}
 	}

@@ -259,6 +259,13 @@ export class MimiriStore {
 		exportAllNotes: () => this.operationsManager.exportAllNotes(),
 		importAllNotes: () => this.operationsManager.importAllNotes(),
 		exportSubtree: (note: MimerNote) => this.operationsManager.exportSubtree(note),
+		collectAllFiles: (onProgress?: (count: number) => void) => this.operationsManager.collectAllFiles(onProgress),
+		collectSubtreeFiles: (note: MimerNote, onProgress?: (count: number) => void) =>
+			this.operationsManager.collectSubtreeFiles(note, onProgress),
+		saveExportToFolder: (files: import('./note-exporter').ExportedFile[], dialogTitle: string) =>
+			this.operationsManager.saveExportToFolder(files, dialogTitle),
+		saveExportToZip: (files: import('./note-exporter').ExportedFile[], defaultName: string, dialogTitle: string) =>
+			this.operationsManager.saveExportToZip(files, defaultName, dialogTitle),
 	}
 
 	public readonly session = {

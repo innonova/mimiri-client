@@ -85,6 +85,21 @@
 	"infoDialog": {
 		"ok": "OK"
 	},
+	"exportDialog": {
+		"title": "Export Notes",
+		"exportAll": "Export all notes",
+		"exportSubtree": "Export \"{title}\" and all its children",
+		"folderOption": "Export to folder",
+		"zipOption": "Save as ZIP file",
+		"zipFilterName": "ZIP Files",
+		"chooseLocationHint": "You will be prompted to choose a location after clicking Start Export.",
+		"cancel": "Cancel",
+		"start": "Start Export",
+		"exporting": "Exporting notes…",
+		"notesProcessed": "{current} of {total} notes",
+		"success": "Successfully exported {count} notes",
+		"ok": "OK"
+	},
 	"limitDialog": {
 		"noteCountTitle": "Note Limit Reached",
 		"noteCountText": "You have created {count} of your {max} notes",

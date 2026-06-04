@@ -395,10 +395,26 @@ export class NoteOperationsManager {
 	}
 
 	public exportAllNotes(): Promise<void> {
-		return this.exporter.exportAllNotes()
+		return this.exporter.collectAllFiles().then(() => {})
 	}
 
 	public exportSubtree(note: MimerNote): Promise<void> {
-		return this.exporter.exportSubtree(note)
+		return this.exporter.collectSubtreeFiles(note).then(() => {})
+	}
+
+	public collectAllFiles(onProgress?: (count: number) => void) {
+		return this.exporter.collectAllFiles(onProgress)
+	}
+
+	public collectSubtreeFiles(note: MimerNote, onProgress?: (count: number) => void) {
+		return this.exporter.collectSubtreeFiles(note, onProgress)
+	}
+
+	public saveExportToFolder(files: import('./note-exporter').ExportedFile[], dialogTitle: string) {
+		return this.exporter.saveToFolder(files, dialogTitle)
+	}
+
+	public saveExportToZip(files: import('./note-exporter').ExportedFile[], defaultName: string, dialogTitle: string) {
+		return this.exporter.saveToZip(files, defaultName, dialogTitle)
 	}
 }

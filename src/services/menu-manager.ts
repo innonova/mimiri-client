@@ -8,6 +8,7 @@ import {
 	deleteNodeDialog,
 	emptyRecycleBinDialog,
 	env,
+	exportDialog,
 	infoDialog,
 	ipcClient,
 	isCut,
@@ -180,10 +181,10 @@ class MenuManager {
 		} else if (itemId === 'show-dev-tools') {
 			ipcClient.menu.showDevTools()
 		} else if (itemId === 'export-notes') {
-			await noteManager.operations.exportAllNotes()
+			exportDialog.value.show({ mode: 'all' })
 		} else if (itemId === 'export-subtree') {
 			if (noteManager.tree.selectedNote()) {
-				await noteManager.operations.exportSubtree(noteManager.tree.selectedNote())
+				exportDialog.value.show({ mode: 'subtree', note: noteManager.tree.selectedNote() })
 			}
 		} else if (itemId === 'import-notes') {
 			await noteManager.operations.importAllNotes()

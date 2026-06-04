@@ -84,6 +84,7 @@
 		<PasswordDialog ref="passwordDialog" />
 		<LoginDialog ref="loginDialog" />
 		<InfoDialog ref="infoDialog" />
+		<ExportDialog ref="exportDialog" />
 		<InconsistencyDialog ref="inconsistencyDialog" />
 		<SyncErrorDialog ref="syncErrorDialog" />
 		<DeleteLocalDataDialog ref="deleteLocalDataDialog" />
@@ -145,6 +146,7 @@ import {
 	deleteHistoryDialog,
 	deleteLocalDataDialog,
 	infoDialog,
+	exportDialog,
 	debug,
 	blockUserInput,
 	appStatus,
@@ -165,6 +167,7 @@ import PropertiesPage from './components/PropertiesPage.vue'
 import DeleteHistoryDialog from './components/dialogs/DeleteHistoryDialog.vue'
 import InfoDialog from './components/dialogs/InfoDialog.vue'
 import InconsistencyDialog from './components/dialogs/InconsistencyDialog.vue'
+import ExportDialog from './components/dialogs/ExportDialog.vue'
 import StatusBar from './components/elements/StatusBar.vue'
 import SyncErrorDialog from './components/dialogs/SyncErrorDialog.vue'
 import DeleteLocalDataDialog from './components/dialogs/DeleteLocalDataDialog.vue'
