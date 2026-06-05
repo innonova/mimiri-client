@@ -1,9 +1,10 @@
 .password-secret-content {
 	-webkit-text-security: disc;
+	text-security: disc;
 }
 
 .clickable-checkbox {
-	@apply cursor-pointer text-text-secondary;
+	@apply cursor-pointer text-editor-code-delimiter;
 }
 
 .clickable-checkbox-content {
@@ -11,7 +12,7 @@
 }
 
 .password-secret {
-	@apply text-text-secondary;
+	@apply text-editor-code-delimiter;
 }
 
 .password-secret-content {
@@ -20,227 +21,131 @@
 
 /* Code block indicator using border instead of background to avoid covering selection */
 .monaco-editor .code-block-line {
-	background-color: #eeeeee;
+	@apply bg-editor-code-block-bg;
 	mix-blend-mode: multiply;
-}
-.monaco-editor.vs-dark .code-block-line {
-	background-color: #888888;
-	mix-blend-mode: hard-light;
 }
 
 /* Text content decorations */
 .code-block-fence {
-	opacity: 0.6;
-	font-weight: bold;
+	@apply font-bold text-editor-code-fence-text opacity-60;
 }
 .code-block-content {
-	font-family: 'Consolas', 'Courier New', monospace;
+	@apply font-mono;
 }
 
 /* Inline markdown decorations - Password masking */
 .password-delimiter {
-	opacity: 0.4;
-	color: #888888;
+	@apply text-editor-password-content;
 }
 .password-content {
 	-webkit-text-security: disc;
 	text-security: disc;
-	color: #666666;
-}
-.monaco-editor.vs-dark .password-delimiter {
-	color: #888888;
-}
-.monaco-editor.vs-dark .password-content {
-	color: #aaaaaa;
+	@apply text-editor-password-content!;
 }
 
 /* Revealed password state */
 .password-content-visible {
 	-webkit-text-security: none;
 	text-security: none;
-	color: #666666;
-}
-.monaco-editor.vs-dark .password-content-visible {
-	color: #aaaaaa;
+	@apply text-editor-password-content!;
 }
 
 /* Password hover buttons widget */
 .monaco-password-buttons {
-	display: inline-flex;
-	background: var(--color-toolbar);
-	border: 1px solid var(--color-border);
-	border-radius: 4px;
-	padding: 1px 2px;
-	gap: 2px;
-	align-items: center;
-	white-space: nowrap;
-	user-select: none;
+	@apply inline-flex items-center whitespace-nowrap select-none bg-toolbar border border-border rounded px-[2px] py-px gap-[2px];
 	-webkit-user-select: none;
 }
 
 .monaco-password-btn {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	background: none;
-	border: none;
-	cursor: pointer;
-	color: var(--color-text-secondary);
-	padding: 1px;
-	border-radius: 3px;
-	width: 16px;
-	height: 16px;
+	@apply flex items-center justify-center cursor-pointer text-text-secondary p-px rounded w-5 h-5 bg-transparent border-none;
 }
 
 .monaco-password-btn:hover {
-	color: #4e94ce;
-	background: var(--color-toolbar-hover);
+	@apply text-editor-link-hover bg-toolbar-hover;
 }
 
 /* Inline markdown decorations - Checkboxes */
 .checkbox-bracket {
-	color: #888888;
-	font-weight: bold;
+	@apply text-editor-code-delimiter font-bold;
 }
 .checkbox-unchecked {
-	color: #888888;
+	@apply text-editor-code-delimiter;
 }
 .checkbox-checked {
-	color: #4381c1;
-	font-weight: bold;
+	@apply text-editor-checkbox-checked font-bold;
 }
 .checkbox-interactive {
-	cursor: pointer;
+	@apply cursor-pointer;
 }
 .checkbox-interactive:hover {
-	opacity: 0.8;
-}
-.monaco-editor.vs-dark .checkbox-bracket {
-	color: #888888;
-}
-.monaco-editor.vs-dark .checkbox-unchecked {
-	color: #888888;
-}
-.monaco-editor.vs-dark .checkbox-checked {
-	color: #6ba3d8;
+	@apply opacity-80;
 }
 
 /* Monaco autocomplete widget styling - Remove underlines and simplify icons */
 .suggest-widget .monaco-list-row .label-name,
 .suggest-widget .monaco-list-row .monaco-highlighted-label,
 .suggest-widget .monaco-list-row * {
-	text-decoration: none !important;
+	@apply no-underline!;
 }
 
 .suggest-widget .monaco-list-row {
-	padding-top: 2px !important;
-	padding-left: 4px !important;
+	@apply pt-[2px]! pl-1!;
 }
 
 /* Hide or simplify the icon */
 .suggest-widget .suggest-icon.codicon {
-	display: none !important;
+	@apply hidden!;
 }
 
 .monaco-editor .md-heading {
-	color: #000000;
-	font-weight: bold;
-}
-.monaco-editor.vs-dark .md-heading {
-	color: #569cd6;
-	font-weight: bold;
+	@apply text-editor-md-emphasis font-bold;
 }
 
 .monaco-editor .md-bold {
-	color: #000000;
-	font-weight: bold;
-}
-.monaco-editor.vs-dark .md-bold {
-	color: #569cd6;
-	font-weight: bold;
+	@apply text-editor-md-emphasis font-bold;
 }
 
 .monaco-editor .md-italic {
-	color: #000000;
-	font-style: italic;
-}
-.monaco-editor.vs-dark .md-italic {
-	color: #569cd6;
-	font-style: italic;
+	@apply text-editor-md-emphasis italic;
 }
 
 .monaco-editor .md-bold-italic {
-	color: #000000;
-	font-weight: bold;
-	font-style: italic;
-}
-.monaco-editor.vs-dark .md-bold-italic {
-	color: #569cd6;
-	font-weight: bold;
-	font-style: italic;
+	@apply text-editor-md-emphasis font-bold italic;
 }
 
 /* Inline code */
 .inline-code-delimiter {
-	opacity: 0.4;
-	color: #888888;
-}
-.monaco-editor.vs-dark .inline-code-delimiter {
-	color: #eeeeee;
+	@apply text-editor-code-delimiter opacity-40;
 }
 
 .monaco-editor .md-inline-code {
-	background-color: rgba(175, 184, 193, 0.2);
+	@apply bg-editor-inline-code-bg;
 	/* Note: Only background color to avoid cursor position issues in Monaco */
 	/* Font changes (family, size) can cause cursor misalignment */
-}
-.monaco-editor.vs-dark .md-inline-code {
-	background-color: rgba(110, 118, 129, 0.4);
 }
 
 /* Conflict block styling - Local vs Server */
 .monaco-editor .conflict-marker-line {
-	background-color: #eeeeee;
-	font-weight: bold;
+	@apply bg-editor-conflict-marker-bg font-bold;
 	mix-blend-mode: multiply;
-}
-.monaco-editor.vs-dark .conflict-marker-line {
-	background-color: #8f8f8f;
-	font-weight: bold;
-	mix-blend-mode: hard-light;
 }
 
 .monaco-editor .conflict-marker-start {
-	color: #1976d2;
-}
-.monaco-editor.vs-dark .conflict-marker-start {
-	color: #64b5f6;
+	@apply text-editor-conflict-local;
 }
 
 .monaco-editor .conflict-marker-separator {
-	color: #757575;
-}
-.monaco-editor.vs-dark .conflict-marker-separator {
-	color: #9e9e9e;
+	@apply text-editor-conflict-separator;
 }
 
 .monaco-editor .conflict-marker-end {
-	color: #7b1fa2;
-}
-.monaco-editor.vs-dark .conflict-marker-end {
-	color: #ba68c8;
+	@apply text-editor-conflict-server;
 }
 
 .monaco-editor .conflict-current-line {
-	background-color: rgba(21, 101, 192, 0.2);
-}
-.monaco-editor.vs-dark .conflict-current-line {
-	background-color: rgba(21, 101, 192, 0.2);
+	@apply bg-editor-conflict-local-bg;
 }
 
 .monaco-editor .conflict-incoming-line {
-	background-color: rgba(106, 27, 154, 0.2);
-}
-.monaco-editor.vs-dark .conflict-incoming-line {
-	background-color: rgba(106, 27, 154, 0.2);
+	@apply bg-editor-conflict-server-bg;
 }
