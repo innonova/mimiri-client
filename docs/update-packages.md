@@ -13,4 +13,4 @@ This ensures direct dependencies are at least 7 days old and transitive dependen
 
 ## Resolve the dependency tree as of 6 days ago and write the lockfile
 
-`npm install --before="$(date -d '6 days ago' +%Y-%m-%d)"`
+`npm install --min-release-age=6`
