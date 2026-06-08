@@ -3,7 +3,7 @@
 		<TabBar :items="[$t('settingsGeneral.tab')]" />
 		<div class="overflow-y-auto pb-10">
 			<div class="p-1 pt-2 m-auto text-left flex items-center">
-				<div class="w-15">{{ $t('settingsGeneral.language') }}</div>
+				<div class="w-20">{{ $t('settingsGeneral.language') }}</div>
 				<select v-model="language" class="ml-1">
 					<option value="en">{{ $t('settingsGeneral.languageEnglish') }}</option>
 					<option value="zh">{{ $t('settingsGeneral.languageChinese') }}</option>
@@ -12,7 +12,7 @@
 				</select>
 			</div>
 			<div class="p-1 pt-2 m-auto text-left flex items-center">
-				<div class="w-15">{{ $t('settingsGeneral.theme') }}</div>
+				<div class="w-20">{{ $t('settingsGeneral.theme') }}</div>
 				<select v-model="theme" class="ml-1">
 					<option value="default">{{ $t('settingsGeneral.themeSystem') }}</option>
 					<option value="light">{{ $t('settingsGeneral.themeLight') }}</option>
@@ -20,7 +20,7 @@
 				</select>
 			</div>
 			<div v-if="mimiriPlatform.isLinuxApp || env.DEV" class="p-1 pt-2 m-auto text-left flex items-center">
-				<div class="w-15">{{ $t('settingsGeneral.trayIcon') }}</div>
+				<div class="w-20">{{ $t('settingsGeneral.trayIcon') }}</div>
 				<select v-model="trayIcon" class="ml-1">
 					<option value="system">{{ $t('settingsGeneral.trayIconSystem') }}</option>
 					<option value="white">{{ $t('settingsGeneral.trayIconWhite') }}</option>
