@@ -1,5 +1,4 @@
-import { editor, languages } from 'monaco-editor'
-import { Emitter } from 'monaco-editor/esm/vs/base/common/event'
+import { editor, languages, Emitter } from 'monaco-editor'
 
 export interface MimiriCodeLensItem {
 	startLine: number
@@ -18,7 +17,8 @@ export interface MimiriCodeLensProviderOptions {
 export class MimiriCodeLensProvider implements languages.CodeLensProvider {
 	public static suspended: boolean = false
 	private readonly changeEmitter = new Emitter<void>()
-	public readonly onDidChange = this.changeEmitter.event
+	// monaco types CodeLensProvider.onDidChange as IEvent<this>; cast the void emitter event to satisfy the override
+	public readonly onDidChange = this.changeEmitter.event as any
 
 	constructor(private readonly options: MimiriCodeLensProviderOptions) {}
 
