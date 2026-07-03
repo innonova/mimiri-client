@@ -140,6 +140,7 @@
 				ref="proseMirrorContainer"
 				data-testid="editor-prosemirror-container"
 			>
+				<EditorFindBar />
 				<AutoComplete ref="proseMirrorPopup"></AutoComplete>
 			</div>
 			<SelectionControl v-if="mimiriEditor.mode === 'advanced'" />
@@ -205,6 +206,7 @@ import CloseButton from './elements/CloseButton.vue'
 import { mimiriApi } from '../services/storage/mimiri-api'
 import AutoComplete from './elements/AutoComplete.vue'
 import ConflictBanner from './elements/ConflictBanner.vue'
+import EditorFindBar from './EditorFindBar.vue'
 
 let activeViewModelStopWatch: WatchStopHandle = undefined
 let activeViewModel: NoteViewModel = undefined

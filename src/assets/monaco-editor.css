@@ -81,6 +81,12 @@
 	@apply opacity-80;
 }
 
+/* Hide the 'Find in Selection' toggle in the find widget — not useful in a
+   notes context and easily toggled by accident, making find report no results */
+.monaco-editor .find-widget .codicon-find-selection {
+	@apply hidden!;
+}
+
 /* Monaco autocomplete widget styling - Remove underlines and simplify icons */
 .suggest-widget .monaco-list-row .label-name,
 .suggest-widget .monaco-list-row .monaco-highlighted-label,

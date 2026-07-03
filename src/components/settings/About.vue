@@ -66,6 +66,7 @@
 						<b>{{ $t('settingsAbout.attributions') }}</b>
 						<div class="mt-2 leading-5" v-html="$t('settingsAbout.iconAttribution0')" />
 						<div class="mt-2 leading-5" v-html="$t('settingsAbout.iconAttribution1')" />
+						<div class="mt-2 leading-5" v-html="$t('settingsAbout.iconAttribution2')" />
 					</div>
 					<div class="flex info flex-col mx-4 mt-4 mb-10 bg-info">
 						<b>{{ $t('settingsAbout.fontLicenses') }}</b>

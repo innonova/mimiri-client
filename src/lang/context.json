@@ -218,7 +218,20 @@
 		"toggleEditMode": "Button to switch between edit and preview/read-only mode.",
 		"readOnly": "Badge/label appended to note title when the note is read-only (e.g. during conflict resolution).",
 		"historyEntries": "Label shown above the history entry count in the history panel.",
-		"readMoreEntries": "Button at the bottom of history list to load older entries."
+		"readMoreEntries": "Button at the bottom of history list to load older entries.",
+		"findPlaceholder": "Placeholder in the in-note find (Ctrl+F) input field.",
+		"findNext": "Tooltip: jump to the next match in the note. Keyboard shortcut is appended in the English string.",
+		"findPrevious": "Tooltip: jump to the previous match in the note. Keyboard shortcut is appended in the English string.",
+		"matchCase": "Tooltip for the case-sensitivity toggle (labelled 'Aa') in the find bar.",
+		"wholeWord": "Tooltip for the whole-word toggle (labelled 'ab') in the find bar.",
+		"useRegex": "Tooltip for the regular-expression toggle (labelled '.*') in the find bar.",
+		"findNoResults": "Shown in the find bar when the search term has no matches in the note.",
+		"findMatchCount": "Match counter in the find bar, e.g. '2 of 7'. {index} is the current match number, {total} the total number of matches.",
+		"closeFind": "Tooltip for the button that closes the find bar. Keyboard shortcut is appended in the English string.",
+		"toggleReplace": "Tooltip for the chevron that expands/collapses the replace row of the find bar.",
+		"replacePlaceholder": "Placeholder in the replace-with input field of the find bar.",
+		"replaceNext": "Button: replace the current match and move to the next one.",
+		"replaceAll": "Button: replace all matches in the note."
 	},
 	"noteTreeView": {
 		"_context": "The hierarchical note tree on the left side of the app.",

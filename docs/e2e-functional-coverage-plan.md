@@ -191,11 +191,19 @@ Two interchangeable editors over the same markdown-ish text model; mode persists
   ordered list (`editor.spec.ts`).
 - ✅ Toggle edit mode (WYSIWYG ↔ code) preserves unsaved changes and dirty state, both directions (`editor.spec.ts`);
   ❌ scroll position preservation.
-- ❌ Find search-all highlight integration; ❌ read-only for system notes / while viewing history.
+- ✅ Find/replace behavior contract, **both editors** via the `findUI` adapter (`editor/find.ts`) mapping
+  to the Mimiri find bar (wysiwyg) or Monaco's built-in widget (code): Ctrl+F open with focus + selection
+  seeding, live match counter ('1 of 3' / 'No results'), Enter / buttons navigation, match-case /
+  whole-word / regex toggles, Ctrl+H replace one + replace all with serializer round-trip, Escape close,
+  F3 / Shift+F3 reopen-and-navigate without being swallowed by the global search shortcut (`editor.spec.ts`).
+- ✅ Search-all highlight integration in wysiwyg: searching from the title bar and opening a result
+  highlights the term in the note (`editor.spec.ts`); 🟡 Monaco side implemented but not e2e-tested.
+- ❌ Read-only enforcement for system notes.
 
 ### 5.2 Code editor (Monaco, "advanced")
 
-- ✅ Find in note (Ctrl+F opens the find widget) (`editor.spec.ts`).
+- ✅ Find/replace: covered by the shared contract suite (§5.1); the 'Find in Selection' toggle is
+  deliberately hidden via `monaco-editor.css` and pinned by test (`editor.spec.ts`).
 - ✅ Word wrap toolbar toggle on/off (`editor.spec.ts`).
 - ❌ Syntax highlighting in code blocks; ❌ language autodetect/suggestions;
   ❌ selection expansion control (mobile), copy/select block, copy next line.
@@ -206,13 +214,22 @@ Two interchangeable editors over the same markdown-ish text model; mode persists
   password mark views (`editor.spec.ts`).
 - ✅ Checkbox list items: rendered with real checkboxes; clicking toggles state and updates the underlying
   text (`[ ]` ↔ `[x]`), verified through the serializer round-trip (`editor.spec.ts`).
+- ✅ Find bar (Ctrl+F via `prosemirror-search`, added 2026-07-03, Monaco-parity UI): the shared
+  find/replace contract runs against it in the parameterized suite (see §5.1). Wysiwyg-specific extras:
+  highlight decorations (`ProseMirror-search-match` / active) appear and clear; find bar and highlights
+  persist across note switches; replace is locked (find still works) in the read-only history view;
+  global F3 / Ctrl+Shift+F / Escape fallbacks in `App.vue` defer to keys the focused editor already
+  handled (`event.defaultPrevented` guard, fixed 2026-07-03) (`editor.spec.ts`).
 - ✅ Word wrap button correctly hidden in this mode (`editor.spec.ts`).
 - ❌ Markdown input rules (`- `, `1. `, `# ` while typing), autocomplete popup (code-block language),
   keymap details (Tab/Shift-Tab list nesting, Mod-e), gap/drop cursor, mobile default behavior.
 
 ### 5.4 Note history
 
-- ❌ Everything: history panel, version list, read-only viewing, keyboard navigation, load more,
+- 🟡 Opening the history panel, selecting an older version, and read-only viewing are exercised
+  incidentally by the find/replace read-only test (`editor.spec.ts`) and the sync edit-protection
+  test (`sync-test.spec.ts`).
+- ❌ Dedicated coverage: version list contents, keyboard navigation, load more,
   delete old / delete all history.
 
 ### 5.5 Conflict handling

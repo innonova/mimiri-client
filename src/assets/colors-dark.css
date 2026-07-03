@@ -88,6 +88,12 @@
 		--color-editor-selection-bg: #264f78;
 		/* --color-editor-selection-outline remains same in dark mode */
 
+		/* Editor overlay widgets (find bar) — matches Monaco's find widget colors */
+		--color-editor-widget: #252526;
+		--color-editor-widget-input: #3c3c3c;
+		--color-editor-widget-text: #cccccc;
+		--color-editor-widget-shadow: rgba(0, 0, 0, 0.36);
+
 		/* Interactive States */
 		/* --color-editor-link-hover remains same in dark mode */
 	}

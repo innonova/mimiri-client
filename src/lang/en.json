@@ -200,7 +200,20 @@
 		"toggleEditMode": "Toggle Edit Mode",
 		"readOnly": "(read-only)",
 		"historyEntries": "History entries:",
-		"readMoreEntries": "Read More Entries"
+		"readMoreEntries": "Read More Entries",
+		"findPlaceholder": "Find",
+		"findNext": "Next Match (Enter)",
+		"findPrevious": "Previous Match (Shift+Enter)",
+		"matchCase": "Match Case",
+		"wholeWord": "Match Whole Word",
+		"useRegex": "Use Regular Expression",
+		"findNoResults": "No results",
+		"findMatchCount": "{index} of {total}",
+		"closeFind": "Close (Escape)",
+		"toggleReplace": "Toggle Replace",
+		"replacePlaceholder": "Replace",
+		"replaceNext": "Replace",
+		"replaceAll": "Replace All"
 	},
 	"noteTreeView": {
 		"noResultsFound": "No results found"
@@ -279,6 +292,7 @@
 		"attributions": "Attributions:",
 		"iconAttribution0": "Vectors and icons by <a href=\"https://dazzleui.gumroad.com/l/dazzleiconsfree?ref=svgrepo.com\" target=\"_blank\">Dazzle Ui</a> in CC Attribution License via <a href=\"https://www.svgrepo.com/\" target=\"_blank\">SVG Repo</a>",
 		"iconAttribution1": "Vectors and icons by <a href=\"https://www.figma.com/@leonid?ref=svgrepo.com\" target=\"_blank\">Leonid Tsvetkov</a> in CC Attribution License via <a href=\"https://www.svgrepo.com/\" target=\"_blank\">SVG Repo</a>",
+		"iconAttribution2": "Replace icons by <a href=\"https://github.com/microsoft/vscode-codicons\" target=\"_blank\">Microsoft (VS Code Codicons)</a> in CC Attribution 4.0 License",
 		"fontLicenses": "Font Licenses:",
 		"fontLicensesText": "All fonts are directly referenced either from the operating system or fonts.mimiri.io\nLicenses and project links for fonts referenced from fonts.mimiri.io listed below",
 		"chooseFontLicense": "Choose font to view license",

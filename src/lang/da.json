@@ -200,7 +200,20 @@
 		"toggleEditMode": "Skift redigeringstilstand",
 		"readOnly": "(skrivebeskyttet)",
 		"historyEntries": "Historikposter:",
-		"readMoreEntries": "Læs flere poster"
+		"readMoreEntries": "Læs flere poster",
+		"findPlaceholder": "Søg",
+		"findNext": "Næste match (Enter)",
+		"findPrevious": "Forrige match (Shift+Enter)",
+		"matchCase": "Forskel på store og små bogstaver",
+		"wholeWord": "Søg kun hele ord",
+		"useRegex": "Brug regulært udtryk",
+		"findNoResults": "Ingen resultater",
+		"findMatchCount": "{index} af {total}",
+		"closeFind": "Luk (Escape)",
+		"toggleReplace": "Skift erstat",
+		"replacePlaceholder": "Erstat",
+		"replaceNext": "Erstat",
+		"replaceAll": "Erstat alle"
 	},
 	"noteTreeView": {
 		"noResultsFound": "Ingen resultater fundet"
@@ -279,6 +292,7 @@
 		"attributions": "Krediteringer:",
 		"iconAttribution0": "Vektorer og ikoner af <a href=\"https://dazzleui.gumroad.com/l/dazzleiconsfree?ref=svgrepo.com\" target=\"_blank\">Dazzle Ui</a> under CC Attribution-licens via <a href=\"https://www.svgrepo.com/\" target=\"_blank\">SVG Repo</a>",
 		"iconAttribution1": "Vektorer og ikoner af <a href=\"https://www.figma.com/@leonid?ref=svgrepo.com\" target=\"_blank\">Leonid Tsvetkov</a> under CC Attribution-licens via <a href=\"https://www.svgrepo.com/\" target=\"_blank\">SVG Repo</a>",
+		"iconAttribution2": "Erstat-ikoner af <a href=\"https://github.com/microsoft/vscode-codicons\" target=\"_blank\">Microsoft (VS Code Codicons)</a> under CC Attribution 4.0-licens",
 		"fontLicenses": "Skrifttypelicenser:",
 		"fontLicensesText": "Alle skrifttyper hentes direkte fra enten operativsystemet eller fonts.mimiri.io\nLicenser og projektlinks for skrifttyper hentet fra fonts.mimiri.io vises herunder",
 		"chooseFontLicense": "Vælg skrifttype for at se licens",

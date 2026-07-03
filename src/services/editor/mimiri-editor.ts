@@ -386,6 +386,56 @@ export class MimiriEditor {
 		this._activeEditor.find()
 	}
 
+	// Find-bar state and controls for the ProseMirror editor (Monaco uses its
+	// own built-in find widget).
+	public get findState() {
+		return this._editorProseMirror.findState
+	}
+
+	public closeFind() {
+		this._editorProseMirror.closeFind()
+	}
+
+	public setFindTerm(term: string) {
+		this._editorProseMirror.setFindTerm(term)
+	}
+
+	public setFindCaseSensitive(value: boolean) {
+		this._editorProseMirror.setFindCaseSensitive(value)
+	}
+
+	public setFindWholeWord(value: boolean) {
+		this._editorProseMirror.setFindWholeWord(value)
+	}
+
+	public setFindRegexp(value: boolean) {
+		this._editorProseMirror.setFindRegexp(value)
+	}
+
+	public findNext() {
+		this._editorProseMirror.findNext()
+	}
+
+	public findPrev() {
+		this._editorProseMirror.findPrev()
+	}
+
+	public setReplaceTerm(term: string) {
+		this._editorProseMirror.setReplaceTerm(term)
+	}
+
+	public setReplaceVisible(value: boolean) {
+		this._editorProseMirror.setReplaceVisible(value)
+	}
+
+	public replaceNext() {
+		this._editorProseMirror.replaceNext()
+	}
+
+	public replaceAll() {
+		this._editorProseMirror.replaceAll()
+	}
+
 	public toggleWordWrap() {
 		this._activeEditor.toggleWordWrap()
 	}

@@ -74,6 +74,7 @@
 			<input
 				ref="searchInput"
 				type="text"
+				data-testid="title-search-input"
 				:placeholder="$t('titleBar.searchNotes')"
 				:value="searchManager.state.term"
 				:disabled="!noteManager.state.isLoggedIn"

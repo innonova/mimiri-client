@@ -44,6 +44,16 @@
 	@apply select-text;
 }
 
+/* Find (Ctrl+F) and search-term match highlights */
+.ProseMirror-search-match {
+	background-color: var(--color-search-highlight);
+}
+
+.ProseMirror-active-search-match {
+	background-color: var(--color-search-highlight);
+	outline: 1px solid var(--color-editor-selection-outline);
+}
+
 .ProseMirror-selectednode:not(:has(a)) {
 	@apply outline-2 outline-editor-selection-outline;
 }

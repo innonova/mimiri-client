@@ -1,5 +1,17 @@
+import { reactive } from 'vue'
 import { settingsManager } from '../settings-manager'
 import type { MimiriEditorState, SelectionExpansion, TextEditor, TextEditorListener } from './type'
+import {
+	search,
+	SearchQuery,
+	setSearchState,
+	getSearchState,
+	getMatchHighlights,
+	findNext as findNextCommand,
+	findPrev as findPrevCommand,
+	replaceNext as replaceNextCommand,
+	replaceAll as replaceAllCommand,
+} from 'prosemirror-search'
 
 import { EditorState, TextSelection, Transaction } from 'prosemirror-state'
 import { EditorView } from 'prosemirror-view'
@@ -60,6 +72,18 @@ export class EditorProseMirror implements TextEditor {
 	private _codeBlockActionHandler: CodeBlockActionHandler | undefined
 	private _conflictActionHandler: ConflictActionHandler | undefined
 	private _initialDoc: ProseMirrorNode | undefined
+	public readonly findState = reactive({
+		visible: false,
+		term: '',
+		caseSensitive: false,
+		wholeWord: false,
+		regexp: false,
+		total: 0,
+		index: 0,
+		replaceVisible: false,
+		replaceTerm: '',
+		canReplace: true,
+	})
 
 	constructor(private listener: TextEditorListener) {}
 
@@ -121,6 +145,34 @@ export class EditorProseMirror implements TextEditor {
 				keymap({
 					'Mod-z': undo,
 					'Mod-y': redo,
+					'Mod-f': () => {
+						this.find()
+						return true
+					},
+					'Mod-h': () => {
+						this.findState.replaceVisible = true
+						this.find()
+						return true
+					},
+					'Mod-Shift-f': () => {
+						this.listener.onSearchAllRequested()
+						return true
+					},
+					F3: () => {
+						this.findNext()
+						return true
+					},
+					'Shift-F3': () => {
+						this.findPrev()
+						return true
+					},
+					Escape: () => {
+						if (this.findState.visible) {
+							this.closeFind()
+							return true
+						}
+						return false
+					},
 					'Mod-e': (state, dispatch) => {
 						if (dispatch) {
 							executeFormatAction(state, dispatch, 'insert-code-block')
@@ -146,6 +198,7 @@ export class EditorProseMirror implements TextEditor {
 				}),
 				updateCapsPlugin,
 				passwordCursorPlugin,
+				search(),
 			],
 			doc,
 		})
@@ -175,6 +228,9 @@ export class EditorProseMirror implements TextEditor {
 					this._documentState = newState
 				}
 				this.updateState()
+				if (this.findState.visible) {
+					this.updateFindCounts(newState)
+				}
 			},
 			handleDoubleClick: (view, pos, event) => {
 				const target = event.target as HTMLElement
@@ -466,6 +522,10 @@ export class EditorProseMirror implements TextEditor {
 		setTimeout(() => {
 			this._conflictActionHandler?.updateBanner(this.historyShowing)
 			this.updateState()
+			if (this.findState.visible) {
+				this.applyFindQuery()
+				this.updateFindCounts(this._editor.state)
+			}
 		}, 0)
 	}
 
@@ -551,9 +611,189 @@ export class EditorProseMirror implements TextEditor {
 		}
 	}
 
-	public clearSearchHighlights() {}
-	public setSearchHighlights(_text: string) {}
-	public find() {}
+	private applyFindQuery() {
+		if (!this._editor) {
+			return
+		}
+		const query = new SearchQuery({
+			search: this.findState.term,
+			caseSensitive: this.findState.caseSensitive,
+			wholeWord: this.findState.wholeWord,
+			regexp: this.findState.regexp,
+			replace: this.findState.replaceTerm,
+		})
+		this._editor.dispatch(setSearchState(this._editor.state.tr, query))
+	}
+
+	// Monaco-style live highlight: while the query changes, keep the selection
+	// on the match nearest to (at or after) the current selection start, so the
+	// active match does not jump away as the user types more characters.
+	private selectNearestMatch() {
+		if (!this._editor) {
+			return
+		}
+		const state = this._editor.state
+		const query = getSearchState(state)?.query
+		if (!query?.valid) {
+			return
+		}
+		const result = query.findNext(state, state.selection.from) ?? query.findNext(state, 0)
+		if (result) {
+			const selection = TextSelection.create(state.doc, result.from, result.to)
+			this._editor.dispatch(state.tr.setSelection(selection).scrollIntoView())
+		}
+	}
+
+	private updateFindCounts(state: EditorState) {
+		this.findState.canReplace = !!this._editor?.editable
+		if (!this.findState.term) {
+			this.findState.total = 0
+			this.findState.index = 0
+			return
+		}
+		const matches = getMatchHighlights(state).find()
+		this.findState.total = matches.length
+		const { from, to } = state.selection
+		const index = matches.findIndex(match => match.from === from && match.to === to)
+		this.findState.index = index < 0 ? 0 : index + 1
+	}
+
+	// Make sure the plugin's query matches the find bar state (the plugin state
+	// is reset whenever a new document is loaded via setText).
+	private ensureFindQuery() {
+		if (!this._editor) {
+			return
+		}
+		const current = getSearchState(this._editor.state)?.query
+		if (
+			!current ||
+			current.search !== this.findState.term ||
+			current.caseSensitive !== this.findState.caseSensitive ||
+			current.wholeWord !== this.findState.wholeWord ||
+			current.regexp !== this.findState.regexp ||
+			current.replace !== this.findState.replaceTerm
+		) {
+			this.applyFindQuery()
+		}
+	}
+
+	public find() {
+		if (!this._editor) {
+			return
+		}
+		const { from, to } = this._editor.state.selection
+		if (to > from && to - from < 200) {
+			const selectedText = this._editor.state.doc.textBetween(from, to, '\n')
+			if (selectedText && !selectedText.includes('\n')) {
+				this.findState.term = selectedText
+			}
+		}
+		this.findState.visible = true
+		this.applyFindQuery()
+		this.updateFindCounts(this._editor.state)
+	}
+
+	public closeFind() {
+		this.findState.visible = false
+		if (this._editor) {
+			this._editor.dispatch(setSearchState(this._editor.state.tr, new SearchQuery({ search: '' })))
+		}
+		this.focus()
+	}
+
+	private applyFindOptions() {
+		this.applyFindQuery()
+		this.selectNearestMatch()
+		if (this._editor) {
+			this.updateFindCounts(this._editor.state)
+		}
+	}
+
+	public setFindTerm(term: string) {
+		this.findState.term = term
+		this.applyFindOptions()
+	}
+
+	public setFindCaseSensitive(value: boolean) {
+		this.findState.caseSensitive = value
+		this.applyFindOptions()
+	}
+
+	public setFindWholeWord(value: boolean) {
+		this.findState.wholeWord = value
+		this.applyFindOptions()
+	}
+
+	public setFindRegexp(value: boolean) {
+		this.findState.regexp = value
+		this.applyFindOptions()
+	}
+
+	public setReplaceTerm(term: string) {
+		this.findState.replaceTerm = term
+		this.applyFindQuery()
+	}
+
+	public setReplaceVisible(value: boolean) {
+		this.findState.replaceVisible = value
+	}
+
+	public replaceNext() {
+		if (!this._editor || !this._editor.editable || !this.findState.term) {
+			return
+		}
+		this.ensureFindQuery()
+		replaceNextCommand(this._editor.state, this._editor.dispatch)
+	}
+
+	public replaceAll() {
+		if (!this._editor || !this._editor.editable || !this.findState.term) {
+			return
+		}
+		this.ensureFindQuery()
+		replaceAllCommand(this._editor.state, this._editor.dispatch)
+	}
+
+	public findNext() {
+		if (!this._editor) {
+			return
+		}
+		if (!this.findState.term) {
+			this.find()
+			return
+		}
+		// F3 after the bar was closed reopens it with the last term (Monaco parity)
+		this.findState.visible = true
+		this.ensureFindQuery()
+		findNextCommand(this._editor.state, this._editor.dispatch)
+	}
+
+	public findPrev() {
+		if (!this._editor) {
+			return
+		}
+		if (!this.findState.term) {
+			this.find()
+			return
+		}
+		this.findState.visible = true
+		this.ensureFindQuery()
+		findPrevCommand(this._editor.state, this._editor.dispatch)
+	}
+
+	public clearSearchHighlights() {
+		if (!this._editor || this.findState.visible) {
+			return
+		}
+		this._editor.dispatch(setSearchState(this._editor.state.tr, new SearchQuery({ search: '' })))
+	}
+
+	public setSearchHighlights(text: string) {
+		if (!this._editor || this.findState.visible || !text) {
+			return
+		}
+		this._editor.dispatch(setSearchState(this._editor.state.tr, new SearchQuery({ search: text })))
+	}
 
 	public toggleWordWrap() {
 		settingsManager.wordwrap = !settingsManager.wordwrap

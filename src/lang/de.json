@@ -200,7 +200,20 @@
 		"toggleEditMode": "Bearbeitungsmodus umschalten",
 		"readOnly": "(schreibgeschützt)",
 		"historyEntries": "Verlaufseinträge:",
-		"readMoreEntries": "Weitere Einträge laden"
+		"readMoreEntries": "Weitere Einträge laden",
+		"findPlaceholder": "Suchen",
+		"findNext": "Nächster Treffer (Enter)",
+		"findPrevious": "Vorheriger Treffer (Umschalt+Enter)",
+		"matchCase": "Groß-/Kleinschreibung beachten",
+		"wholeWord": "Nur ganzes Wort suchen",
+		"useRegex": "Regulären Ausdruck verwenden",
+		"findNoResults": "Keine Ergebnisse",
+		"findMatchCount": "{index} von {total}",
+		"closeFind": "Schließen (Escape)",
+		"toggleReplace": "Ersetzen umschalten",
+		"replacePlaceholder": "Ersetzen",
+		"replaceNext": "Ersetzen",
+		"replaceAll": "Alle ersetzen"
 	},
 	"noteTreeView": {
 		"noResultsFound": "Keine Ergebnisse gefunden"
@@ -279,6 +292,7 @@
 		"attributions": "Danksagungen:",
 		"iconAttribution0": "Vectors and icons by <a href=\"https://dazzleui.gumroad.com/l/dazzleiconsfree?ref=svgrepo.com\" target=\"_blank\">Dazzle Ui</a> in CC Attribution License via <a href=\"https://www.svgrepo.com/\" target=\"_blank\">SVG Repo</a>",
 		"iconAttribution1": "Vectors and icons by <a href=\"https://www.figma.com/@leonid?ref=svgrepo.com\" target=\"_blank\">Leonid Tsvetkov</a> in CC Attribution License via <a href=\"https://www.svgrepo.com/\" target=\"_blank\">SVG Repo</a>",
+		"iconAttribution2": "Replace icons by <a href=\"https://github.com/microsoft/vscode-codicons\" target=\"_blank\">Microsoft (VS Code Codicons)</a> in CC Attribution 4.0 License",
 		"fontLicenses": "Schriftlizenzen:",
 		"fontLicensesText": "Alle Schriften werden direkt aus dem Betriebssystem oder von fonts.mimiri.io referenziert\nLizenzen und Projektlinks für Schriften von fonts.mimiri.io sind unten aufgeführt",
 		"chooseFontLicense": "Schriftart auswählen, um Lizenz anzuzeigen",

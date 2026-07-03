@@ -428,13 +428,15 @@ const handleShortcut = event => {
 			noteManager.ui.newNote()
 		}
 	}
-	if (event.key === 'F3' || (event.key === 'F' && ctrlActive)) {
+	// Skip global fallbacks for keys the focused editor already handled
+	// (e.g. F3 = find next / Escape = close find bar inside the editors)
+	if ((event.key === 'F3' || (event.key === 'F' && ctrlActive)) && !event.defaultPrevented) {
 		event.preventDefault()
 		if (titleBar.value) {
 			titleBar.value.searchAllNotes()
 		}
 	}
-	if (event.key === 'Escape') {
+	if (event.key === 'Escape' && !event.defaultPrevented) {
 		if (showSearchBox.value) {
 			showSearchBox.value = false
 		}
