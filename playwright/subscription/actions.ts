@@ -42,16 +42,14 @@ export const createSubscription = async () => {
 		await settingNodes.subscriptionGroup().dblclick()
 	}
 	await settingNodes.subscription().click()
-	await expect(subHomeView.container()).toBeVisible()
-	await expect(subItem.free()).toBeVisible()
-	await expect(subItem.freeUpgrade()).toBeVisible()
-	await subItem.freeUpgrade().click()
+	// Free accounts are redirected straight to plan selection (SubHome emits
+	// 'change' for sku 'free'), so there is no home view to click through.
 	await expect(newSubView.container()).toBeVisible()
 	await expect(newSubView.monthly()).toBeVisible()
 	await expect(newSubView.yearly()).toBeVisible()
-	await expect(newSubView.currencySelector()).toBeVisible()
+	await expect(newSubView.currency(mimiri().config.currency)).toBeVisible()
 
-	await newSubView.currencySelector().selectOption(mimiri().config.currency)
+	await newSubView.currency(mimiri().config.currency).click()
 
 	await expect(subItem.yearly(1)).toBeVisible()
 	await expect(subItem.yearly(2)).toBeVisible()
@@ -86,9 +84,8 @@ export const createSubscription = async () => {
 	await expect(upgradeView.payButton()).toBeVisible()
 	await expect(upgradeView.payButton()).toBeDisabled()
 
-	await expect(subItem.perYear(1)).toContainText(mimiri().config.currencySymbol)
-	await expect(subItem.perMonthDerived(1)).toContainText(mimiri().config.currencySymbol)
-
+	// The upgrade view shows the chosen plan as plain text rows; prices are
+	// asserted via the payment summary below.
 	await expect(upgradeView.total()).toBeVisible()
 	await expect(upgradeView.vat()).toBeVisible()
 	await expect(upgradeView.currency()).toBeVisible()
@@ -232,8 +229,9 @@ export const createMonthlySubscription = async () => {
 	await expect(settingNodes.subscriptionGroup()).toBeVisible()
 	await settingNodes.subscriptionGroup().dblclick()
 	await settingNodes.subscription().click()
-	await subItem.freeUpgrade().click()
-	await newSubView.currencySelector().selectOption(mimiri().config.currency)
+	// Free accounts land directly on plan selection (no upgrade click needed)
+	await expect(newSubView.container()).toBeVisible()
+	await newSubView.currency(mimiri().config.currency).click()
 	await newSubView.monthly().click()
 	await subItem.monthlyChangeTo(1).click()
 	await customerCtrl.givenName().fill(mimiri().customer.givenName)
@@ -293,9 +291,23 @@ export const verifyEmail = async () => {
 	await mimiri().openTab()
 	await mimiri().goto(verifyLink!.url)
 	await expect(accountServer.emailVerified()).toBeVisible()
+	// Give the landing page a moment to finish persisting the verification
+	// before closing the tab.
+	await mimiri().waitForTimeout(2000)
 	await mimiri().closeTab()
-	await settingNodes.billingAddress().click()
-	await expect(accountView.emailVerified()).toBeVisible()
+	// The verified flag is only fetched when CustomerData mounts, so re-navigate
+	// (away and back) until the backend reports the email as verified.
+	await expect
+		.poll(
+			async () => {
+				await settingNodes.subscription().click()
+				await settingNodes.billingAddress().click()
+				await mimiri().waitForTimeout(500)
+				return await accountView.emailVerified().isVisible()
+			},
+			{ timeout: 45000, intervals: [2000] },
+		)
+		.toBe(true)
 }
 
 export const createBillingAddress = async () => {
@@ -330,9 +342,23 @@ export const createBillingAddress = async () => {
 	await mimiri().openTab()
 	await mimiri().goto(verifyLink!.url)
 	await expect(accountServer.emailVerified()).toBeVisible()
+	// Give the landing page a moment to finish persisting the verification
+	// before closing the tab.
+	await mimiri().waitForTimeout(2000)
 	await mimiri().closeTab()
-	await settingNodes.billingAddress().click()
-	await expect(accountView.emailVerified()).toBeVisible()
+	// The verified flag is only fetched when CustomerData mounts, so re-navigate
+	// (away and back) until the backend reports the email as verified.
+	await expect
+		.poll(
+			async () => {
+				await settingNodes.subscription().click()
+				await settingNodes.billingAddress().click()
+				await mimiri().waitForTimeout(500)
+				return await accountView.emailVerified().isVisible()
+			},
+			{ timeout: 45000, intervals: [2000] },
+		)
+		.toBe(true)
 }
 
 export const changeBillingAddress = async () => {
@@ -362,10 +388,9 @@ export const failCreateSubscription = async () => {
 	await expect(settingNodes.subscriptionGroup()).toBeVisible()
 	await settingNodes.subscriptionGroup().dblclick()
 	await settingNodes.subscription().click()
-	await expect(subHomeView.container()).toBeVisible()
-	await expect(subItem.free()).toBeVisible()
-	await subItem.freeUpgrade().click()
-	await newSubView.currencySelector().selectOption(mimiri().config.currency)
+	// Free accounts are redirected straight to plan selection
+	await expect(newSubView.container()).toBeVisible()
+	await newSubView.currency(mimiri().config.currency).click()
 	await newSubView.yearly().click()
 	await subItem.yearlyChangeTo(1).click()
 
@@ -411,8 +436,8 @@ export const failCreateSubscription = async () => {
 	await expect(waitingView.container()).toBeVisible()
 	await waitingView.cancel().click()
 
-	await expect(subHomeView.container()).toBeVisible()
-	await expect(subItem.free()).toBeVisible()
+	// Cancelling as a free account lands back on plan selection (SubHome redirects)
+	await expect(newSubView.container()).toBeVisible()
 }
 
 export const cancelCreateSubscription = async () => {
@@ -421,10 +446,9 @@ export const cancelCreateSubscription = async () => {
 	await expect(settingNodes.subscriptionGroup()).toBeVisible()
 	await settingNodes.subscriptionGroup().dblclick()
 	await settingNodes.subscription().click()
-	await expect(subHomeView.container()).toBeVisible()
-	await expect(subItem.free()).toBeVisible()
-	await subItem.freeUpgrade().click()
-	await newSubView.currencySelector().selectOption(mimiri().config.currency)
+	// Free accounts are redirected straight to plan selection
+	await expect(newSubView.container()).toBeVisible()
+	await newSubView.currency(mimiri().config.currency).click()
 	await newSubView.yearly().click()
 	await subItem.yearlyChangeTo(1).click()
 
@@ -480,8 +504,8 @@ export const cancelCreateSubscription = async () => {
 	await expect(waitingView.container()).toBeVisible()
 	await waitingView.cancel().click()
 
-	await expect(subHomeView.container()).toBeVisible()
-	await expect(subItem.free()).toBeVisible()
+	// Cancelling as a free account lands back on plan selection (SubHome redirects)
+	await expect(newSubView.container()).toBeVisible()
 }
 
 export const navigateAwayCreateSubscription = async () => {
@@ -490,10 +514,9 @@ export const navigateAwayCreateSubscription = async () => {
 	await expect(settingNodes.subscriptionGroup()).toBeVisible()
 	await settingNodes.subscriptionGroup().dblclick()
 	await settingNodes.subscription().click()
-	await expect(subHomeView.container()).toBeVisible()
-	await expect(subItem.free()).toBeVisible()
-	await subItem.freeUpgrade().click()
-	await newSubView.currencySelector().selectOption(mimiri().config.currency)
+	// Free accounts are redirected straight to plan selection
+	await expect(newSubView.container()).toBeVisible()
+	await newSubView.currency(mimiri().config.currency).click()
 	await newSubView.yearly().click()
 	await subItem.yearlyChangeTo(1).click()
 

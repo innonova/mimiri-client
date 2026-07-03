@@ -115,12 +115,6 @@ export class MimiriState {
 		} else {
 			this._context = await this._browser.newContext(globalOpts)
 		}
-		await this._context.addInitScript(() => {
-			const settings = {
-				defaultEditor: 'code',
-			}
-			;(globalThis as any).localStorage.setItem('mimer-settings', JSON.stringify(settings))
-		})
 		this._mainPage = await this._context.newPage()
 		// this._mainPage.on('console', msg => console.log(msg.text()));
 		this._pageStack.push(this._mainPage)

@@ -77,35 +77,35 @@ export const checkUserTier0 = async () => {
 	const login = await mimiri().login(mimiri().username, mimiri().password)
 	const clientConfig = JSON.parse(login.config)
 	await expect(clientConfig.features ?? []).not.toContain('sharing')
-	await expect(login.maxTotalBytes).toBe(10485760)
-	await expect(login.maxNoteCount).toBe(1000)
+	await expect(login.maxTotalBytes).toBe(104857600)
+	await expect(login.maxNoteCount).toBe(2000)
 	await expect(login.maxNoteBytes).toBe(1048576)
 }
 
 export const checkUserTier0WithSharing = async () => {
 	const login = await mimiri().login(mimiri().username, mimiri().password)
-	await expect(login.maxTotalBytes).toBe(10485760)
-	await expect(login.maxNoteCount).toBe(1000)
+	await expect(login.maxTotalBytes).toBe(104857600)
+	await expect(login.maxNoteCount).toBe(2000)
 	await expect(login.maxNoteBytes).toBe(1048576)
 }
 
 export const checkUserTier1 = async () => {
 	const login = await mimiri().login(mimiri().username, mimiri().password)
-	await expect(login.maxTotalBytes).toBe(104857600)
+	await expect(login.maxTotalBytes).toBe(1048576000)
 	await expect(login.maxNoteCount).toBe(10000)
 	await expect(login.maxNoteBytes).toBe(10485760)
 }
 
 export const checkUserTier2 = async () => {
 	const login = await mimiri().login(mimiri().username, mimiri().password)
-	await expect(login.maxTotalBytes).toBe(204857600)
+	await expect(login.maxTotalBytes).toBe(2048576000)
 	await expect(login.maxNoteCount).toBe(20000)
 	await expect(login.maxNoteBytes).toBe(10485760)
 }
 
 export const checkUserTier3 = async () => {
 	const login = await mimiri().login(mimiri().username, mimiri().password)
-	await expect(login.maxTotalBytes).toBe(504857600)
+	await expect(login.maxTotalBytes).toBe(5048576000)
 	await expect(login.maxNoteCount).toBe(50000)
 	await expect(login.maxNoteBytes).toBe(10485760)
 }

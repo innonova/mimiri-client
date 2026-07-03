@@ -91,15 +91,24 @@ export const note = {
 
 export const editor = {
 	monaco: () => tid('editor-monaco-container').locator('.monaco-editor'),
+	monacoContainer: () => tid('editor-monaco-container'),
+	proseMirror: () => tid('editor-prosemirror-container').locator('.ProseMirror'),
+	proseMirrorContainer: () => tid('editor-prosemirror-container'),
 	simple: () => tid('editor-simple-container'),
 	display: () => tid('editor-display-container'),
 	back: () => tid('editor-back-button'),
 	save: () => tid('editor-save-button'),
 	toggleWordWrap: () => tid('editor-toggle-wordwrap'),
+	toggleEditMode: () => tid('editor-toggle-edit-mode-button'),
 	undo: () => tid('editor-undo-button'),
 	redo: () => tid('editor-redo-button'),
 	history: () => tid('editor-history-button'),
 	markAsPassword: () => tid('editor-mark-as-password'),
+	insertHeading: () => tid('editor-insert-heading'),
+	insertCodeBlock: () => tid('editor-insert-code-block'),
+	insertCheckboxList: () => tid('editor-insert-checkbox'),
+	insertUnorderedList: () => tid('editor-insert-unordered-list'),
+	insertOrderedList: () => tid('editor-insert-ordered-list'),
 	activateEditMode: () => tid('editor-activate-edit-mode'),
 }
 
@@ -248,9 +257,10 @@ export const subItem = {
 
 export const newSubView = {
 	container: () => tid('new-subscription-view'),
-	monthly: () => tid('period-month'),
-	yearly: () => tid('period-year'),
-	currencySelector: () => tid('currency-selector'),
+	// Period and currency are Slider segmented toggles (selector-<value>)
+	monthly: () => tid('selector-month'),
+	yearly: () => tid('selector-year'),
+	currency: (currency: string) => tid(`selector-${currency}`),
 	loaded: () => tid('subscriptions-loaded'),
 }
 

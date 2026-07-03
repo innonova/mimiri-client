@@ -1,6 +1,12 @@
 import type { Node } from 'prosemirror-model'
 
-const serializeNode = (node: Node, depth: number, indentStyle: string, hideListMarker: boolean): string => {
+const serializeNode = (
+	node: Node,
+	depth: number,
+	indentStyle: string,
+	hideListMarker: boolean,
+	orderedIndex?: number,
+): string => {
 	let text = ''
 	if (node.isText) {
 		if (node.marks.length > 0) {
@@ -40,7 +46,14 @@ const serializeNode = (node: Node, depth: number, indentStyle: string, hideListM
 			return text
 		}
 		if (node.type.name === 'list_item') {
-			text += `${indentStyle.repeat(depth)}${hideListMarker ? '' : `${node.attrs.marker ?? '-'} `}${node.attrs.checked !== null ? (node.attrs.checked ? '[x] ' : '[ ] ') : ''}`
+			// Items created in the editor (as opposed to deserialized from text)
+			// have no marker attr; under an ordered list the marker must be
+			// numeric or the text form loses its ordered-ness.
+			const marker =
+				orderedIndex !== undefined && !/^\d+[.)]$/.test(node.attrs.marker ?? '')
+					? `${orderedIndex + 1}.`
+					: (node.attrs.marker ?? '-')
+			text += `${indentStyle.repeat(depth)}${hideListMarker ? '' : `${marker} `}${node.attrs.checked !== null ? (node.attrs.checked ? '[x] ' : '[ ] ') : ''}`
 		}
 		if (node.type.name === 'code_block') {
 			text += `\`\`\`${node.attrs.language ?? ''}\n`
@@ -48,7 +61,7 @@ const serializeNode = (node: Node, depth: number, indentStyle: string, hideListM
 		if (node.type.name === 'heading') {
 			text += `#`.repeat(node.attrs.level) + ' '
 		}
-		node.forEach(child => {
+		node.forEach((child, _offset, index) => {
 			text += serializeNode(
 				child,
 				node.type.name === 'list_item' ? depth + 1 : depth,
@@ -56,6 +69,7 @@ const serializeNode = (node: Node, depth: number, indentStyle: string, hideListM
 					? (node.attrs.indent ?? indentStyle)
 					: indentStyle,
 				node.attrs.hideListMarker ?? false,
+				node.type.name === 'ordered_list' ? index : undefined,
 			)
 		})
 		if (node.type.name === 'paragraph' || node.type.name === 'heading' || node.type.name === 'blockquote') {

@@ -11,6 +11,7 @@ import {
 	testTreeAfterMove,
 } from './data'
 import { waitForSyncToEnd } from '../core/actions'
+import { ensureEditorMode } from '../editor/mode'
 
 export interface CreateTreeOptions {
 	verify?: boolean
@@ -22,6 +23,7 @@ export const replaceTextInEditor = async (text: string) => {
 		;(globalThis as any).navigator.clipboard.writeText(text)
 	}, text)
 
+	await ensureEditorMode('code')
 	await editor.monaco().click({ timeout: 2000 })
 	await expect(editor.monaco()).toHaveClass(/\bfocused\b/, { timeout: 2000 })
 	await mimiri().page.keyboard.press('Control+a')
@@ -29,6 +31,7 @@ export const replaceTextInEditor = async (text: string) => {
 }
 
 export const getTextFromEditor = async () => {
+	await ensureEditorMode('code')
 	await editor.monaco().click({ timeout: 2000 })
 	await expect(editor.monaco()).toHaveClass(/\bfocused\b/, { timeout: 2000 })
 	await mimiri().page.keyboard.press('Control+a')
@@ -45,6 +48,7 @@ export const createRootNote = async (name: string, text?: string, options: Creat
 	await note.newInput().press('Enter')
 	await waitForSyncToEnd()
 	if (text) {
+		await ensureEditorMode('code')
 		await editor.monaco().click({ timeout: 2000 })
 		await expect(editor.monaco()).toHaveClass(/\bfocused\b/, { timeout: 2000 })
 		if (options.typeText) {
@@ -70,6 +74,7 @@ export const createChildNote = async (name: string, text?: string, options: Crea
 	await note.newInput().press('Enter')
 	await waitForSyncToEnd()
 	if (text) {
+		await ensureEditorMode('code')
 		await editor.monaco().click({ timeout: 2000 })
 		await expect(editor.monaco()).toHaveClass(/\bfocused\b/, { timeout: 2000 })
 		if (options.typeText) {
@@ -95,6 +100,7 @@ export const createSiblingNote = async (name: string, text?: string, options: Cr
 	await note.newInput().press('Enter')
 	await waitForSyncToEnd()
 	if (text) {
+		await ensureEditorMode('code')
 		await editor.monaco().click({ timeout: 2000 })
 		await expect(editor.monaco()).toHaveClass(/\bfocused\b/, { timeout: 2000 })
 		if (options.typeText) {
@@ -146,6 +152,7 @@ export const verifyTestTree = async (tree: StandardTreeNode[]) => {
 			await note.expand(root.title).click({ timeout: 2000 })
 		}
 		if (root.text) {
+			await ensureEditorMode('code')
 			await editor.monaco().waitFor({ state: 'visible', timeout: 2000 })
 			await expect(editor.monaco()).toHaveText(root.text, { timeout: 2000 })
 		}
@@ -157,6 +164,7 @@ export const verifyTestTree = async (tree: StandardTreeNode[]) => {
 						await note.expand(child.title, parent).click({ timeout: 2000 })
 					}
 					if (child.text) {
+						await ensureEditorMode('code')
 						await expect(editor.monaco()).toHaveText(child.text, { timeout: 2000 })
 					}
 					if (child.children) {

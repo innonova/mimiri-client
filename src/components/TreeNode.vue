@@ -237,6 +237,9 @@ const searchModeActive = computed(() => {
 
 const startDrag = event => {
 	event.stopPropagation()
+	// NOTE: concurrent moves while offline can leave the tree diverged across
+	// devices; a proper conflict-resolution fix is planned. Blocking moves while
+	// offline was tried and rolled back — the UX cost outweighed the edge case.
 	if (!props.node.isSystem) {
 		event.dataTransfer.dropEffect = 'move'
 		event.dataTransfer.effectAllowed = 'move'

@@ -14,6 +14,7 @@ import {
 	verifyMoveNoteIntoOwnChild,
 } from './notes/actions'
 import { standardTree } from './notes/data'
+import { ensureEditorMode } from './editor/mode'
 import { createCloudAccount, createLocalAccount, login, logout, saveNote } from './core/actions'
 
 // test.describe.configure({ mode: 'serial' })
@@ -62,6 +63,8 @@ test.describe('account-less', () => {
 			await createSiblingNote('Test Sibling Note')
 			await note.item('Test Child Note').click()
 			await createChildNote('Test Child Note 2')
+			await ensureEditorMode('code')
+			await editor.monaco().click()
 			await expect(editor.monaco()).toHaveClass(/\bfocused\b/)
 			await mimiri().page.keyboard.type('Test Child Note 2 content')
 			await saveNote()

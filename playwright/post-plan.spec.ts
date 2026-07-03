@@ -13,6 +13,9 @@ import {
 
 // test.describe.configure({ mode: 'serial' })
 
+// Skipped: these tests target the InitialPlanChooser flow, which was unwired from the
+// app in the Sept-2025 subscription rework (a1407f9). The component still exists but is
+// never rendered — either delete this spec + the component, or re-wire the flow.
 test.describe.skip('cloud account', () => {
 	test('verify post create plan choice, after reload', async () => {
 		await withMimiriContext(async () => {

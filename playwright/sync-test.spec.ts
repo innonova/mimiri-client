@@ -1,6 +1,8 @@
 import { expect, test } from '@playwright/test'
 import { mimiri, mimiriClone, withMimiriContext } from './framework/mimiri-context'
 import { menu, note, titleBar, editor, statusBar, infoDialog, editorHistory } from './selectors'
+import { ensureEditorMode } from './editor/mode'
+
 import { createChildNote, createRootNote, createTestTree, verifyTestTree } from './notes/actions'
 import { createCloudAccount, login, saveNote } from './core/actions'
 import {
@@ -59,6 +61,7 @@ test.describe('sync tests', () => {
 
 			mimiri(0, true)
 			await note.item('Live Edit Test').click()
+			await ensureEditorMode('code')
 			await editor.monaco().click()
 			await mimiri().page.keyboard.press('Control+a')
 			await mimiri().page.keyboard.type('Content edited live on device 1')
@@ -66,6 +69,7 @@ test.describe('sync tests', () => {
 
 			mimiri(1, true)
 			await note.item('Live Edit Test').click()
+			await ensureEditorMode('code')
 			await expect(editor.monaco()).toHaveText('Content edited live on device 1')
 
 			await verifyTestTree(syncAfterLiveEdit)
@@ -127,17 +131,20 @@ test.describe('sync tests', () => {
 			await expect(note.item('Edit Protection Test')).toBeVisible()
 
 			await note.item('Edit Protection Test').click()
+			await ensureEditorMode('code')
 			await editor.monaco().click()
 			await mimiri().page.keyboard.type('Changed by device 2')
 
 			mimiri(0, true)
 			await note.item('Edit Protection Test').click()
+			await ensureEditorMode('code')
 			await editor.monaco().click()
 			await mimiri().page.keyboard.press('Control+a')
 			await mimiri().page.keyboard.type('Changed by device 1 while device 2 was editing')
 			await saveNote()
 
 			mimiri(1, true)
+			await ensureEditorMode('code')
 			await expect(editor.monaco()).toHaveText('Base content for edit protection testing.Changed by device 2')
 
 			await note.item('Sync Marker').click()
@@ -146,6 +153,7 @@ test.describe('sync tests', () => {
 			await infoDialog.okButton().click()
 
 			await note.item('Edit Protection Test').click()
+			await ensureEditorMode('code')
 			await expect(editor.monaco()).toHaveText('Base content for edit protection testing.Changed by device 2')
 
 			await verifyTestTree(syncAfterEditProtection)
@@ -153,6 +161,7 @@ test.describe('sync tests', () => {
 			await editor.history().click()
 			await expect(editorHistory.container()).toBeVisible()
 			await editorHistory.item(1).click()
+			await ensureEditorMode('code')
 			await expect(editor.monaco()).toHaveText('Changed by device 1 while device 2 was editing')
 		})
 	})
