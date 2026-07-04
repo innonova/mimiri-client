@@ -19,10 +19,12 @@
 	@apply text-text;
 }
 
-/* Code block indicator using border instead of background to avoid covering selection */
+/* Code block background as a translucent overlay: this line decoration paints
+   above Monaco's selection layer, so an opaque background (or multiply
+   blending, which crushes the selection to black in dark mode) would hide the
+   text selection inside code blocks */
 .monaco-editor .code-block-line {
-	@apply bg-editor-code-block-bg;
-	mix-blend-mode: multiply;
+	@apply bg-editor-code-block-overlay;
 }
 
 /* Text content decorations */
@@ -130,10 +132,10 @@
 	/* Font changes (family, size) can cause cursor misalignment */
 }
 
-/* Conflict block styling - Local vs Server */
+/* Conflict block styling - Local vs Server. Translucent overlay for the same
+   reason as .code-block-line above: keep the text selection visible */
 .monaco-editor .conflict-marker-line {
-	@apply bg-editor-conflict-marker-bg font-bold;
-	mix-blend-mode: multiply;
+	@apply bg-editor-conflict-marker-overlay font-bold;
 }
 
 .monaco-editor .conflict-marker-start {

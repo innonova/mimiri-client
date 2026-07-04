@@ -88,6 +88,9 @@
 	/* Editor-specific Colors */
 	/* Code Elements */
 	--color-editor-code-block-bg: #f5f5f5;
+	/* Translucent variant for Monaco's line overlay: it paints above the
+	   selection layer, so it must let the selection shine through */
+	--color-editor-code-block-overlay: rgba(0, 0, 0, 0.04);
 	--color-editor-inline-code-bg: rgba(175, 184, 193, 0.2);
 	--color-editor-code-delimiter: #888888;
 	--color-editor-code-fence-text: #888888;
@@ -101,6 +104,7 @@
 
 	/* Conflict Resolution */
 	--color-editor-conflict-marker-bg: #f5f5f5;
+	--color-editor-conflict-marker-overlay: rgba(0, 0, 0, 0.04);
 	--color-editor-conflict-local: #1976d2;
 	--color-editor-conflict-server: #7b1fa2;
 	--color-editor-conflict-separator: #757575;

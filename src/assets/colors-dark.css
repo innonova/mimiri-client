@@ -64,6 +64,7 @@
 		/* Editor-specific Colors */
 		/* Code Elements */
 		--color-editor-code-block-bg: #2d2d2d;
+		--color-editor-code-block-overlay: rgba(255, 255, 255, 0.055);
 		--color-editor-inline-code-bg: rgba(110, 118, 129, 0.4);
 		--color-editor-code-delimiter: #eeeeee;
 		--color-editor-code-fence-text: #eeeeee;
@@ -77,6 +78,7 @@
 
 		/* Conflict Resolution */
 		--color-editor-conflict-marker-bg: #2d2d2d;
+		--color-editor-conflict-marker-overlay: rgba(255, 255, 255, 0.055);
 		--color-editor-conflict-local: #64b5f6;
 		--color-editor-conflict-server: #ba68c8;
 		--color-editor-conflict-separator: #9e9e9e;
