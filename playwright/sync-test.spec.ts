@@ -4,7 +4,7 @@ import { menu, note, titleBar, editor, statusBar, infoDialog, editorHistory } fr
 import { ensureEditorMode } from './editor/mode'
 
 import { createChildNote, createRootNote, createTestTree, verifyTestTree } from './notes/actions'
-import { createCloudAccount, login, saveNote } from './core/actions'
+import { createCloudAccount, login, saveNote, waitForSyncToEnd } from './core/actions'
 import {
 	syncNoteCreationTree,
 	syncHierarchyInitialTree,
@@ -158,6 +158,9 @@ test.describe('sync tests', () => {
 
 			await verifyTestTree(syncAfterEditProtection)
 
+			// Let the live sync settle before opening history — incoming updates
+			// re-render the version list and detach its rows mid-click
+			await waitForSyncToEnd()
 			await editor.history().click()
 			await expect(editorHistory.container()).toBeVisible()
 			await editorHistory.item(1).click()

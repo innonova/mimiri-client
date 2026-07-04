@@ -61,6 +61,38 @@ for (const mode of editorModes) {
 			})
 		})
 
+		test('undo and redo keyboard shortcuts', async () => {
+			await withMimiriContext(async () => {
+				// Undo grouping differs between the editors, so press until the
+				// condition holds rather than a fixed number of times
+				const pressUntil = async (key: string, condition: () => Promise<boolean>) => {
+					for (let i = 0; i < 30 && !(await condition()); i++) {
+						await mimiri().page.keyboard.press(key)
+						await mimiri().waitForTimeout(50)
+					}
+					await expect.poll(condition, { timeout: 2000 }).toBe(true)
+				}
+				await openNoteInMode(mode)
+				await typeInEditor(mode, 'Hello world')
+				await expect.poll(() => visibleText(mode)).toBe('Hello world')
+				await pressUntil('Control+z', async () => (await visibleText(mode)) === '')
+				await pressUntil('Control+y', async () => (await visibleText(mode)) === 'Hello world')
+			})
+		})
+
+		test('Ctrl+S saves the note', async () => {
+			await withMimiriContext(async () => {
+				await openNoteInMode(mode)
+				await typeInEditor(mode, 'saved by shortcut')
+				await expectToolbarButtonEnabled(editor.save())
+				await mimiri().page.keyboard.press('Control+s')
+				await expectToolbarButtonDisabled(editor.save())
+				await mimiri().reload()
+				await expect(surface(mode)).toBeVisible()
+				await expect.poll(() => visibleText(mode)).toBe('saved by shortcut')
+			})
+		})
+
 		test('insert heading cycles levels', async () => {
 			await withMimiriContext(async () => {
 				await openNoteInMode(mode)
@@ -455,6 +487,45 @@ test.describe('editor (wysiwyg only)', () => {
 			await expect(
 				editor.proseMirror().locator('.ProseMirror-search-match, .ProseMirror-active-search-match'),
 			).toHaveCount(1)
+		})
+	})
+
+	test('markdown input rules create structure while typing', async () => {
+		await withMimiriContext(async () => {
+			await openNoteInMode('wysiwyg')
+			await focusEditor('wysiwyg')
+			const kbd = mimiri().page.keyboard
+
+			await kbd.type('# Big Title')
+			await expect(editor.proseMirror().locator('h1')).toHaveText('Big Title')
+
+			await kbd.press('Enter')
+			await kbd.type('- First bullet')
+			await expect(editor.proseMirror().locator('ul li')).toContainText('First bullet')
+
+			// Double Enter exits the list
+			await kbd.press('Enter')
+			await kbd.press('Enter')
+			await kbd.type('1. Numbered')
+			await expect(editor.proseMirror().locator('ol li')).toContainText('Numbered')
+
+			await kbd.press('Enter')
+			await kbd.press('Enter')
+			await kbd.type('[ ] Task item')
+			await expect(editor.proseMirror().locator('li[data-item-type="task"]')).toContainText('Task item')
+
+			await kbd.press('Enter')
+			await kbd.press('Enter')
+			await kbd.type('`inline`')
+			await expect(editor.proseMirror().locator('code')).toContainText('inline')
+
+			// The typed structure serializes back to the expected markdown
+			const raw = await readRawText('wysiwyg')
+			expect(raw).toContain('# Big Title')
+			expect(raw).toMatch(/- First bullet/)
+			expect(raw).toMatch(/1[.)] Numbered/)
+			expect(raw).toMatch(/\[ \] Task item/)
+			expect(raw).toContain('`inline`')
 		})
 	})
 

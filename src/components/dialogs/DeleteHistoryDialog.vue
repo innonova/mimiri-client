@@ -2,6 +2,7 @@
 	<dialog
 		class="bg-dialog text-text desktop:border border-solid border-dialog-border"
 		ref="dialog"
+		data-testid="delete-history-dialog"
 		@close="isOpen = false"
 	>
 		<div v-if="isOpen" class="grid grid-rows-[auto_1fr_auto] gap-6">
@@ -25,8 +26,12 @@
 				</div>
 			</main>
 			<footer class="flex justify-end mobile:justify-center gap-2 pr-2 pb-2">
-				<button class="primary" @click="submitDialog">{{ $t('deleteHistoryDialog.delete') }}</button>
-				<button class="secondary" @click="close">{{ $t('deleteHistoryDialog.cancel') }}</button>
+				<button class="primary" @click="submitDialog" data-testid="delete-history-confirm">
+					{{ $t('deleteHistoryDialog.delete') }}
+				</button>
+				<button class="secondary" @click="close" data-testid="delete-history-cancel">
+					{{ $t('deleteHistoryDialog.cancel') }}
+				</button>
 			</footer>
 		</div>
 	</dialog>

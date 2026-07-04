@@ -91,6 +91,7 @@
 			v-if="noteManager.state.busy"
 			class="absolute left-0 top-0 w-full h-full flex items-center justify-around text-white"
 			:class="{ 'bg-backdrop': noteManager.state.busyLong }"
+			data-testid="busy-overlay"
 		>
 			<LoadingIcon v-if="noteManager.state.spinner" class="animate-spin w-12 h-12" />
 		</div>

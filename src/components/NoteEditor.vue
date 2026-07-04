@@ -184,6 +184,7 @@
 					class="primary rounded-none!"
 					:disabled="!mimiriEditor.history.note.viewModel.hasMoreHistory"
 					@click="loadMoreHistory"
+					data-testid="editor-history-more-button"
 				>
 					{{ $t('noteEditor.readMoreEntries') }}
 				</button>

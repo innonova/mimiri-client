@@ -51,9 +51,13 @@
 						data-testid="share-username-input"
 					/>
 					<div v-if="invalid || shareWithSelf || shareFailed" />
-					<div v-if="invalid" class="text-error leading-4">{{ $t('shareDialog.invalidUsername') }}</div>
-					<div v-if="shareWithSelf" class="text-error leading-4">{{ $t('shareDialog.shareWithSelf') }}</div>
-					<div v-if="shareFailed" class="text-error leading-4">
+					<div v-if="invalid" class="text-error leading-4" data-testid="share-error-invalid-username">
+						{{ $t('shareDialog.invalidUsername') }}
+					</div>
+					<div v-if="shareWithSelf" class="text-error leading-4" data-testid="share-error-share-with-self">
+						{{ $t('shareDialog.shareWithSelf') }}
+					</div>
+					<div v-if="shareFailed" class="text-error leading-4" data-testid="share-error-failed">
 						{{ $t('shareDialog.shareFailed') }}
 					</div>
 					<div v-if="!code" class="col-span-2 flex flex-col items-center">

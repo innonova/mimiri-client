@@ -16,10 +16,20 @@
 				<div>{{ $t('textNoteProperties.key') }}</div>
 				<div data-testid="note-key">{{ note.keyFriendlyName }}</div>
 				<div class="col-span-2 flex gap-2">
-					<button v-if="showDeleteOldHistory" class="primary" @click="deleteOldHistory">
+					<button
+						v-if="showDeleteOldHistory"
+						class="primary"
+						@click="deleteOldHistory"
+						data-testid="properties-delete-old-history"
+					>
 						{{ $t('textNoteProperties.deleteOldHistory') }}
 					</button>
-					<button v-if="showDeleteAllHistory" class="primary" @click="deleteAllHistory">
+					<button
+						v-if="showDeleteAllHistory"
+						class="primary"
+						@click="deleteAllHistory"
+						data-testid="properties-delete-all-history"
+					>
 						{{ $t('textNoteProperties.deleteAllHistory') }}
 					</button>
 				</div>

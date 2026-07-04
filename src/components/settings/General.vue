@@ -4,7 +4,7 @@
 		<div class="overflow-y-auto pb-10">
 			<div class="p-1 pt-2 m-auto text-left flex items-center">
 				<div class="w-20">{{ $t('settingsGeneral.language') }}</div>
-				<select v-model="language" class="ml-1">
+				<select v-model="language" class="ml-1" data-testid="settings-language">
 					<option value="en">{{ $t('settingsGeneral.languageEnglish') }}</option>
 					<option value="zh">{{ $t('settingsGeneral.languageChinese') }}</option>
 					<option value="da">{{ $t('settingsGeneral.languageDanish') }}</option>
@@ -13,7 +13,7 @@
 			</div>
 			<div class="p-1 pt-2 m-auto text-left flex items-center">
 				<div class="w-20">{{ $t('settingsGeneral.theme') }}</div>
-				<select v-model="theme" class="ml-1">
+				<select v-model="theme" class="ml-1" data-testid="settings-theme">
 					<option value="default">{{ $t('settingsGeneral.themeSystem') }}</option>
 					<option value="light">{{ $t('settingsGeneral.themeLight') }}</option>
 					<option value="dark">{{ $t('settingsGeneral.themeDark') }}</option>
@@ -78,7 +78,9 @@
 			<div class="mt-10 max-w-110 mr-2">
 				<hr />
 				<div class="w-full flex justify-end mt-2 gap-2">
-					<button :disabled="!canSave" @click="save" class="primary">{{ $t('settingsGeneral.save') }}</button>
+					<button :disabled="!canSave" @click="save" class="primary" data-testid="settings-general-save">
+						{{ $t('settingsGeneral.save') }}
+					</button>
 				</div>
 			</div>
 		</div>

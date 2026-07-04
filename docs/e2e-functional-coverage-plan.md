@@ -111,7 +111,7 @@ Key platform gates observed in code:
 
 - ✅ Set PIN (with password confirmation dialog), lock on hide + timeout, unlock via lock screen (`pin.spec.ts`).
 - ✅ Incorrect PIN with attempts counter; ✅ multiple accounts each with own PIN; ✅ PIN node hidden without account.
-- ❌ Change existing PIN, clear PIN.
+- ✅ Change existing PIN; clear PIN disables the lock screen (`pin.spec.ts`, 2026-07-04).
 
 ## 4. Note Tree
 
@@ -122,14 +122,15 @@ Key platform gates observed in code:
 - ✅ Selection and open-in-editor (implicit in all suites, asserted via editor content checks).
 - ✅ Rename via F2 (`keyboard.spec.ts`); 🟡 rename via context menu (used as helper, not asserted as entry point).
 - ✅ Rename conflicts between two devices (`conflict-test.spec.ts`).
-- ❌ Copy path to clipboard.
+- ✅ Copy path to clipboard (`note-tree.spec.ts`, 2026-07-04).
 - ❌ Scroll position remembered per note.
 
 ### 4.2 Creation
 
 - ✅ New root / child / sibling note via toolbar create menu, incl. text entry, save, persistence across
   reload (all account suites; `notes/actions.ts` helpers).
-- ✅ Creation blocked on system notes (`system-notes.spec.ts`); ❌ creation blocked inside recycle bin.
+- ✅ Creation blocked on system notes (`system-notes.spec.ts`); ✅ creation blocked inside recycle bin
+  (menu items hidden — `recycle-bin.spec.ts`).
 - ❌ Save-empty-note handling (`SaveEmptyNodeDialog`; currently disabled in code).
 
 ### 4.3 Move / copy / clipboard
@@ -143,14 +144,14 @@ Key platform gates observed in code:
   (`drag.spec.ts`); drop-position variants (above/below/into), auto-expand on hover, and drop indicators
   still untested. Note: moving while offline is permitted **by design** (accepting the concurrent-move
   divergence risk — see §5.5); an offline-move block was tried 2026-07-03 and rolled back for UX reasons.
-- ❌ Duplicate via context menu (only keyboard variant covered).
+- ✅ Duplicate via context menu incl. content check (`note-tree.spec.ts`, 2026-07-04).
 
 ### 4.4 System notes
 
 - ✅ Cannot cut, copy, duplicate, rename, delete system notes via context menu, Edit menu, **and** keyboard
   shortcuts; covers System, Settings, Updates, Dev Blog, Create Account, General, Fonts, Recycle Bin
   (`system-notes.spec.ts`).
-- ❌ System note titles re-localize when language changes.
+- ✅ System note titles re-localize live when language changes (`settings.spec.ts`, 2026-07-04).
 
 ### 4.5 Recycle bin
 
@@ -158,10 +159,14 @@ Key platform gates observed in code:
 - ✅ Empty recycle bin with confirm dialog; bin verified empty afterwards (`system-notes.spec.ts`; also used
   as a utility in quota/conflict suites).
 - ✅ Recycle blocked when note contains shared descendants (`sharing.spec.ts`).
-- ❌ Permanent delete of a single note from within the bin (as distinct from emptying).
-- ❌ Restore by moving a note out of the bin; content/children intact after round trip.
-- ❌ Recycle-bin settings page: scan for inconsistencies, empty-from-settings.
-- ❌ Restrictions inside bin (no new notes, rename, paste, share).
+- ✅ Permanent delete of a single note from within the bin, incl. cancel path (`recycle-bin.spec.ts`, 2026-07-04).
+- ✅ Restore by cut/paste out of the bin; content and children intact after the round trip (`recycle-bin.spec.ts`).
+- ✅ In-bin context-menu restrictions: new note / rename / paste / share / recycle hidden, Delete shown
+  instead of Recycle (`recycle-bin.spec.ts`).
+- ✅ Empty recycle bin (dedicated test in `recycle-bin.spec.ts` in addition to the utility usages).
+- ✅ Recycle-bin settings page: scan for inconsistencies (clean-tree path) and empty-from-settings incl.
+  button enablement (`recycle-bin.spec.ts`, 2026-07-04); ❌ scan with actual inconsistencies (requires
+  the §5.5 divergence scenario).
 
 ## 5. Editors
 
@@ -183,7 +188,9 @@ Two interchangeable editors over the same markdown-ish text model; mode persists
 - ✅ Save-error paths for note-size and total-size limits, incl. `LimitDialog` and upgrade path (`quota.spec.ts`).
 - ❌ Lost-update save error surfaced to user.
 - ✅ Save-button enablement tracks changed state (disabled → dirty → saved), both editors (`editor.spec.ts`).
-- ✅ Undo / redo via toolbar buttons restore text, both editors (`editor.spec.ts`); ❌ keyboard shortcuts, enablement states.
+- ✅ Undo / redo via toolbar buttons **and** Ctrl+Z / Ctrl+Y, both editors (`editor.spec.ts`);
+  ❌ enablement states.
+- ✅ Ctrl+S saves, dirty flag clears, content persists across reload, both editors (`editor.spec.ts`, 2026-07-04).
 - ✅ Mark selection as password (`` p`…` `` raw form, masked rendering) / unmark, and copy-password-to-clipboard
   via the hover/inline copy button — both editors (`editor.spec.ts`).
 - ✅ Formatting actions, both editors, DOM + serialized-text asserted: heading (incl. level cycling),
@@ -221,16 +228,21 @@ Two interchangeable editors over the same markdown-ish text model; mode persists
   global F3 / Ctrl+Shift+F / Escape fallbacks in `App.vue` defer to keys the focused editor already
   handled (`event.defaultPrevented` guard, fixed 2026-07-03) (`editor.spec.ts`).
 - ✅ Word wrap button correctly hidden in this mode (`editor.spec.ts`).
-- ❌ Markdown input rules (`- `, `1. `, `# ` while typing), autocomplete popup (code-block language),
-  keymap details (Tab/Shift-Tab list nesting, Mod-e), gap/drop cursor, mobile default behavior.
+- ✅ Markdown input rules while typing (`# ` heading, `- ` bullet, `1. ` ordered, `[ ] ` checkbox,
+  `` `x` `` inline code) incl. serializer round-trip (`editor.spec.ts`, 2026-07-04).
+- ❌ URL→link input rule, autocomplete popup (code-block language), keymap details
+  (Tab/Shift-Tab list nesting, Mod-e), gap/drop cursor, mobile default behavior.
 
 ### 5.4 Note history
 
-- 🟡 Opening the history panel, selecting an older version, and read-only viewing are exercised
-  incidentally by the find/replace read-only test (`editor.spec.ts`) and the sync edit-protection
-  test (`sync-test.spec.ts`).
-- ❌ Dedicated coverage: version list contents, keyboard navigation, load more,
-  delete old / delete all history.
+- ✅ Dedicated suite (`note-history.spec.ts`, 2026-07-04): version list newest-first with correct
+  content per version; keyboard navigation (ArrowUp/Down) through versions; 'Read More Entries'
+  paging of archived versions (active list caps at 10, older entries overflow into archives);
+  delete old history (keeps the 10 newest); delete all history (content untouched, panel empty,
+  verified across reload); cancel path keeps history.
+- ✅ Read-only viewing additionally exercised by the find/replace read-only test (`editor.spec.ts`)
+  and the sync edit-protection test (`sync-test.spec.ts`).
+- ❌ Multi-user history entries (usernames per version in shared notes).
 
 ### 5.5 Conflict handling
 
@@ -250,16 +262,21 @@ Two interchangeable editors over the same markdown-ish text model; mode persists
 
 ## 6. Search
 
-- ❌ Everything: search all notes (shortcut, toolbar, mobile flow), tree filtering to matches + ancestors,
-  first-match auto-select, term highlighting, clearing/exit, offline search.
+- ✅ Dedicated suite (`search.spec.ts`, 2026-07-04): term entry via title bar + Enter; tree filtered to
+  matches and their ancestors; case-insensitive matching over text and titles; first-match auto-select;
+  no-results message; close button restores the full tree; empty term clears the search;
+  Ctrl+Shift+F focuses the global search from both editors.
+- ✅ Term highlighting when opening a result (`editor.spec.ts`).
+- ❌ Mobile search flow (search box overlay, toolbar toggle); offline/large-tree behavior;
+  search progress indicator.
 
 ## 7. Sharing (Cloud accounts, online only)
 
 - ✅ Share a note by recipient username → share code generated → second user accepts via code; single notes,
   folders with children, multiple items to different locations, mixed content into existing folders
   (`sharing.spec.ts`, 18 tests, all two-user via orchestration framework).
-- 🟡 Share-dialog validation errors (invalid username, share-with-self, failure) — flow is exercised
-  happy-path only.
+- ✅ Share-dialog validation errors: empty username, share-with-self, unknown recipient
+  (`share-validation.spec.ts`, 2026-07-04).
 - ✅ Leave share as recipient, as sender, leave-and-delete.
 - ✅ Guards: cannot delete or recycle a regular note containing shared descendants; only the share root
   can be re-shared ("Can only share already shared notes from the root").
@@ -332,11 +349,13 @@ render — its `v-if` requires `emailVerificationEmailSent` while `showEmailVeri
 - ✅ Settings **tree structure** per account type: which nodes exist/are hidden (update, blog, general,
   fonts & colors, PIN, create-account vs. account group, subscription group) — asserted in all three
   account suites.
-- ❌ General page behaviors: language switching (incl. live system-note retitling), theme, tray icon,
+- ✅ General page: language switching with live UI + system-note retitling; theme light/dark switch
+  asserted on `html[data-theme]` (`settings.spec.ts`, 2026-07-04).
+- ❌ Remaining general page behaviors: tray icon,
   launch on login, taskbar, quit on close, chevrons, vertical guides, disable dev blog (+ reload),
   allow Monaco on mobile, save-button dirty tracking.
 - ❌ Fonts & colors page.
-- ✅ PIN page: set flow (see §3.3); ❌ change/clear.
+- ✅ PIN page: set, change and clear flows (see §3.3).
 - ✅ Account pages: username/password/delete flows (see §3.2); ✅ connect-to-cloud page (`connectCloudView`).
 - ✅ Plan/billing/payment-methods/invoices pages: exercised via subscription flows (see §10).
 - ❌ Updates page: modes, channels, check-for-update, version display.
@@ -354,10 +373,11 @@ render — its `v-if` requires `emailVerificationEmailSent` while `showEmailVeri
 ## 14. Tools & Misc
 
 - ❌ Password generator (dialog and inline generation).
-- 🟡 Note properties page: total-size ✅ (quota), share participants ✅ (sharing); created/modified dates,
-  history stats, key name, delete old/all history ❌.
+- ✅ Note properties page: total-size (quota), share participants (sharing), data/history/total sizes,
+  created/modified dates, key name (`note-tree.spec.ts`), delete old/all history (`note-history.spec.ts`).
 - ✅ Keyboard shortcuts: Ctrl+X/C/V, Ctrl+D, F2, Del (`keyboard.spec.ts`); system-note protection via
-  shortcuts (`system-notes.spec.ts`). ❌ Ctrl+N, Ctrl+F, Ctrl+Shift+F, Ctrl+S, undo/redo keys, Mac special-casing.
+  shortcuts (`system-notes.spec.ts`); Ctrl+F/F3 (editor find), Ctrl+S, Ctrl+Z/Y, Ctrl+Shift+F
+  (`editor.spec.ts`, `search.spec.ts`). ❌ Ctrl+N, Mac special-casing.
 - 🟡 App menus: File/Edit menu **item visibility** asserted for share gating (`account-less.spec.ts`);
   full enablement matrix per state (online, selection, system, recycle bin) ❌; Mac application menu ❌;
   mobile hamburger menu ❌.
@@ -400,7 +420,7 @@ Cancel/Escape/Enter paths and phone-layout rendering of all dialogs: ❌.
 | --- | --- | --- |
 | `account-less`, `local-account`, `cloud-account` | Per-account-type basics: offline/online, API-call auditing, note CRUD, move/copy matrices, settings/menu gating | Thorough for tree ops + capability gating |
 | `account-mutations` | Up/downgrades incl. username/password variants, delete account, change username/password + failures, reserved usernames | Thorough, incl. persistence across logout/login |
-| `pin` | Set/verify/incorrect/multi-account/no-account | Good; change/clear missing |
+| `pin` | Set/verify/incorrect/multi-account/no-account, change PIN, clear PIN | Thorough |
 | `password-desync` | Password changed elsewhere: 5 recovery paths | Thorough |
 | `keyboard` | Cut/copy/paste/delete/rename/duplicate shortcuts | Good for tree shortcuts only |
 | `system-notes` | System-note protection via menus and keyboard; recycle + empty bin | Thorough |
@@ -411,7 +431,14 @@ Cancel/Escape/Enter paths and phone-layout rendering of all dialogs: ❌.
 | `quota` | All count/size limit scenarios incl. share interactions and upgrade path | Thorough |
 | `subscription` | Purchase, plan changes, billing address + email verification, renewal/failure/recovery matrix, payment methods, abort paths, currencies, deletion cleanup | Thorough — re-enabled + repaired 2026-07-03 (was skipped since 2026-02-01) |
 | `post-plan` | Forced initial plan chooser | ⏸ Obsolete — flow removed from app Sept 2025; delete or re-wire |
-| `editor` | Shared editor behavior contract run against **both** Monaco and ProseMirror: type/save/persist, dirty-state tracking, undo/redo, heading/list/code-block/inline-code formatting, mark/unmark/copy password, mode toggle with unsaved changes, find + word wrap (Monaco), checkbox toggling + serializer round-trip (ProseMirror) | Good; input rules, history, scroll, shortcuts still open |
+| `editor` | Shared editor behavior contract run against **both** Monaco and ProseMirror: type/save/persist, dirty-state tracking, undo/redo, heading/list/code-block/inline-code formatting, mark/unmark/copy password, mode toggle with unsaved changes, full find/replace contract (via `findUI` adapter), word wrap, checkbox toggling + serializer round-trip (ProseMirror) | Good; input rules, scroll, shortcuts still open |
+| `search` | Search all notes: tree filtering to matches + ancestors, title/text case-insensitive matching, auto-select, no-results, close/clear, Ctrl+Shift+F from both editors | Good (2026-07-04); mobile flow open |
+| `note-history` | Version list + content per version, keyboard navigation, read-more paging of archives, delete old/all history incl. cancel and reload verification | Thorough (2026-07-04) |
+| `recycle-bin` | Restore by cut/paste with content/children intact, single permanent delete + cancel, in-bin menu restrictions, empty bin (tree + settings page), inconsistency scan (clean path) | Thorough (2026-07-04) |
+| `drag` | Basic drag & drop moves (online/offline/local), system-note drag protection | Basic |
+| `note-tree` | Copy path to clipboard, duplicate via context menu, properties page details (sizes/dates/key) | Good (2026-07-04) |
+| `settings` | General page: theme light/dark switch, language switch with live UI + system-note retitling | Basic (2026-07-04) |
+| `share-validation` | Share-dialog error paths: empty username, share-with-self, unknown recipient | Good (2026-07-04) |
 
 Note: test contexts start in the app-default editor (ProseMirror on a new install). The old
 `defaultEditor: 'code'` localStorage seed in the framework was removed; suites that depend on Monaco
@@ -427,17 +454,19 @@ opt in explicitly via `ensureEditorMode('code')` (`playwright/editor/mode.ts`).
 2. **Editor details** — largely covered by `editor.spec.ts` now; still open: ProseMirror input rules and
    autocomplete, keyboard shortcuts for undo/redo/save, scroll-position preservation, read-only enforcement,
    syntax highlighting, mobile selection control, lost-update error surfacing.
-3. **Note history** — view, navigate, load more, delete old/all history: zero coverage.
+3. ~~**Note history**~~ — covered by `note-history.spec.ts` (2026-07-04).
 4. **Interactive conflict resolution** — the conflict banner (keep local/server/both, navigation); only
    silent auto-merge outcomes are verified today.
-5. **Search all notes** — zero coverage.
+5. ~~**Search all notes**~~ — covered by `search.spec.ts` (2026-07-04); mobile flow still open.
 6. **Import/export** — zero coverage (Electron; needs ipc mocking or a real Electron run).
-7. **Recycle bin details** — restore-by-move, single permanent delete, in-bin restrictions, inconsistency scan page.
-8. **Settings pages** — general (language/theme/etc.), fonts & colors, updates: zero behavioral coverage
-   (only node visibility is asserted).
+7. ~~**Recycle bin details**~~ — covered by `recycle-bin.spec.ts` (2026-07-04); inconsistency scan page still open.
+8. **Settings pages** — general page language/theme now covered (`settings.spec.ts`, 2026-07-04);
+   fonts & colors and updates pages still zero behavioral coverage.
 9. **Notifications & dev blog UI** — unread counts, mark-as-read, click-through, blog posts.
-10. **Password generator, properties-page details** (dates/history stats/key, delete history).
-11. **Share edge cases** — dialog validation errors, share offers list, accept-while-offline.
+10. **Password generator** (properties-page details now covered via `note-tree.spec.ts` /
+    `note-history.spec.ts`, 2026-07-04).
+11. **Share edge cases** — dialog validation ✅ (`share-validation.spec.ts`, 2026-07-04);
+    share offers list and accept-while-offline still open.
 12. **Anonymous cloud accounts** and the create-password claim flow.
 13. **Platform matrix** — everything currently runs only as desktop-web Chromium; need runs for mobile
     viewport/touch (phone + tablet), real iOS/Android (Capacitor), Electron (tray, import/export, PIN,

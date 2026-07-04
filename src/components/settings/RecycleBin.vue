@@ -6,13 +6,14 @@
 			<div class="mt-5 max-w-110 mr-2">
 				<hr />
 				<div class="w-full flex justify-between mt-2 gap-2">
-					<button @click="scanForInconsistencies" class="primary">
+					<button @click="scanForInconsistencies" class="primary" data-testid="recycle-scan-inconsistencies">
 						{{ $t('settingsRecycleBin.scanForInconsistencies') }}
 					</button>
 					<button
 						:disabled="noteManager.tree.selectedNote()?.viewModel?.children.length === 0"
 						@click="empty"
 						class="primary"
+						data-testid="recycle-empty-from-settings"
 					>
 						{{ $t('settingsRecycleBin.emptyRecycleBin') }}
 					</button>

@@ -6,6 +6,7 @@ const tid = (id: string) => {
 }
 export const appMain = {
 	status: () => tid('app-status'),
+	busyOverlay: () => tid('busy-overlay'),
 }
 
 export const subHomeView = {
@@ -131,6 +132,14 @@ export const editorHistory = {
 	container: () => tid('editor-history-container'),
 	scrollContainer: () => tid('editor-history-scroll-container'),
 	item: (index: number) => tid(`editor-history-item-${index}`),
+	moreButton: () => tid('editor-history-more-button'),
+}
+
+export const searchBox = {
+	term: () => tid('search-box-term'),
+	close: () => tid('search-box-close'),
+	closeMobile: () => tid('search-box-close-mobile'),
+	noResults: () => tid('tree-no-search-results'),
 }
 
 export const dialog = {
@@ -429,6 +438,18 @@ export const aboutView = {
 export const pinCodeView = {
 	container: () => tid(`pin-code-container`),
 	save: () => tid(`pin-code-container`).getByTestId(`save-pin`),
+	clear: () => tid(`pin-code-container`).getByTestId(`clear-pin`),
+}
+
+export const settingsGeneral = {
+	language: () => tid('settings-language'),
+	theme: () => tid('settings-theme'),
+	save: () => tid('settings-general-save'),
+}
+
+export const recycleBinView = {
+	scan: () => tid('recycle-scan-inconsistencies'),
+	empty: () => tid('recycle-empty-from-settings'),
 }
 
 export const shareDialog = {
@@ -438,6 +459,9 @@ export const shareDialog = {
 	closeButton: () => tid(`share-dialog`).getByTestId(`share-close-button`),
 	cancelButton: () => tid(`share-dialog`).getByTestId(`share-cancel-button`),
 	code: () => tid(`share-dialog`).getByTestId(`share-code`),
+	errorInvalidUsername: () => tid(`share-dialog`).getByTestId(`share-error-invalid-username`),
+	errorShareWithSelf: () => tid(`share-dialog`).getByTestId(`share-error-share-with-self`),
+	errorFailed: () => tid(`share-dialog`).getByTestId(`share-error-failed`),
 }
 
 export const acceptShareDialog = {
@@ -516,6 +540,14 @@ export const textNoteProperties = {
 	key: () => tid(`text-note-properties`).getByTestId(`note-key`),
 	shareParticipantUsername: () => tid(`text-note-properties`).getByTestId(`share-participant-username`),
 	noShareParticipants: () => tid(`text-note-properties`).getByTestId(`no-share-participants`),
+	deleteOldHistory: () => tid(`text-note-properties`).getByTestId(`properties-delete-old-history`),
+	deleteAllHistory: () => tid(`text-note-properties`).getByTestId(`properties-delete-all-history`),
+}
+
+export const deleteHistoryDialog = {
+	container: () => tid(`delete-history-dialog`),
+	confirmButton: () => tid(`delete-history-dialog`).getByTestId(`delete-history-confirm`),
+	cancelButton: () => tid(`delete-history-dialog`).getByTestId(`delete-history-cancel`),
 }
 
 export const infoDialog = {
