@@ -18,7 +18,19 @@ import { DevTools } from './services/dev-tools'
 import { LocalizationProvider } from './services/localization'
 
 export const env = import.meta.env
-const host = env.VITE_MIMER_API_HOST
+
+export interface MimiriTestInfo {
+	version: string
+	baseVersion: string
+	channel: string
+	platform: string
+	apiUrl?: string
+}
+
+export const mimiriTestInfo: MimiriTestInfo | undefined = (window as any).mimiriTestInfo
+export const testMode = !!mimiriTestInfo
+
+const host = mimiriTestInfo?.apiUrl ?? env.VITE_MIMER_API_HOST
 const paymentHost = env.VITE_PAYMENT_API_HOST
 const serverKey = env.VITE_API_PUBLIC_KEY
 const serverKeyId = env.VITE_API_PUBLIC_KEY_ID

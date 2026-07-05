@@ -1,5 +1,5 @@
 import { reactive } from 'vue'
-import { debug, env, ipcClient, notificationManager, updateKeys, updateManager, noteManager } from '../global'
+import { debug, env, ipcClient, notificationManager, updateKeys, updateManager, noteManager, testMode } from '../global'
 import { version, releaseDate } from '../version'
 import { CryptSignature } from './crypt-signature'
 import type { InstalledBundleInfo } from './types/ipc.interfaces'
@@ -157,6 +157,9 @@ export class UpdateManager {
 	}
 
 	public async checkUpdateInitial() {
+		if (testMode) {
+			return false
+		}
 		if (this.currentVersion !== '0.0.0' && location.host !== 'localhost' && location.host !== env.VITE_ALLOWED_HOST) {
 			try {
 				const lastRunHostVersion = settingsManager.lastRunHostVersion
@@ -205,6 +208,9 @@ export class UpdateManager {
 	}
 
 	public async check(allowUpdate: boolean = true) {
+		if (testMode) {
+			return
+		}
 		if (ipcClient.isAvailable) {
 			try {
 				this.installedVersions = await ipcClient.bundle.getInstalledVersions()
