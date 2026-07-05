@@ -25,6 +25,7 @@ export interface MimiriTestInfo {
 	channel: string
 	platform: string
 	apiUrl?: string
+	blogApiUrl?: string
 }
 
 export const mimiriTestInfo: MimiriTestInfo | undefined = (window as any).mimiriTestInfo
@@ -36,6 +37,7 @@ const serverKey = env.VITE_API_PUBLIC_KEY
 const serverKeyId = env.VITE_API_PUBLIC_KEY_ID
 export const pdfEnvironment = env.VITE_PDF_ENV
 export const accountHost = env.VITE_ACCOUNT_HOST
+export const blogApiHost = mimiriTestInfo?.blogApiUrl ?? env.VITE_MIMIRI_API_HOST
 
 export const debug = new DebugManager()
 

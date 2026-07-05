@@ -3,7 +3,7 @@ import { settingsManager } from './settings-manager'
 import { emptyGuid } from './types/guid'
 import type { Guid } from './types/guid'
 import type { BlogPost } from './types/responses'
-import { env, notificationManager, updateManager } from '../global'
+import { blogApiHost, notificationManager, updateManager } from '../global'
 import type { MimiriStore } from './storage/mimiri-store'
 
 export interface BlogConfig {
@@ -31,7 +31,7 @@ export class BlogManager {
 
 	private async updateLatestBlogPost(): Promise<void> {
 		try {
-			const blogPost = (await fetch(`${env.VITE_MIMIRI_API_HOST}/blog/latest/metadata`, {
+			const blogPost = (await fetch(`${blogApiHost}/blog/latest/metadata`, {
 				method: 'GET',
 				headers: {
 					'X-Mimiri-Version': `${updateManager.platformString}`,
