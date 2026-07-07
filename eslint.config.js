@@ -18,7 +18,6 @@ export default defineConfigWithVueTs(
 	{
 		languageOptions: {
 			parserOptions: {
-				project: ["./tsconfig.app.json", "./tsconfig.node.json"],
 				tsconfigRootDir: process.cwd(),
 			}
 		},

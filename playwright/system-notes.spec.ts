@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test'
 import { mimiri, withMimiriContext } from './framework/mimiri-context'
-import { emptyRecycleBinDialog, menu, note, titleBar } from './selectors'
+import { editor, emptyRecycleBinDialog, menu, note, titleBar } from './selectors'
 import { createChildNote, createRootNote } from './notes/actions'
 
 // test.describe.configure({ mode: 'serial' })
@@ -67,7 +67,12 @@ test.describe('system notes', () => {
 			await note.item('Test Child Note').click()
 			await mimiri().keyboard.press('F2')
 			await expect(note.renameInput()).toBeVisible()
-			await mimiri().keyboard.press('Enter')
+			// Press Enter on the input itself: the rename input takes focus
+			// asynchronously (setTimeout in TreeNode.vue), so a global Enter can
+			// fire before focus lands, leaving the input open to swallow the
+			// Ctrl+Delete below
+			await note.renameInput().press('Enter')
+			await expect(note.renameInput()).not.toBeVisible()
 			await expect(note.item('Test Child Note', note.container('Test Target Note'))).toBeVisible()
 
 			await mimiri().keyboard.press('Control+Delete')
@@ -100,6 +105,28 @@ test.describe('system notes', () => {
 				await expect(note.items(item)).toHaveCount(1)
 				await mimiri().keyboard.press('Control+d')
 				await expect(note.items(item)).toHaveCount(1)
+			}
+		})
+	})
+
+	test('verify system notes never open in an editable editor', async () => {
+		await withMimiriContext(async () => {
+			await mimiri().home()
+			await expect(titleBar.accountButton()).toBeVisible()
+			// Establish that a regular note does show an editor surface...
+			// (createRootNote with text switches to the code editor)
+			await createRootNote('Regular Note', 'editable content')
+			await expect(editor.monaco()).toBeVisible()
+			// ...then verify that no system note ever does: selecting one swaps
+			// the content pane to a settings view, so there is no editable
+			// surface (this is how read-only is enforced for system notes)
+			await note.item('Settings').dblclick()
+			for (const item of systemNotes) {
+				await note.item(item).click()
+				await expect(note.selectedItem()).toContainText(item)
+				await expect(editor.monaco()).not.toBeVisible()
+				await expect(editor.proseMirror()).not.toBeVisible()
+				await expect(editor.save()).not.toBeVisible()
 			}
 		})
 	})

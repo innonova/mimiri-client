@@ -54,10 +54,20 @@ for (const mode of editorModes) {
 		test('undo and redo restore text', async () => {
 			await withMimiriContext(async () => {
 				await openNoteInMode(mode)
+				// A fresh note has nothing to undo or redo
+				await expectToolbarButtonDisabled(editor.undo())
+				await expectToolbarButtonDisabled(editor.redo())
 				await typeInEditor(mode, 'Hello world')
 				await expect.poll(() => visibleText(mode)).toBe('Hello world')
+				await expectToolbarButtonEnabled(editor.undo())
+				await expectToolbarButtonDisabled(editor.redo())
 				await clickUntil(editor.undo(), async () => (await visibleText(mode)) === '')
+				// Everything undone: redo becomes available, undo exhausted
+				await expectToolbarButtonEnabled(editor.redo())
+				await expectToolbarButtonDisabled(editor.undo())
 				await clickUntil(editor.redo(), async () => (await visibleText(mode)) === 'Hello world')
+				await expectToolbarButtonEnabled(editor.undo())
+				await expectToolbarButtonDisabled(editor.redo())
 			})
 		})
 
@@ -225,6 +235,27 @@ for (const mode of editorModes) {
 				}
 				const clipboard = await mimiri().getClipboardText()
 				expect(clipboard).toBe('hunter2')
+			})
+		})
+
+		test('switching notes implicitly saves unsaved changes', async () => {
+			await withMimiriContext(async () => {
+				await openNoteInMode(mode)
+				await createRootNote('Second Note')
+				await note.item('Editor Test Note').click()
+				await ensureEditorMode(mode)
+				await typeInEditor(mode, 'implicitly saved')
+				await expectToolbarButtonEnabled(editor.save())
+				// Switching away saves the dirty note without an explicit save
+				await note.item('Second Note').click()
+				await expect.poll(() => visibleText(mode)).toBe('')
+				await note.item('Editor Test Note').click()
+				await expect.poll(() => visibleText(mode)).toBe('implicitly saved')
+				await expectToolbarButtonDisabled(editor.save())
+				// And the content survives a reload
+				await mimiri().reload()
+				await expect(surface(mode)).toBeVisible()
+				await expect.poll(() => visibleText(mode)).toBe('implicitly saved')
 			})
 		})
 
@@ -526,6 +557,25 @@ test.describe('editor (wysiwyg only)', () => {
 			expect(raw).toMatch(/1[.)] Numbered/)
 			expect(raw).toMatch(/\[ \] Task item/)
 			expect(raw).toContain('`inline`')
+		})
+	})
+
+	test('typing a URL converts it to a link', async () => {
+		await withMimiriContext(async () => {
+			await openNoteInMode('wysiwyg')
+			await focusEditor('wysiwyg')
+			// The URL input rule fires on the space after the URL
+			await mimiri().page.keyboard.type('Visit https://example.com now')
+			const link = editor.proseMirror().locator('a[href="https://example.com"]')
+			await expect(link).toHaveText('https://example.com')
+			// The surrounding text is not part of the link
+			await expect(editor.proseMirror().locator('a')).toHaveCount(1)
+
+			// The serialized text keeps the bare URL (round-trips through the
+			// mode toggle), and coming back re-creates the link mark
+			const raw = await readRawText('wysiwyg')
+			expect(raw).toContain('Visit https://example.com now')
+			await expect(editor.proseMirror().locator('a[href="https://example.com"]')).toBeVisible()
 		})
 	})
 

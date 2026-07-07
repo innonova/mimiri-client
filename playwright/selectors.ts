@@ -74,6 +74,7 @@ export const menu = {
 	workOffline: () => tid('menu-work-offline'),
 	properties: () => tid('menu-properties'),
 	emptyRecycleBin: () => tid('menu-empty-recycle-bin'),
+	passwordGenerator: () => tid('menu-password-generator'),
 }
 
 export const note = {
@@ -574,4 +575,19 @@ export const clearLocalDataDialog = {
 	container: () => tid(`clear-local-data-dialog`),
 	clearButton: () => tid(`clear-local-data-clear`),
 	logoutButton: () => tid(`clear-local-data-logout`),
+}
+
+export const passwordGeneratorDialog = {
+	container: () => tid(`password-generator-dialog`),
+	password: () => tid(`password-generator-password`),
+	refresh: () => tid(`password-generator-refresh`),
+	copyButton: () => tid(`password-generator-copy`),
+	closeButton: () => tid(`password-generator-close`),
+}
+
+// zxcvbn-based quality indicator rendered by PasswordInput (create-account etc.)
+export const passwordQuality = {
+	freeAccess: () => tid('password-quality-free-access'),
+	casualUseOnly: () => tid('password-quality-casual-use-only'),
+	acceptable: () => tid('password-quality-acceptable-security'),
 }
