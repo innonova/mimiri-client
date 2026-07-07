@@ -117,6 +117,14 @@
 	},
 	"overrides": {
 		"dompurify": "^3.3.2",
+		"replace": {
+			"minimatch": "^10.2.5"
+		},
+		"@capacitor/assets": {
+			"@capacitor/cli": {
+				"tar": "^7.5.19"
+			}
+		},
 		"xcode": {
 			"uuid": "^11.1.1"
 		}

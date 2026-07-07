@@ -1,0 +1,15 @@
+{
+	"extends": "./tsconfig.app.json",
+	"compilerOptions": {
+		"composite": false,
+		"module": "CommonJS",
+		"moduleResolution": "node",
+		"verbatimModuleSyntax": false,
+		"esModuleInterop": true,
+		"allowImportingTsExtensions": false,
+		"paths": {
+			"@/*": ["./src/*"],
+			"node-diff3": ["./node_modules/node-diff3/src/diff3.d.ts"]
+		}
+	}
+}
