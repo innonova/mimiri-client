@@ -1,6 +1,7 @@
 import * as vsctm from 'vscode-textmate'
 import * as oniguruma from 'vscode-oniguruma'
 import * as monaco from 'monaco-editor'
+import onigWasmUrl from 'vscode-oniguruma/release/onig.wasm?url'
 
 let registryInitialized = false
 let grammarRegistry: vsctm.Registry | null = null
@@ -15,8 +16,10 @@ async function initializeOniguruma(): Promise<vsctm.IOnigLib> {
 		return onigLib
 	}
 
-	// Load the WASM file from vscode-oniguruma package
-	const response = await fetch('/wasm/onig.wasm')
+	// Load the WASM file from vscode-oniguruma, emitted as a hashed asset by
+	// Vite (the previous static-copy approach stopped flattening the path
+	// under Vite 8, so the fixed /wasm/onig.wasm URL 404'd in built apps)
+	const response = await fetch(onigWasmUrl)
 	const wasmBytes = await response.arrayBuffer()
 	await oniguruma.loadWASM(wasmBytes)
 
