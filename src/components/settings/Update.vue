@@ -4,7 +4,7 @@
 		<div class="overflow-y-auto pb-10">
 			<div class="leading-7">
 				<div class="mt-2 px-1">
-					<select v-model="settingsManager.updateMode">
+					<select v-model="settingsManager.updateMode" data-testid="update-mode-select">
 						<option :value="UpdateMode.AutomaticOnIdle">{{ $t('settingsUpdate.autoIdle') }}</option>
 						<option :value="UpdateMode.AutomaticOnStart">{{ $t('settingsUpdate.autoStart') }}</option>
 						<option :value="UpdateMode.StrongNotify">{{ $t('settingsUpdate.strongNotify') }}</option>
@@ -115,22 +115,30 @@
 			</div>
 			<div v-if="showNoUpdatesFound && settingsManager.updateMode !== UpdateMode.Off" class="p-2 mt-4 leading-5">
 				<div>{{ $t('settingsUpdate.noUpdatesFound') }}</div>
-				<div class="mt-2">{{ $t('settingsUpdate.currentVersion') }} {{ updateManager.currentVersion }}</div>
-				<div>
+				<div class="mt-2" data-testid="update-current-version">
+					{{ $t('settingsUpdate.currentVersion') }} {{ updateManager.currentVersion }}
+				</div>
+				<div data-testid="update-latest-version">
 					{{ $t('settingsUpdate.latestVersion') }} {{ updateManager.latestVersion ?? updateManager.currentVersion }}
 				</div>
 			</div>
 			<div v-else class="pb-1 mt-3 pt-4 ml-2 flex">
 				<div class="w-32">{{ $t('settingsUpdate.currentVersion') }}</div>
-				<div class="w-16 text-right">{{ updateManager.currentVersion }}</div>
+				<div class="w-16 text-right" data-testid="update-current-version">{{ updateManager.currentVersion }}</div>
 			</div>
 			<div
 				v-if="!updateManager.isUpdateAvailable && settingsManager.updateMode !== UpdateMode.Off"
 				class="max-w-110 pt-5 pl-1"
 			>
-				<button @click="checkUpdates" class="primary">{{ $t('settingsUpdate.checkForUpdates') }}</button>
+				<button @click="checkUpdates" class="primary" data-testid="update-check-button">
+					{{ $t('settingsUpdate.checkForUpdates') }}
+				</button>
 			</div>
-			<div v-if="updateManager.isUpdateAvailable && settingsManager.updateMode !== UpdateMode.Off" class="p-1 mt-4">
+			<div
+				v-if="updateManager.isUpdateAvailable && settingsManager.updateMode !== UpdateMode.Off"
+				class="p-1 mt-4"
+				data-testid="update-available"
+			>
 				<div class="mb-14 max-w-110">
 					<h1 class="font-bold text-size-header">{{ $t('settingsUpdate.updateAvailable') }}</h1>
 					<div class="flex flex-col w-full items-center">
@@ -140,7 +148,7 @@
 						</div>
 						<div class="py-1 flex">
 							<div class="w-32">{{ $t('settingsUpdate.newVersion') }}</div>
-							<div class="w-16 text-right">{{ updateManager.latestVersion }}</div>
+							<div class="w-16 text-right" data-testid="update-new-version">{{ updateManager.latestVersion }}</div>
 						</div>
 					</div>
 				</div>
@@ -150,24 +158,28 @@
 						<div
 							v-if="running && stage === 'download'"
 							class="absolute h-full w-full top-0 left-0 text-center leading-[27px]"
+							data-testid="update-stage-download"
 						>
 							{{ downloadedBytes }} / {{ totalBytes }} &nbsp; ({{ bytesPerSec }})
 						</div>
 						<div
 							v-if="running && stage === 'verify'"
 							class="absolute h-full w-full top-0 left-0 text-center leading-[27px]"
+							data-testid="update-stage-verify"
 						>
 							{{ $t('settingsUpdate.verifyingSignature') }}
 						</div>
 						<div
 							v-if="running && stage === 'install'"
 							class="absolute h-full w-full top-0 left-0 text-center leading-[27px]"
+							data-testid="update-stage-install"
 						>
 							{{ $t('settingsUpdate.installing') }}
 						</div>
 						<div
 							v-if="running && stage === 'ready'"
 							class="absolute h-full w-full top-0 left-0 text-center leading-[27px]"
+							data-testid="update-stage-ready"
 						>
 							{{ $t('settingsUpdate.restartToActivate') }}
 						</div>
@@ -177,11 +189,23 @@
 					v-if="!updateManager.isHostUpdate || !mimiriPlatform.isLinuxApp"
 					class="mt-2 flex justify-end gap-2 max-w-110"
 				>
-					<button class="primary" v-if="!running" @click="update">{{ $t('settingsUpdate.update') }}</button>
-					<button class="primary" v-if="running && stage === 'ready'" @click="restart">
+					<button class="primary" v-if="!running" @click="update" data-testid="update-download-button">
+						{{ $t('settingsUpdate.update') }}
+					</button>
+					<button
+						class="primary"
+						v-if="running && stage === 'ready'"
+						@click="restart"
+						data-testid="update-restart-button"
+					>
 						{{ $t('settingsUpdate.restart') }}
 					</button>
-					<button class="secondary" v-if="running && (stage === 'download' || stage === 'ready')" @click="cancel">
+					<button
+						class="secondary"
+						v-if="running && (stage === 'download' || stage === 'ready')"
+						@click="cancel"
+						data-testid="update-cancel-button"
+					>
 						{{ $t('settingsUpdate.cancel') }}
 					</button>
 				</div>

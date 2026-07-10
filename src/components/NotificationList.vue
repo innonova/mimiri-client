@@ -7,6 +7,7 @@
 		<div
 			class="absolute right-0 top-menu w-80 cursor-default rounded-sm shadow-sm py-2 px-2 bg-menu text-menu-text"
 			:class="{ invisible: !visible }"
+			data-testid="notification-list"
 			@mouseup="stopPropagation"
 		>
 			<template v-for="item of notificationManager.state.notifications" :key="item.id">

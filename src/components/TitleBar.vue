@@ -113,6 +113,7 @@
 			}"
 			@click="notificationsClick()"
 			:title="$t('titleBar.notifications')"
+			data-testid="notification-button"
 		>
 			<NotificationIcon
 				v-if="notificationManager.unread === 0"
@@ -121,7 +122,11 @@
 					'text-title-text-blur': notificationManager.count <= 0,
 				}"
 			/>
-			<NotificationActiveIcon v-if="notificationManager.unread > 0" class="w-9 h-6 p-px no-drag pointer-events-none" />
+			<NotificationActiveIcon
+				v-if="notificationManager.unread > 0"
+				class="w-9 h-6 p-px no-drag pointer-events-none"
+				data-testid="notification-unread-indicator"
+			/>
 			<div v-if="notificationManager.strong" class="absolute bottom-1 left-px w-2 h-2 rounded-sm bg-bad" />
 		</div>
 		<div

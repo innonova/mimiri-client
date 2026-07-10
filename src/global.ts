@@ -26,6 +26,8 @@ export interface MimiriTestInfo {
 	platform: string
 	apiUrl?: string
 	blogApiUrl?: string
+	updateUrl?: string
+	updateKey?: string
 }
 
 export const mimiriTestInfo: MimiriTestInfo | undefined = (window as any).mimiriTestInfo
@@ -38,6 +40,7 @@ const serverKeyId = env.VITE_API_PUBLIC_KEY_ID
 export const pdfEnvironment = env.VITE_PDF_ENV
 export const accountHost = env.VITE_ACCOUNT_HOST
 export const blogApiHost = mimiriTestInfo?.blogApiUrl ?? env.VITE_MIMIRI_API_HOST
+export const updateUrlOverride = mimiriTestInfo?.updateUrl
 
 export const debug = new DebugManager()
 
@@ -46,7 +49,7 @@ export const browserHistory = new BrowserHistory()
 export const noteManager = new MimiriStore(host, paymentHost, serverKeyId, serverKey, async note => {
 	await noteManager.tree.getNoteById(note.id)?.update(note)
 })
-export const updateManager = new UpdateManager(env.VITE_MIMER_UPDATE_HOST)
+export const updateManager = new UpdateManager(updateUrlOverride ?? env.VITE_MIMER_UPDATE_HOST)
 export const blogManager = new BlogManager(noteManager)
 export const notificationManager = new NotificationManager()
 export const passwordGenerator = new PasswordGenerator()
@@ -111,7 +114,7 @@ export const updateKeys = [
 	{
 		name: env.VITE_UPDATE_NAME,
 		algorithm: env.VITE_UPDATE_ALGORITHM,
-		key: env.VITE_UPDATE_PUBLIC_KEY,
+		key: (testMode && mimiriTestInfo?.updateKey) || env.VITE_UPDATE_PUBLIC_KEY,
 		current: true,
 	},
 ]
