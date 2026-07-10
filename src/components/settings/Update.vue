@@ -217,6 +217,7 @@
 						!mimiriPlatform.isSnapStore
 					"
 					class="max-w-110"
+					data-testid="update-manual-download"
 				>
 					<div class="py-3">{{ $t('settingsUpdate.electronClientRequired') }}</div>
 					<div class="py-2">
@@ -234,6 +235,7 @@
 						(mimiriPlatform.isFlatHub || mimiriPlatform.isSnapStore)
 					"
 					class="max-w-110"
+					data-testid="update-store-managed"
 				>
 					<div class="py-3">{{ $t('settingsUpdate.electronClientRequired') }}</div>
 				</div>

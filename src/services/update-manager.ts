@@ -297,6 +297,19 @@ export class UpdateManager {
 										notificationManager.updateAvailable(bundleInfo.version, new Date(bundleInfo.releaseDate))
 									}
 								}
+							} else if (mimiriPlatform.isLinuxApp) {
+								// Store-managed Linux installs (flathub / snap store): the store
+								// delivers the new shell, so there is nothing to download here —
+								// but the user should still learn that an update exists and that
+								// their store will provide it (settings show the store notice).
+								this.state.latestVersion = bundleInfo.version
+								this.state.isHostUpdate = true
+								if (
+									settingsManager.updateMode === UpdateMode.StrongNotify ||
+									settingsManager.updateMode === UpdateMode.DiscreteNotify
+								) {
+									notificationManager.updateAvailable(bundleInfo.version, new Date(bundleInfo.releaseDate))
+								}
 							}
 						} else if (mimiriPlatform.isIosApp) {
 							const hostSupportsVersion =
