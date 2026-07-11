@@ -25,6 +25,7 @@ export interface MimiriTestInfo {
 	channel: string
 	platform: string
 	apiUrl?: string
+	useDevApi?: boolean
 	blogApiUrl?: string
 	updateUrl?: string
 	updateKey?: string
@@ -33,10 +34,18 @@ export interface MimiriTestInfo {
 export const mimiriTestInfo: MimiriTestInfo | undefined = (window as any).mimiriTestInfo
 export const testMode = !!mimiriTestInfo
 
-const host = mimiriTestInfo?.apiUrl ?? env.VITE_MIMER_API_HOST
+// Test-mode toggle: use the compiled-in dev API host and dev server key
+// pair. The key pair must switch together with the host — requests are
+// encrypted to the server key and responses verified against it, so a
+// build talking to the dev host with the production key gets nowhere.
+// Deliberately a toggle between baked-in pairs rather than an injectable
+// key: accepting an arbitrary key from outside would let anyone who
+// controls the environment re-key the client.
+const useDevApi = !!mimiriTestInfo?.useDevApi
+const host = mimiriTestInfo?.apiUrl ?? (useDevApi ? env.VITE_MIMER_DEV_API_HOST : env.VITE_MIMER_API_HOST)
 const paymentHost = env.VITE_PAYMENT_API_HOST
-const serverKey = env.VITE_API_PUBLIC_KEY
-const serverKeyId = env.VITE_API_PUBLIC_KEY_ID
+const serverKey = useDevApi ? env.VITE_DEV_API_PUBLIC_KEY : env.VITE_API_PUBLIC_KEY
+const serverKeyId = useDevApi ? env.VITE_DEV_API_PUBLIC_KEY_ID : env.VITE_API_PUBLIC_KEY_ID
 export const pdfEnvironment = env.VITE_PDF_ENV
 export const accountHost = env.VITE_ACCOUNT_HOST
 export const blogApiHost = mimiriTestInfo?.blogApiUrl ?? env.VITE_MIMIRI_API_HOST
