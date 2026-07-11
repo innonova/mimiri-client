@@ -41,7 +41,12 @@ export const testMode = !!mimiriTestInfo
 // Deliberately a toggle between baked-in pairs rather than an injectable
 // key: accepting an arbitrary key from outside would let anyone who
 // controls the environment re-key the client.
-const useDevApi = !!mimiriTestInfo?.useDevApi
+// If the build didn't bake the dev pair (shell 2.6.14's bundle shipped
+// without it), the toggle no-ops instead of aiming at a host with an
+// undefined key — normal production behavior is the safe fallback, and
+// the e2e spec detects it from the traffic and skips.
+const useDevApi =
+	!!mimiriTestInfo?.useDevApi && !!env.VITE_DEV_API_PUBLIC_KEY && !!env.VITE_MIMER_DEV_API_HOST
 const host = mimiriTestInfo?.apiUrl ?? (useDevApi ? env.VITE_MIMER_DEV_API_HOST : env.VITE_MIMER_API_HOST)
 const paymentHost = env.VITE_PAYMENT_API_HOST
 const serverKey = useDevApi ? env.VITE_DEV_API_PUBLIC_KEY : env.VITE_API_PUBLIC_KEY
