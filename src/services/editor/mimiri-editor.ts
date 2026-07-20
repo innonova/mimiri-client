@@ -1,30 +1,37 @@
-import type { MimerNote } from '../types/mimer-note'
+import type { MimerNote, NoteEditorMode } from '../types/mimer-note'
 import { NoteHistory } from './note-history'
 import { mimiriPlatform } from '../mimiri-platform'
-import { EditorAdvanced } from './editor-advanced'
-import type { EditorState, SelectionExpansion, TextEditor, TextEditorListener } from './type'
+import { EditorMonaco } from './editor-monaco'
+import type { MimiriEditorState, SelectionExpansion, TextEditor, TextEditorListener } from './type'
 import { reactive } from 'vue'
-import { EditorSimple } from './editor-simple'
-import { EditorDisplay } from './editor-display'
-import { settingsManager } from '../settings-manager'
-import { clipboardManager, debug, noteManager, saveEmptyNodeDialog } from '../../global'
+import { clipboardManager, debug, noteManager } from '../../global'
 import { VersionConflictError } from '../storage/mimiri-client'
+import { EditorProseMirror } from './editor-prosemirror'
+import AutoComplete from '../../components/elements/AutoComplete.vue'
+import ConflictBanner from '../../components/elements/ConflictBanner.vue'
+import { settingsManager } from '../settings-manager'
+
+declare type SaveError = 'success' | 'note-size' | 'total-size' | 'lost-update' | 'not-saved-empty'
 
 export class MimiriEditor {
 	private _history = new NoteHistory(this)
 	private _note: MimerNote
 	private infoElement: HTMLDivElement
-	private _editorAdvanced: EditorAdvanced
-	private _editorSimple: EditorSimple
-	private _editorDisplay: EditorDisplay
+	private _editorMonaco: EditorMonaco
+	private _editorProseMirror: EditorProseMirror
 	private _activeEditor: TextEditor
-	private _state: EditorState
+	private _state: MimiriEditorState
 	private _monacoElement: HTMLElement
-	private _simpleElement: HTMLElement
-	private _displayElement: HTMLElement
+	private _proseMirrorElement: HTMLElement
+	private _proseMirrorAutoComplete: any
+	private _conflictBanner: InstanceType<typeof ConflictBanner> | null = null
 	private _monacoInitialized: boolean = false
-	private _simpleInitialized: boolean = false
-	private _displayInitialized: boolean = false
+	private _proseMirrorInitialized: boolean = false
+	private _initialText: string = ''
+	private _monacoHasDocument: boolean = false
+	private _proseMirrorHasDocument: boolean = false
+	private _initialEditorMode: NoteEditorMode | undefined
+	private _pendingEditorMode: NoteEditorMode | undefined
 
 	private saveListener: () => void
 	public onSave(listener: () => void) {
@@ -36,9 +43,9 @@ export class MimiriEditor {
 		this.searchAllListener = listener
 	}
 
-	private blurListener: () => void
-	public onBlur(listener: () => void) {
-		this.blurListener = listener
+	private errorListener: (error: SaveError) => void
+	public onError(listener: (error: SaveError) => void) {
+		this.errorListener = listener
 	}
 
 	constructor() {
@@ -46,8 +53,7 @@ export class MimiriEditor {
 			canUndo: false,
 			canRedo: false,
 			changed: false,
-			canMarkAsPassword: false,
-			canUnMarkAsPassword: false,
+			supportedActions: [],
 			mode: '',
 		})
 
@@ -59,9 +65,6 @@ export class MimiriEditor {
 			},
 			onSearchAllRequested: () => {
 				this.searchAllListener?.()
-			},
-			onEditorBlur: () => {
-				this.blurListener?.()
 			},
 			onScroll: (position: number) => {
 				if (this.note) {
@@ -80,9 +83,8 @@ export class MimiriEditor {
 			},
 		}
 
-		this._editorAdvanced = new EditorAdvanced(editorListener)
-		this._editorSimple = new EditorSimple(editorListener)
-		this._editorDisplay = new EditorDisplay(editorListener)
+		this._editorMonaco = new EditorMonaco(editorListener)
+		this._editorProseMirror = new EditorProseMirror(editorListener)
 	}
 
 	private animateNotification(top: number, left: number) {
@@ -105,123 +107,241 @@ export class MimiriEditor {
 		}
 	}
 
-	private activateAdvanced() {
+	// A pending editor-mode change is deliberately not part of the reactive
+	// changed state: switching view must not show as an unsaved change. It
+	// still persists through the regular save triggers, which check this.
+	public get modeChanged() {
+		return this._pendingEditorMode !== this._initialEditorMode
+	}
+
+	private resolveEditor(note?: MimerNote): 'monaco' | 'prosemirror' {
+		const mode =
+			note?.editorMode ??
+			(mimiriPlatform.isDesktop ? settingsManager.defaultEditor : settingsManager.defaultEditorMobile)
+		if (mode === 'code' && (mimiriPlatform.isDesktop || settingsManager.allowMonacoOnMobile)) {
+			return 'monaco'
+		}
+		return 'prosemirror'
+	}
+
+	private activateMonaco() {
 		if (!this._monacoInitialized) {
 			this._monacoInitialized = true
-			this._editorAdvanced.init(this._monacoElement)
+			this._editorMonaco.init(this._monacoElement, this._conflictBanner)
 		}
-		this._editorAdvanced.active = true
-		this._editorSimple.active = false
-		this._editorDisplay.active = false
-		this._activeEditor = this._editorAdvanced
+		this._editorMonaco.active = true
+		this._editorProseMirror.active = false
+		this._activeEditor = this._editorMonaco
 		this._state.mode = 'advanced'
 		this._activeEditor.syncSettings()
 	}
 
-	private activateSimple() {
-		if (!this._simpleInitialized) {
-			this._simpleInitialized = true
-			this._editorSimple.init(this._simpleElement)
+	private async activateProseMirror() {
+		if (!this._proseMirrorInitialized) {
+			this._proseMirrorInitialized = true
+			await this._editorProseMirror.init(this._proseMirrorElement, this._proseMirrorAutoComplete, this._conflictBanner)
 		}
-		this._editorAdvanced.active = false
-		this._editorSimple.active = true
-		this._editorDisplay.active = false
-		this._activeEditor = this._editorSimple
-		this._state.mode = 'simple'
+		this._editorMonaco.active = false
+		this._editorProseMirror.active = true
+		this._activeEditor = this._editorProseMirror
+		this._state.mode = 'proseMirror'
 		this._activeEditor.syncSettings()
 	}
 
-	private activateDisplay() {
-		if (!this._displayInitialized) {
-			this._displayInitialized = true
-			this._editorDisplay.init(this._displayElement)
+	public init(
+		monacoElement: HTMLElement,
+		proseMirrorElement: HTMLElement,
+		proseMirrorAutoComplete: InstanceType<typeof AutoComplete>,
+		conflictBanner: InstanceType<typeof ConflictBanner> | null,
+	) {
+		this.infoElement = document.getElementById('mimiri-editor-info') as HTMLDivElement
+		if (!this.infoElement) {
+			this.infoElement = document.createElement('div')
+			this.infoElement.id = 'mimiri-editor-info'
+			this.infoElement.style.position = 'absolute'
+			this.infoElement.style.left = '-2000px'
+			this.infoElement.style.top = '0'
+			this.infoElement.className = 'bg-warning p-1 rounded-sm shadow-sm'
+			this.infoElement.innerHTML = 'copied'
+			document.body.appendChild(this.infoElement)
 		}
-		this._editorAdvanced.active = false
-		this._editorSimple.active = false
-		this._editorDisplay.active = true
-		this._activeEditor = this._editorDisplay
-		this._state.mode = 'display'
-		this._activeEditor.syncSettings()
-	}
 
-	private activateEditor() {
-		if (settingsManager.simpleEditor) {
-			this.activateSimple()
-		} else {
-			this.activateAdvanced()
-		}
-	}
-
-	public init(monacoElement: HTMLElement, simpleElement: HTMLElement, displayElement: HTMLElement) {
 		this._monacoElement = monacoElement
-		this._simpleElement = simpleElement
-		this._displayElement = displayElement
+		this._proseMirrorElement = proseMirrorElement
+		this._proseMirrorAutoComplete = proseMirrorAutoComplete
+		this._conflictBanner = conflictBanner
 
-		this.activateEditor()
-	}
-
-	public mobileClosing() {
-		if (!settingsManager.alwaysEdit && this.note.text.trim().length > 0) {
-			this.activateDisplay()
-			this._activeEditor.show(this.note.text, this.note.scrollTop)
+		if (this.resolveEditor(this._note) === 'monaco') {
+			this.activateMonaco()
+		} else {
+			void this.activateProseMirror()
 		}
 	}
 
-	public open(note: MimerNote) {
+	public navigateConflict(direction: 'prev' | 'next') {
+		if (this._editorProseMirror.active) {
+			this._editorProseMirror.navigateConflict(direction)
+		} else if (this._editorMonaco.active) {
+			this._editorMonaco.navigateConflict(direction)
+		}
+	}
+
+	public async toggleEditMode() {
+		const currentText = this._activeEditor.text
+		const currentScrollTop = this._activeEditor.scrollTop
+		const currentReadonly = this._activeEditor.readonly
+
+		if (this._editorProseMirror.active) {
+			this.activateMonaco()
+			if (!this._monacoHasDocument) {
+				this._monacoHasDocument = true
+				this._editorMonaco.setText(this._initialText)
+			}
+			this._editorMonaco.setScrollTop(currentScrollTop)
+			this._editorMonaco.replaceText(currentText)
+			if (currentText === this._initialText) {
+				this._editorMonaco.resetBaseline()
+			}
+			this._editorMonaco.readonly = currentReadonly
+			this._editorMonaco.focus()
+			this.setPendingEditorMode('code')
+		} else {
+			await this.activateProseMirror()
+			if (!this._proseMirrorHasDocument) {
+				this._proseMirrorHasDocument = true
+				this._editorProseMirror.setText(this._initialText)
+			}
+			this._editorProseMirror.setScrollTop(currentScrollTop)
+			this._editorProseMirror.replaceText(currentText)
+			if (currentText === this._initialText) {
+				this._editorProseMirror.resetBaseline()
+			}
+			this._editorProseMirror.readonly = currentReadonly
+			this._editorProseMirror.focus()
+			this.setPendingEditorMode('wysiwyg')
+		}
+	}
+
+	private setPendingEditorMode(mode: NoteEditorMode) {
+		if (this.note && !this.note.isSystem) {
+			// returning to the mode the note opened in restores the stored value (possibly
+			// undefined = "no choice"), so toggling back and forth never leaves a pending change
+			const initialResolved = this.resolveEditor(this.note) === 'monaco' ? 'code' : 'wysiwyg'
+			this._pendingEditorMode = mode === initialResolved ? this._initialEditorMode : mode
+		}
+	}
+
+	public async open(note: MimerNote) {
+		if (this.note && this.note.id !== note.id && (this._state.changed || this.modeChanged)) {
+			const result = await this.internal_save()
+			if (result !== 'success') {
+				setTimeout(async () => {
+					await this.note.select()
+					this.errorListener?.(result as SaveError)
+				}, 0)
+				return
+			}
+		}
+
 		if (this.note && this.note.id !== note?.id) {
 			this.note.scrollTop = this._activeEditor.scrollTop
 		}
 		if (!note) {
 			this._note = undefined
+			this._monacoHasDocument = false
+			this._proseMirrorHasDocument = false
+			this._initialEditorMode = undefined
+			this._pendingEditorMode = undefined
 			this.history.reset()
-			this._activeEditor.clear()
+			this._activeEditor.setText('')
 			return
 		}
 		if (note.id !== this.note?.id) {
-			if (!settingsManager.alwaysEdit && note.text.trim().length > 0) {
-				this.activateDisplay()
-			} else {
-				this.activateEditor()
+			this._initialEditorMode = note.editorMode
+			this._pendingEditorMode = note.editorMode
+			const target = this.resolveEditor(note)
+			if (target === 'monaco' && this._activeEditor !== this._editorMonaco) {
+				this.activateMonaco()
+			} else if (target === 'prosemirror' && this._activeEditor !== this._editorProseMirror) {
+				await this.activateProseMirror()
 			}
 			this._note = note
+			this._monacoHasDocument = false
+			this._proseMirrorHasDocument = false
 			this.history.reset()
-			this._activeEditor.show(note.text, this.note.scrollTop)
+			this._initialText = note.text
+			this._state.changed = false
+			this._activeEditor.setText(note.text)
+			this._activeEditor.setScrollTop(this.note.scrollTop)
 			this._activeEditor.readonly = note.isSystem
+			if (this._activeEditor === this._editorMonaco) {
+				this._monacoHasDocument = true
+			} else {
+				this._proseMirrorHasDocument = true
+			}
 		} else {
 			if (!this._activeEditor.changed) {
-				this._activeEditor.updateText(note.text)
+				this._initialText = note.text
+				this._activeEditor.setText(note.text)
 			} else {
 				if (note.text === this._activeEditor.text) {
-					this._activeEditor.resetChanged()
+					this._initialText = note.text
+					this._state.changed = false
+					// this._activeEditor.resetChanged()
 				}
 			}
 		}
 	}
 
-	public async save(): Promise<string> {
-		let result = 'success'
+	public async save() {
+		const result = await this.internal_save()
+		if (result !== 'success') {
+			setTimeout(async () => {
+				await this.note.select()
+				this.errorListener?.(result as SaveError)
+			}, 0)
+		}
+	}
+
+	private async internal_save(): Promise<SaveError> {
+		let result: SaveError = 'success'
 		const noteId = this.note?.id
 		const targetText = this._activeEditor.text
-		const initialText = this._activeEditor.initialText
-		if (noteId && targetText !== initialText) {
-			if (targetText.length === 0 && initialText.length > 5) {
-				const doSave = await saveEmptyNodeDialog.value.show(noteManager.tree.getNoteById(noteId))
-				if (!doSave) {
-					return 'not-saved-empty'
-				}
+		// const initialText = this._activeEditor.initialText
+		if (noteId) {
+			if (targetText === this._initialText && !this.modeChanged) {
+				this.resetChanged()
+				return 'success'
 			}
+			// TODO reconsider empty note saving
+			// if (targetText.length === 0 && this._initialText.length > 5) {
+			// 	const doSave = await saveEmptyNodeDialog.value.show(noteManager.tree.getNoteById(noteId))
+			// 	if (!doSave) {
+			// 		return 'not-saved-empty'
+			// 	}
+			// }
 			while (true) {
 				try {
 					const note = noteManager.tree.getNoteById(noteId)
+					if (this.modeChanged) {
+						note.editorMode = this._pendingEditorMode
+					}
 					if (targetText === note.text) {
+						if (this.modeChanged) {
+							await note.save()
+						}
 						if (note.id === this.note.id) {
+							this._initialText = note.text
+							this._initialEditorMode = this._pendingEditorMode
+							this._state.changed = false
 							this.resetChanged()
 						}
 						return 'success'
 					}
-					if (initialText !== note.text) {
+					if (this._initialText !== note.text) {
 						result = 'lost-update'
 					}
+					// TODO consider size limits
 					// const sizeBefore = note.size
 					note.text = targetText
 					// const sizeAfter = note.size
@@ -236,6 +356,9 @@ export class MimiriEditor {
 					// } else {
 					await note.save()
 					if (note.id === this.note.id) {
+						this._initialText = note.text
+						this._initialEditorMode = this._pendingEditorMode
+						this._state.changed = false
 						this.resetChanged()
 					}
 					// }
@@ -252,21 +375,15 @@ export class MimiriEditor {
 		return result
 	}
 
-	public activateEdit() {
-		this.activateEditor()
-		this._activeEditor.show(this.note.text, this.note.scrollTop)
-		this._activeEditor.readonly = this.note.isSystem
-	}
-
 	public reloadNode() {
 		if (this.note) {
-			this._activeEditor.updateText(this.note.text)
+			this._activeEditor.setText(this.note.text)
 			this._activeEditor.readonly = this.note.isSystem
 		}
 	}
 
 	public resetChanged() {
-		this._activeEditor.resetChanged()
+		this._activeEditor.resetBaseline()
 		this._activeEditor.readonly = this.note.isSystem
 	}
 
@@ -302,6 +419,56 @@ export class MimiriEditor {
 
 	public find() {
 		this._activeEditor.find()
+	}
+
+	// Find-bar state and controls for the ProseMirror editor (Monaco uses its
+	// own built-in find widget).
+	public get findState() {
+		return this._editorProseMirror.findState
+	}
+
+	public closeFind() {
+		this._editorProseMirror.closeFind()
+	}
+
+	public setFindTerm(term: string) {
+		this._editorProseMirror.setFindTerm(term)
+	}
+
+	public setFindCaseSensitive(value: boolean) {
+		this._editorProseMirror.setFindCaseSensitive(value)
+	}
+
+	public setFindWholeWord(value: boolean) {
+		this._editorProseMirror.setFindWholeWord(value)
+	}
+
+	public setFindRegexp(value: boolean) {
+		this._editorProseMirror.setFindRegexp(value)
+	}
+
+	public findNext() {
+		this._editorProseMirror.findNext()
+	}
+
+	public findPrev() {
+		this._editorProseMirror.findPrev()
+	}
+
+	public setReplaceTerm(term: string) {
+		this._editorProseMirror.setReplaceTerm(term)
+	}
+
+	public setReplaceVisible(value: boolean) {
+		this._editorProseMirror.setReplaceVisible(value)
+	}
+
+	public replaceNext() {
+		this._editorProseMirror.replaceNext()
+	}
+
+	public replaceAll() {
+		this._editorProseMirror.replaceAll()
 	}
 
 	public toggleWordWrap() {
@@ -344,10 +511,10 @@ export class MimiriEditor {
 	}
 
 	public toggleSelectionAsPassword() {
-		if (this.canUnMarkAsPassword) {
-			this._activeEditor.unMarkSelectionAsPassword()
-		} else if (this.canMarkAsPassword) {
-			this._activeEditor.markSelectionAsPassword()
+		if (this._state.supportedActions.includes('unmark-password')) {
+			this._activeEditor.executeFormatAction('unmark-password')
+		} else if (this._state.supportedActions.includes('mark-password')) {
+			this._activeEditor.executeFormatAction('mark-password')
 		}
 	}
 
@@ -375,23 +542,23 @@ export class MimiriEditor {
 		return this._history
 	}
 
-	public get canMarkAsPassword() {
-		return this._state.canMarkAsPassword
+	public isActionSupported(action: string): boolean {
+		return this._state.supportedActions.includes(action)
 	}
 
-	public get canUnMarkAsPassword() {
-		return this._state.canUnMarkAsPassword
+	public get supportedActions(): string[] {
+		return this._state.supportedActions
 	}
 
 	public get changed() {
 		return this._state.changed
 	}
 
-	public get text() {
-		return this._activeEditor.text
-	}
-
 	public get mode() {
 		return this._state.mode
+	}
+
+	public get supportsWordWrap(): boolean {
+		return this._state.mode === 'advanced'
 	}
 }

@@ -1,0 +1,102 @@
+/* Dark theme color overrides */
+@layer theme {
+	html[data-theme='dark'] {
+		/* General UI Colors */
+		--color-back: #3f3f3f;
+		--color-info: #505059;
+		--color-back-highlight: #474747;
+		--color-backdrop: rgba(255, 255, 255, 0.1);
+		--color-text: #d4d4d4;
+		--color-text-secondary: #909090;
+		--color-logo: #fff;
+		--color-title-bar: #323233;
+		--color-title-text: #ccc;
+		--color-title-text-blur: #8e8e8e;
+		--color-title-hover: #454646;
+		--color-menu: #252526;
+		--color-menu-text: #ccc;
+		--color-menu-disabled: #555;
+		--color-menu-hover: #555;
+		--color-menu-separator: #333;
+		--color-item-selected: #555;
+		--color-drop-indicator: #fff;
+		--color-shared: #d78af6;
+		--color-search-parent: #888;
+		--color-error: red;
+		--color-online: green;
+		--color-offline: red;
+		--color-connecting: #ffa500;
+		--color-warning: #f6ba00;
+		--color-button-primary: #777;
+		--color-button-primary-text: #fff;
+		--color-button-disabled: #484848;
+		--color-button-disabled-text: #777;
+		--color-button-secondary: #282828;
+		--color-button-secondary-text: #fff;
+		--color-button-hover: rgba(255, 255, 255, 0.2);
+		--color-dialog: #3f3f3f;
+		--color-dialog-border: #666;
+		--color-dialog-backdrop: rgba(0, 0, 0, 0.4);
+		--color-input: #1e1e1e;
+		--color-input-text: #d4d4d4;
+		--color-input-selection: #a8c7fa;
+		--color-input-selected-text: #000;
+		--color-toolbar: #323233;
+		--color-toolbar-separator: #555;
+		--color-toolbar-disabled: #666;
+		--color-toolbar-hover: #454646;
+		--color-toolbar-toggled: #555;
+		--color-progress-indicator: #8e8e8e;
+		--color-search-highlight: #bf5116;
+		--color-info-bar: #555;
+		--color-info-bar-accented: #bf5116;
+		--color-good: green;
+		--color-bad: #ff2222;
+		--color-splash: #4381c1;
+		--color-checkbox: #4381c1;
+		--color-tree-line: #333333;
+		--color-tree-line-highlight: #555555;
+		--color-border: #555555;
+		--color-border-hover: #666667;
+		--color-ring: #888888;
+		--color-ring-highlight: #bbbbbb;
+
+		/* Editor-specific Colors */
+		/* Code Elements */
+		--color-editor-code-block-bg: #2d2d2d;
+		--color-editor-code-block-overlay: rgba(255, 255, 255, 0.055);
+		--color-editor-inline-code-bg: rgba(110, 118, 129, 0.4);
+		--color-editor-code-delimiter: #eeeeee;
+		--color-editor-code-fence-text: #eeeeee;
+
+		/* Markdown Emphasis */
+		--color-editor-md-emphasis: #569cd6;
+		--color-editor-checkbox-checked: #6ba3d8;
+
+		/* Password UI */
+		--color-editor-password-content: #b0b088;
+
+		/* Conflict Resolution */
+		--color-editor-conflict-marker-bg: #2d2d2d;
+		--color-editor-conflict-marker-overlay: rgba(255, 255, 255, 0.055);
+		--color-editor-conflict-local: #64b5f6;
+		--color-editor-conflict-server: #ba68c8;
+		--color-editor-conflict-separator: #9e9e9e;
+		--color-editor-conflict-local-bg: rgba(21, 101, 192, 0.2);
+		--color-editor-conflict-server-bg: rgba(106, 27, 154, 0.2);
+		--color-editor-conflict-lens-bg: #404040;
+
+		/* Selection & Highlights */
+		--color-editor-selection-bg: #264f78;
+		/* --color-editor-selection-outline remains same in dark mode */
+
+		/* Editor overlay widgets (find bar) — matches Monaco's find widget colors */
+		--color-editor-widget: #252526;
+		--color-editor-widget-input: #3c3c3c;
+		--color-editor-widget-text: #cccccc;
+		--color-editor-widget-shadow: rgba(0, 0, 0, 0.36);
+
+		/* Interactive States */
+		/* --color-editor-link-hover remains same in dark mode */
+	}
+}

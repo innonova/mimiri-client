@@ -1,0 +1,923 @@
+import { reactive } from 'vue'
+import { settingsManager } from '../settings-manager'
+import type { MimiriEditorState, SelectionExpansion, TextEditor, TextEditorListener } from './type'
+import {
+	search,
+	SearchQuery,
+	setSearchState,
+	getSearchState,
+	getMatchHighlights,
+	findNext as findNextCommand,
+	findPrev as findPrevCommand,
+	replaceNext as replaceNextCommand,
+	replaceAll as replaceAllCommand,
+} from 'prosemirror-search'
+
+import { EditorState, TextSelection, Transaction } from 'prosemirror-state'
+import { EditorView } from 'prosemirror-view'
+import { dropCursor } from 'prosemirror-dropcursor'
+import { gapCursor } from 'prosemirror-gapcursor'
+import { keymap } from 'prosemirror-keymap'
+import { history, redo, undo, undoDepth, redoDepth } from 'prosemirror-history'
+import {
+	baseKeymap,
+	chainCommands,
+	createParagraphNear,
+	liftEmptyBlock,
+	newlineInCode,
+	splitBlock,
+} from 'prosemirror-commands'
+import { mimiriSchema } from './prosemirror/mimiri-schema'
+import { convertUrlAtCursor, mimiriInputRules } from './prosemirror/mimiri-input-rules'
+import { liftListItem, sinkListItem, splitListItem } from 'prosemirror-schema-list'
+import { deserialize } from './prosemirror/mimiri-deserializer'
+import { serialize } from './prosemirror/mimiri-serializer'
+import { markExitPlugin } from './prosemirror/mark-exit-plugint'
+import { initHighlighter, syntaxHighlightPlugin } from './prosemirror/syntax-highlighting'
+import { getThemeById } from './theme-manager'
+import { clipboardManager } from '../../global'
+import AutoComplete from '../../components/elements/AutoComplete.vue'
+import { CheckboxListItemView } from './prosemirror/checkbox-list-item-view'
+import { Plugin } from 'prosemirror-state'
+import { Node as ProseMirrorNode } from 'prosemirror-model'
+import { CodeBlockActionHandler } from './prosemirror/code-block-action-handler'
+import { ConflictActionHandler } from './prosemirror/conflict-action-handler'
+import { createPasswordMarkViewFactory } from './prosemirror/password-mark-view'
+import { passwordCursorPlugin } from './prosemirror/password-cursor-plugin'
+import type ConflictBanner from '../../components/elements/ConflictBanner.vue'
+import { executeFormatAction, getSupportedActions, exitCodeBlock } from './prosemirror/format-commands'
+
+export class EditorProseMirror implements TextEditor {
+	private _domElement: HTMLElement | undefined
+	private _autoComplete: InstanceType<typeof AutoComplete> | undefined
+	private historyShowing: boolean = false
+	private _active = true
+	private _readonly = false
+	private _longPressTimer: number | null = null
+	private _state: Omit<MimiriEditorState, 'mode'> = {
+		canUndo: true,
+		canRedo: true,
+		supportedActions: [
+			'insert-heading',
+			'insert-code-block',
+			'insert-checkbox-list',
+			'insert-unordered-list',
+			'insert-ordered-list',
+		],
+		changed: false,
+	}
+	private _editor: EditorView | undefined
+	private _documentState: EditorState | undefined
+	private _historyState: EditorState | undefined
+	private _codeBlockActionHandler: CodeBlockActionHandler | undefined
+	private _conflictActionHandler: ConflictActionHandler | undefined
+	private _initialDoc: ProseMirrorNode | undefined
+	public readonly findState = reactive({
+		visible: false,
+		term: '',
+		caseSensitive: false,
+		wholeWord: false,
+		regexp: false,
+		total: 0,
+		index: 0,
+		replaceVisible: false,
+		replaceTerm: '',
+		canReplace: true,
+	})
+
+	constructor(private listener: TextEditorListener) {}
+
+	public async init(
+		domElement: HTMLElement,
+		autoComplete: InstanceType<typeof AutoComplete>,
+		conflictBanner: InstanceType<typeof ConflictBanner> | null,
+	) {
+		this._domElement = domElement
+		this._autoComplete = autoComplete
+		this._domElement.style.display = this._active ? 'flex' : 'none'
+
+		this._domElement.addEventListener('contextmenu', _event => {
+			// event.stopPropagation()
+		})
+
+		// Initialize action handlers
+		this._codeBlockActionHandler = new CodeBlockActionHandler(clipboardManager, this._autoComplete, this._domElement)
+		this._conflictActionHandler = new ConflictActionHandler(conflictBanner)
+
+		await initHighlighter()
+
+		const doc = deserialize('')
+
+		const conflictReadOnlyPlugin = new Plugin({
+			props: {
+				editable: state => {
+					// Check if document contains any conflict blocks
+					let hasConflictBlocks = false
+					if (state.doc.attrs.history || this._readonly) {
+						return false
+					}
+					state.doc.descendants(node => {
+						if (node.type.name === 'conflict_block') {
+							hasConflictBlocks = true
+							return false // Stop iteration
+						}
+					})
+					// Document is editable only if no conflicts exist
+					return !hasConflictBlocks
+				},
+			},
+		})
+
+		const updateCapsPlugin = new Plugin({
+			filterTransaction: (tr: Transaction) => {
+				if (tr.selectionSet) {
+					this.updateSupportedActions(tr.selection.from, tr.selection.to, tr.doc)
+				}
+				return true
+			},
+		})
+
+		const state = EditorState.create({
+			schema: mimiriSchema,
+			plugins: [
+				conflictReadOnlyPlugin,
+				mimiriInputRules(mimiriSchema),
+				keymap({
+					'Mod-z': undo,
+					'Mod-y': redo,
+					'Mod-f': () => {
+						this.find()
+						return true
+					},
+					'Mod-h': () => {
+						this.findState.replaceVisible = true
+						this.find()
+						return true
+					},
+					'Mod-Shift-f': () => {
+						this.listener.onSearchAllRequested()
+						return true
+					},
+					F3: () => {
+						this.findNext()
+						return true
+					},
+					'Shift-F3': () => {
+						this.findPrev()
+						return true
+					},
+					Escape: () => {
+						if (this.findState.visible) {
+							this.closeFind()
+							return true
+						}
+						return false
+					},
+					'Mod-e': (state, dispatch) => {
+						if (dispatch) {
+							executeFormatAction(state, dispatch, 'insert-code-block')
+						}
+						return true
+					},
+					Enter: chainCommands(
+						exitCodeBlock,
+						convertUrlAtCursor(mimiriSchema.marks.link),
+						splitListItem(mimiriSchema.nodes.list_item),
+					),
+					Tab: sinkListItem(mimiriSchema.nodes.list_item),
+					'Shift-Tab': liftListItem(mimiriSchema.nodes.list_item),
+					'Shift-Enter': chainCommands(newlineInCode, createParagraphNear, liftEmptyBlock, splitBlock),
+				}),
+				keymap(baseKeymap),
+				dropCursor(),
+				gapCursor(),
+				history(),
+				markExitPlugin,
+				syntaxHighlightPlugin(() => {
+					return getThemeById(settingsManager.state.editorTheme, settingsManager.darkMode).shikiTheme
+				}),
+				updateCapsPlugin,
+				passwordCursorPlugin,
+				search(),
+			],
+			doc,
+		})
+
+		const view = new EditorView(this._domElement, {
+			state,
+			attributes: {
+				spellcheck: 'false',
+			},
+			nodeViews: {
+				list_item: (node, view, getPos) => {
+					if (node.attrs.checked !== null) {
+						return new CheckboxListItemView(node, view, getPos as () => number)
+					}
+					return undefined
+				},
+			},
+			markViews: {
+				password: createPasswordMarkViewFactory(clipboardManager, (top, left) =>
+					this.listener.onCopyNotification(top, left),
+				),
+			},
+			dispatchTransaction: transaction => {
+				const newState = view.state.apply(transaction)
+				view.updateState(newState)
+				if (!newState.doc.attrs.history) {
+					this._documentState = newState
+				}
+				this.updateState()
+				if (this.findState.visible) {
+					this.updateFindCounts(newState)
+				}
+			},
+			handleDoubleClick: (view, pos, event) => {
+				const target = event.target as HTMLElement
+				if (target.tagName === 'SPAN' && target.classList.contains('password-content')) {
+					const coords = view.coordsAtPos(pos)
+					this.listener.onPasswordClicked(coords.top, coords.left, target.innerHTML)
+				} else if (target.tagName === 'PASSWORD') {
+					event.preventDefault()
+					const coords = view.coordsAtPos(pos)
+					this.listener.onPasswordClicked(coords.top, coords.left, target.innerHTML)
+
+					const $pos = view.state.doc.resolve(pos)
+					const start = $pos.parent.childAfter($pos.parentOffset)
+
+					if (start.node) {
+						const markStart = $pos.start() + start.offset
+						const markEnd = markStart + start.node.nodeSize
+						const tr = view.state.tr.setSelection(TextSelection.create(view.state.doc, markStart, markEnd))
+						view.dispatch(tr)
+					}
+					return true
+				}
+				return false
+			},
+			handleDOMEvents: {
+				click: (_view, event) => {
+					// Handle link clicks - open in browser with Ctrl/Cmd+Click
+					const target = event.target as HTMLElement
+					const anchor = target.closest('a')
+					if (anchor && (event.ctrlKey || event.metaKey)) {
+						const href = anchor.getAttribute('href')
+						if (href) {
+							event.preventDefault()
+							window.open(href, '_blank')
+							return true
+						}
+					}
+					return false
+				},
+				// Long press to open links on touch devices
+				touchstart: (_view, event) => {
+					const anchor = (event.target as HTMLElement).closest('a')
+					const href = anchor?.getAttribute('href')
+					if (!href) {
+						return false
+					}
+
+					this._longPressTimer = window.setTimeout(() => {
+						this._longPressTimer = -1 // Mark as triggered
+						anchor.classList.add('long-press-active')
+						window.open(href, '_blank')
+					}, 500)
+					return false
+				},
+				touchmove: () => {
+					if (this._longPressTimer && this._longPressTimer !== -1) {
+						clearTimeout(this._longPressTimer)
+						this._longPressTimer = null
+					}
+					return false
+				},
+				touchend: (_view, event) => {
+					if (this._longPressTimer === -1) {
+						event.preventDefault()
+						;(event.target as HTMLElement).closest('a')?.classList.remove('long-press-active')
+						this._longPressTimer = null
+						return true
+					}
+					if (this._longPressTimer) {
+						clearTimeout(this._longPressTimer)
+						this._longPressTimer = null
+					}
+					return false
+				},
+				keydown: (view, event) => {
+					if (event.key === 'Control' || event.key === 'Meta') {
+						view.dom.classList.add('ctrl-pressed')
+					}
+					return false
+				},
+				keyup: (view, event) => {
+					if (event.key === 'Control' || event.key === 'Meta') {
+						view.dom.classList.remove('ctrl-pressed')
+					}
+					return false
+				},
+				blur: view => {
+					view.dom.classList.remove('ctrl-pressed')
+					return false
+				},
+				mousedown: (view, event) => {
+					if (event.button !== 0) {
+						return false
+					}
+
+					const target = event.target as HTMLElement
+					const action = target.getAttribute('data-action')
+
+					this._autoComplete.hide()
+					if (
+						action === 'copy-block' ||
+						action === 'select-block' ||
+						action === 'copy-next-line' ||
+						action === 'unwrap-block' ||
+						action === 'choose-language' ||
+						action === 'keep-local' ||
+						action === 'keep-server' ||
+						action === 'keep-both'
+					) {
+						event.preventDefault()
+						// Focus the editor if it's not already focused
+						if (!view.hasFocus()) {
+							view.focus()
+						}
+						return true
+					}
+					return false
+				},
+				mouseup: (view, event) => {
+					if (event.button !== 0 || this.historyShowing) {
+						return false
+					}
+					const element = event.target as HTMLElement
+					const action = element.getAttribute('data-action')
+
+					if (!action) {
+						return false
+					}
+
+					// Get the position and node from the mouse coordinates
+					const pos = view.posAtCoords({ left: event.clientX, top: event.clientY })
+					if (!pos) {
+						return false
+					}
+
+					// Resolve the target node
+					const target = this.resolveActionTarget(view, pos.pos)
+					if (!target) {
+						return false
+					}
+
+					const { node, nodePos, nodeType } = target
+
+					// Delegate to appropriate handler
+					if (nodeType === 'conflict_block') {
+						const result = this._conflictActionHandler.handle(action, view, node, nodePos)
+						this.updateState()
+						return result
+					}
+
+					if (nodeType === 'code_block') {
+						const result = this._codeBlockActionHandler.handle(action, view, node, nodePos)
+						this.updateState()
+						if (result && action === 'copy-block') {
+							this.listener.onCopyNotification(event.clientY, event.clientX + 30)
+						}
+						return result
+					}
+					return false
+				},
+			},
+
+			// handleClickOn(view, pos, node, nodePos, event, direct) {
+			// 	return false
+			// },
+		})
+		this._editor = view
+		this._conflictActionHandler?.setEditorView(view)
+	}
+
+	private resolveActionTarget(
+		view: EditorView,
+		posValue: number,
+	): { node: ProseMirrorNode; nodePos: number; nodeType: string } | null {
+		const $pos = view.state.doc.resolve(posValue)
+		let node: ProseMirrorNode | null = null
+		let nodePos = -1
+		let nodeType: string | null = null
+
+		// Walk up the tree to find the code_block or conflict_block node
+		for (let d = $pos.depth; d > 0; d--) {
+			const n = $pos.node(d)
+
+			if (n.type.name === 'code_block' || n.type.name === 'conflict_block') {
+				node = n
+				nodePos = $pos.before(d)
+				nodeType = n.type.name
+				break
+			}
+		}
+
+		// For atom nodes (like conflict_block), check the node before or at the current position
+		if (!node) {
+			// Check if we're right after an atom node
+			if (posValue > 0) {
+				const nodeBefore = view.state.doc.nodeAt(posValue - 1)
+				if (nodeBefore?.type.name === 'conflict_block') {
+					node = nodeBefore
+					nodePos = posValue - 1
+					nodeType = 'conflict_block'
+				}
+			}
+			// Check if there's an atom node at the current position
+			if (!node) {
+				const nodeAt = view.state.doc.nodeAt(posValue)
+				if (nodeAt?.type.name === 'conflict_block') {
+					node = nodeAt
+					nodePos = posValue
+					nodeType = 'conflict_block'
+				}
+			}
+		}
+
+		if (!node) {
+			return null
+		}
+
+		return { node, nodePos, nodeType }
+	}
+
+	private updateState() {
+		this._state.changed = !!this._initialDoc && !this._editor?.state.doc.eq(this._initialDoc) && !this.historyShowing
+		this._state.canUndo = this._editor ? undoDepth(this._editor.state) > 0 : false
+		this._state.canRedo = this._editor ? redoDepth(this._editor.state) > 0 : false
+		this.listener.onStateUpdated(this._state)
+	}
+
+	private updateSupportedActions(from: number, to: number, doc: ProseMirrorNode) {
+		const supportedActions = getSupportedActions(from, to, doc)
+
+		// Check if actions changed (compare arrays)
+		const actionsChanged =
+			supportedActions.length !== this._state.supportedActions.length ||
+			supportedActions.some((action, i) => action !== this._state.supportedActions[i])
+
+		if (actionsChanged) {
+			this._state.supportedActions = supportedActions
+			this.listener.onStateUpdated(this._state)
+		}
+	}
+
+	public executeFormatAction(action: string) {
+		if (!this._editor) {
+			return
+		}
+
+		if (!this._state.supportedActions.includes(action)) {
+			return
+		}
+
+		executeFormatAction(this._editor.state, this._editor.dispatch.bind(this._editor), action)
+		const { from, to } = this._editor.state.selection
+		this.updateSupportedActions(from, to, this._editor.state.doc)
+	}
+
+	public get active(): boolean {
+		return this._active
+	}
+
+	public set active(value: boolean) {
+		if (this._active !== value) {
+			this._active = value
+			if (this._domElement) {
+				this._domElement.style.display = this._active ? 'flex' : 'none'
+			}
+			if (this._active) {
+				this.listener.onStateUpdated(this._state)
+			}
+		}
+	}
+
+	public navigateConflict(direction: 'prev' | 'next') {
+		this._conflictActionHandler?.navigateConflict(direction)
+	}
+
+	public setText(text: string) {
+		const newDoc = deserialize(text)
+
+		this._documentState = EditorState.create({
+			schema: mimiriSchema,
+			doc: newDoc,
+			plugins: this._editor.state.plugins,
+		})
+
+		this._editor.updateState(this._documentState)
+
+		this._initialDoc = this._editor.state.doc
+
+		setTimeout(() => {
+			this._conflictActionHandler?.updateBanner(this.historyShowing)
+			this.updateState()
+			if (this.findState.visible) {
+				this.applyFindQuery()
+				this.updateFindCounts(this._editor.state)
+			}
+		}, 0)
+	}
+
+	public setScrollTop(_scrollTop: number) {
+		// ProseMirror scroll management not yet implemented
+	}
+
+	public replaceText(text: string) {
+		if (this.text !== text) {
+			const newDoc = deserialize(text)
+			const tr = this._editor.state.tr
+			tr.replaceWith(0, this._editor.state.doc.content.size, newDoc.content)
+			this._editor.dispatch(tr)
+
+			setTimeout(() => {
+				this._conflictActionHandler?.updateBanner(this.historyShowing)
+				this.updateState()
+			}, 0)
+		}
+	}
+
+	public resetBaseline() {
+		this._initialDoc = this._editor.state.doc
+		this._state.changed = false
+		if (this._active) {
+			this.listener.onStateUpdated(this._state)
+		}
+	}
+
+	public setHistoryText(text: string) {
+		const newDoc = deserialize(text, true)
+
+		this._historyState = EditorState.create({
+			schema: mimiriSchema,
+			doc: newDoc,
+			plugins: this._editor.state.plugins,
+		})
+		this._editor.updateState(this._historyState)
+
+		setTimeout(() => {
+			this._conflictActionHandler?.updateBanner(this.historyShowing)
+			this.updateState()
+		}, 0)
+	}
+
+	public hideHistory() {
+		if (this.historyShowing) {
+			this.historyShowing = false
+			this._domElement.classList.remove('history-active')
+			console.log('restore document state')
+
+			this._editor.updateState(this._documentState)
+
+			if (this._editor) {
+				const tr = this._editor.state.tr
+				tr.setMeta('forceUpdate', true)
+				this._editor.dispatch(tr)
+			}
+
+			setTimeout(() => {
+				this._conflictActionHandler?.updateBanner(this.historyShowing)
+				this.updateState()
+			}, 0)
+		}
+	}
+
+	public showHistory() {
+		if (!this.historyShowing) {
+			this.historyShowing = true
+			this._domElement.classList.add('history-active')
+		}
+	}
+
+	public undo() {
+		if (this._editor) {
+			undo(this._editor.state, this._editor.dispatch)
+		}
+	}
+
+	public redo() {
+		if (this._editor) {
+			redo(this._editor.state, this._editor.dispatch)
+		}
+	}
+
+	private applyFindQuery() {
+		if (!this._editor) {
+			return
+		}
+		const query = new SearchQuery({
+			search: this.findState.term,
+			caseSensitive: this.findState.caseSensitive,
+			wholeWord: this.findState.wholeWord,
+			regexp: this.findState.regexp,
+			replace: this.findState.replaceTerm,
+		})
+		this._editor.dispatch(setSearchState(this._editor.state.tr, query))
+	}
+
+	// Monaco-style live highlight: while the query changes, keep the selection
+	// on the match nearest to (at or after) the current selection start, so the
+	// active match does not jump away as the user types more characters.
+	private selectNearestMatch() {
+		if (!this._editor) {
+			return
+		}
+		const state = this._editor.state
+		const query = getSearchState(state)?.query
+		if (!query?.valid) {
+			return
+		}
+		const result = query.findNext(state, state.selection.from) ?? query.findNext(state, 0)
+		if (result) {
+			const selection = TextSelection.create(state.doc, result.from, result.to)
+			this._editor.dispatch(state.tr.setSelection(selection).scrollIntoView())
+		}
+	}
+
+	private updateFindCounts(state: EditorState) {
+		this.findState.canReplace = !!this._editor?.editable
+		if (!this.findState.term) {
+			this.findState.total = 0
+			this.findState.index = 0
+			return
+		}
+		const matches = getMatchHighlights(state).find()
+		this.findState.total = matches.length
+		const { from, to } = state.selection
+		const index = matches.findIndex(match => match.from === from && match.to === to)
+		this.findState.index = index < 0 ? 0 : index + 1
+	}
+
+	// Make sure the plugin's query matches the find bar state (the plugin state
+	// is reset whenever a new document is loaded via setText).
+	private ensureFindQuery() {
+		if (!this._editor) {
+			return
+		}
+		const current = getSearchState(this._editor.state)?.query
+		if (
+			!current ||
+			current.search !== this.findState.term ||
+			current.caseSensitive !== this.findState.caseSensitive ||
+			current.wholeWord !== this.findState.wholeWord ||
+			current.regexp !== this.findState.regexp ||
+			current.replace !== this.findState.replaceTerm
+		) {
+			this.applyFindQuery()
+		}
+	}
+
+	public find() {
+		if (!this._editor) {
+			return
+		}
+		const { from, to } = this._editor.state.selection
+		if (to > from && to - from < 200) {
+			const selectedText = this._editor.state.doc.textBetween(from, to, '\n')
+			if (selectedText && !selectedText.includes('\n')) {
+				this.findState.term = selectedText
+			}
+		}
+		this.findState.visible = true
+		this.applyFindQuery()
+		this.updateFindCounts(this._editor.state)
+	}
+
+	public closeFind() {
+		this.findState.visible = false
+		if (this._editor) {
+			this._editor.dispatch(setSearchState(this._editor.state.tr, new SearchQuery({ search: '' })))
+		}
+		this.focus()
+	}
+
+	private applyFindOptions() {
+		this.applyFindQuery()
+		this.selectNearestMatch()
+		if (this._editor) {
+			this.updateFindCounts(this._editor.state)
+		}
+	}
+
+	public setFindTerm(term: string) {
+		this.findState.term = term
+		this.applyFindOptions()
+	}
+
+	public setFindCaseSensitive(value: boolean) {
+		this.findState.caseSensitive = value
+		this.applyFindOptions()
+	}
+
+	public setFindWholeWord(value: boolean) {
+		this.findState.wholeWord = value
+		this.applyFindOptions()
+	}
+
+	public setFindRegexp(value: boolean) {
+		this.findState.regexp = value
+		this.applyFindOptions()
+	}
+
+	public setReplaceTerm(term: string) {
+		this.findState.replaceTerm = term
+		this.applyFindQuery()
+	}
+
+	public setReplaceVisible(value: boolean) {
+		this.findState.replaceVisible = value
+	}
+
+	public replaceNext() {
+		if (!this._editor || !this._editor.editable || !this.findState.term) {
+			return
+		}
+		this.ensureFindQuery()
+		replaceNextCommand(this._editor.state, this._editor.dispatch)
+	}
+
+	public replaceAll() {
+		if (!this._editor || !this._editor.editable || !this.findState.term) {
+			return
+		}
+		this.ensureFindQuery()
+		replaceAllCommand(this._editor.state, this._editor.dispatch)
+	}
+
+	public findNext() {
+		if (!this._editor) {
+			return
+		}
+		if (!this.findState.term) {
+			this.find()
+			return
+		}
+		// F3 after the bar was closed reopens it with the last term (Monaco parity)
+		this.findState.visible = true
+		this.ensureFindQuery()
+		findNextCommand(this._editor.state, this._editor.dispatch)
+	}
+
+	public findPrev() {
+		if (!this._editor) {
+			return
+		}
+		if (!this.findState.term) {
+			this.find()
+			return
+		}
+		this.findState.visible = true
+		this.ensureFindQuery()
+		findPrevCommand(this._editor.state, this._editor.dispatch)
+	}
+
+	public clearSearchHighlights() {
+		if (!this._editor || this.findState.visible) {
+			return
+		}
+		this._editor.dispatch(setSearchState(this._editor.state.tr, new SearchQuery({ search: '' })))
+	}
+
+	public setSearchHighlights(text: string) {
+		if (!this._editor || this.findState.visible || !text) {
+			return
+		}
+		this._editor.dispatch(setSearchState(this._editor.state.tr, new SearchQuery({ search: text })))
+	}
+
+	public toggleWordWrap() {
+		settingsManager.wordwrap = !settingsManager.wordwrap
+		this.syncSettings()
+	}
+
+	public syncSettings() {
+		// Force a recalculation of syntax highlighting decorations when theme changes
+		if (this._editor) {
+			const tr = this._editor.state.tr
+			tr.setMeta('forceUpdate', true)
+			this._editor.dispatch(tr)
+		}
+		// if (this._wordWrap !== settingsManager.wordwrap) {
+		// 	if (this.historyShowing) {
+		// 		if (settingsManager.wordwrap) {
+		// 			this._history.contentEditable = 'plaintext-only'
+		// 			this._history.focus()
+		// 			this._wordWrap = true
+		// 			this._history.style.whiteSpace = 'pre-wrap'
+		// 			this._element.style.whiteSpace = 'pre-wrap'
+		// 			this._element.style.overflowX = 'hidden'
+		// 			this._history.style.overflowX = 'hidden'
+		// 			this._history.blur()
+		// 			this._history.contentEditable = 'false'
+		// 		} else {
+		// 			this._history.contentEditable = 'plaintext-only'
+		// 			this._history.focus()
+		// 			this._wordWrap = false
+		// 			this._history.style.whiteSpace = 'pre'
+		// 			this._element.style.whiteSpace = 'pre'
+		// 			this._element.style.overflowX = 'auto'
+		// 			this._history.style.overflowX = 'auto'
+		// 			this._history.blur()
+		// 			this._history.contentEditable = 'false'
+		// 		}
+		// 	} else {
+		// 		if (settingsManager.wordwrap) {
+		// 			this._wordWrap = true
+		// 			this._element.style.whiteSpace = 'pre-wrap'
+		// 			this._history.style.whiteSpace = 'pre-wrap'
+		// 			this._element.style.overflowX = 'hidden'
+		// 			this._history.style.overflowX = 'hidden'
+		// 		} else {
+		// 			this._wordWrap = false
+		// 			this._element.style.whiteSpace = 'pre'
+		// 			this._history.style.whiteSpace = 'pre'
+		// 			this._element.style.overflowX = 'auto'
+		// 			this._history.style.overflowX = 'auto'
+		// 		}
+		// 	}
+		// }
+	}
+
+	public expandSelection(_type: SelectionExpansion) {}
+
+	public focus() {
+		if (!this.historyShowing) {
+		}
+		this._editor?.focus()
+	}
+
+	public selectAll() {
+		if (this.historyShowing && this._editor) {
+			const selection = window.getSelection()
+			if (selection) {
+				const range = document.createRange()
+				range.selectNodeContents(this._editor.dom)
+				selection.removeAllRanges()
+				selection.addRange(range)
+			}
+		}
+	}
+
+	public cut() {
+		try {
+			document.execCommand('cut')
+		} catch {}
+	}
+
+	public copy() {
+		try {
+			document.execCommand('copy')
+		} catch {}
+	}
+
+	public paste(_text: string) {
+		try {
+			document.execCommand('paste')
+		} catch {}
+	}
+
+	public get readonly() {
+		return this._readonly
+	}
+
+	public set readonly(value: boolean) {
+		if (this._readonly !== value) {
+			this._readonly = value
+			if (this._editor) {
+				const tr = this._editor.state.tr
+				tr.setMeta('forceUpdate', true)
+				this._editor.dispatch(tr)
+			}
+		}
+	}
+	public get scrollTop(): number {
+		return 0
+		// return this._element.scrollTop
+	}
+
+	// get initialText(): string {
+	// 	return this._initialText
+	// }
+
+	public get text(): string {
+		return serialize(this._editor.state.doc)
+	}
+
+	public get changed(): boolean {
+		return this._state.changed
+	}
+
+	public get supportsWordWrap(): boolean {
+		return false
+	}
+}

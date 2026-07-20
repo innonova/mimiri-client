@@ -31,28 +31,28 @@
 				<PlusIcon
 					v-if="!settingsManager.useChevrons && !node.expanded"
 					:data-testid="`${dataTestId}-closed`"
-					title="Expand"
+					:title="$t('common.expand')"
 					class="h-5 w-5 desktop:h-4 desktop:w-4 mt-px"
 					:class="{ invisible: !hasChildren }"
 				/>
 				<MinusIcon
 					v-if="!settingsManager.useChevrons && node.expanded"
 					:data-testid="`${dataTestId}-open`"
-					title="Collapse"
+					:title="$t('common.collapse')"
 					class="h-5 w-5 desktop:h-4 desktop:w-4 mt-px"
 					:class="{ invisible: !hasChildren }"
 				/>
 				<ChevronRightIcon
 					v-if="settingsManager.useChevrons && !node.expanded"
 					:data-testid="`${dataTestId}-closed`"
-					title="Expand"
+					:title="$t('common.expand')"
 					class="h-5 w-5 desktop:h-4 desktop:w-4 mt-px"
 					:class="{ invisible: !hasChildren }"
 				/>
 				<ChevronDownIcon
 					v-if="settingsManager.useChevrons && node.expanded"
 					:data-testid="`${dataTestId}-open`"
-					title="Collapse"
+					:title="$t('common.collapse')"
 					class="h-5 w-5 desktop:h-4 desktop:w-4 mt-px"
 					:class="{ invisible: !hasChildren }"
 				/>
@@ -237,6 +237,9 @@ const searchModeActive = computed(() => {
 
 const startDrag = event => {
 	event.stopPropagation()
+	// NOTE: concurrent moves while offline can leave the tree diverged across
+	// devices; a proper conflict-resolution fix is planned. Blocking moves while
+	// offline was tried and rolled back — the UX cost outweighed the edge case.
 	if (!props.node.isSystem) {
 		event.dataTransfer.dropEffect = 'move'
 		event.dataTransfer.effectAllowed = 'move'
@@ -409,6 +412,7 @@ const showContextMenu = async e => {
 			...(isInRecycleBin ? [] : [MenuItems.Rename]),
 			e.shiftKey || isInRecycleBin || props.node.shared ? MenuItems.Delete : MenuItems.Recycle,
 			MenuItems.Separator,
+			...(isInRecycleBin ? [] : [MenuItems.ExportSubtree, MenuItems.Separator]),
 			MenuItems.Properties,
 		])
 	}

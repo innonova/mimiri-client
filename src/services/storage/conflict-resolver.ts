@@ -300,11 +300,11 @@ export class ConflictResolver {
 								mergedLines.push(...cleanedConflict.sharedPrefix)
 							}
 
-							mergedLines.push('<<<<<<< HEAD')
+							mergedLines.push('<<<<<<< Local')
 							mergedLines.push(...cleanedConflict.local)
 							mergedLines.push('=======')
 							mergedLines.push(...cleanedConflict.remote)
-							mergedLines.push('>>>>>>> remote')
+							mergedLines.push('>>>>>>> Server')
 
 							// Add shared suffix if it exists
 							if (cleanedConflict.sharedSuffix.length > 0) {

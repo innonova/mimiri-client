@@ -1,5 +1,9 @@
 <template>
-	<div class="p-2 flex flex-col hover:bg-button-secondary rounded-sm" @click="clicked">
+	<div
+		class="p-2 flex flex-col hover:bg-button-secondary rounded-sm"
+		:data-testid="`notification-${notification.icon}`"
+		@click="clicked"
+	>
 		<div class="text-right text-size-menu text-menu-disabled">
 			{{ formatNotificationTimestamp(notification.timestamp) }}
 		</div>

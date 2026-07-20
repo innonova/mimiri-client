@@ -114,6 +114,16 @@ test.describe('conflict tests', () => {
 		})
 	})
 
+	// Skipped: these two tests assert the automatic post-sync consistency check
+	// (inconsistency dialog -> reload -> converged trees), which was deliberately
+	// disabled 2025-09-17 in 5f0b723 ("turn off automatic consistency check") —
+	// queueSync is now always called with shouldCheckConsistency=false, so the
+	// dialog can never appear organically. Verified consequence (2026-07-03):
+	// concurrent moves of the same note on two devices leave the tree permanently
+	// diverged across devices. Blocking offline moves was tried and rolled back
+	// (UX cost outweighed the edge case) — currently a known accepted risk.
+	// Un-skip these once a proper conflict-resolution fix for move/delete
+	// conflicts lands.
 	test.skip('verify node move conflicts', async () => {
 		await withMimiriContext(async () => {
 			await mimiri().home()
@@ -158,6 +168,7 @@ test.describe('conflict tests', () => {
 		})
 	})
 
+	// Skipped: see comment on 'verify node move conflicts' above.
 	test.skip('verify node delete conflicts', async () => {
 		await withMimiriContext(async () => {
 			await mimiri().home()

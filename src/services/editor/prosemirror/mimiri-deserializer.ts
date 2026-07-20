@@ -1,0 +1,940 @@
+import { mimiriSchema } from './mimiri-schema'
+import type { Node } from 'prosemirror-model'
+import { cleanUrl, urlPatternBase } from './url-utils'
+
+const headingRegex = /^(?<hashes>#{1,6})\s+(?<content>.*)$/
+const listItemRegex = /^(?<indent>\s*)(?<marker>[-*+]|\d+\.)\s(?:(?<checkbox>\[(?:\s|[xX])\])\s+)?(?<content>.*)$/
+const nakedCheckItemRegex = /^(?<indent>\s*)(?:(?<checkbox>\[(?:\s|[xX])\])\s+)(?<content>.*)$/
+const blockquoteRegex = /^(?<indent>\s*)>\s?(?<content>.*)$/
+const codeBlockRegex = /^```(?<language>.*)$/
+const detectConflictRegex = /^<<<<<<< (?:Local|HEAD)$/m
+const conflictStartRegex = /^<<<<<<< (?:Local|HEAD)$/
+const conflictSeparatorRegex = /^=======$/
+const conflictEndRegex = /^>>>>>>> (?:Server|remote)$/
+const indentedTextRegex = /^(?<indent>\s+)(?<content>\S.*)$/
+const orderedRegex = /^(?<number>\d+)\./
+
+interface Token {
+	type: string
+	indent: string
+	depth: number
+	value?: string
+	checked?: boolean
+	lineEnd: boolean
+	lineStart: boolean
+	hideListMarker?: boolean
+}
+
+interface TreeNode {
+	type: string
+	indent?: string
+	depth: number
+	value?: string
+	checked?: boolean
+	children: TreeNode[]
+	hideListMarker?: boolean
+}
+
+const indentToDepth = (indent: string) => {
+	if (!indent) {
+		return 0
+	}
+	let depth = 0
+	for (let i = 0; i < indent.length; i++) {
+		if (indent[i] === '\t') {
+			depth += 2
+		} else {
+			depth += 1
+		}
+	}
+	return depth
+}
+
+const subTokenizeText = (
+	tokens: Token[],
+	text: string,
+	lineEnd: boolean,
+	lineStart: boolean,
+	indent: string = '',
+	inCodeBlock: boolean = false,
+): void => {
+	const startIdx = tokens.length
+	let i = 0
+	let currentText = ''
+
+	const flushText = () => {
+		if (currentText) {
+			tokens.push({
+				type: 'text',
+				value: currentText,
+				lineEnd: false,
+				lineStart: false,
+				indent: '',
+				depth: 0,
+			})
+			currentText = ''
+		}
+	}
+
+	// If we're in a code block, don't process any markdown, just treat everything as text
+	if (inCodeBlock) {
+		tokens.push({
+			type: 'text',
+			value: text,
+			lineEnd,
+			lineStart,
+			indent,
+			depth: indentToDepth(indent),
+		})
+		return
+	}
+
+	const findClosing = (startIdx: number, delimiter: string): number => {
+		let idx = startIdx + delimiter.length
+		while (idx <= text.length - delimiter.length) {
+			// Check for escape
+			if (text[idx - 1] === '\\') {
+				idx++
+				continue
+			}
+			if (text.substring(idx, idx + delimiter.length) === delimiter) {
+				return idx
+			}
+			idx++
+		}
+		return -1
+	}
+
+	const findLinkEnd = (startIdx: number): { textEnd: number; urlEnd: number } | null => {
+		let idx = startIdx + 1
+		let depth = 1
+
+		// Find closing ] for link text
+		while (idx < text.length) {
+			if (text[idx - 1] === '\\') {
+				idx++
+				continue
+			}
+			if (text[idx] === '[') {
+				depth++
+			}
+			if (text[idx] === ']') {
+				depth--
+				if (depth === 0) {
+					break
+				}
+			}
+			idx++
+		}
+
+		if (depth !== 0 || idx >= text.length) {
+			return null
+		}
+		const textEnd = idx
+
+		// Check for opening (
+		if (text[idx + 1] !== '(') {
+			return null
+		}
+		idx += 2
+
+		// Find closing ) for URL
+		depth = 1
+		while (idx < text.length) {
+			if (text[idx - 1] === '\\') {
+				idx++
+				continue
+			}
+			if (text[idx] === '(') {
+				depth++
+			}
+			if (text[idx] === ')') {
+				depth--
+				if (depth === 0) {
+					return { textEnd, urlEnd: idx }
+				}
+			}
+			idx++
+		}
+
+		return null
+	}
+
+	while (i < text.length) {
+		const char = text[i]
+
+		// Handle escape sequences
+		if (char === '\\' && i + 1 < text.length) {
+			const nextChar = text[i + 1]
+			if ('*_[]()\\`'.includes(nextChar)) {
+				currentText += nextChar
+				i += 2
+				continue
+			}
+		}
+		// Helper to check if a character is a word character
+		const isWordChar = (ch: string | undefined): boolean => {
+			return ch !== undefined && /\w/.test(ch)
+		}
+
+		// Check for strong emphasis: ***text*** or ___text___
+		if (
+			(char === '*' && text[i + 1] === '*' && text[i + 2] === '*') ||
+			(char === '_' && text[i + 1] === '_' && text[i + 2] === '_')
+		) {
+			// For underscores, check word boundaries
+			if (char === '_' && isWordChar(text[i - 1])) {
+				currentText += char
+				i++
+				continue
+			}
+			const delimiter = char + text[i + 1] + text[i + 2]
+			const closingIdx = findClosing(i, delimiter)
+			if (closingIdx !== -1) {
+				// For underscores, check that closing is not followed by word char
+				if (char === '_' && isWordChar(text[closingIdx + delimiter.length])) {
+					currentText += char
+					i++
+					continue
+				}
+				flushText()
+				const content = text.substring(i + delimiter.length, closingIdx)
+				tokens.push({
+					type: 'strong_emphasis',
+					value: content,
+					lineEnd: false,
+					lineStart: false,
+					indent: '',
+					depth: 0,
+				})
+				// console.log(tokens[tokens.length - 1])
+
+				i = closingIdx + delimiter.length
+				continue
+			}
+		}
+
+		// Check for strong: **text** or __text__
+		if ((char === '*' && text[i + 1] === '*') || (char === '_' && text[i + 1] === '_')) {
+			// For underscores, check word boundaries
+			if (char === '_' && isWordChar(text[i - 1])) {
+				currentText += char
+				i++
+				continue
+			}
+			const delimiter = char + text[i + 1]
+			const closingIdx = findClosing(i, delimiter)
+			if (closingIdx !== -1) {
+				// For underscores, check that closing is not followed by word char
+				if (char === '_' && isWordChar(text[closingIdx + delimiter.length])) {
+					currentText += char
+					i++
+					continue
+				}
+				flushText()
+				const content = text.substring(i + delimiter.length, closingIdx)
+				tokens.push({
+					type: 'strong',
+					value: content,
+					lineEnd: false,
+					lineStart: false,
+					indent: '',
+					depth: 0,
+				})
+				i = closingIdx + delimiter.length
+				continue
+			}
+		}
+
+		// Check for emphasis: *text* or _text_
+		if (char === '*' || char === '_') {
+			// For underscores, check word boundaries
+			if (char === '_' && isWordChar(text[i - 1])) {
+				currentText += char
+				i++
+				continue
+			}
+			const closingIdx = findClosing(i, char)
+			if (closingIdx !== -1) {
+				// For underscores, check that closing is not followed by word char
+				if (char === '_' && isWordChar(text[closingIdx + 1])) {
+					currentText += char
+					i++
+					continue
+				}
+				flushText()
+				const content = text.substring(i + 1, closingIdx)
+				tokens.push({
+					type: 'emphasis',
+					value: content,
+					lineEnd: false,
+					lineStart: false,
+					indent: '',
+					depth: 0,
+				})
+				i = closingIdx + 1
+				continue
+			}
+		}
+
+		// Check for inline password: p`password`
+		if (text[i] === 'p' && text[i + 1] === '`') {
+			const closingIdx = findClosing(i + 1, '`')
+			if (closingIdx !== -1) {
+				flushText()
+				const content = text.substring(i + 2, closingIdx)
+				tokens.push({
+					type: 'password',
+					value: content,
+					lineEnd: false,
+					lineStart: false,
+					indent: '',
+					depth: 0,
+				})
+				i = closingIdx + 1
+				continue
+			}
+		}
+
+		// Check for inline code: `code`
+		if (char === '`') {
+			const closingIdx = findClosing(i, '`')
+			if (closingIdx !== -1) {
+				flushText()
+				const content = text.substring(i + 1, closingIdx)
+				tokens.push({
+					type: 'code',
+					value: content,
+					lineEnd: false,
+					lineStart: false,
+					indent: '',
+					depth: 0,
+				})
+				i = closingIdx + 1
+				continue
+			}
+		}
+
+		// Check for links: [text](url)
+		if (char === '[') {
+			const linkEnd = findLinkEnd(i)
+			if (linkEnd) {
+				flushText()
+				const linkText = text.substring(i + 1, linkEnd.textEnd)
+				const linkUrl = text.substring(linkEnd.textEnd + 2, linkEnd.urlEnd)
+				tokens.push({
+					type: 'link',
+					value: JSON.stringify({ text: linkText, url: linkUrl }),
+					lineEnd: false,
+					lineStart: false,
+					indent: '',
+					depth: 0,
+				})
+				i = linkEnd.urlEnd + 1
+				continue
+			}
+		}
+
+		// Check for plain URLs: https://... or http://...
+		if (
+			char === 'h' &&
+			text[i + 1] === 't' &&
+			(text.substring(i, i + 8) === 'https://' || text.substring(i, i + 7) === 'http://')
+		) {
+			const urlMatch = text.substring(i).match(new RegExp('^' + urlPatternBase.source))
+			if (urlMatch) {
+				flushText()
+				const url = cleanUrl(urlMatch[1])
+				tokens.push({
+					type: 'link',
+					value: JSON.stringify({ text: url, url: url }),
+					lineEnd: false,
+					lineStart: false,
+					indent: '',
+					depth: 0,
+				})
+				i += url.length
+				continue
+			}
+		}
+
+		// Regular character
+		currentText += char
+		i++
+	}
+
+	flushText()
+
+	// Apply lineStart and lineEnd to the first and last tokens added
+	if (tokens.length > startIdx) {
+		const firstToken = tokens[startIdx]
+		const lastToken = tokens[tokens.length - 1]
+
+		if (lineStart) {
+			firstToken.lineStart = true
+			firstToken.indent = indent
+			firstToken.depth = indentToDepth(indent)
+		}
+
+		if (lineEnd) {
+			lastToken.lineEnd = true
+		}
+	}
+}
+
+const tokenize = (text: string, safeMode: boolean = false): Token[] => {
+	const lines = text.split('\n') //.slice(0, 10)
+	const tokens: Token[] = []
+	let inCodeBlock = false
+	let codeBlockLanguage = ''
+	let inConflictBlock = false
+	let conflictState: 'none' | 'local' | 'server' = 'none'
+
+	for (const line of lines) {
+		let match
+
+		// In safe mode, only process conflict markers and treat everything else as plain text
+		if (
+			safeMode &&
+			!conflictStartRegex.test(line) &&
+			!conflictSeparatorRegex.test(line) &&
+			!conflictEndRegex.test(line)
+		) {
+			if (inConflictBlock) {
+				// Inside conflict: accumulate content
+				tokens.push({
+					type: conflictState === 'local' ? 'conflict_local_content' : 'conflict_server_content',
+					value: line,
+					lineEnd: true,
+					lineStart: true,
+					indent: '',
+					depth: 0,
+				})
+			} else {
+				// Outside conflict: plain paragraph text (no markdown parsing)
+				if (line.trim() === '') {
+					tokens.push({ type: 'blank_line', lineEnd: true, lineStart: true, indent: '', depth: 0 })
+				} else {
+					tokens.push({
+						type: 'text',
+						value: line,
+						lineEnd: true,
+						lineStart: true,
+						indent: '',
+						depth: 0,
+					})
+				}
+			}
+			continue
+		}
+
+		if ((match = codeBlockRegex.exec(line))) {
+			tokens.push({
+				type: 'code_block',
+				value: match.groups.language,
+				lineEnd: true,
+				lineStart: true,
+				indent: '',
+				depth: 0,
+			})
+			if (inCodeBlock) {
+				inCodeBlock = false
+				codeBlockLanguage = ''
+			} else {
+				inCodeBlock = true
+				codeBlockLanguage = match.groups.language
+			}
+		} else if (conflictStartRegex.test(line)) {
+			// Track code block language if we're inside one
+			const savedCodeBlockLanguage = inCodeBlock ? codeBlockLanguage : ''
+			// If we're in a code block, close it before starting conflict
+			if (inCodeBlock) {
+				tokens.push({
+					type: 'code_block',
+					value: codeBlockLanguage,
+					lineEnd: true,
+					lineStart: true,
+					indent: '',
+					depth: 0,
+				})
+				inCodeBlock = false
+			}
+			tokens.push({
+				type: 'conflict_start',
+				value: savedCodeBlockLanguage,
+				lineEnd: true,
+				lineStart: true,
+				indent: '',
+				depth: 0,
+			})
+			inConflictBlock = true
+			conflictState = 'local'
+		} else if (conflictSeparatorRegex.test(line) && inConflictBlock) {
+			tokens.push({
+				type: 'conflict_separator',
+				lineEnd: true,
+				lineStart: true,
+				indent: '',
+				depth: 0,
+			})
+			conflictState = 'server'
+		} else if (conflictEndRegex.test(line) && inConflictBlock) {
+			tokens.push({
+				type: 'conflict_end',
+				lineEnd: true,
+				lineStart: true,
+				indent: '',
+				depth: 0,
+			})
+			inConflictBlock = false
+			conflictState = 'none'
+			// If we were in a code block before the conflict, reopen it
+			if (codeBlockLanguage) {
+				tokens.push({
+					type: 'code_block',
+					value: codeBlockLanguage,
+					lineEnd: true,
+					lineStart: true,
+					indent: '',
+					depth: 0,
+				})
+				inCodeBlock = true
+			}
+		} else if (inConflictBlock) {
+			// Content within conflict block
+			tokens.push({
+				type: conflictState === 'local' ? 'conflict_local_content' : 'conflict_server_content',
+				value: line,
+				lineEnd: true,
+				lineStart: true,
+				indent: '',
+				depth: 0,
+			})
+		} else if (inCodeBlock) {
+			// If we're in a code block, treat everything as text without processing markdown
+			if (line === '') {
+				// Preserve blank lines in code blocks
+				tokens.push({ type: 'blank_line', lineEnd: true, lineStart: true, indent: '', depth: 0 })
+			} else {
+				subTokenizeText(tokens, line, true, true, '', true)
+			}
+		} else if ((match = headingRegex.exec(line))) {
+			tokens.push({
+				type: 'heading',
+				indent: match.groups.hashes,
+				depth: indentToDepth(match.groups.hashes),
+				lineEnd: false,
+				lineStart: true,
+			})
+			subTokenizeText(tokens, match.groups.content, true, false)
+		} else if ((match = listItemRegex.exec(line))) {
+			if (match.groups.checkbox) {
+				tokens.push({
+					type: 'list_item',
+					indent: match.groups.indent,
+					depth: indentToDepth(match.groups.indent),
+					checked: match.groups.checkbox.toLowerCase() === '[x]',
+					value: match.groups.marker,
+					lineEnd: false,
+					lineStart: true,
+				})
+			} else {
+				tokens.push({
+					type: 'list_item',
+					indent: match.groups.indent,
+					depth: indentToDepth(match.groups.indent),
+					value: match.groups.marker,
+					lineEnd: false,
+					lineStart: true,
+				})
+			}
+			subTokenizeText(tokens, match.groups.content, true, false)
+		} else if ((match = nakedCheckItemRegex.exec(line))) {
+			tokens.push({
+				type: 'list_item',
+				indent: match.groups.indent,
+				depth: indentToDepth(match.groups.indent),
+				checked: match.groups.checkbox.toLowerCase() === '[x]',
+				value: '-',
+				lineEnd: false,
+				lineStart: true,
+				hideListMarker: true,
+			})
+			subTokenizeText(tokens, match.groups.content, true, false)
+		} else if ((match = blockquoteRegex.exec(line))) {
+			tokens.push({
+				type: 'blockquote',
+				indent: match.groups.indent,
+				depth: indentToDepth(match.groups.indent),
+				lineEnd: false,
+				lineStart: true,
+			})
+			subTokenizeText(tokens, match.groups.content, true, false)
+		} else if ((match = indentedTextRegex.exec(line))) {
+			subTokenizeText(tokens, match[0], true, true, match.groups.indent)
+		} else if (line.trim() === '') {
+			tokens.push({ type: 'blank_line', lineEnd: true, lineStart: true, indent: '', depth: 0 })
+		} else {
+			subTokenizeText(tokens, line, true, true)
+		}
+	}
+	return tokens
+}
+
+const distinctIndents = (nodes: TreeNode[]): string[] => {
+	const indents: Set<string> = new Set()
+	for (const node of nodes) {
+		if (node.indent && !indents.has(node.indent)) {
+			indents.add(node.indent)
+		}
+		if (node.children.length > 0) {
+			const childIndents = distinctIndents(node.children)
+			for (const indent of childIndents) {
+				if (!indents.has(indent)) {
+					indents.add(indent)
+				}
+			}
+		}
+	}
+	return Array.from(indents)
+}
+
+const applyIndentation = (node: TreeNode, indent: string) => {
+	if (node.type === 'bullet_list' || node.type === 'ordered_list') {
+		node.indent = indent
+	}
+	for (const child of node.children) {
+		applyIndentation(child, indent)
+	}
+}
+
+const buildTree = (tokens: Token[]): TreeNode => {
+	const root: TreeNode = { type: 'doc', depth: 0, indent: null, children: [] }
+	const stack: TreeNode[] = [root]
+	const parentDepth = () => stack[stack.length - 1]?.depth ?? 0
+	const parentType = () => stack[stack.length - 1]?.type ?? 'NONE'
+	const pushChild = (node: TreeNode) => {
+		stack[stack.length - 1].children.push(node)
+	}
+	const isParent = (...types: string[]) => {
+		return types.includes(parentType())
+	}
+
+	for (let i = 0; i < tokens.length; i++) {
+		const token = tokens[i]
+		const node: TreeNode = {
+			type: token.type,
+			indent: token.indent,
+			depth: token.depth,
+			value: token.value,
+			checked: token.checked,
+			children: [],
+		}
+
+		// console.log(token.type, token.value, parentType())
+
+		const isInlineToken = ['text', 'strong', 'emphasis', 'strong_emphasis', 'code', 'link', 'password'].includes(
+			token.type,
+		)
+
+		if (isInlineToken) {
+			if (token.lineStart && token.indent === '' && isParent('list_item')) {
+				while (isParent('list_item', 'bullet_list', 'ordered_list')) {
+					stack.pop()
+				}
+			}
+
+			// Check if we need to create a paragraph wrapper for inline content
+			// Paragraphs are needed when the parent is NOT heading, blockquote, or already a paragraph
+			// List items DO need paragraphs as they contain block content
+			const needsParagraph = !isParent('heading', 'blockquote', 'paragraph', 'code_block')
+
+			if (needsParagraph) {
+				// Start a new paragraph (will hold all inline tokens until lineEnd)
+				const paragraphNode: TreeNode = {
+					type: 'paragraph',
+					indent: '',
+					depth: 0,
+					children: [],
+				}
+				pushChild(paragraphNode)
+				stack.push(paragraphNode)
+			}
+
+			pushChild(node)
+
+			if (token.lineEnd) {
+				// Close paragraph if we're in one
+				if (isParent('paragraph')) {
+					stack.pop()
+				}
+				// Also close heading/blockquote if we're at line end
+				if (isParent('heading', 'blockquote')) {
+					stack.pop()
+				}
+			}
+		} else if (token.type === 'blank_line') {
+			if (isParent('list_item')) {
+				// TODO handle blank lines in list items
+				while (isParent('list_item', 'bullet_list', 'ordered_list')) {
+					stack.pop()
+				}
+			}
+			pushChild(node)
+		} else if (token.type === 'list_item') {
+			// Pop back to the correct level in the list hierarchy
+			// We need to find the right parent list for this item's depth
+
+			// First, pop any list_item at the same or greater depth
+			if (parentType() === 'list_item' && token.depth <= parentDepth()) {
+				// Pop back through the stack until we find the right level
+				while (stack.length > 1 && isParent('list_item', 'bullet_list', 'ordered_list')) {
+					const parent = stack[stack.length - 1]
+
+					if (parent.type === 'list_item') {
+						// Pop list items that are at same or deeper level
+						if (parent.depth >= token.depth) {
+							stack.pop()
+						} else {
+							break
+						}
+					} else if (parent.type === 'bullet_list' || parent.type === 'ordered_list') {
+						// Pop lists that are at deeper level than our target
+						if (parent.depth > token.depth) {
+							stack.pop()
+						} else {
+							// Found a list at our level or shallower - stop here
+							break
+						}
+					} else {
+						break
+					}
+				}
+			}
+
+			if (!isParent('bullet_list', 'ordered_list')) {
+				const listNode: TreeNode = {
+					type: orderedRegex.test(token.value) ? 'ordered_list' : 'bullet_list',
+					indent: token.indent,
+					depth: token.depth,
+					children: [],
+					hideListMarker: token.hideListMarker,
+				}
+				pushChild(listNode)
+				stack.push(listNode)
+			}
+			pushChild(node)
+			stack.push(node)
+		} else if (token.type === 'conflict_start') {
+			const conflictNode: TreeNode = {
+				type: 'conflict_block',
+				indent: token.value || '',
+				depth: 0,
+				children: [],
+				value: '',
+			}
+			pushChild(conflictNode)
+			stack.push(conflictNode)
+		} else if (token.type === 'conflict_local_content' && parentType() === 'conflict_block') {
+			// Accumulate local content
+			const parent = stack[stack.length - 1]
+			parent.value = parent.value ? parent.value + '\n' + token.value : token.value
+		} else if (token.type === 'conflict_separator' && parentType() === 'conflict_block') {
+			// Mark transition to server content
+			const separatorNode: TreeNode = {
+				type: 'conflict_separator',
+				indent: '',
+				depth: 0,
+				children: [],
+			}
+			pushChild(separatorNode)
+		} else if (token.type === 'conflict_server_content' && parentType() === 'conflict_block') {
+			// Accumulate server content in the separator node
+			const parent = stack[stack.length - 1]
+			const separatorNode = parent.children[parent.children.length - 1]
+			if (separatorNode && separatorNode.type === 'conflict_separator') {
+				separatorNode.value = separatorNode.value ? separatorNode.value + '\n' + token.value : token.value
+			}
+		} else if (token.type === 'conflict_end' && parentType() === 'conflict_block') {
+			stack.pop()
+		} else if (['heading', 'blockquote', 'code_block'].includes(token.type)) {
+			if (token.type === 'code_block' && parentType() === 'code_block') {
+				stack.pop()
+			} else {
+				// Headings (and fresh blockquotes/code blocks) are block-level and cannot
+				// be children of a list_item — pop any open list context first.
+				if (token.type === 'heading') {
+					while (isParent('list_item', 'bullet_list', 'ordered_list')) {
+						stack.pop()
+					}
+				}
+				pushChild(node)
+				stack.push(node)
+			}
+		}
+	}
+	let documentDefaultIndent = '  '
+	for (const node of root.children) {
+		if (node.type === 'bullet_list' || node.type === 'ordered_list') {
+			const indents = distinctIndents([node])
+			indents.filter(indent => indent.length > 0).sort((a, b) => a.length - b.length)
+			const indent = indents.length > 0 ? indents[0] : undefined
+			if (indent && indent.length < documentDefaultIndent.length) {
+				documentDefaultIndent = indent
+			}
+			applyIndentation(node, indent ?? null)
+		}
+	}
+	root.indent = documentDefaultIndent ?? null
+	return root
+}
+
+const buildProseMirrorNode = (parent: TreeNode, treeNode: TreeNode, index: number, history: boolean): Node | null => {
+	const children: Node[] = []
+
+	// Don't build children for conflict blocks since they're atom nodes
+	if (treeNode.type !== 'conflict_block') {
+		for (let i = 0; i < treeNode.children.length; i++) {
+			const child = buildProseMirrorNode(treeNode, treeNode.children[i], i, history)
+			if (child) {
+				children.push(child)
+			}
+		}
+	}
+
+	switch (treeNode.type) {
+		case 'doc':
+			return mimiriSchema.node('doc', { indent: treeNode.indent, history }, children)
+		case 'heading':
+			return mimiriSchema.node('heading', { level: treeNode.depth || 1 }, children)
+		case 'list_item': {
+			// schema requires at least one paragraph child; empty items produce no tokens - causing an error
+			const listItemChildren = children.length === 0 ? [mimiriSchema.node('paragraph', null, [])] : children
+			return mimiriSchema.node(
+				'list_item',
+				{ checked: treeNode.checked, marker: treeNode.value, indent: treeNode.depth },
+				listItemChildren,
+			)
+		}
+		case 'checkbox_item': {
+			// schema requires at least one paragraph child; empty items produce no tokens - causing an error
+			const checkboxItemChildren = children.length === 0 ? [mimiriSchema.node('paragraph', null, [])] : children
+			return mimiriSchema.node(
+				'list_item',
+				{ checked: treeNode.checked, hideListMarker: treeNode.hideListMarker },
+				checkboxItemChildren,
+			)
+		}
+		case 'bullet_list':
+			return mimiriSchema.node(
+				'bullet_list',
+				{ indent: treeNode.indent, hideListMarker: treeNode.hideListMarker },
+				children,
+			)
+		case 'ordered_list':
+			return mimiriSchema.node('ordered_list', { indent: treeNode.indent }, children)
+		case 'blockquote':
+			return mimiriSchema.node('blockquote', null, children)
+		case 'paragraph':
+			return mimiriSchema.node('paragraph', null, children)
+		case 'code_block':
+			return mimiriSchema.node('code_block', { language: treeNode.value }, children)
+		case 'conflict_block': {
+			// Extract local and server content from children
+			const localContent = treeNode.value || ''
+			const separatorNode = treeNode.children.find(c => c.type === 'conflict_separator')
+			const serverContent = separatorNode?.value || ''
+			const codeBlockLanguage = treeNode.indent || null
+			return mimiriSchema.node('conflict_block', {
+				localContent,
+				serverContent,
+				codeBlockLanguage,
+			})
+		}
+		case 'conflict_separator':
+			// Skip separator nodes when building (handled in conflict_block)
+			return null
+		case 'blank_line':
+			if (parent?.type === 'code_block') {
+				return mimiriSchema.text('\n')
+			} else if (parent?.type === 'heading' || parent?.type === 'blockquote') {
+				return mimiriSchema.text('a')
+			} else {
+				return mimiriSchema.node('paragraph', null, [])
+			}
+		case 'text':
+			// ProseMirror doesn't allow empty text nodes - return null to skip
+			if (!treeNode.value) {
+				return null
+			}
+			if (parent?.type === 'code_block') {
+				if (index > 0) {
+					return mimiriSchema.text(`\n${treeNode.value}`)
+				} else {
+					return mimiriSchema.text(treeNode.value)
+				}
+			} else {
+				// Text is always inline, no paragraph wrapping here
+				return mimiriSchema.text(treeNode.value)
+			}
+		case 'strong':
+			if (!treeNode.value) {
+				return null
+			}
+			// Create text node with strong mark (always inline)
+			return mimiriSchema.text(treeNode.value, [mimiriSchema.mark('strong')])
+		case 'emphasis':
+			if (!treeNode.value) {
+				return null
+			}
+			// Create text node with em mark (always inline)
+			return mimiriSchema.text(treeNode.value, [mimiriSchema.mark('em')])
+		case 'strong_emphasis':
+			if (!treeNode.value) {
+				return null
+			}
+			// Create text node with strong and em marks (always inline)
+			return mimiriSchema.text(treeNode.value, [mimiriSchema.mark('strong'), mimiriSchema.mark('em')])
+		case 'code':
+			if (!treeNode.value) {
+				return null
+			}
+			// Create text node with code mark (always inline)
+			return mimiriSchema.text(treeNode.value, [mimiriSchema.mark('code')])
+		case 'link': {
+			// Parse link data and create text node with link mark (always inline)
+			const linkData = JSON.parse(treeNode.value ?? '{"text":"","url":""}')
+			if (linkData.text.length === 0) {
+				return null
+			}
+			return mimiriSchema.text(linkData.text, [mimiriSchema.mark('link', { href: linkData.url, title: null })])
+		}
+		case 'password':
+			if (!treeNode.value) {
+				return null
+			}
+			// Create text node with password mark (always inline)
+			return mimiriSchema.text(treeNode.value, [mimiriSchema.mark('password')])
+		default:
+			throw new Error(`Unknown node type: ${treeNode.type}`)
+	}
+}
+
+export const hasConflicts = (text: string): boolean => {
+	return detectConflictRegex.test(text)
+}
+
+export const deserialize = (text: string, history: boolean = false) => {
+	const normalizedText = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n')
+
+	// Use safe mode if conflicts are detected
+	const safeMode = hasConflicts(normalizedText)
+
+	const tokens = tokenize(normalizedText, safeMode)
+	// console.log('tokens', tokens)
+	const tree = buildTree(tokens)
+	// console.log('tree', tree)
+	const doc = buildProseMirrorNode(null, tree, 0, history)
+	// console.log('des', doc2)
+	return doc
+}

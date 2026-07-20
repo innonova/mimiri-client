@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test'
+import { ensureEditorMode } from './editor/mode'
 import { mimiri, mimiriCreate, withMimiriContext } from './framework/mimiri-context'
 import {
 	aboutView,
@@ -169,6 +170,7 @@ test.describe('quotas', () => {
 			await expect(textNoteProperties.totalSize()).toHaveText(/50\d B/)
 
 			await note.item('Max Note Size Test').click()
+			await ensureEditorMode('code')
 			await editor.monaco().click({ timeout: 2000 })
 			await expect(editor.monaco()).toHaveClass(/\bfocused\b/, { timeout: 2000 })
 			await mimiri().page.keyboard.insertText(longRandomLine())
@@ -179,6 +181,7 @@ test.describe('quotas', () => {
 			await expect(textNoteProperties.totalSize()).toHaveText(/2.\d\d kB/)
 
 			await note.item('Max Note Size Test').click()
+			await ensureEditorMode('code')
 			await editor.monaco().click({ timeout: 2000 })
 			await expect(editor.monaco()).toHaveClass(/\bfocused\b/, { timeout: 2000 })
 			for (let i = 0; i < 10; i++) {
@@ -217,6 +220,7 @@ test.describe('quotas', () => {
 			await expect(aboutView.usedBytes()).toHaveText('52 kB')
 			await mimiri().setUserTypeFree()
 			await note.item('Size Quota Test Root').click()
+			await ensureEditorMode('code')
 			await editor.monaco().click({ timeout: 2000 })
 			await expect(editor.monaco()).toHaveClass(/\bfocused\b/, { timeout: 2000 })
 			await mimiri().page.keyboard.insertText('test')
@@ -546,14 +550,17 @@ test.describe('quotas', () => {
 			await note.newInput().press('Enter')
 
 			await note.item('Quota Test Root').click()
+			await ensureEditorMode('code')
 			await expect(editor.monaco()).toHaveText('Root node for testing note count quotas (16 items total)')
 
 			mimiri(0, true)
+			await ensureEditorMode('code')
 			await editor.monaco().click()
 			await mimiri().page.keyboard.type('Add More Text')
 			await saveNote()
 
 			mimiri(1, true)
+			await ensureEditorMode('code')
 			await expect(editor.monaco()).toHaveText('Root node for testing note count quotas (16 items total)Add More Text')
 		})
 	})

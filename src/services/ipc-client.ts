@@ -210,7 +210,7 @@ export class IpcClient {
 		} else {
 			this.api = (window as any).mimiri
 			if (this.api?.os) {
-				this.api.os.rules()?.then(rules => {
+				void this.api.os.rules()?.then(rules => {
 					this._platformRules = rules
 				})
 			}

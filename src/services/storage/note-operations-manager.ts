@@ -3,9 +3,9 @@ import { Note } from '../types/note'
 import type { MimerNote } from '../types/mimer-note'
 import { newGuid } from '../types/guid'
 import { dateTimeNow } from '../types/date-time'
-import { VersionConflictError } from './mimiri-client'
 import { MultiAction } from './multi-action'
 import { debug } from '../../global'
+
 import type { NoteService } from './note-service'
 import type { SynchronizationService } from './synchronization-service'
 import type { MimiriClient } from './mimiri-client'
@@ -16,9 +16,13 @@ import { ProofOfWork } from '../proof-of-work'
 import type { CryptographyManager } from './cryptography-manager'
 import type { NoteShareInfo } from '../types/note-share-info'
 import { DEFAULT_PROOF_BITS } from './mimiri-store'
+import { NoteImporter } from './note-importer'
+import { NoteExporter } from './note-exporter'
 
 export class NoteOperationsManager {
 	private _proofBits = DEFAULT_PROOF_BITS
+	private importer: NoteImporter
+	private exporter: NoteExporter
 
 	constructor(
 		private state: SharedState,
@@ -28,7 +32,10 @@ export class NoteOperationsManager {
 		private uiManager: UIStateManager,
 		private treeManager: NoteTreeManager,
 		private cryptoManager: CryptographyManager,
-	) {}
+	) {
+		this.importer = new NoteImporter(this, uiManager, treeManager)
+		this.exporter = new NoteExporter(treeManager)
+	}
 
 	public async createNote(note: Note): Promise<void> {
 		await this.noteService.createNote(note)
@@ -381,5 +388,17 @@ export class NoteOperationsManager {
 	public async deleteKey(name: Guid): Promise<void> {
 		await this.cryptoManager.deleteKey(name)
 		this.syncService.queueSync()
+	}
+
+	public importAllNotes(): Promise<void> {
+		return this.importer.importAllNotes()
+	}
+
+	public exportAllNotes(): Promise<void> {
+		return this.exporter.exportAllNotes()
+	}
+
+	public exportSubtree(note: MimerNote): Promise<void> {
+		return this.exporter.exportSubtree(note)
 	}
 }

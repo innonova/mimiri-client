@@ -9,7 +9,7 @@
 					type="text"
 					@keydown="keyDown"
 				/>
-				<CloseButton @click="close" class="w-10" />
+				<CloseButton @click="close" class="w-10" data-testid="search-box-close-mobile" />
 			</div>
 			<div v-if="searchManager.state.searchRunning" class="progress-bar-value absolute left-0 bottom-0 w-full h-1" />
 		</div>
@@ -17,9 +17,9 @@
 			<div v-if="searchManager.state.searchRunning" class="progress-bar-value absolute left-0 top-0 w-full h-full" />
 			<div class="flex absolute left-0 top-0 w-full justify-between items-center text-size-base! pl-1 select-none">
 				<SearchIcon class="h-7 w-7 p-px mr-1" />
-				<div>{{ searchManager.state.term }}</div>
+				<div data-testid="search-box-term">{{ searchManager.state.term }}</div>
 				<div class="w-7 h-7 flex justify-end bg-info-bar-accented">
-					<CloseButton @click="close" />
+					<CloseButton @click="close" data-testid="search-box-close" />
 				</div>
 			</div>
 		</div>

@@ -6,13 +6,17 @@
 		@close="isOpen = false"
 	>
 		<div v-if="isOpen" class="grid grid-rows-[auto_1fr_auto] gap-6">
-			<DialogTitle @close="close">Empty Recycle Bin</DialogTitle>
+			<DialogTitle @close="close">{{ $t('emptyRecycleBinDialog.title') }}</DialogTitle>
 			<main class="px-2">
-				<div>Are you sure you want to permanently delete all items int the recycle bin?</div>
+				<div>{{ $t('emptyRecycleBinDialog.question') }}</div>
 			</main>
 			<footer class="flex justify-end mobile:justify-center gap-2 pr-2 pb-2">
-				<button class="primary" @click="submitDialog" data-testid="empty-recycle-bin-yes">Yes</button>
-				<button class="secondary" @click="close" data-testid="empty-recycle-bin-no">No</button>
+				<button class="primary" @click="submitDialog" :disabled="isDeleting" data-testid="empty-recycle-bin-yes">
+					{{ $t('emptyRecycleBinDialog.yes') }}
+				</button>
+				<button class="secondary" @click="close" :disabled="isDeleting" data-testid="empty-recycle-bin-no">
+					{{ $t('emptyRecycleBinDialog.no') }}
+				</button>
 			</footer>
 		</div>
 	</dialog>
@@ -24,6 +28,7 @@ import { noteManager } from '../../global'
 import DialogTitle from '../elements/DialogTitle.vue'
 const dialog = ref(null)
 const isOpen = ref(false)
+const isDeleting = ref(false)
 
 const show = () => {
 	isOpen.value = true
@@ -35,11 +40,17 @@ const close = () => {
 }
 
 const submitDialog = async () => {
-	await noteManager.tree.recycleBin().deleteChildren()
-	setTimeout(() => {
-		noteManager.session.queueSync()
-	}, 1000)
-	close()
+	if (isDeleting.value) {return}
+	isDeleting.value = true
+	try {
+		await noteManager.tree.recycleBin().deleteChildren()
+		setTimeout(() => {
+			noteManager.session.queueSync()
+		}, 1000)
+		close()
+	} finally {
+		isDeleting.value = false
+	}
 }
 
 defineExpose({

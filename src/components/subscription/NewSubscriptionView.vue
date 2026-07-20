@@ -1,6 +1,6 @@
 <template>
 	<div v-if="ready" class="flex flex-col h-full">
-		<TabBar :items="['Current Plan']" />
+		<TabBar :items="[$t('subNewSubscriptionView.tab')]" />
 		<div class="flex flex-col items-start overflow-auto">
 			<div data-testid="new-subscription-view" class="flex flex-col items-center">
 				<div class="pb-4 pt-4 compact:pt-2 cursor-default flex gap-5 justify-center items-center">
@@ -30,8 +30,7 @@
 					<input type="hidden" data-testid="subscriptions-loaded" :value="!!products?.length" />
 				</div>
 				<div class="text-center text-size-promo mt-5">
-					The free tier isn’t a trial - it’s built to be fully usable and will always be here. <br />
-					But it’s our subscribers who make it possible for Mimiri Notes to keep moving forward for everyone.
+					{{ $t('subNewSubscriptionView.promoCopy') }}
 				</div>
 				<Faq :items="faqItems" class="mt-6" />
 			</div>
@@ -40,10 +39,10 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { Currency, Period, type Subscription, type SubscriptionProduct } from '../../services/types/subscription'
 import SubscriptionItem from './SubscriptionItem.vue'
-import { noteManager } from '../../global'
+import { noteManager, $t } from '../../global'
 import Slider from '../elements/Slider.vue'
 import TabBar from '../elements/TabBar.vue'
 import Faq from '../elements/Faq.vue'
@@ -55,10 +54,10 @@ const period = ref(Period.Year)
 const products = ref<SubscriptionProduct[]>([])
 const currency = ref(Currency.CHF)
 const ready = ref(false)
-const periodOptions = [
-	{ value: Period.Month, label: 'Monthly' },
-	{ value: Period.Year, label: 'Yearly' },
-]
+const periodOptions = computed(() => [
+	{ value: Period.Month, label: $t('subNewSubscriptionView.monthly') },
+	{ value: Period.Year, label: $t('subNewSubscriptionView.yearly') },
+])
 
 const currencyOptions = [
 	{ value: Currency.CHF, label: 'CHF' },
@@ -68,13 +67,12 @@ const currencyOptions = [
 
 const faqItems = ref([
 	{
-		question: 'Is the free tier really free?',
-		answer: `Yes, the free tier is free and will remain so.
-		For most use cases, the limits are more than adequate.`,
+		question: $t('subNewSubscriptionView.faq1Question'),
+		answer: $t('subNewSubscriptionView.faq1Answer'),
 	},
 	{
-		question: 'Why would I choose a paid plan?',
-		answer: `The main reason to subscribe is to support the ongoing development of Mimiri Notes.`,
+		question: $t('subNewSubscriptionView.faq2Question'),
+		answer: $t('subNewSubscriptionView.faq2Answer'),
 	},
 ])
 

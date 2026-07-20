@@ -1,5 +1,4 @@
 import { mimiriPlatform } from './mimiri-platform'
-import { settingsManager } from './settings-manager'
 import { devTools, env, ipcClient, noteManager, updateManager } from '../global'
 import { reactive } from 'vue'
 import type { HideShowListener } from './ipc-client'

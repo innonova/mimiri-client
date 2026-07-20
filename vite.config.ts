@@ -37,5 +37,15 @@ export default defineConfig(({ mode }) => {
 		define: {
 			__DEV_VERSION__: JSON.stringify(packageJson.version),
 		},
+		build: {
+			rollupOptions: {
+				onLog(level, log, handler) {
+					if (log.code === 'INVALID_ANNOTATION' && log.id?.includes('node_modules')) {
+						return
+					}
+					handler(level, log)
+				},
+			},
+		},
 	}
 })

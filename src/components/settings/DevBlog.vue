@@ -1,6 +1,6 @@
 <template>
 	<div v-if="!settingsManager.disableDevBlog" class="flex flex-col h-full">
-		<TabBar :items="['Dev Blog']" />
+		<TabBar :items="[$t('settingsDevBlog.tab')]" />
 		<div class="w-full h-full">
 			<iframe
 				ref="blogFrame"
@@ -58,7 +58,7 @@ const onMessage = async (event: MessageEvent) => {
 				try {
 					await blogManager.addComment(data.postId, data.username, data.comment)
 					postMessageToFrame({ type: 'comment-posted' })
-				} catch (error) {
+				} catch (error: any) {
 					postMessageToFrame({ type: 'comment-error', error: error.message })
 				}
 				break

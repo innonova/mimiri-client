@@ -1,0 +1,159 @@
+.password-secret-content {
+	-webkit-text-security: disc;
+	text-security: disc;
+}
+
+.clickable-checkbox {
+	@apply cursor-pointer text-editor-code-delimiter;
+}
+
+.clickable-checkbox-content {
+	@apply text-text;
+}
+
+.password-secret {
+	@apply text-editor-code-delimiter;
+}
+
+.password-secret-content {
+	@apply text-text;
+}
+
+/* Code block background as a translucent overlay: this line decoration paints
+   above Monaco's selection layer, so an opaque background (or multiply
+   blending, which crushes the selection to black in dark mode) would hide the
+   text selection inside code blocks */
+.monaco-editor .code-block-line {
+	@apply bg-editor-code-block-overlay;
+}
+
+/* Text content decorations */
+.code-block-fence {
+	@apply font-bold text-editor-code-fence-text opacity-60;
+}
+.code-block-content {
+	@apply font-mono;
+}
+
+/* Inline markdown decorations - Password masking */
+.password-delimiter {
+	@apply text-editor-password-content;
+}
+.password-content {
+	-webkit-text-security: disc;
+	text-security: disc;
+	@apply text-editor-password-content!;
+}
+
+/* Revealed password state */
+.password-content-visible {
+	-webkit-text-security: none;
+	text-security: none;
+	@apply text-editor-password-content!;
+}
+
+/* Password hover buttons widget */
+.monaco-password-buttons {
+	@apply inline-flex items-center whitespace-nowrap select-none bg-toolbar border border-border rounded px-[2px] py-px gap-[2px];
+	-webkit-user-select: none;
+}
+
+.monaco-password-btn {
+	@apply flex items-center justify-center cursor-pointer text-text-secondary p-px rounded w-5 h-5 bg-transparent border-none;
+}
+
+.monaco-password-btn:hover {
+	@apply text-editor-link-hover bg-toolbar-hover;
+}
+
+/* Inline markdown decorations - Checkboxes */
+.checkbox-bracket {
+	@apply text-editor-code-delimiter font-bold;
+}
+.checkbox-unchecked {
+	@apply text-editor-code-delimiter;
+}
+.checkbox-checked {
+	@apply text-editor-checkbox-checked font-bold;
+}
+.checkbox-interactive {
+	@apply cursor-pointer;
+}
+.checkbox-interactive:hover {
+	@apply opacity-80;
+}
+
+/* Hide the 'Find in Selection' toggle in the find widget — not useful in a
+   notes context and easily toggled by accident, making find report no results */
+.monaco-editor .find-widget .codicon-find-selection {
+	@apply hidden!;
+}
+
+/* Monaco autocomplete widget styling - Remove underlines and simplify icons */
+.suggest-widget .monaco-list-row .label-name,
+.suggest-widget .monaco-list-row .monaco-highlighted-label,
+.suggest-widget .monaco-list-row * {
+	@apply no-underline!;
+}
+
+.suggest-widget .monaco-list-row {
+	@apply pt-[2px]! pl-1!;
+}
+
+/* Hide or simplify the icon */
+.suggest-widget .suggest-icon.codicon {
+	@apply hidden!;
+}
+
+.monaco-editor .md-heading {
+	@apply text-editor-md-emphasis font-bold;
+}
+
+.monaco-editor .md-bold {
+	@apply text-editor-md-emphasis font-bold;
+}
+
+.monaco-editor .md-italic {
+	@apply text-editor-md-emphasis italic;
+}
+
+.monaco-editor .md-bold-italic {
+	@apply text-editor-md-emphasis font-bold italic;
+}
+
+/* Inline code */
+.inline-code-delimiter {
+	@apply text-editor-code-delimiter opacity-40;
+}
+
+.monaco-editor .md-inline-code {
+	@apply bg-editor-inline-code-bg;
+	/* Note: Only background color to avoid cursor position issues in Monaco */
+	/* Font changes (family, size) can cause cursor misalignment */
+}
+
+/* Conflict block styling - Local vs Server. Translucent overlay for the same
+   reason as .code-block-line above: keep the text selection visible */
+.monaco-editor .conflict-marker-line {
+	@apply bg-editor-conflict-marker-overlay font-bold;
+}
+
+.monaco-editor .conflict-marker-start {
+	@apply text-editor-conflict-local;
+}
+
+.monaco-editor .conflict-marker-separator {
+	@apply text-editor-conflict-separator;
+}
+
+.monaco-editor .conflict-marker-end {
+	@apply text-editor-conflict-server;
+}
+
+.monaco-editor .conflict-current-line {
+	@apply bg-editor-conflict-local-bg;
+}
+
+.monaco-editor .conflict-incoming-line {
+	@apply bg-editor-conflict-server-bg;
+}

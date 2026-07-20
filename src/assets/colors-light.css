@@ -1,0 +1,127 @@
+/* Light theme color variables */
+@theme {
+	/* Typography */
+	--font-display: 'Segoe UI', 'Verdana', 'Ubuntu', 'Noto Sans';
+	--font-editor: 'Consolas', 'Courier New', 'monospace';
+
+	--text-size-base: 14px;
+	--text-size-base--line-height: 1.35em;
+	--text-size-menu: 13px;
+	--text-size-menu--line-height: 20px;
+	--text-size-secondary: 12px;
+	--text-size-secondary--line-height: 16px;
+	--text-size-title: 16px;
+	--text-size-title--line-height: 1rem;
+	--text-size-product: 18px;
+	--text-size-product--line-height: 1rem;
+	--text-size-header: 24px;
+	--text-size-header--line-height: 1.3rem;
+	--text-size-input: 14px;
+	--text-size-input--line-height: 1.5rem;
+	--text-size-info: 14px;
+	--text-size-info--line-height: 1.15em;
+	--text-size-editor: 14px;
+	--text-size-editor--line-height: 1.35em;
+	--text-size-promo: 15px;
+	--text-size-promo--line-height: 1.6em;
+
+	/* General UI Colors */
+	--color-back: #e3e3e3;
+	--color-info: #d2d2d8;
+	--color-back-highlight: #ebebeb;
+	--color-backdrop: rgba(0, 0, 0, 0.2);
+	--color-text: #000;
+	--color-text-secondary: #555;
+	--color-logo: #000;
+	--color-title-bar: #f4f4f4;
+	--color-title-text: #000;
+	--color-title-text-blur: #000;
+	--color-title-hover: #dfecf9;
+	--color-menu: #f4f4f4;
+	--color-menu-text: #000;
+	--color-menu-disabled: #b7b7b7;
+	--color-menu-hover: #d2dfec;
+	--color-menu-separator: #d8d8d8;
+	--color-item-selected: #d9e6f3;
+	--color-drop-indicator: #000;
+	--color-shared: #d78af6;
+	--color-search-parent: #888;
+	--color-error: red;
+	--color-online: green;
+	--color-offline: red;
+	--color-connecting: #ffa500;
+	--color-warning: #f6ba00;
+	--color-button-primary: #4381c1;
+	--color-button-primary-text: #fff;
+	--color-button-disabled: #aaa;
+	--color-button-disabled-text: #ccc;
+	--color-button-secondary: #777;
+	--color-button-secondary-text: #fff;
+	--color-button-hover: rgba(0, 0, 0, 0.2);
+	--color-dialog: #f4f4f4;
+	--color-dialog-border: #999;
+	--color-dialog-backdrop: rgba(0, 0, 0, 0.4);
+	--color-input: #fff;
+	--color-input-text: #000;
+	--color-input-selection: #0078d7;
+	--color-input-selected-text: #fff;
+	--color-toolbar: #f4f4f4;
+	--color-toolbar-separator: #555;
+	--color-toolbar-disabled: #b7b7b7;
+	--color-toolbar-hover: #dfecf9;
+	--color-progress-indicator: green;
+	--color-toolbar-toggled: #d9e6f3;
+	--color-search-highlight: #ffc147;
+	--color-info-bar: #d9e6f3;
+	--color-info-bar-accented: #ffc147;
+	--color-good: green;
+	--color-bad: red;
+	--color-splash: #4381c1;
+	--color-checkbox: #4381c1;
+	--color-tree-line: #e8e8e8;
+	--color-tree-line-highlight: #d8d8d8;
+	--color-border: #d2d2d8;
+	--color-border-hover: #aaaaab;
+	--color-ring: #d2d2d8;
+	--color-ring-highlight: #d2d2d8;
+
+	/* Editor-specific Colors */
+	/* Code Elements */
+	--color-editor-code-block-bg: #f5f5f5;
+	/* Translucent variant for Monaco's line overlay: it paints above the
+	   selection layer, so it must let the selection shine through */
+	--color-editor-code-block-overlay: rgba(0, 0, 0, 0.04);
+	--color-editor-inline-code-bg: rgba(175, 184, 193, 0.2);
+	--color-editor-code-delimiter: #888888;
+	--color-editor-code-fence-text: #888888;
+
+	/* Markdown Emphasis */
+	--color-editor-md-emphasis: #000000;
+	--color-editor-checkbox-checked: #4381c1;
+
+	/* Password UI */
+	--color-editor-password-content: #9a7b0a;
+
+	/* Conflict Resolution */
+	--color-editor-conflict-marker-bg: #f5f5f5;
+	--color-editor-conflict-marker-overlay: rgba(0, 0, 0, 0.04);
+	--color-editor-conflict-local: #1976d2;
+	--color-editor-conflict-server: #7b1fa2;
+	--color-editor-conflict-separator: #757575;
+	--color-editor-conflict-local-bg: rgba(21, 101, 192, 0.2);
+	--color-editor-conflict-server-bg: rgba(106, 27, 154, 0.2);
+	--color-editor-conflict-lens-bg: #e0e0e0;
+
+	/* Selection & Highlights */
+	--color-editor-selection-bg: #add6ff;
+	--color-editor-selection-outline: #8cf;
+
+	/* Editor overlay widgets (find bar) — matches Monaco's find widget colors */
+	--color-editor-widget: #f3f3f3;
+	--color-editor-widget-input: #ffffff;
+	--color-editor-widget-text: #616161;
+	--color-editor-widget-shadow: rgba(0, 0, 0, 0.16);
+
+	/* Interactive States */
+	--color-editor-link-hover: #4e94ce;
+}

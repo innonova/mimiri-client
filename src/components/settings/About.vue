@@ -1,35 +1,36 @@
 <template>
 	<div class="flex flex-col h-full">
-		<TabBar :items="['About']" />
+		<TabBar :items="[$t('settingsAbout.tab')]" />
 		<div class="flex flex-col overflow-y-auto">
 			<div @click="boxClicked">
-				<div class="p-1 pl-4">Bundle Version: {{ updateManager.currentVersion }}</div>
+				<div class="p-1 pl-4">{{ $t('settingsAbout.bundleVersion') }} {{ updateManager.currentVersion }}</div>
 				<div class="p-1 pl-4 pt-2 leading-5">
-					Host Version: {{ mimiriPlatform.isWeb ? browserName : updateManager.hostVersion }}
+					{{ $t('settingsAbout.hostVersion') }} {{ mimiriPlatform.isWeb ? browserName : updateManager.hostVersion }}
 				</div>
-				<div class="p-1 pl-4 pt-2">Released: {{ formatDate(updateManager.releaseDate) }}</div>
+				<div class="p-1 pl-4 pt-2">{{ $t('settingsAbout.released') }} {{ formatDate(updateManager.releaseDate) }}</div>
 				<template v-if="maxNoteCount > 0">
 					<div class="p-1 pl-4 pt-6">
-						Notes: <span data-testid="about-note-count">{{ noteCount }}</span> /
+						{{ $t('settingsAbout.notes') }} <span data-testid="about-note-count">{{ noteCount }}</span> /
 						<span data-testid="about-max-note-count">{{ maxNoteCount }}</span> ({{ notesPercent }})
 					</div>
 					<div class="p-1 pl-4 pt-2">
-						Space Used: <span data-testid="about-space-used" :title="`${usedBytesRaw}`">{{ usedBytes }}</span> /
+						{{ $t('settingsAbout.spaceUsed') }}
+						<span data-testid="about-space-used" :title="`${usedBytesRaw}`">{{ usedBytes }}</span> /
 						<span data-testid="about-max-space">{{ maxBytes }}</span> ({{ bytesPercent }})
 					</div>
 					<div class="p-1 pl-4 pt-2">
-						Unsynced Notes: <span data-testid="about-unsynced-notes">{{ localNoteCount }}</span>
+						{{ $t('settingsAbout.unsyncedNotes') }} <span data-testid="about-unsynced-notes">{{ localNoteCount }}</span>
 					</div>
 					<div class="p-1 pl-4 pt-2">
-						Unsynced Data: <span data-testid="about-unsynced-data">{{ localUsedBytes }}</span>
+						{{ $t('settingsAbout.unsyncedData') }} <span data-testid="about-unsynced-data">{{ localUsedBytes }}</span>
 					</div>
 				</template>
 				<template v-else>
-					<div class="p-1 pl-4 pt-6">Notes: {{ noteCount }}</div>
-					<div class="p-1 pl-4 pt-2">Space Used: {{ usedBytes }}</div>
+					<div class="p-1 pl-4 pt-6">{{ $t('settingsAbout.notes') }} {{ noteCount }}</div>
+					<div class="p-1 pl-4 pt-2">{{ $t('settingsAbout.spaceUsed') }} {{ usedBytes }}</div>
 				</template>
 				<div class="p-1 pl-4 pt-6">
-					Account:
+					{{ $t('settingsAbout.account') }}
 					<span
 						><span data-testid="about-username">{{ noteManager.state.username }}</span> (<span
 							class="inline-block mx-px capitalize"
@@ -38,41 +39,48 @@
 						>)</span
 					>
 				</div>
-				<div v-if="flags" class="p-1 pl-4 pt-2">System: {{ flags }}</div>
-				<div class="pt-6 pl-4"><a href="https://mimiri.io/terms" target="_blank">Terms & Conditions</a></div>
-				<div class="pt-3 pl-4"><a href="https://mimiri.io/privacy" target="_blank">Privacy Policy</a></div>
-				<div class="pt-6 pl-4"><a href="https://mimiri.io" target="_blank">https://mimiri.io</a></div>
-				<div class="pt-6 pl-4"><a href="https://discord.gg/pg69qPAVZR" target="_blank">Join us on Discord</a></div>
-				<div class="pt-3 pl-4"><a href="https://www.reddit.com/r/mimiri/" target="_blank">Join us on Reddit</a></div>
+				<div v-if="flags" class="p-1 pl-4 pt-2">{{ $t('settingsAbout.system') }} {{ flags }}</div>
 				<div class="pt-6 pl-4">
-					<a href="https://github.com/innonova/mimiri-client" target="_blank">Source on GitHub</a>
+					<a href="https://mimiri.io/terms" target="_blank">{{ $t('settingsAbout.termsAndConditions') }}</a>
 				</div>
 				<div class="pt-3 pl-4">
-					<a href="https://github.com/innonova/mimiri-client/issues" target="_blank">Issue Tracker on GitHub</a>
+					<a href="https://mimiri.io/privacy" target="_blank">{{ $t('settingsAbout.privacyPolicy') }}</a>
 				</div>
-
-				<div class="pt-6 pl-4">Copyright &copy;2024-{{ new Date().getFullYear() }} innonova GmbH</div>
+				<div class="pt-6 pl-4"><a href="https://mimiri.io" target="_blank">https://mimiri.io</a></div>
+				<div class="pt-6 pl-4">
+					<a href="https://discord.gg/pg69qPAVZR" target="_blank">{{ $t('settingsAbout.discord') }}</a>
+				</div>
+				<div class="pt-3 pl-4">
+					<a href="https://www.reddit.com/r/mimiri/" target="_blank">{{ $t('settingsAbout.reddit') }}</a>
+				</div>
+				<div class="pt-6 pl-4">
+					<a href="https://github.com/innonova/mimiri-client" target="_blank">{{ $t('settingsAbout.sourceGitHub') }}</a>
+				</div>
+				<div class="pt-3 pl-4">
+					<a href="https://github.com/innonova/mimiri-client/issues" target="_blank">{{
+						$t('settingsAbout.issueTracker')
+					}}</a>
+				</div>
 				<div @click="resetBoxClicks" class="flex flex-col items-start">
 					<div class="flex info flex-col mx-4 mt-4 bg-info">
-						<b>Attributions:</b>
-						<template v-for="att of iconAttributions" :key="att">
-							<div class="mt-2 leading-5" v-html="att" />
-						</template>
+						<b>{{ $t('settingsAbout.attributions') }}</b>
+						<div class="mt-2 leading-5" v-html="$t('settingsAbout.iconAttribution0')" />
+						<div class="mt-2 leading-5" v-html="$t('settingsAbout.iconAttribution1')" />
+						<div class="mt-2 leading-5" v-html="$t('settingsAbout.iconAttribution2')" />
 					</div>
 					<div class="flex info flex-col mx-4 mt-4 mb-10 bg-info">
-						<b>Font Licenses:</b>
+						<b>{{ $t('settingsAbout.fontLicenses') }}</b>
 						<div class="mt-2 mb-1 leading-5">
-							All fonts are directly referenced either from the operating system or fonts.mimiri.io <br />
-							Licenses and project links for fonts referenced from fonts.mimiri.io listed below
+							{{ $t('settingsAbout.fontLicensesText') }}
 						</div>
 						<select v-model="selectedFont" class="mt-2">
-							<option value="CHOOSE">Choose font to view license</option>
+							<option value="CHOOSE">{{ $t('settingsAbout.chooseFontLicense') }}</option>
 							<template v-for="item of fontManager.licenses" :key="item.name">
 								<option :value="item.name">{{ item.name }} ({{ item.license }})</option>
 							</template>
 						</select>
 						<div v-if="fontLink" class="mt-3 mb-2 p-1">
-							Project Link: <a :href="fontLink" target="_blank">{{ fontLink }}</a>
+							{{ $t('settingsAbout.projectLink') }} <a :href="fontLink" target="_blank">{{ fontLink }}</a>
 						</div>
 						<div class="whitespace-pre-wrap max-w-120 mt-3 p-1">{{ fontLicense }}</div>
 					</div>
@@ -81,10 +89,10 @@
 			<div v-if="showLog" class="flex flex-col">
 				<div class="flex justify-around">
 					<div class="text-center">
-						<button class="secondary" @click="closeLog">Close Log</button>
+						<button class="secondary" @click="closeLog">{{ $t('settingsAbout.closeLog') }}</button>
 					</div>
 					<div class="text-center">
-						<button class="primary" @click="reload">reload</button>
+						<button class="primary" @click="reload">{{ $t('settingsAbout.reload') }}</button>
 					</div>
 					<div class="text-center">
 						<button class="primary" @click="changeChannel">
@@ -95,7 +103,7 @@
 				<div class="flex justify-around mt-2">
 					<div class="text-center">
 						<button class="primary" @click="toggleDebug">
-							{{ settingsManager.debugEnabled ? 'Disable Debug' : 'Enable Debug' }}
+							{{ settingsManager.debugEnabled ? $t('settingsAbout.disableDebug') : $t('settingsAbout.enableDebug') }}
 						</button>
 					</div>
 				</div>
@@ -108,7 +116,6 @@
 import { ref, watch } from 'vue'
 import { ipcClient, noteManager, updateManager } from '../../global'
 import { settingsManager } from '../../services/settings-manager'
-import { iconAttributions } from '../../icons/attributions'
 import { mimiriPlatform } from '../../services/mimiri-platform'
 import TabBar from '../elements/TabBar.vue'
 import { fontManager } from '../../global'
@@ -135,7 +142,7 @@ const fontLink = ref('')
 const flags = ref('')
 
 if (ipcClient.isAvailable) {
-	ipcClient.os.rules()?.then(rules => (flags.value = rules?.flags?.join(', ')))
+	void ipcClient.os.rules()?.then(rules => (flags.value = rules?.flags?.join(', ')))
 }
 
 const biCif = value => {

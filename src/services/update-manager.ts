@@ -1,5 +1,15 @@
 import { reactive } from 'vue'
-import { debug, env, ipcClient, notificationManager, updateKeys, updateManager, noteManager } from '../global'
+import {
+	debug,
+	env,
+	ipcClient,
+	notificationManager,
+	updateKeys,
+	updateManager,
+	noteManager,
+	testMode,
+	updateUrlOverride,
+} from '../global'
 import { version, releaseDate } from '../version'
 import { CryptSignature } from './crypt-signature'
 import type { InstalledBundleInfo } from './types/ipc.interfaces'
@@ -157,6 +167,9 @@ export class UpdateManager {
 	}
 
 	public async checkUpdateInitial() {
+		if (testMode && !updateUrlOverride) {
+			return false
+		}
 		if (this.currentVersion !== '0.0.0' && location.host !== 'localhost' && location.host !== env.VITE_ALLOWED_HOST) {
 			try {
 				const lastRunHostVersion = settingsManager.lastRunHostVersion
@@ -205,6 +218,9 @@ export class UpdateManager {
 	}
 
 	public async check(allowUpdate: boolean = true) {
+		if (testMode && !updateUrlOverride) {
+			return
+		}
 		if (ipcClient.isAvailable) {
 			try {
 				this.installedVersions = await ipcClient.bundle.getInstalledVersions()
@@ -280,6 +296,19 @@ export class UpdateManager {
 									) {
 										notificationManager.updateAvailable(bundleInfo.version, new Date(bundleInfo.releaseDate))
 									}
+								}
+							} else if (mimiriPlatform.isLinuxApp) {
+								// Store-managed Linux installs (flathub / snap store): the store
+								// delivers the new shell, so there is nothing to download here —
+								// but the user should still learn that an update exists and that
+								// their store will provide it (settings show the store notice).
+								this.state.latestVersion = bundleInfo.version
+								this.state.isHostUpdate = true
+								if (
+									settingsManager.updateMode === UpdateMode.StrongNotify ||
+									settingsManager.updateMode === UpdateMode.DiscreteNotify
+								) {
+									notificationManager.updateAvailable(bundleInfo.version, new Date(bundleInfo.releaseDate))
 								}
 							}
 						} else if (mimiriPlatform.isIosApp) {
@@ -458,7 +487,7 @@ export class UpdateManager {
 					return
 				}
 			}
-		} catch (ex) {
+		} catch (ex: any) {
 			status?.({ total: 0, downloaded: 0, stage: 'error', error: ex.message })
 			debug.logError('UpdateManager.download', ex)
 		}

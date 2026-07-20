@@ -2,9 +2,15 @@ import { reactive } from 'vue'
 import { fontManager, ipcClient } from '../global'
 import { menuManager } from './menu-manager'
 import { toRaw } from 'vue'
-import { mimiriPlatform } from './mimiri-platform'
 import { delay } from './helpers'
 import { emptyGuid, type Guid } from './types/guid'
+
+export const SUPPORTED_LOCALES = ['en', 'zh', 'da', 'de'] as const
+export type SupportedLocale = (typeof SUPPORTED_LOCALES)[number]
+export const DEFAULT_LOCALE: SupportedLocale = 'en'
+
+export const isSupportedLocale = (value: unknown): value is SupportedLocale =>
+	typeof value === 'string' && (SUPPORTED_LOCALES as readonly string[]).includes(value)
 
 export enum UpdateMode {
 	AutomaticOnIdle = 'auto-idle',
@@ -19,6 +25,7 @@ export interface MimerConfiguration {
 	openAtLogin: boolean
 	allowScreenSharing: boolean
 	theme: string
+	editorTheme: string | undefined
 	titleBarColor: string
 	titleBarSymbolColor: string
 	titleBarHeight: number
@@ -36,8 +43,6 @@ export interface MimerConfiguration {
 	anonymousPassword: string | undefined
 	isNewInstall: boolean | undefined
 	showCreateOverCancel: boolean | undefined
-	alwaysEdit: boolean
-	simpleEditor: boolean
 	editorFontFamily: string
 	editorFontSize: number
 	lastNoteCreateType: string
@@ -50,6 +55,10 @@ export interface MimerConfiguration {
 	debugEnabled?: boolean
 	startCount: number
 	systemTheme: string
+	defaultEditor: string | undefined
+	defaultEditorMobile: string
+	allowMonacoOnMobile: boolean
+	language: SupportedLocale
 }
 
 class SettingsManager {
@@ -60,6 +69,7 @@ class SettingsManager {
 		openAtLogin: true,
 		allowScreenSharing: false,
 		theme: 'default',
+		editorTheme: undefined,
 		titleBarColor: '#f4f4f4',
 		titleBarSymbolColor: '#000',
 		titleBarHeight: 36,
@@ -77,8 +87,6 @@ class SettingsManager {
 		anonymousPassword: undefined,
 		isNewInstall: undefined,
 		showCreateOverCancel: false,
-		alwaysEdit: mimiriPlatform.isDesktop,
-		simpleEditor: !mimiriPlatform.isDesktop,
 		editorFontFamily: 'Consolas',
 		editorFontSize: 14,
 		lastNoteCreateType: 'child',
@@ -91,6 +99,10 @@ class SettingsManager {
 		debugEnabled: undefined,
 		startCount: 0,
 		systemTheme: 'light',
+		defaultEditor: undefined,
+		defaultEditorMobile: 'wysiwyg',
+		allowMonacoOnMobile: false,
+		language: DEFAULT_LOCALE,
 	})
 
 	constructor() {
@@ -138,6 +150,10 @@ class SettingsManager {
 				this.state.isNewInstall = true
 			}
 		}
+		if (this.state.defaultEditor === undefined /* && !this.state.isNewInstall */) {
+			// TODO implement selection prompt
+			this.state.defaultEditor = 'code'
+		}
 		this.state.startCount = (this.state.startCount || 0) + 1
 		await this.save()
 		fontManager.load(this.editorFontFamily)
@@ -152,7 +168,7 @@ class SettingsManager {
 					this._saveRequestedWhileInProgress = false
 					if (ipcClient.isAvailable) {
 						await ipcClient.settings.save(toRaw(this.state))
-						menuManager.updateTrayMenu()
+						void menuManager.updateTrayMenu()
 					} else if (localStorage) {
 						localStorage.setItem('mimer-settings', JSON.stringify(toRaw(this.state)))
 					}
@@ -180,7 +196,9 @@ class SettingsManager {
 		const useSystem = this.state.theme === 'default'
 		const themeIsDark = this.state.theme === 'dark'
 		const systemIsDark = this.state.systemTheme === 'dark'
-		if (useSystem) return systemIsDark
+		if (useSystem) {
+			return systemIsDark
+		}
 		return themeIsDark
 	}
 
@@ -346,24 +364,6 @@ class SettingsManager {
 		void this.save()
 	}
 
-	public get alwaysEdit() {
-		return !!this.state.alwaysEdit
-	}
-
-	public set alwaysEdit(value: boolean) {
-		this.state.alwaysEdit = value
-		void this.save()
-	}
-
-	public get simpleEditor() {
-		return !!this.state.simpleEditor
-	}
-
-	public set simpleEditor(value: boolean) {
-		this.state.simpleEditor = value
-		void this.save()
-	}
-
 	public get editorFontFamily() {
 		return this.state.editorFontFamily
 	}
@@ -456,6 +456,48 @@ class SettingsManager {
 
 	public get startCount() {
 		return this.state.startCount || 0
+	}
+
+	public get defaultEditor() {
+		return this.state.defaultEditor
+	}
+
+	public set defaultEditor(value: string | undefined) {
+		this.state.defaultEditor = value
+		void this.save()
+	}
+
+	public get defaultEditorMobile() {
+		return this.state.defaultEditorMobile
+	}
+
+	public set defaultEditorMobile(value: string) {
+		this.state.defaultEditorMobile = value
+		void this.save()
+	}
+
+	public get allowMonacoOnMobile() {
+		return !!this.state.allowMonacoOnMobile
+	}
+
+	public set allowMonacoOnMobile(value: boolean) {
+		this.state.allowMonacoOnMobile = value
+		void this.save()
+	}
+
+	public get language(): SupportedLocale {
+		if (isSupportedLocale(this.state.language)) {
+			return this.state.language
+		}
+		// Persisted value is unsupported (legacy/unregistered locale).
+		this.state.language = DEFAULT_LOCALE
+		void this.save()
+		return DEFAULT_LOCALE
+	}
+
+	public set language(value: string) {
+		this.state.language = isSupportedLocale(value) ? value : DEFAULT_LOCALE
+		void this.save()
 	}
 }
 

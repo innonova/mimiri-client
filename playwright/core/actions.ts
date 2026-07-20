@@ -20,6 +20,16 @@ import {
 } from '../selectors'
 import { mimiri } from '../framework/mimiri-context'
 
+// Wait for the app to settle after an operation: the busy overlay (which
+// intercepts all pointer events) must be gone and the sync cycle back at rest.
+// Replaces the fixed sleeps that used to guard the account helpers.
+export const waitForAppIdle = async () => {
+	await expect(appMain.busyOverlay()).not.toBeVisible()
+	await expect(statusBar.syncStatusCode()).toHaveValue(
+		/idle|total-size-limit-exceeded|count-limit-exceeded|note-size-limit-exceeded|server-rejection|synchronization-error/,
+	)
+}
+
 export const createLocalAccount = async () => {
 	if (await settingNodes.controlPanelClosed().isVisible()) {
 		await settingNodes.controlPanel().dblclick()
@@ -32,11 +42,11 @@ export const createLocalAccount = async () => {
 	await expect(usernameInput.status()).not.toBeVisible()
 	await createAccountView.button().click()
 	await expect(createAccountView.container()).not.toBeVisible()
-	await mimiri().waitForTimeout(1000)
+	await waitForAppIdle()
 	await expect(settingNodes.controlPanel()).toBeVisible()
 	await settingNodes.controlPanel().click()
 	await expect(aboutView.username()).toHaveText(mimiri().config.username)
-	await mimiri().waitForTimeout(500)
+	await waitForAppIdle()
 }
 
 export const connectLocalAccount = async () => {
@@ -51,11 +61,11 @@ export const connectLocalAccount = async () => {
 	await expect(usernameInput.available()).toBeVisible()
 	await connectCloudView.button().click()
 	await expect(connectCloudView.container()).not.toBeVisible()
-	await mimiri().waitForTimeout(1000)
+	await waitForAppIdle()
 	await expect(settingNodes.controlPanel()).toBeVisible()
 	await settingNodes.controlPanel().click()
 	await expect(aboutView.username()).toHaveText(mimiri().config.username)
-	await mimiri().waitForTimeout(500)
+	await waitForAppIdle()
 }
 
 export const createCloudAccount = async () => {
@@ -70,13 +80,13 @@ export const createCloudAccount = async () => {
 	await expect(usernameInput.available()).toBeVisible()
 	await createAccountView.button().click()
 	await expect(createAccountView.container()).not.toBeVisible()
-	await mimiri().waitForTimeout(1000)
+	await waitForAppIdle()
 	await expect(settingView.currentPlan()).toBeVisible()
 	await expect(settingNodes.controlPanel()).toBeVisible()
 	await settingNodes.subscriptionGroup().dblclick()
 	await settingNodes.controlPanel().dblclick()
 	await expect(aboutView.username()).toHaveText(mimiri().config.username)
-	await mimiri().waitForTimeout(500)
+	await waitForAppIdle()
 }
 
 export const logout = async () => {
@@ -109,10 +119,12 @@ export const login = async () => {
 	await loginCtrl.username().fill(mimiri().config.username)
 	await loginCtrl.password().fill(mimiri().config.password)
 	await loginCtrl.button().click()
-	await mimiri().waitForTimeout(1000)
+	// Wait for the login dialog to actually close — a fixed sleep is not enough
+	// when login is slow (e.g. offline logins that wait out network timeouts)
+	await expect(loginCtrl.container()).not.toBeVisible({ timeout: 15000 })
 	await settingNodes.controlPanel().click()
 	await expect(aboutView.username()).toHaveText(mimiri().config.username)
-	await mimiri().waitForTimeout(500)
+	await waitForAppIdle()
 }
 
 export const loginFail = async () => {

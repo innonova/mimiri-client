@@ -2,16 +2,16 @@ import { computed } from 'vue'
 import { blogManager, updateManager } from '../../global'
 import type { MimiriStore } from '../storage/mimiri-store'
 import { settingsManager, UpdateMode } from '../settings-manager'
+import { AccountType } from '../storage/type'
 import { dateTimeNow } from './date-time'
 import type { Guid } from './guid'
 import { MimerNote } from './mimer-note'
 import { Note } from './note'
-import { differenceInHours } from 'date-fns'
 
 export interface VirtualTree {
 	id: Guid
 	type: string
-	title: string
+	title: () => string
 	icon: string
 	children: VirtualTree[]
 }
@@ -94,9 +94,7 @@ export class VirtualNote extends MimerNote {
 		}
 		if (this.id === 'settings-create-account') {
 			return computed(
-				() =>
-					!this.owner.state.flags['create-account-read'] &&
-					differenceInHours(new Date(), this.owner.state.created) > 24,
+				() => !this.owner.state.flags['create-account-read'] && this.owner.state.accountType === AccountType.None,
 			)
 		}
 		if (this.id === 'settings-create-password' || this.id === 'settings-account') {
@@ -106,7 +104,7 @@ export class VirtualNote extends MimerNote {
 	}
 
 	public get title() {
-		return this._tree?.title
+		return this._tree?.title?.() ?? ''
 	}
 
 	public set title(value: string) {}

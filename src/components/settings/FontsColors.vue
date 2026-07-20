@@ -1,36 +1,46 @@
 <template>
 	<div class="flex flex-col h-full">
-		<TabBar :items="['Fonts']" />
+		<TabBar :items="[$t('settingsFontsColors.tab')]" />
 		<div class="overflow-y-auto pb-10">
 			<div class="grid grid-cols-[5rem_12rem] gap-3 items-baseline mx-1 mt-2">
-				<div class="col-span-2">Editor</div>
+				<div class="col-span-2">{{ $t('settingsFontsColors.editor') }}</div>
 				<hr class="col-span-2 mt-[-0.4rem]" />
-				<div>Font Family:</div>
+				<div>{{ $t('settingsFontsColors.fontFamily') }}</div>
 				<select v-model="editorFontFamily">
 					<template v-for="item of fontManager.families" :key="item">
 						<option :value="item">{{ item }}</option>
 					</template>
-					<option value="CUSTOM">Custom</option>
+					<option value="CUSTOM">{{ $t('settingsFontsColors.custom') }}</option>
 				</select>
 				<div v-if="editorFontFamily === 'CUSTOM'" class="col-span-2 mt-1 mb-[-0.1rem]">
-					Name of a font installed on your system:
+					{{ $t('settingsFontsColors.nameOfFont') }}
 				</div>
-				<div v-if="editorFontFamily === 'CUSTOM'">Font Name:</div>
+				<div v-if="editorFontFamily === 'CUSTOM'">{{ $t('settingsFontsColors.fontName') }}</div>
 				<input v-if="editorFontFamily === 'CUSTOM'" type="text" class="basic-input" v-model="customFontFamily" />
-				<div>Font Size:</div>
+				<div>{{ $t('settingsFontsColors.fontSize') }}</div>
 				<select v-model="editorFontSize">
 					<template v-for="item of fontManager.sizes" :key="item">
 						<option :value="item">{{ item }}</option>
 					</template>
 				</select>
+				<div>{{ $t('settingsFontsColors.theme') }}</div>
+				<select v-model="editorTheme">
+					<option :value="undefined">{{ $t('settingsFontsColors.auto') }}</option>
+					<template v-for="theme of EDITOR_THEMES" :key="theme.id">
+						<option :value="theme.id">{{ theme.label }}</option>
+					</template>
+				</select>
+				<div v-if="editorTheme !== undefined" class="col-span-2 mt-[-0.8rem] text-xs opacity-70">
+					{{ selectedThemeDescription }}
+				</div>
 				<!-- <div class="col-span-2 mt-5">User Interface</div>
 		<hr class="col-span-2 mt-[-0.4rem]" /> -->
 			</div>
 			<div class="mt-10 max-w-110 mr-2">
 				<hr />
 				<div class="w-full flex justify-between mt-2 gap-2">
-					<button @click="reset" class="secondary">Restore defaults</button>
-					<button :disabled="!canSave" @click="save" class="primary">Save</button>
+					<button @click="reset" class="secondary">{{ $t('settingsFontsColors.restoreDefaults') }}</button>
+					<button :disabled="!canSave" @click="save" class="primary">{{ $t('settingsFontsColors.save') }}</button>
 				</div>
 			</div>
 			<div class="mt-10 mb-2 ml-1 text-size-title">{{ currentFontFamily }} ({{ editorFontSize }})</div>
@@ -40,10 +50,15 @@
 			>
 				{{ sampleText }}
 				<br />
-				<span>normal text</span><br />
-				<b>bold text</b><br />
-				<i>italic text</i><br />
-				<i><b>bold italic text</b></i>
+				<span>{{ $t('settingsFontsColors.normalText') }}</span
+				><br />
+				<b>{{ $t('settingsFontsColors.boldText') }}</b
+				><br />
+				<i>{{ $t('settingsFontsColors.italicText') }}</i
+				><br />
+				<i
+					><b>{{ $t('settingsFontsColors.boldItalicText') }}</b></i
+				>
 			</div>
 			<div class="mt-10 mb-2 ml-1 text-size-title">
 				{{ settingsManager.editorFontFamily }} ({{ settingsManager.editorFontSize }})
@@ -54,10 +69,15 @@
 			>
 				{{ sampleText }}
 				<br />
-				<span>normal text</span><br />
-				<b>bold text</b><br />
-				<i>italic text</i><br />
-				<i><b>bold italic text</b></i>
+				<span>{{ $t('settingsFontsColors.normalText') }}</span
+				><br />
+				<b>{{ $t('settingsFontsColors.boldText') }}</b
+				><br />
+				<i>{{ $t('settingsFontsColors.italicText') }}</i
+				><br />
+				<i
+					><b>{{ $t('settingsFontsColors.boldItalicText') }}</b></i
+				>
 			</div>
 		</div>
 	</div>
@@ -68,15 +88,27 @@ import { computed, onMounted, ref, watch } from 'vue'
 import { settingsManager } from '../../services/settings-manager'
 import TabBar from '../elements/TabBar.vue'
 import { fontManager } from '../../global'
+import { EDITOR_THEMES } from '../../services/editor/theme-manager'
 
 const editorFontFamily = ref('')
 const customFontFamily = ref('')
 const editorFontSize = ref(14)
+const editorTheme = ref<string | undefined>(undefined)
+
 const canSave = computed(
 	() =>
 		currentFontFamily.value !== settingsManager.editorFontFamily ||
-		editorFontSize.value !== settingsManager.editorFontSize,
+		editorFontSize.value !== settingsManager.editorFontSize ||
+		editorTheme.value !== settingsManager.state.editorTheme,
 )
+
+const selectedThemeDescription = computed(() => {
+	if (editorTheme.value === undefined) {
+		return ''
+	}
+	const theme = EDITOR_THEMES.find(t => t.id === editorTheme.value)
+	return theme ? theme.description : ''
+})
 
 const currentFontFamily = computed(() =>
 	editorFontFamily.value !== 'CUSTOM' ? editorFontFamily.value : customFontFamily.value,
@@ -96,12 +128,14 @@ onMounted(async () => {
 		customFontFamily.value = settingsManager.editorFontFamily
 	}
 	editorFontSize.value = settingsManager.editorFontSize
+	editorTheme.value = settingsManager.state.editorTheme
 })
 
 const reset = async () => {
 	document.body.style.fontSize = '16px'
 	editorFontFamily.value = 'Consolas'
 	editorFontSize.value = 14
+	editorTheme.value = undefined
 	await save()
 }
 
@@ -112,12 +146,16 @@ const save = async () => {
 		settingsManager.editorFontFamily = customFontFamily.value
 	}
 	settingsManager.editorFontSize = editorFontSize.value
+	settingsManager.state.editorTheme = editorTheme.value
+
 	const root = document.querySelector(':root') as HTMLElement
 	root.style.setProperty(
 		'--font-editor',
 		`'${editorFontFamily.value}', 'Consolas', 'Menlo', 'Droid Sans Mono', 'monospace', 'Courier New'`,
 	)
 	root.style.setProperty('--text-size-editor', `${editorFontSize.value}px`)
+
+	await settingsManager.save()
 }
 
 const sampleText = `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent elit augue,

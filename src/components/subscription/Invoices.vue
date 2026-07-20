@@ -1,7 +1,7 @@
 <template>
 	<div class="flex flex-col h-full">
-		<TabBar :items="['Invoices']" />
-		<div v-if="!invoices?.length" class="m-5" data-testid="invoices-none">No Invoices Yet</div>
+		<TabBar :items="[$t('subInvoices.tab')]" />
+		<div v-if="!invoices?.length" class="m-5" data-testid="invoices-none">{{ $t('subInvoices.noInvoicesYet') }}</div>
 		<div class="p-1 pt-2 text-left overflow-y-auto" data-testid="invoices-view">
 			<div class="flex flex-col gap-2">
 				<template v-for="invoice of invoices" :key="invoice.id">

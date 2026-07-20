@@ -1,20 +1,20 @@
 <template>
 	<div class="flex flex-col h-full" data-testid="connect-cloud-view">
-		<TabBar ref="tabBar" :items="['Connect Cloud']" />
+		<TabBar ref="tabBar" :items="[$t('settingsUpgrade.tab')]" />
 		<form @submit.prevent="createAccount" class="pl-2 mt-1">
 			<div class="grid grid-cols-[7rem_12rem] gap-2">
-				<ItemHeader class="col-span-2">Choose your credentials</ItemHeader>
+				<ItemHeader class="col-span-2">{{ $t('settingsUpgrade.chooseCredentials') }}</ItemHeader>
 				<div class="col-span-2 mb-2">
-					You current local user is: &nbsp; <b>{{ noteManager.state.username }}</b>
+					{{ $t('settingsUpgrade.currentLocalUser') }} &nbsp; <b>{{ noteManager.state.username }}</b>
 				</div>
-				<div class="flex items-center">Username:</div>
+				<div class="flex items-center">{{ $t('settingsUpgrade.username') }}</div>
 				<UsernameInput
 					:display-current="false"
 					:check-username="true"
 					v-model:value="username"
 					v-model:valid="usernameValid"
 				/>
-				<div class="flex items-center">Current Password:</div>
+				<div class="flex items-center">{{ $t('settingsUpgrade.currentPassword') }}</div>
 				<input class="basic-input" type="password" v-model="currentPassword" data-testid="current-password-input" />
 				<div />
 				<label class="flex items-center gap-2">
@@ -24,18 +24,20 @@
 						type="checkbox"
 						data-testid="choose-new-password-checkbox"
 					/>
-					Choose a new password
+					{{ $t('settingsUpgrade.chooseNewPassword') }}
 				</label>
 
 				<template v-if="chooseNewPassword">
-					<div class="flex items-center">New Password:</div>
+					<div class="flex items-center">{{ $t('settingsUpgrade.newPassword') }}</div>
 					<PasswordInput :display-current="false" v-model:value="password" />
-					<div class="flex items-center">Repeat:</div>
+					<div class="flex items-center">{{ $t('settingsUpgrade.repeat') }}</div>
 					<PasswordRepeatInput :display-current="false" :value="password" v-model:match="passwordMatch" />
 				</template>
 				<div v-if="errorMessage" class="col-span-2 text-right text-error my-1">{{ errorMessage }}</div>
 				<div />
-				<PrimaryButton :enabled="canCreate" :loading="loading" data-testid="create-button"> Create </PrimaryButton>
+				<PrimaryButton :enabled="canCreate" :loading="loading" data-testid="create-button">
+					{{ $t('settingsUpgrade.create') }}
+				</PrimaryButton>
 			</div>
 		</form>
 
@@ -50,7 +52,7 @@ import UsernameInput from '../elements/UsernameInput.vue'
 import PasswordInput from '../elements/PasswordInput.vue'
 import PasswordRepeatInput from '../elements/PasswordRepeatInput.vue'
 import PrimaryButton from '../elements/PrimaryButton.vue'
-import { blockUserInput, noteManager } from '../../global'
+import { blockUserInput, noteManager, $t } from '../../global'
 import { DEFAULT_ITERATIONS } from '../../services/storage/mimiri-store'
 
 const username = ref('')
@@ -88,9 +90,9 @@ const createAccount = async () => {
 		)
 	} catch (error) {
 		if (error instanceof Error && error.message === 'Incorrect password') {
-			errorMessage.value = 'Incorrect current password'
+			errorMessage.value = $t('settingsUpgrade.incorrectPassword')
 		} else {
-			errorMessage.value = 'Error upgrading account. Please try again later.'
+			errorMessage.value = $t('settingsUpgrade.upgradeError')
 			console.error('Error upgrading account:', error)
 		}
 	} finally {

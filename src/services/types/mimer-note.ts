@@ -1,14 +1,14 @@
 import { computed, reactive } from 'vue'
 import type { MimiriStore } from '../storage/mimiri-store'
+import { AccountType } from '../storage/type'
 import { dateTimeNow, type DateTime } from './date-time'
 import { type Guid } from './guid'
 import type { Note } from './note'
 import { fromBase64, toBase64 } from '../hex-base64'
 import { persistedState } from '../persisted-state'
-import { blogManager, debug, updateManager } from '../../global'
+import { blogManager, debug, $t, updateManager } from '../../global'
 import { settingsManager, UpdateMode } from '../settings-manager'
 import { MimiriException, MimiriExceptionType } from './exceptions'
-import { differenceInHours, isAfter } from 'date-fns'
 
 const zip = async (text: string) => {
 	return toBase64(
@@ -36,6 +36,8 @@ export interface HistoryItem {
 	username: string
 	text: string
 }
+
+export type NoteEditorMode = 'code' | 'wysiwyg'
 
 export interface NoteViewModel {
 	id: Guid
@@ -160,7 +162,7 @@ export class MimerNote {
 					id: childId,
 					type: '',
 					icon: '',
-					title: 'Loading...',
+					title: $t('controlPanel.loading'),
 					text: '',
 					children: [],
 					history: [],
@@ -305,6 +307,10 @@ export class MimerNote {
 			return
 		}
 		return this.owner.note.shareMimerNote(this, username)
+	}
+
+	public refreshTitle() {
+		this.viewModel.title = this.title
 	}
 
 	public async save() {
@@ -656,9 +662,7 @@ export class MimerNote {
 				() =>
 					(updateManager.isUpdateAvailable && settingsManager.updateMode === UpdateMode.StrongNotify) ||
 					(blogManager.hasNewPost.value && settingsManager.blogPostNotificationLevel === 'clearly') ||
-					(!this.owner.state.flags['create-account-read'] &&
-						differenceInHours(new Date(), this.owner.state.created) > 24) ||
-					(!this.owner.state.flags['create-account-read'] && this.owner.state.isAnonymous),
+					(!this.owner.state.flags['create-account-read'] && this.owner.state.accountType === AccountType.None),
 			)
 		}
 		return false
@@ -700,10 +704,10 @@ export class MimerNote {
 
 	public get title() {
 		if (this.isRecycleBin) {
-			return 'Recycle Bin'
+			return $t('notes.recycleBin')
 		}
 		if (this.isControlPanel) {
-			return 'System'
+			return $t('notes.system')
 		}
 		return (this.note.getItem('metadata').title as string) ?? '[MISSING TITLE]'
 	}
@@ -711,6 +715,17 @@ export class MimerNote {
 	public set title(value: string) {
 		if (!this.isSystem) {
 			this.note.changeItem('metadata').title = value
+		}
+	}
+
+	public get editorMode(): NoteEditorMode | undefined {
+		const value = this.note.getItem('metadata').editorMode
+		return value === 'code' || value === 'wysiwyg' ? value : undefined
+	}
+
+	public set editorMode(value: NoteEditorMode | undefined) {
+		if (!this.isSystem) {
+			this.note.changeItem('metadata').editorMode = value
 		}
 	}
 

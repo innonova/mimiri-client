@@ -12,7 +12,13 @@
 			<TreeNode v-for="node of noteManager.tree.rootRef().value?.viewModel.children" :node="node" :key="node.id" />
 		</template>
 		<NewTreeNode v-if="createNewRootNode" />
-		<div v-if="noSearchResults" class="text-center text-text text-size-menu mt-2 cursor-default">No results found</div>
+		<div
+			v-if="noSearchResults"
+			class="text-center text-text text-size-menu mt-2 cursor-default"
+			data-testid="tree-no-search-results"
+		>
+			{{ $t('noteTreeView.noResultsFound') }}
+		</div>
 	</div>
 </template>
 
@@ -163,7 +169,7 @@ const moveSelectionUp = () => {
 				void note.parent.select()
 			}
 		} else if (note.prevSibling) {
-			findBottomMostNode(note.prevSibling).select()
+			void findBottomMostNode(note.prevSibling).select()
 		}
 	} else if (noteManager.tree.root().children.length > 0) {
 		void noteManager.tree.root().children[0].select()
@@ -178,7 +184,7 @@ const moveSelectionDown = () => {
 				void note.children[0].select()
 			}
 		} else {
-			findNextNodeDown(note)?.select()
+			void findNextNodeDown(note)?.select()
 		}
 	} else if (noteManager.tree.root().children.length > 0) {
 		void noteManager.tree.root().children[0].select()

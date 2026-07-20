@@ -15,12 +15,14 @@
 				:class="{ 'justify-between': showShow || showUpgrade, 'justify-end': !showShow && !showUpgrade }"
 			>
 				<button v-if="showShow" class="secondary" @click="showNote" data-testid="sync-error-dialog-show-note">
-					Show
+					{{ $t('syncErrorDialog.show') }}
 				</button>
 				<button v-if="showUpgrade" class="secondary" @click="upgrade" data-testid="sync-error-dialog-upgrade">
-					Upgrade
+					{{ $t('syncErrorDialog.upgrade') }}
 				</button>
-				<button class="primary" @click="close" data-testid="sync-error-dialog-ok">OK</button>
+				<button class="primary" @click="close" data-testid="sync-error-dialog-ok">
+					{{ $t('syncErrorDialog.ok') }}
+				</button>
 			</footer>
 		</div>
 	</dialog>
@@ -28,7 +30,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { noteManager, syncOverSizeNote, syncStatus } from '../../global'
+import { noteManager, syncOverSizeNote, syncStatus, $t } from '../../global'
 import DialogTitle from '../elements/DialogTitle.vue'
 import { SYSTEM_NOTE_COUNT } from '../../services/storage/synchronization-service'
 import { formatBytes } from '../../services/helpers'
@@ -45,41 +47,38 @@ const show = async () => {
 	showUpgrade.value = false
 	if (syncStatus.value === 'count-limit-exceeded') {
 		showUpgrade.value = true && !noteManager.state.isMobile
-		title.value = 'Note Limit Reached'
+		title.value = $t('syncErrorDialog.noteLimitTitle')
 		const totalCount =
 			noteManager.state.userStats.noteCount + noteManager.state.userStats.localNoteCountDelta - SYSTEM_NOTE_COUNT
 		const maxCount = noteManager.state.userStats.maxNoteCount
 
-		text.value = `You have created ${totalCount} of your ${maxCount} notes\nYou can either delete some notes or upgrade your account to increase the limit.`
+		text.value = $t('syncErrorDialog.noteLimitText', { count: totalCount, max: maxCount })
 	}
 	if (syncStatus.value === 'total-size-limit-exceeded') {
 		showUpgrade.value = true && !noteManager.state.isMobile
-		title.value = 'Data Limit Reached'
+		title.value = $t('syncErrorDialog.dataLimitTitle')
 		const totalSize = noteManager.state.userStats.size + noteManager.state.userStats.localSizeDelta
 		const maxSize = noteManager.state.userStats.maxTotalBytes
-		text.value = `You have created ${formatBytes(totalSize)} of your ${formatBytes(maxSize)} data
-
-		You can either delete some data or upgrade your account to increase the limit.`
+		text.value = $t('syncErrorDialog.dataLimitText', { used: formatBytes(totalSize), max: formatBytes(maxSize) })
 	}
 	if (syncStatus.value === 'note-size-limit-exceeded') {
 		showShow.value = true && !noteManager.state.isMobile
 		const note = await noteManager.tree.getNoteById(syncOverSizeNote.value)
-		title.value = 'Note Size Limit Reached'
+		title.value = $t('syncErrorDialog.noteSizeLimitTitle')
 		const maxSize = noteManager.state.userStats.maxNoteBytes
-		text.value = `The Note '${note.title}' (${formatBytes(note.size)})
-		exceeds the size limit (${formatBytes(maxSize)})
-
-		You can either split the note into smaller notes or upgrade your account to increase the limit.
-
-		You can also try deleting note history to reduce the size of the note. (This can be done in the note properties)`
+		text.value = $t('syncErrorDialog.noteSizeLimitText', {
+			title: note.title,
+			size: formatBytes(note.size),
+			max: formatBytes(maxSize),
+		})
 	}
 	if (syncStatus.value === 'synchronization-error') {
-		title.value = 'Synchronization Error'
-		text.value = `An unexpected error occurred while attempting to synchronize.\n\nCheck your internet connection or try again later.`
+		title.value = $t('syncErrorDialog.syncErrorTitle')
+		text.value = $t('syncErrorDialog.syncErrorText')
 	}
 	if (syncStatus.value === 'server-rejection') {
-		title.value = 'Synchronization Error'
-		text.value = `The server rejected the synchronization request.\n\nThis is likely a result of a temporary issue, if it persists please contact support.`
+		title.value = $t('syncErrorDialog.syncErrorTitle')
+		text.value = $t('syncErrorDialog.serverRejectionText')
 	}
 	isOpen.value = true
 	dialog.value.showModal()

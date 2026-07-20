@@ -42,6 +42,14 @@ export class NoteTreeManager {
 		this.notes[id] = note
 	}
 
+	public refreshSystemNoteTitles() {
+		for (const note of Object.values(this.notes)) {
+			if (note.isSystem) {
+				note.refreshTitle()
+			}
+		}
+	}
+
 	public async ensureNote(id: Guid) {
 		if (!this.notes[id]) {
 			await this.noteService.readNote(id)

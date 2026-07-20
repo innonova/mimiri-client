@@ -6,6 +6,7 @@ const tid = (id: string) => {
 }
 export const appMain = {
 	status: () => tid('app-status'),
+	busyOverlay: () => tid('busy-overlay'),
 }
 
 export const subHomeView = {
@@ -28,6 +29,7 @@ export const mainToolbar = {
 export const titleBar = {
 	container: () => tid('title-bar'),
 	accountButton: () => tid('account-button'),
+	searchInput: () => tid('title-search-input'),
 	file: () => tid('title-menu-file'),
 	edit: () => tid('title-menu-edit'),
 	view: () => tid('title-menu-view'),
@@ -52,6 +54,7 @@ export const menu = {
 	refresh: () => tid('menu-refresh'),
 	delete: () => tid('menu-delete'),
 	recycle: () => tid('menu-recycle'),
+	find: () => tid('menu-find'),
 	rename: () => tid('menu-rename'),
 	duplicate: () => tid('menu-duplicate'),
 	copy: () => tid('menu-copy'),
@@ -71,6 +74,7 @@ export const menu = {
 	workOffline: () => tid('menu-work-offline'),
 	properties: () => tid('menu-properties'),
 	emptyRecycleBin: () => tid('menu-empty-recycle-bin'),
+	passwordGenerator: () => tid('menu-password-generator'),
 }
 
 export const note = {
@@ -91,22 +95,52 @@ export const note = {
 
 export const editor = {
 	monaco: () => tid('editor-monaco-container').locator('.monaco-editor'),
+	monacoContainer: () => tid('editor-monaco-container'),
+	proseMirror: () => tid('editor-prosemirror-container').locator('.ProseMirror'),
+	proseMirrorContainer: () => tid('editor-prosemirror-container'),
 	simple: () => tid('editor-simple-container'),
 	display: () => tid('editor-display-container'),
 	back: () => tid('editor-back-button'),
 	save: () => tid('editor-save-button'),
 	toggleWordWrap: () => tid('editor-toggle-wordwrap'),
+	toggleEditMode: () => tid('editor-toggle-edit-mode-button'),
 	undo: () => tid('editor-undo-button'),
 	redo: () => tid('editor-redo-button'),
 	history: () => tid('editor-history-button'),
 	markAsPassword: () => tid('editor-mark-as-password'),
+	insertHeading: () => tid('editor-insert-heading'),
+	insertCodeBlock: () => tid('editor-insert-code-block'),
+	insertCheckboxList: () => tid('editor-insert-checkbox'),
+	insertUnorderedList: () => tid('editor-insert-unordered-list'),
+	insertOrderedList: () => tid('editor-insert-ordered-list'),
 	activateEditMode: () => tid('editor-activate-edit-mode'),
+	findBar: () => tid('editor-find-bar'),
+	findInput: () => tid('editor-find-input'),
+	findCount: () => tid('editor-find-count'),
+	findNext: () => tid('editor-find-next'),
+	findPrev: () => tid('editor-find-prev'),
+	findCase: () => tid('editor-find-case'),
+	findWholeWord: () => tid('editor-find-whole-word'),
+	findRegex: () => tid('editor-find-regex'),
+	findClose: () => tid('editor-find-close'),
+	findToggleReplace: () => tid('editor-find-toggle-replace'),
+	findReplaceInput: () => tid('editor-find-replace-input'),
+	findReplace: () => tid('editor-find-replace'),
+	findReplaceAll: () => tid('editor-find-replace-all'),
 }
 
 export const editorHistory = {
 	container: () => tid('editor-history-container'),
 	scrollContainer: () => tid('editor-history-scroll-container'),
 	item: (index: number) => tid(`editor-history-item-${index}`),
+	moreButton: () => tid('editor-history-more-button'),
+}
+
+export const searchBox = {
+	term: () => tid('search-box-term'),
+	close: () => tid('search-box-close'),
+	closeMobile: () => tid('search-box-close-mobile'),
+	noResults: () => tid('tree-no-search-results'),
 }
 
 export const dialog = {
@@ -248,9 +282,10 @@ export const subItem = {
 
 export const newSubView = {
 	container: () => tid('new-subscription-view'),
-	monthly: () => tid('period-month'),
-	yearly: () => tid('period-year'),
-	currencySelector: () => tid('currency-selector'),
+	// Period and currency are Slider segmented toggles (selector-<value>)
+	monthly: () => tid('selector-month'),
+	yearly: () => tid('selector-year'),
+	currency: (currency: string) => tid(`selector-${currency}`),
 	loaded: () => tid('subscriptions-loaded'),
 }
 
@@ -404,6 +439,19 @@ export const aboutView = {
 export const pinCodeView = {
 	container: () => tid(`pin-code-container`),
 	save: () => tid(`pin-code-container`).getByTestId(`save-pin`),
+	clear: () => tid(`pin-code-container`).getByTestId(`clear-pin`),
+}
+
+export const settingsGeneral = {
+	language: () => tid('settings-language'),
+	theme: () => tid('settings-theme'),
+	defaultEditor: () => tid('settings-default-editor'),
+	save: () => tid('settings-general-save'),
+}
+
+export const recycleBinView = {
+	scan: () => tid('recycle-scan-inconsistencies'),
+	empty: () => tid('recycle-empty-from-settings'),
 }
 
 export const shareDialog = {
@@ -413,6 +461,9 @@ export const shareDialog = {
 	closeButton: () => tid(`share-dialog`).getByTestId(`share-close-button`),
 	cancelButton: () => tid(`share-dialog`).getByTestId(`share-cancel-button`),
 	code: () => tid(`share-dialog`).getByTestId(`share-code`),
+	errorInvalidUsername: () => tid(`share-dialog`).getByTestId(`share-error-invalid-username`),
+	errorShareWithSelf: () => tid(`share-dialog`).getByTestId(`share-error-share-with-self`),
+	errorFailed: () => tid(`share-dialog`).getByTestId(`share-error-failed`),
 }
 
 export const acceptShareDialog = {
@@ -491,6 +542,14 @@ export const textNoteProperties = {
 	key: () => tid(`text-note-properties`).getByTestId(`note-key`),
 	shareParticipantUsername: () => tid(`text-note-properties`).getByTestId(`share-participant-username`),
 	noShareParticipants: () => tid(`text-note-properties`).getByTestId(`no-share-participants`),
+	deleteOldHistory: () => tid(`text-note-properties`).getByTestId(`properties-delete-old-history`),
+	deleteAllHistory: () => tid(`text-note-properties`).getByTestId(`properties-delete-all-history`),
+}
+
+export const deleteHistoryDialog = {
+	container: () => tid(`delete-history-dialog`),
+	confirmButton: () => tid(`delete-history-dialog`).getByTestId(`delete-history-confirm`),
+	cancelButton: () => tid(`delete-history-dialog`).getByTestId(`delete-history-cancel`),
 }
 
 export const infoDialog = {
@@ -517,4 +576,19 @@ export const clearLocalDataDialog = {
 	container: () => tid(`clear-local-data-dialog`),
 	clearButton: () => tid(`clear-local-data-clear`),
 	logoutButton: () => tid(`clear-local-data-logout`),
+}
+
+export const passwordGeneratorDialog = {
+	container: () => tid(`password-generator-dialog`),
+	password: () => tid(`password-generator-password`),
+	refresh: () => tid(`password-generator-refresh`),
+	copyButton: () => tid(`password-generator-copy`),
+	closeButton: () => tid(`password-generator-close`),
+}
+
+// zxcvbn-based quality indicator rendered by PasswordInput (create-account etc.)
+export const passwordQuality = {
+	freeAccess: () => tid('password-quality-free-access'),
+	casualUseOnly: () => tid('password-quality-casual-use-only'),
+	acceptable: () => tid('password-quality-acceptable-security'),
 }

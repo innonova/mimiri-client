@@ -1,4 +1,4 @@
-import { noteManager } from '../../global'
+import { $t, noteManager } from '../../global'
 import { mimiriPlatform } from '../mimiri-platform'
 import type { MimiriStore } from '../storage/mimiri-store'
 import { settingsManager } from '../settings-manager'
@@ -25,7 +25,7 @@ export const createControlPanelTree = (owner: MimiriStore, parent: MimerNote): M
 			? [
 					{
 						id: 'settings-update' as Guid,
-						title: 'Updates',
+					title: () => $t('controlPanel.updates'),
 						type: 'settings-update',
 						icon: 'download',
 						children: [],
@@ -36,7 +36,7 @@ export const createControlPanelTree = (owner: MimiriStore, parent: MimerNote): M
 			? [
 					{
 						id: 'settings-blog' as Guid,
-						title: 'Dev Blog',
+					title: () => $t('controlPanel.devBlog'),
 						type: 'settings-blog',
 						icon: 'announcement',
 						children: [],
@@ -47,7 +47,7 @@ export const createControlPanelTree = (owner: MimiriStore, parent: MimerNote): M
 			? [
 					{
 						id: 'settings-debug' as Guid,
-						title: 'Debug',
+					title: () => $t('controlPanel.debug'),
 						type: 'settings-debug',
 						icon: 'bulb',
 						children: [],
@@ -56,20 +56,20 @@ export const createControlPanelTree = (owner: MimiriStore, parent: MimerNote): M
 			: []),
 		{
 			id: 'settings-group' as Guid,
-			title: 'Settings',
+			title: () => $t('controlPanel.settings'),
 			type: 'settings-general',
 			icon: 'cog',
 			children: [
 				{
 					id: 'settings-general' as Guid,
-					title: 'General',
+					title: () => $t('controlPanel.general'),
 					type: 'settings-general',
 					icon: 'cog',
 					children: [],
 				},
 				{
 					id: 'settings-fonts-colors' as Guid,
-					title: 'Fonts',
+					title: () => $t('controlPanel.fonts'),
 					type: 'settings-fonts-colors',
 					icon: 'font',
 					children: [],
@@ -78,7 +78,7 @@ export const createControlPanelTree = (owner: MimiriStore, parent: MimerNote): M
 					? [
 							{
 								id: 'settings-pin' as Guid,
-								title: 'PIN Code',
+								title: () => $t('controlPanel.pinCode'),
 								type: 'settings-pin',
 								icon: 'lock',
 								children: [],
@@ -91,7 +91,7 @@ export const createControlPanelTree = (owner: MimiriStore, parent: MimerNote): M
 			? [
 					{
 						id: 'settings-create-account' as Guid,
-						title: 'Create Account',
+						title: () => $t('controlPanel.createAccount'),
 						type: 'settings-create-account',
 						icon: 'account',
 						children: [],
@@ -100,7 +100,7 @@ export const createControlPanelTree = (owner: MimiriStore, parent: MimerNote): M
 			: [
 					{
 						id: 'settings-account' as Guid,
-						title: 'Account',
+						title: () => $t('controlPanel.account'),
 						type: noteManager.state.isAnonymous
 							? 'settings-create-password'
 							: noteManager.state.accountType === AccountType.Local
@@ -112,7 +112,7 @@ export const createControlPanelTree = (owner: MimiriStore, parent: MimerNote): M
 								? [
 										{
 											id: 'settings-upgrade' as Guid,
-											title: 'Connect Cloud',
+									title: () => $t('controlPanel.connectCloud'),
 											type: 'settings-upgrade',
 											icon: 'account',
 											children: [],
@@ -123,14 +123,14 @@ export const createControlPanelTree = (owner: MimiriStore, parent: MimerNote): M
 								? [
 										{
 											id: 'settings-username' as Guid,
-											title: 'Username',
+										title: () => $t('controlPanel.username'),
 											type: 'settings-username',
 											icon: 'account',
 											children: [],
 										},
 										{
 											id: 'settings-password' as Guid,
-											title: 'Password',
+										title: () => $t('controlPanel.password'),
 											type: 'settings-password',
 											icon: 'account',
 											children: [],
@@ -139,7 +139,7 @@ export const createControlPanelTree = (owner: MimiriStore, parent: MimerNote): M
 								: [
 										{
 											id: 'settings-create-password' as Guid,
-											title: 'Create Password',
+										title: () => $t('controlPanel.createPassword'),
 											type: 'settings-create-password',
 											icon: 'account',
 											children: [],
@@ -148,7 +148,7 @@ export const createControlPanelTree = (owner: MimiriStore, parent: MimerNote): M
 
 							{
 								id: 'settings-delete' as Guid,
-								title: 'Delete',
+								title: () => $t('controlPanel.delete'),
 								type: 'settings-delete',
 								icon: 'account',
 								children: [],
@@ -160,34 +160,34 @@ export const createControlPanelTree = (owner: MimiriStore, parent: MimerNote): M
 			? [
 					{
 						id: 'settings-plan-group' as Guid,
-						title: 'Plan',
+					title: () => $t('controlPanel.plan'),
 						type: 'settings-plan',
 						icon: 'coins',
 						children: [
 							{
 								id: 'settings-plan' as Guid,
-								title: 'Current Plan',
+						title: () => $t('controlPanel.currentPlan'),
 								type: 'settings-plan',
 								icon: 'coins',
 								children: [],
 							},
 							{
 								id: 'settings-billing-address' as Guid,
-								title: 'Billing Address',
+							title: () => $t('controlPanel.billingAddress'),
 								type: 'settings-billing-address',
 								icon: 'coins',
 								children: [],
 							},
 							{
 								id: 'settings-payment-methods' as Guid,
-								title: 'Payment Methods',
+							title: () => $t('controlPanel.paymentMethods'),
 								type: 'settings-payment-methods',
 								icon: 'coins',
 								children: [],
 							},
 							{
 								id: 'settings-invoices' as Guid,
-								title: 'Invoices',
+							title: () => $t('controlPanel.invoices'),
 								type: 'settings-invoices',
 								icon: 'coins',
 								children: [],

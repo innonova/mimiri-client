@@ -12,11 +12,11 @@
 		<div v-if="secondPassed" class="flex flex-col items-center justify-center h-full pb-10">
 			<img v-if="!mimiriPlatform.isElectron" class="ml-1.5 mr-1 mt-px p-1 w-32 h-32" src="/img/logo-big.png" />
 			<div class="flex text-size-header">
-				<div>Initializing</div>
+				<div>{{ $t('app.initializing') }}</div>
 				<div class="w-0">{{ activity }}</div>
 			</div>
 			<div class="text-size-title mt-5 px-5 leading-6 text-center max-w-96">
-				This might take a moment if this is the first time you are starting Mimiri Notes
+				{{ $t('app.firstTimeMessage') }}
 			</div>
 		</div>
 	</div>
@@ -91,6 +91,7 @@
 			v-if="noteManager.state.busy"
 			class="absolute left-0 top-0 w-full h-full flex items-center justify-around text-white"
 			:class="{ 'bg-backdrop': noteManager.state.busyLong }"
+			data-testid="busy-overlay"
 		>
 			<LoadingIcon v-if="noteManager.state.spinner" class="animate-spin w-12 h-12" />
 		</div>
@@ -98,7 +99,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import NoteTreeView from './components/NoteTreeView.vue'
 import NoteEditor from './components/NoteEditor.vue'
 import MainToolbar from './components/MainToolbar.vue'
@@ -149,6 +150,7 @@ import {
 	blockUserInput,
 	appStatus,
 	inconsistencyDialog,
+	localization,
 } from './global'
 import { settingsManager } from './services/settings-manager'
 import LoadingIcon from './icons/loading.vue'
@@ -159,7 +161,7 @@ import { localAuth } from './services/local-auth'
 import LockScreen from './components/LockScreen.vue'
 import { useEventListener } from '@vueuse/core'
 import SystemPage from './components/SystemPage.vue'
-import { AccountType, ViewMode } from './services/storage/type'
+import { ViewMode } from './services/storage/type'
 import PropertiesPage from './components/PropertiesPage.vue'
 import DeleteHistoryDialog from './components/dialogs/DeleteHistoryDialog.vue'
 import InfoDialog from './components/dialogs/InfoDialog.vue'
@@ -167,7 +169,6 @@ import InconsistencyDialog from './components/dialogs/InconsistencyDialog.vue'
 import StatusBar from './components/elements/StatusBar.vue'
 import SyncErrorDialog from './components/dialogs/SyncErrorDialog.vue'
 import DeleteLocalDataDialog from './components/dialogs/DeleteLocalDataDialog.vue'
-import type { Guid } from './services/types/guid'
 
 const colorScheme = ref('only light')
 const loading = ref(true)
@@ -256,7 +257,7 @@ useEventListener(
 
 if (ipcClient.isAvailable) {
 	// noteManager.setCacheManager(ipcClient.cache)
-	menuManager.updateTrayMenu()
+	void menuManager.updateTrayMenu()
 	menuManager.updateAppMenu()
 }
 
@@ -309,7 +310,7 @@ const handleShortcut = event => {
 		if (isSystemNote) {
 			return
 		}
-		if (treeViewShortCutsActive) {
+		if (treeViewShortCutsActive && !window.getSelection()?.toString()) {
 			event.preventDefault()
 			event.stopPropagation()
 			if (noteTreeView.value) {
@@ -397,6 +398,13 @@ const handleShortcut = event => {
 			}
 		}
 	}
+	if (event.key === 'a' && ctrlActive) {
+		if (treeViewShortCutsActive) {
+			event.preventDefault()
+			event.stopPropagation()
+			mimiriEditor.selectAll()
+		}
+	}
 	if (event.key === 's' && ctrlActive) {
 		if (isSystemNote) {
 			return
@@ -421,13 +429,15 @@ const handleShortcut = event => {
 			noteManager.ui.newNote()
 		}
 	}
-	if (event.key === 'F3' || (event.key === 'F' && ctrlActive)) {
+	// Skip global fallbacks for keys the focused editor already handled
+	// (e.g. F3 = find next / Escape = close find bar inside the editors)
+	if ((event.key === 'F3' || (event.key === 'F' && ctrlActive)) && !event.defaultPrevented) {
 		event.preventDefault()
 		if (titleBar.value) {
 			titleBar.value.searchAllNotes()
 		}
 	}
-	if (event.key === 'Escape') {
+	if (event.key === 'Escape' && !event.defaultPrevented) {
 		if (showSearchBox.value) {
 			showSearchBox.value = false
 		}
@@ -461,6 +471,7 @@ onMounted(async () => {
 		progressActivity()
 
 		await settingsManager.load()
+		localization.setLocale(settingsManager.language)
 		debug.init()
 		debug.log(`App Loading ${settingsManager.channel} ${updateManager.currentVersion}`)
 		if (settingsManager.mainWindowSize.width > 100 && settingsManager.mainWindowSize.height > 100) {

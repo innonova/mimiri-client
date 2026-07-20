@@ -1,83 +1,95 @@
 <template>
 	<div class="flex flex-col h-full">
-		<TabBar :items="['General']" />
+		<TabBar :items="[$t('settingsGeneral.tab')]" />
 		<div class="overflow-y-auto pb-10">
 			<div class="p-1 pt-2 m-auto text-left flex items-center">
-				<div class="w-15">Theme</div>
-				<select v-model="theme" class="ml-1">
-					<option value="default">System</option>
-					<option value="light">Light</option>
-					<option value="dark">Dark</option>
+				<div class="w-20">{{ $t('settingsGeneral.language') }}</div>
+				<select v-model="language" class="ml-1" data-testid="settings-language">
+					<option value="en">{{ $t('settingsGeneral.languageEnglish') }}</option>
+					<option value="zh">{{ $t('settingsGeneral.languageChinese') }}</option>
+					<option value="da">{{ $t('settingsGeneral.languageDanish') }}</option>
+					<option value="de">{{ $t('settingsGeneral.languageGerman') }}</option>
+				</select>
+			</div>
+			<div class="p-1 pt-2 m-auto text-left flex items-center">
+				<div class="w-20">{{ $t('settingsGeneral.theme') }}</div>
+				<select v-model="theme" class="ml-1" data-testid="settings-theme">
+					<option value="default">{{ $t('settingsGeneral.themeSystem') }}</option>
+					<option value="light">{{ $t('settingsGeneral.themeLight') }}</option>
+					<option value="dark">{{ $t('settingsGeneral.themeDark') }}</option>
+				</select>
+			</div>
+			<div class="p-1 pt-2 m-auto text-left flex items-center">
+				<div class="w-20" :title="$t('settingsGeneral.defaultEditorTooltip')">
+					{{ $t('settingsGeneral.defaultEditor') }}
+				</div>
+				<select v-model="defaultEditor" class="ml-1" data-testid="settings-default-editor">
+					<option value="wysiwyg">{{ $t('settingsGeneral.editorWysiwyg') }}</option>
+					<option value="code">{{ $t('settingsGeneral.editorCode') }}</option>
 				</select>
 			</div>
 			<div v-if="mimiriPlatform.isLinuxApp || env.DEV" class="p-1 pt-2 m-auto text-left flex items-center">
-				<div class="w-15">Tray Icon</div>
+				<div class="w-20">{{ $t('settingsGeneral.trayIcon') }}</div>
 				<select v-model="trayIcon" class="ml-1">
-					<option value="system">System</option>
-					<option value="white">White</option>
-					<option value="black">Black</option>
+					<option value="system">{{ $t('settingsGeneral.trayIconSystem') }}</option>
+					<option value="white">{{ $t('settingsGeneral.trayIconWhite') }}</option>
+					<option value="black">{{ $t('settingsGeneral.trayIconBlack') }}</option>
 				</select>
 			</div>
-			<div v-if="!mimiriPlatform.isDesktop || !alwaysEdit || env.DEV" class="p-1 pt-2 m-auto text-left">
-				<label title="When disabled, notes open in read-only mode and editing must be explicitly enabled">
-					<input type="checkbox" v-model="alwaysEdit" class="mr-1 relative top-0.5" />
-					Always edit
-				</label>
-			</div>
-			<div v-if="!mimiriPlatform.isDesktop || simpleEditor || env.DEV" class="p-1 pt-2 m-auto text-left">
-				<label title="A simpler editor intended for mobile devices, where the advanced editor may not work reliably">
-					<input type="checkbox" v-model="simpleEditor" class="mr-1 relative top-0.5" />
-					Use simplified editor
-				</label>
-			</div>
 			<div v-if="mimiriPlatform.isDesktop && !mimiriPlatform.isWeb" class="p-1 pt-2 m-auto text-left">
-				<label title="Automatically start Mimiri Notes when you log in to your computer">
+				<label :title="$t('settingsGeneral.launchOnLoginTooltip')">
 					<input type="checkbox" v-model="openAtLogin" class="mr-1 relative top-0.5" />
-					Launch Mimiri Notes on Login
+					{{ $t('settingsGeneral.launchOnLogin') }}
 				</label>
 			</div>
 			<div v-if="mimiriPlatform.isWindowsApp" class="p-1 pt-2 m-auto text-left">
-				<label
-					title="Show Mimiri Notes in the taskbar when the window is open, instead of only showing the system tray icon"
-				>
+				<label :title="$t('settingsGeneral.showInTaskbarTooltip')">
 					<input type="checkbox" v-model="showInTaskBar" class="mr-1 relative top-0.5" />
-					Show in Taskbar
+					{{ $t('settingsGeneral.showInTaskbar') }}
 				</label>
 			</div>
 			<div v-if="mimiriPlatform.isWindowsApp" class="p-1 pt-2 m-auto text-left">
-				<label title="Prevent the system tray icon from being hidden in the overflow area">
+				<label :title="$t('settingsGeneral.keepTrayVisibleTooltip')">
 					<input type="checkbox" v-model="keepTrayIconVisible" class="mr-1 relative top-0.5" />
-					Keep Tray Icon Visible
+					{{ $t('settingsGeneral.keepTrayVisible') }}
 				</label>
 			</div>
 			<div v-if="mimiriPlatform.isElectron" class="p-1 pt-2 m-auto text-left">
-				<label title="Fully quit the application instead of minimizing to the system tray when closing the window">
+				<label :title="$t('settingsGeneral.quitOnCloseTooltip')">
 					<input type="checkbox" v-model="closeOnX" class="mr-1 relative top-0.5" />
-					Quit when closing application window
+					{{ $t('settingsGeneral.quitOnClose') }}
 				</label>
 			</div>
 			<div class="p-1 pt-2 m-auto text-left">
-				<label title="Show chevrons in the tree instead of plus/minus icons to indicate expandable items">
+				<label :title="$t('settingsGeneral.useChevronsTooltip')">
 					<input type="checkbox" v-model="useChevrons" class="mr-1 relative top-0.5" />
-					Use chevrons in tree view
+					{{ $t('settingsGeneral.useChevrons') }}
 				</label>
 			</div>
 			<div v-if="mimiriPlatform.isDesktop" class="p-1 pt-2 m-auto text-left">
-				<label title="Display vertical lines in the tree view to indicate nesting depth">
+				<label :title="$t('settingsGeneral.showVerticalGuidesTooltip')">
 					<input type="checkbox" v-model="showVerticalGuides" class="mr-1 relative top-0.5" />
-					Show vertical guides
+					{{ $t('settingsGeneral.showVerticalGuides') }}
 				</label>
 			</div>
 			<div class="p-1 pt-2 m-auto text-left">
-				<label title="If you find the developer blog annoying, you can choose to hide it">
+				<label :title="$t('settingsGeneral.disableDevBlogTooltip')">
 					<input type="checkbox" v-model="disableDevBlog" class="mr-1 relative top-0.5" />
-					Disable Dev Blog
+					{{ $t('settingsGeneral.disableDevBlog') }}
+				</label>
+			</div>
+			<div v-if="!mimiriPlatform.isDesktop" class="p-1 pt-2 m-auto text-left">
+				<label :title="$t('settingsGeneral.allowMonacoOnMobileTooltip')">
+					<input type="checkbox" v-model="allowMonacoOnMobile" class="mr-1 relative top-0.5" />
+					{{ $t('settingsGeneral.allowMonacoOnMobile') }}
 				</label>
 			</div>
 			<div class="mt-10 max-w-110 mr-2">
 				<hr />
 				<div class="w-full flex justify-end mt-2 gap-2">
-					<button :disabled="!canSave" @click="save" class="primary">Save</button>
+					<button :disabled="!canSave" @click="save" class="primary" data-testid="settings-general-save">
+						{{ $t('settingsGeneral.save') }}
+					</button>
 				</div>
 			</div>
 		</div>
@@ -89,8 +101,9 @@ import { computed, onMounted, ref } from 'vue'
 import { settingsManager } from '../../services/settings-manager'
 import { mimiriPlatform } from '../../services/mimiri-platform'
 import TabBar from '../elements/TabBar.vue'
-import { env } from '../../global'
+import { env, localization, noteManager } from '../../global'
 
+const language = ref('en')
 const theme = ref('default')
 const openAtLogin = ref(false)
 const showInTaskBar = ref(false)
@@ -100,52 +113,63 @@ const trayIcon = ref('system')
 const disableDevBlog = ref(false)
 const useChevrons = ref(false)
 const showVerticalGuides = ref(false)
-
-const alwaysEdit = ref(true)
-const simpleEditor = ref(false)
+const allowMonacoOnMobile = ref(false)
+const defaultEditor = ref('wysiwyg')
 
 const canSave = computed(
 	() =>
+		language.value !== settingsManager.language ||
 		theme.value !== settingsManager.theme ||
 		keepTrayIconVisible.value !== settingsManager.keepTrayIconVisible ||
 		showInTaskBar.value !== settingsManager.showInTaskBar ||
 		openAtLogin.value !== settingsManager.openAtLogin ||
 		closeOnX.value !== settingsManager.closeOnX ||
 		trayIcon.value !== settingsManager.trayIcon ||
-		alwaysEdit.value !== settingsManager.alwaysEdit ||
-		simpleEditor.value !== settingsManager.simpleEditor ||
 		disableDevBlog.value !== settingsManager.disableDevBlog ||
 		useChevrons.value !== settingsManager.useChevrons ||
-		showVerticalGuides.value !== settingsManager.showVerticalGuides,
+		showVerticalGuides.value !== settingsManager.showVerticalGuides ||
+		allowMonacoOnMobile.value !== settingsManager.allowMonacoOnMobile ||
+		defaultEditor.value !==
+			(mimiriPlatform.isDesktop ? (settingsManager.defaultEditor ?? 'code') : settingsManager.defaultEditorMobile),
 )
 
 onMounted(() => {
+	language.value = settingsManager.language
 	theme.value = settingsManager.theme
 	keepTrayIconVisible.value = settingsManager.keepTrayIconVisible
 	showInTaskBar.value = settingsManager.showInTaskBar
 	openAtLogin.value = settingsManager.openAtLogin
 	closeOnX.value = settingsManager.closeOnX
 	trayIcon.value = settingsManager.trayIcon
-	alwaysEdit.value = settingsManager.alwaysEdit
-	simpleEditor.value = settingsManager.simpleEditor
 	disableDevBlog.value = settingsManager.disableDevBlog
 	useChevrons.value = settingsManager.useChevrons
 	showVerticalGuides.value = settingsManager.showVerticalGuides
+	allowMonacoOnMobile.value = settingsManager.allowMonacoOnMobile
+	defaultEditor.value = mimiriPlatform.isDesktop
+		? (settingsManager.defaultEditor ?? 'code')
+		: settingsManager.defaultEditorMobile
 })
 
 const save = async () => {
+	settingsManager.language = language.value
+	localization.setLocale(language.value)
+	noteManager.tree.refreshSystemNoteTitles()
 	settingsManager.theme = theme.value
 	settingsManager.keepTrayIconVisible = keepTrayIconVisible.value
 	settingsManager.showInTaskBar = showInTaskBar.value
 	settingsManager.openAtLogin = openAtLogin.value
 	settingsManager.closeOnX = closeOnX.value
 	settingsManager.trayIcon = trayIcon.value
-	settingsManager.alwaysEdit = alwaysEdit.value
-	settingsManager.simpleEditor = simpleEditor.value
 	const reload = settingsManager.disableDevBlog !== disableDevBlog.value
 	settingsManager.disableDevBlog = disableDevBlog.value
 	settingsManager.useChevrons = useChevrons.value
 	settingsManager.showVerticalGuides = showVerticalGuides.value
+	settingsManager.allowMonacoOnMobile = allowMonacoOnMobile.value
+	if (mimiriPlatform.isDesktop) {
+		settingsManager.defaultEditor = defaultEditor.value
+	} else {
+		settingsManager.defaultEditorMobile = defaultEditor.value
+	}
 	if (reload) {
 		window.location.reload()
 	}

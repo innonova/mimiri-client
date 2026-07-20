@@ -1,3 +1,6 @@
+# Project specific
+/src/lang/*.review*.json
+
 # Logs
 logs
 *.log
@@ -34,6 +37,7 @@ bundles/
 certs/
 prop_icons/
 .env
+.env.*
 artifacts.json
 src/icon-sources/
 src/icons.cache/
@@ -42,3 +46,4 @@ build-dev.sh
 prod.env
 screenshots/
 .playwright-profile/
+connect.sh

@@ -2,7 +2,7 @@
 	<div id="title-bar" class="w-full h-[36px] pl-px select-none drag" />
 	<div class="m-auto p-10">
 		<div class="mb-14">
-			<h1 class="text-center font-bold text-size-header">Convert Existing Account</h1>
+			<h1 class="text-center font-bold text-size-header">{{ $t('convertAccount.title') }}</h1>
 		</div>
 		<div class="w-[300px] m-auto">
 			<div class="relative w-[300px] h-[30px] border border-solid border-dialog-border">
@@ -11,16 +11,20 @@
 					v-if="running && convertedNodes === 0"
 					class="absolute h-full w-full top-0 left-0 text-center leading-[27px]"
 				>
-					Initializing...
+					{{ $t('convertAccount.initializing') }}
 				</div>
 				<div v-if="convertedNodes > 0" class="absolute h-full w-full top-0 left-0 text-center leading-[27px]">
-					{{ convertedNodes }} nodes converted
+					{{ $t('convertAccount.nodesConverted', { count: convertedNodes }) }}
 				</div>
 			</div>
 		</div>
 		<div class="w-[300px] mt-2 m-auto flex justify-end">
-			<button tabindex="1" class="primary" :disabled="running" @click="convert">Convert</button>
-			<button tabindex="2" class="secondary" :disabled="running" @click="cancel">Cancel</button>
+			<button tabindex="1" class="primary" :disabled="running" @click="convert">
+				{{ $t('convertAccount.convert') }}
+			</button>
+			<button tabindex="2" class="secondary" :disabled="running" @click="cancel">
+				{{ $t('convertAccount.cancel') }}
+			</button>
 		</div>
 	</div>
 </template>

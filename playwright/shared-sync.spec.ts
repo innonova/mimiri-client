@@ -1,6 +1,8 @@
 import { expect, test } from '@playwright/test'
 import { mimiri, mimiriCreate, withMimiriContext } from './framework/mimiri-context'
 import { menu, note, titleBar, editor, shareDialog, acceptShareDialog, deleteNoteDialog } from './selectors'
+import { ensureEditorMode } from './editor/mode'
+
 import { createChildNote, createTestTree, verifyTestTree } from './notes/actions'
 import { createCloudAccount, saveNote } from './core/actions'
 import { sharedBaseTree, collaborationHubTree, afterNoteCreation, afterEdit } from './notes/data.shared'
@@ -114,6 +116,7 @@ test.describe('shared note live sync tests', () => {
 			// Now test live sync: user 1 edits the note while user 2 has it open (but not editing)
 			mimiri(0, true)
 			await note.item('Live Shared Edit Test').click()
+			await ensureEditorMode('code')
 			await editor.monaco().click()
 			await mimiri().page.keyboard.press('Control+a')
 			await mimiri().page.keyboard.type('Content edited live by user 1 in shared space')
@@ -122,6 +125,7 @@ test.describe('shared note live sync tests', () => {
 			// User 2 should see the live edit
 			mimiri(1, true)
 			await note.item('Live Shared Edit Test').click()
+			await ensureEditorMode('code')
 			await expect(editor.monaco()).toHaveText('Content edited live by user 1 in shared space')
 
 			// Verify the complete updated shared tree

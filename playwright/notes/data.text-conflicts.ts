@@ -29,11 +29,11 @@ Today's agenda:
 		expected: `Meeting Notes
 Today's agenda:
 - Review project status
-<<<<<<< HEAD
+<<<<<<< Local
 - Discuss next milestones
 =======
 - Discuss future plans
->>>>>>> remote
+>>>>>>> Server
 - Plan deployment`,
 	},
 
@@ -70,11 +70,11 @@ Working on implementation`,
 
 ## Features
 - User authentication
-<<<<<<< HEAD
+<<<<<<< Local
 - Real-time updates
 =======
 - Offline support
->>>>>>> remote
+>>>>>>> Server
 - Data synchronization
 
 ## Status
@@ -124,7 +124,7 @@ Working on implementation`,
 	retries: 3
 };`,
 		expected: `const config = {
-<<<<<<< HEAD
+<<<<<<< Local
     apiUrl: 'https://api.example.com',
     timeout: 5000,
     retries: 3
@@ -132,7 +132,7 @@ Working on implementation`,
 	apiUrl: 'https://api.example.com',
 	timeout: 5000,
 	retries: 3
->>>>>>> remote
+>>>>>>> Server
 };`,
 	},
 
@@ -196,13 +196,13 @@ Working on implementation`,
   notifications: true
 };`,
 		expected: `const settings = {
-<<<<<<< HEAD
+<<<<<<< Local
   theme: 'dark',
   language: 'en',
 =======
   theme: 'light',
   language: 'fr',
->>>>>>> remote
+>>>>>>> Server
   notifications: true
 };`,
 	},
@@ -268,7 +268,7 @@ Import the library and use the main function.`,
 		expected: `# Documentation
 
 ## Installation
-<<<<<<< HEAD
+<<<<<<< Local
 1. Clone the repository
 2. Run npm install
 3. Configure your environment
@@ -277,7 +277,7 @@ Import the library and use the main function.`,
 Download the latest release and extract it.
 Run the installer with admin privileges.
 Restart your system after installation.
->>>>>>> remote
+>>>>>>> Server
 
 ## Usage
 Import the library and use the main function.`,
@@ -326,7 +326,7 @@ Import the library and use the main function.`,
 }`,
 		expected: `{
   "name": "my-app",
-<<<<<<< HEAD
+<<<<<<< Local
   "version": "1.1.0",
   "dependencies": {
     "react": "^18.0.0",
@@ -338,7 +338,7 @@ Import the library and use the main function.`,
     "react": "^18.0.0",
     "lodash": "^4.17.0",
     "moment": "^2.29.0"
->>>>>>> remote
+>>>>>>> Server
   },
   "scripts": {
     "start": "react-scripts start",
@@ -408,11 +408,11 @@ Import the library and use the main function.`,
   retries: 3
 };`,
 		expected: `export const API_CONFIG = {
-<<<<<<< HEAD
+<<<<<<< Local
   baseUrl: 'https://api.production.com',
 =======
   baseUrl: 'https://api.development.com',
->>>>>>> remote
+>>>>>>> Server
   timeout: 30000,
   retries: 3
 };`,
@@ -439,11 +439,11 @@ Import the library and use the main function.`,
 - Meeting with team tomorrow
 - Review quarterly goals
 - Schedule vacation
-<<<<<<< HEAD
+<<<<<<< Local
 - Call dentist
 =======
 - Update resume
->>>>>>> remote`,
+>>>>>>> Server`,
 	},
 
 	{
@@ -452,11 +452,11 @@ Import the library and use the main function.`,
 		base: `${'# Section\nContent line\n'.repeat(50)}`,
 		local: `${'# Section\nContent line\n'.repeat(50)}Additional local content\n`,
 		remote: `${'# Section\nContent line\n'.repeat(50)}Additional remote content\n`,
-		expected: `${'# Section\nContent line\n'.repeat(50)}<<<<<<< HEAD
+		expected: `${'# Section\nContent line\n'.repeat(50)}<<<<<<< Local
 Additional local content
 =======
 Additional remote content
->>>>>>> remote
+>>>>>>> Server
 `,
 	},
 
@@ -476,13 +476,13 @@ Additional remote content
 • Send updates to team ✓
 • Prepare presentation`,
 		expected: `Task List:
-<<<<<<< HEAD
+<<<<<<< Local
 • Complete project review ✓
 • Send updates to team
 =======
 • Complete project review
 • Send updates to team ✓
->>>>>>> remote
+>>>>>>> Server
 • Prepare presentation`,
 	},
 
@@ -496,7 +496,7 @@ This is the local version.`,
 		remote: `Getting started guide
 
 This is the remote version.`,
-		expected: `<<<<<<< HEAD
+		expected: `<<<<<<< Local
 Welcome to the new document!
 
 This is the local version.
@@ -504,7 +504,7 @@ This is the local version.
 Getting started guide
 
 This is the remote version.
->>>>>>> remote`,
+>>>>>>> Server`,
 	},
 
 	{
@@ -519,7 +519,7 @@ Content: Basic outline`,
 		remote: `Status: Draft
 Last modified: Today
 Content: Detailed outline`,
-		expected: `<<<<<<< HEAD
+		expected: `<<<<<<< Local
 Status: Review
 Last modified: Today
 Content: Basic outline
@@ -527,7 +527,7 @@ Content: Basic outline
 Status: Draft
 Last modified: Today
 Content: Detailed outline
->>>>>>> remote`,
+>>>>>>> Server`,
 	},
 
 	{
@@ -559,13 +559,13 @@ status: final
 		expected: `---
 title: Project Plan
 author: Team Lead
-<<<<<<< HEAD
+<<<<<<< Local
 version: 1.1
 status: draft
 =======
 version: 1.0
 status: final
->>>>>>> remote
+>>>>>>> Server
 ---
 
 # Project Overview`,
@@ -583,13 +583,13 @@ Status: active`,
 		remote: `Config hash: abc123def456
 Checksum: 111xyz
 Status: active`,
-		expected: `<<<<<<< HEAD
+		expected: `<<<<<<< Local
 Config hash: abc123def999
 Checksum: 789xyz
 =======
 Config hash: abc123def456
 Checksum: 111xyz
->>>>>>> remote
+>>>>>>> Server
 Status: active`,
 	},
 
@@ -606,13 +606,13 @@ Next: Add charts`,
 Progress: 60%
 Next: Review with team`,
 		expected: `Current task: Writing report
-<<<<<<< HEAD
+<<<<<<< Local
 Progress: 75%
 Next: Add charts
 =======
 Progress: 60%
 Next: Review with team
->>>>>>> remote`,
+>>>>>>> Server`,
 	},
 
 	{
@@ -700,13 +700,13 @@ database:
 server:
   port: 3000
 
-<<<<<<< HEAD
+<<<<<<< Local
 # Local development settings
 debug: true
 =======
 # Production overrides
 ssl: enabled
->>>>>>> remote`,
+>>>>>>> Server`,
 	},
 
 	{
@@ -730,11 +730,11 @@ ssl: enabled
 - Fix login bug
 - Update documentation
 - Deploy to staging
-<<<<<<< HEAD
+<<<<<<< Local
 - Test on mobile devices
 =======
 - Test mobile compatibility
->>>>>>> remote`,
+>>>>>>> Server`,
 	},
 
 	{
@@ -759,11 +759,11 @@ export default processData;`,
   return result;
 }
 
-<<<<<<< HEAD
+<<<<<<< Local
 // End of file
 =======
 export default processData;
->>>>>>> remote`,
+>>>>>>> Server`,
 	},
 
 	{
@@ -796,13 +796,13 @@ export default Logger;`,
   }
 }
 
-<<<<<<< HEAD
+<<<<<<< Local
 // Version 1.0
 module.exports = Logger;
 =======
 export { Logger };
 export default Logger;
->>>>>>> remote`,
+>>>>>>> Server`,
 	},
 
 	{
@@ -838,8 +838,8 @@ export const getScenarioByName = (name: string): ConflictScenario | undefined =>
 export const getScenariosByType = (type: 'conflict' | 'auto-merge'): ConflictScenario[] => {
 	return conflictScenarios.filter(scenario => {
 		return type === 'conflict'
-			? scenario.expected.includes('<<<<<<< HEAD')
-			: !scenario.expected.includes('<<<<<<< HEAD')
+			? scenario.expected.includes('<<<<<<< Local')
+			: !scenario.expected.includes('<<<<<<< Local')
 	})
 }
 

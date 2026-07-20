@@ -1,0 +1,340 @@
+.ProseMirror {
+	@apply relative overflow-y-auto bg-input flex-1 outline-none break-words text-base leading-5;
+	padding: 10px 5px;
+	white-space: pre-wrap;
+	white-space: break-spaces;
+	-webkit-font-variant-ligatures: none;
+	font-variant-ligatures: none;
+	font-feature-settings: 'liga' 0;
+}
+
+.ProseMirror::after {
+	@apply block h-[50rem];
+	content: '';
+}
+
+/* Read-only mode during conflict resolution */
+.ProseMirror[contenteditable='false'] {
+	@apply cursor-default opacity-95;
+}
+
+.ProseMirror ::selection {
+	@apply bg-editor-selection-bg;
+}
+
+.ProseMirror ::-moz-selection {
+	@apply bg-editor-selection-bg;
+}
+
+.ProseMirror pre {
+	@apply whitespace-pre-wrap;
+}
+
+.ProseMirror-hideselection *::selection {
+	@apply bg-transparent;
+}
+.ProseMirror-hideselection *::-moz-selection {
+	@apply bg-transparent;
+}
+.ProseMirror-hideselection {
+	@apply caret-transparent;
+}
+
+.ProseMirror [draggable][contenteditable='false'] {
+	@apply select-text;
+}
+
+/* Find (Ctrl+F) and search-term match highlights */
+.ProseMirror-search-match {
+	background-color: var(--color-search-highlight);
+}
+
+.ProseMirror-active-search-match {
+	background-color: var(--color-search-highlight);
+	outline: 1px solid var(--color-editor-selection-outline);
+}
+
+.ProseMirror-selectednode:not(:has(a)) {
+	@apply outline-2 outline-editor-selection-outline;
+}
+
+.ProseMirror img.ProseMirror-separator {
+	@apply inline! border-none! m-0!;
+}
+
+/* Lists */
+.ProseMirror ul,
+.ProseMirror ol {
+	@apply pl-6 my-[0.2rem];
+	ol,
+	ul {
+		@apply pl-4;
+	}
+}
+
+.ProseMirror ul:has(li[data-item-type='task']) {
+	@apply pl-1;
+	ul {
+		@apply -ml-2;
+	}
+}
+
+.ProseMirror ul {
+	@apply list-disc;
+}
+
+.ProseMirror ol {
+	@apply list-decimal;
+}
+
+.ProseMirror li {
+	@apply list-item;
+}
+
+/* Code blocks */
+.ProseMirror pre {
+	@apply bg-editor-code-block-bg p-1 mb-2 overflow-x-auto;
+}
+
+/* Inline code */
+.ProseMirror code {
+	@apply bg-editor-inline-code-bg m-0 rounded font-mono;
+	font-size: 0.9em;
+	padding: 0.1em 0.3em;
+}
+
+.ProseMirror pre code {
+	@apply p-0 rounded-none whitespace-pre-wrap bg-transparent font-mono text-sm;
+}
+
+.ProseMirror codelens {
+	@apply flex p-1 -mb-[0.125rem] text-xs;
+	a {
+		@apply text-text-secondary cursor-pointer no-underline;
+	}
+	div {
+		@apply mx-1 text-text-secondary;
+	}
+}
+
+.ProseMirror codelens a:hover {
+	@apply text-editor-link-hover;
+}
+
+/* Task list items with real checkboxes */
+li[data-item-type='task'] {
+	@apply flex items-start gap-2 list-none;
+}
+
+/* Checkbox container */
+.checkbox-container {
+	@apply flex items-center shrink-0 pt-[0.125rem] mobile:p-2 mobile:-m-2;
+}
+
+/* Content container */
+.list-item-content {
+	@apply flex-1 min-w-0;
+}
+
+/* Strike through checked items */
+li[data-item-type='task'][data-checked='true'] .list-item-content p {
+	@apply line-through text-text-secondary;
+}
+
+li[data-item-type='task'] {
+	@apply mobile:leading-8;
+}
+
+.ProseMirror input[type='checkbox'] {
+	@apply w-5 h-5 mobile:w-6 mobile:h-6 mt-0.5 accent-checkbox;
+}
+
+/* Password field styling - inline editable approach */
+.password-prefix {
+	/* The "p" before the backtick - already styled by text-text-secondary */
+}
+
+.password-inline-code {
+	/* The inline code containing the password */
+	@apply text-text cursor-pointer;
+}
+
+.password-inline-code.password-hidden {
+	-webkit-text-security: disc;
+	text-security: disc;
+}
+
+.ProseMirror password {
+	-webkit-text-security: disc;
+	text-security: disc;
+	@apply text-editor-password-content!;
+}
+
+.ProseMirror .password-wrapper {
+	@apply relative inline-block;
+}
+
+.ProseMirror .password-wrapper.password-visible password {
+	-webkit-text-security: none;
+	text-security: none;
+}
+
+.ProseMirror .password-buttons {
+	@apply inline-flex absolute items-center whitespace-nowrap select-none bg-toolbar border border-border rounded px-[2px] py-px gap-[2px] opacity-0 invisible z-10 -top-[1.2em] right-0;
+	-webkit-user-select: none;
+	/* delay visibility until after opacity fade completes, keeping buttons interactive during fade-out */
+	transition:
+		opacity 0.15s ease 0.5s,
+		visibility 0s linear 0.65s;
+}
+
+.ProseMirror .password-wrapper:hover .password-buttons,
+.ProseMirror .password-wrapper.password-active .password-buttons {
+	@apply opacity-100 visible;
+	transition:
+		opacity 0.1s ease 0s,
+		visibility 0s linear 0s; /* appear immediately */
+}
+
+.ProseMirror .password-btn {
+	@apply flex items-center justify-center cursor-pointer text-text-secondary p-px rounded w-5 h-5 bg-transparent border-none;
+}
+
+.ProseMirror .password-btn:hover {
+	@apply text-editor-link-hover bg-toolbar-hover;
+}
+
+.ProseMirror .password-delimiter {
+	@apply font-bold text-editor-code-fence-text opacity-60;
+}
+.ProseMirror .password-content {
+	-webkit-text-security: disc;
+	text-security: disc;
+	@apply text-editor-password-content!;
+}
+
+/* Conflict block styling */
+.ProseMirror .conflict-block {
+	@apply my-2 border border-editor-conflict-separator overflow-hidden rounded;
+}
+
+.ProseMirror conflictlens {
+	@apply flex py-1 px-2 bg-editor-conflict-lens-bg text-xs;
+	a {
+		@apply text-editor-conflict-local cursor-pointer no-underline font-medium;
+	}
+	div {
+		@apply mx-2 text-editor-conflict-separator;
+	}
+}
+
+.ProseMirror conflictlens a:hover {
+	@apply text-editor-conflict-local underline;
+}
+
+.ProseMirror .conflict-marker {
+	@apply py-1 px-2 font-bold bg-editor-conflict-marker-bg cursor-default font-mono;
+	font-size: 0.9em;
+}
+
+.ProseMirror .conflict-marker-start {
+	@apply text-editor-conflict-local cursor-default border-b border-editor-conflict-local;
+}
+
+.ProseMirror .conflict-marker-separator {
+	@apply text-editor-conflict-separator cursor-default border-y border-editor-conflict-marker-bg;
+}
+
+.ProseMirror .conflict-marker-end {
+	@apply text-editor-conflict-server cursor-default border-t border-editor-conflict-server;
+}
+
+.ProseMirror .conflict-local-content {
+	@apply p-2 bg-editor-conflict-local-bg cursor-default font-mono whitespace-pre-wrap min-h-6;
+}
+
+.ProseMirror .conflict-server-content {
+	@apply p-2 bg-editor-conflict-server-bg cursor-default font-mono whitespace-pre-wrap min-h-6;
+}
+
+.history-active .ProseMirror conflictlens {
+	@apply hidden;
+}
+
+.history-active .ProseMirror codelens {
+	@apply hidden;
+}
+
+.ProseMirror h1 {
+	@apply font-semibold;
+	font-size: 1.875em;
+	margin-top: 0.15em;
+	line-height: 1.2;
+}
+
+.ProseMirror h2 {
+	@apply font-semibold;
+	font-size: 1.5em;
+	margin-top: 0.15em;
+	line-height: 1.25;
+}
+
+.ProseMirror h3 {
+	@apply font-semibold;
+	font-size: 1.25em;
+	margin-top: 0.1em;
+	line-height: 1.3;
+}
+
+.ProseMirror h4 {
+	@apply font-semibold;
+	font-size: 1.125em;
+	margin-top: 0.1em;
+	line-height: 1.35;
+}
+
+.ProseMirror h5 {
+	@apply font-semibold;
+	font-size: 1em;
+	margin-top: 0.1em;
+	line-height: 1.4;
+}
+
+.ProseMirror h6 {
+	@apply font-semibold uppercase;
+	font-size: 0.875em;
+	margin-top: 0.1em;
+	letter-spacing: 0.05em;
+	line-height: 1.4;
+}
+
+/* Prevents double spacing scenarios by always setting margin-top rather than combining with margin-bottom. */
+.ProseMirror h1 + *,
+.ProseMirror h2 + * {
+	margin-top: 0.4em;
+}
+
+.ProseMirror h3 + *,
+.ProseMirror h4 + * {
+	margin-top: 0.25em;
+}
+
+.ProseMirror h5 + *,
+.ProseMirror h6 + * {
+	margin-top: 0.15em;
+}
+
+/* Links - pointer cursor and blue color when Ctrl/Cmd is pressed and hovered */
+.ProseMirror.ctrl-pressed a:hover {
+	@apply text-editor-link-hover cursor-pointer underline;
+}
+
+/* Keep underline on links when hovering */
+.ProseMirror a:hover {
+	@apply underline;
+}
+
+/* Long press visual feedback on touch devices */
+.ProseMirror a.long-press-active {
+	@apply text-editor-link-hover underline;
+}

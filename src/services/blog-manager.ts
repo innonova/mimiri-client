@@ -3,7 +3,7 @@ import { settingsManager } from './settings-manager'
 import { emptyGuid } from './types/guid'
 import type { Guid } from './types/guid'
 import type { BlogPost } from './types/responses'
-import { env, notificationManager, updateManager } from '../global'
+import { blogApiHost, notificationManager, updateManager } from '../global'
 import type { MimiriStore } from './storage/mimiri-store'
 
 export interface BlogConfig {
@@ -18,6 +18,7 @@ export interface BlogState {
 
 export class BlogManager {
 	private noteManager: MimiriStore
+	private isNewAccount = false
 	public state: BlogState
 
 	constructor(noteManager: MimiriStore) {
@@ -30,7 +31,7 @@ export class BlogManager {
 
 	private async updateLatestBlogPost(): Promise<void> {
 		try {
-			const blogPost = (await fetch(`${env.VITE_MIMIRI_API_HOST}/blog/latest/metadata`, {
+			const blogPost = (await fetch(`${blogApiHost}/blog/latest/metadata`, {
 				method: 'GET',
 				headers: {
 					'X-Mimiri-Version': `${updateManager.platformString}`,
@@ -45,7 +46,7 @@ export class BlogManager {
 			) {
 				notificationManager.blogAvailable(new Date(this.state.latestPostDate))
 			}
-		} catch (error) {
+		} catch {
 			this.state.latestPostId = emptyGuid()
 			this.state.latestPostDate = undefined
 		}
@@ -112,6 +113,13 @@ export class BlogManager {
 		}
 	}
 
+	// Called when a new account is initially created. A freshly created account can't
+	// have missed any post, so the dev blog tree entry is not highlighted for the rest
+	// of this session. It will highlight again on the next launch (flag is in-memory).
+	public markNewAccount(): void {
+		this.isNewAccount = true
+	}
+
 	public markAsRead(): void {
 		settingsManager.lastReadBlogPostId = this.state.latestPostId
 		notificationManager.blogRead()
@@ -119,7 +127,10 @@ export class BlogManager {
 
 	public get hasNewPost() {
 		return computed(
-			() => this.state.latestPostId !== emptyGuid() && this.state.latestPostId !== settingsManager.lastReadBlogPostId,
+			() =>
+				!this.isNewAccount &&
+				this.state.latestPostId !== emptyGuid() &&
+				this.state.latestPostId !== settingsManager.lastReadBlogPostId,
 		)
 	}
 }

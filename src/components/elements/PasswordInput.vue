@@ -18,20 +18,23 @@
 			<div
 				v-if="passwordQuality === 'free-access'"
 				class="flex items-center w-52 h-7 desktop:ml-2 mt-1.5 desktop:mt-0 text-left"
+				data-testid="password-quality-free-access"
 			>
-				<FreeAccessIcon class="w-5 h-5 mr-1 inline-block" /> Not really a password
+				<FreeAccessIcon class="w-5 h-5 mr-1 inline-block" /> {{ $t('passwordInput.notReallyAPassword') }}
 			</div>
 			<div
 				v-if="passwordQuality === 'casual-use-only'"
 				class="flex items-center w-52 h-7 desktop:ml-2 mt-1.5 desktop:mt-0 text-left"
+				data-testid="password-quality-casual-use-only"
 			>
-				<CasualOnlyIcon class="w-5 h-5 mr-1 inline-block" /> Very limited security
+				<CasualOnlyIcon class="w-5 h-5 mr-1 inline-block" /> {{ $t('passwordInput.veryLimitedSecurity') }}
 			</div>
 			<div
 				v-if="passwordQuality === 'acceptable-security'"
 				class="flex items-center w-52 h-7 desktop:ml-2 mt-1.5 desktop:mt-0 text-left"
+				data-testid="password-quality-acceptable-security"
 			>
-				<LightSecurityIcon class="w-5 h-5 mr-1 inline-block" /> Acceptable
+				<LightSecurityIcon class="w-5 h-5 mr-1 inline-block" /> {{ $t('passwordInput.acceptable') }}
 			</div>
 		</div>
 	</div>

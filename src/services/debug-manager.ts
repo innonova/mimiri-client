@@ -161,13 +161,13 @@ export class DebugManager {
 		}
 	}
 
-	public logError(message: string, error?: Error) {
+	public logError(message: string, error?: Error | unknown) {
 		console.error(message, error)
 		// if (this._initialized) {
 		this._errorLog.push({
 			id: newGuid(),
 			message,
-			stack: error?.stack,
+			stack: (error as Error)?.stack,
 			timestamp: Date.now(),
 		})
 		while (this._errorLog.length > 100) {

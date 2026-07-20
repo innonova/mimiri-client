@@ -31,8 +31,7 @@ import { Currency, Period, type SubscriptionProduct } from '../../services/types
 import SubscriptionItem from './SubscriptionItem.vue'
 import CurrencySelector from './CurrencySelector.vue'
 import PeriodSelector from './PeriodSelector.vue'
-import { noteManager, subscriptionCurrency, subscriptionNewProduct, subscriptionStage } from '../../global'
-import type { Guid } from '../../services/types/guid'
+import { noteManager } from '../../global'
 
 const period = ref(Period.Year)
 const products = ref<SubscriptionProduct[]>([])
@@ -56,7 +55,7 @@ watch(period, async () => {
 	await populate()
 })
 
-const choose = async (sku: string) => {
+const choose = async (_sku: string) => {
 	// await noteManager.auth.clearNeedsToChooseTier()
 	// if (sku === 'free') {
 	// 	noteManager.tree.openNote('settings-plan' as Guid)

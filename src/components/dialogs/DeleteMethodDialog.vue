@@ -6,16 +6,18 @@
 		@close="isOpen = false"
 	>
 		<div v-if="isOpen" class="grid grid-rows-[auto_1fr_auto] gap-6">
-			<DialogTitle @close="close">Delete Payment Method</DialogTitle>
+			<DialogTitle @close="close">{{ $t('deleteMethodDialog.title') }}</DialogTitle>
 			<main class="px-2">
-				<div>Are you sure you want to delete:</div>
+				<div>{{ $t('deleteMethodDialog.question') }}</div>
 				<div class="mt-3 ml-3 mb-1 italic">
 					{{ text }}
 				</div>
 			</main>
 			<footer class="flex justify-end mobile:justify-center gap-2 pr-2 pb-2">
-				<button class="primary" @click="submitDialog" data-testid="dialog-yes">Yes</button>
-				<button class="secondary" data-testid="dialog-no" @click="close">No</button>
+				<button class="primary" @click="submitDialog" data-testid="dialog-yes">
+					{{ $t('deleteMethodDialog.yes') }}
+				</button>
+				<button class="secondary" data-testid="dialog-no" @click="close">{{ $t('deleteMethodDialog.no') }}</button>
 			</footer>
 		</div>
 	</dialog>

@@ -6,33 +6,40 @@
 		@close="isOpen = false"
 	>
 		<div v-if="isOpen" class="grid grid-rows-[auto_1fr_auto]">
-			<DialogTitle @close="close">Share Note</DialogTitle>
+			<DialogTitle @close="close">{{ $t('shareDialog.title') }}</DialogTitle>
 			<form @submit.prevent="submitDialog" class="mx-2 mt-5 mb-2 mobile:mx-8">
 				<div class="grid grid-cols-[5.5rem_10rem] mobile:grid-cols-[5.5rem_auto] items-center gap-2 mx-2 mb-2">
 					<div v-if="code" class="col-span-2 flex flex-col items-center">
 						<div class="text-center leading-5">
-							Share this one time code with {{ name }} to complete the share of {{ noteName }}
+							{{ $t('shareDialog.codeInstruction', { name, noteName }) }}
 						</div>
 						<div class="text-size-header my-5 flex gap-1 items-center">
 							<div class="mb-1 ml-2" data-testid="share-code">{{ code }}</div>
 							<div class="w-6 ml-px">
-								<CopyIcon v-if="!copied" title="copy" @click="copyCode" class="w-5 hover:w-6 cursor-pointer" />
-								<div v-if="copied" class="ml-1 mb-1 cursor-default select-none text-size-base">Copied</div>
+								<CopyIcon
+									v-if="!copied"
+									:title="$t('shareDialog.copy')"
+									@click="copyCode"
+									class="w-5 hover:w-6 cursor-pointer"
+								/>
+								<div v-if="copied" class="ml-1 mb-1 cursor-default select-none text-size-base">
+									{{ $t('shareDialog.copied') }}
+								</div>
 							</div>
 						</div>
 						<div class="text-center leading-5">
-							{{ name }} will need to accept the share using the menu item 'Accept Share'
+							{{ $t('shareDialog.acceptInstruction', { name }) }}
 						</div>
 						<div class="info mt-4">
 							<div class="text-left leading-5">
-								If you lose this code, simply share {{ noteName }} with {{ name }} again to show the code again.
+								{{ $t('shareDialog.loseCodeHint', { noteName, name }) }}
 							</div>
 							<div class="text-left leading-5 mt-3">
-								If you wish to share this note with multiple people you will need to repeat this process for each user.
+								{{ $t('shareDialog.multipleUsersHint') }}
 							</div>
 						</div>
 					</div>
-					<div v-if="!code" class="col-span-2 mb-1">Share {{ noteName }} and all child notes with:</div>
+					<div v-if="!code" class="col-span-2 mb-1">{{ $t('shareDialog.shareWith', { noteName }) }}</div>
 					<input
 						v-if="!code"
 						ref="nameInput"
@@ -44,28 +51,36 @@
 						data-testid="share-username-input"
 					/>
 					<div v-if="invalid || shareWithSelf || shareFailed" />
-					<div v-if="invalid" class="text-error leading-4">You must enter a username</div>
-					<div v-if="shareWithSelf" class="text-error leading-4">You cannot share with yourself.</div>
-					<div v-if="shareFailed" class="text-error leading-4">
-						Unable to share, please verify username and internet connection.
+					<div v-if="invalid" class="text-error leading-4" data-testid="share-error-invalid-username">
+						{{ $t('shareDialog.invalidUsername') }}
+					</div>
+					<div v-if="shareWithSelf" class="text-error leading-4" data-testid="share-error-share-with-self">
+						{{ $t('shareDialog.shareWithSelf') }}
+					</div>
+					<div v-if="shareFailed" class="text-error leading-4" data-testid="share-error-failed">
+						{{ $t('shareDialog.shareFailed') }}
 					</div>
 					<div v-if="!code" class="col-span-2 flex flex-col items-center">
 						<div class="info mt-2">
 							<div class="text-left leading-5">
-								Enter the username of another user in the field above to share {{ noteName }}.
+								{{ $t('shareDialog.enterUsernameHint', { noteName }) }}
 							</div>
 							<div class="text-left leading-5 mt-3">
-								Then share the provided one time code with them so they can accept the share.
+								{{ $t('shareDialog.codeHint') }}
 							</div>
 						</div>
 					</div>
 					<div v-if="code" class="col-span-2 flex justify-center gap-2 mt-4">
-						<button class="primary" type="button" @click="close" data-testid="share-close-button">Close</button>
+						<button class="primary" type="button" @click="close" data-testid="share-close-button">
+							{{ $t('shareDialog.close') }}
+						</button>
 					</div>
 					<div v-if="!code" class="col-span-2 flex justify-end mobile:justify-center gap-2 mt-2 mobile:mt-8">
 						<LoadingIcon v-if="loading" class="animate-spin w-8 h-8 mr-2 inline-block" />
-						<button v-if="!loading" class="primary" data-testid="share-ok-button">OK</button>
-						<button class="secondary" type="button" @click="close" data-testid="share-cancel-button">Cancel</button>
+						<button v-if="!loading" class="primary" data-testid="share-ok-button">{{ $t('shareDialog.ok') }}</button>
+						<button class="secondary" type="button" @click="close" data-testid="share-cancel-button">
+							{{ $t('shareDialog.cancel') }}
+						</button>
 					</div>
 				</div>
 			</form>

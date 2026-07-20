@@ -1,11 +1,11 @@
 <template>
 	<div class="flex flex-col h-full">
 		<div class="flex flex-col h-full">
-			<TabBar :items="['Delete Account']" />
+			<TabBar :items="[$t('settingsDeleteAccount.tab')]" />
 			<div class="overflow-y-auto pb-10">
 				<form @submit.prevent="deleteAccount" class="mr-2">
 					<div class="flex flex-col">
-						<div class="py-1">I understand that</div>
+						<div class="py-1">{{ $t('settingsDeleteAccount.iUnderstandThat') }}</div>
 						<div class="py-1">
 							<label>
 								<input
@@ -14,7 +14,7 @@
 									class="mr-1 relative top-0.5"
 									data-testid="delete-account-checkbox"
 								/>
-								this will <b>permanently</b> delete my account
+								<span v-html="$t('settingsDeleteAccount.permanentlyDeleteAccount')" />
 							</label>
 						</div>
 						<div class="py-1">
@@ -25,7 +25,7 @@
 									class="mr-1 relative top-0.5"
 									data-testid="delete-data-checkbox"
 								/>
-								this will <b>permanently</b> delete all my data
+								<span v-html="$t('settingsDeleteAccount.permanentlyDeleteData')" />
 							</label>
 						</div>
 						<div class="py-1">
@@ -36,13 +36,13 @@
 									class="mr-1 relative top-0.5"
 									data-testid="no-recovery-checkbox"
 								/>
-								that there is <b>no way</b> to recover my data
+								<span v-html="$t('settingsDeleteAccount.noWayToRecover')" />
 							</label>
 						</div>
 						<div class="max-w-110">
 							<hr class="my-5" />
 							<div v-if="!noteManager.state.isAnonymous" class="flex justify-end items-baseline">
-								<div class="mr-2">Password:</div>
+								<div class="mr-2">{{ $t('settingsDeleteAccount.password') }}</div>
 								<div class="text-right">
 									<input
 										v-model="password"
@@ -56,14 +56,14 @@
 							</div>
 							<div v-if="!noteManager.state.isAnonymous" class="flex justify-end items-baseline">
 								<div v-if="capsLockOn" />
-								<div v-if="capsLockOn" class="py-1">Caps Lock is on!</div>
+								<div v-if="capsLockOn" class="py-1">{{ $t('settingsDeleteAccount.capsLock') }}</div>
 							</div>
 							<div
 								v-if="(!mimiriPlatform.isWeb || env.DEV) && noteManager.state.accountType !== AccountType.Local"
 								class="pt-2 text-right"
 							>
 								<label>
-									Also delete local data from this device
+									<span v-html="$t('settingsDeleteAccount.alsoDeleteLocal')" />
 									<input
 										type="checkbox"
 										v-model="deleteLocal"

@@ -7,7 +7,7 @@ export class Utils {
 		try {
 			document.createEvent('TouchEvent')
 			return true
-		} catch (e) {
+		} catch {
 			return false
 		}
 	}

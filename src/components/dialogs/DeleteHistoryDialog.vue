@@ -2,31 +2,36 @@
 	<dialog
 		class="bg-dialog text-text desktop:border border-solid border-dialog-border"
 		ref="dialog"
+		data-testid="delete-history-dialog"
 		@close="isOpen = false"
 	>
 		<div v-if="isOpen" class="grid grid-rows-[auto_1fr_auto] gap-6">
-			<DialogTitle @close="close">Delete History</DialogTitle>
+			<DialogTitle @close="close">{{ $t('deleteHistoryDialog.title') }}</DialogTitle>
 			<main class="px-2 leading-5">
-				<div v-if="deleteAllHistory">Are you sure you want to delete ALL history</div>
-				<div v-if="!deleteAllHistory">Are you sure you want to delete older history</div>
-				<div v-if="!deleteAllHistory">(keeping only the most recent 10 versions)</div>
-				<div class="mt-4">Affected note:</div>
+				<div v-if="deleteAllHistory">{{ $t('deleteHistoryDialog.deleteAll') }}</div>
+				<div v-if="!deleteAllHistory">{{ $t('deleteHistoryDialog.deleteOlder') }}</div>
+				<div v-if="!deleteAllHistory">{{ $t('deleteHistoryDialog.keepRecent') }}</div>
+				<div class="mt-4">{{ $t('deleteHistoryDialog.affectedNote') }}</div>
 				<div class="mt-3 ml-3 mb-1 italic">
 					{{ noteManager.tree.selectedViewModelRef().value?.title }}
 				</div>
-				<div v-if="shareParticipants.length > 0" class="mt-5">This note is shared with:</div>
+				<div v-if="shareParticipants.length > 0" class="mt-5">{{ $t('deleteHistoryDialog.sharedWith') }}</div>
 				<template v-if="shareParticipants.length > 0 && shareParticipants.length < 5">
 					<div v-for="participant in shareParticipants" :key="participant.username" class="mt-3 ml-3 mb-1 italic">
 						{{ participant.username }}
 					</div>
 				</template>
 				<div v-if="shareParticipants.length >= 5" class="mt-3 ml-3 mb-1 italic">
-					{{ shareParticipants.length }} other users
+					{{ $t('deleteHistoryDialog.otherUsers', { count: shareParticipants.length }) }}
 				</div>
 			</main>
 			<footer class="flex justify-end mobile:justify-center gap-2 pr-2 pb-2">
-				<button class="primary" @click="submitDialog">Delete</button>
-				<button class="secondary" @click="close">Cancel</button>
+				<button class="primary" @click="submitDialog" data-testid="delete-history-confirm">
+					{{ $t('deleteHistoryDialog.delete') }}
+				</button>
+				<button class="secondary" @click="close" data-testid="delete-history-cancel">
+					{{ $t('deleteHistoryDialog.cancel') }}
+				</button>
 			</footer>
 		</div>
 	</dialog>

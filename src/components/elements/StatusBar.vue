@@ -14,7 +14,7 @@
 </template>
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import { noteManager, syncErrorDialog, syncStatus } from '../../global'
+import { noteManager, syncErrorDialog, syncStatus, $t } from '../../global'
 
 const status = ref('')
 const error = ref(false)
@@ -23,36 +23,36 @@ const calculateStatus = () => {
 	let result = ''
 	error.value = false
 	if (!noteManager.state.isOnline) {
-		result = 'Offline'
+		result = $t('statusBar.offline')
 	}
 	if (!noteManager.state.isLoggedIn) {
-		result = 'Not logged in'
+		result = $t('statusBar.notLoggedIn')
 	}
 	if (syncStatus.value === 'retrieving-changes') {
-		result = 'Synchronizing...'
+		result = $t('statusBar.synchronizing')
 	}
 	if (syncStatus.value === 'sending-changes') {
-		result = 'Synchronizing...'
+		result = $t('statusBar.synchronizing')
 	}
 	if (syncStatus.value === 'synchronization-error') {
 		error.value = true
-		result = 'Synchronization Error (see details)'
+		result = $t('statusBar.syncError')
 	}
 	if (syncStatus.value === 'count-limit-exceeded') {
 		error.value = true
-		result = 'Sync Error: Limit exceeded (see details)'
+		result = $t('statusBar.syncErrorLimitExceeded')
 	}
 	if (syncStatus.value === 'total-size-limit-exceeded') {
 		error.value = true
-		result = 'Sync Error: Limit exceeded (see details)'
+		result = $t('statusBar.syncErrorLimitExceeded')
 	}
 	if (syncStatus.value === 'note-size-limit-exceeded') {
 		error.value = true
-		result = 'Sync Error: Note size exceeded (see details)'
+		result = $t('statusBar.syncErrorNoteSize')
 	}
 	if (syncStatus.value === 'server-rejection') {
 		error.value = true
-		result = 'Sync Error: Server rejection (see details)'
+		result = $t('statusBar.syncErrorServerRejection')
 	}
 
 	return result

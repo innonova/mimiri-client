@@ -4,111 +4,130 @@
 			<ToolbarIcon
 				icon="back"
 				:hoverEffect="true"
-				title="Back"
+				:title="$t('noteEditor.back')"
 				class="desktop:hidden"
 				@click="onBack"
 				data-testid="editor-back-button"
 			/>
-			<div class="inline-block h-4 w-0 border border-solid border-toolbar-separator m-0.5 desktop:hidden" />
+			<div class="inline-block h-4/5 w-0 border border-solid border-toolbar-separator m-0.5 desktop:hidden" />
 			<ToolbarIcon
 				icon="save"
 				:hoverEffect="true"
 				:disabled="!saveEnabled"
-				title="Save Note"
+				:title="$t('noteEditor.saveNote')"
 				@click="saveClicked"
 				data-testid="editor-save-button"
 			/>
-			<div class="inline-block h-4/5 w-0 border border-solid border-toolbar-separator m-0.5" />
+
+			<div class="flex overflow-auto h-full">
+				<div class="inline-block h-4/5 w-0 border border-solid border-toolbar-separator mx-0.5 mt-[0.275rem]" />
+				<ToolbarIcon
+					icon="undo"
+					:hoverEffect="true"
+					:disabled="!mimiriEditor.canUndo"
+					:title="$t('noteEditor.undo')"
+					@click="undo"
+					data-testid="editor-undo-button"
+				/>
+				<ToolbarIcon
+					icon="redo"
+					:hoverEffect="true"
+					:disabled="!mimiriEditor.canRedo"
+					:title="$t('noteEditor.redo')"
+					@click="redo"
+					data-testid="editor-redo-button"
+				/>
+				<div class="inline-block h-4/5 w-0 border border-solid border-toolbar-separator mx-0.5 mt-[0.275rem]" />
+				<ToolbarIcon
+					icon="history"
+					:hoverEffect="true"
+					:title="historyVisible ? $t('noteEditor.hideHistory') : $t('noteEditor.showHistory')"
+					:disabled="noteManager.tree.selectedNoteRef().value?.isSystem"
+					:toggledOn="historyVisible"
+					@click="showHistory"
+					data-testid="editor-history-button"
+				/>
+				<div class="inline-block h-4/5 w-0 border border-solid border-toolbar-separator mx-0.5 mt-[0.275rem]" />
+				<ToolbarIcon
+					icon="hide"
+					:hoverEffect="true"
+					:disabled="
+						!mimiriEditor.isActionSupported('mark-password') && !mimiriEditor.isActionSupported('unmark-password')
+					"
+					:title="$t('noteEditor.markAsPassword')"
+					@click="markAsPassword"
+					data-testid="editor-mark-as-password"
+				/>
+				<ToolbarIcon
+					icon="heading"
+					:hoverEffect="true"
+					:disabled="false"
+					:title="$t('noteEditor.heading')"
+					@click="insertHeading"
+					data-testid="editor-insert-heading"
+				/>
+				<ToolbarIcon
+					icon="code-block"
+					:hoverEffect="true"
+					:disabled="false"
+					:title="$t('noteEditor.codeBlock')"
+					@click="insertCodeBlock"
+					data-testid="editor-insert-code-block"
+				/>
+				<div class="inline-block h-4/5 w-0 border border-solid border-toolbar-separator m-0.5" />
+				<ToolbarIcon
+					icon="check-list"
+					:hoverEffect="true"
+					:disabled="false"
+					:title="$t('noteEditor.checkbox')"
+					@click="insertCheckboxList"
+					data-testid="editor-insert-checkbox"
+				/>
+				<ToolbarIcon
+					icon="list"
+					:hoverEffect="true"
+					:disabled="false"
+					:title="$t('noteEditor.list')"
+					@click="insertUnorderedList"
+					data-testid="editor-insert-unordered-list"
+				/>
+				<ToolbarIcon
+					icon="number-list"
+					:hoverEffect="true"
+					:disabled="false"
+					:title="$t('noteEditor.orderedList')"
+					@click="insertOrderedList"
+					data-testid="editor-insert-ordered-list"
+				/>
+				<div class="inline-block h-4/5 w-0 border border-solid border-toolbar-separator m-0.5" />
+				<ToolbarIcon
+					v-if="showWordWrap"
+					:icon="settingsManager.wordwrap ? 'wordwrap-on' : 'wordwrap-off'"
+					:hoverEffect="true"
+					:disabled="noteManager.tree.selectedNoteRef().value?.isSystem"
+					:title="settingsManager.wordwrap ? $t('noteEditor.disableWordWrap') : $t('noteEditor.enableWordWrap')"
+					:toggledOn="settingsManager.wordwrap"
+					@click="toggleWordWrap"
+					data-testid="editor-toggle-wordwrap"
+				/>
+			</div>
+			<div class="flex-1"></div>
 			<ToolbarIcon
-				:icon="settingsManager.wordwrap ? 'wordwrap-on' : 'wordwrap-off'"
+				v-if="mimiriPlatform.isDesktop || settingsManager.state.allowMonacoOnMobile"
+				:icon="mimiriEditor.mode === 'advanced' ? 'wysiwyg' : 'code'"
 				:hoverEffect="true"
-				:disabled="noteManager.tree.selectedNoteRef().value?.isSystem"
-				:title="settingsManager.wordwrap ? 'Disable Word Wrap' : 'Enable Word Wrap'"
-				:toggledOn="settingsManager.wordwrap"
-				@click="toggleWordWrap"
-				data-testid="editor-toggle-wordwrap"
-			/>
-			<ToolbarIcon
-				icon="undo"
-				:hoverEffect="true"
-				:disabled="!mimiriEditor.canUndo"
-				title="Undo"
-				@click="undo"
-				data-testid="editor-undo-button"
-			/>
-			<ToolbarIcon
-				icon="redo"
-				:hoverEffect="true"
-				:disabled="!mimiriEditor.canRedo"
-				title="Redo"
-				@click="redo"
-				data-testid="editor-redo-button"
-			/>
-			<div class="inline-block h-4/5 w-0 border border-solid border-toolbar-separator m-0.5" />
-			<ToolbarIcon
-				icon="history"
-				:hoverEffect="true"
-				:title="historyVisible ? 'Hide History' : 'Show History'"
-				:disabled="noteManager.tree.selectedNoteRef().value?.isSystem"
-				:toggledOn="historyVisible"
-				@click="showHistory"
-				data-testid="editor-history-button"
-			/>
-			<div class="inline-block h-4/5 w-0 border border-solid border-toolbar-separator m-0.5" />
-			<ToolbarIcon
-				icon="hide"
-				:hoverEffect="true"
-				:disabled="!mimiriEditor.canMarkAsPassword && !mimiriEditor.canUnMarkAsPassword"
-				title="Mark as Password Ctrl+Shift+C"
-				@click="markAsPassword"
-				data-testid="editor-mark-as-password"
-			/>
-			<ToolbarIcon
-				icon="heading"
-				:hoverEffect="true"
-				:disabled="false"
-				title="Heading"
-				@click="insertHeading"
-				data-testid="editor-insert-heading"
-			/>
-			<ToolbarIcon
-				icon="code-block"
-				:hoverEffect="true"
-				:disabled="false"
-				title="Code Block"
-				@click="insertCodeBlock"
-				data-testid="editor-insert-code-block"
-			/>
-			<div class="inline-block h-4/5 w-0 border border-solid border-toolbar-separator m-0.5" />
-			<ToolbarIcon
-				icon="check-list"
-				:hoverEffect="true"
-				:disabled="false"
-				title="Checkbox"
-				@click="insertCheckboxList"
-				data-testid="editor-insert-checkbox"
-			/>
-			<ToolbarIcon
-				icon="list"
-				:hoverEffect="true"
-				:disabled="false"
-				title="List"
-				@click="insertUnorderedList"
-				data-testid="editor-insert-unordered-list"
-			/>
-			<ToolbarIcon
-				icon="number-list"
-				:hoverEffect="true"
-				:disabled="false"
-				title="Ordered List"
-				@click="insertOrderedList"
-				data-testid="editor-insert-ordered-list"
+				:disabled="historyVisible"
+				:title="$t('noteEditor.toggleEditMode')"
+				@click="toggleEditModeClicked"
+				data-testid="editor-toggle-edit-mode-button"
 			/>
 		</div>
-		<div class="relative flex-auto flex flex-col items-stretch overflow-hidden">
+		<div class="relative flex-auto min-h-0 flex flex-col items-stretch overflow-hidden">
 			<div v-if="historyVisible && selectedHistoryItem" class="px-2 py-1 bg-info-bar cursor-default text-size-menu">
-				{{ selectedHistoryItem.username }} - {{ formatDate(selectedHistoryItem.timestamp) }} (read-only)
+				{{ selectedHistoryItem.username }} - {{ formatDate(selectedHistoryItem.timestamp) }}
+				{{ $t('noteEditor.readOnly') }}
 			</div>
+			<ConflictBanner ref="conflictBanner" @navigate="onConflictNavigate" />
 			<div
 				class="overflow-hidden flex-1"
 				style="display: none"
@@ -116,28 +135,13 @@
 				data-testid="editor-monaco-container"
 			/>
 			<div
-				class="overflow-hidden flex-1"
+				class="overflow-hidden flex-1 flex-col relative"
 				style="display: none"
-				ref="simpleContainer"
-				data-testid="editor-simple-container"
-			/>
-			<div
-				class="overflow-hidden flex-1"
-				style="display: none"
-				ref="displayContainer"
-				data-testid="editor-display-container"
-			/>
-			<div v-if="!historyVisible && mimiriEditor.mode === 'display'" class="display-editor-toolbar flex flex-row gap-1">
-				<button
-					@click="activateEdit"
-					class="bg-button-primary text-button-primary-text hover:brightness-125 select-none; font-display text-size-base; cursor-default; py-2 px-4; w-full"
-					data-testid="editor-activate-edit-mode"
-				>
-					Edit
-				</button>
-				<button @click="activateSettings" class="bg-button-primary text-button-primary-text hover:brightness-125">
-					<SettingIcon class="w-6 h-6 my-1 mx-3" />
-				</button>
+				ref="proseMirrorContainer"
+				data-testid="editor-prosemirror-container"
+			>
+				<EditorFindBar />
+				<AutoComplete ref="proseMirrorPopup"></AutoComplete>
 			</div>
 			<SelectionControl v-if="mimiriEditor.mode === 'advanced'" />
 			<div
@@ -148,10 +152,17 @@
 				<div
 					class="flex items-center justify-between bg-toolbar border-b border-solid border-toolbar cursor-default text-size-menu p-0.5"
 				>
-					<div>History entries:</div>
+					<div>{{ $t('noteEditor.historyEntries') }}</div>
 					<CloseButton @click="showHistory" class="w-6 h-6" />
 				</div>
-				<div class="flex-auto overflow-y-auto h-0 pb-5 w-full bg-input" data-testid="editor-history-scroll-container">
+				<div
+					ref="historyScrollContainer"
+					class="flex-auto overflow-y-auto h-0 pb-5 w-full bg-input"
+					data-testid="editor-history-scroll-container"
+					tabindex="0"
+					@keydown.up.prevent="navigateHistory(-1)"
+					@keydown.down.prevent="navigateHistory(1)"
+				>
 					<div class="grid grid-cols-[auto_auto_1fr] gap-x-2">
 						<template v-for="(historyItem, index) of historyItems" :key="historyItem.timestamp">
 							<div
@@ -173,8 +184,9 @@
 					class="primary rounded-none!"
 					:disabled="!mimiriEditor.history.note.viewModel.hasMoreHistory"
 					@click="loadMoreHistory"
+					data-testid="editor-history-more-button"
 				>
-					Read More Entries
+					{{ $t('noteEditor.readMoreEntries') }}
 				</button>
 			</div>
 		</div>
@@ -182,27 +194,30 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch, type WatchStopHandle } from 'vue'
-import { env, infoDialog, limitDialog, mimiriEditor, noteManager, showSearchBox, titleBar } from '../global'
+import { ref, computed, onMounted, watch, nextTick, type WatchStopHandle } from 'vue'
+import { env, infoDialog, limitDialog, mimiriEditor, noteManager, showSearchBox, titleBar, $t } from '../global'
 import type { NoteViewModel } from '../services/types/mimer-note'
 import { searchManager } from '../services/search-manager'
 import ToolbarIcon from './ToolbarIcon.vue'
 import SelectionControl from './SelectionControl.vue'
 import { settingsManager } from '../services/settings-manager'
+import { mimiriPlatform } from '../services/mimiri-platform'
 import { useEventListener } from '@vueuse/core'
 import CloseButton from './elements/CloseButton.vue'
-import SettingIcon from '../icons/cog.vue'
-import type { Guid } from '../services/types/guid'
 import { mimiriApi } from '../services/storage/mimiri-api'
+import AutoComplete from './elements/AutoComplete.vue'
+import ConflictBanner from './elements/ConflictBanner.vue'
+import EditorFindBar from './EditorFindBar.vue'
 
 let activeViewModelStopWatch: WatchStopHandle = undefined
 let activeViewModel: NoteViewModel = undefined
+const historyScrollContainer = ref<HTMLElement | null>(null)
 const monacoContainer = ref(null)
-const simpleContainer = ref(null)
-const displayContainer = ref(null)
+const proseMirrorContainer = ref(null)
+const proseMirrorPopup = ref<InstanceType<typeof AutoComplete> | null>(null)
+const conflictBanner = ref<InstanceType<typeof ConflictBanner> | null>(null)
 const windowFocus = ref(true)
 const historyVisible = ref(false)
-const displayMode = ref(true)
 const selectedHistoryItem = computed(() => mimiriEditor.history.state.selectedHistoryItem)
 const historyItems = computed(() => {
 	if (env.DEV && mimiriApi.state.historyEntries) {
@@ -219,15 +234,6 @@ const biCif = value => {
 	return `${value}`
 }
 
-const activateEdit = () => {
-	displayMode.value = false
-	mimiriEditor.activateEdit()
-}
-
-const activateSettings = () => {
-	noteManager.tree.openNote('settings-general' as Guid)
-}
-
 const formatDate = (value: string) => {
 	const date = new Date(value)
 	const result = `${date.getFullYear()}.${biCif(date.getMonth() + 1)}.${biCif(date.getDate())} ${biCif(
@@ -242,6 +248,24 @@ const loadMoreHistory = async () => {
 
 const selectHistoryItem = (index: number) => {
 	mimiriEditor.history.selectHistoryItem(index)
+	historyScrollContainer.value?.focus()
+}
+
+const navigateHistory = (delta: number) => {
+	const items = historyItems.value
+	if (!items?.length) {
+		return
+	}
+	const current = mimiriEditor.history.state.selectedHistoryIndex ?? 0
+	const next = Math.max(0, Math.min(items.length - 1, current + delta))
+	if (next !== current) {
+		selectHistoryItem(next)
+		void nextTick(() => {
+			historyScrollContainer.value
+				?.querySelector(`[data-testid="editor-history-item-${next}"]`)
+				?.scrollIntoView({ block: 'nearest' })
+		})
+	}
 }
 
 const checkLoadHistory = async () => {
@@ -278,6 +302,10 @@ const insertCodeBlock = () => {
 	mimiriEditor.executeFormatAction('insert-code-block')
 }
 
+const toggleEditModeClicked = () => {
+	void mimiriEditor.toggleEditMode()
+}
+
 watch(historyVisible, (newVal, _) => {
 	if (newVal) {
 		void checkLoadHistory()
@@ -301,21 +329,44 @@ const setActiveViewModel = viewModel => {
 		}
 		activeViewModel = viewModel
 		if (activeViewModel) {
-			mimiriEditor.open(noteManager.tree.getNoteById(activeViewModel.id))
+			void mimiriEditor.open(noteManager.tree.getNoteById(activeViewModel.id))
 			activeViewModelStopWatch = watch(activeViewModel, () => {
 				if (activeViewModel && activeViewModel.id === mimiriEditor.note?.id) {
-					mimiriEditor.open(noteManager.tree.getNoteById(activeViewModel.id))
+					void mimiriEditor.open(noteManager.tree.getNoteById(activeViewModel.id))
 				}
 			})
 		}
 	}
 }
 
+function onConflictNavigate(direction: 'prev' | 'next') {
+	mimiriEditor.navigateConflict(direction)
+}
+
 onMounted(() => {
-	mimiriEditor.init(monacoContainer.value, simpleContainer.value, displayContainer.value)
+	mimiriEditor.init(monacoContainer.value, proseMirrorContainer.value, proseMirrorPopup.value, conflictBanner.value)
 	mimiriEditor.onSave(() => save())
 	mimiriEditor.onSearchAll(() => titleBar.value?.searchAllNotes())
-	mimiriEditor.onBlur(() => save())
+	mimiriEditor.onError(error => {
+		if (error === 'note-size') {
+			limitDialog.value.show('save-note-size')
+		} else if (error === 'total-size') {
+			limitDialog.value.show('save-total-size')
+		} else if (error === 'lost-update') {
+			infoDialog.value.show(
+				'Note was changed',
+				`The note you just saved appears to have been changed outside the editor while you were editing it.
+
+This may happen if you edited the note in another tab or device.
+
+This may also happen if your connection is unstable.
+
+Or if this is a shared note: another user may have edited it.
+
+You can view all changes in the history.`,
+			)
+		}
+	})
 	setActiveViewModel(noteManager.tree.selectedViewModel())
 
 	watch(settingsManager.state, () => {
@@ -372,7 +423,6 @@ const find = () => {
 
 const onBack = () => {
 	void save()
-	mimiriEditor.mobileClosing()
 	window.history.back()
 	noteManager.ui.closeEditorIfMobile()
 }
@@ -397,32 +447,17 @@ const saveEnabled = computed(() => {
 	return mimiriEditor.changed && winFocus && !!activeViewModel
 })
 
+const showWordWrap = computed(() => {
+	return mimiriEditor.supportsWordWrap
+})
+
 const save = async () => {
-	if (activeViewModel && saveEnabled.value && !saveInProgress) {
+	// A pending editor-mode change saves silently: it never lights up the save
+	// button (saveEnabled), but rides the same triggers (blur, Ctrl+S, note switch)
+	if (activeViewModel && (saveEnabled.value || mimiriEditor.modeChanged) && !saveInProgress) {
 		saveInProgress = true
 		try {
-			const result = await mimiriEditor.save()
-
-			if (result === 'note-size') {
-				noteManager.tree.select(activeViewModel.id)
-				limitDialog.value.show('save-note-size')
-			} else if (result === 'total-size') {
-				noteManager.tree.select(activeViewModel.id)
-				limitDialog.value.show('save-total-size')
-			} else if (result === 'lost-update') {
-				infoDialog.value.show(
-					'Note was changed',
-					`The note you just saved appears to have been changed outside the editor while you were editing it.
-
-This may happen if you edited the note in another tab or device.
-
-This may also happen if your connection is unstable.
-
-Or if this is a shared note: another user may have edited it.
-
-You can view all changes in the history.`,
-				)
-			}
+			await mimiriEditor.save()
 		} finally {
 			saveInProgress = false
 		}

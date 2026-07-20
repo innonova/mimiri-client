@@ -1,0 +1,793 @@
+import { editor, KeyCode, languages, Selection } from 'monaco-editor'
+import { SelectionExpansion, type MimiriEditorState, type TextEditor, type TextEditorListener } from './type'
+import { settingsManager } from '../settings-manager'
+import { mimiriPlatform } from '../mimiri-platform'
+import { Debounce } from '../helpers'
+import { ListPlugin } from './monaco-editor/list-plugin'
+import { HeadingPlugin } from './monaco-editor/heading-plugin'
+import { CodeBlockPlugin } from './monaco-editor/code-block-plugin'
+import { ConflictBlockPlugin } from './monaco-editor/conflict-block-plugin'
+import { InlineMarkdownPlugin } from './monaco-editor/inline-markdown-plugin'
+import { PasswordPlugin } from './monaco-editor/password-plugin'
+import { PasswordButtonsPlugin } from './monaco-editor/password-buttons-plugin'
+import { clipboardManager } from '../../global'
+import { getThemeById } from './theme-manager'
+import type ConflictBanner from '../../components/elements/ConflictBanner.vue'
+import { MimiriCodeLensProvider } from './monaco-editor/mimiri-code-lens-provider'
+
+export class EditorMonaco implements TextEditor {
+	private monacoEditor: editor.IStandaloneCodeEditor
+	private monacoEditorModel: editor.ITextModel
+	private monacoEditorHistoryModel: editor.ITextModel
+	private decorations: string[] = []
+	private styleElement: HTMLStyleElement
+	private backgroundElement: HTMLDivElement
+	private _state: Omit<MimiriEditorState, 'mode'> = {
+		canUndo: false,
+		canRedo: false,
+		supportedActions: [],
+		changed: false,
+	}
+	private skipScrollUntil = 0
+	private historyShowing = false
+	private lastScrollTop = 0
+	private lastSelection: Selection | null = null
+	private _cleanVersions: number[] = []
+	private _checkNextChangeForClean = false
+	private _baselineText: string = ''
+	private _domElement: HTMLElement | undefined
+	private _active = true
+	private _mouseDownPosition: { lineNumber: number; column: number } | undefined
+	private _selectionHistory: Selection[] = []
+	private _preClickSelection: Selection | undefined
+	private _plugins: any[] = []
+	private _conflictBlockPlugin: ConflictBlockPlugin | null = null
+	private _layoutDebounce: Debounce
+
+	constructor(private listener: TextEditorListener) {
+		this.styleElement = document.getElementById('mimiri-style-overrides') as HTMLStyleElement
+		if (!this.styleElement) {
+			this.styleElement = document.createElement('style')
+			this.styleElement.id = 'mimiri-style-overrides'
+			document.getElementsByTagName('head')[0].appendChild(this.styleElement)
+		}
+
+		languages.register({
+			id: 'mimiri',
+		})
+
+		languages.setMonarchTokensProvider('mimiri', {
+			tokenizer: {
+				root: [
+					// Password pattern (kept in tokenizer for syntax highlighting)
+					[/(p`)([^``]+)(`)/, ['directive', 'password', 'directive']],
+					// Merge conflict markers
+					[/^<{7} .*$/, 'conflict-start'],
+					[/^={7}$/, 'conflict-separator'],
+					[/^>{7} .*$/, 'conflict-end'],
+					// Code blocks with language embedding
+					[
+						/^```\s*(\w+)\s*$/,
+						{
+							token: 'string',
+							next: '@codeblock',
+							nextEmbedded: '$1', // Switches to the tokenizer of the captured language
+						},
+					],
+				],
+				codeblock: [
+					// When seeing the closing fence, pop back to your language
+					[/^```\s*$/, { token: 'string', next: '@pop', nextEmbedded: '@pop' }],
+				],
+			},
+		})
+	}
+
+	public init(domElement: HTMLElement, conflictBanner: InstanceType<typeof ConflictBanner> | null) {
+		this._domElement = domElement
+		this.backgroundElement = document.getElementById('mimiri-background-editor') as HTMLDivElement
+		if (this.backgroundElement) {
+			this.backgroundElement.remove()
+		}
+		this.backgroundElement = document.createElement('div')
+		this.backgroundElement.id = 'mimiri-background-editor'
+		this.backgroundElement.style.position = 'absolute'
+		this.backgroundElement.style.visibility = 'hidden'
+		this.backgroundElement.style.left = '-2000px'
+		this.backgroundElement.style.top = '0'
+		this.backgroundElement.style.width = '400px'
+		this.backgroundElement.style.height = '800px'
+		document.body.appendChild(this.backgroundElement)
+
+		const config: editor.IStandaloneEditorConstructionOptions = {
+			value: '',
+			language: 'mimiri',
+			lineNumbers: 'off',
+			glyphMargin: false,
+			folding: false,
+			lineDecorationsWidth: 5,
+			lineNumbersMinChars: 0,
+			showFoldingControls: 'never',
+			automaticLayout: true,
+			minimap: { enabled: false },
+			readOnly: true,
+			copyWithSyntaxHighlighting: false,
+			occurrencesHighlight: 'off',
+			selectionHighlight: false,
+			matchBrackets: 'never',
+			wordWrap: settingsManager.wordwrap ? 'on' : 'off',
+			autoClosingBrackets: 'never',
+			bracketPairColorization: {
+				independentColorPoolPerBracketType: false,
+				enabled: false,
+			},
+			tabSize: 2,
+			padding: {
+				top: 5,
+			},
+			suggest: {
+				showWords: false,
+			},
+			renderLineHighlight: 'none',
+			theme: getThemeById(settingsManager.state.editorTheme, settingsManager.darkMode).monacoTheme,
+			fontFamily: `'${settingsManager.editorFontFamily}', 'Consolas', 'Menlo', 'Droid Sans Mono', 'monospace', 'Courier New'`,
+			fontSize: settingsManager.editorFontSize,
+		}
+		// this.backgroundEditor = editor.create(this.backgroundElement, config)
+		this.monacoEditor = editor.create(domElement, config)
+
+		this.monacoEditorModel = editor.createModel('', 'mimiri')
+		// this.backgroundModel = editor.createModel('', 'text') // Use 'text' instead of 'mimiri' to avoid triggering semantic tokens
+		this.monacoEditorModel.setEOL(editor.EndOfLineSequence.LF)
+		// this.backgroundModel.setEOL(editor.EndOfLineSequence.LF)
+
+		this.monacoEditor.setModel(this.monacoEditorModel)
+		// this.backgroundEditor.setModel(this.backgroundModel)
+
+		this.monacoEditorHistoryModel = editor.createModel('', 'mimiri')
+
+		this._plugins.push(new ListPlugin(this.monacoEditor))
+		this._plugins.push(new HeadingPlugin(this.monacoEditor))
+		this._plugins.push(new CodeBlockPlugin(this.monacoEditor, this.listener))
+		this._conflictBlockPlugin = new ConflictBlockPlugin(this.monacoEditor, conflictBanner)
+		this._plugins.push(this._conflictBlockPlugin)
+		this._plugins.push(new PasswordPlugin(this.monacoEditor))
+		const inlinePlugin = new InlineMarkdownPlugin(this.monacoEditorModel)
+		const passwordButtonsPlugin = new PasswordButtonsPlugin(this.monacoEditor, this.listener, inlinePlugin)
+		inlinePlugin.visiblePasswords = passwordButtonsPlugin.visiblePasswords
+		this._plugins.push(passwordButtonsPlugin)
+		this._plugins.push(inlinePlugin)
+		this._plugins.push(new InlineMarkdownPlugin(this.monacoEditorHistoryModel))
+
+		this.monacoEditor.onKeyDown(e => {
+			if (this._active) {
+				if (e.keyCode === KeyCode.KeyS && e.ctrlKey && !this.historyShowing) {
+					this.listener.onSaveRequested()
+				}
+				if (e.keyCode === KeyCode.KeyF && e.ctrlKey && e.shiftKey) {
+					this.listener.onSearchAllRequested()
+				}
+				if (e.keyCode === KeyCode.KeyE && e.ctrlKey) {
+					e.preventDefault()
+					this.executeFormatAction('insert-code-block')
+				}
+			}
+		})
+
+		if (mimiriPlatform.isMacApp) {
+			this.monacoEditor.onKeyDown(async e => {
+				if (this._active) {
+					if (e.metaKey && e.keyCode === KeyCode.KeyV) {
+						e.preventDefault()
+
+						try {
+							const text = await navigator.clipboard.readText()
+
+							const pasteEvent = new ClipboardEvent('paste', {
+								bubbles: true,
+								cancelable: true,
+								clipboardData: new DataTransfer(),
+							})
+
+							pasteEvent.clipboardData.setData('text/plain', text)
+							e.target.dispatchEvent(pasteEvent)
+						} catch (err) {
+							console.error('Clipboard read failed:', err)
+						}
+					}
+
+					if (e.metaKey && e.keyCode === KeyCode.KeyC) {
+						e.preventDefault()
+
+						const copyEvent = new ClipboardEvent('copy', {
+							bubbles: true,
+							cancelable: true,
+							clipboardData: new DataTransfer(),
+						})
+
+						e.target.dispatchEvent(copyEvent)
+
+						const text = copyEvent.clipboardData.getData('text/plain')
+
+						if (text) {
+							clipboardManager.write(text)
+						}
+					}
+
+					if (e.metaKey && e.keyCode === KeyCode.KeyX) {
+						e.preventDefault()
+
+						const copyEvent = new ClipboardEvent('cut', {
+							bubbles: true,
+							cancelable: true,
+							clipboardData: new DataTransfer(),
+						})
+
+						e.target.dispatchEvent(copyEvent)
+
+						const text = copyEvent.clipboardData.getData('text/plain')
+
+						if (text) {
+							clipboardManager.write(text)
+						}
+					}
+				}
+			})
+		}
+
+		// this.monacoEditor.onKeyUp(e => {
+		// 	if (this._active) {
+		// 	}
+		// })
+
+		this.monacoEditorModel.onDidChangeContent(() => {
+			if (this._active) {
+				if (this._cleanVersions.length === 0) {
+					this._cleanVersions.push(this.monacoEditorModel.getAlternativeVersionId())
+				} else if (this._checkNextChangeForClean) {
+					if (this.monacoEditorModel.getValue() === this._baselineText) {
+						this._cleanVersions.push(this.monacoEditorModel.getAlternativeVersionId())
+					}
+				}
+				this._checkNextChangeForClean = false
+				this.updateState()
+			}
+		})
+
+		this._layoutDebounce = new Debounce(() => {
+			if (this._active && !this.historyShowing) {
+				this.monacoEditor.layout()
+			}
+		}, 150)
+
+		this.monacoEditor.onMouseDown(e => {
+			if (this._selectionHistory.length > 1) {
+				this._preClickSelection = this._selectionHistory[this._selectionHistory.length - 2]
+			} else {
+				this._preClickSelection = undefined
+			}
+			if (e.target.position) {
+				this._mouseDownPosition = { lineNumber: e.target.position.lineNumber, column: e.target.position.column }
+			}
+		})
+
+		this.monacoEditor.onMouseUp(e => {
+			if (e.target && e.target.position) {
+				if (
+					!this._mouseDownPosition ||
+					(this._mouseDownPosition.lineNumber !== e.target.position.lineNumber &&
+						this._mouseDownPosition.column !== e.target.position.column)
+				) {
+					return
+				}
+				const selection = this.monacoEditor.getSelection()
+				if (selection.startColumn !== selection.endColumn) {
+					return
+				}
+				const lineNumber = e.target.position.lineNumber
+				const line = this.monacoEditor.getModel().getLineContent(lineNumber)
+				const index = e.target.position.column - 1
+				let start = -1
+				let end = -1
+				for (let s = index; s >= 0; s--) {
+					if (line[s] === '[') {
+						start = s
+						break
+					}
+				}
+				for (let s = index - 1; s < line.length; s++) {
+					if (line[s] === ']') {
+						end = s
+						break
+					}
+				}
+				const checkValue = line[start + 1]
+				if (end - start === 2 && (checkValue === 'x' || checkValue === 'X' || checkValue === ' ')) {
+					const action = {
+						range: {
+							startLineNumber: lineNumber,
+							startColumn: start + 2,
+							endLineNumber: lineNumber,
+							endColumn: end + 1,
+						},
+						text: checkValue === ' ' ? 'x' : ' ',
+						forceMoveMarkers: true,
+					}
+					this.monacoEditor.executeEdits(undefined, [action])
+					if (this._preClickSelection) {
+						this.monacoEditor.setSelection(this._preClickSelection)
+					} else {
+						this.monacoEditor.setSelection({
+							startLineNumber: lineNumber,
+							startColumn: start + 1,
+							endLineNumber: lineNumber,
+							endColumn: start + 1,
+						})
+					}
+				}
+			}
+		})
+
+		this.monacoEditor.onDidChangeCursorSelection(e => {
+			this._selectionHistory.push(e.selection)
+			if (this._selectionHistory.length > 10) {
+				this._selectionHistory.shift()
+			}
+			if (
+				e.reason === editor.CursorChangeReason.Explicit &&
+				e.selection &&
+				e.selection.startLineNumber === e.selection.endLineNumber
+			) {
+				const line = this.monacoEditor.getModel().getLineContent(e.selection.startLineNumber)
+				const selectionStart = e.selection.startColumn
+				const selectionEnd = e.selection.endColumn
+				if (selectionEnd - selectionStart > 0 || !mimiriPlatform.isDesktop) {
+					const tokens = editor.tokenize(line, 'mimiri')[0]
+					for (let i = 0; i < tokens.length; i++) {
+						const token = tokens[i]
+						if (token.type === 'password.mimiri' && i + 1 < tokens.length) {
+							const tokenStart = token.offset + 1
+							const tokenEnd = tokens[i + 1].offset + 1
+							if (tokenStart <= selectionStart && selectionEnd <= tokenEnd) {
+								this.monacoEditor.setSelection(
+									{
+										startLineNumber: e.selection.startLineNumber,
+										startColumn: tokenStart,
+										endLineNumber: e.selection.startLineNumber,
+										endColumn: tokenEnd,
+									},
+									e.source,
+								)
+								if (!mimiriPlatform.isDesktop) {
+									if (this._active) {
+										const text = line.substring(tokenStart - 1, tokenEnd - 1)
+										const rect = this.monacoEditor.getDomNode().getBoundingClientRect()
+										const lineTop = this.monacoEditor.getTopForLineNumber(e.selection.startLineNumber)
+										const columnOffset = this.monacoEditor.getOffsetForColumn(e.selection.startLineNumber, tokenEnd)
+										const left = columnOffset + rect.left - this.monacoEditor.getScrollLeft()
+										const top = lineTop + rect.top - this.monacoEditor.getScrollTop()
+										this.listener.onPasswordClicked(top, left, text)
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+			this.updateAbilities()
+		})
+
+		const scrollDebounce = new Debounce(async () => {
+			if (this.skipScrollUntil > Date.now()) {
+				return
+			}
+			if (this.monacoEditor.getScrollWidth() > 100 && !this.historyShowing) {
+				this.lastScrollTop = this.monacoEditor.getScrollTop()
+				if (this._active) {
+					this.listener.onScroll(this.monacoEditor.getScrollTop())
+				}
+			}
+		}, 250)
+
+		this.monacoEditor.onDidScrollChange(() => {
+			if (this.skipScrollUntil > Date.now()) {
+				return
+			}
+			scrollDebounce.activate()
+		})
+
+		const mouseInfo = {
+			line: -1,
+			column: -1,
+			count: 0,
+			time: Date.now(),
+			rect: new DOMRect(),
+		}
+
+		this.monacoEditor.onMouseDown(e => {
+			if (
+				Date.now() - mouseInfo.time < 500 &&
+				mouseInfo.line === e.target.position?.lineNumber &&
+				mouseInfo.column === e.target.position?.column
+			) {
+				mouseInfo.count++
+			} else if (e.target?.position) {
+				mouseInfo.line = e.target.position.lineNumber
+				mouseInfo.column = e.target.position.column
+				mouseInfo.time = Date.now()
+				mouseInfo.count = 1
+				mouseInfo.rect = e.target.element.getBoundingClientRect()
+			}
+		})
+
+		this.monacoEditor.onMouseUp(e => {
+			if (
+				Date.now() - mouseInfo.time < 500 &&
+				e.target &&
+				e.target.position &&
+				mouseInfo.line === e.target.position.lineNumber &&
+				mouseInfo.column === e.target.position.column &&
+				mouseInfo.count == 2
+			) {
+				const line = this.monacoEditor.getModel().getLineContent(mouseInfo.line)
+				const tokens = editor.tokenize(line, 'mimiri')[0]
+				for (let i = 0; i < tokens.length; i++) {
+					const token = tokens[i]
+					if (token.type === 'password.mimiri' && i + 1 < tokens.length) {
+						const tokenStart = token.offset + 1
+						const tokenEnd = tokens[i + 1].offset + 1
+						if (mouseInfo.column >= tokenStart && mouseInfo.column <= tokenEnd) {
+							const text = line.substring(tokenStart - 1, tokenEnd - 1)
+							const rect = this.monacoEditor.getDomNode().getBoundingClientRect()
+							const lineTop = this.monacoEditor.getTopForLineNumber(mouseInfo.line)
+							const columnOffset = this.monacoEditor.getOffsetForColumn(mouseInfo.line, mouseInfo.column)
+							const left = columnOffset + rect.left - this.monacoEditor.getScrollLeft()
+							const top = lineTop + rect.top - this.monacoEditor.getScrollTop()
+							this.listener.onPasswordClicked(top, left, text)
+						}
+						break
+					}
+				}
+			}
+		})
+		this._domElement.style.display = this._active ? 'block' : 'none'
+	}
+
+	private updateAbilities() {
+		// Build supportedActions array from all plugins
+		const supportedActions: string[] = []
+		for (const plugin of this._plugins) {
+			supportedActions.push(...plugin.getSupportedActions())
+		}
+
+		// Check if actions changed (use Set for order-independent comparison)
+		const currentSet = new Set(this._state.supportedActions)
+		const newSet = new Set(supportedActions)
+		const actionsChanged = currentSet.size !== newSet.size || supportedActions.some(action => !currentSet.has(action))
+
+		if (actionsChanged) {
+			this._state.supportedActions = supportedActions
+			if (this._active) {
+				this.listener.onStateUpdated(this._state)
+			}
+		}
+	}
+
+	private updateState() {
+		this._state.canUndo = (this.monacoEditorModel as any).canUndo()
+		this._state.canRedo = (this.monacoEditorModel as any).canRedo()
+		this._state.changed =
+			this._cleanVersions.length === 0 ||
+			!this._cleanVersions.includes(this.monacoEditorModel.getAlternativeVersionId())
+
+		this.listener.onStateUpdated(this._state)
+	}
+
+	public setText(text: string) {
+		editor.remeasureFonts()
+		this._state.changed = false
+		this._cleanVersions = []
+		this._baselineText = text
+		this.monacoEditorModel.setValue(text)
+
+		this._plugins.forEach(plugin => {
+			plugin.show()
+		})
+		if (this._active) {
+			this.listener.onStateUpdated(this._state)
+		}
+	}
+
+	public setScrollTop(scrollTop: number) {
+		this.skipScrollUntil = Date.now() + 500
+		this.lastScrollTop = scrollTop
+		this.monacoEditor.setScrollTop(scrollTop, editor.ScrollType.Immediate)
+		setTimeout(() => {
+			this.skipScrollUntil = Date.now() + 500
+			this.monacoEditor.setScrollTop(scrollTop, editor.ScrollType.Immediate)
+		})
+	}
+
+	public replaceText(text: string) {
+		if (this.monacoEditorModel.getValue() !== text) {
+			const fullRange = this.monacoEditorModel.getFullModelRange()
+			this._checkNextChangeForClean = true
+			this.monacoEditorModel.pushEditOperations(
+				[],
+				[
+					{
+						range: fullRange,
+						text,
+					},
+				],
+				() => null,
+			)
+			this._plugins.forEach(plugin => {
+				plugin.updateText()
+			})
+		}
+		if (this._active) {
+			this.updateState()
+		}
+	}
+
+	public resetBaseline() {
+		const text = this.monacoEditorModel.getValue()
+		if (text !== this._baselineText) {
+			this._baselineText = text
+			this._cleanVersions = [this.monacoEditorModel.getAlternativeVersionId()]
+		} else {
+			this._cleanVersions.push(this.monacoEditorModel.getAlternativeVersionId())
+		}
+		this._state.changed = false
+		if (this._active) {
+			this.listener.onStateUpdated(this._state)
+		}
+	}
+
+	public undo() {
+		;(this.monacoEditorModel as any).undo()
+		this.updateState()
+	}
+
+	public redo() {
+		;(this.monacoEditorModel as any).redo()
+		this.updateState()
+	}
+
+	public setHistoryText(text: string) {
+		this.monacoEditorHistoryModel.setValue(text)
+	}
+
+	public hideHistory() {
+		this.monacoEditor.setModel(this.monacoEditorModel)
+		this.monacoEditor.setScrollTop(this.lastScrollTop, editor.ScrollType.Immediate)
+		if (this.lastSelection) {
+			this.monacoEditor.setSelection(this.lastSelection)
+		}
+		this.historyShowing = false
+		this._conflictBlockPlugin.resume()
+		MimiriCodeLensProvider.suspended = false
+	}
+
+	public showHistory() {
+		this.lastSelection = this.monacoEditor.getSelection()
+		this.historyShowing = true
+		this._conflictBlockPlugin.suspend()
+		MimiriCodeLensProvider.suspended = true
+		this.monacoEditor.setModel(this.monacoEditorHistoryModel)
+	}
+
+	public clearSearchHighlights() {
+		if (this.decorations.length > 0) {
+			this.monacoEditorModel.deltaDecorations(this.decorations, [])
+			this.decorations = []
+		}
+	}
+
+	public setSearchHighlights(text: string) {
+		this.clearSearchHighlights()
+		if (text) {
+			const matches: editor.FindMatch[] = this.monacoEditorModel.findMatches(text, false, false, false, null, false)
+			matches.forEach((match: editor.FindMatch): void => {
+				const newDecorations = this.monacoEditorModel.deltaDecorations(
+					[],
+					[
+						{
+							range: match.range,
+							options: {
+								isWholeLine: false,
+								inlineClassName: 'search-highlight',
+							},
+						},
+					],
+				)
+				this.decorations.push(...newDecorations)
+			})
+		}
+	}
+
+	public find() {
+		void this.monacoEditor.getAction('actions.find').run()
+	}
+
+	public focus() {
+		this.monacoEditor.focus()
+	}
+
+	public toggleWordWrap() {
+		settingsManager.wordwrap = !settingsManager.wordwrap
+		this.syncSettings()
+	}
+
+	public syncSettings() {
+		const theme = getThemeById(settingsManager.state.editorTheme, settingsManager.darkMode)
+		this.monacoEditor.updateOptions({
+			theme: theme.monacoTheme,
+			fontFamily: `'${settingsManager.editorFontFamily}', 'Consolas', 'Menlo', 'Droid Sans Mono', 'monospace', 'Courier New'`,
+			fontSize: settingsManager.editorFontSize,
+			wordWrap: settingsManager.wordwrap ? 'on' : 'off',
+		})
+	}
+
+	public cut() {
+		const selection = this.monacoEditor.getSelection()
+		if (!selection.isEmpty()) {
+			const text = this.monacoEditor.getModel().getValueInRange(selection)
+			this.monacoEditor.executeEdits(undefined, [{ range: selection, text: '', forceMoveMarkers: true }])
+			return text
+		}
+		return undefined
+	}
+
+	public copy() {
+		const selection = this.monacoEditor.getSelection()
+		if (!selection.isEmpty()) {
+			const text = this.monacoEditor.getModel().getValueInRange(selection)
+			return text
+		}
+		return undefined
+	}
+
+	public paste(text: string) {
+		const selection = this.monacoEditor.getSelection()
+		const action = { range: selection, text, forceMoveMarkers: true }
+		this.monacoEditor.executeEdits(undefined, [action])
+	}
+
+	public executeFormatAction(action: string) {
+		if (!this._state.supportedActions.includes(action)) {
+			return
+		}
+		for (const plugin of this._plugins) {
+			if (plugin.executeFormatAction && plugin.executeFormatAction(action)) {
+				break
+			}
+		}
+	}
+
+	public expandSelection(type: SelectionExpansion) {
+		const selection = this.monacoEditor.getSelection()
+		const newSelection = {
+			startLineNumber: selection.startLineNumber,
+			startColumn: selection.startColumn,
+			endLineNumber: selection.endLineNumber,
+			endColumn: selection.endColumn,
+		}
+		const model = this.monacoEditor.getModel()
+		switch (type) {
+			case SelectionExpansion.ExpandLeft:
+				if (newSelection.startColumn > 1) {
+					newSelection.startColumn--
+				} else if (newSelection.startLineNumber > 1) {
+					newSelection.startLineNumber--
+					newSelection.startColumn = model.getLineLength(newSelection.startLineNumber)
+				}
+				break
+			case SelectionExpansion.ShrinkLeft:
+				if (newSelection.startLineNumber === newSelection.endLineNumber) {
+					if (newSelection.startColumn < newSelection.endColumn) {
+						newSelection.startColumn++
+					}
+				} else if (newSelection.startColumn < model.getLineLength(newSelection.startLineNumber)) {
+					newSelection.startColumn++
+				} else {
+					newSelection.startLineNumber++
+					newSelection.startColumn = 1
+				}
+				break
+			case SelectionExpansion.ExpandRight:
+				if (newSelection.endColumn < model.getLineLength(newSelection.endLineNumber)) {
+					newSelection.endColumn++
+				} else if (newSelection.endLineNumber < model.getLineCount()) {
+					newSelection.endLineNumber++
+					newSelection.endColumn = 1
+				}
+				break
+			case SelectionExpansion.ShrinkRight:
+				if (newSelection.startLineNumber === newSelection.endLineNumber) {
+					if (newSelection.endColumn > newSelection.startColumn) {
+						newSelection.endColumn--
+					}
+				} else if (newSelection.endColumn > 1) {
+					newSelection.endColumn--
+				} else {
+					newSelection.endLineNumber--
+					newSelection.endColumn = model.getLineLength(newSelection.endLineNumber)
+				}
+				break
+			case SelectionExpansion.LineUp:
+				if (newSelection.startLineNumber > 1) {
+					newSelection.startLineNumber--
+					newSelection.startColumn = model.getLineLength(newSelection.startLineNumber)
+				} else {
+					newSelection.startColumn = 1
+				}
+				break
+			case SelectionExpansion.LineDown:
+				if (newSelection.endLineNumber < this.monacoEditor.getModel().getLineCount()) {
+					newSelection.endLineNumber++
+					newSelection.endColumn = 1
+				} else {
+					newSelection.endColumn = this.monacoEditor.getModel().getLineLength(newSelection.endLineNumber)
+				}
+				break
+		}
+		this.monacoEditor.setSelection(newSelection)
+		this.monacoEditor.focus()
+	}
+
+	public selectAll() {
+		this.monacoEditor.setSelection(this.monacoEditor.getModel().getFullModelRange())
+		this.monacoEditor.focus()
+	}
+
+	public get active(): boolean {
+		return this._active
+	}
+
+	public set active(value: boolean) {
+		if (this._active !== value) {
+			this._active = value
+			if (this._domElement) {
+				this._domElement.style.display = this._active ? 'block' : 'none'
+			}
+			if (this._active) {
+				this.listener.onStateUpdated(this._state)
+			}
+			this._plugins.forEach(plugin => {
+				plugin.active = this._active
+			})
+		}
+	}
+
+	public get readonly() {
+		return this.monacoEditor.getOption(editor.EditorOption.readOnly)
+	}
+
+	public set readonly(value: boolean) {
+		this.monacoEditor?.updateOptions({ readOnly: value })
+	}
+
+	public get scrollTop() {
+		return this.monacoEditor.getScrollTop()
+	}
+
+	public get text() {
+		return this.monacoEditor.getValue()
+	}
+
+	public get changed() {
+		return this._state.changed
+	}
+
+	public navigateConflict(direction: 'prev' | 'next') {
+		if (this._conflictBlockPlugin) {
+			this._conflictBlockPlugin.navigateConflict(direction)
+		}
+	}
+
+	public get supportsWordWrap(): boolean {
+		return true
+	}
+}

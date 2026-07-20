@@ -186,7 +186,7 @@ export class MimiriClient extends HttpClientBase {
 				token: loginResponse.token,
 			}
 			return result
-		} catch (ex) {
+		} catch (ex: any) {
 			if (ex.statusCode === 404) {
 				return 'REJECTED'
 			}
@@ -242,7 +242,7 @@ export class MimiriClient extends HttpClientBase {
 
 			// await this.openWebSocket()
 			return response.data
-		} catch (ex) {
+		} catch (ex: any) {
 			if (ex.statusCode === 404) {
 				return 'REJECTED'
 			}
@@ -522,7 +522,7 @@ export class MimiriClient extends HttpClientBase {
 			await this._authManager.signRequest(request)
 			response = await this.post<ReadNoteResponse>('/note/read', request)
 			return response
-		} catch (ex) {
+		} catch (ex: any) {
 			if (ex.statusCode == 404) {
 				return undefined
 			}

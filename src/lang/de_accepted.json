@@ -1,0 +1,2319 @@
+{
+	"acceptShareDialog.cannotAcceptDataUsage": {
+		"en": "Cannot accept share!\nNew data usage ({size}) would exceed current maximum ({max})",
+		"de": "Freigabe kann nicht angenommen werden!\nDie neue Datenmenge ({size}) würde das aktuelle Maximum ({max}) überschreiten",
+		"de_en": "Share cannot be accepted!\nThe new data amount ({size}) would exceed the current maximum ({max})",
+		"_note": "\"data usage\" → \"Datenmenge\" (data amount). Placeholders {size} and {max} present. Meaning preserved.",
+		"_recommendation": "accept"
+	},
+	"acceptShareDialog.cannotAcceptNoteCount": {
+		"en": "Cannot accept share!\nNew note count ({count}) would exceed current maximum ({max})",
+		"de": "Freigabe kann nicht angenommen werden!\nDie neue Notizenanzahl ({count}) würde das aktuelle Maximum ({max}) überschreiten",
+		"de_en": "Share cannot be accepted!\nThe new note count ({count}) would exceed the current maximum ({max})",
+		"_note": "Passive construction; adds \"the\" before Maximum. Placeholders {count} and {max} present. Meaning preserved.",
+		"_recommendation": "accept"
+	},
+	"acceptShareDialog.enterCode": {
+		"en": "Enter the one time code to accept a share.",
+		"de": "Gib den Einmalcode ein, um eine Freigabe anzunehmen.",
+		"de_en": "Enter the one-time code to accept a share.",
+		"_note": "\"one time\" → \"Einmal\" (one-time, as compound). Minor hyphenation and phrasing difference, meaning identical.",
+		"_recommendation": "accept"
+	},
+	"acceptShareDialog.title": {
+		"en": "Accept Share",
+		"de": "Freigabe annehmen",
+		"de_en": "Accept share",
+		"_note": "Title case → sentence case. German standard for dialog titles. Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"acceptShareDialog.warning": {
+		"en": "We do not recommend accepting shares from users you do not know.",
+		"de": "Wir empfehlen nicht, Freigaben von unbekannten Benutzern anzunehmen.",
+		"de_en": "We do not recommend accepting shares from unknown users.",
+		"_note": "\"users you do not know\" → \"unbekannten Benutzern\" (unknown users). Compact but equivalent phrasing.",
+		"_recommendation": "accept"
+	},
+	"app.firstTimeMessage": {
+		"en": "This might take a moment if this is the first time you are starting Mimiri Notes",
+		"de": "Das kann einen Moment dauern, wenn du Mimiri Notes zum ersten Mal startest",
+		"de_en": "This can take a moment when you start Mimiri Notes for the first time",
+		"_note": "\"might\" → \"kann\" (can); conditional \"if this is the first time\" restructured as \"when ... for the first time\". Meaning preserved, phrasing more natural in German.",
+		"_recommendation": "accept"
+	},
+	"app.initializing": {
+		"en": "Initializing",
+		"de": "Initialisierung",
+		"de_en": "Initialization",
+		"_note": "Gerund \"Initializing\" rendered as noun \"Initialisierung\" (Initialization). German prefers nominalisations as status labels.",
+		"_recommendation": "accept"
+	},
+	"conflictBanner.conflicts": {
+		"en": "{count} conflict(s) found - document is read-only until resolved",
+		"de": "{count} Konflikt(e) gefunden – Dokument ist schreibgeschützt bis zur Auflösung",
+		"de_en": "{count} conflict(s) found – document is write-protected until resolution",
+		"_note": "'read-only' → 'schreibgeschützt' (write-protected): standard German tech term for read-only. 'until resolved' → 'bis zur Auflösung' (until resolution): nominal construction, normal in German. Hyphen upgraded to en-dash, correct German punctuation. {count} placeholder preserved.",
+		"_recommendation": "accept"
+	},
+	"conflictBanner.next": {
+		"en": "Next →",
+		"de": "Weiter →",
+		"de_en": "Continue →",
+		"_note": "'Next' → 'Weiter' (Continue/Forward). Context: navigation button to jump to next conflict. 'Weiter' is the idiomatic German label for forward navigation, more natural than 'Nächste'. Arrow preserved.",
+		"_recommendation": "accept"
+	},
+	"conflictBanner.previous": {
+		"en": "← Previous",
+		"de": "← Zurück",
+		"de_en": "← Back",
+		"_note": "'Previous' → 'Zurück' (Back). Context: navigation button to jump to previous conflict. German UI convention uses 'Zurück' for backward navigation rather than literal 'Vorherige'. Arrow preserved.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.acceptShare": {
+		"en": "Accept Share",
+		"de": "Freigabe annehmen",
+		"de_en": "Accept share",
+		"_note": "\"Share\" → \"Freigabe\" (sharing/release). Title case → sentence case. \"Freigabe annehmen\" is natural German for accepting a shared note.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.acceptShareHere": {
+		"en": "Accept Share Here",
+		"de": "Freigabe hier annehmen",
+		"de_en": "Accept share here",
+		"_note": "Same as acceptShare with \"Here\" added. Title case → sentence case. Consistent with acceptShare.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.addGettingStarted": {
+		"en": "Add Getting Started",
+		"de": "Erste Schritte hinzufügen",
+		"de_en": "Add first steps",
+		"_note": "\"Getting Started\" → \"Erste Schritte\" (first steps). Standard German translation for a \"Getting Started\" guide or note.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.changePassword": {
+		"en": "Change Password",
+		"de": "Passwort ändern",
+		"de_en": "Change password",
+		"_note": "Title case → sentence case. Standard German context menu label.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.changeUsername": {
+		"en": "Change Username",
+		"de": "Benutzernamen ändern",
+		"de_en": "Change username",
+		"_note": "Title case → sentence case. \"Username\" → \"Benutzernamen\" (username in accusative). Standard German.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.checkForUpdates": {
+		"en": "Check for Updates",
+		"de": "Nach Updates suchen",
+		"de_en": "Search for updates",
+		"_note": "\"Check for\" → \"Nach ... suchen\" (search for). Title case → sentence case. Consistent with settingsUpdate.checkForUpdates.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.copyPath": {
+		"en": "Copy Path",
+		"de": "Pfad kopieren",
+		"de_en": "Copy path",
+		"_note": "Title case → sentence case. Standard German context menu action.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.createAccount": {
+		"en": "Create Account",
+		"de": "Konto erstellen",
+		"de_en": "Create account",
+		"_note": "\"Account\" → \"Konto\". Title case → sentence case. Consistent with controlPanel.createAccount.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.createPassword": {
+		"en": "Create Password",
+		"de": "Passwort erstellen",
+		"de_en": "Create password",
+		"_note": "Title case → sentence case. Consistent with controlPanel.createPassword.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.darkMode": {
+		"en": "Dark Mode",
+		"de": "Dunkler Modus",
+		"de_en": "Dark mode",
+		"_note": "\"Dark Mode\" → \"Dunkler Modus\" (dark mode). Title case → sentence case. Adjective-noun construction, standard German.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.deleteAccount": {
+		"en": "Delete Account",
+		"de": "Konto löschen",
+		"de_en": "Delete account",
+		"_note": "\"Account\" → \"Konto\". Title case → sentence case. Consistent with other account translations.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.find": {
+		"en": "Find",
+		"de": "Suchen",
+		"de_en": "Search",
+		"_note": "\"Find\" → \"Suchen\" (search/find). \"Suchen\" is the standard German for the Find action in menus and toolbars.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.findInNotes": {
+		"en": "Find in Notes",
+		"de": "In Notizen suchen",
+		"de_en": "Search in notes",
+		"_note": "\"Find\" → \"suchen\" (search/find). Title case → sentence case. Natural German context menu label.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.goOnline": {
+		"en": "Go Online",
+		"de": "Online gehen",
+		"de_en": "Go online",
+		"_note": "Title case → sentence case. \"Go Online\" → \"Online gehen\". Natural German phrasing for this action.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.loginSwitchUser": {
+		"en": "Log In / Switch User",
+		"de": "Anmelden / Benutzer wechseln",
+		"de_en": "Log in / switch user",
+		"_note": "\"Log In\" → \"Anmelden\" (log in/sign in). \"Switch User\" → \"Benutzer wechseln\". Both are standard German UI terms. Consistent with Abmelden (logout).",
+		"_recommendation": "accept"
+	},
+	"contextMenu.logout": {
+		"en": "Logout",
+		"de": "Abmelden",
+		"de_en": "Log out",
+		"_note": "\"Logout\" → \"Abmelden\" (log out/sign out). \"Abmelden\" is the standard German verb for logging out, used by Windows, browsers, and all major German software.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.markAsRead": {
+		"en": "Mark as Read",
+		"de": "Als gelesen markieren",
+		"de_en": "Mark as read",
+		"_note": "Title case → sentence case. Standard German context menu action (same pattern as Windows, Outlook etc.).",
+		"_recommendation": "accept"
+	},
+	"contextMenu.newChildNote": {
+		"en": "New Child Note",
+		"de": "Neue untergeordnete Notiz",
+		"de_en": "New subordinate note",
+		"_note": "\"Child Note\" → \"untergeordnete Notiz\" (subordinate note). \"Untergeordnet\" is the standard German for a child node in a tree hierarchy.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.newNote": {
+		"en": "New Note",
+		"de": "Neue Notiz",
+		"de_en": "New note",
+		"_note": "Title case → sentence case. Standard German context menu label.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.newRootNote": {
+		"en": "New Root Note",
+		"de": "Neue Stammnotiz",
+		"de_en": "New root note",
+		"_note": "\"Root Note\" → \"Stammnotiz\" (root note compound noun). \"Stamm\" = root/trunk, standard German tree term. Title case → sentence case.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.newSiblingNote": {
+		"en": "New Sibling Note",
+		"de": "Neue gleichgeordnete Notiz",
+		"de_en": "New equal-level note",
+		"_note": "\"Sibling Note\" → \"gleichgeordnete Notiz\" (equal-level/co-ordinate note). \"Gleichgeordnet\" is the standard German tree-hierarchy term for a sibling node.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.passwordGenerator": {
+		"en": "Password Generator",
+		"de": "Passwortgenerator",
+		"de_en": "Password generator",
+		"_note": "\"Password Generator\" → \"Passwortgenerator\" (compound noun). Title case → sentence case.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.shareOffers": {
+		"en": "Share Offers",
+		"de": "Freigabeangebote",
+		"de_en": "Share offers",
+		"_note": "\"Share Offers\" → \"Freigabeangebote\" (share offers compound noun). Title case → sentence case. Natural German compound noun.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.showDevTools": {
+		"en": "Show Dev Tools",
+		"de": "Entwicklertools anzeigen",
+		"de_en": "Show developer tools",
+		"_note": "\"Dev Tools\" → \"Entwicklertools\" (developer tools compound noun). Title case → sentence case.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.trayAllowScreenSharing": {
+		"en": "Allow Screen Sharing",
+		"de": "Bildschirmfreigabe erlauben",
+		"de_en": "Allow screen sharing",
+		"_note": "\"Screen Sharing\" → \"Bildschirmfreigabe\" (screen sharing compound noun). Title case → sentence case. Standard German OS term.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.trayDevTools": {
+		"en": "Dev Tools",
+		"de": "Entwicklertools",
+		"de_en": "Developer tools",
+		"_note": "\"Dev Tools\" → \"Entwicklertools\" (developer tools). Consistent with contextMenu.showDevTools.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.trayKeepTrayVisible": {
+		"en": "Keep Tray Icon Visible",
+		"de": "Systray-Symbol sichtbar halten",
+		"de_en": "Keep Systray icon visible",
+		"_note": "Same as settingsGeneral.keepTrayVisible. \"Tray Icon\" → \"Systray-Symbol\". Title case → sentence case.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.trayLaunchOnStartup": {
+		"en": "Launch on Startup",
+		"de": "Beim Start starten",
+		"de_en": "Start on startup",
+		"_note": "\"Launch on Startup\" → \"Beim Start starten\" (start on startup). The repetition of \"Start\" is slightly tautological in German but mirrors the Windows tray menu convention (\"Autostart\"). Consistent with settingsGeneral.launchOnLogin.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.trayShowInTaskbar": {
+		"en": "Show In Taskbar",
+		"de": "In Taskleiste anzeigen",
+		"de_en": "Show in taskbar",
+		"_note": "\"Taskbar\" → \"Taskleiste\". Title case → sentence case. Consistent with settingsGeneral.showInTaskbar.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.updateAvailable": {
+		"en": "Update Available",
+		"de": "Update verfügbar",
+		"de_en": "Update available",
+		"_note": "Title case → sentence case. \"Update\" retained as English loanword. Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.wordWrap": {
+		"en": "Word Wrap",
+		"de": "Zeilenumbruch",
+		"de_en": "Word wrap",
+		"_note": "\"Word Wrap\" → \"Zeilenumbruch\" (line wrap compound noun). Title case → sentence case. \"Zeilenumbruch\" is the standard German term used by Word, VS Code, etc.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.workOffline": {
+		"en": "Work Offline",
+		"de": "Offline arbeiten",
+		"de_en": "Work offline",
+		"_note": "Title case → sentence case. \"Work Offline\" → \"Offline arbeiten\". Natural German; consistent with contextMenu.goOnline.",
+		"_recommendation": "accept"
+	},
+	"controlPanel.billingAddress": {
+		"en": "Billing Address",
+		"de": "Rechnungsadresse",
+		"de_en": "Billing address",
+		"_note": "Title case → sentence case. Same as subAccount.tab.",
+		"_recommendation": "accept"
+	},
+	"controlPanel.connectCloud": {
+		"en": "Connect Cloud",
+		"de": "Cloud verbinden",
+		"de_en": "Connect cloud",
+		"_note": "Title case → sentence case. \"Cloud verbinden\" is natural German for connecting to the cloud. Consistent with settingsUpgrade.tab.",
+		"_recommendation": "accept"
+	},
+	"controlPanel.createAccount": {
+		"en": "Create Account",
+		"de": "Konto erstellen",
+		"de_en": "Create account",
+		"_note": "\"Account\" → \"Konto\". Title case → sentence case. Consistent translation across the app.",
+		"_recommendation": "accept"
+	},
+	"controlPanel.createPassword": {
+		"en": "Create Password",
+		"de": "Passwort erstellen",
+		"de_en": "Create password",
+		"_note": "Title case → sentence case. Consistent with settingsPassword.tab and other occurrences.",
+		"_recommendation": "accept"
+	},
+	"controlPanel.currentPlan": {
+		"en": "Current Plan",
+		"de": "Aktueller Plan",
+		"de_en": "Current plan",
+		"_note": "Title case → sentence case. Same as subNewSubscriptionView.tab.",
+		"_recommendation": "accept"
+	},
+	"controlPanel.devBlog": {
+		"en": "Dev Blog",
+		"de": "Entwicklerblog",
+		"de_en": "Developer blog",
+		"_note": "Same as settingsDevBlog.tab. \"Dev Blog\" → \"Entwicklerblog\". Consistent across all occurrences.",
+		"_recommendation": "accept"
+	},
+	"controlPanel.loading": {
+		"en": "Loading...",
+		"de": "Wird geladen...",
+		"de_en": "Is being loaded...",
+		"_note": "Gerund → passive construction. \"Loading\" → \"Wird geladen\" (is being loaded). Standard German progress-label style.",
+		"_recommendation": "accept"
+	},
+	"controlPanel.paymentMethods": {
+		"en": "Payment Methods",
+		"de": "Zahlungsmethoden",
+		"de_en": "Payment methods",
+		"_note": "Title case → sentence case. Same as subPaymentMethods.tab.",
+		"_recommendation": "accept"
+	},
+	"controlPanel.pinCode": {
+		"en": "PIN Code",
+		"de": "PIN-Code",
+		"de_en": "PIN code",
+		"_note": "\"PIN Code\" → \"PIN-Code\" (hyphen added per German compound convention). Title case → sentence case.",
+		"_recommendation": "accept"
+	},
+	"convertAccount.initializing": {
+		"en": "Initializing...",
+		"de": "Initialisierung...",
+		"de_en": "Initialization...",
+		"_note": "Gerund → noun nominalization. German prefers noun status labels.",
+		"_recommendation": "accept"
+	},
+	"convertAccount.nodesConverted": {
+		"en": "{count} nodes converted",
+		"de": "{count} Notizen konvertiert",
+		"de_en": "{count} notes converted",
+		"_note": "\"nodes\" → \"Notizen\" (notes). The app consistently uses \"Notizen\" (notes) rather than \"Knoten\" (nodes) for user-facing text; this matches the app's terminology throughout.",
+		"_recommendation": "accept"
+	},
+	"convertAccount.title": {
+		"en": "Convert Existing Account",
+		"de": "Vorhandenes Konto konvertieren",
+		"de_en": "Convert existing account",
+		"_note": "Title case → sentence case. German standard.",
+		"_recommendation": "accept"
+	},
+	"deleteHistoryDialog.deleteAll": {
+		"en": "Are you sure you want to delete ALL history",
+		"de": "Bist du sicher, dass du den GESAMTEN Verlauf löschen möchtest",
+		"de_en": "Are you sure you want to delete the ENTIRE history",
+		"_note": "\"ALL\" (caps for emphasis) → \"GESAMTEN\" (ENTIRE, caps preserved). Emphasis equivalent. Natural phrasing in German.",
+		"_recommendation": "accept"
+	},
+	"deleteHistoryDialog.deleteOlder": {
+		"en": "Are you sure you want to delete older history",
+		"de": "Bist du sicher, dass du den älteren Verlauf löschen möchtest",
+		"de_en": "Are you sure you want to delete the older history",
+		"_note": "Adds article \"den\". German requires definite article here. Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"deleteHistoryDialog.keepRecent": {
+		"en": "(keeping only the most recent 10 versions)",
+		"de": "(nur die 10 neuesten Versionen werden behalten)",
+		"de_en": "(only the 10 most recent versions will be kept)",
+		"_note": "Gerund \"keeping\" restructured as passive \"werden behalten\" (will be kept). Natural German passive. Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"deleteHistoryDialog.title": {
+		"en": "Delete History",
+		"de": "Verlauf löschen",
+		"de_en": "Delete history",
+		"_note": "Title case → sentence case. German standard.",
+		"_recommendation": "accept"
+	},
+	"deleteLocalDataDialog.encryptedWarning": {
+		"en": "While your data is encrypted leaving it lying around does make it more exposed to potential attacks.",
+		"de": "Obwohl deine Daten verschlüsselt sind, erhöht das Zurücklassen das Risiko potenzieller Angriffe.",
+		"de_en": "Although your data is encrypted, leaving it behind increases the risk of potential attacks.",
+		"_note": "\"more exposed to potential attacks\" → \"erhöht das Risiko potenzieller Angriffe\" (increases the risk of potential attacks). Rephrased but meaning preserved; tone is cautionary as context requires.",
+		"_recommendation": "accept"
+	},
+	"deleteLocalDataDialog.leaveImprovePerformance": {
+		"en": "Leaving it will improve performance the next time you log in on this device.",
+		"de": "Das Belassen der Daten verbessert die Leistung beim nächsten Anmelden auf diesem Gerät.",
+		"de_en": "Leaving the data improves performance when logging in next time on this device.",
+		"_note": "\"it\" → \"der Daten\" (the data) — German nominalization. Meaning and intent identical.",
+		"_recommendation": "accept"
+	},
+	"deleteLocalDataDialog.moreInfo": {
+		"en": "more info",
+		"de": "Mehr Infos",
+		"de_en": "More info",
+		"_note": "Capitalised \"Mehr Infos\" vs lowercase en \"more info\". German capitalises nouns (\"Infos\"). Natural and standard.",
+		"_recommendation": "accept"
+	},
+	"deleteLocalDataDialog.notPersonalDevice": {
+		"en": "If this is not your personal device, removing this data is advisable.",
+		"de": "Wenn dies kein persönliches Gerät ist, wird das Entfernen dieser Daten empfohlen.",
+		"de_en": "If this is not a personal device, removing this data is recommended.",
+		"_note": "\"your personal\" → \"kein persönliches\" (no personal). Drops \"your\" but meaning unchanged in context.",
+		"_recommendation": "accept"
+	},
+	"deleteLocalDataDialog.question": {
+		"en": "Do you want to remove locally cached data?",
+		"de": "Möchtest du die lokal zwischengespeicherten Daten entfernen?",
+		"de_en": "Do you want to remove the locally cached data?",
+		"_note": "Adds definite article \"die\". German requires it here. Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"deleteLocalDataDialog.title": {
+		"en": "Clear local data",
+		"de": "Lokale Daten löschen",
+		"de_en": "Delete local data",
+		"_note": "\"Clear\" → \"löschen\" (delete). In German computing, \"löschen\" is the standard term for both clear and delete in this context.",
+		"_recommendation": "accept"
+	},
+	"deleteMethodDialog.question": {
+		"en": "Are you sure you want to delete:",
+		"de": "Bist du sicher, dass du folgendes löschen möchtest:",
+		"de_en": "Are you sure you want to delete the following:",
+		"_note": "Adds \"folgendes\" (the following) for clarity. German requires the object reference explicit. Meaning equivalent.",
+		"_recommendation": "accept"
+	},
+	"deleteMethodDialog.title": {
+		"en": "Delete Payment Method",
+		"de": "Zahlungsmethode löschen",
+		"de_en": "Delete payment method",
+		"_note": "Title case → sentence case. German standard.",
+		"_recommendation": "accept"
+	},
+	"deleteNodeDialog.cannotDeleteLine1": {
+		"en": "Cannot delete note containing shared notes.",
+		"de": "Notiz mit geteilten Unternotizen kann nicht gelöscht werden.",
+		"de_en": "Note with shared sub-notes cannot be deleted.",
+		"_note": "\"containing shared notes\" → \"mit geteilten Unternotizen\" (with shared sub-notes). Adds \"Unter-\" (sub-) prefix clarifying hierarchy. Meaning equivalent.",
+		"_recommendation": "accept"
+	},
+	"deleteNodeDialog.cannotDeleteLine2": {
+		"en": "Please remove shared notes before deleting.",
+		"de": "Bitte entferne die geteilten Notizen, bevor du sie löschst.",
+		"de_en": "Please remove the shared notes before deleting them.",
+		"_note": "Explicit pronoun \"sie\" (them) added at end. German requires explicit reference. Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"deleteNodeDialog.cannotDeleteTitle": {
+		"en": "Cannot Delete",
+		"de": "Löschen nicht möglich",
+		"de_en": "Deletion not possible",
+		"_note": "\"Cannot Delete\" → \"Löschen nicht möglich\" (Deletion not possible). Rephrased as nominalization; standard German error-dialog style.",
+		"_recommendation": "accept"
+	},
+	"deleteNodeDialog.deleteQuestion": {
+		"en": "Are you sure you want to delete:",
+		"de": "Bist du sicher, dass du folgendes löschen möchtest:",
+		"de_en": "Are you sure you want to delete the following:",
+		"_note": "Adds \"folgendes\" (the following) for German grammatical completeness.",
+		"_recommendation": "accept"
+	},
+	"deleteNodeDialog.deleteTitle": {
+		"en": "Delete Note",
+		"de": "Notiz löschen",
+		"de_en": "Delete note",
+		"_note": "Title case → sentence case. German standard.",
+		"_recommendation": "accept"
+	},
+	"deleteNodeDialog.leaveShareTitle": {
+		"en": "Leave Share",
+		"de": "Freigabe verlassen",
+		"de_en": "Leave share",
+		"_note": "Title case → sentence case. German standard.",
+		"_recommendation": "accept"
+	},
+	"deleteNodeDialog.noOtherUsers": {
+		"en": "No other users have access to this note",
+		"de": "Kein anderer Benutzer hat Zugriff auf diese Notiz",
+		"de_en": "No other user has access to this note",
+		"_note": "Plural \"users\" → singular \"Benutzer\" after \"kein\" (no). Standard German grammar; collective meaning preserved.",
+		"_recommendation": "accept"
+	},
+	"deleteNodeDialog.ok": {
+		"en": "Ok",
+		"de": "OK",
+		"de_en": "OK",
+		"_note": "\"Ok\" → \"OK\" (all-caps). Standard abbreviation rendering in German.",
+		"_recommendation": "accept"
+	},
+	"deleteNodeDialog.remainAccessible": {
+		"en": "This note will remain accessible to:",
+		"de": "Diese Notiz bleibt zugänglich für:",
+		"de_en": "This note remains accessible to:",
+		"_note": "\"will remain\" → \"bleibt\" (remains). German present tense used for future certainty. Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"editor.copyNextLine": {
+		"en": "Copy Next Line",
+		"de": "Nächste Zeile kopieren",
+		"de_en": "Copy next line",
+		"_note": "Title case → sentence case. Standard German editor button label.",
+		"_recommendation": "accept"
+	},
+	"editor.keepBoth": {
+		"en": "Keep Both",
+		"de": "Beide behalten",
+		"de_en": "Keep both",
+		"_note": "Title case → sentence case. \"Both\" → \"Beide\". Standard German conflict-resolution button label.",
+		"_recommendation": "accept"
+	},
+	"editor.keepLocal": {
+		"en": "Keep Local",
+		"de": "Lokal behalten",
+		"de_en": "Keep locally",
+		"_note": "Title case → sentence case. \"Local\" → \"Lokal\" (adverbial). Standard German conflict-resolution button label.",
+		"_recommendation": "accept"
+	},
+	"editor.keepServer": {
+		"en": "Keep Server",
+		"de": "Server behalten",
+		"de_en": "Keep server",
+		"_note": "Title case → sentence case. \"Server behalten\" is natural German for a conflict-resolution button. Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"emptyRecycleBinDialog.question": {
+		"en": "Are you sure you want to permanently delete all items in the recycle bin?",
+		"de": "Bist du sicher, dass du alle Elemente im Papierkorb dauerhaft löschen möchtest?",
+		"de_en": "Are you sure you want to permanently delete all items in the waste paper basket?",
+		"_note": "Papierkorb = standard German term for recycle bin. Meaning and tone identical.",
+		"_recommendation": "accept"
+	},
+	"emptyRecycleBinDialog.title": {
+		"en": "Empty Recycle Bin",
+		"de": "Papierkorb leeren",
+		"de_en": "Empty waste paper basket",
+		"_note": "Papierkorb = standard German term for Recycle Bin. Title case → sentence case.",
+		"_recommendation": "accept"
+	},
+	"inconsistencyDialog.reloadRecommended": {
+		"en": "Reloading is recommended.",
+		"de": "Ein Neu laden wird empfohlen.",
+		"de_en": "A reload is recommended.",
+		"_note": "Gerund \"Reloading\" → noun \"Ein Neu laden\" (A reload). Standard German nominalisation. Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"inconsistencyDialog.title": {
+		"en": "Inconsistency Detected",
+		"de": "Inkonsistenz erkannt",
+		"de_en": "Inconsistency detected",
+		"_note": "Title case → sentence case. German standard for dialog titles.",
+		"_recommendation": "accept"
+	},
+	"limitDialog.dataSizeText": {
+		"en": "You have used {used} of your {max}",
+		"de": "Du hast {used} von {max} verwendet",
+		"de_en": "You have used {used} of {max}",
+		"_note": "Drops possessive \"your\" before {max}. German does not require it here. Placeholders {used} and {max} present. Meaning preserved.",
+		"_recommendation": "accept"
+	},
+	"limitDialog.dataSizeTitle": {
+		"en": "Data Limit Reached",
+		"de": "Datenlimit erreicht",
+		"de_en": "Data limit reached",
+		"_note": "Title case → sentence case; compound noun \"Datenlimit\". German standard.",
+		"_recommendation": "accept"
+	},
+	"limitDialog.noteCountText": {
+		"en": "You have created {count} of your {max} notes",
+		"de": "Du hast {count} von {max} Notizen erstellt",
+		"de_en": "You have created {count} of {max} notes",
+		"_note": "Drops possessive \"your\" before {max}. German does not require it here. Placeholders {count} and {max} present. Meaning preserved.",
+		"_recommendation": "accept"
+	},
+	"limitDialog.noteCountTitle": {
+		"en": "Note Limit Reached",
+		"de": "Notizlimit erreicht",
+		"de_en": "Note limit reached",
+		"_note": "Title case → sentence case; compound noun \"Notizlimit\" (note limit). German standard.",
+		"_recommendation": "accept"
+	},
+	"limitDialog.noteSizeText": {
+		"en": "The note you are trying to save is {size} the maximum allowed is {max}",
+		"de": "Die Notiz, die du zu speichern versuchst, ist {size}; das Maximum ist {max}",
+		"de_en": "The note you are trying to save is {size}; the maximum is {max}",
+		"_note": "En has two run-on clauses; de adds a semicolon to separate them. \"the maximum allowed is\" → \"das Maximum ist\" (the maximum is) — drops \"allowed\" but meaning equivalent. Placeholders {size} and {max} present.",
+		"_recommendation": "accept"
+	},
+	"limitDialog.noteSizeTitle": {
+		"en": "Note Exceeds Max Size",
+		"de": "Notiz überschreitet maximale Größe",
+		"de_en": "Note exceeds maximum size",
+		"_note": "\"Max\" expanded to \"maximale\" (maximum). Title case → sentence case. Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"lockScreen.attemptsRemaining": {
+		"en": "Attempts remaining: 1",
+		"de": "Verbleibende Versuche: 1",
+		"de_en": "Remaining attempts: 1",
+		"_note": "Word order change: adjective before noun is standard German. Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"loginDialog.capsLock": {
+		"en": "Caps Lock is on!",
+		"de": "Caps Lock ist aktiviert!",
+		"de_en": "Caps Lock is activated!",
+		"_note": "\"is on\" → \"ist aktiviert\" (is activated). Standard German translation for this warning.",
+		"_recommendation": "accept"
+	},
+	"loginDialog.incorrectCredentials": {
+		"en": "Incorrect username or password",
+		"de": "Falscher Benutzername oder falsches Passwort",
+		"de_en": "Incorrect username or incorrect password",
+		"_note": "German grammatical gender requires separate adjective forms: \"Falscher Benutzername\" (masc.) or \"falsches Passwort\" (neut.). The adjective \"falsch\" is repeated for grammatical correctness. Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"loginDialog.login": {
+		"en": "Login",
+		"de": "Anmelden",
+		"de_en": "Log in",
+		"_note": "Same as loginDialog.title: \"Login\" → \"Anmelden\". Standard German UI button label.",
+		"_recommendation": "accept"
+	},
+	"loginDialog.reason1": {
+		"en": "You changed password on another device",
+		"de": "Du hast das Passwort auf einem anderen Gerät geändert",
+		"de_en": "You changed the password on another device",
+		"_note": "Adds definite article \"das\" before Passwort. German grammar requires it here; en omits the article colloquially. Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"loginDialog.reason2": {
+		"en": "You updated from a version prior to 2.5.0",
+		"de": "Du hast von einer Version vor 2.5.0 aktualisiert",
+		"de_en": "You updated from a version before 2.5.0",
+		"_note": "\"prior to\" → \"vor\" (before). Standard German equivalent. Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"loginDialog.title": {
+		"en": "Login",
+		"de": "Anmelden",
+		"de_en": "Log in",
+		"_note": "\"Login\" (noun/verb hybrid) → \"Anmelden\" (infinitive verb form). Standard German UI term for login action. Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"loginDialog.whySeeingThis": {
+		"en": "Why are you seeing this?",
+		"de": "Warum siehst du das?",
+		"de_en": "Why do you see this?",
+		"_note": "Progressive \"are you seeing\" → simple present \"siehst du\" (do you see). German does not use progressive aspect. Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"mainToolbar.newChildNote": {
+		"en": "New Child Note",
+		"de": "Neue untergeordnete Notiz",
+		"de_en": "New subordinate note",
+		"_note": "\"Child\" → \"untergeordnete\" (subordinate). This is the standard German hierarchical-tree term. Title case → sentence case.",
+		"_recommendation": "accept"
+	},
+	"mainToolbar.newRootNote": {
+		"en": "New Root Note",
+		"de": "Neue Stammnotiz",
+		"de_en": "New root note",
+		"_note": "Title case → sentence case; compound noun formed. Standard German.",
+		"_recommendation": "accept"
+	},
+	"mainToolbar.newSiblingNote": {
+		"en": "New Sibling Note",
+		"de": "Neue gleichgeordnete Notiz",
+		"de_en": "New equal-level note",
+		"_note": "\"Sibling\" → \"gleichgeordnete\" (equal-level/same-rank). Standard German hierarchical-tree term. Title case → sentence case.",
+		"_recommendation": "accept"
+	},
+	"mainToolbar.searchAllNotes": {
+		"en": "Search All Notes",
+		"de": "Alle Notizen durchsuchen",
+		"de_en": "Search all notes",
+		"_note": "Title case → sentence case. Verb position at end (\"durchsuchen\") is standard German word order for infinitive labels.",
+		"_recommendation": "accept"
+	},
+	"noteEditor.codeBlock": {
+		"en": "Code Block",
+		"de": "Codeblock",
+		"de_en": "Code block",
+		"_note": "Compound noun formation (standard German). Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"noteEditor.disableWordWrap": {
+		"en": "Disable Word Wrap",
+		"de": "Zeilenumbruch deaktivieren",
+		"de_en": "Deactivate word wrap",
+		"_note": "\"Disable\" → \"deaktivieren\" (deactivate). Standard German equivalent for Disable in UI contexts.",
+		"_recommendation": "accept"
+	},
+	"noteEditor.enableWordWrap": {
+		"en": "Enable Word Wrap",
+		"de": "Zeilenumbruch aktivieren",
+		"de_en": "Activate word wrap",
+		"_note": "\"Enable\" → \"aktivieren\" (activate). Standard German equivalent.",
+		"_recommendation": "accept"
+	},
+	"noteEditor.hideHistory": {
+		"en": "Hide History",
+		"de": "Verlauf ausblenden",
+		"de_en": "Hide history",
+		"_note": "Title case → sentence case. German verb-final. \"ausblenden\" (fade out/hide) is the standard UI term.",
+		"_recommendation": "accept"
+	},
+	"noteEditor.markAsPassword": {
+		"en": "Mark as Password Ctrl+Shift+C",
+		"de": "Als Passwort markieren Strg+Umschalt+C",
+		"de_en": "Mark as password Ctrl+Shift+C",
+		"_note": "Keyboard shortcut adapted to German convention: Ctrl→Strg, Shift→Umschalt. This is the standard German Windows keyboard shortcut notation.",
+		"_recommendation": "accept"
+	},
+	"noteEditor.orderedList": {
+		"en": "Ordered List",
+		"de": "Nummerierte Liste",
+		"de_en": "Numbered list",
+		"_note": "\"Ordered List\" → \"Nummerierte Liste\" (Numbered list). \"Nummerierte Liste\" is the standard German term used in word processors (e.g. Word, LibreOffice) for an ordered/numbered list.",
+		"_recommendation": "accept"
+	},
+	"noteEditor.readMoreEntries": {
+		"en": "Read More Entries",
+		"de": "Weitere Einträge laden",
+		"de_en": "Load more entries",
+		"_note": "\"Read More\" → \"Weitere ... laden\" (Load more). \"Weitere Einträge laden\" is the natural German UI pattern (like \"Mehr laden\") for paginated content. Title case → sentence case.",
+		"_recommendation": "accept"
+	},
+	"noteEditor.readOnly": {
+		"en": "(read-only)",
+		"de": "(schreibgeschützt)",
+		"de_en": "(write-protected)",
+		"_note": "\"read-only\" → \"schreibgeschützt\" (write-protected). In German computing, \"schreibgeschützt\" is the universally accepted standard term for \"read-only\". The semantics are equivalent: prevents writing.",
+		"_recommendation": "accept"
+	},
+	"noteEditor.saveNote": {
+		"en": "Save Note",
+		"de": "Notiz speichern",
+		"de_en": "Save note",
+		"_note": "Title case → sentence case. German verb-final word order for labels.",
+		"_recommendation": "accept"
+	},
+	"noteEditor.showHistory": {
+		"en": "Show History",
+		"de": "Verlauf anzeigen",
+		"de_en": "Show history",
+		"_note": "Title case → sentence case. German verb-final.",
+		"_recommendation": "accept"
+	},
+	"noteEditor.toggleEditMode": {
+		"en": "Toggle Edit Mode",
+		"de": "Bearbeitungsmodus umschalten",
+		"de_en": "Toggle edit mode",
+		"_note": "Title case → sentence case. Compound noun \"Bearbeitungsmodus\" is standard German.",
+		"_recommendation": "accept"
+	},
+	"notes.recycleBin": {
+		"en": "Recycle Bin",
+		"de": "Papierkorb",
+		"de_en": "Waste paper basket",
+		"_note": "Papierkorb (waste-paper basket) is the standard German computing term for Recycle Bin — used in German Windows. Correct localisation.",
+		"_recommendation": "accept"
+	},
+	"notificationList.markAllRead": {
+		"en": "Mark All Read",
+		"de": "Alle als gelesen markieren",
+		"de_en": "Mark all as read",
+		"_note": "Adds \"als\" (as) for grammatical completeness in German. Title case → sentence case.",
+		"_recommendation": "accept"
+	},
+	"passwordDialog.capsLock": {
+		"en": "Caps Lock is on!",
+		"de": "Caps Lock ist aktiviert!",
+		"de_en": "Caps Lock is activated!",
+		"_note": "\"is on\" → \"ist aktiviert\" (is activated). Standard German translation for Caps Lock warning.",
+		"_recommendation": "accept"
+	},
+	"passwordDialog.incorrectPassword": {
+		"en": "Incorrect Password",
+		"de": "Falsches Passwort",
+		"de_en": "Incorrect password",
+		"_note": "Title case → sentence case. German standard for error messages.",
+		"_recommendation": "accept"
+	},
+	"passwordDialog.title": {
+		"en": "Verify that it is you",
+		"de": "Identität bestätigen",
+		"de_en": "Confirm identity",
+		"_note": "Informal en phrasing \"Verify that it is you\" → formal noun phrase \"Identität bestätigen\" (Confirm identity). Standard German dialog-title style; meaning equivalent.",
+		"_recommendation": "accept"
+	},
+	"passwordGenerator.certainty": {
+		"en": "certainty",
+		"de": "Gewissheit",
+		"de_en": "Certainty",
+		"_note": "Capitalized in German (noun). \"certainty\" → \"Gewissheit\". Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"passwordGenerator.easierToType": {
+		"en": "Make it easier to type",
+		"de": "Einfacher zu tippen",
+		"de_en": "Easier to type",
+		"_note": "\"Make it easier to type\" → \"Einfacher zu tippen\" (easier to type). Drops \"make it\"; German comparative form is more natural as a quick-action label.",
+		"_recommendation": "accept"
+	},
+	"passwordGenerator.hideDetails": {
+		"en": "hide details",
+		"de": "Details ausblenden",
+		"de_en": "Hide details",
+		"_note": "\"hide details\" → \"Details ausblenden\" (hide details). German puts verb at end in infinitive labels. Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"passwordGenerator.howLikelyToBeCracked": {
+		"en": "How likely to be cracked in case of:",
+		"de": "Wie wahrscheinlich ist ein Cracking-Angriff:",
+		"de_en": "How likely is a cracking attack:",
+		"_note": "\"How likely to be cracked in case of\" → \"Wie wahrscheinlich ist ein Cracking-Angriff\" (How likely is a cracking attack). Rephrases to a complete question label. \"Cracking\" retained as English technical term. Meaning equivalent.",
+		"_recommendation": "accept"
+	},
+	"passwordGenerator.imATarget": {
+		"en": "I'm a target",
+		"de": "Ich bin ein Ziel",
+		"de_en": "I am a target",
+		"_note": "\"I'm\" expanded to \"Ich bin\". Natural German; contractions not used. Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"passwordGenerator.includeExactlyOneSymbol": {
+		"en": "Include exactly 1 Symbol",
+		"de": "Genau 1 Symbol einbeziehen",
+		"de_en": "Include exactly 1 symbol",
+		"_note": "Title case → sentence case (\"Symbol\" lowercased in de_en). Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"passwordGenerator.includeFriendlySymbols": {
+		"en": "Include friendly symbols",
+		"de": "Einfache Symbole einbeziehen",
+		"de_en": "Include simple symbols",
+		"_note": "\"friendly symbols\" → \"Einfache Symbole\" (simple symbols). \"Einfach\" (simple/easy) captures the \"friendly\" intent — symbols that are easy to type. Meaning equivalent.",
+		"_recommendation": "accept"
+	},
+	"passwordGenerator.includeLowerCase": {
+		"en": "Include lower case",
+		"de": "Kleinbuchstaben einbeziehen",
+		"de_en": "Include lowercase letters",
+		"_note": "\"lower case\" → \"Kleinbuchstaben\" (lowercase letters). Adds \"Buchstaben\" for clarity; standard German checkbox label.",
+		"_recommendation": "accept"
+	},
+	"passwordGenerator.includeUpperCase": {
+		"en": "Include upper case",
+		"de": "Großbuchstaben einbeziehen",
+		"de_en": "Include uppercase letters",
+		"_note": "\"upper case\" → \"Großbuchstaben\" (uppercase letters). Consistent with includeLowerCase pattern.",
+		"_recommendation": "accept"
+	},
+	"passwordGenerator.investmentRequired": {
+		"en": "Investment required to crack in less than:",
+		"de": "Erforderliche Investition zum Knacken in unter:",
+		"de_en": "Required investment to crack in under:",
+		"_note": "\"Investment required to crack\" → \"Erforderliche Investition zum Knacken\" (required investment to crack). Nominalized German construction. Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"passwordGenerator.largeScaleBreach": {
+		"en": "Large scale breach:",
+		"de": "Großangelegter Datenmissbrauch:",
+		"de_en": "Large-scale data breach:",
+		"_note": "\"breach\" → \"Datenmissbrauch\" (data misuse). \"Datenmissbrauch\" means data misuse rather than data breach. More precise alternatives: \"Datenpanne\" (data incident) or \"Datenleck\" (data leak). The current translation slightly shifts meaning.",
+		"_recommendation": "modify: Großangelegter Datenleck:"
+	},
+	"passwordGenerator.notHappening": {
+		"en": "not happening",
+		"de": "nicht möglich",
+		"de_en": "not possible",
+		"_note": "\"not happening\" (colloquial for \"impossible/won't occur\") → \"nicht möglich\" (not possible). Captures the same meaning more precisely in German.",
+		"_recommendation": "accept"
+	},
+	"passwordGenerator.nudgeUp": {
+		"en": "Nudge it up a bit",
+		"de": "Ein bisschen stärker",
+		"de_en": "A bit stronger",
+		"_note": "\"Nudge it up a bit\" (informal) → \"Ein bisschen stärker\" (a bit stronger). Captures the casual \"just a little more\" tone in a concise German idiom. Meaning equivalent.",
+		"_recommendation": "accept"
+	},
+	"passwordGenerator.poorMemory": {
+		"en": "My memory isn't so good",
+		"de": "Mein Gedächtnis ist nicht so gut",
+		"de_en": "My memory is not so good",
+		"_note": "\"isn't\" expanded to \"ist nicht\". Natural German; contractions not used in written German.",
+		"_recommendation": "accept"
+	},
+	"passwordGenerator.possibleCombinations": {
+		"en": "Possible Combinations:",
+		"de": "Mögliche Kombinationen:",
+		"de_en": "Possible combinations:",
+		"_note": "Title case → sentence case. Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"passwordGenerator.recommendedSettings": {
+		"en": "Recommended Settings",
+		"de": "Empfohlene Einstellungen",
+		"de_en": "Recommended settings",
+		"_note": "Title case → sentence case. Standard German button/label.",
+		"_recommendation": "accept"
+	},
+	"passwordGenerator.showDetails": {
+		"en": "details",
+		"de": "Details",
+		"de_en": "Details",
+		"_note": "Capitalized in German (all nouns are capitalized). \"details\" → \"Details\". Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"passwordGenerator.timeToLogin": {
+		"en": "Time to log in:",
+		"de": "Anmeldezeit:",
+		"de_en": "Login time:",
+		"_note": "\"Time to log in\" → \"Anmeldezeit\" (login time compound noun). Concise German label.",
+		"_recommendation": "accept"
+	},
+	"passwordGeneratorDialog.title": {
+		"en": "Generate Password",
+		"de": "Passwort generieren",
+		"de_en": "Generate password",
+		"_note": "Title case → sentence case. German standard for dialog titles.",
+		"_recommendation": "accept"
+	},
+	"passwordInput.notReallyAPassword": {
+		"en": "Not really a password",
+		"de": "Kein wirkliches Passwort",
+		"de_en": "Not a real password",
+		"_note": "Same as settingsPassword.notReallyAPassword. Standard German weak-password hint.",
+		"_recommendation": "accept"
+	},
+	"passwordRepeatInput.notMatching": {
+		"en": "Not matching",
+		"de": "Keine Übereinstimmung",
+		"de_en": "No match",
+		"_note": "Same as settingsPassword.notMatching. Standard German validation message.",
+		"_recommendation": "accept"
+	},
+	"recycleBin.recycleBin": {
+		"en": "Recycle Bin",
+		"de": "Papierkorb",
+		"de_en": "Waste paper basket",
+		"_note": "Papierkorb is the standard German computing term for Recycle Bin (used in Windows in German). The back-translation \"waste paper basket\" is the literal meaning but the term is functionally identical.",
+		"_recommendation": "accept"
+	},
+	"saveEmptyNodeDialog.question": {
+		"en": "Are you sure you want to save empty version of node:",
+		"de": "Bist du sicher, dass du eine leere Version folgender Notiz speichern möchtest:",
+		"de_en": "Are you sure you want to save an empty version of the following note:",
+		"_note": "\"node\" → \"Notiz\" (note) — consistent with the app's user-facing terminology. \"of node:\" → \"folgender Notiz\" (of the following note:) adds clarity. Article \"eine\" added for German grammar. Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"saveEmptyNodeDialog.title": {
+		"en": "Save Empty Note",
+		"de": "Leere Notiz speichern",
+		"de_en": "Save empty note",
+		"_note": "Title case → sentence case. German standard for dialog titles.",
+		"_recommendation": "accept"
+	},
+	"selectionControl.selectAll": {
+		"en": "Select All",
+		"de": "Alles auswählen",
+		"de_en": "Select all",
+		"_note": "Title case → sentence case. \"Alles auswählen\" is the standard German phrasing used throughout German-locale Windows and macOS.",
+		"_recommendation": "accept"
+	},
+	"settingsAbout.attributions": {
+		"en": "Attributions:",
+		"de": "Danksagungen:",
+		"de_en": "Acknowledgements:",
+		"_note": "\"Attributions\" → \"Danksagungen\" (acknowledgements/thanks). Standard German equivalent for a credits/attribution section.",
+		"_recommendation": "accept"
+	},
+	"settingsAbout.bundleVersion": {
+		"en": "Bundle Version:",
+		"de": "Bundle-Version:",
+		"de_en": "Bundle version:",
+		"_note": "Hyphen added to form the compound \"Bundle-Version\" (German loanword convention for English compound loanwords). Title case → sentence case. Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"settingsAbout.chooseFontLicense": {
+		"en": "Choose font to view license",
+		"de": "Schriftart auswählen, um Lizenz anzuzeigen",
+		"de_en": "Select font to view license",
+		"_note": "\"Choose\" → \"auswählen\" (select). German infinitive label style. Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"settingsAbout.closeLog": {
+		"en": "Close Log",
+		"de": "Protokoll schließen",
+		"de_en": "Close log",
+		"_note": "\"Log\" → \"Protokoll\" (protocol/log). Standard German term for application log. Title case → sentence case.",
+		"_recommendation": "accept"
+	},
+	"settingsAbout.disableDebug": {
+		"en": "Disable Debug",
+		"de": "Debuggen deaktivieren",
+		"de_en": "Deactivate debugging",
+		"_note": "\"Disable\" → \"deaktivieren\" (deactivate). Consistent with enableDebug. Standard German.",
+		"_recommendation": "accept"
+	},
+	"settingsAbout.enableDebug": {
+		"en": "Enable Debug",
+		"de": "Debuggen aktivieren",
+		"de_en": "Activate debugging",
+		"_note": "\"Enable\" → \"aktivieren\" (activate). \"Debug\" → \"Debuggen\" (gerund/noun form of the loanword). Standard German UI pattern for enable toggles.",
+		"_recommendation": "accept"
+	},
+	"settingsAbout.fontLicenses": {
+		"en": "Font Licenses:",
+		"de": "Schriftlizenzen:",
+		"de_en": "Font licenses:",
+		"_note": "Compound noun \"Schriftlizenzen\" (font licenses). Title case → sentence case. Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"settingsAbout.fontLicensesText": {
+		"en": "All fonts are directly referenced either from the operating system or fonts.mimiri.io\nLicenses and project links for fonts referenced from fonts.mimiri.io listed below",
+		"de": "Alle Schriften werden direkt aus dem Betriebssystem oder von fonts.mimiri.io referenziert\nLizenzen und Projektlinks für Schriften von fonts.mimiri.io sind unten aufgeführt",
+		"de_en": "All fonts are directly referenced from the operating system or from fonts.mimiri.io\nLicenses and project links for fonts from fonts.mimiri.io are listed below",
+		"_note": "\"either ... or\" structure slightly compressed in German; \"referenced from fonts.mimiri.io\" simplified to \"von fonts.mimiri.io\". Minor stylistic difference; meaning fully preserved.",
+		"_recommendation": "accept"
+	},
+	"settingsAbout.hostVersion": {
+		"en": "Host Version:",
+		"de": "Host-Version:",
+		"de_en": "Host version:",
+		"_note": "Hyphen added for German compound noun convention. Title case → sentence case. Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"settingsAbout.issueTracker": {
+		"en": "Issue Tracker on GitHub",
+		"de": "Issue-Tracker auf GitHub",
+		"de_en": "Issue tracker on GitHub",
+		"_note": "Hyphen added for German compound noun convention: \"Issue-Tracker\". Title case → sentence case. Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"settingsAbout.privacyPolicy": {
+		"en": "Privacy Policy",
+		"de": "Datenschutzrichtlinie",
+		"de_en": "Data protection guideline",
+		"_note": "\"Privacy Policy\" → \"Datenschutzrichtlinie\" (data protection guideline). Standard German term for Privacy Policy used in German-language legal/UI contexts.",
+		"_recommendation": "accept"
+	},
+	"settingsAbout.projectLink": {
+		"en": "Project Link:",
+		"de": "Projektlink:",
+		"de_en": "Project link:",
+		"_note": "Compound noun \"Projektlink\". Title case → sentence case. Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"settingsAbout.reload": {
+		"en": "reload",
+		"de": "Neu laden",
+		"de_en": "Reload",
+		"_note": "En lowercase \"reload\" → German capitalised \"Neu laden\" (noun phrase: New load). German capitalises verb phrases used as labels. Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"settingsAbout.sourceGitHub": {
+		"en": "Source on GitHub",
+		"de": "Quellcode auf GitHub",
+		"de_en": "Source code on GitHub",
+		"_note": "\"Source\" → \"Quellcode\" (source code). \"Quellcode\" is the standard German full form; meaning equivalent.",
+		"_recommendation": "accept"
+	},
+	"settingsAbout.spaceUsed": {
+		"en": "Space Used:",
+		"de": "Verwendeter Speicher:",
+		"de_en": "Used storage:",
+		"_note": "\"Space Used\" → \"Verwendeter Speicher\" (Used storage). \"Speicher\" is the standard German term for storage/space in computing contexts. Meaning equivalent.",
+		"_recommendation": "accept"
+	},
+	"settingsAbout.termsAndConditions": {
+		"en": "Terms & Conditions",
+		"de": "Nutzungsbedingungen",
+		"de_en": "Terms of use",
+		"_note": "\"Terms & Conditions\" → \"Nutzungsbedingungen\" (Terms of use). Standard German legal/UI term for Terms & Conditions.",
+		"_recommendation": "accept"
+	},
+	"settingsAbout.unsyncedData": {
+		"en": "Unsynced Data:",
+		"de": "Nicht synchronisierte Daten:",
+		"de_en": "Not synchronized data:",
+		"_note": "\"Unsynced\" expanded to \"Nicht synchronisierte\". Standard German; see settingsAbout.unsyncedNotes.",
+		"_recommendation": "accept"
+	},
+	"settingsAbout.unsyncedNotes": {
+		"en": "Unsynced Notes:",
+		"de": "Nicht synchronisierte Notizen:",
+		"de_en": "Not synchronized notes:",
+		"_note": "\"Unsynced\" expanded to \"Nicht synchronisierte\" (not synchronized). German does not use the shortened loanword form \"ungesynct\". Standard German phrasing.",
+		"_recommendation": "accept"
+	},
+	"settingsCreateAccount2.chooseCredentials": {
+		"en": "Choose your credentials",
+		"de": "Wähle deine Anmeldedaten",
+		"de_en": "Choose your login data",
+		"_note": "\"credentials\" → \"Anmeldedaten\" (login data). Standard German term for credentials in UI contexts.",
+		"_recommendation": "accept"
+	},
+	"settingsCreateAccount2.cloudAccountHeader": {
+		"en": "Cloud Account",
+		"de": "Cloud-Konto",
+		"de_en": "Cloud account",
+		"_note": "Same as settingsCreateAccount2.cloudTab. Cloud-Konto is the correct German translation.",
+		"_recommendation": "accept"
+	},
+	"settingsCreateAccount2.cloudFeature2": {
+		"en": "Notes backed up in cloud",
+		"de": "Notizen in der Cloud gesichert",
+		"de_en": "Notes backed up in the cloud",
+		"_note": "Adds article \"der\" before \"Cloud\". German requires it here. \"backed up\" → \"gesichert\" (secured/backed up). Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"settingsCreateAccount2.cloudFeature4": {
+		"en": "On-device encryption",
+		"de": "Geräteverschlüsselung",
+		"de_en": "Device encryption",
+		"_note": "\"On-device encryption\" → \"Geräteverschlüsselung\" (device encryption). German compound noun; the \"on-device\" prefix is implicit in \"Geräte-\" (device). Meaning equivalent.",
+		"_recommendation": "accept"
+	},
+	"settingsCreateAccount2.cloudFeature7": {
+		"en": "Unlimited device sync on Windows, Linux, macOS, Android, iOS and web",
+		"de": "Unbegrenzte Gerätesynchronisierung unter Windows, Linux, macOS, Android, iOS und Web",
+		"de_en": "Unlimited device synchronization under Windows, Linux, macOS, Android, iOS and Web",
+		"_note": "\"sync\" → \"Gerätesynchronisierung\" (device synchronization). \"on\" → \"unter\" (under/on, standard German for OS preposition). Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"settingsCreateAccount2.cloudTab": {
+		"en": "Cloud Account",
+		"de": "Cloud-Konto",
+		"de_en": "Cloud account",
+		"_note": "\"Cloud Account\" → \"Cloud-Konto\" (hyphenated loanword compound). \"Konto\" is the standard German word for account. \"Cloud\" retained as the recognised English loanword.",
+		"_recommendation": "accept"
+	},
+	"settingsCreateAccount2.faq1Answer": {
+		"en": "Yes up to 2000 notes and 100MB.",
+		"de": "Ja, bis zu 2000 Notizen und 100 MB.",
+		"de_en": "Yes, up to 2000 notes and 100 MB.",
+		"_note": "Adds comma after \"Ja\" (standard German punctuation). \"100MB\" → \"100 MB\" (space added, SI convention). Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"settingsCreateAccount2.faq1Question": {
+		"en": "Is the Cloud Account free?",
+		"de": "Ist das Cloud-Konto kostenlos?",
+		"de_en": "Is the cloud account free?",
+		"_note": "\"Cloud Account\" → \"Cloud-Konto\". Title case → sentence case. Adds article \"das\". Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"settingsCreateAccount2.faq2Answer": {
+		"en": "If you want to access your notes from multiple devices or you wish to share notes with other users, then yes.\n\nIf you want to keep your notes only on this device and not sync them anywhere, then no.",
+		"de": "Wenn du von mehreren Geräten auf deine Notizen zugreifen oder Notizen mit anderen Benutzern teilen möchtest, dann ja.\n\nWenn du deine Notizen nur auf diesem Gerät behalten und nirgendwo synchronisieren möchtest, dann nein.",
+		"de_en": "If you want to access your notes from multiple devices or share notes with other users, then yes.\n\nIf you want to keep your notes only on this device and not synchronize them anywhere, then no.",
+		"_note": "\"wish to\" → \"möchtest\" (want to). \"sync\" → \"synchronisieren\". Minor restructuring; meaning fully preserved.",
+		"_recommendation": "accept"
+	},
+	"settingsCreateAccount2.faq2Question": {
+		"en": "Do I need a Cloud Account?",
+		"de": "Brauche ich ein Cloud-Konto?",
+		"de_en": "Do I need a cloud account?",
+		"_note": "\"Cloud Account\" → \"Cloud-Konto\". Title case → sentence case. Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"settingsCreateAccount2.faq3Answer": {
+		"en": "Your data is encrypted before it leaves your device and even we cannot access your data.",
+		"de": "Deine Daten werden verschlüsselt, bevor sie dein Gerät verlassen, und selbst wir können nicht auf deine Daten zugreifen.",
+		"de_en": "Your data is encrypted before it leaves your device, and even we cannot access your data.",
+		"_note": "Comma added for clause separation in German. Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"settingsCreateAccount2.faq3Question": {
+		"en": "Is my data safe in the Cloud?",
+		"de": "Sind meine Daten in der Cloud sicher?",
+		"de_en": "Is my data safe in the cloud?",
+		"_note": "\"the Cloud\" → \"der Cloud\". Adds article. Title case → sentence case. Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"settingsCreateAccount2.faq4Answer": {
+		"en": "No, unfortunately we cannot help you recover your password.\n\nMaking this possible would substantially weaken your data security.",
+		"de": "Nein, leider können wir dir nicht bei der Passwortwiederherstellung helfen.\n\nDies zu ermöglichen würde deine Datensicherheit erheblich schwächen.",
+		"de_en": "No, unfortunately we cannot help you with password recovery.\n\nEnabling this would substantially weaken your data security.",
+		"_note": "\"recover your password\" → \"Passwortwiederherstellung\" (password recovery). Compound noun. \"Making this possible\" → \"Dies zu ermöglichen\". Meaning fully preserved.",
+		"_recommendation": "accept"
+	},
+	"settingsCreateAccount2.faq5Answer": {
+		"en": "Technically a Local Account offers stronger privacy guarantees. However, with a well-chosen password the difference is academic.\n\nAnd a Local Account does not help ensure your own access to the data in case of device loss or in an emergency situation.\n\nUltimately it depends on what you are trying to achieve.",
+		"de": "Technisch gesehen bietet ein lokales Konto stärkere Datenschutzgarantien. Bei einem gut gewählten Passwort ist der Unterschied jedoch akademischer Natur.\n\nAußerdem hilft ein lokales Konto nicht dabei, im Falle eines Geräteverlusts oder in einem Notfall auf deine Daten zugreifen zu können.\n\nLetztendlich hängt es davon ab, was du erreichen möchtest.",
+		"de_en": "Technically speaking, a local account offers stronger data protection guarantees. With a well-chosen password, however, the difference is academic in nature.\n\nFurthermore, a local account does not help with accessing your data in case of device loss or in an emergency situation.\n\nUltimately it depends on what you want to achieve.",
+		"_note": "\"Technically\" → \"Technisch gesehen\" (technically speaking). \"privacy guarantees\" → \"Datenschutzgarantien\" (data protection guarantees). \"And\" → \"Außerdem\" (furthermore). Minor stylistic differences; meaning fully preserved.",
+		"_recommendation": "accept"
+	},
+	"settingsCreateAccount2.faq5Question": {
+		"en": "Is my data safer with a Local Account?",
+		"de": "Sind meine Daten mit einem lokalen Konto sicherer?",
+		"de_en": "Is my data safer with a local account?",
+		"_note": "\"Local Account\" → \"lokalen Konto\". Title case → sentence case. Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"settingsCreateAccount2.helpMeChoose": {
+		"en": "Help me choose",
+		"de": "Hilf mir bei der Wahl",
+		"de_en": "Help me with the choice",
+		"_note": "\"Help me choose\" → \"Hilf mir bei der Wahl\" (Help me with the choice). Natural German phrasing for a help link.",
+		"_recommendation": "accept"
+	},
+	"settingsCreateAccount2.localAccountHeader": {
+		"en": "Local Account",
+		"de": "Lokales Konto",
+		"de_en": "Local account",
+		"_note": "Same as settingsCreateAccount2.localTab. Standard German translation.",
+		"_recommendation": "accept"
+	},
+	"settingsCreateAccount2.localFeature1": {
+		"en": "On-device encryption",
+		"de": "Geräteverschlüsselung",
+		"de_en": "Device encryption",
+		"_note": "Same as settingsCreateAccount2.cloudFeature4. Standard German compound noun.",
+		"_recommendation": "accept"
+	},
+	"settingsCreateAccount2.localTab": {
+		"en": "Local Account",
+		"de": "Lokales Konto",
+		"de_en": "Local account",
+		"_note": "\"Local Account\" → \"Lokales Konto\". Standard German: adjective \"lokales\" + noun \"Konto\". Title case → sentence case.",
+		"_recommendation": "accept"
+	},
+	"settingsCreateAccount2.readMoreSecurity": {
+		"en": "Read more about how we keep your data secure",
+		"de": "Mehr darüber lesen, wie wir deine Daten schützen",
+		"de_en": "Read more about how we protect your data",
+		"_note": "\"keep your data secure\" → \"deine Daten schützen\" (protect your data). Natural German compression; meaning equivalent.",
+		"_recommendation": "accept"
+	},
+	"settingsCreateAccount2.seePricing": {
+		"en": "See pricing for additional space",
+		"de": "Preise für zusätzlichen Speicher anzeigen",
+		"de_en": "Show prices for additional storage",
+		"_note": "\"See pricing\" → \"Preise ... anzeigen\" (Show prices). \"space\" → \"Speicher\" (storage). Natural German link/button label phrasing.",
+		"_recommendation": "accept"
+	},
+	"settingsDeleteAccount.capsLock": {
+		"en": "Caps Lock is on!",
+		"de": "Caps Lock ist aktiviert!",
+		"de_en": "Caps Lock is activated!",
+		"_note": "\"is on\" → \"ist aktiviert\" (is activated). Standard German Caps Lock warning. Consistent with other occurrences.",
+		"_recommendation": "accept"
+	},
+	"settingsDeleteAccount.deleteAccount": {
+		"en": "Delete Account",
+		"de": "Konto löschen",
+		"de_en": "Delete account",
+		"_note": "Title case → sentence case. German standard for button labels.",
+		"_recommendation": "accept"
+	},
+	"settingsDeleteAccount.noWayToRecover": {
+		"en": "that there is no way to recover my data",
+		"de": "es keine Möglichkeit gibt, meine Daten wiederherzustellen",
+		"de_en": "there is no way to recover my data",
+		"_note": "\"that there is no way\" → \"es keine Möglichkeit gibt\" (there is no possibility). Standard German construction for this phrasing. Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"settingsDeleteAccount.permanentlyDeleteAccount": {
+		"en": "this will permanently delete my account",
+		"de": "mein Konto dauerhaft gelöscht wird",
+		"de_en": "my account will be permanently deleted",
+		"_note": "Active \"this will ... delete my account\" → passive \"mein Konto wird gelöscht\" (my account will be deleted). These are checkbox-label fragments. German passive is natural here; meaning identical.",
+		"_recommendation": "accept"
+	},
+	"settingsDeleteAccount.permanentlyDeleteData": {
+		"en": "this will permanently delete all my data",
+		"de": "alle meine Daten dauerhaft gelöscht werden",
+		"de_en": "all my data will be permanently deleted",
+		"_note": "Active → passive construction for checkbox fragment. Same pattern as permanentlyDeleteAccount. Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"settingsDeleteAccount.tab": {
+		"en": "Delete Account",
+		"de": "Konto löschen",
+		"de_en": "Delete account",
+		"_note": "Title case → sentence case. German standard for tab labels.",
+		"_recommendation": "accept"
+	},
+	"settingsDevBlog.tab": {
+		"en": "Dev Blog",
+		"de": "Entwicklerblog",
+		"de_en": "Developer blog",
+		"_note": "\"Dev Blog\" → \"Entwicklerblog\" (developer blog compound noun). \"Entwickler\" is the standard German for developer. Consistent with settingsGeneral.disableDevBlog.",
+		"_recommendation": "accept"
+	},
+	"settingsExplainPlan.description": {
+		"en": "Manage your subscription plan and billing information",
+		"de": "Abonnementplan und Abrechnungsinformationen verwalten",
+		"de_en": "Manage subscription plan and billing information",
+		"_note": "Drops \"your\" (\"dein/deinen\"). In German, omitting the possessive is natural in command-form labels. Meaning equivalent.",
+		"_recommendation": "accept"
+	},
+	"settingsFontsColors.auto": {
+		"en": "Auto (based on system)",
+		"de": "Automatisch (basierend auf dem System)",
+		"de_en": "Automatic (based on the system)",
+		"_note": "\"Auto\" → \"Automatisch\" (automatic). Full German word preferred for UI dropdown options. Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"settingsFontsColors.fontFamily": {
+		"en": "Font Family:",
+		"de": "Schriftfamilie:",
+		"de_en": "Font family:",
+		"_note": "\"Font Family\" → \"Schriftfamilie\" (font family compound noun). Title case → sentence case. Standard German typographic term.",
+		"_recommendation": "accept"
+	},
+	"settingsFontsColors.fontName": {
+		"en": "Font Name:",
+		"de": "Schriftname:",
+		"de_en": "Font name:",
+		"_note": "\"Font Name\" → \"Schriftname\" (font name compound noun). Title case → sentence case.",
+		"_recommendation": "accept"
+	},
+	"settingsFontsColors.fontSize": {
+		"en": "Font Size:",
+		"de": "Schriftgröße:",
+		"de_en": "Font size:",
+		"_note": "\"Font Size\" → \"Schriftgröße\" (font size compound noun). Title case → sentence case. Standard German typographic term.",
+		"_recommendation": "accept"
+	},
+	"settingsFontsColors.tab": {
+		"en": "Fonts & Theme",
+		"de": "Schriften & Design",
+		"de_en": "Fonts & design",
+		"_note": "\"Fonts\" → \"Schriften\" (fonts/typefaces). \"Theme\" → \"Design\". Both are standard German UI terms. Consistent with settingsGeneral.theme.",
+		"_recommendation": "accept"
+	},
+	"settingsFontsColors.theme": {
+		"en": "Theme:",
+		"de": "Design:",
+		"de_en": "Design:",
+		"_note": "\"Theme\" → \"Design\". Consistent with settingsGeneral.theme and settingsFontsColors.tab.",
+		"_recommendation": "accept"
+	},
+	"settingsGeneral.disableDevBlog": {
+		"en": "Disable Dev Blog",
+		"de": "Entwicklerblog deaktivieren",
+		"de_en": "Deactivate developer blog",
+		"_note": "\"Dev Blog\" → \"Entwicklerblog\" (developer blog, compound noun). \"Disable\" → \"deaktivieren\". Standard German.",
+		"_recommendation": "accept"
+	},
+	"settingsGeneral.disableDevBlogTooltip": {
+		"en": "If you find the developer blog annoying, you can choose to hide it",
+		"de": "Falls du den Entwicklerblog störend findest, kannst du ihn ausblenden",
+		"de_en": "If you find the developer blog annoying, you can hide it",
+		"_note": "Drops \"choose to\" before \"hide it\". German omits this modal; direct \"kannst du ... ausblenden\" is natural. Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"settingsGeneral.keepTrayVisible": {
+		"en": "Keep Tray Icon Visible",
+		"de": "Systray-Symbol sichtbar halten",
+		"de_en": "Keep Systray icon visible",
+		"_note": "\"Tray Icon\" → \"Systray-Symbol\". Title case → sentence case. Context confirms this is the Windows system tray icon.",
+		"_recommendation": "accept"
+	},
+	"settingsGeneral.keepTrayVisibleTooltip": {
+		"en": "Prevent the system tray icon from being hidden in the overflow area",
+		"de": "Verhindert, dass das Systray-Symbol im Überlaufbereich ausgeblendet wird",
+		"de_en": "Prevents the Systray icon from being hidden in the overflow area",
+		"_note": "\"system tray icon\" → \"Systray-Symbol\". Third-person form (\"Verhindert\") used for tooltip descriptions. Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"settingsGeneral.languageGerman": {
+		"en": "Deutsch",
+		"de": "Deutsch",
+		"de_en": "German",
+		"_note": "Both en and de use \"Deutsch\" — language picker shows each language in its own native name. Correct by design.",
+		"_recommendation": "accept"
+	},
+	"settingsGeneral.launchOnLogin": {
+		"en": "Launch Mimiri Notes on Login",
+		"de": "Mimiri Notes beim Anmelden starten",
+		"de_en": "Start Mimiri Notes when logging in",
+		"_note": "Title case → sentence case. \"on Login\" → \"beim Anmelden\" (when logging in). Natural German phrasing; meaning identical.",
+		"_recommendation": "accept"
+	},
+	"settingsGeneral.quitOnClose": {
+		"en": "Quit when closing application window",
+		"de": "Beim Schließen des Programmfensters beenden",
+		"de_en": "Quit when closing the application window",
+		"_note": "\"application window\" → \"Programmfensters\" (program window). \"Programm\" is more natural than \"Anwendung\" for this setting label. Meaning equivalent.",
+		"_recommendation": "accept"
+	},
+	"settingsGeneral.quitOnCloseTooltip": {
+		"en": "Fully quit the application instead of minimizing to the system tray when closing the window",
+		"de": "Anwendung vollständig beenden, anstatt sie beim Schließen des Fensters in den Infobereich der Taskleiste zu minimieren",
+		"de_en": "Completely close the application instead of minimizing it to the taskbar notification area when closing the window",
+		"_note": "\"system tray\" → \"Infobereich der Taskleiste\" (notification area of the taskbar). This is the official Microsoft German terminology for the Windows system tray. Meaning fully preserved.",
+		"_recommendation": "accept"
+	},
+	"settingsGeneral.showInTaskbar": {
+		"en": "Show in Taskbar",
+		"de": "In der Taskleiste anzeigen",
+		"de_en": "Show in the taskbar",
+		"_note": "\"Taskbar\" → \"Taskleiste\" (task bar, compound). Adds article \"der\". Standard German Windows UI term.",
+		"_recommendation": "accept"
+	},
+	"settingsGeneral.showInTaskbarTooltip": {
+		"en": "Show Mimiri Notes in the taskbar when the window is open, instead of only showing the system tray icon",
+		"de": "Mimiri Notes in der Taskleiste anzeigen, wenn das Fenster geöffnet ist, anstatt nur das Systray-Symbol anzuzeigen",
+		"de_en": "Show Mimiri Notes in the taskbar when the window is open, instead of showing only the Systray icon",
+		"_note": "\"system tray icon\" → \"Systray-Symbol\". \"Taskleiste\" for taskbar. Minor word-order shift (\"only showing\" vs \"showing only\"). Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"settingsGeneral.showVerticalGuides": {
+		"en": "Show vertical guides",
+		"de": "Vertikale Führungslinien anzeigen",
+		"de_en": "Show vertical guide lines",
+		"_note": "\"guides\" → \"Führungslinien\" (guide lines, compound noun). Standard German term. Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"settingsGeneral.showVerticalGuidesTooltip": {
+		"en": "Display vertical lines in the tree view to indicate nesting depth",
+		"de": "Vertikale Linien in der Baumansicht anzeigen, um die Einschachtelungstiefe anzuzeigen",
+		"de_en": "Show vertical lines in the tree view to indicate the nesting depth",
+		"_note": "\"Display\" → \"anzeigen\" (show). \"nesting depth\" → \"Einschachtelungstiefe\" (nesting depth compound noun). Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"settingsGeneral.theme": {
+		"en": "Theme",
+		"de": "Design",
+		"de_en": "Design",
+		"_note": "\"Theme\" → \"Design\". \"Design\" is the standard German word used in system settings (e.g. Windows, macOS in German) for the visual theme/appearance setting.",
+		"_recommendation": "accept"
+	},
+	"settingsGeneral.trayIcon": {
+		"en": "Tray Icon",
+		"de": "Tray-Symbol",
+		"de_en": "Tray icon",
+		"_note": "\"Icon\" → \"Symbol\" (symbol/icon). \"Symbol\" is the standard German term in Windows system tray contexts. Hyphen follows German compound convention.",
+		"_recommendation": "accept"
+	},
+	"settingsGeneral.useChevrons": {
+		"en": "Use chevrons in tree view",
+		"de": "Chevrons in der Baumansicht verwenden",
+		"de_en": "Use chevrons in the tree view",
+		"_note": "\"chevrons\" kept as English loanword (standard in German UI contexts). Adds article \"der\". Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"settingsGeneral.useChevronsTooltip": {
+		"en": "Show chevrons in the tree instead of plus/minus icons to indicate expandable items",
+		"de": "Chevrons statt Plus-/Minus-Symbole im Baum anzeigen, um erweiterbare Elemente anzuzeigen",
+		"de_en": "Show chevrons instead of plus/minus icons in the tree to indicate expandable items",
+		"_note": "Minor word-order difference. \"icons\" → \"Symbole\". Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"settingsPassword.capsLock": {
+		"en": "Caps Lock is on!",
+		"de": "Caps Lock ist aktiviert!",
+		"de_en": "Caps Lock is activated!",
+		"_note": "Standard German Caps Lock warning. Consistent with all other occurrences.",
+		"_recommendation": "accept"
+	},
+	"settingsPassword.notMatching": {
+		"en": "Not matching",
+		"de": "Keine Übereinstimmung",
+		"de_en": "No match",
+		"_note": "\"Not matching\" → \"Keine Übereinstimmung\" (No match/agreement). Standard German validation message for a password repeat field.",
+		"_recommendation": "accept"
+	},
+	"settingsPassword.notReallyAPassword": {
+		"en": "Not really a password",
+		"de": "Kein wirkliches Passwort",
+		"de_en": "Not a real password",
+		"_note": "\"Not really a password\" → \"Kein wirkliches Passwort\" (Not a real password). Natural German phrasing for a weak password hint. Meaning equivalent.",
+		"_recommendation": "accept"
+	},
+	"settingsPinCode.clear": {
+		"en": "Clear",
+		"de": "Löschen",
+		"de_en": "Delete",
+		"_note": "\"Clear\" → \"Löschen\" (delete). In a PIN input context, \"Löschen\" is the standard German button label for clearing/removing the PIN. Meaning equivalent.",
+		"_recommendation": "accept"
+	},
+	"settingsPinCode.setOrChange": {
+		"en": "Set or change your PIN code:",
+		"de": "PIN-Code festlegen oder ändern:",
+		"de_en": "Set or change PIN code:",
+		"_note": "Drops possessive \"your\" before PIN code. German does not require it for a setting label. Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"settingsPinCode.setOrChangeTooltip": {
+		"en": "Set a 4-digit PIN Code to lock Mimiri after a small period of inactivity and use the code to quickly resume the session",
+		"de": "Lege einen 4-stelligen PIN-Code fest, um Mimiri nach kurzer Inaktivität zu sperren, und verwende den Code, um die Sitzung schnell fortzusetzen",
+		"de_en": "Set a 4-digit PIN code to lock Mimiri after a short period of inactivity and use the code to quickly resume the session",
+		"_note": "\"small period\" → \"kurzer\" (short). \"Short period\" is more natural than \"small period\" in both languages; the German is slightly more accurate. All meaning preserved.",
+		"_recommendation": "accept"
+	},
+	"settingsPinCode.tab": {
+		"en": "PIN Code",
+		"de": "PIN-Code",
+		"de_en": "PIN code",
+		"_note": "Hyphen added: \"PIN-Code\" follows German compound noun conventions for acronym+noun compounds.",
+		"_recommendation": "accept"
+	},
+	"settingsPromoteAccount.capsLock": {
+		"en": "Caps Lock is on!",
+		"de": "Caps Lock ist aktiviert!",
+		"de_en": "Caps Lock is activated!",
+		"_note": "Standard German Caps Lock warning. Consistent with all other occurrences.",
+		"_recommendation": "accept"
+	},
+	"settingsPromoteAccount.description": {
+		"en": "Choose a username and password to allow you to access your data from anywhere",
+		"de": "Wähle einen Benutzernamen und ein Passwort, um von überall auf deine Daten zuzugreifen",
+		"de_en": "Choose a username and password to access your data from anywhere",
+		"_note": "\"to allow you to access\" compressed to \"um ... zuzugreifen\" (to access). Drops \"allow you to\"; German infinitive construction is more natural. Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"settingsPromoteAccount.noRecoveryWarning": {
+		"en": "I understand that I am solely responsible for remembering my password and innonova GmbH has <b>no way</b> to recover my data or account if I lose my password",
+		"de": "Ich verstehe, dass ich allein für das Merken meines Passworts verantwortlich bin und innonova GmbH <b>keine Möglichkeit</b> hat, meine Daten oder mein Konto wiederherzustellen, falls ich mein Passwort verliere",
+		"de_en": "I understand that I alone am responsible for remembering my password and innonova GmbH has no way to recover my data or my account if I lose my password",
+		"_note": "Bold markup <b>no way</b> → <b>keine Möglichkeit</b> (no possibility) — bold preserved. \"solely\" → \"allein\" (alone). Minor restructuring; legal meaning fully preserved.",
+		"_recommendation": "accept"
+	},
+	"settingsPromoteAccount.notMatching": {
+		"en": "Not matching",
+		"de": "Keine Übereinstimmung",
+		"de_en": "No match",
+		"_note": "Standard German validation message. Same as settingsPassword.notMatching.",
+		"_recommendation": "accept"
+	},
+	"settingsPromoteAccount.notReallyAPassword": {
+		"en": "Not really a password",
+		"de": "Kein wirkliches Passwort",
+		"de_en": "Not a real password",
+		"_note": "Standard German weak-password hint. Same as settingsPassword.notReallyAPassword.",
+		"_recommendation": "accept"
+	},
+	"settingsPromoteAccount.tab": {
+		"en": "Create Password",
+		"de": "Passwort erstellen",
+		"de_en": "Create password",
+		"_note": "Title case → sentence case. German standard for tab labels.",
+		"_recommendation": "accept"
+	},
+	"settingsRecycleBin.description": {
+		"en": "Permanently delete all items in the Recycle Bin",
+		"de": "Alle Elemente im Papierkorb dauerhaft löschen",
+		"de_en": "Permanently delete all items in the waste paper basket",
+		"_note": "\"Recycle Bin\" → \"Papierkorb\". \"Items\" → \"Elemente\". Minor word-order shift (\"Permanently\" at end in German). Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"settingsRecycleBin.emptyRecycleBin": {
+		"en": "Empty Recycle Bin",
+		"de": "Papierkorb leeren",
+		"de_en": "Empty waste paper basket",
+		"_note": "\"Recycle Bin\" → \"Papierkorb\". Title case → sentence case. Consistent with settingsRecycleBin.tab and description.",
+		"_recommendation": "accept"
+	},
+	"settingsRecycleBin.scanForInconsistencies": {
+		"en": "Scan for inconsistencies",
+		"de": "Nach Inkonsistenzen suchen",
+		"de_en": "Search for inconsistencies",
+		"_note": "\"Scan for\" → \"Nach ... suchen\" (search for). Natural German button label. Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"settingsRecycleBin.tab": {
+		"en": "Recycle Bin",
+		"de": "Papierkorb",
+		"de_en": "Waste paper basket",
+		"_note": "\"Recycle Bin\" → \"Papierkorb\" (waste-paper basket). This is the standard German computing term used by Windows, macOS and all major German software for a recycling bin/trash.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.autoIdle": {
+		"en": "Automatic - when idle (default)",
+		"de": "Automatisch – bei Inaktivität (Standard)",
+		"de_en": "Automatic – when idle (default)",
+		"_note": "Hyphen-minus \" - \" → en-dash \" – \". Standard German punctuation for ranges and option labels. Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.autoStart": {
+		"en": "Automatic - on startup",
+		"de": "Automatisch – beim Start",
+		"de_en": "Automatic – on startup",
+		"_note": "Hyphen-minus → en-dash. \"on startup\" → \"beim Start\". Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.checkForUpdates": {
+		"en": "Check for updates",
+		"de": "Nach Updates suchen",
+		"de_en": "Search for updates",
+		"_note": "\"Check for\" → \"Nach ... suchen\" (search for). Natural German button label. Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.currentVersion": {
+		"en": "Current Version:",
+		"de": "Aktuelle Version:",
+		"de_en": "Current version:",
+		"_note": "Title case → sentence case. Standard German field label.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.descAndThis": {
+		"en": "and this",
+		"de": "und so",
+		"de_en": "and like this",
+		"_note": "\"and this\" → \"und so\" (and like this). Same referential fragment pattern as descInTitlebar. Meaning equivalent.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.descAndroidPlay": {
+		"en": "Larger updates will happen like normal through Google Play",
+		"de": "Größere Updates erfolgen wie gewohnt über Google Play",
+		"de_en": "Larger updates happen as usual through Google Play",
+		"_note": "Same pattern as descIosAppStore. \"like normal\" → \"wie gewohnt\". Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.descAndroidStill": {
+		"en": "Larger updates will still happen like normal through Google Play (outside our control)",
+		"de": "Größere Updates erfolgen weiterhin wie gewohnt über Google Play (außerhalb unserer Kontrolle)",
+		"de_en": "Larger updates will still happen as usual through Google Play (outside our control)",
+		"_note": "Same pattern as descIosStill. Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.descFlatHubStill": {
+		"en": "If you have installed via FlatHub or Snap Store updates to the Electron host application will still happen through the normal flow here.",
+		"de": "Wenn du über FlatHub oder den Snap Store installiert hast, erfolgen Updates der Electron-Host-Anwendung weiterhin über den normalen Weg.",
+		"de_en": "If you have installed via FlatHub or the Snap Store, updates to the Electron host application will still happen through the normal way.",
+		"_note": "Same pattern as descLinuxFlatHub with \"still\" added. \"weiterhin\" = still/continue to. Drops \"here\". Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.descInSystemArea": {
+		"en": "in the System area in the treeview",
+		"de": "im Systembereich in der Baumansicht",
+		"de_en": "in the system area in the tree view",
+		"_note": "\"System area\" → \"Systembereich\" (system area compound noun). \"treeview\" → \"Baumansicht\" (tree view). Standard German compound nouns.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.descInTitlebar": {
+		"en": "in the titlebar and like this",
+		"de": "in der Titelleiste und so",
+		"de_en": "in the title bar and like this",
+		"_note": "\"like this\" → \"und so\" (and like this/and so). Colloquial but contextually appropriate — this is a fragment within a longer UI description where \"und so\" refers back to a previously shown example. Meaning equivalent.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.descIosAppStore": {
+		"en": "Larger updates will happen like normal through the AppStore",
+		"de": "Größere Updates erfolgen wie gewohnt über den AppStore",
+		"de_en": "Larger updates happen as usual through the AppStore",
+		"_note": "\"like normal\" → \"wie gewohnt\" (as usual/as customary). More idiomatic German. Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.descIosStill": {
+		"en": "Larger updates will still happen like normal through the AppStore (outside our control)",
+		"de": "Größere Updates erfolgen weiterhin wie gewohnt über den AppStore (außerhalb unserer Kontrolle)",
+		"de_en": "Larger updates will still happen as usual through the AppStore (outside our control)",
+		"_note": "\"like normal\" → \"wie gewohnt\". \"still\" → \"weiterhin\". Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.descLinuxFlatHub": {
+		"en": "If you have installed via FlatHub or Snap Store updates to the Electron host application will happen through the normal flow here.",
+		"de": "Wenn du über FlatHub oder den Snap Store installiert hast, erfolgen Updates der Electron-Host-Anwendung über den normalen Weg.",
+		"de_en": "If you have installed via FlatHub or the Snap Store, updates to the Electron host application happen through the normal way.",
+		"_note": "\"through the normal flow here\" → \"über den normalen Weg\" (through the normal way). Drops \"here\". Natural German phrasing; meaning identical.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.descLinuxManual": {
+		"en": "If you have installed the application manually you will be notified when an update to the Electron host is available.",
+		"de": "Wenn du die Anwendung manuell installiert hast, wirst du benachrichtigt, wenn ein Update für den Electron-Host verfügbar ist.",
+		"de_en": "If you have installed the application manually, you will be notified when an update for the Electron host is available.",
+		"_note": "Adds comma after \"manually\" (standard German subordinate clause punctuation). \"to the Electron host\" → \"für den Electron-Host\" (for the Electron host). Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.descMacWinRestart": {
+		"en": "Updates that require restarting the application will happen automatically when you restart the application.",
+		"de": "Updates, die einen Neustart der Anwendung erfordern, werden automatisch beim nächsten Neustart durchgeführt.",
+		"de_en": "Updates that require a restart of the application will be performed automatically on the next restart.",
+		"_note": "\"when you restart\" → \"beim nächsten Neustart\" (on the next restart). Passive construction. Minor difference; meaning identical.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.descNoNotification": {
+		"en": "No notification will be shown, you will need to manually check for updates from here",
+		"de": "Es wird keine Benachrichtigung angezeigt; du musst manuell nach Updates suchen",
+		"de_en": "No notification will be shown; you must manually check for updates",
+		"_note": "Drops \"from here\" at end. German omits the implicit location since \"suchen\" (search/check) implies the current location. Meaning equivalent.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.descNoRestartAuto": {
+		"en": "Updates that do not require restart will happen automatically when you are not actively using the app.",
+		"de": "Updates, die keinen Neustart erfordern, erfolgen automatisch, wenn du die App gerade nicht aktiv verwendest.",
+		"de_en": "Updates that do not require a restart happen automatically when you are not actively using the app.",
+		"_note": "\"will happen\" → \"erfolgen\" (happen/occur, more formal). Adds \"gerade\" (right now) for emphasis. Minor stylistic differences; meaning identical.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.descNoUnsaved": {
+		"en": "Updates will never happen if you have unsaved data.",
+		"de": "Updates werden niemals durchgeführt, wenn du nicht gespeicherte Daten hast.",
+		"de_en": "Updates will never be performed when you have unsaved data.",
+		"_note": "\"will never happen\" → \"werden niemals durchgeführt\" (will never be performed). Passive construction is standard German for process descriptions. Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.descOnRestart": {
+		"en": "Updates automatically when you restart the application.",
+		"de": "Wird automatisch beim Neustart der Anwendung aktualisiert.",
+		"de_en": "Is updated automatically when the application restarts.",
+		"_note": "Gerund form → passive construction. \"Updates automatically\" → \"Wird ... aktualisiert\" (is updated). Standard German style for status descriptions.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.descSeamless": {
+		"en": "The experience aims to be completely seamless.",
+		"de": "Die Erfahrung soll vollständig nahtlos sein.",
+		"de_en": "The experience is intended to be completely seamless.",
+		"_note": "\"aims to be\" → \"soll ... sein\" (should/is intended to be). Natural German modal. Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.discreteNotify": {
+		"en": "Manual - notify me discreetly",
+		"de": "Manuell – dezent benachrichtigen",
+		"de_en": "Manual – notify discreetly",
+		"_note": "Hyphen-minus → en-dash. Drops \"me\" in label. \"discreetly\" → \"dezent\" (subtly/discreetly). Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.electronClientRequired": {
+		"en": "An update of the Electron Client is required",
+		"de": "Ein Update des Electron-Clients ist erforderlich",
+		"de_en": "An update of the Electron client is required",
+		"_note": "\"Electron Client\" → \"Electron-Clients\" (hyphen for compound, genitive). Title case → sentence case. Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.fixes": {
+		"en": "Fixes:",
+		"de": "Fehlerbehebungen:",
+		"de_en": "Bug fixes:",
+		"_note": "\"Fixes\" → \"Fehlerbehebungen\" (bug fixes/corrections compound noun). Standard German term for bug fixes section header.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.installing": {
+		"en": "Installing...",
+		"de": "Wird installiert...",
+		"de_en": "Is being installed...",
+		"_note": "Gerund → passive construction. \"Installing\" → \"Wird installiert\" (is being installed). Standard German progress-label style.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.manualOnly": {
+		"en": "Manual - do not notify me",
+		"de": "Manuell – nicht benachrichtigen",
+		"de_en": "Manual – do not notify",
+		"_note": "Hyphen-minus → en-dash. Drops \"me\" in label. Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.newVersion": {
+		"en": "New Version:",
+		"de": "Neue Version:",
+		"de_en": "New version:",
+		"_note": "Title case → sentence case. Standard German field label.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.off": {
+		"en": "Off - stay on this version",
+		"de": "Aus – auf dieser Version bleiben",
+		"de_en": "Off – stay on this version",
+		"_note": "Hyphen-minus → en-dash. \"Off\" → \"Aus\". Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.restartToActivate": {
+		"en": "Restart to activate new version",
+		"de": "Neustart zum Aktivieren der neuen Version",
+		"de_en": "Restart to activate the new version",
+		"_note": "\"Restart to activate\" → \"Neustart zum Aktivieren\" (restart for the activation of). Nominalized German construction, natural for action labels.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.strongNotify": {
+		"en": "Manual - notify me clearly",
+		"de": "Manuell – deutlich benachrichtigen",
+		"de_en": "Manual – notify clearly",
+		"_note": "Hyphen-minus → en-dash. Drops \"me\"; German omits direct object pronoun in label. Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.verifyingSignature": {
+		"en": "Verifying Signature...",
+		"de": "Signatur wird überprüft...",
+		"de_en": "Signature is being verified...",
+		"_note": "Gerund → passive construction. \"Verifying\" → \"wird überprüft\" (is being verified). Standard German progress-label style.",
+		"_recommendation": "accept"
+	},
+	"settingsUpgrade.chooseCredentials": {
+		"en": "Choose your credentials",
+		"de": "Wähle deine Anmeldedaten",
+		"de_en": "Choose your login data",
+		"_note": "\"credentials\" → \"Anmeldedaten\" (login data). Same as settingsCreateAccount2.chooseCredentials.",
+		"_recommendation": "accept"
+	},
+	"settingsUpgrade.currentPassword": {
+		"en": "Current Password:",
+		"de": "Aktuelles Passwort:",
+		"de_en": "Current password:",
+		"_note": "Title case → sentence case. Colon preserved. Standard German field label.",
+		"_recommendation": "accept"
+	},
+	"settingsUpgrade.incorrectPassword": {
+		"en": "Incorrect current password",
+		"de": "Aktuelles Passwort ist falsch",
+		"de_en": "Current password is incorrect",
+		"_note": "\"Incorrect current password\" → \"Aktuelles Passwort ist falsch\" (current password is wrong). Natural German error message phrasing; same meaning.",
+		"_recommendation": "accept"
+	},
+	"settingsUpgrade.newPassword": {
+		"en": "New Password:",
+		"de": "Neues Passwort:",
+		"de_en": "New password:",
+		"_note": "Title case → sentence case. Colon preserved. Standard German field label.",
+		"_recommendation": "accept"
+	},
+	"settingsUpgrade.tab": {
+		"en": "Connect Cloud",
+		"de": "Cloud verbinden",
+		"de_en": "Connect cloud",
+		"_note": "Sentence case already in en. Minor: drops \"the\" article. Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"settingsUpgrade.upgradeError": {
+		"en": "Error upgrading account. Please try again later.",
+		"de": "Fehler beim Upgrade des Kontos. Bitte versuche es später erneut.",
+		"de_en": "Error upgrading the account. Please try again later.",
+		"_note": "\"upgrading account\" → \"beim Upgrade des Kontos\" (during upgrade of the account). \"Upgrade\" retained as English loanword. Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"shareDialog.acceptInstruction": {
+		"en": "{name} will need to accept the share using the menu item 'Accept Share'",
+		"de": "{name} muss die Freigabe über den Menüpunkt 'Freigabe annehmen' annehmen",
+		"de_en": "{name} must accept the share via the menu item 'Accept share'",
+		"_note": "\"will need to\" → \"muss\" (must). \"using\" → \"über\" (via). Menu item name correctly translated to match the app's German label. Placeholder {name} present. Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"shareDialog.codeHint": {
+		"en": "Then share the provided one time code with them so they can accept the share.",
+		"de": "Teile den bereitgestellten Einmalcode mit der Person, damit sie die Freigabe annehmen kann.",
+		"de_en": "Share the provided one-time code with the person so they can accept the share.",
+		"_note": "\"them\" → \"der Person\" (the person) — German requires an explicit noun/pronoun here. \"so they can\" → \"damit sie ... kann\" (so that they can). Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"shareDialog.codeInstruction": {
+		"en": "Share this one time code with {name} to complete the share of {noteName}",
+		"de": "Teile diesen Einmalcode mit {name}, um die Freigabe von {noteName} abzuschließen",
+		"de_en": "Share this one-time code with {name} to complete the share of {noteName}",
+		"_note": "\"one time code\" → \"Einmalcode\" (one-time code, standard German compound noun). Placeholders {name} and {noteName} present. Minor hyphenation difference, meaning identical.",
+		"_recommendation": "accept"
+	},
+	"shareDialog.enterUsernameHint": {
+		"en": "Enter the username of another user in the field above to share {noteName}.",
+		"de": "Gib oben den Benutzernamen eines anderen Benutzers ein, um {noteName} zu teilen.",
+		"de_en": "Enter the username of another user above to share {noteName}.",
+		"_note": "\"in the field above\" compressed to \"oben\" (above). Meaning equivalent; German omits the redundant \"in the field\" reference. Placeholder {noteName} present.",
+		"_recommendation": "accept"
+	},
+	"shareDialog.loseCodeHint": {
+		"en": "If you lose this code, simply share {noteName} with {name} again to show the code again.",
+		"de": "Falls du diesen Code verlierst, teile {noteName} einfach erneut mit {name}, um den Code wieder anzuzeigen.",
+		"de_en": "If you lose this code, simply share {noteName} again with {name} to display the code again.",
+		"_note": "Minor word-order reordering (\"again\" repositioned). \"show\" → \"anzuzeigen\" (to display). Placeholders {noteName} and {name} present. Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"shareDialog.multipleUsersHint": {
+		"en": "If you wish to share this note with multiple people you will need to repeat this process for each user.",
+		"de": "Wenn du diese Notiz mit mehreren Personen teilen möchtest, musst du diesen Vorgang für jeden Benutzer wiederholen.",
+		"de_en": "If you want to share this note with multiple people, you must repeat this process for each user.",
+		"_note": "\"wish to\" → \"möchtest\" (want to) and \"will need to\" → \"musst\" (must). Natural German phrasing. Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"shareDialog.shareFailed": {
+		"en": "Unable to share, please verify username and internet connection.",
+		"de": "Teilen fehlgeschlagen. Bitte überprüfe den Benutzernamen und die Internetverbindung.",
+		"de_en": "Sharing failed. Please verify the username and internet connection.",
+		"_note": "\"Unable to share\" → \"Teilen fehlgeschlagen\" (Sharing failed). Articles added for German grammar. Meaning equivalent.",
+		"_recommendation": "accept"
+	},
+	"shareDialog.shareWith": {
+		"en": "Share {noteName} and all child notes with:",
+		"de": "{noteName} und alle untergeordneten Notizen teilen mit:",
+		"de_en": "Share {noteName} and all subordinate notes with:",
+		"_note": "\"child notes\" → \"untergeordneten Notizen\" (subordinate notes). Consistent with app terminology throughout. Verb moved to end per German word order. Placeholder {noteName} present.",
+		"_recommendation": "accept"
+	},
+	"shareDialog.title": {
+		"en": "Share Note",
+		"de": "Notiz teilen",
+		"de_en": "Share note",
+		"_note": "Title case → sentence case. German standard.",
+		"_recommendation": "accept"
+	},
+	"statusBar.syncError": {
+		"en": "Synchronization Error (see details)",
+		"de": "Synchronisierungsfehler (Details anzeigen)",
+		"de_en": "Synchronization error (show details)",
+		"_note": "Title case → sentence case; \"see details\" → \"Details anzeigen\" (show details). German uses an imperative/infinitive label for action hints.",
+		"_recommendation": "accept"
+	},
+	"statusBar.syncErrorLimitExceeded": {
+		"en": "Sync Error: Limit exceeded (see details)",
+		"de": "Sync-Fehler: Limit überschritten (Details anzeigen)",
+		"de_en": "Sync error: Limit exceeded (show details)",
+		"_note": "Title case → sentence case. Compound noun \"Sync-Fehler\" with hyphen (German loanword convention). \"see details\" → \"Details anzeigen\". Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"statusBar.syncErrorNoteSize": {
+		"en": "Sync Error: Note size exceeded (see details)",
+		"de": "Sync-Fehler: Notizgröße überschritten (Details anzeigen)",
+		"de_en": "Sync error: Note size exceeded (show details)",
+		"_note": "Title case → sentence case. Compound \"Sync-Fehler\". \"see details\" → \"Details anzeigen\". Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"statusBar.syncErrorServerRejection": {
+		"en": "Sync Error: Server rejection (see details)",
+		"de": "Sync-Fehler: Serverablehnung (Details anzeigen)",
+		"de_en": "Sync error: Server rejection (show details)",
+		"_note": "\"Server rejection\" → \"Serverablehnung\" (compound noun). Title case → sentence case. \"see details\" → \"Details anzeigen\". Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"statusBar.synchronizing": {
+		"en": "Synchronizing...",
+		"de": "Wird synchronisiert...",
+		"de_en": "Is being synchronized...",
+		"_note": "Gerund → passive construction \"wird synchronisiert\" (is being synchronized). Standard German for in-progress status labels.",
+		"_recommendation": "accept"
+	},
+	"subAccount.tab": {
+		"en": "Billing Address",
+		"de": "Rechnungsadresse",
+		"de_en": "Billing address",
+		"_note": "\"Billing Address\" → \"Rechnungsadresse\" (invoice address compound noun). Title case → sentence case. Standard German e-commerce term.",
+		"_recommendation": "accept"
+	},
+	"subCustomerData.postalCode": {
+		"en": "Postal Code",
+		"de": "Postleitzahl",
+		"de_en": "Postal code",
+		"_note": "\"Postal Code\" → \"Postleitzahl\" (PLZ, postal routing number). Standard German address field term.",
+		"_recommendation": "accept"
+	},
+	"subCustomerData.sendVerification": {
+		"en": "Send verification email",
+		"de": "Bestätigungs-E-Mail senden",
+		"de_en": "Send confirmation email",
+		"_note": "Same as verificationSent pattern. \"Verification\" → \"Bestätigungs\". Standard German button label.",
+		"_recommendation": "accept"
+	},
+	"subCustomerData.stateProvince": {
+		"en": "State/Province",
+		"de": "Bundesland/Provinz",
+		"de_en": "Federal state/province",
+		"_note": "\"State\" → \"Bundesland\" (federal state). \"Bundesland\" is the standard German administrative term; covers both German Länder and foreign states/provinces.",
+		"_recommendation": "accept"
+	},
+	"subCustomerData.verificationSent": {
+		"en": "Verification email sent",
+		"de": "Bestätigungs-E-Mail gesendet",
+		"de_en": "Confirmation email sent",
+		"_note": "\"Verification\" → \"Bestätigungs\" (confirmation). \"Bestätigungs-E-Mail\" is the standard German term for a verification/confirmation email.",
+		"_recommendation": "accept"
+	},
+	"subCustomerData.whyAskInfo": {
+		"en": "We need your country of residence to manage VAT (this has no impact on the price you pay - the price you are shown is the final price).<br /><br />We will use your email address solely to send you receipts, notifications of failed payments, and reminders prior to renewal. Your email address also serves as a last resort for canceling your subscription in case you lose access to your account.<br /><br />We will never use your email address for marketing purposes, newsletters, or any other kind of unsolicited communication.<br /><br />The above data is shared with our payment provider to process your payment, primarily for fraud prevention.<br /><br />We will, however, never share your data with any other parties. See our <a href=\"https://mimiri.io/privacy\" target=\"_blank\">Privacy Policy</a> for details.<br /><br />All data is handled in compliance with both GDPR and Swiss data protection laws, regardless of your country of residence.",
+		"de": "Wir benötigen dein Wohnsitzland für die Verwaltung der Mehrwertsteuer (dies hat keinen Einfluss auf den von dir zu zahlenden Preis – der angezeigte Preis ist der Endpreis).<br /><br />Wir verwenden deine E-Mail-Adresse ausschließlich zum Senden von Quittungen, Benachrichtigungen bei fehlgeschlagenen Zahlungen und Erinnerungen vor der Verlängerung. Deine E-Mail-Adresse dient auch als letzte Möglichkeit, dein Abonnement zu kündigen, falls du den Zugang zu deinem Konto verlierst.<br /><br />Wir werden deine E-Mail-Adresse niemals für Marketingzwecke, Newsletter oder andere unerwünschte Kommunikation verwenden.<br /><br />Die oben genannten Daten werden mit unserem Zahlungsanbieter geteilt, um deine Zahlung zu verarbeiten, hauptsächlich zur Betrugsprävention.<br /><br />Wir werden deine Daten jedoch niemals an Dritte weitergeben. Weitere Informationen findest du in unserer <a href=\"https://mimiri.io/privacy\" target=\"_blank\">Datenschutzrichtlinie</a>.<br /><br />Alle Daten werden sowohl gemäß der DSGVO als auch gemäß dem Schweizer Datenschutzgesetz behandelt, unabhängig von deinem Wohnsitzland.",
+		"de_en": "We need your country of residence to manage VAT (this has no impact on the price you pay – the price shown is the final price).<br /><br />We will use your email address solely to send you receipts, notifications of failed payments, and reminders prior to renewal. Your email address also serves as a last resort for canceling your subscription in case you lose access to your account.<br /><br />We will never use your email address for marketing purposes, newsletters, or any other kind of unsolicited communication.<br /><br />The above data is shared with our payment provider to process your payment, primarily for fraud prevention.<br /><br />We will, however, never share your data with any other parties. See our <a href=\"https://mimiri.io/privacy\" target=\"_blank\">Privacy Policy</a> for details.<br /><br />All data is handled in compliance with both GDPR and Swiss data protection laws, regardless of your country of residence.",
+		"_note": "\"GDPR\" → \"DSGVO\" (Datenschutz-Grundverordnung). Correct German acronym. \"VAT\" → \"Mehrwertsteuer\" (MwSt). Hyphen-minus → en-dash in parenthetical. HTML markup fully preserved. All legal content retained.",
+		"_recommendation": "accept"
+	},
+	"subInvoiceItem.invoiceNo": {
+		"en": "Invoice No:",
+		"de": "Rechnungsnr.:",
+		"de_en": "Invoice no.:",
+		"_note": "\"Invoice No\" → \"Rechnungsnr.\" (invoice number abbreviation). Standard German abbreviation for Rechnungsnummer.",
+		"_recommendation": "accept"
+	},
+	"subInvoiceItem.payNow": {
+		"en": "Pay Now",
+		"de": "Jetzt bezahlen",
+		"de_en": "Pay now",
+		"_note": "Same as subSubscriptionItem.payNow. Title case → sentence case. Natural German button label.",
+		"_recommendation": "accept"
+	},
+	"subInvoiceItem.view": {
+		"en": "View",
+		"de": "Anzeigen",
+		"de_en": "Show",
+		"_note": "\"View\" → \"Anzeigen\" (show/display). Standard German button label for viewing an item.",
+		"_recommendation": "accept"
+	},
+	"subInvoices.noInvoicesYet": {
+		"en": "No Invoices Yet",
+		"de": "Noch keine Rechnungen",
+		"de_en": "No invoices yet",
+		"_note": "Title case → sentence case. \"Noch keine\" is the natural German for \"None yet\". Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"subNewSubscriptionView.faq2Answer": {
+		"en": "The main reason to subscribe is to support the ongoing development of Mimiri Notes.",
+		"de": "Der Hauptgrund für ein Abonnement ist die Unterstützung der laufenden Entwicklung von Mimiri Notes.",
+		"de_en": "The main reason for a subscription is to support the ongoing development of Mimiri Notes.",
+		"_note": "\"to subscribe\" → \"für ein Abonnement\" (for a subscription). Nominalized German construction; meaning equivalent.",
+		"_recommendation": "accept"
+	},
+	"subNewSubscriptionView.faq2Question": {
+		"en": "Why would I choose a paid plan?",
+		"de": "Warum sollte ich einen kostenpflichtigen Plan wählen?",
+		"de_en": "Why should I choose a paid plan?",
+		"_note": "\"would I\" → \"sollte ich\" (should I). Natural German register for rhetorical FAQ question. Meaning equivalent.",
+		"_recommendation": "accept"
+	},
+	"subNewSubscriptionView.promoCopy": {
+		"en": "The free tier isn't a trial - it's built to be fully usable and will always be here. \nBut it's our subscribers who make it possible for Mimiri Notes to keep moving forward for everyone.",
+		"de": "Die kostenlose Stufe ist keine Testversion – sie ist so konzipiert, dass sie vollständig nutzbar ist und immer da sein wird. \nAber es sind unsere Abonnenten, die es Mimiri Notes ermöglichen, für alle voranzukommen.",
+		"de_en": "The free tier is not a trial version – it is designed to be fully usable and will always be here. \nBut it is our subscribers who make it possible for Mimiri Notes to move forward for everyone.",
+		"_note": "Hyphen-minus → en-dash. \"tier\" → \"Stufe\" (tier/level). \"trial\" → \"Testversion\" (trial version). \"keep moving forward\" → \"voranzukommen\". Natural German. Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"subNewSubscriptionView.tab": {
+		"en": "Current Plan",
+		"de": "Aktueller Plan",
+		"de_en": "Current plan",
+		"_note": "Title case → sentence case. Standard German tab label.",
+		"_recommendation": "accept"
+	},
+	"subPayInvoice.tab": {
+		"en": "Pay Invoice",
+		"de": "Rechnung bezahlen",
+		"de_en": "Pay invoice",
+		"_note": "\"Invoice\" → \"Rechnung\" (invoice/bill). Title case → sentence case. Standard German.",
+		"_recommendation": "accept"
+	},
+	"subPaymentMethodItem.makeDefault": {
+		"en": "Make default",
+		"de": "Als Standard festlegen",
+		"de_en": "Set as default",
+		"_note": "\"Make default\" → \"Als Standard festlegen\" (set as default). \"festlegen\" is the standard German for setting a default option. Meaning equivalent.",
+		"_recommendation": "accept"
+	},
+	"subPaymentMethods.createNew": {
+		"en": "Create New",
+		"de": "Neu erstellen",
+		"de_en": "Create new",
+		"_note": "Title case → sentence case. German word order places \"Neu\" (new) before the verb. Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"subPaymentMethods.noMethodsYet": {
+		"en": "No Payment Methods Yet",
+		"de": "Noch keine Zahlungsmethoden",
+		"de_en": "No payment methods yet",
+		"_note": "Title case → sentence case. \"Noch keine\" is the natural German for \"None yet\". Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"subPaymentMethods.tab": {
+		"en": "Payment Methods",
+		"de": "Zahlungsmethoden",
+		"de_en": "Payment methods",
+		"_note": "\"Payment Methods\" → \"Zahlungsmethoden\" (payment methods compound noun). Title case → sentence case. Standard German e-commerce term.",
+		"_recommendation": "accept"
+	},
+	"subPaymentSummary.acceptPrivacy": {
+		"en": "I have read and accept the",
+		"de": "Ich akzeptiere die",
+		"de_en": "I accept the",
+		"_note": "Same issue as acceptTerms: drops \"I have read and\" from a legal acceptance checkbox. Recommend restoring \"gelesen und\" for legal parity with the English.",
+		"_recommendation": "modify: Ich habe die {privacyLink} gelesen und akzeptiere sie"
+	},
+	"subPaymentSummary.acceptTerms": {
+		"en": "I have read and accept the",
+		"de": "Ich akzeptiere die",
+		"de_en": "I accept the",
+		"_note": "Drops \"I have read and\" — the German only says \"I accept the\". For a legal acceptance checkbox this omission weakens the acknowledgement that the user has read the terms. Recommend restoring \"gelesen und\" to maintain legal parity.",
+		"_recommendation": "modify: Ich habe die {termsLink} gelesen und akzeptiere sie"
+	},
+	"subPaymentSummary.privacyPolicy": {
+		"en": "Privacy Policy",
+		"de": "Datenschutzrichtlinie",
+		"de_en": "Data protection guideline",
+		"_note": "\"Privacy Policy\" → \"Datenschutzrichtlinie\" (data protection guideline). Standard German term for privacy policy.",
+		"_recommendation": "accept"
+	},
+	"subPaymentSummary.termsAndConditions": {
+		"en": "Terms & Conditions",
+		"de": "Nutzungsbedingungen",
+		"de_en": "Terms of use",
+		"_note": "\"Terms & Conditions\" → \"Nutzungsbedingungen\" (terms of use/conditions of use). Standard German legal term for T&C.",
+		"_recommendation": "accept"
+	},
+	"subPaymentSummary.total": {
+		"en": "Total amount to be paid now:",
+		"de": "Zu zahlender Gesamtbetrag:",
+		"de_en": "Total amount to be paid:",
+		"_note": "\"Total amount to be paid now\" → \"Zu zahlender Gesamtbetrag\" (total amount to be paid). Drops \"now\" — in context this is already the current payment. More concise German label. Meaning equivalent.",
+		"_recommendation": "accept"
+	},
+	"subPaymentSummary.vat": {
+		"en": "Of this VAT:",
+		"de": "Davon MwSt.:",
+		"de_en": "Of which VAT:",
+		"_note": "\"Of this VAT\" → \"Davon MwSt.\" (of which VAT). \"MwSt.\" is the standard German abbreviation for Mehrwertsteuer (VAT). Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"subSubscriptionItem.changeTo": {
+		"en": "Change to",
+		"de": "Wechseln zu",
+		"de_en": "Switch to",
+		"_note": "\"Change to\" → \"Wechseln zu\" (switch to). \"Wechseln\" is the standard German term for switching/changing plans.",
+		"_recommendation": "accept"
+	},
+	"subSubscriptionItem.manuallyRenewBefore": {
+		"en": "Manually renew before:",
+		"de": "Manuell verlängern bis:",
+		"de_en": "Manually renew until:",
+		"_note": "\"before\" → \"bis\" (until/by). Both convey a deadline; \"bis\" is the standard German preposition for deadlines.",
+		"_recommendation": "accept"
+	},
+	"subSubscriptionItem.payNow": {
+		"en": "Pay Now",
+		"de": "Jetzt bezahlen",
+		"de_en": "Pay now",
+		"_note": "Title case → sentence case. \"Now\" → \"Jetzt\" placed before the verb (fronted for emphasis), natural German word order for buttons.",
+		"_recommendation": "accept"
+	},
+	"subUpgradeView.chosenPlan": {
+		"en": "Chosen Plan",
+		"de": "Gewählter Plan",
+		"de_en": "Chosen plan",
+		"_note": "Title case → sentence case. \"Chosen\" → \"Gewählter\" (chosen/selected). Standard German label.",
+		"_recommendation": "accept"
+	},
+	"subWaitingForPayment.checking": {
+		"en": "Checking...",
+		"de": "Wird geprüft...",
+		"de_en": "Is being checked...",
+		"_note": "Gerund → passive construction. \"Checking\" → \"Wird geprüft\" (is being checked). Standard German progress-label style.",
+		"_recommendation": "accept"
+	},
+	"subWaitingForPayment.failure": {
+		"en": "Failure",
+		"de": "Fehlgeschlagen",
+		"de_en": "Failed",
+		"_note": "\"Failure\" → \"Fehlgeschlagen\" (failed). German status messages typically use past-participle/adjectival form. Meaning equivalent.",
+		"_recommendation": "accept"
+	},
+	"subWaitingForPayment.noWindowOpened": {
+		"en": "If a new window did not open in your browser",
+		"de": "Wenn sich kein neues Fenster im Browser geöffnet hat",
+		"de_en": "If a new window did not open in the browser",
+		"_note": "\"your browser\" → \"im Browser\" (drops possessive). Adds reflexive \"sich geöffnet hat\" (has opened). Natural German construction; meaning identical.",
+		"_recommendation": "accept"
+	},
+	"subWaitingForPayment.success": {
+		"en": "Success",
+		"de": "Erfolgreich",
+		"de_en": "Successful",
+		"_note": "\"Success\" → \"Erfolgreich\" (successful). German status messages typically use adjectival form. Meaning equivalent.",
+		"_recommendation": "accept"
+	},
+	"subWaitingForPayment.waitingAutomatic": {
+		"en": "Waiting for payment to complete (this will happen automatically)",
+		"de": "Warte auf Zahlungsabschluss (geschieht automatisch)",
+		"de_en": "Waiting for payment to complete (happens automatically)",
+		"_note": "\"Zahlungsabschluss\" = payment completion compound noun. Drops \"this will\" from parenthetical; \"geschieht automatisch\" = happens automatically. Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"subWaitingForPayment.waitingBrowser": {
+		"en": "Waiting for payment to be completed in browser window",
+		"de": "Warte auf Abschluss der Zahlung im Browserfenster",
+		"de_en": "Waiting for payment to be completed in the browser window",
+		"_note": "\"Waiting for payment to be completed\" → \"Warte auf Abschluss der Zahlung\" (waiting for completion of payment). Natural German nominalization. Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"syncErrorDialog.dataLimitText": {
+		"en": "You have created {used} of your {max} data\n\nYou can either delete some data or upgrade your account to increase the limit.",
+		"de": "Du hast {used} von {max} Daten erstellt\n\nDu kannst entweder einige Daten löschen oder dein Konto upgraden, um das Limit zu erhöhen.",
+		"de_en": "You have created {used} of {max} data\n\nYou can either delete some data or upgrade your account to increase the limit.",
+		"_note": "Drops possessive \"your\" before {max}. German does not require it. Placeholders {used} and {max} present. Meaning preserved.",
+		"_recommendation": "accept"
+	},
+	"syncErrorDialog.dataLimitTitle": {
+		"en": "Data Limit Reached",
+		"de": "Datenlimit erreicht",
+		"de_en": "Data limit reached",
+		"_note": "Title case → sentence case; compound noun \"Datenlimit\". German standard. Identical to limitDialog.dataSizeTitle.",
+		"_recommendation": "accept"
+	},
+	"syncErrorDialog.noteLimitText": {
+		"en": "You have created {count} of your {max} notes\nYou can either delete some notes or upgrade your account to increase the limit.",
+		"de": "Du hast {count} von {max} Notizen erstellt\nDu kannst entweder einige Notizen löschen oder dein Konto upgraden, um das Limit zu erhöhen.",
+		"de_en": "You have created {count} of {max} notes\nYou can either delete some notes or upgrade your account to increase the limit.",
+		"_note": "Drops possessive \"your\" before {max}. German does not require it. Placeholders {count} and {max} present. Meaning preserved.",
+		"_recommendation": "accept"
+	},
+	"syncErrorDialog.noteLimitTitle": {
+		"en": "Note Limit Reached",
+		"de": "Notizlimit erreicht",
+		"de_en": "Note limit reached",
+		"_note": "Title case → sentence case; compound noun \"Notizlimit\". German standard. Identical to limitDialog.noteCountTitle.",
+		"_recommendation": "accept"
+	},
+	"syncErrorDialog.noteSizeLimitText": {
+		"en": "The Note '{title}' ({size})\nexceeds the size limit ({max})\n\nYou can either split the note into smaller notes or upgrade your account to increase the limit.\n\nYou can also try deleting note history to reduce the size of the note. (This can be done in the note properties)",
+		"de": "Die Notiz „{title}“ ({size})\nüberschreitet das Größenlimit ({max})\n\nDu kannst entweder die Notiz in kleinere Notizen aufteilen oder dein Konto upgraden, um das Limit zu erhöhen.\n\nDu kannst auch versuchen, den Notizverlauf zu löschen, um die Größe der Notiz zu reduzieren. (Dies ist in den Notizeigenschaften möglich)",
+		"de_en": "The note „{title}“ ({size})\nexceeds the size limit ({max})\n\nYou can either split the note into smaller notes or upgrade your account to increase the limit.\n\nYou can also try deleting the note history to reduce the size of the note. (This can be done in the note properties)",
+		"_note": "En uses single quotes around {title}; de uses German quotation marks. Placeholders {title}, {size}, and {max} all present. Minor phrasing differences; meaning preserved.",
+		"_recommendation": "accept"
+	},
+	"syncErrorDialog.noteSizeLimitTitle": {
+		"en": "Note Size Limit Reached",
+		"de": "Notizgrößenlimit erreicht",
+		"de_en": "Note size limit reached",
+		"_note": "Title case to sentence case; compound noun Notizgroeszenlimit. German standard.",
+		"_recommendation": "accept"
+	},
+	"syncErrorDialog.serverRejectionText": {
+		"en": "The server rejected the synchronization request.\n\nThis is likely a result of a temporary issue, if it persists please contact support.",
+		"de": "Der Server hat die Synchronisierungsanforderung abgelehnt.\n\nDies ist wahrscheinlich ein vorübergehendes Problem. Wenn es weiterhin auftritt, wende dich bitte an den Support.",
+		"de_en": "The server rejected the synchronization request.\n\nThis is likely a temporary problem. If it continues to occur, please contact support.",
+		"_note": "\"likely a result of a temporary issue\" → \"wahrscheinlich ein vorübergehendes Problem\" (likely a temporary problem). Single sentence split into two for clarity. Meaning preserved.",
+		"_recommendation": "accept"
+	},
+	"syncErrorDialog.syncErrorText": {
+		"en": "An unexpected error occurred while attempting to synchronize.\n\nCheck your internet connection or try again later.",
+		"de": "Beim Versuch der Synchronisierung ist ein unerwarteter Fehler aufgetreten.\n\nÜberprüfe deine Internetverbindung oder versuche es später erneut.",
+		"de_en": "An unexpected error occurred while attempting synchronization.\n\nCheck your internet connection or try again later.",
+		"_note": "\"while attempting to synchronize\" → \"beim Versuch der Synchronisierung\" (during the attempt at synchronization). Standard German nominalisation. Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"syncErrorDialog.syncErrorTitle": {
+		"en": "Synchronization Error",
+		"de": "Synchronisierungsfehler",
+		"de_en": "Synchronization error",
+		"_note": "Title case → sentence case; compound noun \"Synchronisierungsfehler\". German standard.",
+		"_recommendation": "accept"
+	},
+	"textNoteProperties.deleteAllHistory": {
+		"en": "Delete all history",
+		"de": "Gesamten Verlauf löschen",
+		"de_en": "Delete entire history",
+		"_note": "\"all\" → \"gesamten\" (entire). More emphatic and natural in German; \"den gesamten\" emphasises totality. Meaning equivalent.",
+		"_recommendation": "accept"
+	},
+	"textNoteProperties.lastModified": {
+		"en": "Last Modified:",
+		"de": "Zuletzt geändert:",
+		"de_en": "Last modified:",
+		"_note": "Title case → sentence case. \"Modified\" → \"geändert\" (changed/modified). Standard German label.",
+		"_recommendation": "accept"
+	},
+	"textNoteProperties.noOneAccepted": {
+		"en": "You have shared this note but no one has accepted",
+		"de": "Du hast diese Notiz geteilt, aber noch niemand hat sie angenommen",
+		"de_en": "You have shared this note, but no one has accepted it yet",
+		"_note": "Adds \"noch\" (yet) and \"sie\" (it) for natural German phrasing. En omits the object and \"yet\"; German requires the explicit object reference. Meaning identical.",
+		"_recommendation": "accept"
+	},
+	"titleBar.screenSharingHidden": {
+		"en": "Invisible to screen sharing/screenshot",
+		"de": "Unsichtbar für Bildschirmfreigabe/Screenshot",
+		"de_en": "Invisible for screen sharing/screenshot",
+		"_note": "\"Invisible to\" → \"unsichtbar für\" (invisible for). Minor preposition difference; meaning identical.",
+		"_recommendation": "accept"
+	},
+	"titleBar.screenSharingVisible": {
+		"en": "Warning: Visible to screen sharing/screenshot!",
+		"de": "Warnung: Für Bildschirmfreigabe/Screenshot sichtbar!",
+		"de_en": "Warning: Visible for screen sharing/screenshot!",
+		"_note": "\"Visible to\" → \"sichtbar für\" (visible for). Minor preposition difference; meaning identical.",
+		"_recommendation": "accept"
+	},
+	"titleBar.searchNotes": {
+		"en": "Search Notes",
+		"de": "Notizen suchen",
+		"de_en": "Search notes",
+		"_note": "Title case → sentence case. German standard.",
+		"_recommendation": "accept"
+	},
+	"titleBar.tools": {
+		"en": "Tools",
+		"de": "Extras",
+		"de_en": "Extras",
+		"_note": "\"Tools\" → \"Extras\". In German Windows, the Tools menu is conventionally labelled \"Extras\" (this is the standard German Windows UI convention used in Office, Explorer, and most Windows software).",
+		"_recommendation": "accept"
+	},
+	"usernameInput.checking": {
+		"en": "Checking",
+		"de": "Wird geprüft",
+		"de_en": "Is being checked",
+		"_note": "Gerund → passive construction. \"Checking\" → \"Wird geprüft\" (is being checked). Standard German inline-status style.",
+		"_recommendation": "accept"
+	},
+	"usernameInput.unavailable": {
+		"en": "Unavailable",
+		"de": "Nicht verfügbar",
+		"de_en": "Not available",
+		"_note": "\"Unavailable\" → \"Nicht verfügbar\" (not available). Standard German inline-status label.",
+		"_recommendation": "accept"
+	}
+}

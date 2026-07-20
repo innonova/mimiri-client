@@ -348,13 +348,13 @@ export class SessionManager {
 				loginRequiredToGoOnline.value = false
 				loginDialog.value.show(true)
 			}
-		} catch (ex) {
+		} catch {
 			await this.logout()
 			location.reload()
 		}
 	}
 
-	public async logout(userInitiated: boolean = false, clearData: boolean = false): Promise<void> {
+	public async logout(_userInitiated: boolean = false, clearData: boolean = false): Promise<void> {
 		await this.authManager.logout(clearData)
 		await this.api.logout()
 		await this.localStateManager.logout()

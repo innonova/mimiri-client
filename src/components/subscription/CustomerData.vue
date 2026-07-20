@@ -1,7 +1,9 @@
 <template>
 	<div data-testid="customer-data" class="flex flex-col">
 		<div class="grid grid-cols-[9em_18em] gap-3 items-baseline">
-			<div class="text-right" :class="{ 'text-red-500': changed && !givenNameValid }">First name *</div>
+			<div class="text-right" :class="{ 'text-red-500': changed && !givenNameValid }">
+				{{ $t('subCustomerData.firstName') }}
+			</div>
 			<input
 				v-model="givenName"
 				:disabled="disabled"
@@ -12,7 +14,9 @@
 				class="basic-input"
 				data-testid="given-name"
 			/>
-			<div class="text-right" :class="{ 'text-red-500': changed && !familyNameValid }">Last name *</div>
+			<div class="text-right" :class="{ 'text-red-500': changed && !familyNameValid }">
+				{{ $t('subCustomerData.lastName') }}
+			</div>
 			<input
 				v-model="familyName"
 				:disabled="disabled"
@@ -23,7 +27,7 @@
 				class="basic-input"
 				data-testid="family-name"
 			/>
-			<div class="text-right">Company <sup>1)</sup></div>
+			<div class="text-right">{{ $t('subCustomerData.company') }} <sup>1)</sup></div>
 			<input
 				v-model="company"
 				:disabled="disabled"
@@ -34,7 +38,9 @@
 				class="basic-input"
 				data-testid="company"
 			/>
-			<div class="text-right" :class="{ 'text-red-500': changed && !emailValid }">Email *</div>
+			<div class="text-right" :class="{ 'text-red-500': changed && !emailValid }">
+				{{ $t('subCustomerData.email') }}
+			</div>
 			<div class="flex flex-col items-end">
 				<input
 					v-model="email"
@@ -70,10 +76,12 @@
 					Send verification email
 				</button>
 			</div>
-			<div class="text-right" :class="{ 'text-red-500': changed && !countryValid }">Country *</div>
+			<div class="text-right" :class="{ 'text-red-500': changed && !countryValid }">
+				{{ $t('subCustomerData.country') }}
+			</div>
 			<CountrySelector v-model:code="countryCode" v-model:name="countryName" :disabled="disabled" />
 			<div class="text-right" :class="{ 'text-red-500': changed && !stateValid }">
-				State/Province <span v-if="stateRequired">*</span><sup v-if="!stateRequired">1)</sup>
+				{{ $t('subCustomerData.stateProvince') }} <span v-if="stateRequired">*</span><sup v-if="!stateRequired">1)</sup>
 			</div>
 			<StateSelector
 				:country-code="countryCode"
@@ -82,7 +90,7 @@
 				v-model:mode="stateMode"
 				:disabled="disabled"
 			/>
-			<div class="text-right">City <sup>1)</sup></div>
+			<div class="text-right">{{ $t('subCustomerData.city') }} <sup>1)</sup></div>
 			<input
 				v-model="city"
 				name="city"
@@ -93,7 +101,7 @@
 				class="basic-input"
 				data-testid="city"
 			/>
-			<div class="text-right">Postal Code <sup>1)</sup></div>
+			<div class="text-right">{{ $t('subCustomerData.postalCode') }} <sup>1)</sup></div>
 			<input
 				v-model="postalCode"
 				name="postalCode"
@@ -104,7 +112,7 @@
 				class="basic-input"
 				data-testid="postal-code"
 			/>
-			<div class="text-right">Address <sup>1)</sup></div>
+			<div class="text-right">{{ $t('subCustomerData.address') }} <sup>1)</sup></div>
 			<textarea
 				v-model="address"
 				name="street-address"
@@ -115,36 +123,18 @@
 				:disabled="disabled"
 			/>
 			<div />
-			<div>* required</div>
+			<div>{{ $t('subCustomerData.required') }}</div>
 			<div />
-			<div><sup>1)</sup> We recommend filling out all relevant fields if you need a tax invoice</div>
+			<div><sup>1)</sup> {{ $t('subCustomerData.recommendFillOut') }}</div>
 			<div />
 			<div>
-				<button class="underline cursor-pointer" @click="toggleInfo">Why do we ask for this information?</button>
+				<button class="underline cursor-pointer" @click="toggleInfo">{{ $t('subCustomerData.whyAsk') }}</button>
 			</div>
 			<div />
 		</div>
 
 		<div v-if="showInfoText" class="max-w-120 mt-2 info">
-			<div class="mt-2">
-				We need your country of residence to manage VAT (this has no impact on the price you pay - the price you are
-				shown is the final price).<br />
-				<br />
-				We will use your email address solely to send you receipts, notifications of failed payments, and reminders
-				prior to renewal. Your email address also serves as a last resort for canceling your subscription in case you
-				lose access to your account.<br />
-				<br />
-				We will never use your email address for marketing purposes, newsletters, or any other kind of unsolicited
-				communication.<br />
-				<br />
-				The above data is shared with our payment provider to process your payment, primarily for fraud prevention.<br />
-				<br />
-				We will, however, never share your data with any other parties. See our
-				<a href="https://mimiri.io/privacy" target="_blank">Privacy Policy</a> for details.<br />
-				<br />
-				All data is handled in compliance with both GDPR and Swiss data protection laws, regardless of your country of
-				residence.
-			</div>
+			<div class="mt-2" v-html="$t('subCustomerData.whyAskInfo')" />
 		</div>
 	</div>
 </template>
@@ -161,7 +151,7 @@ const props = defineProps<{
 	disabled?: boolean
 }>()
 
-const model = defineModel()
+const model = defineModel<Partial<Customer>>()
 const readonly = ref(true)
 const givenName = ref('')
 const familyName = ref('')
@@ -181,9 +171,9 @@ const emailVerificationEmailSent = ref(false)
 const customer = ref<Customer>()
 const showInfoText = ref(false)
 
-const valid = defineModel('valid')
-const changed = defineModel('changed')
-const countryCodeOut = defineModel('countryCode')
+const valid = defineModel<boolean>('valid')
+const changed = defineModel<boolean>('changed')
+const countryCodeOut = defineModel<string>('countryCode')
 
 const givenNameValid = computed(() => givenName.value?.length > 0)
 const familyNameValid = computed(() => familyName.value?.length > 0)

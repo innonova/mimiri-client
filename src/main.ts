@@ -2,13 +2,19 @@ import './assets/main.css'
 
 import { createApp } from 'vue'
 import App from './App.vue'
+import { $t, localization } from './global'
+import enLocale from './lang/en.json'
+import zhLocale from './lang/zh.json'
+import daLocale from './lang/da.json'
+import deLocale from './lang/de.json'
+import { initializeMonacoThemes } from './services/editor/theme-manager'
+import { initializeTextMateGrammars } from './services/editor/textmate-setup'
 
 import editorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker'
 import jsonWorker from 'monaco-editor/esm/vs/language/json/json.worker?worker'
 import cssWorker from 'monaco-editor/esm/vs/language/css/css.worker?worker'
 import htmlWorker from 'monaco-editor/esm/vs/language/html/html.worker?worker'
 import tsWorker from 'monaco-editor/esm/vs/language/typescript/ts.worker?worker'
-
 ;(self as any).MonacoEnvironment = {
 	getWorker: function (workerId, label) {
 		switch (label) {
@@ -31,6 +37,23 @@ import tsWorker from 'monaco-editor/esm/vs/language/typescript/ts.worker?worker'
 	},
 }
 
-const app = createApp(App)
+// Initialize localization, TextMate grammars and Monaco themes before creating the app
+async function initializeEditor() {
+	localization.register('en', enLocale)
+	localization.register('zh', zhLocale)
+	localization.register('da', daLocale)
+	localization.register('de', deLocale)
 
-app.mount('#app')
+	// Initialize TextMate grammars first (required for Monaco themes to work with TextMate)
+	await initializeTextMateGrammars()
+
+	// Then initialize Monaco themes
+	await initializeMonacoThemes()
+
+	// Finally mount the app
+	const app = createApp(App)
+	app.config.globalProperties.$t = $t
+	app.mount('#app')
+}
+
+void initializeEditor()

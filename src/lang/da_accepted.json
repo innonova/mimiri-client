@@ -1,0 +1,2305 @@
+{
+	"acceptShareDialog.cannotAcceptDataUsage": {
+		"en": "Cannot accept share!\nNew data usage ({size}) would exceed current maximum ({max})",
+		"da": "Kan ikke acceptere deling!\nDet nye dataforbrug ({size}) vil overskride det nuværende maksimum ({max})",
+		"da_en": "Cannot accept share!\nThe new data usage ({size}) will exceed the current maximum ({max})",
+		"_note": "Placeholders and newline preserved. 'dataforbrug' is the standard Danish compound for 'data usage'.",
+		"_recommendation": "accept"
+	},
+	"acceptShareDialog.cannotAcceptNoteCount": {
+		"en": "Cannot accept share!\nNew note count ({count}) would exceed current maximum ({max})",
+		"da": "Kan ikke acceptere deling!\nDet nye antal noter ({count}) vil overskride det nuværende maksimum ({max})",
+		"da_en": "Cannot accept share!\nThe new note count ({count}) will exceed the current maximum ({max})",
+		"_note": "Both placeholders preserved; '\\n' preserved. Slight modal shift ('would' → 'vil', 'will').",
+		"_recommendation": "accept"
+	},
+	"acceptShareDialog.enterCode": {
+		"en": "Enter the one time code to accept a share.",
+		"da": "Indtast engangskoden for at acceptere en deling.",
+		"da_en": "Enter the one-time code to accept a share.",
+		"_note": "Definite suffix '-en' attached to 'engangskode'; equivalent meaning.",
+		"_recommendation": "accept"
+	},
+	"acceptShareDialog.title": {
+		"en": "Accept Share",
+		"da": "Accepter deling",
+		"da_en": "Accept share",
+		"_note": "Danish sentence-case (only first word capitalised) is the standard convention.",
+		"_recommendation": "accept"
+	},
+	"app.firstTimeMessage": {
+		"en": "This might take a moment if this is the first time you are starting Mimiri Notes",
+		"da": "Det kan tage et øjeblik, hvis det er første gang, du starter Mimiri Notes",
+		"da_en": "It can take a moment, if it is the first time you start Mimiri Notes",
+		"_note": "Faithful translation; commas added per Danish subordinate-clause punctuation rules.",
+		"_recommendation": "accept"
+	},
+	"common.collapse": {
+		"en": "Collapse",
+		"da": "Skjul",
+		"da_en": "Hide",
+		"_note": "'Skjul' (hide) is the natural Danish UI verb for collapsing a panel/tree.",
+		"_recommendation": "accept"
+	},
+	"conflictBanner.conflicts": {
+		"en": "{count} conflict(s) found - document is read-only until resolved",
+		"da": "{count} konflikt(er) fundet – dokumentet er skrivebeskyttet, indtil de er løst",
+		"da_en": "{count} conflict(s) found – the document is write-protected, until they are resolved",
+		"_note": "Placeholder preserved; Danish typographic en-dash used in place of hyphen.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.acceptShare": {
+		"en": "Accept Share",
+		"da": "Accepter deling",
+		"da_en": "Accept share",
+		"_note": "Danish sentence-case menu label.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.acceptShareHere": {
+		"en": "Accept Share Here",
+		"da": "Accepter deling her",
+		"da_en": "Accept share here",
+		"_note": "Danish sentence-case menu label.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.addGettingStarted": {
+		"en": "Add Getting Started",
+		"da": "Tilføj kom godt i gang",
+		"da_en": "Add get well started",
+		"_note": "'Kom godt i gang' is the established Danish idiom for 'Getting Started'.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.changePassword": {
+		"en": "Change Password",
+		"da": "Skift adgangskode",
+		"da_en": "Change password",
+		"_note": "Danish sentence-case menu label.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.changeUsername": {
+		"en": "Change Username",
+		"da": "Skift brugernavn",
+		"da_en": "Change username",
+		"_note": "Danish sentence-case menu label.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.checkForUpdates": {
+		"en": "Check for Updates",
+		"da": "Søg efter opdateringer",
+		"da_en": "Search for updates",
+		"_note": "'Søg efter' is standard Danish for 'check for' updates.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.copyPath": {
+		"en": "Copy Path",
+		"da": "Kopiér sti",
+		"da_en": "Copy path",
+		"_note": "Danish accented imperative 'Kopiér'.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.createAccount": {
+		"en": "Create Account",
+		"da": "Opret konto",
+		"da_en": "Create account",
+		"_note": "Danish sentence-case menu label.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.createPassword": {
+		"en": "Create Password",
+		"da": "Opret adgangskode",
+		"da_en": "Create password",
+		"_note": "Danish sentence-case menu label.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.darkMode": {
+		"en": "Dark Mode",
+		"da": "Mørk tilstand",
+		"da_en": "Dark mode",
+		"_note": "'Mørk tilstand' is standard Danish for dark mode.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.deleteAccount": {
+		"en": "Delete Account",
+		"da": "Slet konto",
+		"da_en": "Delete account",
+		"_note": "Danish sentence-case menu label.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.findInNotes": {
+		"en": "Find in Notes",
+		"da": "Find i noter",
+		"da_en": "Find in notes",
+		"_note": "Danish sentence-case menu label.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.goOnline": {
+		"en": "Go Online",
+		"da": "Gå online",
+		"da_en": "Go online",
+		"_note": "Danish sentence-case menu label.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.loginSwitchUser": {
+		"en": "Log In / Switch User",
+		"da": "Log ind / skift bruger",
+		"da_en": "Log in / switch user",
+		"_note": "Danish sentence-case menu label; 'Log ind' for log in.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.logout": {
+		"en": "Logout",
+		"da": "Log ud",
+		"da_en": "Log out",
+		"_note": "Danish writes 'Log ud' as two words per orthographic convention.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.markAsRead": {
+		"en": "Mark as Read",
+		"da": "Marker som læst",
+		"da_en": "Mark as read",
+		"_note": "Danish sentence-case menu label.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.menuFile": {
+		"en": "File",
+		"da": "Filer",
+		"da_en": "Files",
+		"_note": "Danish OS menu convention uses plural 'Filer' for the File menu.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.menuView": {
+		"en": "View",
+		"da": "Vis",
+		"da_en": "Show",
+		"_note": "Danish OS menu convention 'Vis' for the View menu.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.newChildNote": {
+		"en": "New Child Note",
+		"da": "Ny undernote",
+		"da_en": "New child note",
+		"_note": "Danish compound noun 'undernote' for child note.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.newNote": {
+		"en": "New Note",
+		"da": "Ny note",
+		"da_en": "New note",
+		"_note": "Danish sentence-case menu label.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.newRootNote": {
+		"en": "New Root Note",
+		"da": "Ny rodnote",
+		"da_en": "New root note",
+		"_note": "Danish compound noun 'rodnote' for root note.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.newSiblingNote": {
+		"en": "New Sibling Note",
+		"da": "Ny søskendenote",
+		"da_en": "New sibling note",
+		"_note": "Danish compound noun 'søskendenote' for sibling note.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.passwordGenerator": {
+		"en": "Password Generator",
+		"da": "Adgangskodegenerator",
+		"da_en": "Password generator",
+		"_note": "Danish compound noun.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.refresh": {
+		"en": "Refresh",
+		"da": "Opdater",
+		"da_en": "Update",
+		"_note": "'Opdater' is the standard Danish UI verb for refresh.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.shareOffers": {
+		"en": "Share Offers",
+		"da": "Delingstilbud",
+		"da_en": "Share offers",
+		"_note": "Danish compound noun.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.showDevTools": {
+		"en": "Show Dev Tools",
+		"da": "Vis udviklerværktøjer",
+		"da_en": "Show developer tools",
+		"_note": "Danish compound noun 'udviklerværktøjer'.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.trayAllowScreenSharing": {
+		"en": "Allow Screen Sharing",
+		"da": "Tillad skærmdeling",
+		"da_en": "Allow screen sharing",
+		"_note": "Danish compound noun 'skærmdeling'.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.trayDevTools": {
+		"en": "Dev Tools",
+		"da": "Udviklerværktøjer",
+		"da_en": "Developer tools",
+		"_note": "Danish compound noun.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.trayKeepTrayVisible": {
+		"en": "Keep Tray Icon Visible",
+		"da": "Hold systembakkeikon synligt",
+		"da_en": "Keep system tray icon visible",
+		"_note": "Danish sentence-case + compound noun; 'systembakkeikon' = Windows System Tray icon, consistent with tooltip terminology.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.trayLaunchOnStartup": {
+		"en": "Launch on Startup",
+		"da": "Start ved opstart",
+		"da_en": "Start at startup",
+		"_note": "Idiomatic Danish 'ved opstart'.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.trayShowInTaskbar": {
+		"en": "Show In Taskbar",
+		"da": "Vis i proceslinjen",
+		"da_en": "Show in the taskbar",
+		"_note": "'proceslinjen' is the standard Danish term for taskbar; matches settingsGeneral.showInTaskbar.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.updateAvailable": {
+		"en": "Update Available",
+		"da": "Opdatering tilgængelig",
+		"da_en": "Update available",
+		"_note": "Danish sentence-case menu label.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.wordWrap": {
+		"en": "Word Wrap",
+		"da": "Tekstombrydning",
+		"da_en": "Text wrapping",
+		"_note": "'Tekstombrydning' is the standard Danish term for word wrap.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.workOffline": {
+		"en": "Work Offline",
+		"da": "Arbejd offline",
+		"da_en": "Work offline",
+		"_note": "Danish sentence-case menu label.",
+		"_recommendation": "accept"
+	},
+	"controlPanel.billingAddress": {
+		"en": "Billing Address",
+		"da": "Faktureringsadresse",
+		"da_en": "Billing address",
+		"_note": "Danish compound noun.",
+		"_recommendation": "accept"
+	},
+	"controlPanel.connectCloud": {
+		"en": "Connect Cloud",
+		"da": "Forbind sky",
+		"da_en": "Connect cloud",
+		"_note": "Danish sentence-case.",
+		"_recommendation": "accept"
+	},
+	"controlPanel.createAccount": {
+		"en": "Create Account",
+		"da": "Opret konto",
+		"da_en": "Create account",
+		"_note": "Danish sentence-case.",
+		"_recommendation": "accept"
+	},
+	"controlPanel.createPassword": {
+		"en": "Create Password",
+		"da": "Opret adgangskode",
+		"da_en": "Create password",
+		"_note": "Danish sentence-case.",
+		"_recommendation": "accept"
+	},
+	"controlPanel.currentPlan": {
+		"en": "Current Plan",
+		"da": "Nuværende plan",
+		"da_en": "Current plan",
+		"_note": "Danish sentence-case.",
+		"_recommendation": "accept"
+	},
+	"controlPanel.debug": {
+		"en": "Debug",
+		"da": "Fejlfinding",
+		"da_en": "Debugging",
+		"_note": "'Fejlfinding' is the standard Danish UI term for debug.",
+		"_recommendation": "accept"
+	},
+	"controlPanel.devBlog": {
+		"en": "Dev Blog",
+		"da": "Udviklerblog",
+		"da_en": "Developer blog",
+		"_note": "Danish compound noun.",
+		"_recommendation": "accept"
+	},
+	"controlPanel.paymentMethods": {
+		"en": "Payment Methods",
+		"da": "Betalingsmetoder",
+		"da_en": "Payment methods",
+		"_note": "Danish compound noun.",
+		"_recommendation": "accept"
+	},
+	"controlPanel.pinCode": {
+		"en": "PIN Code",
+		"da": "PIN-kode",
+		"da_en": "PIN code",
+		"_note": "Danish convention hyphenates 'PIN-kode'.",
+		"_recommendation": "accept"
+	},
+	"convertAccount.title": {
+		"en": "Convert Existing Account",
+		"da": "Konverter eksisterende konto",
+		"da_en": "Convert existing account",
+		"_note": "Danish sentence-case title.",
+		"_recommendation": "accept"
+	},
+	"deleteHistoryDialog.deleteAll": {
+		"en": "Are you sure you want to delete ALL history",
+		"da": "Er du sikker på, at du vil slette ALT historik",
+		"da_en": "Are you sure that you want to delete ALL history",
+		"_note": "ALL/ALT emphasis preserved. No question mark per source style.",
+		"_recommendation": "accept"
+	},
+	"deleteHistoryDialog.deleteOlder": {
+		"en": "Are you sure you want to delete older history",
+		"da": "Er du sikker på, at du vil slette ældre historik",
+		"da_en": "Are you sure that you want to delete older history",
+		"_note": "Direct equivalent.",
+		"_recommendation": "accept"
+	},
+	"deleteHistoryDialog.keepRecent": {
+		"en": "(keeping only the most recent 10 versions)",
+		"da": "(beholder kun de 10 nyeste versioner)",
+		"da_en": "(keeps only the 10 newest versions)",
+		"_note": "'nyeste' (newest) standard equivalent for 'most recent' in this context.",
+		"_recommendation": "accept"
+	},
+	"deleteHistoryDialog.title": {
+		"en": "Delete History",
+		"da": "Slet historik",
+		"da_en": "Delete history",
+		"_note": "Danish sentence-case title.",
+		"_recommendation": "accept"
+	},
+	"deleteLocalDataDialog.encryptedWarning": {
+		"en": "While your data is encrypted leaving it lying around does make it more exposed to potential attacks.",
+		"da": "Selvom dine data er krypterede, gør det dem mere udsatte for potentielle angreb at lade dem ligge.",
+		"da_en": "Although your data is encrypted, it makes them more exposed to potential attacks to leave them lying around.",
+		"_note": "Word order rearranged but security warning intent preserved.",
+		"_recommendation": "accept"
+	},
+	"deleteLocalDataDialog.leaveImprovePerformance": {
+		"en": "Leaving it will improve performance the next time you log in on this device.",
+		"da": "Hvis du beholder dem, forbedres ydelsen, næste gang du logger ind på denne enhed.",
+		"da_en": "If you keep them, performance will be improved the next time you log in on this device.",
+		"_note": "Reworded as conditional clause; meaning equivalent.",
+		"_recommendation": "accept"
+	},
+	"deleteLocalDataDialog.notPersonalDevice": {
+		"en": "If this is not your personal device, removing this data is advisable.",
+		"da": "Hvis dette ikke er din personlige enhed, anbefales det at fjerne disse data.",
+		"da_en": "If this is not your personal device, it is recommended to remove this data.",
+		"_note": "Idiomatic recasting using passive 'anbefales det'; meaning preserved.",
+		"_recommendation": "accept"
+	},
+	"deleteMethodDialog.question": {
+		"en": "Are you sure you want to delete:",
+		"da": "Er du sikker på, at du vil slette:",
+		"da_en": "Are you sure that you want to delete:",
+		"_note": "Danish requires comma before 'at' subordinate clause.",
+		"_recommendation": "accept"
+	},
+	"deleteMethodDialog.title": {
+		"en": "Delete Payment Method",
+		"da": "Slet betalingsmetode",
+		"da_en": "Delete payment method",
+		"_note": "Danish sentence-case title.",
+		"_recommendation": "accept"
+	},
+	"deleteNodeDialog.cannotDeleteLine1": {
+		"en": "Cannot delete note containing shared notes.",
+		"da": "Kan ikke slette en note, der indeholder delte noter.",
+		"da_en": "Cannot delete a note that contains shared notes.",
+		"_note": "Danish requires the article 'en' and a relative pronoun 'der'; meaning identical.",
+		"_recommendation": "accept"
+	},
+	"deleteNodeDialog.cannotDeleteLine2": {
+		"en": "Please remove shared notes before deleting.",
+		"da": "Fjern venligst de delte noter, før du sletter.",
+		"da_en": "Please remove the shared notes before you delete.",
+		"_note": "'venligst' is Danish equivalent of 'please'; definite article added is idiomatic.",
+		"_recommendation": "accept"
+	},
+	"deleteNodeDialog.cannotDeleteTitle": {
+		"en": "Cannot Delete",
+		"da": "Kan ikke slette",
+		"da_en": "Cannot delete",
+		"_note": "Danish sentence-case title.",
+		"_recommendation": "accept"
+	},
+	"deleteNodeDialog.deleteQuestion": {
+		"en": "Are you sure you want to delete:",
+		"da": "Er du sikker på, at du vil slette:",
+		"da_en": "Are you sure that you want to delete:",
+		"_note": "Danish 'at' subordinate clause requires preceding comma.",
+		"_recommendation": "accept"
+	},
+	"deleteNodeDialog.deleteTitle": {
+		"en": "Delete Note",
+		"da": "Slet note",
+		"da_en": "Delete note",
+		"_note": "Danish sentence-case title.",
+		"_recommendation": "accept"
+	},
+	"deleteNodeDialog.leaveQuestion": {
+		"en": "Are you sure you want to leave this share:",
+		"da": "Er du sikker på, at du vil forlade denne deling:",
+		"da_en": "Are you sure that you want to leave this share:",
+		"_note": "Direct equivalent with Danish comma rules.",
+		"_recommendation": "accept"
+	},
+	"deleteNodeDialog.leaveShareTitle": {
+		"en": "Leave Share",
+		"da": "Forlad deling",
+		"da_en": "Leave share",
+		"_note": "Danish sentence-case title.",
+		"_recommendation": "accept"
+	},
+	"deleteNodeDialog.ok": {
+		"en": "Ok",
+		"da": "OK",
+		"da_en": "OK",
+		"_note": "Danish UI convention uses uppercase 'OK'.",
+		"_recommendation": "accept"
+	},
+	"deleteNodeDialog.remainAccessible": {
+		"en": "This note will remain accessible to:",
+		"da": "Denne note vil fortsat være tilgængelig for:",
+		"da_en": "This note will continue to be accessible to:",
+		"_note": "'fortsat' (continue to) is the natural Danish rendering of 'remain'; meaning preserved.",
+		"_recommendation": "accept"
+	},
+	"editor.copyNextLine": {
+		"en": "Copy Next Line",
+		"da": "Kopiér næste linje",
+		"da_en": "Copy next line",
+		"_note": "Danish accented imperative 'Kopiér' per orthographic convention.",
+		"_recommendation": "accept"
+	},
+	"editor.keepBoth": {
+		"en": "Keep Both",
+		"da": "Behold begge",
+		"da_en": "Keep both",
+		"_note": "Danish sentence-case button label.",
+		"_recommendation": "accept"
+	},
+	"editor.keepLocal": {
+		"en": "Keep Local",
+		"da": "Behold lokal",
+		"da_en": "Keep local",
+		"_note": "Danish sentence-case button label.",
+		"_recommendation": "accept"
+	},
+	"editor.keepServer": {
+		"en": "Keep Server",
+		"da": "Behold server",
+		"da_en": "Keep server",
+		"_note": "Danish sentence-case button label.",
+		"_recommendation": "accept"
+	},
+	"emptyRecycleBinDialog.question": {
+		"en": "Are you sure you want to permanently delete all items in the recycle bin?",
+		"da": "Er du sikker på, at du vil slette alle elementer i papirkurven permanent?",
+		"da_en": "Are you sure that you want to delete all elements in the recycle bin permanently?",
+		"_note": "'permanent' kept at end (Danish word order); 'permanently' nuance preserved.",
+		"_recommendation": "accept"
+	},
+	"emptyRecycleBinDialog.title": {
+		"en": "Empty Recycle Bin",
+		"da": "Tøm papirkurv",
+		"da_en": "Empty recycle bin",
+		"_note": "Danish sentence-case title.",
+		"_recommendation": "accept"
+	},
+	"inconsistencyDialog.title": {
+		"en": "Inconsistency Detected",
+		"da": "Uoverensstemmelse opdaget",
+		"da_en": "Inconsistency detected",
+		"_note": "Danish sentence-case title.",
+		"_recommendation": "accept"
+	},
+	"limitDialog.dataSizeTitle": {
+		"en": "Data Limit Reached",
+		"da": "Datagrænse nået",
+		"da_en": "Data limit reached",
+		"_note": "Compound noun 'Datagrænse'; standard Danish style.",
+		"_recommendation": "accept"
+	},
+	"limitDialog.noteCountTitle": {
+		"en": "Note Limit Reached",
+		"da": "Notegrænse nået",
+		"da_en": "Note limit reached",
+		"_note": "Compound noun 'Notegrænse'; standard Danish style.",
+		"_recommendation": "accept"
+	},
+	"limitDialog.noteSizeText": {
+		"en": "The note you are trying to save is {size} the maximum allowed is {max}",
+		"da": "Den note, du forsøger at gemme, er {size}; den maksimalt tilladte er {max}",
+		"da_en": "The note you are trying to save is {size}; the maximum allowed is {max}",
+		"_note": "Both placeholders preserved; Danish adds semicolon to make the run-on source sentence readable.",
+		"_recommendation": "accept"
+	},
+	"limitDialog.noteSizeTitle": {
+		"en": "Note Exceeds Max Size",
+		"da": "Note overskrider maksimal størrelse",
+		"da_en": "Note exceeds maximum size",
+		"_note": "Direct equivalent; 'maksimal størrelse' = 'max size'.",
+		"_recommendation": "accept"
+	},
+	"lockScreen.attemptsRemaining": {
+		"en": "Attempts remaining: 1",
+		"da": "Resterende forsøg: 1",
+		"da_en": "Remaining attempts: 1",
+		"_note": "Word order swap; literal '1' kept per context.",
+		"_recommendation": "accept"
+	},
+	"loginDialog.capsLock": {
+		"en": "Caps Lock is on!",
+		"da": "Caps Lock er slået til!",
+		"da_en": "Caps Lock is turned on!",
+		"_note": "'slået til' is idiomatic Danish for 'on'. Brand 'Caps Lock' kept.",
+		"_recommendation": "accept"
+	},
+	"loginDialog.login": {
+		"en": "Login",
+		"da": "Log ind",
+		"da_en": "Log in",
+		"_note": "Standard Danish UI verb form.",
+		"_recommendation": "accept"
+	},
+	"loginDialog.pleaseWait": {
+		"en": "Please wait",
+		"da": "Vent venligst",
+		"da_en": "Wait please",
+		"_note": "Standard Danish word order: verb + 'venligst'.",
+		"_recommendation": "accept"
+	},
+	"loginDialog.reason1": {
+		"en": "You changed password on another device",
+		"da": "Du har ændret adgangskode på en anden enhed",
+		"da_en": "You have changed password on another device",
+		"_note": "Danish present perfect ('har ændret') idiomatic for past action.",
+		"_recommendation": "accept"
+	},
+	"loginDialog.reason2": {
+		"en": "You updated from a version prior to 2.5.0",
+		"da": "Du har opdateret fra en version før 2.5.0",
+		"da_en": "You have updated from a version before 2.5.0",
+		"_note": "Danish present perfect; 'før' = 'prior to'.",
+		"_recommendation": "accept"
+	},
+	"loginDialog.serverReauth": {
+		"en": "Please enter your username and password to reauthenticate with the server.",
+		"da": "Indtast venligst dit brugernavn og adgangskode for at godkende dig på ny mod serveren.",
+		"da_en": "Please enter your username and password to authenticate yourself anew against the server.",
+		"_note": "'godkende dig på ny' = 'reauthenticate'; idiomatic Danish phrasing.",
+		"_recommendation": "accept"
+	},
+	"loginDialog.title": {
+		"en": "Login",
+		"da": "Log ind",
+		"da_en": "Log in",
+		"_note": "Standard Danish UI verb form 'log ind'.",
+		"_recommendation": "accept"
+	},
+	"mainToolbar.newChildNote": {
+		"en": "New Child Note",
+		"da": "Ny undernote",
+		"da_en": "New child note",
+		"_note": "'undernote' (sub-note) is the natural Danish term for child note.",
+		"_recommendation": "accept"
+	},
+	"mainToolbar.newRootNote": {
+		"en": "New Root Note",
+		"da": "Ny rodnote",
+		"da_en": "New root note",
+		"_note": "Danish compound noun + sentence-case.",
+		"_recommendation": "accept"
+	},
+	"mainToolbar.newSiblingNote": {
+		"en": "New Sibling Note",
+		"da": "Ny søskendenote",
+		"da_en": "New sibling note",
+		"_note": "Danish compound noun.",
+		"_recommendation": "accept"
+	},
+	"mainToolbar.searchAllNotes": {
+		"en": "Search All Notes",
+		"da": "Søg i alle noter",
+		"da_en": "Search in all notes",
+		"_note": "Danish 'søg i' takes preposition 'in'; idiomatic.",
+		"_recommendation": "accept"
+	},
+	"noteEditor.codeBlock": {
+		"en": "Code Block",
+		"da": "Kodeblok",
+		"da_en": "Code block",
+		"_note": "Danish compound noun.",
+		"_recommendation": "accept"
+	},
+	"noteEditor.disableWordWrap": {
+		"en": "Disable Word Wrap",
+		"da": "Deaktiver tekstombrydning",
+		"da_en": "Disable text wrapping",
+		"_note": "Danish compound noun standard for word wrap.",
+		"_recommendation": "accept"
+	},
+	"noteEditor.enableWordWrap": {
+		"en": "Enable Word Wrap",
+		"da": "Aktiver tekstombrydning",
+		"da_en": "Enable text wrapping",
+		"_note": "Danish compound noun standard for word wrap.",
+		"_recommendation": "accept"
+	},
+	"noteEditor.hideHistory": {
+		"en": "Hide History",
+		"da": "Skjul historik",
+		"da_en": "Hide history",
+		"_note": "Danish sentence-case.",
+		"_recommendation": "accept"
+	},
+	"noteEditor.markAsPassword": {
+		"en": "Mark as Password Ctrl+Shift+C",
+		"da": "Marker som adgangskode Ctrl+Shift+C",
+		"da_en": "Mark as password Ctrl+Shift+C",
+		"_note": "Keyboard shortcut preserved verbatim.",
+		"_recommendation": "accept"
+	},
+	"noteEditor.orderedList": {
+		"en": "Ordered List",
+		"da": "Nummereret liste",
+		"da_en": "Numbered list",
+		"_note": "'Nummereret' (numbered) is the standard Danish term for ordered list.",
+		"_recommendation": "accept"
+	},
+	"noteEditor.readMoreEntries": {
+		"en": "Read More Entries",
+		"da": "Læs flere poster",
+		"da_en": "Read more entries",
+		"_note": "Danish sentence-case; 'poster' standard for 'entries'.",
+		"_recommendation": "accept"
+	},
+	"noteEditor.readOnly": {
+		"en": "(read-only)",
+		"da": "(skrivebeskyttet)",
+		"da_en": "(write-protected)",
+		"_note": "'skrivebeskyttet' (write-protected) is the established Danish OS/UI term for read-only.",
+		"_recommendation": "accept"
+	},
+	"noteEditor.redo": {
+		"en": "Redo",
+		"da": "Annuller fortryd",
+		"da_en": "Cancel undo",
+		"_note": "Standard Danish UI convention for Redo (literally 'cancel undo').",
+		"_recommendation": "accept"
+	},
+	"noteEditor.saveNote": {
+		"en": "Save Note",
+		"da": "Gem note",
+		"da_en": "Save note",
+		"_note": "Danish sentence-case.",
+		"_recommendation": "accept"
+	},
+	"noteEditor.showHistory": {
+		"en": "Show History",
+		"da": "Vis historik",
+		"da_en": "Show history",
+		"_note": "Danish sentence-case.",
+		"_recommendation": "accept"
+	},
+	"noteEditor.toggleEditMode": {
+		"en": "Toggle Edit Mode",
+		"da": "Skift redigeringstilstand",
+		"da_en": "Switch edit mode",
+		"_note": "'Skift' (switch/change) is the standard Danish UI rendering of 'toggle'.",
+		"_recommendation": "accept"
+	},
+	"notificationList.markAllRead": {
+		"en": "Mark All Read",
+		"da": "Marker alle som læst",
+		"da_en": "Mark all as read",
+		"_note": "Danish requires the 'som' particle (as).",
+		"_recommendation": "accept"
+	},
+	"passwordDialog.capsLock": {
+		"en": "Caps Lock is on!",
+		"da": "Caps Lock er slået til!",
+		"da_en": "Caps Lock is turned on!",
+		"_note": "Idiomatic Danish for 'on'.",
+		"_recommendation": "accept"
+	},
+	"passwordDialog.incorrectPassword": {
+		"en": "Incorrect Password",
+		"da": "Forkert adgangskode",
+		"da_en": "Incorrect password",
+		"_note": "Danish sentence-case.",
+		"_recommendation": "accept"
+	},
+	"passwordDialog.title": {
+		"en": "Verify that it is you",
+		"da": "Bekræft, at det er dig",
+		"da_en": "Confirm that it is you",
+		"_note": "'Bekræft' (confirm) is the standard Danish term for password verification dialogs; meaning equivalent to 'verify'.",
+		"_recommendation": "accept"
+	},
+	"passwordGenerator.certainty": {
+		"en": "certainty",
+		"da": "sikkert",
+		"da_en": "certain",
+		"_note": "Adverbial form 'sikkert' is the natural inline label in Danish.",
+		"_recommendation": "accept"
+	},
+	"passwordGenerator.dataBreach": {
+		"en": "Data breach:",
+		"da": "Datalæk:",
+		"da_en": "Data leak:",
+		"_note": "'Datalæk' is the standard Danish term for a data breach/leak.",
+		"_recommendation": "accept"
+	},
+	"passwordGenerator.howLikelyToBeCracked": {
+		"en": "How likely to be cracked in case of:",
+		"da": "Hvor sandsynligt at blive brudt i tilfælde af:",
+		"da_en": "How likely to be broken in case of:",
+		"_note": "'brudt' is idiomatic Danish for cracking a password.",
+		"_recommendation": "accept"
+	},
+	"passwordGenerator.imATarget": {
+		"en": "I'm a target",
+		"da": "Jeg er et mål",
+		"da_en": "I am a target",
+		"_note": "Literal but natural Danish for the casual preset label.",
+		"_recommendation": "accept"
+	},
+	"passwordGenerator.includeExactlyOneSymbol": {
+		"en": "Include exactly 1 Symbol",
+		"da": "Inkluder præcis 1 symbol",
+		"da_en": "Include exactly 1 symbol",
+		"_note": "Danish sentence-case.",
+		"_recommendation": "accept"
+	},
+	"passwordGenerator.includeLowerCase": {
+		"en": "Include lower case",
+		"da": "Inkluder små bogstaver",
+		"da_en": "Include small letters",
+		"_note": "'små bogstaver' is the standard Danish term for lowercase letters.",
+		"_recommendation": "accept"
+	},
+	"passwordGenerator.includeUpperCase": {
+		"en": "Include upper case",
+		"da": "Inkluder store bogstaver",
+		"da_en": "Include capital letters",
+		"_note": "'store bogstaver' is the standard Danish term for uppercase letters.",
+		"_recommendation": "accept"
+	},
+	"passwordGenerator.investmentRequired": {
+		"en": "Investment required to crack in less than:",
+		"da": "Påkrævet investering for at bryde på under:",
+		"da_en": "Required investment to break in less than:",
+		"_note": "Word order swap; 'på under' is idiomatic Danish for 'in less than'.",
+		"_recommendation": "accept"
+	},
+	"passwordGenerator.largeScaleBreach": {
+		"en": "Large scale breach:",
+		"da": "Storstilet sikkerhedsbrud:",
+		"da_en": "Large-scale security breach:",
+		"_note": "'Storstilet sikkerhedsbrud' is the natural Danish phrasing.",
+		"_recommendation": "accept"
+	},
+	"passwordGenerator.notHappening": {
+		"en": "not happening",
+		"da": "sker ikke",
+		"da_en": "happens not",
+		"_note": "Idiomatic Danish for the casual 'not happening' label.",
+		"_recommendation": "accept"
+	},
+	"passwordGenerator.nudgeUp": {
+		"en": "Nudge it up a bit",
+		"da": "Skru lidt op",
+		"da_en": "Turn it up a bit",
+		"_note": "Idiomatic Danish for nudging a value upward; natural casual register.",
+		"_recommendation": "accept"
+	},
+	"passwordGenerator.option1M": {
+		"en": "1M ({time}) (default)",
+		"da": "1M ({time}) (standard)",
+		"da_en": "1M ({time}) (standard)",
+		"_note": "Placeholder preserved; 'standard' for '(default)'.",
+		"_recommendation": "accept"
+	},
+	"passwordGenerator.plausible": {
+		"en": "plausible",
+		"da": "muligt",
+		"da_en": "possible",
+		"_note": "'muligt' is the natural Danish equivalent in this scale.",
+		"_recommendation": "accept"
+	},
+	"passwordGenerator.poorMemory": {
+		"en": "My memory isn't so good",
+		"da": "Min hukommelse er ikke så god",
+		"da_en": "My memory is not so good",
+		"_note": "Direct equivalent.",
+		"_recommendation": "accept"
+	},
+	"passwordGenerator.possibleCombinations": {
+		"en": "Possible Combinations:",
+		"da": "Mulige kombinationer:",
+		"da_en": "Possible combinations:",
+		"_note": "Danish sentence-case label.",
+		"_recommendation": "accept"
+	},
+	"passwordGenerator.recommendedSettings": {
+		"en": "Recommended Settings",
+		"da": "Anbefalede indstillinger",
+		"da_en": "Recommended settings",
+		"_note": "Danish sentence-case heading.",
+		"_recommendation": "accept"
+	},
+	"passwordGeneratorDialog.title": {
+		"en": "Generate Password",
+		"da": "Generér adgangskode",
+		"da_en": "Generate password",
+		"_note": "Danish sentence-case; acute accent on 'Generér' marks imperative form.",
+		"_recommendation": "accept"
+	},
+	"passwordRepeatInput.matching": {
+		"en": "Matching",
+		"da": "Matcher",
+		"da_en": "Matches",
+		"_note": "Standard Danish inline status verb.",
+		"_recommendation": "accept"
+	},
+	"passwordRepeatInput.notMatching": {
+		"en": "Not matching",
+		"da": "Matcher ikke",
+		"da_en": "Does not match",
+		"_note": "Standard Danish inline status verb.",
+		"_recommendation": "accept"
+	},
+	"saveEmptyNodeDialog.question": {
+		"en": "Are you sure you want to save empty version of node:",
+		"da": "Er du sikker på, at du vil gemme en tom version af noden:",
+		"da_en": "Are you sure that you want to save an empty version of the node:",
+		"_note": "Adds article 'en' (a) and definite suffix '-en' on noden, both required by Danish grammar.",
+		"_recommendation": "accept"
+	},
+	"saveEmptyNodeDialog.title": {
+		"en": "Save Empty Note",
+		"da": "Gem tom note",
+		"da_en": "Save empty note",
+		"_note": "Danish sentence-case title.",
+		"_recommendation": "accept"
+	},
+	"selectionControl.selectAll": {
+		"en": "Select All",
+		"da": "Vælg alt",
+		"da_en": "Select all",
+		"_note": "Danish sentence-case.",
+		"_recommendation": "accept"
+	},
+	"settingsAbout.bundleVersion": {
+		"en": "Bundle Version:",
+		"da": "Bundleversion:",
+		"da_en": "Bundle version:",
+		"_note": "Danish compound noun + sentence-case.",
+		"_recommendation": "accept"
+	},
+	"settingsAbout.chooseFontLicense": {
+		"en": "Choose font to view license",
+		"da": "Vælg skrifttype for at se licens",
+		"da_en": "Choose font to see license",
+		"_note": "'se' (see) is natural Danish for 'view' in this UI context.",
+		"_recommendation": "accept"
+	},
+	"settingsAbout.closeLog": {
+		"en": "Close Log",
+		"da": "Luk log",
+		"da_en": "Close log",
+		"_note": "Danish sentence-case.",
+		"_recommendation": "accept"
+	},
+	"settingsAbout.disableDebug": {
+		"en": "Disable Debug",
+		"da": "Deaktiver fejlfinding",
+		"da_en": "Disable debugging",
+		"_note": "Mirrors enableDebug.",
+		"_recommendation": "accept"
+	},
+	"settingsAbout.discord": {
+		"en": "Join us on Discord",
+		"da": "Find os på Discord",
+		"da_en": "Find us on Discord",
+		"_note": "'Find os på' (find us on) is the standard Danish phrasing for community-link CTAs; brand 'Discord' preserved.",
+		"_recommendation": "accept"
+	},
+	"settingsAbout.enableDebug": {
+		"en": "Enable Debug",
+		"da": "Aktiver fejlfinding",
+		"da_en": "Enable debugging",
+		"_note": "'fejlfinding' (debugging) is the established Danish term.",
+		"_recommendation": "accept"
+	},
+	"settingsAbout.fontLicenses": {
+		"en": "Font Licenses:",
+		"da": "Skrifttypelicenser:",
+		"da_en": "Font type licenses:",
+		"_note": "'Skrifttype' (font type) is the standard Danish word for font; compound noun.",
+		"_recommendation": "accept"
+	},
+	"settingsAbout.fontLicensesText": {
+		"en": "All fonts are directly referenced either from the operating system or fonts.mimiri.io\nLicenses and project links for fonts referenced from fonts.mimiri.io listed below",
+		"da": "Alle skrifttyper hentes direkte fra enten operativsystemet eller fonts.mimiri.io\nLicenser og projektlinks for skrifttyper hentet fra fonts.mimiri.io vises herunder",
+		"da_en": "All fonts are fetched directly from either the operating system or fonts.mimiri.io\nLicenses and project links for fonts fetched from fonts.mimiri.io are shown below",
+		"_note": "Newline preserved; URL fonts.mimiri.io kept verbatim. Slight rephrasing 'referenced' → 'hentes'/'fetched' but meaning preserved.",
+		"_recommendation": "accept"
+	},
+	"settingsAbout.hostVersion": {
+		"en": "Host Version:",
+		"da": "Værtsversion:",
+		"da_en": "Host version:",
+		"_note": "Danish compound noun.",
+		"_recommendation": "accept"
+	},
+	"settingsAbout.iconAttribution0": {
+		"en": "Vectors and icons by <a href=\"https://dazzleui.gumroad.com/l/dazzleiconsfree?ref=svgrepo.com\" target=\"_blank\">Dazzle Ui</a> in CC Attribution License via <a href=\"https://www.svgrepo.com/\" target=\"_blank\">SVG Repo</a>",
+		"da": "Vektorer og ikoner af <a href=\"https://dazzleui.gumroad.com/l/dazzleiconsfree?ref=svgrepo.com\" target=\"_blank\">Dazzle Ui</a> under CC Attribution-licens via <a href=\"https://www.svgrepo.com/\" target=\"_blank\">SVG Repo</a>",
+		"da_en": "Vectors and icons by <a href=\"https://dazzleui.gumroad.com/l/dazzleiconsfree?ref=svgrepo.com\" target=\"_blank\">Dazzle Ui</a> under CC Attribution license via <a href=\"https://www.svgrepo.com/\" target=\"_blank\">SVG Repo</a>",
+		"_note": "All <a href> tags and URLs preserved exactly; only translatable prose changed.",
+		"_recommendation": "accept"
+	},
+	"settingsAbout.iconAttribution1": {
+		"en": "Vectors and icons by <a href=\"https://www.figma.com/@leonid?ref=svgrepo.com\" target=\"_blank\">Leonid Tsvetkov</a> in CC Attribution License via <a href=\"https://www.svgrepo.com/\" target=\"_blank\">SVG Repo</a>",
+		"da": "Vektorer og ikoner af <a href=\"https://www.figma.com/@leonid?ref=svgrepo.com\" target=\"_blank\">Leonid Tsvetkov</a> under CC Attribution-licens via <a href=\"https://www.svgrepo.com/\" target=\"_blank\">SVG Repo</a>",
+		"da_en": "Vectors and icons by <a href=\"https://www.figma.com/@leonid?ref=svgrepo.com\" target=\"_blank\">Leonid Tsvetkov</a> under CC Attribution license via <a href=\"https://www.svgrepo.com/\" target=\"_blank\">SVG Repo</a>",
+		"_note": "All <a href> tags and URLs preserved exactly.",
+		"_recommendation": "accept"
+	},
+	"settingsAbout.issueTracker": {
+		"en": "Issue Tracker on GitHub",
+		"da": "Issue tracker på GitHub",
+		"da_en": "Issue tracker on GitHub",
+		"_note": "'Issue tracker' kept as English term (no established Danish equivalent); brand 'GitHub' preserved.",
+		"_recommendation": "accept"
+	},
+	"settingsAbout.privacyPolicy": {
+		"en": "Privacy Policy",
+		"da": "Privatlivspolitik",
+		"da_en": "Privacy policy",
+		"_note": "Danish compound; sentence-case.",
+		"_recommendation": "accept"
+	},
+	"settingsAbout.projectLink": {
+		"en": "Project Link:",
+		"da": "Projektlink:",
+		"da_en": "Project link:",
+		"_note": "Danish compound noun.",
+		"_recommendation": "accept"
+	},
+	"settingsAbout.reddit": {
+		"en": "Join us on Reddit",
+		"da": "Find os på Reddit",
+		"da_en": "Find us on Reddit",
+		"_note": "Mirrors discord; brand 'Reddit' preserved.",
+		"_recommendation": "accept"
+	},
+	"settingsAbout.sourceGitHub": {
+		"en": "Source on GitHub",
+		"da": "Kildekode på GitHub",
+		"da_en": "Source code on GitHub",
+		"_note": "'Kildekode' (source code) is the standard Danish term; brand 'GitHub' preserved.",
+		"_recommendation": "accept"
+	},
+	"settingsAbout.spaceUsed": {
+		"en": "Space Used:",
+		"da": "Plads brugt:",
+		"da_en": "Space used:",
+		"_note": "Danish sentence-case label.",
+		"_recommendation": "accept"
+	},
+	"settingsAbout.termsAndConditions": {
+		"en": "Terms & Conditions",
+		"da": "Vilkår og betingelser",
+		"da_en": "Terms and conditions",
+		"_note": "Danish standard expands '&' to 'og' and uses sentence-case.",
+		"_recommendation": "accept"
+	},
+	"settingsAbout.unsyncedData": {
+		"en": "Unsynced Data:",
+		"da": "Usynkroniserede data:",
+		"da_en": "Unsynchronized data:",
+		"_note": "Mirrors unsyncedNotes.",
+		"_recommendation": "accept"
+	},
+	"settingsAbout.unsyncedNotes": {
+		"en": "Unsynced Notes:",
+		"da": "Usynkroniserede noter:",
+		"da_en": "Unsynchronized notes:",
+		"_note": "Danish full form 'usynkroniserede' is preferred over abbreviated 'usynk-'.",
+		"_recommendation": "accept"
+	},
+	"settingsCreateAccount2.chooseCredentials": {
+		"en": "Choose your credentials",
+		"da": "Vælg dine loginoplysninger",
+		"da_en": "Choose your login information",
+		"_note": "'loginoplysninger' is the natural Danish term; English 'credentials' has no neutral one-word equivalent.",
+		"_recommendation": "accept"
+	},
+	"settingsCreateAccount2.cloudAccountHeader": {
+		"en": "Cloud Account",
+		"da": "Cloudkonto",
+		"da_en": "Cloud account",
+		"_note": "'cloud' kept as English loanword (more recognizable in Danish tech contexts than 'sky').",
+		"_recommendation": "accept"
+	},
+	"settingsCreateAccount2.cloudFeature1": {
+		"en": "Access notes from anywhere",
+		"da": "Få adgang til noter fra hvor som helst",
+		"da_en": "Get access to notes from anywhere",
+		"_note": "Idiomatic Danish phrasing for 'access'.",
+		"_recommendation": "accept"
+	},
+	"settingsCreateAccount2.cloudFeature11": {
+		"en": "100 MB & 2000 notes for free",
+		"da": "100 MB og 2000 noter gratis",
+		"da_en": "100 MB and 2000 notes free",
+		"_note": "Danish expands '&' to 'og'; numbers preserved.",
+		"_recommendation": "accept"
+	},
+	"settingsCreateAccount2.cloudFeature2": {
+		"en": "Notes backed up in cloud",
+		"da": "Noter sikkerhedskopieret i skyen",
+		"da_en": "Notes backed up in the cloud",
+		"_note": "Definite suffix '-en' attached to 'sky'; idiomatic.",
+		"_recommendation": "accept"
+	},
+	"settingsCreateAccount2.cloudFeature4": {
+		"en": "On-device encryption",
+		"da": "Kryptering på enheden",
+		"da_en": "Encryption on the device",
+		"_note": "Reformulated to natural Danish phrasing.",
+		"_recommendation": "accept"
+	},
+	"settingsCreateAccount2.cloudFeature7": {
+		"en": "Unlimited device sync on Windows, Linux, macOS, Android, iOS and web",
+		"da": "Ubegrænset enhedssynkronisering på Windows, Linux, macOS, Android, iOS og web",
+		"da_en": "Unlimited device synchronization on Windows, Linux, macOS, Android, iOS and web",
+		"_note": "Platform names preserved; Danish compound 'enhedssynkronisering'.",
+		"_recommendation": "accept"
+	},
+	"settingsCreateAccount2.cloudFeature8": {
+		"en": "Offline read/write access",
+		"da": "Læse-/skriveadgang offline",
+		"da_en": "Read/write access offline",
+		"_note": "Word order swap; meaning identical.",
+		"_recommendation": "accept"
+	},
+	"settingsCreateAccount2.cloudTab": {
+		"en": "Cloud Account",
+		"da": "Cloudkonto",
+		"da_en": "Cloud account",
+		"_note": "'cloud' kept as English loanword (more recognizable in Danish tech contexts than 'sky').",
+		"_recommendation": "accept"
+	},
+	"settingsCreateAccount2.faq1Answer": {
+		"en": "Yes up to 2000 notes and 100MB.",
+		"da": "Ja, op til 2000 noter og 100 MB.",
+		"da_en": "Yes, up to 2000 notes and 100 MB.",
+		"_note": "Adds idiomatic comma after 'Ja' and proper space before unit per Danish convention.",
+		"_recommendation": "accept"
+	},
+	"settingsCreateAccount2.faq1Question": {
+		"en": "Is the Cloud Account free?",
+		"da": "Er cloudkontoen gratis?",
+		"da_en": "Is the cloud account free?",
+		"_note": "'cloud' kept as English loanword + Danish definite suffix '-en'.",
+		"_recommendation": "accept"
+	},
+	"settingsCreateAccount2.faq2Answer": {
+		"en": "If you want to access your notes from multiple devices or you wish to share notes with other users, then yes.\n\nIf you want to keep your notes only on this device and not sync them anywhere, then no.",
+		"da": "Hvis du vil have adgang til dine noter fra flere enheder, eller hvis du ønsker at dele noter med andre brugere, så ja.\n\nHvis du kun vil beholde dine noter på denne enhed og ikke synkronisere dem nogen steder, så nej.",
+		"da_en": "If you want access to your notes from several devices, or if you wish to share notes with other users, then yes.\n\nIf you only want to keep your notes on this device and not synchronize them anywhere, then no.",
+		"_note": "Double newline preserved; meaning preserved.",
+		"_recommendation": "accept"
+	},
+	"settingsCreateAccount2.faq2Question": {
+		"en": "Do I need a Cloud Account?",
+		"da": "Har jeg brug for en cloudkonto?",
+		"da_en": "Do I need a cloud account?",
+		"_note": "'Har brug for' is standard Danish for 'need'; 'cloud' kept as English loanword.",
+		"_recommendation": "accept"
+	},
+	"settingsCreateAccount2.faq3Answer": {
+		"en": "Your data is encrypted before it leaves your device and even we cannot access your data.",
+		"da": "Dine data krypteres, før de forlader din enhed, og selv vi kan ikke tilgå dine data.",
+		"da_en": "Your data is encrypted before it leaves your device, and even we cannot access your data.",
+		"_note": "Direct equivalent; Danish requires comma before 'og' joining clauses with own subjects.",
+		"_recommendation": "accept"
+	},
+	"settingsCreateAccount2.faq3Question": {
+		"en": "Is my data safe in the Cloud?",
+		"da": "Er mine data sikre i skyen?",
+		"da_en": "Are my data safe in the cloud?",
+		"_note": "'data' is grammatically plural in Danish, hence 'er'/'sikre'.",
+		"_recommendation": "accept"
+	},
+	"settingsCreateAccount2.faq4Answer": {
+		"en": "No, unfortunately we cannot help you recover your password.\n\nMaking this possible would substantially weaken your data security.",
+		"da": "Nej, desværre kan vi ikke hjælpe dig med at gendanne din adgangskode.\n\nAt gøre det muligt ville svække din datasikkerhed betydeligt.",
+		"da_en": "No, unfortunately we cannot help you to recover your password.\n\nMaking it possible would weaken your data security considerably.",
+		"_note": "Newline preserved; 'betydeligt' (substantially) preserves the intensifier.",
+		"_recommendation": "accept"
+	},
+	"settingsCreateAccount2.faq4Question": {
+		"en": "Can you help me recover my password?",
+		"da": "Kan I hjælpe mig med at gendanne min adgangskode?",
+		"da_en": "Can you help me to recover my password?",
+		"_note": "Danish formal/plural 'I' (you) used to address the company; idiomatic.",
+		"_recommendation": "accept"
+	},
+	"settingsCreateAccount2.faq5Answer": {
+		"en": "Technically a Local Account offers stronger privacy guarantees. However, with a well-chosen password the difference is academic.\n\nAnd a Local Account does not help ensure your own access to the data in case of device loss or in an emergency situation.\n\nUltimately it depends on what you are trying to achieve.",
+		"da": "Teknisk set giver en lokal konto stærkere privatlivsgarantier. Med en velvalgt adgangskode er forskellen dog akademisk.\n\nOg en lokal konto sikrer ikke din egen adgang til dataene i tilfælde af tab af enheden eller en nødsituation.\n\nI sidste ende afhænger det af, hvad du forsøger at opnå.",
+		"da_en": "Technically a local account gives stronger privacy guarantees. With a well-chosen password the difference is however academic.\n\nAnd a local account does not ensure your own access to the data in case of loss of the device or in an emergency situation.\n\nUltimately it depends on what you are trying to achieve.",
+		"_note": "Newlines preserved; 'dog' (however) shifted to natural Danish position; meaning intact.",
+		"_recommendation": "accept"
+	},
+	"settingsCreateAccount2.faq5Question": {
+		"en": "Is my data safer with a Local Account?",
+		"da": "Er mine data mere sikre med en lokal konto?",
+		"da_en": "Are my data more safe with a local account?",
+		"_note": "Danish comparative 'mere sikre'; meaning preserved.",
+		"_recommendation": "accept"
+	},
+	"settingsCreateAccount2.helpMeChoose": {
+		"en": "Help me choose",
+		"da": "Hjælp mig med at vælge",
+		"da_en": "Help me to choose",
+		"_note": "Danish requires the 'med at' construction; idiomatic.",
+		"_recommendation": "accept"
+	},
+	"settingsCreateAccount2.localAccountHeader": {
+		"en": "Local Account",
+		"da": "Lokal konto",
+		"da_en": "Local account",
+		"_note": "Danish sentence-case.",
+		"_recommendation": "accept"
+	},
+	"settingsCreateAccount2.localFeature1": {
+		"en": "On-device encryption",
+		"da": "Kryptering på enheden",
+		"da_en": "Encryption on the device",
+		"_note": "Reformulated to natural Danish.",
+		"_recommendation": "accept"
+	},
+	"settingsCreateAccount2.localFeature3": {
+		"en": "Offline read/write access",
+		"da": "Læse-/skriveadgang offline",
+		"da_en": "Read/write access offline",
+		"_note": "Word order swap; meaning identical.",
+		"_recommendation": "accept"
+	},
+	"settingsCreateAccount2.localFeature4": {
+		"en": "Unlimited storage (locally)",
+		"da": "Ubegrænset lagerplads (lokalt)",
+		"da_en": "Unlimited storage space (locally)",
+		"_note": "'lagerplads' (storage space) is the standard Danish term for storage.",
+		"_recommendation": "accept"
+	},
+	"settingsCreateAccount2.localFeature5": {
+		"en": "Notes stored exclusively on this device",
+		"da": "Noter gemmes udelukkende på denne enhed",
+		"da_en": "Notes are stored exclusively on this device",
+		"_note": "Danish passive voice 'gemmes' is natural here.",
+		"_recommendation": "accept"
+	},
+	"settingsCreateAccount2.localTab": {
+		"en": "Local Account",
+		"da": "Lokal konto",
+		"da_en": "Local account",
+		"_note": "Danish sentence-case.",
+		"_recommendation": "accept"
+	},
+	"settingsCreateAccount2.readMorePassword": {
+		"en": "Read more about password selection",
+		"da": "Læs mere om valg af adgangskode",
+		"da_en": "Read more about choice of password",
+		"_note": "Danish prefers nominal 'valg af' over noun phrase 'password selection'.",
+		"_recommendation": "accept"
+	},
+	"settingsCreateAccount2.readMoreSecurity": {
+		"en": "Read more about how we keep your data secure",
+		"da": "Læs mere om, hvordan vi holder dine data sikre",
+		"da_en": "Read more about how we keep your data safe",
+		"_note": "'sikre' = secure/safe; same meaning.",
+		"_recommendation": "accept"
+	},
+	"settingsCreateAccount2.seePricing": {
+		"en": "See pricing for additional space",
+		"da": "Se priser for ekstra plads",
+		"da_en": "See prices for extra space",
+		"_note": "Direct equivalent.",
+		"_recommendation": "accept"
+	},
+	"settingsDeleteAccount.capsLock": {
+		"en": "Caps Lock is on!",
+		"da": "Caps Lock er slået til!",
+		"da_en": "Caps Lock is turned on!",
+		"_note": "Idiomatic Danish for 'on'.",
+		"_recommendation": "accept"
+	},
+	"settingsDeleteAccount.deleteAccount": {
+		"en": "Delete Account",
+		"da": "Slet konto",
+		"da_en": "Delete account",
+		"_note": "Danish sentence-case.",
+		"_recommendation": "accept"
+	},
+	"settingsDeleteAccount.iUnderstandThat": {
+		"en": "I understand that",
+		"da": "Jeg forstår, at",
+		"da_en": "I understand, that",
+		"_note": "Danish punctuation rule requires comma before subordinating 'at'.",
+		"_recommendation": "accept"
+	},
+	"settingsDeleteAccount.noWayToRecover": {
+		"en": "that there is no way to recover my data",
+		"da": "der ikke er nogen måde at gendanne mine data på",
+		"da_en": "there is no way to restore my data",
+		"_note": "Danish drops the leading 'at' since it follows another 'at'-clause; idiomatic. 'gendanne' = recover/restore.",
+		"_recommendation": "accept"
+	},
+	"settingsDeleteAccount.pleaseWait": {
+		"en": "Please wait",
+		"da": "Vent venligst",
+		"da_en": "Wait please",
+		"_note": "Standard Danish word order.",
+		"_recommendation": "accept"
+	},
+	"settingsDeleteAccount.tab": {
+		"en": "Delete Account",
+		"da": "Slet konto",
+		"da_en": "Delete account",
+		"_note": "Danish sentence-case.",
+		"_recommendation": "accept"
+	},
+	"settingsDevBlog.tab": {
+		"en": "Dev Blog",
+		"da": "Udviklerblog",
+		"da_en": "Developer blog",
+		"_note": "Danish compound noun.",
+		"_recommendation": "accept"
+	},
+	"settingsFontsColors.fontFamily": {
+		"en": "Font Family:",
+		"da": "Skrifttypefamilie:",
+		"da_en": "Font type family:",
+		"_note": "'Skrifttype' is the standard Danish term for font.",
+		"_recommendation": "accept"
+	},
+	"settingsFontsColors.fontName": {
+		"en": "Font Name:",
+		"da": "Skrifttypenavn:",
+		"da_en": "Font type name:",
+		"_note": "Danish compound noun.",
+		"_recommendation": "accept"
+	},
+	"settingsFontsColors.fontSize": {
+		"en": "Font Size:",
+		"da": "Skriftstørrelse:",
+		"da_en": "Font size:",
+		"_note": "Danish compound noun.",
+		"_recommendation": "accept"
+	},
+	"settingsFontsColors.restoreDefaults": {
+		"en": "Restore defaults",
+		"da": "Gendan standarder",
+		"da_en": "Restore standards",
+		"_note": "'standarder' is the standard Danish UI term for defaults.",
+		"_recommendation": "accept"
+	},
+	"settingsFontsColors.tab": {
+		"en": "Fonts & Theme",
+		"da": "Skrifttyper og tema",
+		"da_en": "Fonts and theme",
+		"_note": "Danish expands '&' to 'og'.",
+		"_recommendation": "accept"
+	},
+	"settingsGeneral.disableDevBlog": {
+		"en": "Disable Dev Blog",
+		"da": "Deaktiver udviklerblog",
+		"da_en": "Disable developer blog",
+		"_note": "Danish compound noun; 'udvikler' = developer.",
+		"_recommendation": "accept"
+	},
+	"settingsGeneral.disableDevBlogTooltip": {
+		"en": "If you find the developer blog annoying, you can choose to hide it",
+		"da": "Hvis du synes, udviklerbloggen er irriterende, kan du vælge at skjule den",
+		"da_en": "If you think the developer blog is annoying, you can choose to hide it",
+		"_note": "Direct equivalent; 'synes' = 'find/think' in this context.",
+		"_recommendation": "accept"
+	},
+	"settingsGeneral.keepTrayVisible": {
+		"en": "Keep Tray Icon Visible",
+		"da": "Hold systembakkeikon synligt",
+		"da_en": "Keep system tray icon visible",
+		"_note": "Danish sentence-case + compound noun; 'systembakkeikon' = Windows System Tray icon, consistent with tooltip terminology.",
+		"_recommendation": "accept"
+	},
+	"settingsGeneral.languageDanish": {
+		"en": "Dansk",
+		"da": "Dansk",
+		"da_en": "Danish",
+		"_note": "Identical to source per context: language picker shows native name only.",
+		"_recommendation": "accept"
+	},
+	"settingsGeneral.launchOnLogin": {
+		"en": "Launch Mimiri Notes on Login",
+		"da": "Start Mimiri Notes ved login",
+		"da_en": "Start Mimiri Notes at login",
+		"_note": "Brand 'Mimiri Notes' preserved; 'ved login' is idiomatic Danish.",
+		"_recommendation": "accept"
+	},
+	"settingsGeneral.launchOnLoginTooltip": {
+		"en": "Automatically start Mimiri Notes when you log in to your computer",
+		"da": "Start automatisk Mimiri Notes, når du logger ind på din computer",
+		"da_en": "Start Mimiri Notes automatically when you log in on your computer",
+		"_note": "Word order swap; brand preserved.",
+		"_recommendation": "accept"
+	},
+	"settingsGeneral.quitOnClose": {
+		"en": "Quit when closing application window",
+		"da": "Afslut ved lukning af programvinduet",
+		"da_en": "Quit on closing of the application window",
+		"_note": "Reformulated as nominal phrase, idiomatic Danish.",
+		"_recommendation": "accept"
+	},
+	"settingsGeneral.quitOnCloseTooltip": {
+		"en": "Fully quit the application instead of minimizing to the system tray when closing the window",
+		"da": "Afslut programmet helt i stedet for at minimere til systembakken, når vinduet lukkes",
+		"da_en": "Quit the application completely instead of minimizing to the system tray when the window is closed",
+		"_note": "'helt' (completely) preserves the 'fully' intensifier.",
+		"_recommendation": "accept"
+	},
+	"settingsGeneral.showInTaskbar": {
+		"en": "Show in Taskbar",
+		"da": "Vis i proceslinjen",
+		"da_en": "Show in the taskbar",
+		"_note": "'proceslinjen' is the standard Danish term for taskbar; definite suffix attached.",
+		"_recommendation": "accept"
+	},
+	"settingsGeneral.showVerticalGuides": {
+		"en": "Show vertical guides",
+		"da": "Vis lodrette hjælpelinjer",
+		"da_en": "Show vertical guide lines",
+		"_note": "'hjælpelinjer' is the standard Danish term for guide lines.",
+		"_recommendation": "accept"
+	},
+	"settingsGeneral.showVerticalGuidesTooltip": {
+		"en": "Display vertical lines in the tree view to indicate nesting depth",
+		"da": "Vis lodrette linjer i trævisningen for at angive indrykningsdybde",
+		"da_en": "Show vertical lines in the tree view to indicate indentation depth",
+		"_note": "'indrykningsdybde' is natural Danish for nesting/indentation depth.",
+		"_recommendation": "accept"
+	},
+	"settingsGeneral.trayIcon": {
+		"en": "Tray Icon",
+		"da": "Bakkeikon",
+		"da_en": "Tray icon",
+		"_note": "Danish compound noun.",
+		"_recommendation": "accept"
+	},
+	"settingsGeneral.useChevrons": {
+		"en": "Use chevrons in tree view",
+		"da": "Brug pile i trævisning",
+		"da_en": "Use arrows in tree view",
+		"_note": "Danish has no distinct word for chevrons; 'pile' (arrows) is the standard rendering.",
+		"_recommendation": "accept"
+	},
+	"settingsGeneral.useChevronsTooltip": {
+		"en": "Show chevrons in the tree instead of plus/minus icons to indicate expandable items",
+		"da": "Vis pile i træet i stedet for plus/minus-ikoner for at angive elementer, der kan udvides",
+		"da_en": "Show arrows in the tree instead of plus/minus icons to indicate elements that can be expanded",
+		"_note": "'pile' (arrows) for chevrons, consistent with useChevrons.",
+		"_recommendation": "accept"
+	},
+	"settingsPassword.capsLock": {
+		"en": "Caps Lock is on!",
+		"da": "Caps Lock er slået til!",
+		"da_en": "Caps Lock is turned on!",
+		"_note": "Idiomatic Danish for 'on'.",
+		"_recommendation": "accept"
+	},
+	"settingsPassword.matching": {
+		"en": "Matching",
+		"da": "Matcher",
+		"da_en": "Matches",
+		"_note": "Danish present-tense verb form is the natural inline status label.",
+		"_recommendation": "accept"
+	},
+	"settingsPassword.notMatching": {
+		"en": "Not matching",
+		"da": "Matcher ikke",
+		"da_en": "Does not match",
+		"_note": "Mirrors matching with negation.",
+		"_recommendation": "accept"
+	},
+	"settingsPassword.option1M": {
+		"en": "1M ({time}) (default)",
+		"da": "1M ({time}) (standard)",
+		"da_en": "1M ({time}) (standard)",
+		"_note": "Placeholder preserved; 'standard' is the standard Danish UI rendering of '(default)'.",
+		"_recommendation": "accept"
+	},
+	"settingsPinCode.setOrChangeTooltip": {
+		"en": "Set a 4-digit PIN Code to lock Mimiri after a small period of inactivity and use the code to quickly resume the session",
+		"da": "Sæt en 4-cifret PIN-kode for at låse Mimiri efter en kort periode med inaktivitet, og brug koden til hurtigt at genoptage sessionen",
+		"da_en": "Set a 4-digit PIN code to lock Mimiri after a short period of inactivity, and use the code to quickly resume the session",
+		"_note": "'kort' (short) is the natural Danish equivalent of 'small period'; brand 'Mimiri' preserved.",
+		"_recommendation": "accept"
+	},
+	"settingsPinCode.tab": {
+		"en": "PIN Code",
+		"da": "PIN-kode",
+		"da_en": "PIN code",
+		"_note": "Danish convention hyphenates 'PIN-kode'.",
+		"_recommendation": "accept"
+	},
+	"settingsPromoteAccount.capsLock": {
+		"en": "Caps Lock is on!",
+		"da": "Caps Lock er slået til!",
+		"da_en": "Caps Lock is turned on!",
+		"_note": "Idiomatic Danish.",
+		"_recommendation": "accept"
+	},
+	"settingsPromoteAccount.description": {
+		"en": "Choose a username and password to allow you to access your data from anywhere",
+		"da": "Vælg et brugernavn og en adgangskode, så du kan tilgå dine data fra hvor som helst",
+		"da_en": "Choose a username and a password, so you can access your data from anywhere",
+		"_note": "Reformulated to natural Danish; meaning identical.",
+		"_recommendation": "accept"
+	},
+	"settingsPromoteAccount.matching": {
+		"en": "Matching",
+		"da": "Matcher",
+		"da_en": "Matches",
+		"_note": "Standard Danish inline status verb.",
+		"_recommendation": "accept"
+	},
+	"settingsPromoteAccount.noRecoveryWarning": {
+		"en": "I understand that I am solely responsible for remembering my password and innonova GmbH has <b>no way</b> to recover my data or account if I lose my password",
+		"da": "Jeg forstår, at jeg alene er ansvarlig for at huske min adgangskode, og at innonova GmbH <b>ikke har nogen mulighed</b> for at gendanne mine data eller min konto, hvis jeg mister min adgangskode",
+		"da_en": "I understand, that I alone am responsible for remembering my password, and that innonova GmbH <b>has no possibility</b> to restore my data or my account, if I lose my password",
+		"_note": "<b> tags preserved; brand 'innonova GmbH' preserved; legal tone of acknowledgement maintained.",
+		"_recommendation": "accept"
+	},
+	"settingsPromoteAccount.notMatching": {
+		"en": "Not matching",
+		"da": "Matcher ikke",
+		"da_en": "Does not match",
+		"_note": "Standard Danish inline status verb.",
+		"_recommendation": "accept"
+	},
+	"settingsPromoteAccount.option1M": {
+		"en": "1M ({time}) (default)",
+		"da": "1M ({time}) (standard)",
+		"da_en": "1M ({time}) (standard)",
+		"_note": "Placeholder preserved; 'standard' for '(default)'.",
+		"_recommendation": "accept"
+	},
+	"settingsPromoteAccount.pleaseWait": {
+		"en": "Please wait",
+		"da": "Vent venligst",
+		"da_en": "Wait please",
+		"_note": "Standard Danish word order.",
+		"_recommendation": "accept"
+	},
+	"settingsPromoteAccount.tab": {
+		"en": "Create Password",
+		"da": "Opret adgangskode",
+		"da_en": "Create password",
+		"_note": "Danish sentence-case.",
+		"_recommendation": "accept"
+	},
+	"settingsRecycleBin.description": {
+		"en": "Permanently delete all items in the Recycle Bin",
+		"da": "Slet alle elementer i papirkurven permanent",
+		"da_en": "Delete all elements in the recycle bin permanently",
+		"_note": "Adverb 'permanent' moved to natural Danish position.",
+		"_recommendation": "accept"
+	},
+	"settingsRecycleBin.emptyRecycleBin": {
+		"en": "Empty Recycle Bin",
+		"da": "Tøm papirkurv",
+		"da_en": "Empty recycle bin",
+		"_note": "Standard Danish OS terminology.",
+		"_recommendation": "accept"
+	},
+	"settingsRecycleBin.tab": {
+		"en": "Recycle Bin",
+		"da": "Papirkurv",
+		"da_en": "Recycle bin",
+		"_note": "'Papirkurv' is the standard Danish OS term for recycle bin.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.autoIdle": {
+		"en": "Automatic - when idle (default)",
+		"da": "Automatisk – når inaktiv (standard)",
+		"da_en": "Automatic – when inactive (standard)",
+		"_note": "Danish typography uses en-dash; 'standard' for '(default)'.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.autoStart": {
+		"en": "Automatic - on startup",
+		"da": "Automatisk – ved opstart",
+		"da_en": "Automatic – at startup",
+		"_note": "En-dash + 'ved opstart' is idiomatic Danish.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.checkForUpdates": {
+		"en": "Check for updates",
+		"da": "Søg efter opdateringer",
+		"da_en": "Search for updates",
+		"_note": "'Søg efter' is the standard Danish UI phrase for 'check for'.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.currentVersion": {
+		"en": "Current Version:",
+		"da": "Nuværende version:",
+		"da_en": "Current version:",
+		"_note": "Danish sentence-case label.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.descAndThis": {
+		"en": "and this",
+		"da": "og sådan her",
+		"da_en": "and like this",
+		"_note": "Mirrors descNotificationShown phrasing for consistency.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.descAndroidPlay": {
+		"en": "Larger updates will happen like normal through Google Play",
+		"da": "Større opdateringer sker som normalt via Google Play",
+		"da_en": "Larger updates happen as normal via Google Play",
+		"_note": "Brand 'Google Play' preserved.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.descAndroidStill": {
+		"en": "Larger updates will still happen like normal through Google Play (outside our control)",
+		"da": "Større opdateringer sker stadig som normalt via Google Play (uden for vores kontrol)",
+		"da_en": "Larger updates still happen as normal via Google Play (outside our control)",
+		"_note": "Brand 'Google Play' preserved.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.descFlatHubStill": {
+		"en": "If you have installed via FlatHub or Snap Store updates to the Electron host application will still happen through the normal flow here.",
+		"da": "Hvis du har installeret via FlatHub eller Snap Store, sker opdateringer af Electron-værtsprogrammet stadig via det normale flow her.",
+		"da_en": "If you have installed via FlatHub or Snap Store, updates of the Electron host application still happen via the normal flow here.",
+		"_note": "Brands preserved.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.descInSystemArea": {
+		"en": "in the System area in the treeview",
+		"da": "i System-området i trævisningen",
+		"da_en": "in the System area in the tree view",
+		"_note": "'System' kept proper-cased as section name; '-området' compound.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.descInTitlebar": {
+		"en": "in the titlebar and like this",
+		"da": "i titellinjen og sådan her",
+		"da_en": "in the title bar and like this",
+		"_note": "'titellinjen' is standard Danish for title bar.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.descIosAppStore": {
+		"en": "Larger updates will happen like normal through the AppStore",
+		"da": "Større opdateringer sker som normalt via AppStore",
+		"da_en": "Larger updates happen as normal via AppStore",
+		"_note": "Brand 'AppStore' preserved; 'via' for 'through'.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.descIosStill": {
+		"en": "Larger updates will still happen like normal through the AppStore (outside our control)",
+		"da": "Større opdateringer sker stadig som normalt via AppStore (uden for vores kontrol)",
+		"da_en": "Larger updates still happen as normal via AppStore (outside our control)",
+		"_note": "Brand 'AppStore' preserved.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.descLinuxFlatHub": {
+		"en": "If you have installed via FlatHub or Snap Store updates to the Electron host application will happen through the normal flow here.",
+		"da": "Hvis du har installeret via FlatHub eller Snap Store, sker opdateringer af Electron-værtsprogrammet via det normale flow her.",
+		"da_en": "If you have installed via FlatHub or Snap Store, updates of the Electron host application happen via the normal flow here.",
+		"_note": "Brands 'FlatHub', 'Snap Store', 'Electron' preserved; Danish adds idiomatic comma.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.descLinuxManual": {
+		"en": "If you have installed the application manually you will be notified when an update to the Electron host is available.",
+		"da": "Hvis du har installeret programmet manuelt, får du besked, når en opdatering af Electron-værten er tilgængelig.",
+		"da_en": "If you have installed the application manually, you will be notified when an update of the Electron host is available.",
+		"_note": "'Electron' preserved; idiomatic Danish.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.descMacWinRestart": {
+		"en": "Updates that require restarting the application will happen automatically when you restart the application.",
+		"da": "Opdateringer, der kræver genstart af programmet, sker automatisk, når du genstarter programmet.",
+		"da_en": "Updates that require restart of the application happen automatically when you restart the application.",
+		"_note": "Idiomatic Danish; 'programmet' for 'application'.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.descManualPerform": {
+		"en": "The update can then be manually performed from here.",
+		"da": "Opdateringen kan derefter udføres manuelt herfra.",
+		"da_en": "The update can then be performed manually from here.",
+		"_note": "Direct equivalent.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.descNoNotification": {
+		"en": "No notification will be shown, you will need to manually check for updates from here",
+		"da": "Ingen notifikation vises; du skal manuelt tjekke for opdateringer herfra",
+		"da_en": "No notification is shown; you must manually check for updates from here",
+		"_note": "Comma replaced by semicolon for cleaner Danish punctuation between independent clauses.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.descNoRestartAuto": {
+		"en": "Updates that do not require restart will happen automatically when you are not actively using the app.",
+		"da": "Opdateringer, der ikke kræver genstart, sker automatisk, når du ikke aktivt bruger appen.",
+		"da_en": "Updates that do not require restart happen automatically when you are not actively using the app.",
+		"_note": "Danish present-tense 'sker' covers English future 'will happen'.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.descNoUnsaved": {
+		"en": "Updates will never happen if you have unsaved data.",
+		"da": "Opdateringer sker aldrig, hvis du har ikke-gemte data.",
+		"da_en": "Updates never happen if you have unsaved data.",
+		"_note": "'ikke-gemte' is the natural Danish hyphenated compound for unsaved.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.descNotificationShown": {
+		"en": "Notification will be shown like this",
+		"da": "Notifikationen vises sådan her",
+		"da_en": "The notification is shown like this",
+		"_note": "Definite suffix '-en' attached; idiomatic 'sådan her' for 'like this'.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.descPreservePosition": {
+		"en": "Your current tree and note position will be preserved.",
+		"da": "Din nuværende træ- og noteposition bevares.",
+		"da_en": "Your current tree and note position is preserved.",
+		"_note": "Danish hyphenated compound list 'træ- og noteposition'; idiomatic.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.discreteNotify": {
+		"en": "Manual - notify me discreetly",
+		"da": "Manuel – giv mig diskret besked",
+		"da_en": "Manual – give me discreet notification",
+		"_note": "Idiomatic Danish.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.electronClientRequired": {
+		"en": "An update of the Electron Client is required",
+		"da": "En opdatering af Electron-klienten er påkrævet",
+		"da_en": "An update of the Electron client is required",
+		"_note": "'Electron' preserved; '-klienten' attached as compound.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.latestVersion": {
+		"en": "Latest version:",
+		"da": "Nyeste version:",
+		"da_en": "Newest version:",
+		"_note": "'Nyeste' (newest) is the natural Danish for 'latest'.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.manualOnly": {
+		"en": "Manual - do not notify me",
+		"da": "Manuel – giv mig ikke besked",
+		"da_en": "Manual – do not give me notification",
+		"_note": "Idiomatic Danish negation.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.newFeaturesAndChanges": {
+		"en": "New features and changes:",
+		"da": "Nye funktioner og ændringer:",
+		"da_en": "New functions and changes:",
+		"_note": "'funktioner' is the standard Danish UI term for 'features'.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.newVersion": {
+		"en": "New Version:",
+		"da": "Ny version:",
+		"da_en": "New version:",
+		"_note": "Danish sentence-case label.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.off": {
+		"en": "Off - stay on this version",
+		"da": "Fra – bliv på denne version",
+		"da_en": "Off – stay on this version",
+		"_note": "'Fra' is standard Danish OS term for 'off'.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.restartToActivate": {
+		"en": "Restart to activate new version",
+		"da": "Genstart for at aktivere den nye version",
+		"da_en": "Restart to activate the new version",
+		"_note": "Danish requires definite article 'den nye'; idiomatic.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.strongNotify": {
+		"en": "Manual - notify me clearly",
+		"da": "Manuel – giv mig tydelig besked",
+		"da_en": "Manual – give me clear notification",
+		"_note": "Idiomatic Danish; 'tydelig besked' = clear notification.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.verifyingSignature": {
+		"en": "Verifying Signature...",
+		"da": "Verificerer signatur...",
+		"da_en": "Verifying signature...",
+		"_note": "Direct equivalent.",
+		"_recommendation": "accept"
+	},
+	"settingsUpgrade.chooseCredentials": {
+		"en": "Choose your credentials",
+		"da": "Vælg dine loginoplysninger",
+		"da_en": "Choose your login information",
+		"_note": "'loginoplysninger' for credentials; consistent with other usages.",
+		"_recommendation": "accept"
+	},
+	"settingsUpgrade.currentPassword": {
+		"en": "Current Password:",
+		"da": "Nuværende adgangskode:",
+		"da_en": "Current password:",
+		"_note": "Danish sentence-case label.",
+		"_recommendation": "accept"
+	},
+	"settingsUpgrade.newPassword": {
+		"en": "New Password:",
+		"da": "Ny adgangskode:",
+		"da_en": "New password:",
+		"_note": "Danish sentence-case label.",
+		"_recommendation": "accept"
+	},
+	"settingsUpgrade.tab": {
+		"en": "Connect Cloud",
+		"da": "Forbind sky",
+		"da_en": "Connect cloud",
+		"_note": "Danish sentence-case.",
+		"_recommendation": "accept"
+	},
+	"settingsUpgrade.upgradeError": {
+		"en": "Error upgrading account. Please try again later.",
+		"da": "Fejl ved opgradering af konto. Prøv venligst igen senere.",
+		"da_en": "Error on upgrading of account. Please try again later.",
+		"_note": "Reformulated as 'Fejl ved' nominal phrase, idiomatic Danish.",
+		"_recommendation": "accept"
+	},
+	"shareDialog.acceptInstruction": {
+		"en": "{name} will need to accept the share using the menu item 'Accept Share'",
+		"da": "{name} skal acceptere delingen via menupunktet 'Accepter deling'",
+		"da_en": "{name} must accept the share via the menu item 'Accept share'",
+		"_note": "Placeholder preserved; quoted menu item matches contextMenu.acceptShare ('Accepter deling').",
+		"_recommendation": "accept"
+	},
+	"shareDialog.codeHint": {
+		"en": "Then share the provided one time code with them so they can accept the share.",
+		"da": "Del derefter den viste engangskode med dem, så de kan acceptere delingen.",
+		"da_en": "Then share the displayed one-time code with them, so they can accept the share.",
+		"_note": "'viste' (displayed) is reasonable equivalent of 'provided' in this UI context.",
+		"_recommendation": "accept"
+	},
+	"shareDialog.codeInstruction": {
+		"en": "Share this one time code with {name} to complete the share of {noteName}",
+		"da": "Del denne engangskode med {name} for at fuldføre delingen af {noteName}",
+		"da_en": "Share this one-time code with {name} to complete the sharing of {noteName}",
+		"_note": "Both placeholders preserved; meaning identical.",
+		"_recommendation": "accept"
+	},
+	"shareDialog.loseCodeHint": {
+		"en": "If you lose this code, simply share {noteName} with {name} again to show the code again.",
+		"da": "Hvis du mister denne kode, så del blot {noteName} med {name} igen for at få vist koden på ny.",
+		"da_en": "If you lose this code, then simply share {noteName} with {name} again to have the code shown anew.",
+		"_note": "Both placeholders preserved; idiomatic Danish 'så ... blot' for 'simply'.",
+		"_recommendation": "accept"
+	},
+	"shareDialog.multipleUsersHint": {
+		"en": "If you wish to share this note with multiple people you will need to repeat this process for each user.",
+		"da": "Hvis du ønsker at dele denne note med flere personer, skal du gentage denne proces for hver bruger.",
+		"da_en": "If you wish to share this note with several persons, you must repeat this process for each user.",
+		"_note": "Direct equivalent; Danish requires comma before main clause.",
+		"_recommendation": "accept"
+	},
+	"shareDialog.shareFailed": {
+		"en": "Unable to share, please verify username and internet connection.",
+		"da": "Kunne ikke dele, kontroller venligst brugernavn og internetforbindelse.",
+		"da_en": "Could not share, please check username and internet connection.",
+		"_note": "'Kunne ikke' (could not) is the standard Danish rendering for 'unable to'.",
+		"_recommendation": "accept"
+	},
+	"shareDialog.title": {
+		"en": "Share Note",
+		"da": "Del note",
+		"da_en": "Share note",
+		"_note": "Danish sentence-case title.",
+		"_recommendation": "accept"
+	},
+	"statusBar.syncError": {
+		"en": "Synchronization Error (see details)",
+		"da": "Synkroniseringsfejl (se detaljer)",
+		"da_en": "Synchronization error (see details)",
+		"_note": "Compound noun + sentence-case.",
+		"_recommendation": "accept"
+	},
+	"statusBar.syncErrorLimitExceeded": {
+		"en": "Sync Error: Limit exceeded (see details)",
+		"da": "Synk-fejl: grænse overskredet (se detaljer)",
+		"da_en": "Sync error: limit exceeded (see details)",
+		"_note": "'Synk-fejl' uses Danish hyphenated compound; lowercased after colon per Danish convention.",
+		"_recommendation": "accept"
+	},
+	"statusBar.syncErrorNoteSize": {
+		"en": "Sync Error: Note size exceeded (see details)",
+		"da": "Synk-fejl: notestørrelse overskredet (se detaljer)",
+		"da_en": "Sync error: note size exceeded (see details)",
+		"_note": "Danish compound + lowercased after colon.",
+		"_recommendation": "accept"
+	},
+	"statusBar.syncErrorServerRejection": {
+		"en": "Sync Error: Server rejection (see details)",
+		"da": "Synk-fejl: serveren afviste (se detaljer)",
+		"da_en": "Sync error: the server rejected (see details)",
+		"_note": "Verbal phrasing 'serveren afviste' (the server rejected) is more natural Danish than the noun form 'serverafvisning'.",
+		"_recommendation": "accept"
+	},
+	"subAccount.tab": {
+		"en": "Billing Address",
+		"da": "Faktureringsadresse",
+		"da_en": "Billing address",
+		"_note": "Danish compound noun.",
+		"_recommendation": "accept"
+	},
+	"subCustomerData.company": {
+		"en": "Company",
+		"da": "Firma",
+		"da_en": "Firm",
+		"_note": "'Firma' is standard Danish for company.",
+		"_recommendation": "accept"
+	},
+	"subCustomerData.postalCode": {
+		"en": "Postal Code",
+		"da": "Postnummer",
+		"da_en": "Postal number",
+		"_note": "'Postnummer' is the standard Danish term.",
+		"_recommendation": "accept"
+	},
+	"subCustomerData.recommendFillOut": {
+		"en": "We recommend filling out all relevant fields if you need a tax invoice",
+		"da": "Vi anbefaler, at du udfylder alle relevante felter, hvis du har brug for en momsfaktura",
+		"da_en": "We recommend that you fill out all relevant fields if you need a VAT invoice",
+		"_note": "Danish 'momsfaktura' is the standard term for a VAT/tax invoice; idiomatic 'anbefaler, at'.",
+		"_recommendation": "accept"
+	},
+	"subCustomerData.stateProvince": {
+		"en": "State/Province",
+		"da": "Stat/provins",
+		"da_en": "State/province",
+		"_note": "Danish sentence-case label.",
+		"_recommendation": "accept"
+	},
+	"subCustomerData.whyAsk": {
+		"en": "Why do we ask for this information?",
+		"da": "Hvorfor spørger vi om disse oplysninger?",
+		"da_en": "Why do we ask about this information?",
+		"_note": "Direct equivalent.",
+		"_recommendation": "accept"
+	},
+	"subCustomerData.whyAskInfo": {
+		"en": "We need your country of residence to manage VAT (this has no impact on the price you pay - the price you are shown is the final price).<br /><br />We will use your email address solely to send you receipts, notifications of failed payments, and reminders prior to renewal. Your email address also serves as a last resort for canceling your subscription in case you lose access to your account.<br /><br />We will never use your email address for marketing purposes, newsletters, or any other kind of unsolicited communication.<br /><br />The above data is shared with our payment provider to process your payment, primarily for fraud prevention.<br /><br />We will, however, never share your data with any other parties. See our <a href=\"https://mimiri.io/privacy\" target=\"_blank\">Privacy Policy</a> for details.<br /><br />All data is handled in compliance with both GDPR and Swiss data protection laws, regardless of your country of residence.",
+		"da": "Vi har brug for dit bopælsland for at håndtere moms (dette har ingen indflydelse på den pris, du betaler – den viste pris er den endelige pris).<br /><br />Vi vil udelukkende bruge din e-mailadresse til at sende dig kvitteringer, notifikationer om mislykkede betalinger og påmindelser før fornyelse. Din e-mailadresse fungerer også som sidste udvej til at opsige dit abonnement, hvis du mister adgangen til din konto.<br /><br />Vi vil aldrig bruge din e-mailadresse til markedsføring, nyhedsbreve eller anden form for uopfordret kommunikation.<br /><br />Ovennævnte data deles med vores betalingsudbyder for at behandle din betaling, primært med henblik på svindelforebyggelse.<br /><br />Vi vil dog aldrig dele dine data med andre parter. Se vores <a href=\"https://mimiri.io/privacy\" target=\"_blank\">privatlivspolitik</a> for detaljer.<br /><br />Alle data håndteres i overensstemmelse med både GDPR og schweizisk databeskyttelseslovgivning, uanset dit bopælsland.",
+		"da_en": "We need your country of residence to handle VAT (this has no influence on the price you pay – the displayed price is the final price).<br /><br />We will use your email address solely to send you receipts, notifications about failed payments and reminders before renewal. Your email address also functions as a last resort to cancel your subscription, if you lose access to your account.<br /><br />We will never use your email address for marketing, newsletters or any other form of unsolicited communication.<br /><br />The above-mentioned data is shared with our payment provider in order to process your payment, primarily for the purpose of fraud prevention.<br /><br />We will however never share your data with other parties. See our <a href=\"https://mimiri.io/privacy\" target=\"_blank\">privacy policy</a> for details.<br /><br />All data is handled in accordance with both GDPR and Swiss data protection legislation, regardless of your country of residence.",
+		"_note": "All <br /> tags, <a href=\"https://mimiri.io/privacy\" target=\"_blank\"> markup, and URL preserved exactly. En-dash used per Danish typography. GDPR preserved as acronym. Idiomatic Danish throughout.",
+		"_recommendation": "accept"
+	},
+	"subInvoiceItem.due": {
+		"en": "Due:",
+		"da": "Forfalder:",
+		"da_en": "Falls due:",
+		"_note": "'Forfalder' is the standard Danish financial term for due date.",
+		"_recommendation": "accept"
+	},
+	"subInvoiceItem.invoiceNo": {
+		"en": "Invoice No:",
+		"da": "Fakturanr.:",
+		"da_en": "Invoice no.:",
+		"_note": "Standard Danish abbreviation 'nr.' for 'nummer'.",
+		"_recommendation": "accept"
+	},
+	"subInvoiceItem.payNow": {
+		"en": "Pay Now",
+		"da": "Betal nu",
+		"da_en": "Pay now",
+		"_note": "Danish sentence-case button label.",
+		"_recommendation": "accept"
+	},
+	"subInvoiceItem.view": {
+		"en": "View",
+		"da": "Vis",
+		"da_en": "Show",
+		"_note": "'Vis' is the standard Danish UI verb for view/show.",
+		"_recommendation": "accept"
+	},
+	"subInvoiceItem.willBePaidAutomatically": {
+		"en": "Will be paid automatically on",
+		"da": "Vil blive betalt automatisk den",
+		"da_en": "Will be paid automatically the",
+		"_note": "Danish 'den' precedes a date in idiomatic prose.",
+		"_recommendation": "accept"
+	},
+	"subInvoices.noInvoicesYet": {
+		"en": "No Invoices Yet",
+		"da": "Ingen fakturaer endnu",
+		"da_en": "No invoices yet",
+		"_note": "Danish sentence-case empty-state heading.",
+		"_recommendation": "accept"
+	},
+	"subNewSubscriptionView.faq1Answer": {
+		"en": "Yes, the free tier is free and will remain so.\nFor most use cases, the limits are more than adequate.",
+		"da": "Ja, det gratis niveau er gratis og forbliver det.\nFor de fleste anvendelser er grænserne mere end tilstrækkelige.",
+		"da_en": "Yes, the free tier is free and remains so.\nFor most uses the limits are more than sufficient.",
+		"_note": "Newline preserved; idiomatic Danish.",
+		"_recommendation": "accept"
+	},
+	"subNewSubscriptionView.faq2Answer": {
+		"en": "The main reason to subscribe is to support the ongoing development of Mimiri Notes.",
+		"da": "Den primære grund til at abonnere er at støtte den fortsatte udvikling af Mimiri Notes.",
+		"da_en": "The primary reason to subscribe is to support the continued development of Mimiri Notes.",
+		"_note": "Brand 'Mimiri Notes' preserved.",
+		"_recommendation": "accept"
+	},
+	"subNewSubscriptionView.faq2Question": {
+		"en": "Why would I choose a paid plan?",
+		"da": "Hvorfor skulle jeg vælge en betalt plan?",
+		"da_en": "Why should I choose a paid plan?",
+		"_note": "'skulle' is idiomatic Danish for hypothetical 'would'.",
+		"_recommendation": "accept"
+	},
+	"subNewSubscriptionView.promoCopy": {
+		"en": "The free tier isn't a trial - it's built to be fully usable and will always be here. \nBut it's our subscribers who make it possible for Mimiri Notes to keep moving forward for everyone.",
+		"da": "Det gratis niveau er ikke en prøveperiode – det er bygget til at være fuldt brugbart og vil altid være her. \nMen det er vores abonnenter, der gør det muligt for Mimiri Notes at fortsætte med at udvikle sig til gavn for alle.",
+		"da_en": "The free tier is not a trial period – it is built to be fully usable and will always be here. \nBut it is our subscribers who make it possible for Mimiri Notes to keep developing for the benefit of everyone.",
+		"_note": "Newline preserved; en-dash per Danish typography; brand 'Mimiri Notes' preserved; idiomatic 'til gavn for alle' = 'for everyone'.",
+		"_recommendation": "accept"
+	},
+	"subNewSubscriptionView.tab": {
+		"en": "Current Plan",
+		"da": "Nuværende plan",
+		"da_en": "Current plan",
+		"_note": "Danish sentence-case tab label.",
+		"_recommendation": "accept"
+	},
+	"subPayInvoice.tab": {
+		"en": "Pay Invoice",
+		"da": "Betal faktura",
+		"da_en": "Pay invoice",
+		"_note": "Danish sentence-case tab label.",
+		"_recommendation": "accept"
+	},
+	"subPaymentMethodItem.makeDefault": {
+		"en": "Make default",
+		"da": "Brug som standard",
+		"da_en": "Use as default",
+		"_note": "Idiomatic Danish for setting a default; literal 'gør til standard' would be unnatural.",
+		"_recommendation": "accept"
+	},
+	"subPaymentMethods.createNew": {
+		"en": "Create New",
+		"da": "Opret ny",
+		"da_en": "Create new",
+		"_note": "Danish sentence-case button label.",
+		"_recommendation": "accept"
+	},
+	"subPaymentMethods.noMethodsYet": {
+		"en": "No Payment Methods Yet",
+		"da": "Ingen betalingsmetoder endnu",
+		"da_en": "No payment methods yet",
+		"_note": "Danish sentence-case empty-state heading.",
+		"_recommendation": "accept"
+	},
+	"subPaymentMethods.tab": {
+		"en": "Payment Methods",
+		"da": "Betalingsmetoder",
+		"da_en": "Payment methods",
+		"_note": "Danish compound noun.",
+		"_recommendation": "accept"
+	},
+	"subPaymentSummary.acceptPrivacy": {
+		"en": "I have read and accept the",
+		"da": "Jeg har læst og accepterer",
+		"da_en": "I have read and accept",
+		"_note": "Mirrors acceptTerms; inline phrase before link.",
+		"_recommendation": "accept"
+	},
+	"subPaymentSummary.acceptTerms": {
+		"en": "I have read and accept the",
+		"da": "Jeg har læst og accepterer",
+		"da_en": "I have read and accept",
+		"_note": "Danish drops the article since the following link text is a noun phrase; consistent with Danish acceptance phrasing.",
+		"_recommendation": "accept"
+	},
+	"subPaymentSummary.items": {
+		"en": "Items",
+		"da": "Poster",
+		"da_en": "Entries",
+		"_note": "'Poster' is standard Danish for invoice line items.",
+		"_recommendation": "accept"
+	},
+	"subPaymentSummary.privacyPolicy": {
+		"en": "Privacy Policy",
+		"da": "privatlivspolitikken",
+		"da_en": "the privacy policy",
+		"_note": "Lower-case + definite suffix because this is inline link text after 'accepterer'.",
+		"_recommendation": "accept"
+	},
+	"subPaymentSummary.summary": {
+		"en": "Summary",
+		"da": "Oversigt",
+		"da_en": "Overview",
+		"_note": "'Oversigt' is the standard Danish UI term for a summary section.",
+		"_recommendation": "accept"
+	},
+	"subPaymentSummary.termsAndConditions": {
+		"en": "Terms & Conditions",
+		"da": "vilkår og betingelser",
+		"da_en": "terms and conditions",
+		"_note": "Lower-case because this string is the inline link text following 'accepterer'; idiomatic Danish.",
+		"_recommendation": "accept"
+	},
+	"subPaymentSummary.total": {
+		"en": "Total amount to be paid now:",
+		"da": "Samlet beløb, der skal betales nu:",
+		"da_en": "Total amount that must be paid now:",
+		"_note": "Idiomatic Danish relative clause with required comma.",
+		"_recommendation": "accept"
+	},
+	"subSubscriptionItem.endedOn": {
+		"en": "Ended on:",
+		"da": "Sluttede:",
+		"da_en": "Ended:",
+		"_note": "Danish past tense without preposition; mirrors endsOn.",
+		"_recommendation": "accept"
+	},
+	"subSubscriptionItem.endsOn": {
+		"en": "Ends on:",
+		"da": "Slutter:",
+		"da_en": "Ends:",
+		"_note": "Danish drops the preposition; the date that follows is self-explanatory.",
+		"_recommendation": "accept"
+	},
+	"subSubscriptionItem.manuallyRenewBefore": {
+		"en": "Manually renew before:",
+		"da": "Forny manuelt inden:",
+		"da_en": "Renew manually before:",
+		"_note": "Adverb 'manuelt' moved to natural Danish position.",
+		"_recommendation": "accept"
+	},
+	"subSubscriptionItem.payNow": {
+		"en": "Pay Now",
+		"da": "Betal nu",
+		"da_en": "Pay now",
+		"_note": "Danish sentence-case button label.",
+		"_recommendation": "accept"
+	},
+	"subSubscriptionItem.renewsAutomatically": {
+		"en": "Renews automatically on:",
+		"da": "Fornyes automatisk:",
+		"da_en": "Renews automatically:",
+		"_note": "Danish drops the preposition 'on:'; idiomatic.",
+		"_recommendation": "accept"
+	},
+	"subUpgradeView.chosenPlan": {
+		"en": "Chosen Plan",
+		"da": "Valgt plan",
+		"da_en": "Chosen plan",
+		"_note": "Danish sentence-case heading.",
+		"_recommendation": "accept"
+	},
+	"subWaitingForPayment.failure": {
+		"en": "Failure",
+		"da": "Fejl",
+		"da_en": "Error",
+		"_note": "Danish 'Fejl' covers both 'error' and 'failure' in this UI context.",
+		"_recommendation": "accept"
+	},
+	"subWaitingForPayment.waitingAutomatic": {
+		"en": "Waiting for payment to complete (this will happen automatically)",
+		"da": "Venter på, at betalingen fuldføres (dette sker automatisk)",
+		"da_en": "Waiting for the payment to be completed (this happens automatically)",
+		"_note": "Idiomatic Danish.",
+		"_recommendation": "accept"
+	},
+	"subWaitingForPayment.waitingBrowser": {
+		"en": "Waiting for payment to be completed in browser window",
+		"da": "Venter på, at betalingen fuldføres i browservinduet",
+		"da_en": "Waiting for the payment to be completed in the browser window",
+		"_note": "Danish requires comma before subordinating 'at'; definite suffixes added per convention.",
+		"_recommendation": "accept"
+	},
+	"syncErrorDialog.dataLimitText": {
+		"en": "You have created {used} of your {max} data\n\nYou can either delete some data or upgrade your account to increase the limit.",
+		"da": "Du har oprettet {used} af dine {max} data\n\nDu kan enten slette nogle data eller opgradere din konto for at hæve grænsen.",
+		"da_en": "You have created {used} of your {max} data\n\nYou can either delete some data or upgrade your account to raise the limit.",
+		"_note": "Both placeholders preserved; double newline preserved.",
+		"_recommendation": "accept"
+	},
+	"syncErrorDialog.dataLimitTitle": {
+		"en": "Data Limit Reached",
+		"da": "Datagrænse nået",
+		"da_en": "Data limit reached",
+		"_note": "Compound noun; Danish sentence-case.",
+		"_recommendation": "accept"
+	},
+	"syncErrorDialog.noteLimitText": {
+		"en": "You have created {count} of your {max} notes\nYou can either delete some notes or upgrade your account to increase the limit.",
+		"da": "Du har oprettet {count} af dine {max} noter\nDu kan enten slette nogle noter eller opgradere din konto for at hæve grænsen.",
+		"da_en": "You have created {count} of your {max} notes\nYou can either delete some notes or upgrade your account to raise the limit.",
+		"_note": "Both placeholders preserved; '\\n' preserved; 'hæve' (raise) is natural Danish for 'increase' in this quota context.",
+		"_recommendation": "accept"
+	},
+	"syncErrorDialog.noteLimitTitle": {
+		"en": "Note Limit Reached",
+		"da": "Notegrænse nået",
+		"da_en": "Note limit reached",
+		"_note": "Compound noun; Danish sentence-case.",
+		"_recommendation": "accept"
+	},
+	"syncErrorDialog.noteSizeLimitText": {
+		"en": "The Note '{title}' ({size})\nexceeds the size limit ({max})\n\nYou can either split the note into smaller notes or upgrade your account to increase the limit.\n\nYou can also try deleting note history to reduce the size of the note. (This can be done in the note properties)",
+		"da": "Noten »{title}« ({size})\noverskrider størrelsesgrænsen ({max})\n\nDu kan enten opdele noten i mindre noter eller opgradere din konto for at hæve grænsen.\n\nDu kan også prøve at slette notens historik for at reducere dens størrelse. (Dette kan gøres i noteegenskaberne)",
+		"da_en": "The note »{title}« ({size})\nexceeds the size limit ({max})\n\nYou can either split the note into smaller notes or upgrade your account to raise the limit.\n\nYou can also try to delete the note's history to reduce its size. (This can be done in the note properties)",
+		"_note": "All placeholders and newlines preserved; uses Danish guillemets »« as title-quote convention (context note explicitly invites local quote convention).",
+		"_recommendation": "accept"
+	},
+	"syncErrorDialog.noteSizeLimitTitle": {
+		"en": "Note Size Limit Reached",
+		"da": "Grænse for notestørrelse nået",
+		"da_en": "Limit for note size reached",
+		"_note": "Reordered to natural Danish phrasing; meaning identical.",
+		"_recommendation": "accept"
+	},
+	"syncErrorDialog.serverRejectionText": {
+		"en": "The server rejected the synchronization request.\n\nThis is likely a result of a temporary issue, if it persists please contact support.",
+		"da": "Serveren afviste synkroniseringsanmodningen.\n\nDette skyldes sandsynligvis et midlertidigt problem; hvis det fortsætter, så kontakt support.",
+		"da_en": "The server rejected the synchronization request.\n\nThis is likely due to a temporary problem; if it persists, then contact support.",
+		"_note": "Newlines preserved; semicolon used to separate clauses, idiomatic Danish.",
+		"_recommendation": "accept"
+	},
+	"syncErrorDialog.syncErrorText": {
+		"en": "An unexpected error occurred while attempting to synchronize.\n\nCheck your internet connection or try again later.",
+		"da": "Der opstod en uventet fejl under forsøg på at synkronisere.\n\nKontroller din internetforbindelse, eller prøv igen senere.",
+		"da_en": "An unexpected error occurred during the attempt to synchronize.\n\nCheck your internet connection, or try again later.",
+		"_note": "Newlines preserved; minor punctuation difference per Danish comma rules.",
+		"_recommendation": "accept"
+	},
+	"syncErrorDialog.syncErrorTitle": {
+		"en": "Synchronization Error",
+		"da": "Synkroniseringsfejl",
+		"da_en": "Synchronization error",
+		"_note": "Compound noun; sentence-case.",
+		"_recommendation": "accept"
+	},
+	"textNoteProperties.lastModified": {
+		"en": "Last Modified:",
+		"da": "Senest ændret:",
+		"da_en": "Most recently modified:",
+		"_note": "'Senest ændret' is the standard Danish UI label.",
+		"_recommendation": "accept"
+	},
+	"textNoteProperties.noOneAccepted": {
+		"en": "You have shared this note but no one has accepted",
+		"da": "Du har delt denne note, men ingen har accepteret",
+		"da_en": "You have shared this note, but no one has accepted",
+		"_note": "Danish requires comma before 'men' (but).",
+		"_recommendation": "accept"
+	},
+	"titleBar.accountConnecting": {
+		"en": "Account (Connecting)",
+		"da": "Konto (opretter forbindelse)",
+		"da_en": "Account (establishing connection)",
+		"_note": "'opretter forbindelse' is idiomatic Danish for 'connecting'.",
+		"_recommendation": "accept"
+	},
+	"titleBar.accountOffline": {
+		"en": "Account (Offline)",
+		"da": "Konto (offline)",
+		"da_en": "Account (offline)",
+		"_note": "Danish convention lowercases parenthetical state words.",
+		"_recommendation": "accept"
+	},
+	"titleBar.accountOnline": {
+		"en": "Account (Online)",
+		"da": "Konto (online)",
+		"da_en": "Account (online)",
+		"_note": "Danish convention lowercases parenthetical state words.",
+		"_recommendation": "accept"
+	},
+	"titleBar.file": {
+		"en": "File",
+		"da": "Filer",
+		"da_en": "Files",
+		"_note": "Danish OS menu convention uses plural 'Filer' for the File menu.",
+		"_recommendation": "accept"
+	},
+	"titleBar.screenSharingHidden": {
+		"en": "Invisible to screen sharing/screenshot",
+		"da": "Usynlig for skærmdeling/-foto",
+		"da_en": "Invisible to screen sharing/-photo",
+		"_note": "Mirrors the visible variant.",
+		"_recommendation": "accept"
+	},
+	"titleBar.screenSharingVisible": {
+		"en": "Warning: Visible to screen sharing/screenshot!",
+		"da": "Advarsel: Synlig for skærmdeling/-foto!",
+		"da_en": "Warning: Visible to screen sharing/-photo!",
+		"_note": "Uses Danish compound shortcut '/-foto' for 'screenshot'; warning emphasis preserved.",
+		"_recommendation": "accept"
+	},
+	"titleBar.searchNotes": {
+		"en": "Search Notes",
+		"da": "Søg i noter",
+		"da_en": "Search in notes",
+		"_note": "Danish 'søg i' takes preposition; idiomatic.",
+		"_recommendation": "accept"
+	},
+	"titleBar.tools": {
+		"en": "Tools",
+		"da": "Funktioner",
+		"da_en": "Functions",
+		"_note": "Danish OS menu convention uses 'Funktioner' for the Tools menu.",
+		"_recommendation": "accept"
+	},
+	"titleBar.view": {
+		"en": "View",
+		"da": "Vis",
+		"da_en": "Show",
+		"_note": "Danish OS menu convention: 'Vis' is the standard label for the View menu.",
+		"_recommendation": "accept"
+	},
+	"usernameInput.unavailable": {
+		"en": "Unavailable",
+		"da": "Optaget",
+		"da_en": "Taken",
+		"_note": "'Optaget' (taken) is the natural Danish status for usernames.",
+		"_recommendation": "accept"
+	}
+}
