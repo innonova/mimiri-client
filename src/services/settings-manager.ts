@@ -150,7 +150,7 @@ class SettingsManager {
 				this.state.isNewInstall = true
 			}
 		}
-		if (this.state.defaultEditor === undefined && !this.state.isNewInstall) {
+		if (this.state.defaultEditor === undefined /* && !this.state.isNewInstall */) {
 			// TODO implement selection prompt
 			this.state.defaultEditor = 'code'
 		}

@@ -354,6 +354,10 @@
 		"disableDevBlogTooltip": "如果您觉得开发博客有干扰，可以选择隐藏它",
 		"allowMonacoOnMobile": "在移动端启用代码编辑器",
 		"allowMonacoOnMobileTooltip": "在移动端启用代码编辑器（不推荐，因为代码编辑器未针对移动端优化）",
+		"defaultEditor": "默认编辑器",
+		"defaultEditorTooltip": "用于没有自己编辑器选择的笔记的编辑器",
+		"editorCode": "代码编辑器",
+		"editorWysiwyg": "富文本编辑器",
 		"save": "保存"
 	},
 	"settingsPassword": {

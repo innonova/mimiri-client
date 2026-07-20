@@ -1,11 +1,15 @@
 import { expect, Locator } from '@playwright/test'
 import { mimiri } from '../framework/mimiri-context'
 import { editor } from '../selectors'
+import { waitForSyncToEnd } from '../core/actions'
 
 // The two user-selectable editor modes. 'code' is Monaco (the "advanced"
-// editor), 'wysiwyg' is ProseMirror. Fresh contexts start with the app
-// default (ProseMirror on a new install); tests that need Monaco switch via
-// the toolbar toggle button — the same path a user takes.
+// editor), 'wysiwyg' is ProseMirror. Notes open in the global default from
+// Settings → General unless they carry their own choice; tests switch via
+// the toolbar toggle button — the same path a user takes. The toggle is
+// per-note: it records a pending choice that never shows as an unsaved
+// change, persisted silently by the regular save triggers (note switch,
+// blur, Ctrl+S).
 export type EditorMode = 'code' | 'wysiwyg'
 
 export const editorModes: EditorMode[] = ['wysiwyg', 'code']
@@ -15,13 +19,27 @@ export const surface = (mode: EditorMode) => (mode === 'code' ? editor.monaco() 
 const container = (mode: EditorMode) => (mode === 'code' ? editor.monacoContainer() : editor.proseMirrorContainer())
 
 // Switch the editor to the requested mode via the toolbar toggle if it is not
-// already active. Idempotent and cheap when the mode already matches.
+// already active. Idempotent and cheap when the mode already matches. Opening
+// a note applies its per-note editor choice asynchronously (after the implicit
+// save of the previous note), so the whole check-and-toggle is retried until
+// the requested mode is stable.
 export const ensureEditorMode = async (mode: EditorMode) => {
-	if (!(await container(mode).isVisible())) {
-		await editor.toggleEditMode().click()
-	}
-	await expect(container(mode)).toBeVisible()
-	await expect(container(mode === 'code' ? 'wysiwyg' : 'code')).not.toBeVisible()
+	await expect(async () => {
+		if (!(await container(mode).isVisible())) {
+			await editor.toggleEditMode().click()
+		}
+		await expect(container(mode)).toBeVisible({ timeout: 1000 })
+		await expect(container(mode === 'code' ? 'wysiwyg' : 'code')).not.toBeVisible({ timeout: 1000 })
+	}).toPass({ timeout: 10_000 })
+}
+
+// Persist the current note's pending editor choice. A mode toggle never
+// lights up the save button (a view switch is not shown as an unsaved
+// change), so persist via Ctrl+S, which saves silently.
+export const persistEditorMode = async (mode: EditorMode) => {
+	await focusEditor(mode)
+	await mimiri().page.keyboard.press('Control+s')
+	await waitForSyncToEnd()
 }
 
 export const focusEditor = async (mode: EditorMode) => {

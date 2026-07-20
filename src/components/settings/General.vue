@@ -19,6 +19,15 @@
 					<option value="dark">{{ $t('settingsGeneral.themeDark') }}</option>
 				</select>
 			</div>
+			<div class="p-1 pt-2 m-auto text-left flex items-center">
+				<div class="w-20" :title="$t('settingsGeneral.defaultEditorTooltip')">
+					{{ $t('settingsGeneral.defaultEditor') }}
+				</div>
+				<select v-model="defaultEditor" class="ml-1" data-testid="settings-default-editor">
+					<option value="wysiwyg">{{ $t('settingsGeneral.editorWysiwyg') }}</option>
+					<option value="code">{{ $t('settingsGeneral.editorCode') }}</option>
+				</select>
+			</div>
 			<div v-if="mimiriPlatform.isLinuxApp || env.DEV" class="p-1 pt-2 m-auto text-left flex items-center">
 				<div class="w-20">{{ $t('settingsGeneral.trayIcon') }}</div>
 				<select v-model="trayIcon" class="ml-1">
@@ -105,6 +114,7 @@ const disableDevBlog = ref(false)
 const useChevrons = ref(false)
 const showVerticalGuides = ref(false)
 const allowMonacoOnMobile = ref(false)
+const defaultEditor = ref('wysiwyg')
 
 const canSave = computed(
 	() =>
@@ -118,7 +128,9 @@ const canSave = computed(
 		disableDevBlog.value !== settingsManager.disableDevBlog ||
 		useChevrons.value !== settingsManager.useChevrons ||
 		showVerticalGuides.value !== settingsManager.showVerticalGuides ||
-		allowMonacoOnMobile.value !== settingsManager.allowMonacoOnMobile,
+		allowMonacoOnMobile.value !== settingsManager.allowMonacoOnMobile ||
+		defaultEditor.value !==
+			(mimiriPlatform.isDesktop ? (settingsManager.defaultEditor ?? 'code') : settingsManager.defaultEditorMobile),
 )
 
 onMounted(() => {
@@ -133,6 +145,9 @@ onMounted(() => {
 	useChevrons.value = settingsManager.useChevrons
 	showVerticalGuides.value = settingsManager.showVerticalGuides
 	allowMonacoOnMobile.value = settingsManager.allowMonacoOnMobile
+	defaultEditor.value = mimiriPlatform.isDesktop
+		? (settingsManager.defaultEditor ?? 'code')
+		: settingsManager.defaultEditorMobile
 })
 
 const save = async () => {
@@ -150,6 +165,11 @@ const save = async () => {
 	settingsManager.useChevrons = useChevrons.value
 	settingsManager.showVerticalGuides = showVerticalGuides.value
 	settingsManager.allowMonacoOnMobile = allowMonacoOnMobile.value
+	if (mimiriPlatform.isDesktop) {
+		settingsManager.defaultEditor = defaultEditor.value
+	} else {
+		settingsManager.defaultEditorMobile = defaultEditor.value
+	}
 	if (reload) {
 		window.location.reload()
 	}

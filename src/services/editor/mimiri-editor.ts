@@ -1,4 +1,4 @@
-import type { MimerNote } from '../types/mimer-note'
+import type { MimerNote, NoteEditorMode } from '../types/mimer-note'
 import { NoteHistory } from './note-history'
 import { mimiriPlatform } from '../mimiri-platform'
 import { EditorMonaco } from './editor-monaco'
@@ -30,6 +30,8 @@ export class MimiriEditor {
 	private _initialText: string = ''
 	private _monacoHasDocument: boolean = false
 	private _proseMirrorHasDocument: boolean = false
+	private _initialEditorMode: NoteEditorMode | undefined
+	private _pendingEditorMode: NoteEditorMode | undefined
 
 	private saveListener: () => void
 	public onSave(listener: () => void) {
@@ -105,6 +107,23 @@ export class MimiriEditor {
 		}
 	}
 
+	// A pending editor-mode change is deliberately not part of the reactive
+	// changed state: switching view must not show as an unsaved change. It
+	// still persists through the regular save triggers, which check this.
+	public get modeChanged() {
+		return this._pendingEditorMode !== this._initialEditorMode
+	}
+
+	private resolveEditor(note?: MimerNote): 'monaco' | 'prosemirror' {
+		const mode =
+			note?.editorMode ??
+			(mimiriPlatform.isDesktop ? settingsManager.defaultEditor : settingsManager.defaultEditorMobile)
+		if (mode === 'code' && (mimiriPlatform.isDesktop || settingsManager.allowMonacoOnMobile)) {
+			return 'monaco'
+		}
+		return 'prosemirror'
+	}
+
 	private activateMonaco() {
 		if (!this._monacoInitialized) {
 			this._monacoInitialized = true
@@ -152,10 +171,7 @@ export class MimiriEditor {
 		this._proseMirrorAutoComplete = proseMirrorAutoComplete
 		this._conflictBanner = conflictBanner
 
-		// TODO store choice per note ?
-		const mode = mimiriPlatform.isDesktop ? settingsManager.defaultEditor : settingsManager.defaultEditorMobile
-
-		if (mode === 'code' && (mimiriPlatform.isDesktop || settingsManager.allowMonacoOnMobile)) {
+		if (this.resolveEditor(this._note) === 'monaco') {
 			this.activateMonaco()
 		} else {
 			void this.activateProseMirror()
@@ -188,11 +204,7 @@ export class MimiriEditor {
 			}
 			this._editorMonaco.readonly = currentReadonly
 			this._editorMonaco.focus()
-			if (mimiriPlatform.isDesktop) {
-				settingsManager.defaultEditor = 'code'
-			} else {
-				settingsManager.defaultEditorMobile = 'code'
-			}
+			this.setPendingEditorMode('code')
 		} else {
 			await this.activateProseMirror()
 			if (!this._proseMirrorHasDocument) {
@@ -206,16 +218,21 @@ export class MimiriEditor {
 			}
 			this._editorProseMirror.readonly = currentReadonly
 			this._editorProseMirror.focus()
-			if (mimiriPlatform.isDesktop) {
-				settingsManager.defaultEditor = 'wysiwyg'
-			} else {
-				settingsManager.defaultEditorMobile = 'wysiwyg'
-			}
+			this.setPendingEditorMode('wysiwyg')
+		}
+	}
+
+	private setPendingEditorMode(mode: NoteEditorMode) {
+		if (this.note && !this.note.isSystem) {
+			// returning to the mode the note opened in restores the stored value (possibly
+			// undefined = "no choice"), so toggling back and forth never leaves a pending change
+			const initialResolved = this.resolveEditor(this.note) === 'monaco' ? 'code' : 'wysiwyg'
+			this._pendingEditorMode = mode === initialResolved ? this._initialEditorMode : mode
 		}
 	}
 
 	public async open(note: MimerNote) {
-		if (this.note && this.note.id !== note.id && this._state.changed) {
+		if (this.note && this.note.id !== note.id && (this._state.changed || this.modeChanged)) {
 			const result = await this.internal_save()
 			if (result !== 'success') {
 				setTimeout(async () => {
@@ -233,11 +250,21 @@ export class MimiriEditor {
 			this._note = undefined
 			this._monacoHasDocument = false
 			this._proseMirrorHasDocument = false
+			this._initialEditorMode = undefined
+			this._pendingEditorMode = undefined
 			this.history.reset()
 			this._activeEditor.setText('')
 			return
 		}
 		if (note.id !== this.note?.id) {
+			this._initialEditorMode = note.editorMode
+			this._pendingEditorMode = note.editorMode
+			const target = this.resolveEditor(note)
+			if (target === 'monaco' && this._activeEditor !== this._editorMonaco) {
+				this.activateMonaco()
+			} else if (target === 'prosemirror' && this._activeEditor !== this._editorProseMirror) {
+				await this.activateProseMirror()
+			}
 			this._note = note
 			this._monacoHasDocument = false
 			this._proseMirrorHasDocument = false
@@ -253,7 +280,7 @@ export class MimiriEditor {
 				this._proseMirrorHasDocument = true
 			}
 		} else {
-			if (!this._state.changed) {
+			if (!this._activeEditor.changed) {
 				this._initialText = note.text
 				this._activeEditor.setText(note.text)
 			} else {
@@ -282,7 +309,7 @@ export class MimiriEditor {
 		const targetText = this._activeEditor.text
 		// const initialText = this._activeEditor.initialText
 		if (noteId) {
-			if (targetText === this._initialText) {
+			if (targetText === this._initialText && !this.modeChanged) {
 				this.resetChanged()
 				return 'success'
 			}
@@ -296,9 +323,16 @@ export class MimiriEditor {
 			while (true) {
 				try {
 					const note = noteManager.tree.getNoteById(noteId)
+					if (this.modeChanged) {
+						note.editorMode = this._pendingEditorMode
+					}
 					if (targetText === note.text) {
+						if (this.modeChanged) {
+							await note.save()
+						}
 						if (note.id === this.note.id) {
 							this._initialText = note.text
+							this._initialEditorMode = this._pendingEditorMode
 							this._state.changed = false
 							this.resetChanged()
 						}
@@ -323,6 +357,7 @@ export class MimiriEditor {
 					await note.save()
 					if (note.id === this.note.id) {
 						this._initialText = note.text
+						this._initialEditorMode = this._pendingEditorMode
 						this._state.changed = false
 						this.resetChanged()
 					}

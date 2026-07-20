@@ -354,6 +354,10 @@
 		"disableDevBlogTooltip": "If you find the developer blog annoying, you can choose to hide it",
 		"allowMonacoOnMobile": "Enable code editor on Mobile",
 		"allowMonacoOnMobileTooltip": "Enable code editor on Mobile (discouraged as the code editor is not mobile optimized)",
+		"defaultEditor": "Default editor",
+		"defaultEditorTooltip": "Editor used for notes that do not have their own editor choice",
+		"editorCode": "Code editor",
+		"editorWysiwyg": "Rich text editor",
 		"save": "Save"
 	},
 	"settingsPassword": {

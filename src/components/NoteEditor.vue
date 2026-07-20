@@ -452,7 +452,9 @@ const showWordWrap = computed(() => {
 })
 
 const save = async () => {
-	if (activeViewModel && saveEnabled.value && !saveInProgress) {
+	// A pending editor-mode change saves silently: it never lights up the save
+	// button (saveEnabled), but rides the same triggers (blur, Ctrl+S, note switch)
+	if (activeViewModel && (saveEnabled.value || mimiriEditor.modeChanged) && !saveInProgress) {
 		saveInProgress = true
 		try {
 			await mimiriEditor.save()

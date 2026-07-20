@@ -354,6 +354,10 @@
 		"disableDevBlogTooltip": "Hvis du synes, udviklerbloggen er irriterende, kan du vælge at skjule den",
 		"allowMonacoOnMobile": "Aktiver kodeeditor på mobil",
 		"allowMonacoOnMobileTooltip": "Aktiver kodeeditor på mobil (frarådes, da kodeeditoren ikke er optimeret til mobil)",
+		"defaultEditor": "Standardeditor",
+		"defaultEditorTooltip": "Editor der bruges til noter, som ikke har deres eget editorvalg",
+		"editorCode": "Kodeeditor",
+		"editorWysiwyg": "Formateret tekst",
 		"save": "Gem"
 	},
 	"settingsPassword": {

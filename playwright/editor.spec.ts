@@ -12,6 +12,7 @@ import {
 	expectToolbarButtonEnabled,
 	focusEditor,
 	openNoteInMode,
+	persistEditorMode,
 	readRawText,
 	selectAllInEditor,
 	selectLineInEditor,
@@ -242,6 +243,10 @@ for (const mode of editorModes) {
 			await withMimiriContext(async () => {
 				await openNoteInMode(mode)
 				await createRootNote('Second Note')
+				// Pin Second Note to the mode under test as well (persisted by the
+				// implicit save on the next switch), so no async editor switch
+				// happens when moving between the notes below
+				await ensureEditorMode(mode)
 				await note.item('Editor Test Note').click()
 				await ensureEditorMode(mode)
 				await typeInEditor(mode, 'implicitly saved')
@@ -455,11 +460,17 @@ test.describe('editor (wysiwyg only)', () => {
 		await withMimiriContext(async () => {
 			await mimiri().home()
 			await expect(titleBar.accountButton()).toBeVisible()
+			// Notes created with text get pinned to the code editor (the helper
+			// types raw text there); re-pin each to wysiwyg while it is open and
+			// settled, so no async editor switch happens mid-test
 			await createRootNote('Find A', 'shared alpha content')
+			await ensureEditorMode('wysiwyg')
 			await createRootNote('Find B', 'shared beta content')
+			await ensureEditorMode('wysiwyg')
+			// Persist Find B's editor choice now so the switch below is quiet
+			await persistEditorMode('wysiwyg')
 
 			await note.item('Find A').click()
-			await ensureEditorMode('wysiwyg')
 			await focusEditor('wysiwyg')
 			await mimiri().page.keyboard.press('Control+f')
 			await editor.findInput().fill('shared')
@@ -508,9 +519,17 @@ test.describe('editor (wysiwyg only)', () => {
 		await withMimiriContext(async () => {
 			await mimiri().home()
 			await expect(titleBar.accountButton()).toBeVisible()
+			// Notes created with text get pinned to the code editor (the helper
+			// types raw text there); re-pin each to wysiwyg while it is open and
+			// settled, so no async editor switch happens mid-test
 			await createRootNote('Search Target', 'the magic word appears here')
+			await ensureEditorMode('wysiwyg')
 			await createRootNote('Other Note', 'nothing to see')
 			await ensureEditorMode('wysiwyg')
+			// Persist the pending editor choice before searching — the save on
+			// switching away would otherwise trigger a sync whose view-model
+			// refresh re-runs setText and wipes the fresh search highlights
+			await persistEditorMode('wysiwyg')
 
 			await titleBar.searchInput().fill('magic')
 			await titleBar.searchInput().press('Enter')
@@ -599,6 +618,49 @@ test.describe('editor (wysiwyg only)', () => {
 			// And back
 			await editor.proseMirror().locator('li[data-item-type="task"]').locator('input.task-checkbox').click()
 			await expect(editor.proseMirror().locator('li[data-item-type="task"]')).toHaveAttribute('data-checked', 'false')
+		})
+	})
+})
+
+// The editor choice is stored per note; notes without a choice follow the
+// global default from Settings → General.
+test.describe('editor (per-note mode)', () => {
+	test('each note remembers its own editor mode', async () => {
+		await withMimiriContext(async () => {
+			await mimiri().home()
+			await expect(titleBar.accountButton()).toBeVisible()
+			await createRootNote('Note A')
+			await createRootNote('Note B')
+			await note.item('Note A').click()
+			await ensureEditorMode('code')
+			// Switching notes persists the pending choice via the implicit save
+			await note.item('Note B').click()
+			await ensureEditorMode('wysiwyg')
+			await note.item('Note A').click()
+			await expect(editor.monacoContainer()).toBeVisible()
+			await note.item('Note B').click()
+			await expect(editor.proseMirrorContainer()).toBeVisible()
+			// And the choice survives a reload
+			await mimiri().reload()
+			await expect(editor.proseMirrorContainer()).toBeVisible()
+			await note.item('Note A').click()
+			await expect(editor.monacoContainer()).toBeVisible()
+		})
+	})
+
+	test('mode toggle does not show as an unsaved change', async () => {
+		await withMimiriContext(async () => {
+			await openNoteInMode('wysiwyg')
+			await expectToolbarButtonDisabled(editor.save())
+			// Switching view is a preference, not content — the save button
+			// must stay quiet in both directions
+			await ensureEditorMode('code')
+			await expectToolbarButtonDisabled(editor.save())
+			await ensureEditorMode('wysiwyg')
+			await expectToolbarButtonDisabled(editor.save())
+			// Text changes still light it up
+			await typeInEditor('wysiwyg', 'dirty')
+			await expectToolbarButtonEnabled(editor.save())
 		})
 	})
 })

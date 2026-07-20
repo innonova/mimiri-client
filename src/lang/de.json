@@ -354,6 +354,10 @@
 		"disableDevBlogTooltip": "Falls du den Entwicklerblog störend findest, kannst du ihn ausblenden",
 		"allowMonacoOnMobile": "Code-Editor auf Mobilgeräten aktivieren",
 		"allowMonacoOnMobileTooltip": "Code-Editor auf Mobilgeräten aktivieren (nicht empfohlen, da der Code-Editor nicht für Mobilgeräte optimiert ist)",
+		"defaultEditor": "Standard-Editor",
+		"defaultEditorTooltip": "Editor für Notizen, die keine eigene Editor-Auswahl haben",
+		"editorCode": "Code-Editor",
+		"editorWysiwyg": "Rich-Text-Editor",
 		"save": "Speichern"
 	},
 	"settingsPassword": {

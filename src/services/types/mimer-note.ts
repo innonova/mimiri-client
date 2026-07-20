@@ -37,6 +37,8 @@ export interface HistoryItem {
 	text: string
 }
 
+export type NoteEditorMode = 'code' | 'wysiwyg'
+
 export interface NoteViewModel {
 	id: Guid
 	type: string
@@ -713,6 +715,17 @@ export class MimerNote {
 	public set title(value: string) {
 		if (!this.isSystem) {
 			this.note.changeItem('metadata').title = value
+		}
+	}
+
+	public get editorMode(): NoteEditorMode | undefined {
+		const value = this.note.getItem('metadata').editorMode
+		return value === 'code' || value === 'wysiwyg' ? value : undefined
+	}
+
+	public set editorMode(value: NoteEditorMode | undefined) {
+		if (!this.isSystem) {
+			this.note.changeItem('metadata').editorMode = value
 		}
 	}
 

@@ -1,6 +1,7 @@
 import { expect, test } from '@playwright/test'
 import { mimiri, withMimiriContext } from './framework/mimiri-context'
-import { settingNodes, settingsGeneral, titleBar } from './selectors'
+import { editor, note, settingNodes, settingsGeneral, titleBar } from './selectors'
+import { createRootNote } from './notes/actions'
 
 const openGeneralSettings = async () => {
 	await expect(settingNodes.controlPanel()).toBeVisible()
@@ -48,6 +49,36 @@ test.describe('settings', () => {
 			await settingsGeneral.save().click()
 			await expect(settingNodes.recycleBin()).toContainText('Recycle Bin')
 			await expect(settingsGeneral.save()).toHaveText(/Save/)
+		})
+	})
+
+	test('default editor applies to notes without their own choice', async () => {
+		await withMimiriContext(async () => {
+			await mimiri().home()
+			await expect(titleBar.accountButton()).toBeVisible()
+			await openGeneralSettings()
+
+			// Work relative to the environment's default so both selections are
+			// real changes (the save button only enables on a change)
+			const initial = await settingsGeneral.defaultEditor().inputValue()
+			const other = initial === 'code' ? 'wysiwyg' : 'code'
+			const container = (mode: string) =>
+				mode === 'code' ? editor.monacoContainer() : editor.proseMirrorContainer()
+
+			await settingsGeneral.defaultEditor().selectOption(other)
+			await settingsGeneral.save().click()
+			await createRootNote('First Default Note')
+			await expect(container(other)).toBeVisible()
+
+			await openGeneralSettings()
+			await settingsGeneral.defaultEditor().selectOption(initial)
+			await settingsGeneral.save().click()
+			await createRootNote('Second Default Note')
+			await expect(container(initial)).toBeVisible()
+
+			// The first note never made its own choice, so it follows the new default
+			await note.item('First Default Note').click()
+			await expect(container(initial)).toBeVisible()
 		})
 	})
 })

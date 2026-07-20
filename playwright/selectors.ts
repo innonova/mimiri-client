@@ -445,6 +445,7 @@ export const pinCodeView = {
 export const settingsGeneral = {
 	language: () => tid('settings-language'),
 	theme: () => tid('settings-theme'),
+	defaultEditor: () => tid('settings-default-editor'),
 	save: () => tid('settings-general-save'),
 }
 
