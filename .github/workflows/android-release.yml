@@ -20,11 +20,6 @@ on:
                 description: Version code (blank = value committed in build.gradle; must be higher than the last upload)
                 type: string
                 default: ''
-    # temporary while developing on the automate-capacitor branch:
-    # builds and signs, but never uploads (upload is dispatch-only).
-    # Remove this trigger before merging to main.
-    push:
-        branches: [automate-capacitor]
 
 jobs:
     release:
