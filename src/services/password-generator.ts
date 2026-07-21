@@ -1,7 +1,7 @@
 import { reactive } from 'vue'
 import { passwordHasher } from './password-hasher'
 import { SymmetricCrypt } from './symmetric-crypt'
-import { DEFAULT_PASSWORD_ALGORITHM } from './storage/mimiri-store'
+import { DEFAULT_PASSWORD_ALGORITHM } from './storage/security-constants'
 
 export interface PasswordOptions {
 	characters: number
@@ -115,18 +115,15 @@ export class PasswordGenerator {
 		}
 	}
 
-	private getCharacters(pool: string, num: number) {
-		let result = ''
-		let remainder = num % pool.length
-		let quotient = Math.floor(num / pool.length)
-		result += pool.charAt(remainder)
-		let count = 100
-		while (quotient > 0 && --count > 0) {
-			remainder = quotient % pool.length
-			quotient = Math.floor(quotient / pool.length)
-			result += pool.charAt(remainder)
-		}
-		return result
+	private randomIndex(range: number) {
+		// rejection sampling: discard values in the incomplete last cycle of 2^32 / range
+		// so the modulo is unbiased
+		const limit = Math.floor(0x100000000 / range) * range
+		const rand = new Uint32Array(1)
+		do {
+			crypto.getRandomValues(rand)
+		} while (rand[0] >= limit)
+		return rand[0] % range
 	}
 
 	private contains(pool: string, password: string) {
@@ -165,30 +162,15 @@ export class PasswordGenerator {
 			pool += symbols
 		}
 		while (true) {
-			const rand = new Uint8Array(128)
-			crypto.getRandomValues(rand)
-			const int32s = new Uint32Array(rand.buffer)
-
 			const targetLength = this._options.characters - (this._options.oneSymbol ? 1 : 0)
-			let index = 0
 			let password = ''
 			while (password.length < targetLength) {
-				password += this.getCharacters(pool, int32s[index++])
-			}
-			if (password.length > targetLength) {
-				password = password.substring(0, targetLength)
+				password += pool.charAt(this.randomIndex(pool.length))
 			}
 			if (this._options.oneSymbol) {
-				const specialIndex = int32s[index] % password.length
-				const specialChar = symbols[int32s[index + 1] % symbols.length]
-				if (specialIndex === 0) {
-					password = specialChar + password
-				} else if (specialIndex >= password.length - 1) {
-					password += specialChar
-				} else {
-					password =
-						password.substring(0, specialIndex) + specialChar + password.substring(specialIndex, password.length)
-				}
+				const specialIndex = this.randomIndex(password.length + 1)
+				const specialChar = symbols.charAt(this.randomIndex(symbols.length))
+				password = password.substring(0, specialIndex) + specialChar + password.substring(specialIndex)
 			}
 			if (this._options.lower && !this.contains(this._lower, password)) {
 				continue
