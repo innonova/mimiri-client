@@ -1,0 +1,104 @@
+name: iOS Release
+
+on:
+    workflow_dispatch:
+        inputs:
+            versionName:
+                description: Store version (blank = MARKETING_VERSION committed in the Xcode project)
+                type: string
+                default: ''
+    # temporary while validating on the automate-capacitor branch:
+    # archives, signs and exports an IPA, but never uploads.
+    # Remove this trigger before merging to main.
+    push:
+        branches: [automate-capacitor]
+
+jobs:
+    release:
+        runs-on: macos-15
+        environment: production
+
+        env:
+            ASC_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+            ASC_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 24
+                  cache: npm
+
+            - name: Install dependencies
+              run: npm ci
+
+            - name: Build production bundle and sync
+              run: npm run sync-prod
+
+            - name: Write App Store Connect API key
+              run: printf '%s' "$ASC_KEY" > "$RUNNER_TEMP/asc_key.p8"
+              env:
+                  ASC_KEY: ${{ secrets.APP_STORE_CONNECT_KEY }}
+
+            - name: Archive
+              run: |
+                  overrides=()
+                  if [ -n "${{ inputs.versionName }}" ]; then
+                    overrides+=("MARKETING_VERSION=${{ inputs.versionName }}")
+                  fi
+                  xcodebuild archive \
+                    -workspace App/App.xcworkspace \
+                    -scheme App \
+                    -configuration Release \
+                    -destination generic/platform=iOS \
+                    -archivePath "$RUNNER_TEMP/App.xcarchive" \
+                    -allowProvisioningUpdates \
+                    -authenticationKeyPath "$RUNNER_TEMP/asc_key.p8" \
+                    -authenticationKeyID "$ASC_KEY_ID" \
+                    -authenticationKeyIssuerID "$ASC_ISSUER_ID" \
+                    "${overrides[@]}"
+              working-directory: ios
+
+            - name: Export and upload
+              run: |
+                  if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+                    destination=upload
+                  else
+                    destination=export
+                  fi
+                  cat > "$RUNNER_TEMP/exportOptions.plist" <<EOF
+                  <?xml version="1.0" encoding="UTF-8"?>
+                  <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+                  <plist version="1.0">
+                  <dict>
+                      <key>method</key>
+                      <string>app-store-connect</string>
+                      <key>destination</key>
+                      <string>$destination</string>
+                      <key>signingStyle</key>
+                      <string>automatic</string>
+                      <key>teamID</key>
+                      <string>L4AYY85TPR</string>
+                      <key>manageAppVersionAndBuildNumber</key>
+                      <true/>
+                  </dict>
+                  </plist>
+                  EOF
+                  xcodebuild -exportArchive \
+                    -archivePath "$RUNNER_TEMP/App.xcarchive" \
+                    -exportOptionsPlist "$RUNNER_TEMP/exportOptions.plist" \
+                    -exportPath "$RUNNER_TEMP/export" \
+                    -allowProvisioningUpdates \
+                    -authenticationKeyPath "$RUNNER_TEMP/asc_key.p8" \
+                    -authenticationKeyID "$ASC_KEY_ID" \
+                    -authenticationKeyIssuerID "$ASC_ISSUER_ID"
+
+            - name: Upload IPA artifact
+              if: github.event_name != 'workflow_dispatch'
+              uses: actions/upload-artifact@v4
+              with:
+                  name: app-release-ipa
+                  path: ${{ runner.temp }}/export/*.ipa
+                  retention-days: 30
