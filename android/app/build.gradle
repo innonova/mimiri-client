@@ -1,5 +1,10 @@
 apply plugin: 'com.android.application'
 
+// CI overrides (empty/absent locally, so IDE builds are unaffected)
+def envVersionCode = System.getenv("MIMIRI_VERSION_CODE")
+def envVersionName = System.getenv("MIMIRI_VERSION_NAME")
+def envKeystoreFile = System.getenv("MIMIRI_KEYSTORE_FILE")
+
 android {
     namespace "io.mimiri.app"
     compileSdk rootProject.ext.compileSdkVersion
@@ -7,8 +12,8 @@ android {
         applicationId "io.mimiri.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 17
-        versionName "1.6"
+        versionCode envVersionCode ? envVersionCode.toInteger() : 17
+        versionName envVersionName ? envVersionName : "1.6"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
@@ -16,10 +21,23 @@ android {
             ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+    signingConfigs {
+        release {
+            if (envKeystoreFile) {
+                storeFile file(envKeystoreFile)
+                storePassword System.getenv("MIMIRI_KEYSTORE_PASSWORD")
+                keyAlias System.getenv("MIMIRI_KEY_ALIAS")
+                keyPassword System.getenv("MIMIRI_KEY_PASSWORD")
+            }
+        }
+    }
     buildTypes {
         release {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            if (envKeystoreFile) {
+                signingConfig signingConfigs.release
+            }
         }
     }
 }
