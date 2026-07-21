@@ -63,11 +63,9 @@ jobs:
 
             - name: Export and upload
               run: |
-                  if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-                    destination=upload
-                  else
-                    destination=export
-                  fi
+                  # temporary while validating: always upload (restore the
+                  # dispatch-only gate before merging to main)
+                  destination=upload
                   cat > "$RUNNER_TEMP/exportOptions.plist" <<EOF
                   <?xml version="1.0" encoding="UTF-8"?>
                   <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -96,7 +94,8 @@ jobs:
                     -authenticationKeyIssuerID "$ASC_ISSUER_ID"
 
             - name: Upload IPA artifact
-              if: github.event_name != 'workflow_dispatch'
+              # temporarily disabled: with destination=upload no IPA is written locally
+              if: false
               uses: actions/upload-artifact@v4
               with:
                   name: app-release-ipa
