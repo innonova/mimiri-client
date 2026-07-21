@@ -25,6 +25,14 @@ jobs:
         steps:
             - uses: actions/checkout@v4
 
+            # App Store Connect requires uploads built with the iOS 26 SDK;
+            # the runner's default Xcode is older
+            - name: Select Xcode 26
+              run: |
+                  ls -d /Applications/Xcode*.app
+                  sudo xcode-select -s "$(ls -d /Applications/Xcode_26*.app | sort -V | tail -1)"
+                  xcodebuild -version
+
             - name: Setup Node.js
               uses: actions/setup-node@v4
               with:
