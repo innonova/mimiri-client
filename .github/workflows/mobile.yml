@@ -1,0 +1,88 @@
+name: Mobile
+
+on:
+    push:
+        branches: [main]
+    pull_request:
+        branches: [main]
+
+jobs:
+    android:
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 24
+                  cache: npm
+
+            - name: Setup Java
+              uses: actions/setup-java@v4
+              with:
+                  distribution: temurin
+                  java-version: 21
+
+            - name: Setup Gradle
+              uses: gradle/actions/setup-gradle@v4
+
+            - name: Install dependencies
+              run: npm ci
+
+            - name: Build web app
+              run: npm run build-only
+
+            - name: Capacitor sync
+              run: npx cap sync android
+
+            - name: Check for uncommitted generated files
+              run: git diff --exit-code -- android
+
+            - name: Build Android app (unsigned)
+              run: ./gradlew assembleRelease
+              working-directory: android
+
+            - name: Upload APK artifact
+              uses: actions/upload-artifact@v4
+              with:
+                  name: app-release-unsigned
+                  path: android/app/build/outputs/apk/release/*.apk
+                  retention-days: 7
+
+    ios:
+        runs-on: macos-15
+
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 24
+                  cache: npm
+
+            - name: Install dependencies
+              run: npm ci
+
+            - name: Build web app
+              run: npm run build-only
+
+            - name: Capacitor sync
+              run: npx cap sync ios
+
+            - name: Check for uncommitted generated files
+              # Podfile.lock excluded for now: runner CocoaPods version can differ
+              # from the one used locally, producing spurious lockfile churn
+              run: git diff --exit-code -- ios ':!ios/App/Podfile.lock'
+
+            - name: Build iOS app (no signing)
+              run: |
+                  xcodebuild build \
+                    -workspace App/App.xcworkspace \
+                    -scheme App \
+                    -configuration Release \
+                    -destination generic/platform=iOS \
+                    CODE_SIGNING_ALLOWED=NO
+              working-directory: ios
