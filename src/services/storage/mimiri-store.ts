@@ -21,11 +21,13 @@ import { SessionManager, type LoginListener } from './session-manager'
 import { LocalStateManager } from './local-state-manager'
 import { NotificationManager } from './notification-manager'
 
-export const DEFAULT_PROOF_BITS = 15
-export const DEFAULT_ITERATIONS = 1000000
-export const DEFAULT_ITERATIONS_LOCAL = 100
-export const DEFAULT_SALT_SIZE = 32
-export const DEFAULT_PASSWORD_ALGORITHM = 'PBKDF2;SHA512;256'
+export {
+	DEFAULT_PROOF_BITS,
+	DEFAULT_ITERATIONS,
+	DEFAULT_ITERATIONS_LOCAL,
+	DEFAULT_SALT_SIZE,
+	DEFAULT_PASSWORD_ALGORITHM,
+} from './security-constants'
 
 export class MimiriStore {
 	public ignoreFirstWALError: boolean = false
