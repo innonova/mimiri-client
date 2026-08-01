@@ -1,0 +1,88 @@
+name: Android Release
+
+on:
+    workflow_dispatch:
+        inputs:
+            track:
+                description: Google Play track
+                type: choice
+                options:
+                    - internal
+                    - alpha
+                    - beta
+                    - production
+                default: internal
+            versionName:
+                description: Store version name (blank = value committed in build.gradle)
+                type: string
+                default: ''
+            versionCode:
+                description: Version code (blank = value committed in build.gradle; must be higher than the last upload)
+                type: string
+                default: ''
+
+jobs:
+    release:
+        runs-on: ubuntu-latest
+        environment: production
+
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 24
+                  cache: npm
+
+            - name: Setup Java
+              uses: actions/setup-java@v4
+              with:
+                  distribution: temurin
+                  java-version: 21
+
+            - name: Setup Gradle
+              uses: gradle/actions/setup-gradle@v4
+
+            - name: Install dependencies
+              run: npm ci
+
+            - name: Build production bundle and sync
+              run: npm run sync-prod
+
+            - name: Decode keystore
+              run: echo "$KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/upload-keystore.jks"
+              env:
+                  KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+
+            - name: Build signed AAB
+              run: ./gradlew bundleRelease
+              working-directory: android
+              env:
+                  MIMIRI_KEYSTORE_FILE: ${{ runner.temp }}/upload-keystore.jks
+                  MIMIRI_KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+                  MIMIRI_KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+                  MIMIRI_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+                  MIMIRI_VERSION_NAME: ${{ inputs.versionName }}
+                  MIMIRI_VERSION_CODE: ${{ inputs.versionCode }}
+
+            - name: Verify signature
+              run: |
+                  jarsigner -verify app/build/outputs/bundle/release/app-release.aab
+              working-directory: android
+
+            - name: Upload AAB artifact
+              uses: actions/upload-artifact@v4
+              with:
+                  name: app-release-aab
+                  path: android/app/build/outputs/bundle/release/app-release.aab
+                  retention-days: 30
+
+            - name: Upload to Google Play
+              if: github.event_name == 'workflow_dispatch'
+              uses: r0adkll/upload-google-play@v1
+              with:
+                  serviceAccountJsonPlainText: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+                  packageName: io.mimiri.app
+                  releaseFiles: android/app/build/outputs/bundle/release/app-release.aab
+                  tracks: ${{ inputs.track }}

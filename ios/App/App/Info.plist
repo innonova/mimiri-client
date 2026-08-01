@@ -45,5 +45,7 @@
 	<true/>
 	<key>NSFaceIDUsageDescription</key>
 	<string>Protect notes when app is suspended for more than 60 seconds</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 </dict>
 </plist>
