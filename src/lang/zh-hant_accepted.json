@@ -1,0 +1,3215 @@
+{
+	"acceptShareDialog.cannotAcceptDataUsage": {
+		"en": "Cannot accept share!\nNew data usage ({size}) would exceed current maximum ({max})",
+		"zh-hant": "無法接受分享！\n新資料用量（{size}）將超過目前上限（{max}）",
+		"zh-hant_en": "Cannot accept share!\nNew data usage ({size}) would exceed the current upper limit ({max})",
+		"_note": "Same pattern as the note-count variant; placeholders and \\n preserved.",
+		"_recommendation": "accept"
+	},
+	"acceptShareDialog.cannotAcceptNoteCount": {
+		"en": "Cannot accept share!\nNew note count ({count}) would exceed current maximum ({max})",
+		"zh-hant": "無法接受分享！\n新筆記數量（{count}）將超過目前上限（{max}）",
+		"zh-hant_en": "Cannot accept share!\nNew note count ({count}) would exceed the current upper limit ({max})",
+		"_note": "上限 (upper limit) is the standard term for 'maximum' in quota contexts. Placeholders and \\n preserved.",
+		"_recommendation": "accept"
+	},
+	"acceptShareDialog.enterCode": {
+		"en": "Enter the one time code to accept a share.",
+		"zh-hant": "輸入一次性代碼以接受分享。",
+		"zh-hant_en": "Enter the one-time code to accept the share.",
+		"_note": "Article difference only (a share/the share); Chinese has no articles.",
+		"_recommendation": "accept"
+	},
+	"acceptShareDialog.limitExceeded": {
+		"en": "Limit exceeded: {message}",
+		"zh-hant": "已超出限制：{message}",
+		"zh-hant_en": "Limit already exceeded: {message}",
+		"_note": "已 (already) marks completed aspect that English shows with the past participle; placeholder preserved.",
+		"_recommendation": "accept"
+	},
+	"acceptShareDialog.noShareFound": {
+		"en": "No share found",
+		"zh-hant": "找不到分享",
+		"zh-hant_en": "Cannot find share",
+		"_note": "找不到 is the idiomatic TW negative-existential for 'not found' error labels.",
+		"_recommendation": "accept"
+	},
+	"acceptShareDialog.ok": {
+		"en": "OK",
+		"zh-hant": "確定",
+		"zh-hant_en": "Confirm",
+		"_note": "確定 is the universal Chinese OK-button label; same choice as the Simplified file.",
+		"_recommendation": "accept"
+	},
+	"acceptShareDialog.title": {
+		"en": "Accept Share",
+		"zh-hant": "接受分享",
+		"zh-hant_en": "Accept sharing",
+		"_note": "分享 is the everyday TW word for user-to-user sharing (vs 共享 used in the Simplified file); noun/gerund difference is a back-translation artifact.",
+		"_recommendation": "accept"
+	},
+	"acceptShareDialog.warning": {
+		"en": "We do not recommend accepting shares from users you do not know.",
+		"zh-hant": "我們不建議接受來自不認識使用者的分享。",
+		"zh-hant_en": "We do not recommend accepting shares coming from users you do not recognize.",
+		"_note": "Context requires cautionary-not-alarming tone; 不建議 (do not recommend) hits exactly that register.",
+		"_recommendation": "accept"
+	},
+	"app.firstTimeMessage": {
+		"en": "This might take a moment if this is the first time you are starting Mimiri Notes",
+		"zh-hant": "如果這是您第一次啟動 Mimiri Notes，可能需要一點時間",
+		"zh-hant_en": "If this is your first time starting Mimiri Notes, it may take a little while",
+		"_note": "Clause order flipped (condition first), which is the natural Chinese order. Product name untranslated as required.",
+		"_recommendation": "accept"
+	},
+	"app.initializing": {
+		"en": "Initializing",
+		"zh-hant": "正在初始化",
+		"zh-hant_en": "Currently initializing",
+		"_note": "正在 marks the progressive aspect that English shows with '-ing'; standard rendering for a splash label.",
+		"_recommendation": "accept"
+	},
+	"checkUpdateDialog.noUpdateFound": {
+		"en": "No update found",
+		"zh-hant": "找不到更新",
+		"zh-hant_en": "Cannot find an update",
+		"_note": "Idiomatic 找不到 pattern for 'not found', consistent with noShareFound.",
+		"_recommendation": "accept"
+	},
+	"checkUpdateDialog.updateFound": {
+		"en": "Update found: {version}",
+		"zh-hant": "找到更新：{version}",
+		"zh-hant_en": "Found update: {version}",
+		"_note": "Word-order artifact of back-translation only; placeholder preserved.",
+		"_recommendation": "accept"
+	},
+	"common.back": {
+		"en": "Back",
+		"zh-hant": "返回",
+		"zh-hant_en": "Go back",
+		"_note": "Standard back label.",
+		"_recommendation": "accept"
+	},
+	"common.collapse": {
+		"en": "Collapse",
+		"zh-hant": "收合",
+		"zh-hant_en": "Fold together (collapse)",
+		"_note": "收合 is the TW word for collapse in tree/panel UIs (Simplified 折叠).",
+		"_recommendation": "accept"
+	},
+	"conflictBanner.conflicts": {
+		"en": "{count} conflict(s) found - document is read-only until resolved",
+		"zh-hant": "發現 {count} 個衝突 - 解決衝突前文件為唯讀",
+		"zh-hant_en": "Found {count} conflicts - before conflicts are resolved the document is read-only",
+		"_note": "Chinese has no plural so the '(s)' hedge disappears naturally; placeholder preserved; 唯讀 for read-only.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.acceptShare": {
+		"en": "Accept Share",
+		"zh-hant": "接受分享",
+		"zh-hant_en": "Accept sharing",
+		"_note": "Exactly matches the 「接受分享」 reference in shareDialog.acceptInstruction — the cross-reference is intact.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.acceptShareHere": {
+		"en": "Accept Share Here",
+		"zh-hant": "在此處接受分享",
+		"zh-hant_en": "Accept the share here",
+		"_note": "Faithful.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.addGettingStarted": {
+		"en": "Add Getting Started",
+		"zh-hant": "新增入門指南",
+		"zh-hant_en": "Add getting-started guide",
+		"_note": "指南 (guide) added as the head noun 'Getting Started' implies.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.changePassword": {
+		"en": "Change Password",
+		"zh-hant": "變更密碼",
+		"zh-hant_en": "Change password",
+		"_note": "Casing artifact only.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.changeUsername": {
+		"en": "Change Username",
+		"zh-hant": "變更使用者名稱",
+		"zh-hant_en": "Change username",
+		"_note": "變更 TW for change; casing artifact.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.checkForUpdates": {
+		"en": "Check for Updates",
+		"zh-hant": "檢查更新",
+		"zh-hant_en": "Check for updates",
+		"_note": "Standard menu label.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.copyPath": {
+		"en": "Copy Path",
+		"zh-hant": "複製路徑",
+		"zh-hant_en": "Copy path",
+		"_note": "Casing artifact only.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.createAccount": {
+		"en": "Create Account",
+		"zh-hant": "建立帳戶",
+		"zh-hant_en": "Create account",
+		"_note": "Casing artifact only.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.createPassword": {
+		"en": "Create Password",
+		"zh-hant": "建立密碼",
+		"zh-hant_en": "Create password",
+		"_note": "Casing artifact only.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.darkMode": {
+		"en": "Dark Mode",
+		"zh-hant": "深色模式",
+		"zh-hant_en": "Dark mode",
+		"_note": "Standard term; casing artifact.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.deleteAccount": {
+		"en": "Delete Account",
+		"zh-hant": "刪除帳戶",
+		"zh-hant_en": "Delete account",
+		"_note": "Casing artifact only.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.duplicate": {
+		"en": "Duplicate",
+		"zh-hant": "建立複本",
+		"zh-hant_en": "Create duplicate copy",
+		"_note": "建立複本 (create a copy) — bare 複製 would collide with the Copy command in the same menu.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.exportNotes": {
+		"en": "Export All Notes",
+		"zh-hant": "匯出所有筆記",
+		"zh-hant_en": "Export all notes",
+		"_note": "匯出 is the TW word for export (Simplified 导出).",
+		"_recommendation": "accept"
+	},
+	"contextMenu.exportNotesComplete": {
+		"en": "Exported {count} notes successfully",
+		"zh-hant": "已成功匯出 {count} 則筆記",
+		"zh-hant_en": "Successfully exported {count} notes",
+		"_note": "Placeholder preserved; 則 measure word consistent.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.exportSubtree": {
+		"en": "Export Subtree",
+		"zh-hant": "匯出子樹",
+		"zh-hant_en": "Export subtree",
+		"_note": "子樹 mirrors the tree metaphor; concise menu label.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.exportSubtreeComplete": {
+		"en": "Exported {count} notes successfully",
+		"zh-hant": "已成功匯出 {count} 則筆記",
+		"zh-hant_en": "Successfully exported {count} notes",
+		"_note": "Identical to exportNotesComplete, matching the identical source.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.findInNotes": {
+		"en": "Find in Notes",
+		"zh-hant": "在筆記中尋找",
+		"zh-hant_en": "Find in notes",
+		"_note": "尋找 TW for find; casing artifact.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.goOnline": {
+		"en": "Go Online",
+		"zh-hant": "上線",
+		"zh-hant_en": "Go online",
+		"_note": "Casing artifact only.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.history": {
+		"en": "History",
+		"zh-hant": "歷史記錄",
+		"zh-hant_en": "History records",
+		"_note": "Consistent 歷史記錄 terminology.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.importNotes": {
+		"en": "Import Notes",
+		"zh-hant": "匯入筆記",
+		"zh-hant_en": "Import notes",
+		"_note": "匯入 TW for import.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.importNotesComplete": {
+		"en": "Imported {count} notes successfully",
+		"zh-hant": "已成功匯入 {count} 則筆記",
+		"zh-hant_en": "Successfully imported {count} notes",
+		"_note": "Placeholder preserved.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.importNotesEmpty": {
+		"en": "No supported notes (.md/.txt) were found in the selected folder",
+		"zh-hant": "在所選資料夾中找不到支援的筆記（.md/.txt）",
+		"zh-hant_en": "Could not find supported notes (.md/.txt) in the selected folder",
+		"_note": "資料夾 is the TW word for folder (Simplified 文件夹); extensions preserved.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.loginSwitchUser": {
+		"en": "Log In / Switch User",
+		"zh-hant": "登入 / 切換使用者",
+		"zh-hant_en": "Log in / switch user",
+		"_note": "Separator preserved; casing artifact.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.logout": {
+		"en": "Logout",
+		"zh-hant": "登出",
+		"zh-hant_en": "Log out",
+		"_note": "登出 is the TW term for logout (Simplified 退出登录).",
+		"_recommendation": "accept"
+	},
+	"contextMenu.markAsRead": {
+		"en": "Mark as Read",
+		"zh-hant": "標為已讀",
+		"zh-hant_en": "Mark as read",
+		"_note": "Casing artifact only.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.menuHelp": {
+		"en": "Help",
+		"zh-hant": "說明",
+		"zh-hant_en": "Explanation (standard Taiwan term for the Help menu)",
+		"_note": "Same 說明 convention as titleBar.help — the TW Help-menu standard.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.newChildNote": {
+		"en": "New Child Note",
+		"zh-hant": "新增子筆記",
+		"zh-hant_en": "Add new child note",
+		"_note": "Consistent with mainToolbar.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.newNote": {
+		"en": "New Note",
+		"zh-hant": "新增筆記",
+		"zh-hant_en": "Add new note",
+		"_note": "新增 convention for New-commands.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.newRootNote": {
+		"en": "New Root Note",
+		"zh-hant": "新增根筆記",
+		"zh-hant_en": "Add new root note",
+		"_note": "Consistent with mainToolbar.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.newSiblingNote": {
+		"en": "New Sibling Note",
+		"zh-hant": "新增同層筆記",
+		"zh-hant_en": "Add new same-level note",
+		"_note": "Consistent 同層 rendering of sibling.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.passwordGenerator": {
+		"en": "Password Generator",
+		"zh-hant": "密碼產生器",
+		"zh-hant_en": "Password generator",
+		"_note": "產生器 TW for generator; casing artifact.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.quit": {
+		"en": "Quit",
+		"zh-hant": "結束",
+		"zh-hant_en": "End (quit)",
+		"_note": "結束 is the established TW menu label for Quit (e.g. 結束 Mimiri Notes); a literal 退出 is the Mainland convention.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.refresh": {
+		"en": "Refresh",
+		"zh-hant": "重新整理",
+		"zh-hant_en": "Refresh (re-organize)",
+		"_note": "重新整理 is the fixed TW term for refresh (browser reload etc.); the literal reading 're-organize' is a back-translation artifact, not a meaning shift.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.shareOffers": {
+		"en": "Share Offers",
+		"zh-hant": "分享邀請",
+		"zh-hant_en": "Share invitations",
+		"_note": "邀請 (invitations) renders 'offers' — these are incoming share proposals, and 分享邀請 describes them more clearly than a literal 提議.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.showDevTools": {
+		"en": "Show Dev Tools",
+		"zh-hant": "顯示開發者工具",
+		"zh-hant_en": "Show developer tools",
+		"_note": "開發者工具 is the common TW label for dev tools.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.trayAllowScreenSharing": {
+		"en": "Allow Screen Sharing",
+		"zh-hant": "允許螢幕分享",
+		"zh-hant_en": "Allow screen sharing",
+		"_note": "螢幕分享 consistent with titleBar strings.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.trayDevTools": {
+		"en": "Dev Tools",
+		"zh-hant": "開發者工具",
+		"zh-hant_en": "Developer tools",
+		"_note": "Consistent with showDevTools.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.trayKeepTrayVisible": {
+		"en": "Keep Tray Icon Visible",
+		"zh-hant": "保持系統匣圖示可見",
+		"zh-hant_en": "Keep the system tray icon visible",
+		"_note": "Identical to settingsGeneral.keepTrayVisible — consistent.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.trayLaunchOnStartup": {
+		"en": "Launch on Startup",
+		"zh-hant": "開機時啟動",
+		"zh-hant_en": "Start at boot",
+		"_note": "開機時啟動 (start when the machine boots) is the standard tray-menu phrasing.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.trayShowInTaskbar": {
+		"en": "Show In Taskbar",
+		"zh-hant": "在工作列中顯示",
+		"zh-hant_en": "Show in the taskbar",
+		"_note": "Identical to settingsGeneral.showInTaskbar — consistent.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.updateAvailable": {
+		"en": "Update Available",
+		"zh-hant": "有可用的更新",
+		"zh-hant_en": "An update is available",
+		"_note": "Consistent with settingsUpdate.updateAvailable.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.wordWrap": {
+		"en": "Word Wrap",
+		"zh-hant": "自動換行",
+		"zh-hant_en": "Automatic line wrapping",
+		"_note": "Consistent with noteEditor word-wrap strings.",
+		"_recommendation": "accept"
+	},
+	"contextMenu.workOffline": {
+		"en": "Work Offline",
+		"zh-hant": "離線工作",
+		"zh-hant_en": "Work offline",
+		"_note": "Standard label; casing artifact.",
+		"_recommendation": "accept"
+	},
+	"controlPanel.billingAddress": {
+		"en": "Billing Address",
+		"zh-hant": "帳單地址",
+		"zh-hant_en": "Billing address",
+		"_note": "Casing artifact only.",
+		"_recommendation": "accept"
+	},
+	"controlPanel.connectCloud": {
+		"en": "Connect Cloud",
+		"zh-hant": "連線雲端",
+		"zh-hant_en": "Connect to the cloud",
+		"_note": "Consistent with settingsUpgrade.tab.",
+		"_recommendation": "accept"
+	},
+	"controlPanel.createAccount": {
+		"en": "Create Account",
+		"zh-hant": "建立帳戶",
+		"zh-hant_en": "Create account",
+		"_note": "Casing artifact only.",
+		"_recommendation": "accept"
+	},
+	"controlPanel.createPassword": {
+		"en": "Create Password",
+		"zh-hant": "建立密碼",
+		"zh-hant_en": "Create password",
+		"_note": "Casing artifact only.",
+		"_recommendation": "accept"
+	},
+	"controlPanel.currentPlan": {
+		"en": "Current Plan",
+		"zh-hant": "目前方案",
+		"zh-hant_en": "Current plan",
+		"_note": "Consistent 目前方案.",
+		"_recommendation": "accept"
+	},
+	"controlPanel.debug": {
+		"en": "Debug",
+		"zh-hant": "偵錯",
+		"zh-hant_en": "Debugging",
+		"_note": "Consistent 偵錯 terminology.",
+		"_recommendation": "accept"
+	},
+	"controlPanel.devBlog": {
+		"en": "Dev Blog",
+		"zh-hant": "開發部落格",
+		"zh-hant_en": "Development blog",
+		"_note": "Consistent with settingsDevBlog.tab.",
+		"_recommendation": "accept"
+	},
+	"controlPanel.paymentMethods": {
+		"en": "Payment Methods",
+		"zh-hant": "付款方式",
+		"zh-hant_en": "Payment methods",
+		"_note": "Consistent 付款方式.",
+		"_recommendation": "accept"
+	},
+	"controlPanel.pinCode": {
+		"en": "PIN Code",
+		"zh-hant": "PIN 碼",
+		"zh-hant_en": "PIN code",
+		"_note": "Consistent PIN 碼 form.",
+		"_recommendation": "accept"
+	},
+	"convertAccount.initializing": {
+		"en": "Initializing...",
+		"zh-hant": "正在初始化...",
+		"zh-hant_en": "Currently initializing...",
+		"_note": "Progressive marker as in app.initializing; ellipsis preserved.",
+		"_recommendation": "accept"
+	},
+	"convertAccount.title": {
+		"en": "Convert Existing Account",
+		"zh-hant": "轉換現有帳戶",
+		"zh-hant_en": "Convert existing account",
+		"_note": "帳戶 is the TW spelling for account (Simplified 账户); casing artifact only.",
+		"_recommendation": "accept"
+	},
+	"deleteHistoryDialog.deleteAll": {
+		"en": "Are you sure you want to delete ALL history",
+		"zh-hant": "您確定要刪除全部歷史記錄嗎",
+		"zh-hant_en": "Are you sure you want to delete all history records",
+		"_note": "English ALL-caps emphasis is not reproduced; 全部 already carries the totality emphasis and caps do not exist in Chinese. No question mark, matching source punctuation per context.",
+		"_recommendation": "accept"
+	},
+	"deleteHistoryDialog.deleteOlder": {
+		"en": "Are you sure you want to delete older history",
+		"zh-hant": "您確定要刪除較舊的歷史記錄嗎",
+		"zh-hant_en": "Are you sure you want to delete the older history records",
+		"_note": "Faithful; 較舊 = comparative 'older'. Punctuation matches source style.",
+		"_recommendation": "accept"
+	},
+	"deleteHistoryDialog.keepRecent": {
+		"en": "(keeping only the most recent 10 versions)",
+		"zh-hant": "（僅保留最近 10 個版本）",
+		"zh-hant_en": "(Only keep the most recent 10 versions)",
+		"_note": "Full-width parentheses per Chinese typographic convention; meaning identical.",
+		"_recommendation": "accept"
+	},
+	"deleteHistoryDialog.sharedWith": {
+		"en": "This note is shared with:",
+		"zh-hant": "此筆記已分享給：",
+		"zh-hant_en": "This note has been shared with:",
+		"_note": "Aspect difference only (is shared / has been shared); Chinese 已 covers both readings.",
+		"_recommendation": "accept"
+	},
+	"deleteHistoryDialog.title": {
+		"en": "Delete History",
+		"zh-hant": "刪除歷史記錄",
+		"zh-hant_en": "Delete history records",
+		"_note": "歷史記錄 (history records) is the standard UI term; bare 歷史 would read as 'history' in the academic sense.",
+		"_recommendation": "accept"
+	},
+	"deleteLocalDataDialog.encryptedWarning": {
+		"en": "While your data is encrypted leaving it lying around does make it more exposed to potential attacks.",
+		"zh-hant": "儘管您的資料已加密，但將其留在裝置上仍會增加潛在攻擊的風險。",
+		"zh-hant_en": "Although your data is encrypted, leaving it on the device still increases the risk of potential attacks.",
+		"_note": "'Lying around' idiom rendered as 留在裝置上 (left on the device) — same security point, neutral register per context.",
+		"_recommendation": "accept"
+	},
+	"deleteLocalDataDialog.leaveImprovePerformance": {
+		"en": "Leaving it will improve performance the next time you log in on this device.",
+		"zh-hant": "保留資料可在您下次於此裝置登入時提升效能。",
+		"zh-hant_en": "Keeping the data can improve performance the next time you log in on this device.",
+		"_note": "保留資料 (keeping the data) makes the implicit 'it' explicit — clearer in Chinese; 效能 is the TW word for performance.",
+		"_recommendation": "accept"
+	},
+	"deleteLocalDataDialog.moreInfo": {
+		"en": "more info",
+		"zh-hant": "更多資訊",
+		"zh-hant_en": "More information",
+		"_note": "English lowercase link style has no Chinese equivalent; 資訊 is the TW word for info.",
+		"_recommendation": "accept"
+	},
+	"deleteLocalDataDialog.notPersonalDevice": {
+		"en": "If this is not your personal device, removing this data is advisable.",
+		"zh-hant": "如果這不是您的個人裝置，建議刪除此資料。",
+		"zh-hant_en": "If this is not your personal device, deleting this data is recommended.",
+		"_note": "建議 (recommend) for 'advisable'; equivalent advice register.",
+		"_recommendation": "accept"
+	},
+	"deleteLocalDataDialog.question": {
+		"en": "Do you want to remove locally cached data?",
+		"zh-hant": "您要刪除本機快取的資料嗎？",
+		"zh-hant_en": "Do you want to delete the locally cached data?",
+		"_note": "刪除 (delete) for 'remove'; 快取 is the TW term for cache. Meaning unchanged.",
+		"_recommendation": "accept"
+	},
+	"deleteLocalDataDialog.removeData": {
+		"en": "Remove data",
+		"zh-hant": "刪除資料",
+		"zh-hant_en": "Delete data",
+		"_note": "刪除 covers both remove/delete; consistent with the dialog body.",
+		"_recommendation": "accept"
+	},
+	"deleteLocalDataDialog.title": {
+		"en": "Clear local data",
+		"zh-hant": "清除本機資料",
+		"zh-hant_en": "Clear local-machine data",
+		"_note": "本機 is the standard TW term for 'local (this machine)'; 資料 for data.",
+		"_recommendation": "accept"
+	},
+	"deleteMethodDialog.title": {
+		"en": "Delete Payment Method",
+		"zh-hant": "刪除付款方式",
+		"zh-hant_en": "Delete payment method",
+		"_note": "付款方式 is the TW term for payment method (Simplified uses 支付方式); casing artifact only.",
+		"_recommendation": "accept"
+	},
+	"deleteNodeDialog.alsoDeleted": {
+		"en": "This note will also be deleted for:",
+		"zh-hant": "此筆記也將對以下使用者刪除：",
+		"zh-hant_en": "This note will also be deleted for the following users:",
+		"_note": "以下使用者 (the following users) added to close the dangling 'for:' — required for grammatical Chinese before a list.",
+		"_recommendation": "accept"
+	},
+	"deleteNodeDialog.cannotDeleteLine1": {
+		"en": "Cannot delete note containing shared notes.",
+		"zh-hant": "無法刪除包含分享筆記的筆記。",
+		"zh-hant_en": "Cannot delete a note that contains shared notes.",
+		"_note": "Article artifact only.",
+		"_recommendation": "accept"
+	},
+	"deleteNodeDialog.cannotDeleteLine2": {
+		"en": "Please remove shared notes before deleting.",
+		"zh-hant": "請先取消分享筆記，再進行刪除。",
+		"zh-hant_en": "Please unshare the notes first, then proceed with deletion.",
+		"_note": "取消分享 (unshare) interprets 'remove shared notes' as removing the share rather than the notes — that matches the actual remedy the dialog is describing.",
+		"_recommendation": "accept"
+	},
+	"deleteNodeDialog.cannotDeleteTitle": {
+		"en": "Cannot Delete",
+		"zh-hant": "無法刪除",
+		"zh-hant_en": "Cannot delete",
+		"_note": "Casing artifact only.",
+		"_recommendation": "accept"
+	},
+	"deleteNodeDialog.deleteTitle": {
+		"en": "Delete Note",
+		"zh-hant": "刪除筆記",
+		"zh-hant_en": "Delete note",
+		"_note": "Casing artifact only.",
+		"_recommendation": "accept"
+	},
+	"deleteNodeDialog.leaveShareTitle": {
+		"en": "Leave Share",
+		"zh-hant": "離開分享",
+		"zh-hant_en": "Leave share",
+		"_note": "離開 (leave) is more natural in TW than the Simplified file's 退出 for exiting a share.",
+		"_recommendation": "accept"
+	},
+	"deleteNodeDialog.noOtherUsers": {
+		"en": "No other users have access to this note",
+		"zh-hant": "沒有其他使用者可以存取此筆記",
+		"zh-hant_en": "No other users can access this note",
+		"_note": "存取 is the TW term for access; 'have access' vs 'can access' is a back-translation artifact.",
+		"_recommendation": "accept"
+	},
+	"deleteNodeDialog.ok": {
+		"en": "Ok",
+		"zh-hant": "確定",
+		"zh-hant_en": "Confirm",
+		"_note": "Standard 確定 confirm button.",
+		"_recommendation": "accept"
+	},
+	"deleteNodeDialog.remainAccessible": {
+		"en": "This note will remain accessible to:",
+		"zh-hant": "以下使用者仍可存取此筆記：",
+		"zh-hant_en": "The following users can still access this note:",
+		"_note": "Restructured from note-subject to user-subject because a Chinese sentence cannot end naturally in a dangling 'to:'; the list that follows still reads correctly.",
+		"_recommendation": "accept"
+	},
+	"editor.copyBlock": {
+		"en": "Copy block",
+		"zh-hant": "複製程式碼區塊",
+		"zh-hant_en": "Copy code block",
+		"_note": "程式碼 added — bare 區塊 (block) would be ambiguous; this button acts on code blocks.",
+		"_recommendation": "accept"
+	},
+	"editor.copyNextLine": {
+		"en": "Copy Next Line",
+		"zh-hant": "複製下一行",
+		"zh-hant_en": "Copy next line",
+		"_note": "Casing artifact only.",
+		"_recommendation": "accept"
+	},
+	"editor.keepBoth": {
+		"en": "Keep Both",
+		"zh-hant": "保留兩者",
+		"zh-hant_en": "Keep both",
+		"_note": "Casing artifact only.",
+		"_recommendation": "accept"
+	},
+	"editor.keepLocal": {
+		"en": "Keep Local",
+		"zh-hant": "保留本機",
+		"zh-hant_en": "Keep local-machine",
+		"_note": "本機 pairs with 伺服器 in the conflict-resolution buttons; concise.",
+		"_recommendation": "accept"
+	},
+	"editor.keepServer": {
+		"en": "Keep Server",
+		"zh-hant": "保留伺服器",
+		"zh-hant_en": "Keep server",
+		"_note": "Counterpart of keepLocal.",
+		"_recommendation": "accept"
+	},
+	"editor.selectBlock": {
+		"en": "Select block",
+		"zh-hant": "選取程式碼區塊",
+		"zh-hant_en": "Select code block",
+		"_note": "Same clarification as copyBlock; 選取 TW for select.",
+		"_recommendation": "accept"
+	},
+	"emptyRecycleBinDialog.question": {
+		"en": "Are you sure you want to permanently delete all items in the recycle bin?",
+		"zh-hant": "您確定要永久刪除回收桶中的所有項目嗎？",
+		"zh-hant_en": "Are you sure you want to permanently delete all items in the recycling bucket?",
+		"_note": "Faithful; terminology consistent.",
+		"_recommendation": "accept"
+	},
+	"emptyRecycleBinDialog.title": {
+		"en": "Empty Recycle Bin",
+		"zh-hant": "清空回收桶",
+		"zh-hant_en": "Empty the recycling bucket",
+		"_note": "Consistent with the 回收桶 terminology choice.",
+		"_recommendation": "accept"
+	},
+	"inconsistencyDialog.detected": {
+		"en": "An inconsistency was detected and corrected during synchronization.",
+		"zh-hant": "同步過程中偵測並修正了一處不一致。",
+		"zh-hant_en": "An inconsistency was detected and corrected during the synchronization process.",
+		"_note": "一處 (one instance) makes the singular explicit; faithful.",
+		"_recommendation": "accept"
+	},
+	"inconsistencyDialog.title": {
+		"en": "Inconsistency Detected",
+		"zh-hant": "偵測到不一致",
+		"zh-hant_en": "Inconsistency detected",
+		"_note": "偵測 is the TW word for detect (Simplified 检测); casing artifact only.",
+		"_recommendation": "accept"
+	},
+	"infoDialog.ok": {
+		"en": "OK",
+		"zh-hant": "確定",
+		"zh-hant_en": "Confirm",
+		"_note": "Standard 確定 confirm button.",
+		"_recommendation": "accept"
+	},
+	"limitDialog.dataSizeText": {
+		"en": "You have used {used} of your {max}",
+		"zh-hant": "您已使用 {used} / {max}",
+		"zh-hant_en": "You have used {used} / {max}",
+		"_note": "Numeric '{used} / {max}' form as elsewhere; placeholders intact.",
+		"_recommendation": "accept"
+	},
+	"limitDialog.dataSizeTitle": {
+		"en": "Data Limit Reached",
+		"zh-hant": "已達資料上限",
+		"zh-hant_en": "Data upper limit reached",
+		"_note": "Same pattern as noteCountTitle.",
+		"_recommendation": "accept"
+	},
+	"limitDialog.noteCountText": {
+		"en": "You have created {count} of your {max} notes",
+		"zh-hant": "您已建立 {count} / {max} 則筆記",
+		"zh-hant_en": "You have created {count} / {max} notes",
+		"_note": "'{count} of your {max}' rendered as the numeric form {count} / {max}, matching the Simplified file's approach; placeholders intact. 則 is the TW measure word for notes.",
+		"_recommendation": "accept"
+	},
+	"limitDialog.noteCountTitle": {
+		"en": "Note Limit Reached",
+		"zh-hant": "已達筆記上限",
+		"zh-hant_en": "Note upper limit reached",
+		"_note": "上限 for limit; standard quota phrasing.",
+		"_recommendation": "accept"
+	},
+	"limitDialog.noteSizeText": {
+		"en": "The note you are trying to save is {size} the maximum allowed is {max}",
+		"zh-hant": "您嘗試儲存的筆記大小為 {size}，最大允許為 {max}",
+		"zh-hant_en": "The note you tried to save has a size of {size}, the maximum allowed is {max}",
+		"_note": "Adds the comma the English run-on omits; placeholders intact.",
+		"_recommendation": "accept"
+	},
+	"limitDialog.noteSizeTitle": {
+		"en": "Note Exceeds Max Size",
+		"zh-hant": "筆記超過大小上限",
+		"zh-hant_en": "Note exceeds the size upper limit",
+		"_note": "Faithful with 上限 terminology.",
+		"_recommendation": "accept"
+	},
+	"limitDialog.ok": {
+		"en": "OK",
+		"zh-hant": "確定",
+		"zh-hant_en": "Confirm",
+		"_note": "Standard 確定 confirm button.",
+		"_recommendation": "accept"
+	},
+	"lockScreen.attemptsRemaining": {
+		"en": "Attempts remaining: 1",
+		"zh-hant": "剩餘嘗試次數：1",
+		"zh-hant_en": "Remaining attempt count: 1",
+		"_note": "次數 (count of times) is the standard counter; the literal '1' matches source.",
+		"_recommendation": "accept"
+	},
+	"lockScreen.enterPin": {
+		"en": "Enter PIN to unlock",
+		"zh-hant": "輸入 PIN 碼以解鎖",
+		"zh-hant_en": "Enter PIN code to unlock",
+		"_note": "PIN 碼 (PIN code) is how Chinese always renders PIN; bare 'PIN' would dangle.",
+		"_recommendation": "accept"
+	},
+	"loginDialog.capsLock": {
+		"en": "Caps Lock is on!",
+		"zh-hant": "大寫鎖定已開啟！",
+		"zh-hant_en": "Caps Lock is switched on!",
+		"_note": "已開啟 = 'is on'; back-translation artifact only.",
+		"_recommendation": "accept"
+	},
+	"loginDialog.incorrectCredentials": {
+		"en": "Incorrect username or password",
+		"zh-hant": "使用者名稱或密碼錯誤",
+		"zh-hant_en": "Username or password incorrect",
+		"_note": "Adjective placement differs by grammar; 使用者 is the TW word for user.",
+		"_recommendation": "accept"
+	},
+	"loginDialog.login": {
+		"en": "Login",
+		"zh-hant": "登入",
+		"zh-hant_en": "Log in",
+		"_note": "Same as title.",
+		"_recommendation": "accept"
+	},
+	"loginDialog.pleaseWait": {
+		"en": "Please wait",
+		"zh-hant": "請稍候",
+		"zh-hant_en": "Please wait a moment",
+		"_note": "請稍候 is the fixed polite formula for 'please wait' in UI.",
+		"_recommendation": "accept"
+	},
+	"loginDialog.reason1": {
+		"en": "You changed password on another device",
+		"zh-hant": "您在其他裝置上變更了密碼",
+		"zh-hant_en": "You changed your password on another device",
+		"_note": "裝置 is the TW word for device; 變更 for change. Faithful.",
+		"_recommendation": "accept"
+	},
+	"loginDialog.reason2": {
+		"en": "You updated from a version prior to 2.5.0",
+		"zh-hant": "您從 2.5.0 之前的版本升級",
+		"zh-hant_en": "You upgraded from a version before 2.5.0",
+		"_note": "升級 (upgrade) for 'updated' — appropriate since moving to a newer version.",
+		"_recommendation": "accept"
+	},
+	"loginDialog.reason3": {
+		"en": "Something unexpected went wrong",
+		"zh-hant": "發生了意外錯誤",
+		"zh-hant_en": "An unexpected error occurred",
+		"_note": "Standard error phrasing; register matches.",
+		"_recommendation": "accept"
+	},
+	"loginDialog.serverReauth": {
+		"en": "Please enter your username and password to reauthenticate with the server.",
+		"zh-hant": "請輸入您的使用者名稱和密碼，以重新向伺服器驗證身分。",
+		"zh-hant_en": "Please enter your username and password to re-verify your identity with the server.",
+		"_note": "'Reauthenticate' expanded to 重新驗證身分 (re-verify identity) — Chinese has no single verb for authenticate; 伺服器 is the TW word for server.",
+		"_recommendation": "accept"
+	},
+	"loginDialog.title": {
+		"en": "Login",
+		"zh-hant": "登入",
+		"zh-hant_en": "Log in",
+		"_note": "登入 is the TW term for login (Simplified 登录).",
+		"_recommendation": "accept"
+	},
+	"loginDialog.whySeeingThis": {
+		"en": "Why are you seeing this?",
+		"zh-hant": "為什麼會看到此提示？",
+		"zh-hant_en": "Why am I seeing this prompt?",
+		"_note": "Chinese omits the pronoun, so the you/I difference is a back-translation artifact; 提示 (prompt) makes the implicit 'this' concrete.",
+		"_recommendation": "accept"
+	},
+	"mainToolbar.newChildNote": {
+		"en": "New Child Note",
+		"zh-hant": "新增子筆記",
+		"zh-hant_en": "Add new child note",
+		"_note": "Same 新增 convention.",
+		"_recommendation": "accept"
+	},
+	"mainToolbar.newRootNote": {
+		"en": "New Root Note",
+		"zh-hant": "新增根筆記",
+		"zh-hant_en": "Add new root note",
+		"_note": "新增 (add new) is the TW convention for 'New X' commands (Simplified uses 新建).",
+		"_recommendation": "accept"
+	},
+	"mainToolbar.newSiblingNote": {
+		"en": "New Sibling Note",
+		"zh-hant": "新增同層筆記",
+		"zh-hant_en": "Add new same-level note",
+		"_note": "同層 (same level) is the natural TW rendering of 'sibling' in a tree; Chinese has no direct sibling metaphor for nodes.",
+		"_recommendation": "accept"
+	},
+	"mainToolbar.searchAllNotes": {
+		"en": "Search All Notes",
+		"zh-hant": "搜尋所有筆記",
+		"zh-hant_en": "Search all notes",
+		"_note": "搜尋 is the TW word for search (Simplified 搜索); casing artifact only.",
+		"_recommendation": "accept"
+	},
+	"noteEditor.back": {
+		"en": "Back",
+		"zh-hant": "返回",
+		"zh-hant_en": "Go back",
+		"_note": "Standard back-button label.",
+		"_recommendation": "accept"
+	},
+	"noteEditor.checkbox": {
+		"en": "Checkbox",
+		"zh-hant": "核取方塊",
+		"zh-hant_en": "Check box",
+		"_note": "核取方塊 is the established TW UI term for checkbox (Simplified 复选框).",
+		"_recommendation": "accept"
+	},
+	"noteEditor.codeBlock": {
+		"en": "Mark selected text as code, or insert code block",
+		"zh-hant": "將選取的文字標記為程式碼，或插入程式碼區塊",
+		"zh-hant_en": "Mark the selected text as code, or insert a code block",
+		"_note": "程式碼 is the TW word for code (Simplified 代码); 選取 for select.",
+		"_recommendation": "accept"
+	},
+	"noteEditor.disableWordWrap": {
+		"en": "Disable Word Wrap",
+		"zh-hant": "停用自動換行",
+		"zh-hant_en": "Disable automatic line wrapping",
+		"_note": "停用 is the TW word for disable (Simplified 禁用); 自動換行 standard for word wrap.",
+		"_recommendation": "accept"
+	},
+	"noteEditor.enableWordWrap": {
+		"en": "Enable Word Wrap",
+		"zh-hant": "啟用自動換行",
+		"zh-hant_en": "Enable automatic line wrapping",
+		"_note": "Consistent with disableWordWrap.",
+		"_recommendation": "accept"
+	},
+	"noteEditor.findMatchCount": {
+		"en": "{index} of {total}",
+		"zh-hant": "第 {index} 項，共 {total} 項",
+		"zh-hant_en": "Item {index}, of {total} items",
+		"_note": "第...項，共...項 is the standard Chinese counter format for 'X of Y'; both placeholders preserved.",
+		"_recommendation": "accept"
+	},
+	"noteEditor.findNext": {
+		"en": "Next Match (Enter)",
+		"zh-hant": "下一個相符項目 (Enter)",
+		"zh-hant_en": "Next matching item (Enter)",
+		"_note": "相符項目 (matching item) is the TW find-widget term; shortcut hint preserved.",
+		"_recommendation": "accept"
+	},
+	"noteEditor.findPrevious": {
+		"en": "Previous Match (Shift+Enter)",
+		"zh-hant": "上一個相符項目 (Shift+Enter)",
+		"zh-hant_en": "Previous matching item (Shift+Enter)",
+		"_note": "Consistent with findNext.",
+		"_recommendation": "accept"
+	},
+	"noteEditor.hideHistory": {
+		"en": "Hide History",
+		"zh-hant": "隱藏歷史記錄",
+		"zh-hant_en": "Hide history records",
+		"_note": "歷史記錄 terminology as elsewhere.",
+		"_recommendation": "accept"
+	},
+	"noteEditor.historyEntries": {
+		"en": "History entries:",
+		"zh-hant": "歷史記錄條目：",
+		"zh-hant_en": "History record entries:",
+		"_note": "Consistent 歷史記錄 terminology.",
+		"_recommendation": "accept"
+	},
+	"noteEditor.markAsPassword": {
+		"en": "Mark as Password Ctrl+Shift+C",
+		"zh-hant": "標記為密碼 Ctrl+Shift+C",
+		"zh-hant_en": "Mark as password Ctrl+Shift+C",
+		"_note": "Shortcut text preserved verbatim.",
+		"_recommendation": "accept"
+	},
+	"noteEditor.matchCase": {
+		"en": "Match Case",
+		"zh-hant": "區分大小寫",
+		"zh-hant_en": "Distinguish upper and lower case",
+		"_note": "區分大小寫 is the fixed Chinese term for case-sensitive matching in every find dialog.",
+		"_recommendation": "accept"
+	},
+	"noteEditor.orderedList": {
+		"en": "Ordered List",
+		"zh-hant": "編號清單",
+		"zh-hant_en": "Numbered list",
+		"_note": "編號清單 (numbered list) is what TW editors call an ordered list; 有序清單 would sound technical.",
+		"_recommendation": "accept"
+	},
+	"noteEditor.readMoreEntries": {
+		"en": "Read More Entries",
+		"zh-hant": "載入更多條目",
+		"zh-hant_en": "Load more entries",
+		"_note": "載入 (load) instead of literal 'read' — this button loads additional history entries, so the verb matches the action better; same choice as the Simplified file.",
+		"_recommendation": "accept"
+	},
+	"noteEditor.readOnly": {
+		"en": "(read-only)",
+		"zh-hant": "（唯讀）",
+		"zh-hant_en": "(Read-only)",
+		"_note": "唯讀 is the TW word for read-only (Simplified 只读); full-width parentheses per convention.",
+		"_recommendation": "accept"
+	},
+	"noteEditor.replaceAll": {
+		"en": "Replace All",
+		"zh-hant": "全部取代",
+		"zh-hant_en": "Replace all",
+		"_note": "Standard TW find/replace label.",
+		"_recommendation": "accept"
+	},
+	"noteEditor.saveNote": {
+		"en": "Save Note",
+		"zh-hant": "儲存筆記",
+		"zh-hant_en": "Save note",
+		"_note": "Casing artifact only.",
+		"_recommendation": "accept"
+	},
+	"noteEditor.showHistory": {
+		"en": "Show History",
+		"zh-hant": "顯示歷史記錄",
+		"zh-hant_en": "Show history records",
+		"_note": "Consistent with hideHistory.",
+		"_recommendation": "accept"
+	},
+	"noteEditor.toggleEditMode": {
+		"en": "Toggle Edit Mode",
+		"zh-hant": "切換編輯模式",
+		"zh-hant_en": "Toggle edit mode",
+		"_note": "Casing artifact only.",
+		"_recommendation": "accept"
+	},
+	"noteEditor.toggleReplace": {
+		"en": "Toggle Replace",
+		"zh-hant": "切換取代",
+		"zh-hant_en": "Toggle replace",
+		"_note": "取代 is the TW word for replace (Simplified 替换).",
+		"_recommendation": "accept"
+	},
+	"noteEditor.useRegex": {
+		"en": "Use Regular Expression",
+		"zh-hant": "使用正規表示式",
+		"zh-hant_en": "Use regular expression",
+		"_note": "正規表示式 is the TW term (Simplified 正则表达式).",
+		"_recommendation": "accept"
+	},
+	"noteEditor.wholeWord": {
+		"en": "Match Whole Word",
+		"zh-hant": "全字比對",
+		"zh-hant_en": "Whole-word comparison",
+		"_note": "全字比對 is concise and idiomatic for the find-widget toggle in TW.",
+		"_recommendation": "accept"
+	},
+	"noteTreeView.noResultsFound": {
+		"en": "No results found",
+		"zh-hant": "找不到結果",
+		"zh-hant_en": "Cannot find results",
+		"_note": "Idiomatic 找不到 'not found' pattern.",
+		"_recommendation": "accept"
+	},
+	"notes.recycleBin": {
+		"en": "Recycle Bin",
+		"zh-hant": "回收桶",
+		"zh-hant_en": "Recycling bucket",
+		"_note": "回收桶 is the natural Taiwan term for an in-app recycle bin; the Windows-specific 資源回收筒 would be jarring here.",
+		"_recommendation": "accept"
+	},
+	"notificationList.markAllRead": {
+		"en": "Mark All Read",
+		"zh-hant": "全部標為已讀",
+		"zh-hant_en": "Mark all as read",
+		"_note": "Word-order artifact only.",
+		"_recommendation": "accept"
+	},
+	"passwordDialog.capsLock": {
+		"en": "Caps Lock is on!",
+		"zh-hant": "大寫鎖定已開啟！",
+		"zh-hant_en": "Caps Lock is switched on!",
+		"_note": "Same as loginDialog.capsLock.",
+		"_recommendation": "accept"
+	},
+	"passwordDialog.incorrectPassword": {
+		"en": "Incorrect Password",
+		"zh-hant": "密碼錯誤",
+		"zh-hant_en": "Password incorrect",
+		"_note": "Word-order and casing artifact only.",
+		"_recommendation": "accept"
+	},
+	"passwordDialog.ok": {
+		"en": "OK",
+		"zh-hant": "確定",
+		"zh-hant_en": "Confirm",
+		"_note": "Standard 確定 confirm button.",
+		"_recommendation": "accept"
+	},
+	"passwordDialog.title": {
+		"en": "Verify that it is you",
+		"zh-hant": "驗證您的身分",
+		"zh-hant_en": "Verify your identity",
+		"_note": "'Verify that it is you' has no natural literal Chinese form; 驗證您的身分 (verify your identity) is the standard equivalent. 身分 is the TW spelling (vs 身份).",
+		"_recommendation": "accept"
+	},
+	"passwordGenerator.certainty": {
+		"en": "certainty",
+		"zh-hant": "必然",
+		"zh-hant_en": "Inevitable",
+		"_note": "必然 (certain/inevitable) — correct top end of the probability scale.",
+		"_recommendation": "accept"
+	},
+	"passwordGenerator.cosplayMataHari": {
+		"en": "I cosplay as Mata Hari",
+		"zh-hant": "我需要頂級安全",
+		"zh-hant_en": "I need top-level security",
+		"_note": "Cultural reference deliberately dropped: the Mata Hari cosplay joke is replaced with plain 'I need top-level security', matching the Simplified file's substitution (我需要顶级安全). Reviewed with the maintainer 2026-08: kept intentionally — zh-hant may also serve Hong Kong users, and a first-person 'I am an international spy' alternative loses the distancing work the English 'cosplay' framing does, so the safe literal meaning wins over restoring the humor.",
+		"_recommendation": "accept"
+	},
+	"passwordGenerator.dataBreach": {
+		"en": "Data breach:",
+		"zh-hant": "資料外洩：",
+		"zh-hant_en": "Data leak:",
+		"_note": "Consistent 資料外洩 terminology.",
+		"_recommendation": "accept"
+	},
+	"passwordGenerator.easierToType": {
+		"en": "Make it easier to type",
+		"zh-hant": "讓輸入更容易",
+		"zh-hant_en": "Make typing easier",
+		"_note": "Faithful.",
+		"_recommendation": "accept"
+	},
+	"passwordGenerator.hideDetails": {
+		"en": "hide details",
+		"zh-hant": "隱藏詳情",
+		"zh-hant_en": "Hide details",
+		"_note": "Consistent with showDetails.",
+		"_recommendation": "accept"
+	},
+	"passwordGenerator.howLikelyToBeCracked": {
+		"en": "How likely to be cracked in case of:",
+		"zh-hant": "在以下情況下被破解的可能性：",
+		"zh-hant_en": "Likelihood of being cracked under the following circumstances:",
+		"_note": "以下情況 closes the dangling 'in case of:' before the list.",
+		"_recommendation": "accept"
+	},
+	"passwordGenerator.imATarget": {
+		"en": "I'm a target",
+		"zh-hant": "我是攻擊目標",
+		"zh-hant_en": "I am an attack target",
+		"_note": "攻擊 (attack) makes the security sense of 'target' explicit — bare 目標 would read as a goal.",
+		"_recommendation": "accept"
+	},
+	"passwordGenerator.includeDifficultSymbols": {
+		"en": "Include difficult symbols",
+		"zh-hant": "包含複雜符號",
+		"zh-hant_en": "Include complex symbols",
+		"_note": "複雜 (complex) for 'difficult' — the scale friendly/extended/difficult maps to 易用/擴充/複雜 coherently.",
+		"_recommendation": "accept"
+	},
+	"passwordGenerator.includeExactlyOneSymbol": {
+		"en": "Include exactly 1 Symbol",
+		"zh-hant": "恰好包含 1 個符號",
+		"zh-hant_en": "Include exactly 1 symbol",
+		"_note": "恰好 = exactly; numeral preserved.",
+		"_recommendation": "accept"
+	},
+	"passwordGenerator.includeExtendedSymbols": {
+		"en": "Include extended symbols",
+		"zh-hant": "包含擴充符號",
+		"zh-hant_en": "Include expanded symbols",
+		"_note": "擴充 is the TW word for extended (Simplified 扩展).",
+		"_recommendation": "accept"
+	},
+	"passwordGenerator.includeFriendlySymbols": {
+		"en": "Include friendly symbols",
+		"zh-hant": "包含易用符號",
+		"zh-hant_en": "Include easy-to-use symbols",
+		"_note": "易用 (easy to use) renders 'friendly' in this typing-difficulty scale.",
+		"_recommendation": "accept"
+	},
+	"passwordGenerator.includeLowerCase": {
+		"en": "Include lower case",
+		"zh-hant": "包含小寫字母",
+		"zh-hant_en": "Include lowercase letters",
+		"_note": "字母 (letters) required as head noun.",
+		"_recommendation": "accept"
+	},
+	"passwordGenerator.includeUpperCase": {
+		"en": "Include upper case",
+		"zh-hant": "包含大寫字母",
+		"zh-hant_en": "Include uppercase letters",
+		"_note": "Parallel to lower case.",
+		"_recommendation": "accept"
+	},
+	"passwordGenerator.investmentRequired": {
+		"en": "Investment required to crack in less than:",
+		"zh-hant": "在以下時間內破解所需投入：",
+		"zh-hant_en": "Investment required to crack within the following time:",
+		"_note": "以下時間 closes the dangling 'less than:' before the 1 year/1 month/1 week rows.",
+		"_recommendation": "accept"
+	},
+	"passwordGenerator.largeScaleBreach": {
+		"en": "Large scale breach:",
+		"zh-hant": "大規模資料外洩：",
+		"zh-hant_en": "Large-scale data leak:",
+		"_note": "資料外洩 is the TW term for data breach (Simplified 数据泄露); 資料 added since bare 外洩 needs an object.",
+		"_recommendation": "accept"
+	},
+	"passwordGenerator.likely": {
+		"en": "likely",
+		"zh-hant": "很可能",
+		"zh-hant_en": "Very likely",
+		"_note": "很可能 sits correctly between 必然 and 有可能 on the scale.",
+		"_recommendation": "accept"
+	},
+	"passwordGenerator.notHappening": {
+		"en": "not happening",
+		"zh-hant": "不可能發生",
+		"zh-hant_en": "Impossible to happen",
+		"_note": "不可能發生 conveys the dismissive certainty of the colloquial 'not happening'.",
+		"_recommendation": "accept"
+	},
+	"passwordGenerator.nudgeUp": {
+		"en": "Nudge it up a bit",
+		"zh-hant": "稍微提高一點",
+		"zh-hant_en": "Raise it a little bit",
+		"_note": "稍微...一點 keeps the casual 'nudge' register.",
+		"_recommendation": "accept"
+	},
+	"passwordGenerator.option10M": {
+		"en": "10M ({time})",
+		"zh-hant": "1000萬（{time}）",
+		"zh-hant_en": "10 million ({time})",
+		"_note": "Same conversion.",
+		"_recommendation": "accept"
+	},
+	"passwordGenerator.option1M": {
+		"en": "1M ({time}) (default)",
+		"zh-hant": "100萬（{time}）（預設）",
+		"zh-hant_en": "1 million ({time}) (default)",
+		"_note": "萬-unit conversion as in settingsPassword.",
+		"_recommendation": "accept"
+	},
+	"passwordGenerator.option20M": {
+		"en": "20M ({time})",
+		"zh-hant": "2000萬（{time}）",
+		"zh-hant_en": "20 million ({time})",
+		"_note": "Same conversion.",
+		"_recommendation": "accept"
+	},
+	"passwordGenerator.option2M": {
+		"en": "2M ({time})",
+		"zh-hant": "200萬（{time}）",
+		"zh-hant_en": "2 million ({time})",
+		"_note": "Same conversion.",
+		"_recommendation": "accept"
+	},
+	"passwordGenerator.plausible": {
+		"en": "plausible",
+		"zh-hant": "有可能",
+		"zh-hant_en": "Possible",
+		"_note": "有可能 (possible) — 'plausible' has no distinct Chinese probability word; scale ordering is preserved.",
+		"_recommendation": "accept"
+	},
+	"passwordGenerator.poorMemory": {
+		"en": "My memory isn't so good",
+		"zh-hant": "我的記憶力不太好",
+		"zh-hant_en": "My memory is not very good",
+		"_note": "Faithful, conversational register preserved.",
+		"_recommendation": "accept"
+	},
+	"passwordGenerator.possibleCombinations": {
+		"en": "Possible Combinations:",
+		"zh-hant": "可能的組合數：",
+		"zh-hant_en": "Number of possible combinations:",
+		"_note": "數 (count) required before a numeric value.",
+		"_recommendation": "accept"
+	},
+	"passwordGenerator.recommendedSettings": {
+		"en": "Recommended Settings",
+		"zh-hant": "建議設定",
+		"zh-hant_en": "Recommended settings",
+		"_note": "設定 is the TW word for settings (Simplified 设置).",
+		"_recommendation": "accept"
+	},
+	"passwordGenerator.showDetails": {
+		"en": "details",
+		"zh-hant": "詳情",
+		"zh-hant_en": "Details",
+		"_note": "Lowercase link style not representable.",
+		"_recommendation": "accept"
+	},
+	"passwordGenerator.timeToLogin": {
+		"en": "Time to log in:",
+		"zh-hant": "登入所需時間：",
+		"zh-hant_en": "Time required to log in:",
+		"_note": "所需 (required) clarifies this is the KDF cost, not a countdown.",
+		"_recommendation": "accept"
+	},
+	"passwordGenerator.unknown": {
+		"en": "unknown",
+		"zh-hant": "未知",
+		"zh-hant_en": "Unknown",
+		"_note": "Casing artifact only.",
+		"_recommendation": "accept"
+	},
+	"passwordGenerator.veryUnlikely": {
+		"en": "very unlikely",
+		"zh-hant": "極不可能",
+		"zh-hant_en": "Extremely unlikely",
+		"_note": "Standard probability label.",
+		"_recommendation": "accept"
+	},
+	"passwordGenerator.workFactor": {
+		"en": "Work factor (iterations):",
+		"zh-hant": "工作因子（迭代次數）：",
+		"zh-hant_en": "Work factor (iteration count):",
+		"_note": "Standard cryptographic terminology.",
+		"_recommendation": "accept"
+	},
+	"passwordGeneratorDialog.title": {
+		"en": "Generate Password",
+		"zh-hant": "產生密碼",
+		"zh-hant_en": "Generate password",
+		"_note": "產生 is the TW word for generate (Simplified 生成); casing artifact only.",
+		"_recommendation": "accept"
+	},
+	"passwordInput.notReallyAPassword": {
+		"en": "Not really a password",
+		"zh-hant": "這算不上密碼",
+		"zh-hant_en": "This hardly counts as a password",
+		"_note": "Consistent with settingsPassword strength labels.",
+		"_recommendation": "accept"
+	},
+	"passwordInput.veryLimitedSecurity": {
+		"en": "Very limited security",
+		"zh-hant": "安全性極低",
+		"zh-hant_en": "Security extremely low",
+		"_note": "Consistent strength label.",
+		"_recommendation": "accept"
+	},
+	"passwordRepeatInput.matching": {
+		"en": "Matching",
+		"zh-hant": "相符",
+		"zh-hant_en": "Matches",
+		"_note": "Consistent 相符.",
+		"_recommendation": "accept"
+	},
+	"passwordRepeatInput.notMatching": {
+		"en": "Not matching",
+		"zh-hant": "不相符",
+		"zh-hant_en": "Does not match",
+		"_note": "Consistent 不相符.",
+		"_recommendation": "accept"
+	},
+	"recycleBin.recycleBin": {
+		"en": "Recycle Bin",
+		"zh-hant": "回收桶",
+		"zh-hant_en": "Recycling bucket",
+		"_note": "Same term as notes.recycleBin — consistent.",
+		"_recommendation": "accept"
+	},
+	"saveEmptyNodeDialog.question": {
+		"en": "Are you sure you want to save empty version of node:",
+		"zh-hant": "您確定要儲存此節點的空白版本嗎：",
+		"zh-hant_en": "Are you sure you want to save a blank version of this node:",
+		"_note": "空白 (blank) reads more naturally than bare 空 before 版本; meaning identical.",
+		"_recommendation": "accept"
+	},
+	"saveEmptyNodeDialog.title": {
+		"en": "Save Empty Note",
+		"zh-hant": "儲存空筆記",
+		"zh-hant_en": "Save empty note",
+		"_note": "儲存 is the TW word for save; casing artifact only.",
+		"_recommendation": "accept"
+	},
+	"selectionControl.selectAll": {
+		"en": "Select All",
+		"zh-hant": "全選",
+		"zh-hant_en": "Select all",
+		"_note": "Standard label; casing artifact only.",
+		"_recommendation": "accept"
+	},
+	"settingsAbout.attributions": {
+		"en": "Attributions:",
+		"zh-hant": "致謝：",
+		"zh-hant_en": "Acknowledgements:",
+		"_note": "致謝 (acknowledgements) is the closest natural heading; 'attribution' as a licensing term appears in the entries below as 姓名標示.",
+		"_recommendation": "accept"
+	},
+	"settingsAbout.bundleVersion": {
+		"en": "Bundle Version:",
+		"zh-hant": "套件版本：",
+		"zh-hant_en": "Package version:",
+		"_note": "套件 (package/bundle) for the JS bundle; no exact Chinese term for 'bundle' exists — this is the closest conventional rendering.",
+		"_recommendation": "accept"
+	},
+	"settingsAbout.chooseFontLicense": {
+		"en": "Choose font to view license",
+		"zh-hant": "選擇字型以檢視授權條款",
+		"zh-hant_en": "Choose a font to view its license terms",
+		"_note": "Faithful.",
+		"_recommendation": "accept"
+	},
+	"settingsAbout.closeLog": {
+		"en": "Close Log",
+		"zh-hant": "關閉日誌",
+		"zh-hant_en": "Close log",
+		"_note": "Casing artifact only.",
+		"_recommendation": "accept"
+	},
+	"settingsAbout.disableDebug": {
+		"en": "Disable Debug",
+		"zh-hant": "停用偵錯",
+		"zh-hant_en": "Disable debugging",
+		"_note": "停用 for disable, consistent throughout.",
+		"_recommendation": "accept"
+	},
+	"settingsAbout.discord": {
+		"en": "Join us on Discord",
+		"zh-hant": "加入 Discord",
+		"zh-hant_en": "Join Discord",
+		"_note": "'Us on' dropped — 加入 Discord is the natural short form; adding 我們的 would be wordy for a link label. Same reduction as the Simplified file.",
+		"_recommendation": "accept"
+	},
+	"settingsAbout.enableDebug": {
+		"en": "Enable Debug",
+		"zh-hant": "啟用偵錯",
+		"zh-hant_en": "Enable debugging",
+		"_note": "偵錯 is the TW word for debug (Simplified 调试).",
+		"_recommendation": "accept"
+	},
+	"settingsAbout.fontLicenses": {
+		"en": "Font Licenses:",
+		"zh-hant": "字型授權：",
+		"zh-hant_en": "Font licensing:",
+		"_note": "字型 is the TW word for font (Simplified 字体); 授權 for license.",
+		"_recommendation": "accept"
+	},
+	"settingsAbout.fontLicensesText": {
+		"en": "All fonts are directly referenced either from the operating system or fonts.mimiri.io\nLicenses and project links for fonts referenced from fonts.mimiri.io listed below",
+		"zh-hant": "所有字型皆直接引用自作業系統或 fonts.mimiri.io\n以下列出從 fonts.mimiri.io 引用之字型的授權條款和專案連結",
+		"zh-hant_en": "All fonts are referenced directly from the operating system or fonts.mimiri.io\nBelow are listed the license terms and project links of the fonts referenced from fonts.mimiri.io",
+		"_note": "作業系統 is the TW word for operating system; \\n preserved; domain untranslated.",
+		"_recommendation": "accept"
+	},
+	"settingsAbout.hostVersion": {
+		"en": "Host Version:",
+		"zh-hant": "主程式版本：",
+		"zh-hant_en": "Main program version:",
+		"_note": "主程式 (main program) chosen over the biological-sounding literal 宿主 (which the Simplified file uses); refers to the Electron shell.",
+		"_recommendation": "accept"
+	},
+	"settingsAbout.iconAttribution0": {
+		"en": "Vectors and icons by <a href=\"https://dazzleui.gumroad.com/l/dazzleiconsfree?ref=svgrepo.com\" target=\"_blank\">Dazzle Ui</a> in CC Attribution License via <a href=\"https://www.svgrepo.com/\" target=\"_blank\">SVG Repo</a>",
+		"zh-hant": "向量圖和圖示來自 <a href=\"https://dazzleui.gumroad.com/l/dazzleiconsfree?ref=svgrepo.com\" target=\"_blank\">Dazzle Ui</a>，依據 CC 姓名標示授權條款透過 <a href=\"https://www.svgrepo.com/\" target=\"_blank\">SVG Repo</a> 提供",
+		"zh-hant_en": "Vector graphics and icons come from Dazzle Ui, provided through SVG Repo in accordance with the CC Attribution license terms",
+		"_note": "Both <a> tags with attributes preserved intact; 姓名標示 is the official TW Creative Commons translation of 'Attribution'.",
+		"_recommendation": "accept"
+	},
+	"settingsAbout.iconAttribution1": {
+		"en": "Vectors and icons by <a href=\"https://www.figma.com/@leonid?ref=svgrepo.com\" target=\"_blank\">Leonid Tsvetkov</a> in CC Attribution License via <a href=\"https://www.svgrepo.com/\" target=\"_blank\">SVG Repo</a>",
+		"zh-hant": "向量圖和圖示來自 <a href=\"https://www.figma.com/@leonid?ref=svgrepo.com\" target=\"_blank\">Leonid Tsvetkov</a>，依據 CC 姓名標示授權條款透過 <a href=\"https://www.svgrepo.com/\" target=\"_blank\">SVG Repo</a> 提供",
+		"zh-hant_en": "Vector graphics and icons come from Leonid Tsvetkov, provided through SVG Repo in accordance with the CC Attribution license terms",
+		"_note": "Same structure as iconAttribution0; markup preserved.",
+		"_recommendation": "accept"
+	},
+	"settingsAbout.iconAttribution2": {
+		"en": "Replace icons by <a href=\"https://github.com/microsoft/vscode-codicons\" target=\"_blank\">Microsoft (VS Code Codicons)</a> in CC Attribution 4.0 License",
+		"zh-hant": "替代圖示來自 <a href=\"https://github.com/microsoft/vscode-codicons\" target=\"_blank\">Microsoft (VS Code Codicons)</a>，依據 CC 姓名標示 4.0 授權條款提供",
+		"zh-hant_en": "Substitute icons come from Microsoft (VS Code Codicons), provided in accordance with the CC Attribution 4.0 license terms",
+		"_note": "English source 'Replace icons' is ambiguous (likely means the replace-action icons); 替代圖示 reads as 'substitute icons' — same reading the Simplified file took. Markup preserved.",
+		"_recommendation": "accept"
+	},
+	"settingsAbout.issueTracker": {
+		"en": "Issue Tracker on GitHub",
+		"zh-hant": "GitHub 問題追蹤",
+		"zh-hant_en": "GitHub issue tracking",
+		"_note": "問題追蹤 = issue tracking; word order per Chinese convention.",
+		"_recommendation": "accept"
+	},
+	"settingsAbout.privacyPolicy": {
+		"en": "Privacy Policy",
+		"zh-hant": "隱私權政策",
+		"zh-hant_en": "Privacy rights policy",
+		"_note": "隱私權政策 is the TW convention (with 權); Simplified uses 隐私政策.",
+		"_recommendation": "accept"
+	},
+	"settingsAbout.projectLink": {
+		"en": "Project Link:",
+		"zh-hant": "專案連結：",
+		"zh-hant_en": "Project link:",
+		"_note": "專案 is the TW word for project (Simplified 项目); 連結 for link.",
+		"_recommendation": "accept"
+	},
+	"settingsAbout.reddit": {
+		"en": "Join us on Reddit",
+		"zh-hant": "加入 Reddit",
+		"zh-hant_en": "Join Reddit",
+		"_note": "Same reduction as the Discord link.",
+		"_recommendation": "accept"
+	},
+	"settingsAbout.released": {
+		"en": "Released:",
+		"zh-hant": "發佈時間：",
+		"zh-hant_en": "Release time:",
+		"_note": "發佈時間 label form as with 建立時間.",
+		"_recommendation": "accept"
+	},
+	"settingsAbout.reload": {
+		"en": "reload",
+		"zh-hant": "重新載入",
+		"zh-hant_en": "Reload",
+		"_note": "English lowercase style not representable; 重新載入 is the TW term (Simplified 重新加载).",
+		"_recommendation": "accept"
+	},
+	"settingsAbout.sourceGitHub": {
+		"en": "Source on GitHub",
+		"zh-hant": "GitHub 原始碼",
+		"zh-hant_en": "GitHub source code",
+		"_note": "原始碼 is the TW word for source code (Simplified 源码).",
+		"_recommendation": "accept"
+	},
+	"settingsAbout.spaceUsed": {
+		"en": "Space Used:",
+		"zh-hant": "已用空間：",
+		"zh-hant_en": "Space used:",
+		"_note": "Casing artifact only.",
+		"_recommendation": "accept"
+	},
+	"settingsAbout.termsAndConditions": {
+		"en": "Terms & Conditions",
+		"zh-hant": "使用條款",
+		"zh-hant_en": "Terms of use",
+		"_note": "使用條款 is the conventional Chinese legal-link label covering 'Terms & Conditions'; a literal 條款與條件 would look machine-translated.",
+		"_recommendation": "accept"
+	},
+	"settingsAbout.unsyncedData": {
+		"en": "Unsynced Data:",
+		"zh-hant": "未同步資料：",
+		"zh-hant_en": "Unsynchronized data:",
+		"_note": "Consistent with unsyncedNotes.",
+		"_recommendation": "accept"
+	},
+	"settingsAbout.unsyncedNotes": {
+		"en": "Unsynced Notes:",
+		"zh-hant": "未同步筆記：",
+		"zh-hant_en": "Unsynchronized notes:",
+		"_note": "未同步 = unsynced; abbreviation has no Chinese equivalent.",
+		"_recommendation": "accept"
+	},
+	"settingsCreateAccount2.chooseCredentials": {
+		"en": "Choose your credentials",
+		"zh-hant": "選擇您的登入資訊",
+		"zh-hant_en": "Choose your login information",
+		"_note": "'Credentials' rendered as 登入資訊 (login information) — the literal 憑證 means certificate in TW usage and would mislead here.",
+		"_recommendation": "accept"
+	},
+	"settingsCreateAccount2.cloudAccountHeader": {
+		"en": "Cloud Account",
+		"zh-hant": "雲端帳戶",
+		"zh-hant_en": "Cloud account",
+		"_note": "Same as cloudTab.",
+		"_recommendation": "accept"
+	},
+	"settingsCreateAccount2.cloudFeature11": {
+		"en": "100 MB & 2000 notes for free",
+		"zh-hant": "免費 100 MB 及 2000 則筆記",
+		"zh-hant_en": "Free 100 MB and 2000 notes",
+		"_note": "免費 fronted per Chinese emphasis norm; figures preserved.",
+		"_recommendation": "accept"
+	},
+	"settingsCreateAccount2.cloudFeature2": {
+		"en": "Notes backed up in cloud",
+		"zh-hant": "筆記備份至雲端",
+		"zh-hant_en": "Notes backed up to the cloud",
+		"_note": "Preposition artifact only.",
+		"_recommendation": "accept"
+	},
+	"settingsCreateAccount2.cloudFeature4": {
+		"en": "On-device encryption",
+		"zh-hant": "裝置本機加密",
+		"zh-hant_en": "Local on-device encryption",
+		"_note": "裝置本機 doubles up device+local for clarity in the feature list.",
+		"_recommendation": "accept"
+	},
+	"settingsCreateAccount2.cloudFeature6": {
+		"en": "Unlimited note hierarchy",
+		"zh-hant": "無限筆記層級",
+		"zh-hant_en": "Unlimited note levels",
+		"_note": "層級 (levels) renders 'hierarchy' — the feature is unlimited nesting depth, which this conveys.",
+		"_recommendation": "accept"
+	},
+	"settingsCreateAccount2.cloudFeature7": {
+		"en": "Unlimited device sync on Windows, Linux, macOS, Android, iOS and web",
+		"zh-hant": "在 Windows、Linux、macOS、Android、iOS 和網頁版之間無限裝置同步",
+		"zh-hant_en": "Unlimited device synchronization between Windows, Linux, macOS, Android, iOS and the web version",
+		"_note": "Platform names preserved; 網頁版 (web version) for 'web'; enumeration comma 、 per Chinese typography.",
+		"_recommendation": "accept"
+	},
+	"settingsCreateAccount2.cloudFeature8": {
+		"en": "Offline read/write access",
+		"zh-hant": "離線讀寫存取",
+		"zh-hant_en": "Offline read-write access",
+		"_note": "Faithful compound.",
+		"_recommendation": "accept"
+	},
+	"settingsCreateAccount2.cloudTab": {
+		"en": "Cloud Account",
+		"zh-hant": "雲端帳戶",
+		"zh-hant_en": "Cloud account",
+		"_note": "雲端 is the TW word for cloud (Simplified uses bare 云); casing artifact only.",
+		"_recommendation": "accept"
+	},
+	"settingsCreateAccount2.faq1Answer": {
+		"en": "Yes up to 2000 notes and 100MB.",
+		"zh-hant": "最多 2000 則筆記和 100MB 是免費的。",
+		"zh-hant_en": "Up to 2000 notes and 100MB are free.",
+		"_note": "The elliptical English 'Yes up to...' is restructured into a full sentence; the affirmative is implicit in 是免費的. Figures preserved.",
+		"_recommendation": "accept"
+	},
+	"settingsCreateAccount2.faq1Question": {
+		"en": "Is the Cloud Account free?",
+		"zh-hant": "雲端帳戶是免費的嗎？",
+		"zh-hant_en": "Is the cloud account free?",
+		"_note": "Casing artifact only.",
+		"_recommendation": "accept"
+	},
+	"settingsCreateAccount2.faq2Answer": {
+		"en": "If you want to access your notes from multiple devices or you wish to share notes with other users, then yes.\n\nIf you want to keep your notes only on this device and not sync them anywhere, then no.",
+		"zh-hant": "如果您想從多台裝置存取筆記，或與其他使用者分享筆記，則需要。\n\n如果您只想將筆記儲存在此裝置上而不同步到任何地方，則不需要。",
+		"zh-hant_en": "If you want to access notes from multiple devices, or share notes with other users, then you need one.\n\nIf you only want to store notes on this device without synchronizing anywhere, then you do not.",
+		"_note": "'Then yes/then no' rendered as 則需要/則不需要 (then you need / then you don't) — Chinese answers the verb, not with bare yes/no. \\n\\n preserved.",
+		"_recommendation": "accept"
+	},
+	"settingsCreateAccount2.faq2Question": {
+		"en": "Do I need a Cloud Account?",
+		"zh-hant": "我需要雲端帳戶嗎？",
+		"zh-hant_en": "Do I need a cloud account?",
+		"_note": "Casing artifact only.",
+		"_recommendation": "accept"
+	},
+	"settingsCreateAccount2.faq3Answer": {
+		"en": "Your data is encrypted before it leaves your device and even we cannot access your data.",
+		"zh-hant": "您的資料在離開裝置之前就已加密，即使是我們也無法存取您的資料。",
+		"zh-hant_en": "Your data is already encrypted before it leaves the device; even we cannot access your data.",
+		"_note": "就已 adds the 'already' emphasis that strengthens the security claim — appropriate for reassurance copy.",
+		"_recommendation": "accept"
+	},
+	"settingsCreateAccount2.faq3Question": {
+		"en": "Is my data safe in the Cloud?",
+		"zh-hant": "我在雲端的資料安全嗎？",
+		"zh-hant_en": "Is my data in the cloud safe?",
+		"_note": "Word-order artifact only.",
+		"_recommendation": "accept"
+	},
+	"settingsCreateAccount2.faq4Answer": {
+		"en": "No, unfortunately we cannot help you recover your password.\n\nMaking this possible would substantially weaken your data security.",
+		"zh-hant": "很遺憾，我們無法幫您恢復密碼。\n\n若要實現這項功能，將會大幅降低您資料的安全性。",
+		"zh-hant_en": "Unfortunately, we cannot help you recover your password.\n\nImplementing this feature would drastically reduce the security of your data.",
+		"_note": "Leading 'No,' folded into 很遺憾...無法 (unfortunately...cannot) — the refusal is unambiguous without a bare 不. \\n\\n preserved.",
+		"_recommendation": "accept"
+	},
+	"settingsCreateAccount2.faq5Answer": {
+		"en": "Technically a Local Account offers stronger privacy guarantees. However, with a well-chosen password the difference is academic.\n\nAnd a Local Account does not help ensure your own access to the data in case of device loss or in an emergency situation.\n\nUltimately it depends on what you are trying to achieve.",
+		"zh-hant": "就技術而言，本機帳戶提供更強的隱私保障。但只要選擇了好密碼，這種差異實際上無關緊要。\n\n而且本機帳戶在裝置遺失或緊急情況下，無法保證您能存取自己的資料。\n\n最終取決於您想達成什麼目的。",
+		"zh-hant_en": "Technically speaking, a local-machine account provides stronger privacy guarantees. But as long as a good password is chosen, this difference is practically irrelevant.\n\nMoreover, a local-machine account cannot guarantee that you can access your own data if the device is lost or in an emergency situation.\n\nUltimately it depends on what goal you want to achieve.",
+		"_note": "'The difference is academic' idiom rendered as 實際上無關緊要 (practically irrelevant) — same rhetorical point without a false-friend literal. \\n\\n structure preserved.",
+		"_recommendation": "accept"
+	},
+	"settingsCreateAccount2.faq5Question": {
+		"en": "Is my data safer with a Local Account?",
+		"zh-hant": "使用本機帳戶資料會更安全嗎？",
+		"zh-hant_en": "Is data safer with a local-machine account?",
+		"_note": "Faithful; 'my' dropped per Chinese pronoun norms.",
+		"_recommendation": "accept"
+	},
+	"settingsCreateAccount2.localAccountHeader": {
+		"en": "Local Account",
+		"zh-hant": "本機帳戶",
+		"zh-hant_en": "Local-machine account",
+		"_note": "Same as localTab.",
+		"_recommendation": "accept"
+	},
+	"settingsCreateAccount2.localFeature1": {
+		"en": "On-device encryption",
+		"zh-hant": "裝置本機加密",
+		"zh-hant_en": "Local on-device encryption",
+		"_note": "Same as cloudFeature4 — consistent.",
+		"_recommendation": "accept"
+	},
+	"settingsCreateAccount2.localFeature2": {
+		"en": "Unlimited note hierarchy",
+		"zh-hant": "無限筆記層級",
+		"zh-hant_en": "Unlimited note levels",
+		"_note": "Same as cloudFeature6 — consistent.",
+		"_recommendation": "accept"
+	},
+	"settingsCreateAccount2.localFeature3": {
+		"en": "Offline read/write access",
+		"zh-hant": "離線讀寫存取",
+		"zh-hant_en": "Offline read-write access",
+		"_note": "Same as cloudFeature8 — consistent.",
+		"_recommendation": "accept"
+	},
+	"settingsCreateAccount2.localFeature4": {
+		"en": "Unlimited storage (locally)",
+		"zh-hant": "無限儲存空間（本機）",
+		"zh-hant_en": "Unlimited storage space (local machine)",
+		"_note": "儲存空間 (storage space) — bare 儲存 is a verb; parenthetical 本機 renders '(locally)'.",
+		"_recommendation": "accept"
+	},
+	"settingsCreateAccount2.localFeature5": {
+		"en": "Notes stored exclusively on this device",
+		"zh-hant": "筆記僅儲存在此裝置上",
+		"zh-hant_en": "Notes are stored only on this device",
+		"_note": "僅 (only) for 'exclusively'; faithful.",
+		"_recommendation": "accept"
+	},
+	"settingsCreateAccount2.localTab": {
+		"en": "Local Account",
+		"zh-hant": "本機帳戶",
+		"zh-hant_en": "Local-machine account",
+		"_note": "本機 (this machine) is the TW term for local; distinguishes clearly from the cloud account.",
+		"_recommendation": "accept"
+	},
+	"settingsCreateAccount2.readMorePassword": {
+		"en": "Read more about password selection",
+		"zh-hant": "進一步瞭解如何選擇密碼",
+		"zh-hant_en": "Learn more about how to choose a password",
+		"_note": "Same 進一步瞭解 pattern; 'password selection' unpacked to a clause as Chinese prefers verbs.",
+		"_recommendation": "accept"
+	},
+	"settingsCreateAccount2.readMoreSecurity": {
+		"en": "Read more about how we keep your data secure",
+		"zh-hant": "進一步瞭解我們如何保護您的資料安全",
+		"zh-hant_en": "Learn more about how we protect the safety of your data",
+		"_note": "進一步瞭解 (learn more) is the standard Chinese link phrasing for 'read more'.",
+		"_recommendation": "accept"
+	},
+	"settingsCreateAccount2.repeat": {
+		"en": "Repeat:",
+		"zh-hant": "再次輸入：",
+		"zh-hant_en": "Enter again:",
+		"_note": "Consistent password-repeat label.",
+		"_recommendation": "accept"
+	},
+	"settingsCreateAccount2.seePricing": {
+		"en": "See pricing for additional space",
+		"zh-hant": "檢視額外空間的定價",
+		"zh-hant_en": "View the pricing for additional space",
+		"_note": "檢視 (view) for 'see'; faithful.",
+		"_recommendation": "accept"
+	},
+	"settingsDeleteAccount.alsoDeleteLocal": {
+		"en": "Also delete local data from this device",
+		"zh-hant": "同時刪除此裝置上的本機資料",
+		"zh-hant_en": "At the same time delete the local-machine data on this device",
+		"_note": "同時 = also/at the same time; faithful.",
+		"_recommendation": "accept"
+	},
+	"settingsDeleteAccount.capsLock": {
+		"en": "Caps Lock is on!",
+		"zh-hant": "大寫鎖定已開啟！",
+		"zh-hant_en": "Caps Lock is switched on!",
+		"_note": "Consistent with the other capsLock strings.",
+		"_recommendation": "accept"
+	},
+	"settingsDeleteAccount.deleteAccount": {
+		"en": "Delete Account",
+		"zh-hant": "刪除帳戶",
+		"zh-hant_en": "Delete account",
+		"_note": "Casing artifact only.",
+		"_recommendation": "accept"
+	},
+	"settingsDeleteAccount.iUnderstandThat": {
+		"en": "I understand that",
+		"zh-hant": "我瞭解以下事項：",
+		"zh-hant_en": "I understand the following matters:",
+		"_note": "English is a sentence fragment continued by the checkboxes below; Chinese cannot dangle mid-sentence, so 以下事項： (the following matters:) introduces the list instead. The checkbox items were adjusted to stand alone accordingly.",
+		"_recommendation": "accept"
+	},
+	"settingsDeleteAccount.invalidPassword": {
+		"en": "Invalid password",
+		"zh-hant": "密碼無效",
+		"zh-hant_en": "Password invalid",
+		"_note": "Word-order artifact only.",
+		"_recommendation": "accept"
+	},
+	"settingsDeleteAccount.noWayToRecover": {
+		"en": "that there is no way to recover my data",
+		"zh-hant": "我的資料將無法復原",
+		"zh-hant_en": "My data will be unrecoverable",
+		"_note": "Restructured from the 'that there is no way' fragment to a standalone statement, consistent with the list-item approach; severity fully conveyed.",
+		"_recommendation": "accept"
+	},
+	"settingsDeleteAccount.permanentlyDeleteAccount": {
+		"en": "this will permanently delete my account",
+		"zh-hant": "這將永久刪除我的帳戶",
+		"zh-hant_en": "This will permanently delete my account",
+		"_note": "Reads as a standalone list item under the 以下事項 header; faithful.",
+		"_recommendation": "accept"
+	},
+	"settingsDeleteAccount.permanentlyDeleteData": {
+		"en": "this will permanently delete all my data",
+		"zh-hant": "這將永久刪除我的所有資料",
+		"zh-hant_en": "This will permanently delete all of my data",
+		"_note": "Faithful list item.",
+		"_recommendation": "accept"
+	},
+	"settingsDeleteAccount.pleaseWait": {
+		"en": "Please wait",
+		"zh-hant": "請稍候",
+		"zh-hant_en": "Please wait a moment",
+		"_note": "Standard 請稍候 formula.",
+		"_recommendation": "accept"
+	},
+	"settingsDeleteAccount.tab": {
+		"en": "Delete Account",
+		"zh-hant": "刪除帳戶",
+		"zh-hant_en": "Delete account",
+		"_note": "Casing artifact only.",
+		"_recommendation": "accept"
+	},
+	"settingsDevBlog.tab": {
+		"en": "Dev Blog",
+		"zh-hant": "開發部落格",
+		"zh-hant_en": "Development blog",
+		"_note": "部落格 TW for blog; 'Dev' abbreviation expanded as Chinese lacks one.",
+		"_recommendation": "accept"
+	},
+	"settingsFontsColors.auto": {
+		"en": "Auto (based on system)",
+		"zh-hant": "自動（依系統）",
+		"zh-hant_en": "Automatic (according to the system)",
+		"_note": "依 (according to) compactly renders 'based on'; full-width parentheses.",
+		"_recommendation": "accept"
+	},
+	"settingsFontsColors.boldItalicText": {
+		"en": "bold italic text",
+		"zh-hant": "粗斜體文字",
+		"zh-hant_en": "Bold-italic text",
+		"_note": "Standard typography term.",
+		"_recommendation": "accept"
+	},
+	"settingsFontsColors.boldText": {
+		"en": "bold text",
+		"zh-hant": "粗體文字",
+		"zh-hant_en": "Bold text",
+		"_note": "Standard typography term.",
+		"_recommendation": "accept"
+	},
+	"settingsFontsColors.fontFamily": {
+		"en": "Font Family:",
+		"zh-hant": "字型系列：",
+		"zh-hant_en": "Font family:",
+		"_note": "Casing artifact only.",
+		"_recommendation": "accept"
+	},
+	"settingsFontsColors.fontName": {
+		"en": "Font Name:",
+		"zh-hant": "字型名稱：",
+		"zh-hant_en": "Font name:",
+		"_note": "Casing artifact only.",
+		"_recommendation": "accept"
+	},
+	"settingsFontsColors.fontSize": {
+		"en": "Font Size:",
+		"zh-hant": "字型大小：",
+		"zh-hant_en": "Font size:",
+		"_note": "Casing artifact only.",
+		"_recommendation": "accept"
+	},
+	"settingsFontsColors.italicText": {
+		"en": "italic text",
+		"zh-hant": "斜體文字",
+		"zh-hant_en": "Italic text",
+		"_note": "Standard typography term.",
+		"_recommendation": "accept"
+	},
+	"settingsFontsColors.nameOfFont": {
+		"en": "Name of a font installed on your system:",
+		"zh-hant": "系統上已安裝字型的名稱：",
+		"zh-hant_en": "Name of a font already installed on the system:",
+		"_note": "已 (already) implicit in English 'installed'; faithful.",
+		"_recommendation": "accept"
+	},
+	"settingsFontsColors.normalText": {
+		"en": "normal text",
+		"zh-hant": "一般文字",
+		"zh-hant_en": "Normal text",
+		"_note": "一般 is the TW word for normal/general here; lowercase style not representable.",
+		"_recommendation": "accept"
+	},
+	"settingsFontsColors.tab": {
+		"en": "Fonts & Theme",
+		"zh-hant": "字型與主題",
+		"zh-hant_en": "Fonts and theme",
+		"_note": "與 renders '&'; 字型 TW for font.",
+		"_recommendation": "accept"
+	},
+	"settingsGeneral.allowMonacoOnMobile": {
+		"en": "Enable code editor on Mobile",
+		"zh-hant": "在行動裝置上啟用程式碼編輯器",
+		"zh-hant_en": "Enable the code editor on mobile devices",
+		"_note": "行動裝置 is the TW term for mobile device (Simplified 移动端).",
+		"_recommendation": "accept"
+	},
+	"settingsGeneral.allowMonacoOnMobileTooltip": {
+		"en": "Enable code editor on Mobile (discouraged as the code editor is not mobile optimized)",
+		"zh-hant": "在行動裝置上啟用程式碼編輯器（不建議，因為程式碼編輯器未針對行動裝置最佳化）",
+		"zh-hant_en": "Enable the code editor on mobile devices (not recommended, because the code editor is not optimized for mobile devices)",
+		"_note": "最佳化 is the TW word for optimize (Simplified 优化); 不建議 renders 'discouraged'.",
+		"_recommendation": "accept"
+	},
+	"settingsGeneral.defaultEditorTooltip": {
+		"en": "Editor used for notes that do not have their own editor choice",
+		"zh-hant": "用於未自行選擇編輯器之筆記的編輯器",
+		"zh-hant_en": "The editor used for notes that have not chosen an editor of their own",
+		"_note": "Faithful; literary 之 keeps the nested relative clause readable.",
+		"_recommendation": "accept"
+	},
+	"settingsGeneral.disableDevBlog": {
+		"en": "Disable Dev Blog",
+		"zh-hant": "停用開發部落格",
+		"zh-hant_en": "Disable the development blog",
+		"_note": "部落格 is the TW word for blog (Simplified 博客).",
+		"_recommendation": "accept"
+	},
+	"settingsGeneral.disableDevBlogTooltip": {
+		"en": "If you find the developer blog annoying, you can choose to hide it",
+		"zh-hant": "如果您覺得開發部落格造成干擾，可以選擇隱藏它",
+		"zh-hant_en": "If you feel the development blog causes distraction, you can choose to hide it",
+		"_note": "造成干擾 (causes distraction) is slightly more polite than a literal 'annoying' (惱人) — appropriate softening for settings copy.",
+		"_recommendation": "accept"
+	},
+	"settingsGeneral.keepTrayVisible": {
+		"en": "Keep Tray Icon Visible",
+		"zh-hant": "保持系統匣圖示可見",
+		"zh-hant_en": "Keep the system tray icon visible",
+		"_note": "Consistent 系統匣 terminology.",
+		"_recommendation": "accept"
+	},
+	"settingsGeneral.keepTrayVisibleTooltip": {
+		"en": "Prevent the system tray icon from being hidden in the overflow area",
+		"zh-hant": "防止系統匣圖示被隱藏到溢位區域",
+		"zh-hant_en": "Prevent the system tray icon from being hidden into the overflow area",
+		"_note": "溢位 is the TW term for overflow (Simplified 溢出).",
+		"_recommendation": "accept"
+	},
+	"settingsGeneral.languageChinese": {
+		"en": "简体中文",
+		"zh-hant": "简体中文",
+		"zh-hant_en": "Simplified Chinese (native name)",
+		"_note": "Deliberately kept in Simplified script per the native-name-only picker convention (context.json): each language shows in its own script in every locale.",
+		"_recommendation": "accept"
+	},
+	"settingsGeneral.languageChineseTraditional": {
+		"en": "繁體中文",
+		"zh-hant": "繁體中文",
+		"zh-hant_en": "Traditional Chinese (native name)",
+		"_note": "Native name per picker convention; identical across all locale files.",
+		"_recommendation": "accept"
+	},
+	"settingsGeneral.launchOnLogin": {
+		"en": "Launch Mimiri Notes on Login",
+		"zh-hant": "登入時啟動 Mimiri Notes",
+		"zh-hant_en": "Start Mimiri Notes upon login",
+		"_note": "Product name preserved; faithful.",
+		"_recommendation": "accept"
+	},
+	"settingsGeneral.launchOnLoginTooltip": {
+		"en": "Automatically start Mimiri Notes when you log in to your computer",
+		"zh-hant": "登入電腦時自動啟動 Mimiri Notes",
+		"zh-hant_en": "Automatically start Mimiri Notes when logging in to the computer",
+		"_note": "電腦 is the TW word for computer; pronoun dropped per Chinese norm.",
+		"_recommendation": "accept"
+	},
+	"settingsGeneral.quitOnClose": {
+		"en": "Quit when closing application window",
+		"zh-hant": "關閉應用程式視窗時結束",
+		"zh-hant_en": "Exit when the application window is closed",
+		"_note": "結束 is the TW convention for 'Quit' (as in macOS/Windows zh-TW menus); Simplified uses 退出.",
+		"_recommendation": "accept"
+	},
+	"settingsGeneral.quitOnCloseTooltip": {
+		"en": "Fully quit the application instead of minimizing to the system tray when closing the window",
+		"zh-hant": "關閉視窗時完全結束應用程式，而不是最小化到系統匣",
+		"zh-hant_en": "Completely exit the application when the window is closed, rather than minimizing to the system tray",
+		"_note": "Faithful; clause order adjusted to Chinese time-first norm.",
+		"_recommendation": "accept"
+	},
+	"settingsGeneral.showInTaskbar": {
+		"en": "Show in Taskbar",
+		"zh-hant": "在工作列中顯示",
+		"zh-hant_en": "Show in the taskbar",
+		"_note": "工作列 is the TW term for taskbar (Simplified 任务栏).",
+		"_recommendation": "accept"
+	},
+	"settingsGeneral.showInTaskbarTooltip": {
+		"en": "Show Mimiri Notes in the taskbar when the window is open, instead of only showing the system tray icon",
+		"zh-hant": "視窗開啟時在工作列中顯示 Mimiri Notes，而不僅顯示系統匣圖示",
+		"zh-hant_en": "Show Mimiri Notes in the taskbar while the window is open, rather than only showing the system tray icon",
+		"_note": "視窗 is the TW word for window (Simplified 窗口); faithful.",
+		"_recommendation": "accept"
+	},
+	"settingsGeneral.showVerticalGuides": {
+		"en": "Show vertical guides",
+		"zh-hant": "顯示垂直參考線",
+		"zh-hant_en": "Show vertical reference lines",
+		"_note": "參考線 (reference/guide lines) standard term.",
+		"_recommendation": "accept"
+	},
+	"settingsGeneral.showVerticalGuidesTooltip": {
+		"en": "Display vertical lines in the tree view to indicate nesting depth",
+		"zh-hant": "在樹狀檢視中顯示垂直線以表示巢狀深度",
+		"zh-hant_en": "Show vertical lines in the tree-shaped view to indicate nesting depth",
+		"_note": "巢狀 is the TW word for nested (Simplified 嵌套).",
+		"_recommendation": "accept"
+	},
+	"settingsGeneral.themeDark": {
+		"en": "Dark",
+		"zh-hant": "深色",
+		"zh-hant_en": "Dark color",
+		"_note": "Standard theme label.",
+		"_recommendation": "accept"
+	},
+	"settingsGeneral.themeLight": {
+		"en": "Light",
+		"zh-hant": "淺色",
+		"zh-hant_en": "Light color",
+		"_note": "淺色 is the standard theme label; bare 淺 cannot stand alone.",
+		"_recommendation": "accept"
+	},
+	"settingsGeneral.trayIcon": {
+		"en": "Tray Icon",
+		"zh-hant": "系統匣圖示",
+		"zh-hant_en": "System tray icon",
+		"_note": "系統匣 is the TW term for the system tray (Simplified 托盘); 圖示 for icon.",
+		"_recommendation": "accept"
+	},
+	"settingsGeneral.useChevrons": {
+		"en": "Use chevrons in tree view",
+		"zh-hant": "在樹狀檢視中使用箭頭圖示",
+		"zh-hant_en": "Use arrow icons in the tree-shaped view",
+		"_note": "'Chevron' has no Chinese loanword; 箭頭圖示 (arrow icons) is the accessible rendering, same as the Simplified file. 樹狀檢視 is the TW term for tree view.",
+		"_recommendation": "accept"
+	},
+	"settingsGeneral.useChevronsTooltip": {
+		"en": "Show chevrons in the tree instead of plus/minus icons to indicate expandable items",
+		"zh-hant": "在樹狀檢視中使用箭頭圖示代替加減號圖示來表示可展開項目",
+		"zh-hant_en": "Use arrow icons in the tree-shaped view instead of plus/minus icons to indicate expandable items",
+		"_note": "Same chevron→arrow rendering as the toggle label; consistent.",
+		"_recommendation": "accept"
+	},
+	"settingsPassword.capsLock": {
+		"en": "Caps Lock is on!",
+		"zh-hant": "大寫鎖定已開啟！",
+		"zh-hant_en": "Caps Lock is switched on!",
+		"_note": "Consistent capsLock string.",
+		"_recommendation": "accept"
+	},
+	"settingsPassword.iterations": {
+		"en": "Iterations:",
+		"zh-hant": "迭代次數：",
+		"zh-hant_en": "Iteration count:",
+		"_note": "次數 counter required; standard technical term.",
+		"_recommendation": "accept"
+	},
+	"settingsPassword.matching": {
+		"en": "Matching",
+		"zh-hant": "相符",
+		"zh-hant_en": "Matches",
+		"_note": "相符 is the TW word for matching (Simplified 匹配).",
+		"_recommendation": "accept"
+	},
+	"settingsPassword.new": {
+		"en": "New:",
+		"zh-hant": "新密碼：",
+		"zh-hant_en": "New password:",
+		"_note": "Bare 新： cannot stand alone in Chinese; 新密碼： makes the field label explicit, matching the Simplified file.",
+		"_recommendation": "accept"
+	},
+	"settingsPassword.notMatching": {
+		"en": "Not matching",
+		"zh-hant": "不相符",
+		"zh-hant_en": "Does not match",
+		"_note": "Consistent with matching.",
+		"_recommendation": "accept"
+	},
+	"settingsPassword.notReallyAPassword": {
+		"en": "Not really a password",
+		"zh-hant": "這算不上密碼",
+		"zh-hant_en": "This hardly counts as a password",
+		"_note": "算不上 keeps the wry, lightly mocking register of the English strength label.",
+		"_recommendation": "accept"
+	},
+	"settingsPassword.option10M": {
+		"en": "10M ({time})",
+		"zh-hant": "1000萬（{time}）",
+		"zh-hant_en": "10 million ({time})",
+		"_note": "Same 萬-unit conversion.",
+		"_recommendation": "accept"
+	},
+	"settingsPassword.option1M": {
+		"en": "1M ({time}) (default)",
+		"zh-hant": "100萬（{time}）（預設）",
+		"zh-hant_en": "1 million ({time}) (default)",
+		"_note": "Chinese numerals use 萬 (10,000) units so '1M' becomes 100萬; placeholder preserved; 預設 is the TW word for default.",
+		"_recommendation": "accept"
+	},
+	"settingsPassword.option20M": {
+		"en": "20M ({time})",
+		"zh-hant": "2000萬（{time}）",
+		"zh-hant_en": "20 million ({time})",
+		"_note": "Same 萬-unit conversion.",
+		"_recommendation": "accept"
+	},
+	"settingsPassword.option2M": {
+		"en": "2M ({time})",
+		"zh-hant": "200萬（{time}）",
+		"zh-hant_en": "2 million ({time})",
+		"_note": "Same 萬-unit conversion.",
+		"_recommendation": "accept"
+	},
+	"settingsPassword.repeat": {
+		"en": "Repeat:",
+		"zh-hant": "再次輸入：",
+		"zh-hant_en": "Enter again:",
+		"_note": "再次輸入 (enter again) is the idiomatic TW password-repeat label; a literal 重複 would read as 'duplicate'.",
+		"_recommendation": "accept"
+	},
+	"settingsPassword.veryLimitedSecurity": {
+		"en": "Very limited security",
+		"zh-hant": "安全性極低",
+		"zh-hant_en": "Security extremely low",
+		"_note": "極低 (extremely low) conveys 'very limited'; concise for the strength meter.",
+		"_recommendation": "accept"
+	},
+	"settingsPinCode.setOrChangeTooltip": {
+		"en": "Set a 4-digit PIN Code to lock Mimiri after a small period of inactivity and use the code to quickly resume the session",
+		"zh-hant": "設定 4 位數 PIN 碼，在一段時間未活動後鎖定 Mimiri，並可使用該碼快速恢復工作階段",
+		"zh-hant_en": "Set a 4-digit PIN code to lock Mimiri after a period of inactivity, and use that code to quickly resume the work session",
+		"_note": "工作階段 is the TW term for session (Simplified 会话); 'small period' simplified to 一段時間 without losing meaning.",
+		"_recommendation": "accept"
+	},
+	"settingsPinCode.tab": {
+		"en": "PIN Code",
+		"zh-hant": "PIN 碼",
+		"zh-hant_en": "PIN code",
+		"_note": "PIN 碼 standard form.",
+		"_recommendation": "accept"
+	},
+	"settingsPromoteAccount.capsLock": {
+		"en": "Caps Lock is on!",
+		"zh-hant": "大寫鎖定已開啟！",
+		"zh-hant_en": "Caps Lock is switched on!",
+		"_note": "Consistent capsLock string.",
+		"_recommendation": "accept"
+	},
+	"settingsPromoteAccount.description": {
+		"en": "Choose a username and password to allow you to access your data from anywhere",
+		"zh-hant": "選擇使用者名稱和密碼，以便從任何地方存取您的資料",
+		"zh-hant_en": "Choose a username and password, so that you can access your data from anywhere",
+		"_note": "Faithful; 存取 for access.",
+		"_recommendation": "accept"
+	},
+	"settingsPromoteAccount.iterations": {
+		"en": "Iterations:",
+		"zh-hant": "迭代次數：",
+		"zh-hant_en": "Iteration count:",
+		"_note": "Consistent with settingsPassword.",
+		"_recommendation": "accept"
+	},
+	"settingsPromoteAccount.matching": {
+		"en": "Matching",
+		"zh-hant": "相符",
+		"zh-hant_en": "Matches",
+		"_note": "Consistent 相符.",
+		"_recommendation": "accept"
+	},
+	"settingsPromoteAccount.noRecoveryWarning": {
+		"en": "I understand that I am solely responsible for remembering my password and innonova GmbH has <b>no way</b> to recover my data or account if I lose my password",
+		"zh-hant": "我瞭解，我必須自行負責記住密碼，如果我遺失密碼，innonova GmbH <b>無法</b>復原我的資料或帳戶",
+		"zh-hant_en": "I understand that I must take responsibility myself for remembering my password, and if I lose my password, innonova GmbH <b>cannot</b> recover my data or account",
+		"_note": "<b> emphasis moved onto 無法 (cannot) — the Chinese word carrying the 'no way' weight; company name preserved; markup intact.",
+		"_recommendation": "accept"
+	},
+	"settingsPromoteAccount.notMatching": {
+		"en": "Not matching",
+		"zh-hant": "不相符",
+		"zh-hant_en": "Does not match",
+		"_note": "Consistent 不相符.",
+		"_recommendation": "accept"
+	},
+	"settingsPromoteAccount.notReallyAPassword": {
+		"en": "Not really a password",
+		"zh-hant": "這算不上密碼",
+		"zh-hant_en": "This hardly counts as a password",
+		"_note": "Consistent with settingsPassword.",
+		"_recommendation": "accept"
+	},
+	"settingsPromoteAccount.option10M": {
+		"en": "10M ({time})",
+		"zh-hant": "1000萬（{time}）",
+		"zh-hant_en": "10 million ({time})",
+		"_note": "Same 萬-unit conversion.",
+		"_recommendation": "accept"
+	},
+	"settingsPromoteAccount.option1M": {
+		"en": "1M ({time}) (default)",
+		"zh-hant": "100萬（{time}）（預設）",
+		"zh-hant_en": "1 million ({time}) (default)",
+		"_note": "Same 萬-unit conversion as settingsPassword.",
+		"_recommendation": "accept"
+	},
+	"settingsPromoteAccount.option20M": {
+		"en": "20M ({time})",
+		"zh-hant": "2000萬（{time}）",
+		"zh-hant_en": "20 million ({time})",
+		"_note": "Same 萬-unit conversion.",
+		"_recommendation": "accept"
+	},
+	"settingsPromoteAccount.option2M": {
+		"en": "2M ({time})",
+		"zh-hant": "200萬（{time}）",
+		"zh-hant_en": "2 million ({time})",
+		"_note": "Same 萬-unit conversion.",
+		"_recommendation": "accept"
+	},
+	"settingsPromoteAccount.pleaseWait": {
+		"en": "Please wait",
+		"zh-hant": "請稍候",
+		"zh-hant_en": "Please wait a moment",
+		"_note": "Standard 請稍候 formula.",
+		"_recommendation": "accept"
+	},
+	"settingsPromoteAccount.repeat": {
+		"en": "Repeat:",
+		"zh-hant": "再次輸入：",
+		"zh-hant_en": "Enter again:",
+		"_note": "Consistent with settingsPassword.repeat.",
+		"_recommendation": "accept"
+	},
+	"settingsPromoteAccount.tab": {
+		"en": "Create Password",
+		"zh-hant": "建立密碼",
+		"zh-hant_en": "Create password",
+		"_note": "建立 is the TW word for create (Simplified 创建); casing artifact only.",
+		"_recommendation": "accept"
+	},
+	"settingsPromoteAccount.veryLimitedSecurity": {
+		"en": "Very limited security",
+		"zh-hant": "安全性極低",
+		"zh-hant_en": "Security extremely low",
+		"_note": "Consistent with settingsPassword.",
+		"_recommendation": "accept"
+	},
+	"settingsRecycleBin.description": {
+		"en": "Permanently delete all items in the Recycle Bin",
+		"zh-hant": "永久刪除回收桶中的所有項目",
+		"zh-hant_en": "Permanently delete all items in the recycling bucket",
+		"_note": "Faithful; matches emptyRecycleBinDialog wording.",
+		"_recommendation": "accept"
+	},
+	"settingsRecycleBin.emptyRecycleBin": {
+		"en": "Empty Recycle Bin",
+		"zh-hant": "清空回收桶",
+		"zh-hant_en": "Empty the recycling bucket",
+		"_note": "Consistent with the dialog title.",
+		"_recommendation": "accept"
+	},
+	"settingsRecycleBin.noInconsistenciesFound": {
+		"en": "Everything looks good - no inconsistencies found",
+		"zh-hant": "一切正常 - 未發現不一致",
+		"zh-hant_en": "Everything normal - no inconsistencies found",
+		"_note": "一切正常 (everything normal) for 'everything looks good' — standard status phrasing.",
+		"_recommendation": "accept"
+	},
+	"settingsRecycleBin.tab": {
+		"en": "Recycle Bin",
+		"zh-hant": "回收桶",
+		"zh-hant_en": "Recycling bucket",
+		"_note": "Consistent 回收桶 terminology.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.autoStart": {
+		"en": "Automatic - on startup",
+		"zh-hant": "自動 - 啟動時",
+		"zh-hant_en": "Automatic - at startup",
+		"_note": "Preposition artifact only.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.currentVersion": {
+		"en": "Current Version:",
+		"zh-hant": "目前版本：",
+		"zh-hant_en": "Current version:",
+		"_note": "目前 TW for current; casing artifact.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.descAndThis": {
+		"en": "and this",
+		"zh-hant": "和這個",
+		"zh-hant_en": "And this one",
+		"_note": "Fragment in the same demo sequence; faithful.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.descAndroidPlay": {
+		"en": "Larger updates will happen like normal through Google Play",
+		"zh-hant": "較大的更新將照常透過 Google Play 進行",
+		"zh-hant_en": "Larger updates will proceed through Google Play as usual",
+		"_note": "Parallel to the iOS string; store name preserved.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.descAndroidStill": {
+		"en": "Larger updates will still happen like normal through Google Play (outside our control)",
+		"zh-hant": "較大的更新仍將照常透過 Google Play 進行（不在我們的控制範圍內）",
+		"zh-hant_en": "Larger updates will still proceed through Google Play as usual (not within our scope of control)",
+		"_note": "Parallel to descIosStill.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.descFlatHubStill": {
+		"en": "If you have installed via FlatHub or Snap Store updates to the Electron host application will still happen through the normal flow here.",
+		"zh-hant": "如果您是透過 FlatHub 或 Snap Store 安裝，Electron 主程式的更新仍將照常在該處進行。",
+		"zh-hant_en": "If you installed through FlatHub or the Snap Store, updates of the Electron main program will still proceed there as usual.",
+		"_note": "Same as descLinuxFlatHub plus 仍 (still).",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.descInSystemArea": {
+		"en": "in the System area in the treeview",
+		"zh-hant": "在樹狀檢視的系統區域中",
+		"zh-hant_en": "In the system area of the tree-shaped view",
+		"_note": "系統 matches the notes.system tree label, so the cross-reference holds.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.descInTitlebar": {
+		"en": "in the titlebar and like this",
+		"zh-hant": "在標題列中，以及以這種方式",
+		"zh-hant_en": "In the title bar, and in this way",
+		"_note": "Fragment continuing descNotificationShown; 標題列 is the TW word for titlebar (Simplified 标题栏). Reads correctly in sequence.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.descIosAppStore": {
+		"en": "Larger updates will happen like normal through the AppStore",
+		"zh-hant": "較大的更新將照常透過 AppStore 進行",
+		"zh-hant_en": "Larger updates will proceed through the AppStore as usual",
+		"_note": "照常 (as usual) for 'like normal'; AppStore name preserved; 透過 is the TW word for 'through'.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.descIosStill": {
+		"en": "Larger updates will still happen like normal through the AppStore (outside our control)",
+		"zh-hant": "較大的更新仍將照常透過 AppStore 進行（不在我們的控制範圍內）",
+		"zh-hant_en": "Larger updates will still proceed through the AppStore as usual (not within our scope of control)",
+		"_note": "控制範圍 (scope of control) renders 'outside our control' precisely.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.descLinuxFlatHub": {
+		"en": "If you have installed via FlatHub or Snap Store updates to the Electron host application will happen through the normal flow here.",
+		"zh-hant": "如果您是透過 FlatHub 或 Snap Store 安裝，Electron 主程式的更新將照常在該處進行。",
+		"zh-hant_en": "If you installed through FlatHub or the Snap Store, updates of the Electron main program will proceed there as usual.",
+		"_note": "'Host application' rendered 主程式 (main program) consistently with settingsAbout.hostVersion; store names preserved. The ambiguous English 'here' is read as the store flow (該處), matching the Simplified file's reading.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.descLinuxManual": {
+		"en": "If you have installed the application manually you will be notified when an update to the Electron host is available.",
+		"zh-hant": "如果您是手動安裝應用程式，當 Electron 主程式有更新時將收到通知。",
+		"zh-hant_en": "If you installed the application manually, you will receive a notification when the Electron main program has an update.",
+		"_note": "Consistent 主程式 terminology.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.descMacWinRestart": {
+		"en": "Updates that require restarting the application will happen automatically when you restart the application.",
+		"zh-hant": "需要重新啟動應用程式的更新，將在您重新啟動應用程式時自動進行。",
+		"zh-hant_en": "Updates that require restarting the application will proceed automatically when you restart the application.",
+		"_note": "Faithful.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.descManualPerform": {
+		"en": "The update can then be manually performed from here.",
+		"zh-hant": "然後可以在此手動執行更新。",
+		"zh-hant_en": "The update can then be performed manually here.",
+		"_note": "Faithful.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.descNoNotification": {
+		"en": "No notification will be shown, you will need to manually check for updates from here",
+		"zh-hant": "不會顯示通知，您需要在此手動檢查更新",
+		"zh-hant_en": "No notification will be shown; you need to check for updates manually here",
+		"_note": "Faithful.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.descNoRestartAuto": {
+		"en": "Updates that do not require restart will happen automatically when you are not actively using the app.",
+		"zh-hant": "不需要重新啟動的更新，將在您未主動使用應用程式時自動進行。",
+		"zh-hant_en": "Updates that do not require a restart will proceed automatically while you are not actively using the application.",
+		"_note": "應用程式 is the TW word for app; faithful.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.descNoUnsaved": {
+		"en": "Updates will never happen if you have unsaved data.",
+		"zh-hant": "如果有未儲存的資料，則不會進行更新。",
+		"zh-hant_en": "If there is unsaved data, the update will not proceed.",
+		"_note": "'Never' softened to plain negation; the guarantee reads the same in context. Condition-first order per Chinese norm.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.descNotificationShown": {
+		"en": "Notification will be shown like this",
+		"zh-hant": "通知將像這樣顯示",
+		"zh-hant_en": "A notification will be shown like this",
+		"_note": "Article artifact only.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.descOnRestart": {
+		"en": "Updates automatically when you restart the application.",
+		"zh-hant": "重新啟動應用程式時自動更新。",
+		"zh-hant_en": "Update automatically when the application is restarted.",
+		"_note": "Faithful; subjectless per Chinese norm.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.descPreservePosition": {
+		"en": "Your current tree and note position will be preserved.",
+		"zh-hant": "您目前的樹狀結構和筆記位置將被保留。",
+		"zh-hant_en": "Your current tree structure and note position will be preserved.",
+		"_note": "樹狀結構 (tree structure) — bare 樹 would read as a literal tree.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.descSeamless": {
+		"en": "The experience aims to be completely seamless.",
+		"zh-hant": "體驗旨在完全無縫。",
+		"zh-hant_en": "The experience is intended to be completely seamless.",
+		"_note": "旨在 = aims to; faithful.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.discreteNotify": {
+		"en": "Manual - notify me discreetly",
+		"zh-hant": "手動 - 低調通知我",
+		"zh-hant_en": "Manual - notify me in a low-key way",
+		"_note": "低調 (low-key) is the idiomatic counterpart of 明顯.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.electronClientRequired": {
+		"en": "An update of the Electron Client is required",
+		"zh-hant": "需要更新 Electron 用戶端",
+		"zh-hant_en": "The Electron client needs to be updated",
+		"_note": "用戶端 is the TW word for client (Simplified 客户端); Electron preserved.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.installing": {
+		"en": "Installing...",
+		"zh-hant": "正在安裝...",
+		"zh-hant_en": "Currently installing...",
+		"_note": "Progressive 正在 as elsewhere.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.newInUpdate": {
+		"en": "New in this update",
+		"zh-hant": "此更新的新內容",
+		"zh-hant_en": "New content in this update",
+		"_note": "內容 (content) required as a head noun; faithful heading.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.newVersion": {
+		"en": "New Version:",
+		"zh-hant": "新版本：",
+		"zh-hant_en": "New version:",
+		"_note": "Casing artifact only.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.noUpdatesFound": {
+		"en": "No new updates found",
+		"zh-hant": "找不到新更新",
+		"zh-hant_en": "Cannot find new updates",
+		"_note": "Idiomatic 找不到 pattern.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.off": {
+		"en": "Off - stay on this version",
+		"zh-hant": "關閉 - 保持此版本",
+		"zh-hant_en": "Off - keep this version",
+		"_note": "保持 (keep/stay on); faithful.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.restartToActivate": {
+		"en": "Restart to activate new version",
+		"zh-hant": "重新啟動以啟用新版本",
+		"zh-hant_en": "Restart to activate the new version",
+		"_note": "Article artifact only.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.strongNotify": {
+		"en": "Manual - notify me clearly",
+		"zh-hant": "手動 - 明顯通知我",
+		"zh-hant_en": "Manual - notify me conspicuously",
+		"_note": "明顯 (conspicuous) for 'clearly' — pairs correctly against the 低調 (discreet) option below.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.updateAvailable": {
+		"en": "Update available",
+		"zh-hant": "有可用的更新",
+		"zh-hant_en": "An update is available",
+		"_note": "有 existential construction is the natural Chinese form.",
+		"_recommendation": "accept"
+	},
+	"settingsUpdate.verifyingSignature": {
+		"en": "Verifying Signature...",
+		"zh-hant": "正在驗證簽章...",
+		"zh-hant_en": "Currently verifying signature...",
+		"_note": "簽章 is the TW word for digital signature (Simplified 签名); ellipsis preserved.",
+		"_recommendation": "accept"
+	},
+	"settingsUpgrade.chooseCredentials": {
+		"en": "Choose your credentials",
+		"zh-hant": "選擇您的登入資訊",
+		"zh-hant_en": "Choose your login information",
+		"_note": "Consistent with settingsCreateAccount2.chooseCredentials.",
+		"_recommendation": "accept"
+	},
+	"settingsUpgrade.currentLocalUser": {
+		"en": "Your current local user is:",
+		"zh-hant": "您目前的本機使用者是：",
+		"zh-hant_en": "Your current local-machine user is:",
+		"_note": "目前 is the TW word for current (Simplified 当前).",
+		"_recommendation": "accept"
+	},
+	"settingsUpgrade.currentPassword": {
+		"en": "Current Password:",
+		"zh-hant": "目前密碼：",
+		"zh-hant_en": "Current password:",
+		"_note": "Casing artifact only.",
+		"_recommendation": "accept"
+	},
+	"settingsUpgrade.incorrectPassword": {
+		"en": "Incorrect current password",
+		"zh-hant": "目前密碼錯誤",
+		"zh-hant_en": "Current password incorrect",
+		"_note": "Word-order artifact only.",
+		"_recommendation": "accept"
+	},
+	"settingsUpgrade.newPassword": {
+		"en": "New Password:",
+		"zh-hant": "新密碼：",
+		"zh-hant_en": "New password:",
+		"_note": "Casing artifact only.",
+		"_recommendation": "accept"
+	},
+	"settingsUpgrade.repeat": {
+		"en": "Repeat:",
+		"zh-hant": "再次輸入：",
+		"zh-hant_en": "Enter again:",
+		"_note": "Consistent password-repeat label.",
+		"_recommendation": "accept"
+	},
+	"settingsUpgrade.tab": {
+		"en": "Connect Cloud",
+		"zh-hant": "連線雲端",
+		"zh-hant_en": "Connect to the cloud",
+		"_note": "連線 is the TW word for connect (Simplified 连接/联机 territory).",
+		"_recommendation": "accept"
+	},
+	"settingsUpgrade.upgradeError": {
+		"en": "Error upgrading account. Please try again later.",
+		"zh-hant": "升級帳戶時發生錯誤，請稍後再試。",
+		"zh-hant_en": "An error occurred while upgrading the account, please try again later.",
+		"_note": "Two sentences joined with a comma — standard Chinese error phrasing.",
+		"_recommendation": "accept"
+	},
+	"shareDialog.acceptInstruction": {
+		"en": "{name} will need to accept the share using the menu item 'Accept Share'",
+		"zh-hant": "{name} 需要使用選單項目「接受分享」來接受分享",
+		"zh-hant_en": "{name} needs to use the menu item \"Accept sharing\" to accept the share",
+		"_note": "The quoted menu-item name 「接受分享」 exactly matches contextMenu.acceptShare and acceptShareDialog.title, so the cross-reference works; corner brackets are the Chinese quote convention.",
+		"_recommendation": "accept"
+	},
+	"shareDialog.codeHint": {
+		"en": "Then share the provided one time code with them so they can accept the share.",
+		"zh-hant": "然後將提供的一次性代碼分享給對方，讓他們接受分享。",
+		"zh-hant_en": "Then share the provided one-time code with the other party so they can accept the share.",
+		"_note": "對方 (the other party) is the natural gender-neutral rendering of 'them'.",
+		"_recommendation": "accept"
+	},
+	"shareDialog.codeInstruction": {
+		"en": "Share this one time code with {name} to complete the share of {noteName}",
+		"zh-hant": "將此一次性代碼分享給 {name}，以完成 {noteName} 的分享",
+		"zh-hant_en": "Share this one-time code with {name} to complete the sharing of {noteName}",
+		"_note": "Both placeholders preserved and correctly positioned in the reordered clause.",
+		"_recommendation": "accept"
+	},
+	"shareDialog.enterUsernameHint": {
+		"en": "Enter the username of another user in the field above to share {noteName}.",
+		"zh-hant": "在上方欄位中輸入其他使用者的使用者名稱，以分享 {noteName}。",
+		"zh-hant_en": "Enter the other user's username in the field above to share {noteName}.",
+		"_note": "欄位 is the TW word for form field; placeholder preserved.",
+		"_recommendation": "accept"
+	},
+	"shareDialog.loseCodeHint": {
+		"en": "If you lose this code, simply share {noteName} with {name} again to show the code again.",
+		"zh-hant": "如果您遺失了此代碼，只需再次將 {noteName} 分享給 {name}，即可再次顯示代碼。",
+		"zh-hant_en": "If you lose this code, simply share {noteName} with {name} again to display the code once more.",
+		"_note": "遺失 is the TW word for lose; both placeholders preserved.",
+		"_recommendation": "accept"
+	},
+	"shareDialog.multipleUsersHint": {
+		"en": "If you wish to share this note with multiple people you will need to repeat this process for each user.",
+		"zh-hant": "如果您想與多人分享此筆記，需要為每位使用者重複此操作。",
+		"zh-hant_en": "If you want to share this note with multiple people, you need to repeat this operation for each user.",
+		"_note": "Faithful; 操作 (operation) for 'process' is the standard UI word.",
+		"_recommendation": "accept"
+	},
+	"shareDialog.ok": {
+		"en": "OK",
+		"zh-hant": "確定",
+		"zh-hant_en": "Confirm",
+		"_note": "Standard 確定 confirm button.",
+		"_recommendation": "accept"
+	},
+	"shareDialog.shareFailed": {
+		"en": "Unable to share, please verify username and internet connection.",
+		"zh-hant": "無法分享，請確認使用者名稱和網路連線。",
+		"zh-hant_en": "Unable to share, please confirm the username and network connection.",
+		"_note": "網路 is the TW word for internet/network; 確認 (confirm/verify) standard.",
+		"_recommendation": "accept"
+	},
+	"shareDialog.title": {
+		"en": "Share Note",
+		"zh-hant": "分享筆記",
+		"zh-hant_en": "Share note",
+		"_note": "Casing artifact only.",
+		"_recommendation": "accept"
+	},
+	"statusBar.syncError": {
+		"en": "Synchronization Error (see details)",
+		"zh-hant": "同步錯誤（檢視詳情）",
+		"zh-hant_en": "Synchronization error (view details)",
+		"_note": "檢視詳情 (view details) for 'see details' — standard phrasing.",
+		"_recommendation": "accept"
+	},
+	"statusBar.syncErrorLimitExceeded": {
+		"en": "Sync Error: Limit exceeded (see details)",
+		"zh-hant": "同步錯誤：超出限制（檢視詳情）",
+		"zh-hant_en": "Synchronization error: limit exceeded (view details)",
+		"_note": "'Sync' abbreviation has no shorter Chinese form; full 同步 used throughout.",
+		"_recommendation": "accept"
+	},
+	"statusBar.syncErrorNoteSize": {
+		"en": "Sync Error: Note size exceeded (see details)",
+		"zh-hant": "同步錯誤：筆記大小超限（檢視詳情）",
+		"zh-hant_en": "Synchronization error: note size over the limit (view details)",
+		"_note": "超限 compactly renders 'exceeded' for status-bar width.",
+		"_recommendation": "accept"
+	},
+	"statusBar.syncErrorServerRejection": {
+		"en": "Sync Error: Server rejection (see details)",
+		"zh-hant": "同步錯誤：伺服器拒絕（檢視詳情）",
+		"zh-hant_en": "Synchronization error: server rejected (view details)",
+		"_note": "Noun/verb difference (rejection/rejected) is a back-translation artifact.",
+		"_recommendation": "accept"
+	},
+	"statusBar.synchronizing": {
+		"en": "Synchronizing...",
+		"zh-hant": "正在同步...",
+		"zh-hant_en": "Currently synchronizing...",
+		"_note": "Progressive 正在 as elsewhere; ellipsis preserved.",
+		"_recommendation": "accept"
+	},
+	"subAccount.tab": {
+		"en": "Billing Address",
+		"zh-hant": "帳單地址",
+		"zh-hant_en": "Billing address",
+		"_note": "Casing artifact only.",
+		"_recommendation": "accept"
+	},
+	"subCustomerData.firstName": {
+		"en": "First name *",
+		"zh-hant": "名 *",
+		"zh-hant_en": "Given name *",
+		"_note": "名/姓 are the correct Chinese name-field labels; asterisk preserved.",
+		"_recommendation": "accept"
+	},
+	"subCustomerData.lastName": {
+		"en": "Last name *",
+		"zh-hant": "姓 *",
+		"zh-hant_en": "Family name *",
+		"_note": "See firstName.",
+		"_recommendation": "accept"
+	},
+	"subCustomerData.postalCode": {
+		"en": "Postal Code",
+		"zh-hant": "郵遞區號",
+		"zh-hant_en": "Postal code",
+		"_note": "郵遞區號 is the TW term (Simplified 邮政编码).",
+		"_recommendation": "accept"
+	},
+	"subCustomerData.recommendFillOut": {
+		"en": "We recommend filling out all relevant fields if you need a tax invoice",
+		"zh-hant": "如果您需要稅務發票，建議填寫所有相關欄位",
+		"zh-hant_en": "If you need a tax invoice, it is recommended to fill in all relevant fields",
+		"_note": "Condition-first order; 欄位 TW for fields.",
+		"_recommendation": "accept"
+	},
+	"subCustomerData.required": {
+		"en": "* required",
+		"zh-hant": "* 必填",
+		"zh-hant_en": "* Required",
+		"_note": "必填 (must fill) is the standard form-field marker.",
+		"_recommendation": "accept"
+	},
+	"subCustomerData.stateProvince": {
+		"en": "State/Province",
+		"zh-hant": "省/州",
+		"zh-hant_en": "Province/State",
+		"_note": "Order flipped because 省 is the more familiar unit to Chinese-speaking users; both retained.",
+		"_recommendation": "accept"
+	},
+	"subCustomerData.verificationSent": {
+		"en": "Verification email sent",
+		"zh-hant": "驗證郵件已傳送",
+		"zh-hant_en": "Verification email has been sent",
+		"_note": "傳送 is the TW word for send (Simplified 发送).",
+		"_recommendation": "accept"
+	},
+	"subCustomerData.whyAsk": {
+		"en": "Why do we ask for this information?",
+		"zh-hant": "我們為什麼需要這些資訊？",
+		"zh-hant_en": "Why do we need this information?",
+		"_note": "需要 (need) for 'ask for' — same intent, natural phrasing.",
+		"_recommendation": "accept"
+	},
+	"subCustomerData.whyAskInfo": {
+		"en": "We need your country of residence to manage VAT (this has no impact on the price you pay - the price you are shown is the final price).<br /><br />We will use your email address solely to send you receipts, notifications of failed payments, and reminders prior to renewal. Your email address also serves as a last resort for canceling your subscription in case you lose access to your account.<br /><br />We will never use your email address for marketing purposes, newsletters, or any other kind of unsolicited communication.<br /><br />The above data is shared with our payment provider to process your payment, primarily for fraud prevention.<br /><br />We will, however, never share your data with any other parties. See our <a href=\"https://mimiri.io/privacy\" target=\"_blank\">Privacy Policy</a> for details.<br /><br />All data is handled in compliance with both GDPR and Swiss data protection laws, regardless of your country of residence.",
+		"zh-hant": "我們需要您的居住國家來處理增值稅（這不會影響您支付的價格——您看到的價格即為最終價格）。<br /><br />我們只會使用您的電子郵件地址來傳送收據、付款失敗通知以及續訂前的提醒。您的電子郵件地址也是在您失去帳戶存取權時取消訂閱的最後手段。<br /><br />我們絕不會將您的電子郵件地址用於行銷、電子報或任何未經請求的通訊。<br /><br />上述資料會與我們的付款服務供應商共享以處理您的付款，主要用於防止詐欺。<br /><br />但我們絕不會將您的資料與任何其他第三方共享。詳情請參閱我們的<a href=\"https://mimiri.io/privacy\" target=\"_blank\">隱私權政策</a>。<br /><br />無論您居住在哪個國家，所有資料均依據 GDPR 及瑞士資料保護法處理。",
+		"zh-hant_en": "We need your country of residence to handle value-added tax (this will not affect the price you pay——the price you see is the final price).<br /><br />We will only use your email address to send receipts, payment-failure notifications, and reminders before renewal. Your email address is also the last resort for cancelling your subscription when you lose access to your account.<br /><br />We will absolutely never use your email address for marketing, e-newsletters, or any unsolicited communication.<br /><br />The above data is shared with our payment service provider to process your payment, mainly used to prevent fraud.<br /><br />But we will absolutely never share your data with any other third party. For details please refer to our privacy rights policy.<br /><br />No matter which country you live in, all data is handled in accordance with GDPR and Swiss data protection law.",
+		"_note": "All six <br /><br /> breaks and the <a> tag with attributes preserved; 行銷 (marketing), 電子報 (newsletter), 詐欺 (fraud) are the TW terms; 'any other parties' rendered as 任何其他第三方 (any other third party) — same commitment. GDPR left untranslated as is customary.",
+		"_recommendation": "accept"
+	},
+	"subInvoiceItem.creditNote": {
+		"en": "CREDIT NOTE",
+		"zh-hant": "貸項通知單",
+		"zh-hant_en": "Credit item notice document",
+		"_note": "貸項通知單 is the generic accounting term for a credit note; the TW-specific 折讓單 is tied to domestic GUI invoicing and would be misleading for an international receipt.",
+		"_recommendation": "accept"
+	},
+	"subInvoiceItem.credited": {
+		"en": "CREDITED",
+		"zh-hant": "已折抵",
+		"zh-hant_en": "Already offset (credited)",
+		"_note": "已折抵 (offset/credited) is how TW billing UIs mark an invoice settled by credit.",
+		"_recommendation": "accept"
+	},
+	"subInvoiceItem.due": {
+		"en": "Due:",
+		"zh-hant": "到期日：",
+		"zh-hant_en": "Due date:",
+		"_note": "Date-label form.",
+		"_recommendation": "accept"
+	},
+	"subInvoiceItem.invoiceNo": {
+		"en": "Invoice No:",
+		"zh-hant": "發票編號：",
+		"zh-hant_en": "Invoice number:",
+		"_note": "編號 expands the 'No:' abbreviation; standard label.",
+		"_recommendation": "accept"
+	},
+	"subInvoiceItem.issued": {
+		"en": "Issued:",
+		"zh-hant": "開立日期：",
+		"zh-hant_en": "Issue date:",
+		"_note": "開立 is the TW accounting verb for issuing an invoice; date-label form as elsewhere.",
+		"_recommendation": "accept"
+	},
+	"subInvoiceItem.open": {
+		"en": "OPEN",
+		"zh-hant": "待付款",
+		"zh-hant_en": "Awaiting payment",
+		"_note": "待付款 (awaiting payment) — a literal 開放 would be meaningless for an invoice status.",
+		"_recommendation": "accept"
+	},
+	"subInvoiceItem.overdue": {
+		"en": "OVERDUE",
+		"zh-hant": "已逾期",
+		"zh-hant_en": "Already overdue",
+		"_note": "Standard status label; caps not representable.",
+		"_recommendation": "accept"
+	},
+	"subInvoiceItem.paid": {
+		"en": "PAID",
+		"zh-hant": "已付款",
+		"zh-hant_en": "Already paid",
+		"_note": "English ALL-CAPS status badges have no Chinese equivalent; 已付款 is the standard paid-status label.",
+		"_recommendation": "accept"
+	},
+	"subInvoiceItem.payNow": {
+		"en": "Pay Now",
+		"zh-hant": "立即付款",
+		"zh-hant_en": "Pay immediately",
+		"_note": "Consistent 立即付款.",
+		"_recommendation": "accept"
+	},
+	"subInvoiceItem.willBePaidAutomatically": {
+		"en": "Will be paid automatically on",
+		"zh-hant": "將於以下日期自動付款",
+		"zh-hant_en": "Will be paid automatically on the following date",
+		"_note": "以下日期 closes the dangling 'on' before the date that follows.",
+		"_recommendation": "accept"
+	},
+	"subInvoices.noInvoicesYet": {
+		"en": "No Invoices Yet",
+		"zh-hant": "尚無發票",
+		"zh-hant_en": "No invoices yet",
+		"_note": "尚無 empty-state pattern as with payment methods.",
+		"_recommendation": "accept"
+	},
+	"subNewSubscriptionView.faq1Answer": {
+		"en": "Yes, the free tier is free and will remain so.\nFor most use cases, the limits are more than adequate.",
+		"zh-hant": "是的，免費方案是免費的，並將繼續如此。\n對於大多數使用情境，這些限制綽綽有餘。",
+		"zh-hant_en": "Yes, the free plan is free and will continue to be so.\nFor most usage scenarios, these limits are more than sufficient.",
+		"_note": "綽綽有餘 (ample and to spare) idiomatically renders 'more than adequate'; \\n preserved.",
+		"_recommendation": "accept"
+	},
+	"subNewSubscriptionView.faq1Question": {
+		"en": "Is the free tier really free?",
+		"zh-hant": "免費方案真的是免費的嗎？",
+		"zh-hant_en": "Is the free plan really free?",
+		"_note": "方案 for tier, consistent.",
+		"_recommendation": "accept"
+	},
+	"subNewSubscriptionView.faq2Answer": {
+		"en": "The main reason to subscribe is to support the ongoing development of Mimiri Notes.",
+		"zh-hant": "訂閱的主要目的是支持 Mimiri Notes 的持續開發。",
+		"zh-hant_en": "The main purpose of subscribing is to support the continued development of Mimiri Notes.",
+		"_note": "目的 (purpose) for 'reason' — equivalent in this sentence.",
+		"_recommendation": "accept"
+	},
+	"subNewSubscriptionView.faq2Question": {
+		"en": "Why would I choose a paid plan?",
+		"zh-hant": "我為什麼要選擇付費方案？",
+		"zh-hant_en": "Why should I choose a paid plan?",
+		"_note": "Modal nuance (would/should) is a back-translation artifact.",
+		"_recommendation": "accept"
+	},
+	"subNewSubscriptionView.monthly": {
+		"en": "Monthly",
+		"zh-hant": "月繳",
+		"zh-hant_en": "Monthly payment",
+		"_note": "Consistent 月繳.",
+		"_recommendation": "accept"
+	},
+	"subNewSubscriptionView.promoCopy": {
+		"en": "The free tier isn't a trial - it's built to be fully usable and will always be here. \nBut it's our subscribers who make it possible for Mimiri Notes to keep moving forward for everyone.",
+		"zh-hant": "免費方案不是試用版——它是完全可用的，並將永遠存在。\n但正是我們的訂閱使用者，讓 Mimiri Notes 能夠持續為所有人進步。",
+		"zh-hant_en": "The free plan is not a trial version——it is fully usable and will exist forever.\nBut it is precisely our subscribing users who let Mimiri Notes keep making progress for everyone.",
+		"_note": "正是...讓 reproduces the cleft-sentence emphasis of 'it's our subscribers who...'; \\n preserved; warm promo tone kept.",
+		"_recommendation": "accept"
+	},
+	"subNewSubscriptionView.tab": {
+		"en": "Current Plan",
+		"zh-hant": "目前方案",
+		"zh-hant_en": "Current plan",
+		"_note": "Consistent 方案 terminology.",
+		"_recommendation": "accept"
+	},
+	"subNewSubscriptionView.yearly": {
+		"en": "Yearly",
+		"zh-hant": "年繳",
+		"zh-hant_en": "Yearly payment",
+		"_note": "Consistent 年繳.",
+		"_recommendation": "accept"
+	},
+	"subPayInvoice.payNow": {
+		"en": "Pay now",
+		"zh-hant": "立即付款",
+		"zh-hant_en": "Pay immediately",
+		"_note": "Consistent 立即付款.",
+		"_recommendation": "accept"
+	},
+	"subPayInvoice.tab": {
+		"en": "Pay Invoice",
+		"zh-hant": "支付發票",
+		"zh-hant_en": "Pay invoice",
+		"_note": "支付發票 (pay an invoice) — 支付 kept here as the verb since 付款發票 would be ungrammatical.",
+		"_recommendation": "accept"
+	},
+	"subPaymentMethodItem.makeDefault": {
+		"en": "Make default",
+		"zh-hant": "設為預設",
+		"zh-hant_en": "Set as default",
+		"_note": "設為預設 standard phrasing; 預設 TW for default.",
+		"_recommendation": "accept"
+	},
+	"subPaymentMethodSelector.createNew": {
+		"en": "Create new payment method",
+		"zh-hant": "新增付款方式",
+		"zh-hant_en": "Add new payment method",
+		"_note": "Consistent 新增 convention.",
+		"_recommendation": "accept"
+	},
+	"subPaymentMethods.createNew": {
+		"en": "Create New",
+		"zh-hant": "新增",
+		"zh-hant_en": "Add new",
+		"_note": "新增 is the standard TW button for creating a new item in a list; a literal 建立新的 would dangle.",
+		"_recommendation": "accept"
+	},
+	"subPaymentMethods.noMethodsYet": {
+		"en": "No Payment Methods Yet",
+		"zh-hant": "尚無付款方式",
+		"zh-hant_en": "No payment methods yet",
+		"_note": "尚無 = none yet; concise empty-state label.",
+		"_recommendation": "accept"
+	},
+	"subPaymentMethods.tab": {
+		"en": "Payment Methods",
+		"zh-hant": "付款方式",
+		"zh-hant_en": "Payment methods",
+		"_note": "Casing artifact; Chinese has no plural marking.",
+		"_recommendation": "accept"
+	},
+	"subPaymentSummary.acceptPrivacy": {
+		"en": "I have read and accept the",
+		"zh-hant": "我已閱讀並接受",
+		"zh-hant_en": "I have read and accept",
+		"_note": "Same continuation pattern as acceptTerms.",
+		"_recommendation": "accept"
+	},
+	"subPaymentSummary.acceptTerms": {
+		"en": "I have read and accept the",
+		"zh-hant": "我已閱讀並接受",
+		"zh-hant_en": "I have read and accept",
+		"_note": "Trailing 'the' has no Chinese counterpart; the sentence continues into the linked 使用條款 label and reads correctly in sequence.",
+		"_recommendation": "accept"
+	},
+	"subPaymentSummary.privacyPolicy": {
+		"en": "Privacy Policy",
+		"zh-hant": "隱私權政策",
+		"zh-hant_en": "Privacy rights policy",
+		"_note": "Consistent with settingsAbout.privacyPolicy.",
+		"_recommendation": "accept"
+	},
+	"subPaymentSummary.termsAndConditions": {
+		"en": "Terms & Conditions",
+		"zh-hant": "使用條款",
+		"zh-hant_en": "Terms of use",
+		"_note": "Consistent with settingsAbout.termsAndConditions.",
+		"_recommendation": "accept"
+	},
+	"subPaymentSummary.total": {
+		"en": "Total amount to be paid now:",
+		"zh-hant": "目前應付總額：",
+		"zh-hant_en": "Current total amount payable:",
+		"_note": "應付總額 (total amount payable) is standard billing language.",
+		"_recommendation": "accept"
+	},
+	"subPaymentSummary.vat": {
+		"en": "Of this VAT:",
+		"zh-hant": "其中增值稅：",
+		"zh-hant_en": "Of which value-added tax:",
+		"_note": "增值稅 kept for EU-style VAT; the TW-domestic 營業稅 would misname the tax actually being charged.",
+		"_recommendation": "accept"
+	},
+	"subPeriodSelector.paymentPeriod": {
+		"en": "Payment period:",
+		"zh-hant": "付款週期：",
+		"zh-hant_en": "Payment cycle:",
+		"_note": "週期 (cycle) is the standard term for a recurring billing period.",
+		"_recommendation": "accept"
+	},
+	"subSubscriptionItem.endsOn": {
+		"en": "Ends on:",
+		"zh-hant": "到期日：",
+		"zh-hant_en": "Expiry date:",
+		"_note": "到期日 (expiry date) is the natural label before a date value; a literal 結束於 is used for endedOn to keep the two distinct.",
+		"_recommendation": "accept"
+	},
+	"subSubscriptionItem.manuallyRenewBefore": {
+		"en": "Manually renew before:",
+		"zh-hant": "手動續訂截止日期：",
+		"zh-hant_en": "Manual renewal deadline:",
+		"_note": "截止日期 (deadline) converts the dangling 'before:' into a proper date label.",
+		"_recommendation": "accept"
+	},
+	"subSubscriptionItem.payNow": {
+		"en": "Pay Now",
+		"zh-hant": "立即付款",
+		"zh-hant_en": "Pay immediately",
+		"_note": "立即付款 is the standard TW pay-now button (付款 rather than Simplified 支付).",
+		"_recommendation": "accept"
+	},
+	"subSubscriptionItem.renewsAutomatically": {
+		"en": "Renews automatically on:",
+		"zh-hant": "自動續訂日期：",
+		"zh-hant_en": "Automatic renewal date:",
+		"_note": "Noun-label form before a date; 續訂 is the standard subscription-renewal term.",
+		"_recommendation": "accept"
+	},
+	"subUpgradeView.chosenPlan": {
+		"en": "Chosen Plan",
+		"zh-hant": "已選方案",
+		"zh-hant_en": "Chosen plan",
+		"_note": "方案 is the TW word for plan/tier (Simplified file uses 套餐).",
+		"_recommendation": "accept"
+	},
+	"subUpgradeView.monthly": {
+		"en": "Monthly",
+		"zh-hant": "月繳",
+		"zh-hant_en": "Monthly payment",
+		"_note": "月繳 is the standard TW billing-cycle term (pay monthly); clearer than a bare 每月 in a plan selector.",
+		"_recommendation": "accept"
+	},
+	"subUpgradeView.payNow": {
+		"en": "Pay now",
+		"zh-hant": "立即付款",
+		"zh-hant_en": "Pay immediately",
+		"_note": "Consistent 立即付款.",
+		"_recommendation": "accept"
+	},
+	"subUpgradeView.recurring": {
+		"en": "Recurring",
+		"zh-hant": "定期",
+		"zh-hant_en": "Periodic",
+		"_note": "定期 (at fixed intervals) is the standard rendering of recurring billing.",
+		"_recommendation": "accept"
+	},
+	"subUpgradeView.yearly": {
+		"en": "Yearly",
+		"zh-hant": "年繳",
+		"zh-hant_en": "Yearly payment",
+		"_note": "年繳, counterpart of 月繳.",
+		"_recommendation": "accept"
+	},
+	"subWaitingForPayment.clickHere": {
+		"en": "click here",
+		"zh-hant": "點選這裡",
+		"zh-hant_en": "Click here",
+		"_note": "點選 is the TW word for click (Simplified 点击).",
+		"_recommendation": "accept"
+	},
+	"subWaitingForPayment.noWindowOpened": {
+		"en": "If a new window did not open in your browser",
+		"zh-hant": "如果瀏覽器未開啟新視窗",
+		"zh-hant_en": "If the browser did not open a new window",
+		"_note": "Subject flipped (browser opens window) — the natural Chinese agent; same condition.",
+		"_recommendation": "accept"
+	},
+	"subWaitingForPayment.waitingAutomatic": {
+		"en": "Waiting for payment to complete (this will happen automatically)",
+		"zh-hant": "等待付款完成（將自動進行）",
+		"zh-hant_en": "Waiting for the payment to complete (will proceed automatically)",
+		"_note": "Faithful; parenthetical condensed without loss.",
+		"_recommendation": "accept"
+	},
+	"subWaitingForPayment.waitingBrowser": {
+		"en": "Waiting for payment to be completed in browser window",
+		"zh-hant": "等待在瀏覽器視窗中完成付款",
+		"zh-hant_en": "Waiting for the payment to be completed in the browser window",
+		"_note": "瀏覽器 TW for browser; faithful.",
+		"_recommendation": "accept"
+	},
+	"syncErrorDialog.dataLimitText": {
+		"en": "You have created {used} of your {max} data\n\nYou can either delete some data or upgrade your account to increase the limit.",
+		"zh-hant": "您已建立 {used} / {max} 資料\n\n您可以刪除一些資料，或升級帳戶以提高上限。",
+		"zh-hant_en": "You have created {used} / {max} data\n\nYou can delete some data, or upgrade your account to raise the upper limit.",
+		"_note": "已建立...資料 mirrors the slightly odd English 'created data' for fidelity (the Simplified file does the same); double \\n and placeholders preserved.",
+		"_recommendation": "accept"
+	},
+	"syncErrorDialog.dataLimitTitle": {
+		"en": "Data Limit Reached",
+		"zh-hant": "已達資料上限",
+		"zh-hant_en": "Data upper limit reached",
+		"_note": "Consistent with limitDialog.dataSizeTitle.",
+		"_recommendation": "accept"
+	},
+	"syncErrorDialog.noteLimitText": {
+		"en": "You have created {count} of your {max} notes\nYou can either delete some notes or upgrade your account to increase the limit.",
+		"zh-hant": "您已建立 {count} / {max} 則筆記\n您可以刪除一些筆記，或升級帳戶以提高上限。",
+		"zh-hant_en": "You have created {count} / {max} notes\nYou can delete some notes, or upgrade your account to raise the upper limit.",
+		"_note": "'Either...or' rendered with 或 alone — standard Chinese; \\n and placeholders preserved.",
+		"_recommendation": "accept"
+	},
+	"syncErrorDialog.noteLimitTitle": {
+		"en": "Note Limit Reached",
+		"zh-hant": "已達筆記上限",
+		"zh-hant_en": "Note upper limit reached",
+		"_note": "Identical to limitDialog.noteCountTitle — good consistency.",
+		"_recommendation": "accept"
+	},
+	"syncErrorDialog.noteSizeLimitText": {
+		"en": "The Note '{title}' ({size})\nexceeds the size limit ({max})\n\nYou can either split the note into smaller notes or upgrade your account to increase the limit.\n\nYou can also try deleting note history to reduce the size of the note. (This can be done in the note properties)",
+		"zh-hant": "筆記「{title}」（{size}）\n超過了大小限制（{max}）\n\n您可以將筆記拆分為較小的筆記，或升級帳戶以提高上限。\n\n您也可以嘗試刪除筆記歷史記錄以減小筆記大小。（可在筆記屬性中操作）",
+		"zh-hant_en": "The note \"{title}\" ({size})\nexceeded the size limit ({max})\n\nYou can split the note into smaller notes, or upgrade your account to raise the upper limit.\n\nYou can also try deleting the note's history records to reduce the note size. (This can be done in the note's properties)",
+		"_note": "English quotes replaced with 「」 corner brackets per Chinese convention; all four placeholders and all \\n breaks preserved.",
+		"_recommendation": "accept"
+	},
+	"syncErrorDialog.noteSizeLimitTitle": {
+		"en": "Note Size Limit Reached",
+		"zh-hant": "已達筆記大小上限",
+		"zh-hant_en": "Note size upper limit reached",
+		"_note": "Consistent quota phrasing.",
+		"_recommendation": "accept"
+	},
+	"syncErrorDialog.ok": {
+		"en": "OK",
+		"zh-hant": "確定",
+		"zh-hant_en": "Confirm",
+		"_note": "Standard 確定 confirm button.",
+		"_recommendation": "accept"
+	},
+	"syncErrorDialog.serverRejectionText": {
+		"en": "The server rejected the synchronization request.\n\nThis is likely a result of a temporary issue, if it persists please contact support.",
+		"zh-hant": "伺服器拒絕了同步請求。\n\n這可能是暫時性問題，如持續發生，請聯絡支援。",
+		"zh-hant_en": "The server rejected the synchronization request.\n\nThis may be caused by a temporary problem; if it keeps happening, please contact support.",
+		"_note": "可能 (may) is marginally softer than 'likely' but the reassuring intent is intact; 聯絡支援 = contact support.",
+		"_recommendation": "accept"
+	},
+	"syncErrorDialog.syncErrorText": {
+		"en": "An unexpected error occurred while attempting to synchronize.\n\nCheck your internet connection or try again later.",
+		"zh-hant": "嘗試同步時發生意外錯誤。\n\n請檢查網路連線或稍後再試。",
+		"zh-hant_en": "An unexpected error occurred while trying to synchronize.\n\nPlease check the network connection or try again later.",
+		"_note": "請 (please) added — bare imperatives read as brusque in Chinese; \\n preserved.",
+		"_recommendation": "accept"
+	},
+	"syncErrorDialog.syncErrorTitle": {
+		"en": "Synchronization Error",
+		"zh-hant": "同步錯誤",
+		"zh-hant_en": "Synchronization error",
+		"_note": "Casing artifact only.",
+		"_recommendation": "accept"
+	},
+	"textNoteProperties.created": {
+		"en": "Created:",
+		"zh-hant": "建立時間：",
+		"zh-hant_en": "Creation time:",
+		"_note": "建立時間 (creation time) — bare 建立 would read as a verb; standard label form.",
+		"_recommendation": "accept"
+	},
+	"textNoteProperties.deleteAllHistory": {
+		"en": "Delete all history",
+		"zh-hant": "刪除全部歷史記錄",
+		"zh-hant_en": "Delete all history records",
+		"_note": "Consistent with deleteHistoryDialog.",
+		"_recommendation": "accept"
+	},
+	"textNoteProperties.deleteOldHistory": {
+		"en": "Delete old history",
+		"zh-hant": "刪除舊歷史記錄",
+		"zh-hant_en": "Delete old history records",
+		"_note": "Consistent 歷史記錄 terminology.",
+		"_recommendation": "accept"
+	},
+	"textNoteProperties.history": {
+		"en": "History:",
+		"zh-hant": "歷史記錄：",
+		"zh-hant_en": "History records:",
+		"_note": "Consistent 歷史記錄 terminology.",
+		"_recommendation": "accept"
+	},
+	"textNoteProperties.key": {
+		"en": "Key:",
+		"zh-hant": "金鑰：",
+		"zh-hant_en": "Key (cryptographic):",
+		"_note": "金鑰 is specifically a cryptographic key — correct here since the property shows the note's encryption key; the ambiguous English 'Key' is actually clearer in Chinese.",
+		"_recommendation": "accept"
+	},
+	"textNoteProperties.lastModified": {
+		"en": "Last Modified:",
+		"zh-hant": "最後修改：",
+		"zh-hant_en": "Last modified:",
+		"_note": "Casing artifact only.",
+		"_recommendation": "accept"
+	},
+	"textNoteProperties.noOneAccepted": {
+		"en": "You have shared this note but no one has accepted",
+		"zh-hant": "您已分享此筆記，但尚無人接受",
+		"zh-hant_en": "You have shared this note, but no one has accepted yet",
+		"_note": "尚 (yet) is implied by the English perfect tense; faithful.",
+		"_recommendation": "accept"
+	},
+	"textNoteProperties.sharedWith": {
+		"en": "This note is shared with:",
+		"zh-hant": "此筆記已分享給：",
+		"zh-hant_en": "This note has been shared with:",
+		"_note": "Same string as deleteHistoryDialog.sharedWith — consistent.",
+		"_recommendation": "accept"
+	},
+	"titleBar.accountConnecting": {
+		"en": "Account (Connecting)",
+		"zh-hant": "帳戶（連線中）",
+		"zh-hant_en": "Account (connecting)",
+		"_note": "連線中 = connecting (in progress).",
+		"_recommendation": "accept"
+	},
+	"titleBar.accountOffline": {
+		"en": "Account (Offline)",
+		"zh-hant": "帳戶（離線）",
+		"zh-hant_en": "Account (offline)",
+		"_note": "Full-width parentheses; casing artifact only.",
+		"_recommendation": "accept"
+	},
+	"titleBar.accountOnline": {
+		"en": "Account (Online)",
+		"zh-hant": "帳戶（線上）",
+		"zh-hant_en": "Account (online)",
+		"_note": "線上 is the TW word for online (Simplified 在线).",
+		"_recommendation": "accept"
+	},
+	"titleBar.help": {
+		"en": "Help",
+		"zh-hant": "說明",
+		"zh-hant_en": "Explanation (standard Taiwan term for the Help menu)",
+		"_note": "說明 — not a literal 'help' — is what every TW application names its Help menu (Windows, Office, macOS zh-TW all use it); a literal 幫助 would immediately read as a Mainland translation.",
+		"_recommendation": "accept"
+	},
+	"titleBar.screenSharingHidden": {
+		"en": "Invisible to screen sharing/screenshot",
+		"zh-hant": "對螢幕分享/截圖不可見",
+		"zh-hant_en": "Not visible to screen sharing/screenshots",
+		"_note": "不可見 (not visible) for 'invisible'; faithful.",
+		"_recommendation": "accept"
+	},
+	"titleBar.screenSharingVisible": {
+		"en": "Warning: Visible to screen sharing/screenshot!",
+		"zh-hant": "警告：螢幕分享/截圖可見！",
+		"zh-hant_en": "Warning: visible to screen sharing/screenshots!",
+		"_note": "螢幕 is the TW word for screen (Simplified 屏幕); warning register preserved.",
+		"_recommendation": "accept"
+	},
+	"titleBar.searchNotes": {
+		"en": "Search Notes",
+		"zh-hant": "搜尋筆記",
+		"zh-hant_en": "Search notes",
+		"_note": "Casing artifact only.",
+		"_recommendation": "accept"
+	},
+	"usernameInput.unavailable": {
+		"en": "Unavailable",
+		"zh-hant": "不可用",
+		"zh-hant_en": "Not available",
+		"_note": "Negation artifact only.",
+		"_recommendation": "accept"
+	}
+}

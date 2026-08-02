@@ -5,6 +5,7 @@ import App from './App.vue'
 import { $t, localization } from './global'
 import enLocale from './lang/en.json'
 import zhLocale from './lang/zh.json'
+import zhHantLocale from './lang/zh-hant.json'
 import daLocale from './lang/da.json'
 import deLocale from './lang/de.json'
 import { initializeMonacoThemes } from './services/editor/theme-manager'
@@ -41,6 +42,7 @@ import tsWorker from 'monaco-editor/esm/vs/language/typescript/ts.worker?worker'
 async function initializeEditor() {
 	localization.register('en', enLocale)
 	localization.register('zh', zhLocale)
+	localization.register('zh-hant', zhHantLocale)
 	localization.register('da', daLocale)
 	localization.register('de', deLocale)
 

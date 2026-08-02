@@ -5,7 +5,7 @@ import { toRaw } from 'vue'
 import { delay } from './helpers'
 import { emptyGuid, type Guid } from './types/guid'
 
-export const SUPPORTED_LOCALES = ['en', 'zh', 'da', 'de'] as const
+export const SUPPORTED_LOCALES = ['en', 'zh', 'zh-hant', 'da', 'de'] as const
 export type SupportedLocale = (typeof SUPPORTED_LOCALES)[number]
 export const DEFAULT_LOCALE: SupportedLocale = 'en'
 

@@ -7,6 +7,7 @@
 				<select v-model="language" class="ml-1" data-testid="settings-language">
 					<option value="en">{{ $t('settingsGeneral.languageEnglish') }}</option>
 					<option value="zh">{{ $t('settingsGeneral.languageChinese') }}</option>
+					<option value="zh-hant">{{ $t('settingsGeneral.languageChineseTraditional') }}</option>
 					<option value="da">{{ $t('settingsGeneral.languageDanish') }}</option>
 					<option value="de">{{ $t('settingsGeneral.languageGerman') }}</option>
 				</select>
