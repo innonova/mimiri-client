@@ -664,3 +664,42 @@ test.describe('editor (per-note mode)', () => {
 		})
 	})
 })
+
+// Mode switching must never lose content: the note is plain text, Monaco
+// edits it raw, and ProseMirror round-trips it through its deserializer and
+// serializer. Everything the deserializer understands has to come back out
+// byte-for-byte.
+test.describe('editor (mode round-trip)', () => {
+	test('markdown links survive switching editor mode (issue #52)', async () => {
+		await withMimiriContext(async () => {
+			const text = 'see [the docs](https://mimiri.io/userguide) for details'
+			await openNoteInMode('code')
+			await typeInEditor('code', text)
+			await saveNote()
+			// Switch to wysiwyg: the link renders as an anchor with the title as text
+			await ensureEditorMode('wysiwyg')
+			const link = editor.proseMirror().locator('a[href="https://mimiri.io/userguide"]')
+			await expect(link).toHaveText('the docs')
+			// Switch back: the raw text must be unchanged
+			await ensureEditorMode('code')
+			expect(await readRawText('code')).toBe(text)
+			// And nothing should have been marked dirty by the view switches
+			await expectToolbarButtonDisabled(editor.save())
+		})
+	})
+
+	test('bare urls survive switching editor mode', async () => {
+		await withMimiriContext(async () => {
+			const text = 'go to https://www.example.com/path now'
+			await openNoteInMode('code')
+			await typeInEditor('code', text)
+			await saveNote()
+			await ensureEditorMode('wysiwyg')
+			await expect(editor.proseMirror().locator('a[href="https://www.example.com/path"]')).toHaveText(
+				'https://www.example.com/path',
+			)
+			await ensureEditorMode('code')
+			expect(await readRawText('code')).toBe(text)
+		})
+	})
+})

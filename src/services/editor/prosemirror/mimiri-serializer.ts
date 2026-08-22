@@ -1,5 +1,16 @@
 import type { Node } from 'prosemirror-model'
 
+// A link mark is written back as markdown `[text](href)`. Bare URLs are
+// auto-linked by the deserializer with text === href; those stay bare so a
+// plain URL is not rewritten just by switching editor mode.
+const serializeLinkText = (node: Node): string => {
+	const link = node.marks.find(mark => mark.type.name === 'link')
+	if (!link || link.attrs.href === node.text) {
+		return node.text
+	}
+	return `[${node.text}](${link.attrs.href})`
+}
+
 const serializeNode = (
 	node: Node,
 	depth: number,
@@ -21,7 +32,7 @@ const serializeNode = (
 					text += 'p`'
 				}
 			}
-			text += node.text
+			text += serializeLinkText(node)
 			for (const mark of node.marks.slice().reverse()) {
 				if (mark.type.name === 'strong') {
 					text += '**'
