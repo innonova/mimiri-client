@@ -1,4 +1,30 @@
 import type { Node } from 'prosemirror-model'
+import { cleanUrl, urlPatternBase } from './url-utils'
+
+const bareUrlRegex = new RegExp('^' + urlPatternBase.source + '$')
+
+// True when the deserializer's bare-URL detection would turn this exact
+// string back into a link on its own.
+const isBareUrl = (url: string): boolean => {
+	const match = bareUrlRegex.exec(url)
+	return !!match && cleanUrl(match[1]) === url
+}
+
+// A link mark is written back as markdown `[text](href)`. Bare URLs are
+// auto-linked by the deserializer with text === href; those stay bare so a
+// plain URL is not rewritten just by switching editor mode — but only when
+// the deserializer would recognize the bare form again, otherwise the link
+// would be lost on the next round-trip.
+const serializeLinkText = (node: Node): string => {
+	const link = node.marks.find(mark => mark.type.name === 'link')
+	if (!link) {
+		return node.text
+	}
+	if (link.attrs.href === node.text && isBareUrl(node.text)) {
+		return node.text
+	}
+	return `[${node.text}](${link.attrs.href})`
+}
 
 const serializeNode = (
 	node: Node,
@@ -21,7 +47,7 @@ const serializeNode = (
 					text += 'p`'
 				}
 			}
-			text += node.text
+			text += serializeLinkText(node)
 			for (const mark of node.marks.slice().reverse()) {
 				if (mark.type.name === 'strong') {
 					text += '**'

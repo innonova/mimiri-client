@@ -18,6 +18,18 @@ Other version locations:
 - `bundle-info.json` — `{url, hash}` of that baked-in bundle.
 - Native store versions: `android/app/build.gradle` (`versionCode`, `versionName`; overridable via `MIMIRI_VERSION_CODE`/`MIMIRI_VERSION_NAME`) and `ios/App/App.xcodeproj` (`MARKETING_VERSION`, overridable from the workflow input). These are independent of the bundle version.
 
+## Bumping the version
+
+Every PR that changes shipped code bumps the patch version as part of the PR:
+
+```bash
+npm version patch --no-git-tag-version
+```
+
+Merging a new version to `main` triggers an automatic build and deploy of that version to the `canary` channel on `update.mimiri.io` (the trigger lives outside this repo's GitHub workflows). That is why doc-only or CI-only PRs should not bump: a bump is a canary release.
+
+This updates `package.json` and `package-lock.json` only. Do **not** use `npm run set-version increment` for this — it also regenerates `src/version.ts`, which is committed as a `0.0.0` placeholder and only written at build time.
+
 ## Bundle pipeline
 
 1. `npm run build` → `dist/`.
