@@ -49,7 +49,7 @@ npm run sync / sync-dev   # build + cap sync;  npm run ios / android opens the I
 - **Icons**: edit `src/icons.json` and run `npm run icons-import`; don't hand-write `src/icons/*.vue`.
 - **e2e selectors** are `data-testid` via `playwright/selectors.ts`; keep existing ids stable.
 - **`mobile.yml` fails if `cap sync` produces a diff** — commit generated files under `android/`/`ios/`.
-- **Every PR bumps the patch version**: `npm version patch --no-git-tag-version` (updates `package.json` + `package-lock.json`; do not use `set-version increment`, it rewrites the committed `src/version.ts` placeholder). Include the bump in the PR.
+- **Every PR bumps the patch version**: `npm version patch --no-git-tag-version` (updates `package.json` + `package-lock.json`; do not use `set-version increment`, it rewrites the committed `src/version.ts` placeholder). Include the bump in the PR. **Merging a version bump to `main` automatically deploys that version to the `canary` channel** (triggered outside this repo's workflows), so doc-only/CI-only changes should not bump.
 - **Releases**: `package.json.version` is the bundle version; `minElectronVersion*`/`minIos`/`minAndroid` gate hosts; `base-version.json` + `bundle-info.json` pin the bundle baked into store builds. Don't bump these casually — see [docs/release.md](docs/release.md).
 - `.env*` files must never be edited or committed (`.cursorban`); `.env.example` documents the variables.
 
