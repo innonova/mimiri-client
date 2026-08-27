@@ -108,7 +108,8 @@
 		"whySeeingThis": "Why are you seeing this?",
 		"reason1": "You changed password on another device",
 		"reason2": "You updated from a version prior to 2.5.0",
-		"reason3": "Something unexpected went wrong"
+		"reason3": "Something unexpected went wrong",
+		"quitHint": "Closing the window keeps you signed in; quitting the app signs you out."
 	},
 	"passwordDialog": {
 		"title": "Verify that it is you",

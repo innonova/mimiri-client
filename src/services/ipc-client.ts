@@ -46,6 +46,15 @@ export class MimerMenu {
 		this.api.menu.showDevTools()
 	}
 
+	/** Ask the host to perform a native edit action on the focused element. Returns false on hosts that predate it. */
+	public nativeAction(action: 'cut' | 'copy' | 'paste' | 'select-all'): boolean {
+		if (typeof this.api.menu.nativeAction !== 'function') {
+			return false
+		}
+		this.api.menu.nativeAction(action)
+		return true
+	}
+
 	public setAppMenu(value: any) {
 		this.api.menu.setAppMenu(value)
 	}

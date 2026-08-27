@@ -25,6 +25,7 @@ export interface IpcMenuApi {
 	setAppMenu(value: any)
 	seTrayMenu(value: any, colors: any)
 	onMenuItemActivated(callback: (menuItemIdd: string) => void)
+	nativeAction?(action: 'cut' | 'copy' | 'paste' | 'select-all'): void
 }
 
 export interface IpcCacheApi {

@@ -63,6 +63,13 @@
 						{{ $t('loginDialog.cancel') }}
 					</button>
 				</div>
+				<div
+					v-if="!neededForServer && ipcClient.isAvailable"
+					class="mx-1 mt-4 mb-1 max-w-72 text-text-secondary text-sm"
+					data-testid="quit-hint"
+				>
+					{{ $t('loginDialog.quitHint') }}
+				</div>
 				<div v-if="neededForServer" class="mx-1 mt-4 mb-1 max-w-72 font-bold">
 					{{ $t('loginDialog.whySeeingThis') }}
 				</div>
@@ -81,7 +88,7 @@
 import { computed, ref } from 'vue'
 import DialogTitle from '../elements/DialogTitle.vue'
 import LoadingIcon from '../../icons/loading.vue'
-import { loginRequiredToGoOnline, noteManager, updateManager } from '../../global'
+import { ipcClient, loginRequiredToGoOnline, noteManager, updateManager } from '../../global'
 
 const dialog = ref(null)
 const username = ref('')

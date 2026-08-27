@@ -241,7 +241,9 @@ class MenuManager {
 				}
 			}
 		} else if (itemId === 'copy') {
-			if (document.activeElement.tagName === 'BODY' || !noteEditor.value?.$el.contains(document.activeElement)) {
+			if (this.isTextInput(document.activeElement)) {
+				this.nativeEditAction('copy')
+			} else if (document.activeElement.tagName === 'BODY' || !noteEditor.value?.$el.contains(document.activeElement)) {
 				clipboardNote.value = noteManager.tree.selectedNote()
 				isCut.value = false
 			} else if (mimiriPlatform.isMacApp) {
@@ -268,7 +270,9 @@ class MenuManager {
 				})
 			}
 		} else if (itemId === 'cut') {
-			if (document.activeElement.tagName === 'BODY' || !noteEditor.value?.$el.contains(document.activeElement)) {
+			if (this.isTextInput(document.activeElement)) {
+				this.nativeEditAction('cut')
+			} else if (document.activeElement.tagName === 'BODY' || !noteEditor.value?.$el.contains(document.activeElement)) {
 				clipboardNote.value = noteManager.tree.selectedNote()
 				isCut.value = true
 			} else if (mimiriPlatform.isMacApp) {
@@ -295,7 +299,9 @@ class MenuManager {
 				})
 			}
 		} else if (itemId === 'paste') {
-			if (document.activeElement.tagName === 'BODY' || !noteEditor.value?.$el.contains(document.activeElement)) {
+			if (this.isTextInput(document.activeElement)) {
+				this.nativeEditAction('paste')
+			} else if (document.activeElement.tagName === 'BODY' || !noteEditor.value?.$el.contains(document.activeElement)) {
 				if (clipboardNote.value && noteManager.tree.selectedNote()) {
 					await noteManager.tree.selectedNote().expand()
 					if (isCut.value) {
@@ -367,6 +373,41 @@ class MenuManager {
 	public close() {
 		this.state.menuShowing = false
 		contextMenu.value.close()
+	}
+
+	/** Plain text fields outside the note editor (login/PIN/settings inputs, dialogs) */
+	private isTextInput(element: Element): boolean {
+		if (!element || noteEditor.value?.$el.contains(element)) {
+			return false
+		}
+		return (
+			element instanceof HTMLInputElement ||
+			element instanceof HTMLTextAreaElement ||
+			(element instanceof HTMLElement && element.isContentEditable)
+		)
+	}
+
+	/**
+	 * The macOS application menu replaces Electron's default Edit menu, whose role-based items are what
+	 * normally deliver Cmd+X/C/V to a focused text field. Route those to the host so they behave natively;
+	 * on hosts that predate nativeAction fall back to execCommand, which still works for plain inputs.
+	 */
+	private nativeEditAction(action: 'cut' | 'copy' | 'paste') {
+		if (ipcClient.menu.nativeAction(action)) {
+			return
+		}
+		if (action === 'paste') {
+			navigator.clipboard
+				.readText()
+				.then(text => {
+					document.execCommand('insertText', false, text)
+				})
+				.catch(err => {
+					console.error('Clipboard paste failed:', err)
+				})
+		} else {
+			document.execCommand(action)
+		}
 	}
 
 	private toItems(items: MenuItems[], separatorAsItem = true) {
@@ -988,7 +1029,11 @@ class MenuManager {
 				},
 				{
 					title: $t('contextMenu.menuEdit'),
-					submenu: this.toItems(this.editMenu),
+					// Cut/Copy/Paste must stay enabled regardless of note state so Cmd+X/C/V keep working in text
+					// fields (e.g. the login password) - menuIdActivated decides what the action applies to.
+					submenu: this.toItems(this.editMenu).map(item =>
+						['cut', 'copy', 'paste'].includes(item.id) ? { ...item, enabled: true } : item,
+					),
 				},
 				{
 					title: $t('contextMenu.menuView'),
