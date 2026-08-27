@@ -247,27 +247,8 @@ class MenuManager {
 				clipboardNote.value = noteManager.tree.selectedNote()
 				isCut.value = false
 			} else if (mimiriPlatform.isMacApp) {
-				void (async () => {
-					const copyEvent = new ClipboardEvent('copy', {
-						bubbles: true,
-						cancelable: true,
-						clipboardData: new DataTransfer(),
-					})
-
-					document.activeElement.dispatchEvent(copyEvent)
-
-					const text = copyEvent.clipboardData.getData('text/plain')
-
-					if (text) {
-						try {
-							await navigator.clipboard.writeText(text)
-						} catch (err) {
-							console.error('Clipboard write failed:', err)
-						}
-					}
-				})().catch(err => {
-					console.error('Clipboard paste failed:', err)
-				})
+				// Editor focused: the macOS app menu swallowed Cmd+C, so the menu item must perform it
+				this.nativeEditAction('copy')
 			}
 		} else if (itemId === 'cut') {
 			if (this.isTextInput(document.activeElement)) {
@@ -276,27 +257,8 @@ class MenuManager {
 				clipboardNote.value = noteManager.tree.selectedNote()
 				isCut.value = true
 			} else if (mimiriPlatform.isMacApp) {
-				void (async () => {
-					const copyEvent = new ClipboardEvent('cut', {
-						bubbles: true,
-						cancelable: true,
-						clipboardData: new DataTransfer(),
-					})
-
-					document.activeElement.dispatchEvent(copyEvent)
-
-					const text = copyEvent.clipboardData.getData('text/plain')
-
-					if (text) {
-						try {
-							await navigator.clipboard.writeText(text)
-						} catch (err) {
-							console.error('Clipboard write failed:', err)
-						}
-					}
-				})().catch(err => {
-					console.error('Clipboard paste failed:', err)
-				})
+				// Editor focused: the macOS app menu swallowed Cmd+X, so the menu item must perform it
+				this.nativeEditAction('cut')
 			}
 		} else if (itemId === 'paste') {
 			if (this.isTextInput(document.activeElement)) {
@@ -311,20 +273,8 @@ class MenuManager {
 					}
 				}
 			} else if (mimiriPlatform.isMacApp) {
-				void (async () => {
-					const text = await navigator.clipboard.readText()
-
-					const pasteEvent = new ClipboardEvent('paste', {
-						bubbles: true,
-						cancelable: true,
-						clipboardData: new DataTransfer(),
-					})
-
-					pasteEvent.clipboardData.setData('text/plain', text)
-					document.activeElement.dispatchEvent(pasteEvent)
-				})().catch(err => {
-					console.error('Clipboard paste failed:', err)
-				})
+				// Editor focused: the macOS app menu swallowed Cmd+V, so the menu item must perform it
+				this.nativeEditAction('paste')
 			}
 		} else if (itemId === 'copy-path') {
 			if (noteManager.tree.selectedNote()) {
@@ -388,26 +338,72 @@ class MenuManager {
 	}
 
 	/**
+	 * Perform a clipboard action on the focused element on behalf of a menu item.
+	 *
 	 * The macOS application menu replaces Electron's default Edit menu, whose role-based items are what
-	 * normally deliver Cmd+X/C/V to a focused text field. Route those to the host so they behave natively;
-	 * on hosts that predate nativeAction fall back to execCommand, which still works for plain inputs.
+	 * normally deliver Cmd+X/C/V to the focused element, so the menu items have to do the work themselves.
+	 * Hosts from 2.6.21 expose menu.nativeAction, which runs the real webContents command and yields a
+	 * genuine native clipboard event for inputs, Monaco and ProseMirror alike. Older hosts fall through
+	 * to the legacy renderer-side emulation below.
 	 */
 	private nativeEditAction(action: 'cut' | 'copy' | 'paste') {
 		if (ipcClient.menu.nativeAction(action)) {
 			return
 		}
-		if (action === 'paste') {
-			navigator.clipboard
-				.readText()
-				.then(text => {
-					document.execCommand('insertText', false, text)
-				})
-				.catch(err => {
-					console.error('Clipboard paste failed:', err)
-				})
-		} else {
-			document.execCommand(action)
+		this.legacyEditAction(action)
+	}
+
+	/**
+	 * LEGACY - only reached on Electron hosts older than 2.6.21 (no menu.nativeAction). Remove once
+	 * those hosts are gone.
+	 *
+	 * Emulates the clipboard action in the renderer: plain inputs use execCommand; the note editor gets
+	 * a synthetic ClipboardEvent so Monaco/ProseMirror handle it as if it came from the keyboard
+	 * (originally added in 6dbabc4 "fix copy/paste on mac"). Synthetic events do not perform the default
+	 * action on <input>, hence the two code paths.
+	 */
+	private legacyEditAction(action: 'cut' | 'copy' | 'paste') {
+		const target = document.activeElement
+		if (!noteEditor.value?.$el.contains(target)) {
+			if (action === 'paste') {
+				navigator.clipboard
+					.readText()
+					.then(text => {
+						document.execCommand('insertText', false, text)
+					})
+					.catch(err => {
+						console.error('Clipboard paste failed:', err)
+					})
+			} else {
+				document.execCommand(action)
+			}
+			return
 		}
+		void (async () => {
+			if (action === 'paste') {
+				const text = await navigator.clipboard.readText()
+				const pasteEvent = new ClipboardEvent('paste', {
+					bubbles: true,
+					cancelable: true,
+					clipboardData: new DataTransfer(),
+				})
+				pasteEvent.clipboardData.setData('text/plain', text)
+				target.dispatchEvent(pasteEvent)
+			} else {
+				const copyEvent = new ClipboardEvent(action, {
+					bubbles: true,
+					cancelable: true,
+					clipboardData: new DataTransfer(),
+				})
+				target.dispatchEvent(copyEvent)
+				const text = copyEvent.clipboardData.getData('text/plain')
+				if (text) {
+					await navigator.clipboard.writeText(text)
+				}
+			}
+		})().catch(err => {
+			console.error(`Clipboard ${action} failed:`, err)
+		})
 	}
 
 	private toItems(items: MenuItems[], separatorAsItem = true) {
