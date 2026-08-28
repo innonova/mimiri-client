@@ -266,6 +266,8 @@ export class MimiriStore {
 	public readonly session = {
 		addGettingStarted: (note?: Note) => this.sessionManager.addGettingStarted(note),
 		recoverLogin: () => this.sessionManager.recoverLogin(),
+		persistLogin: () => this.sessionManager.persistLogin(),
+		clearPersistedLogin: () => this.sessionManager.clearPersistedLogin(),
 		login: (username: string, password: string): Promise<boolean> => this.sessionManager.login(username, password),
 		goOnline: (password?: string): Promise<boolean> => this.sessionManager.goOnline(password),
 		openLocal: () => this.sessionManager.openLocal(),

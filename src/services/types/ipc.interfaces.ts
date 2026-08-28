@@ -70,6 +70,10 @@ export interface IpcWatchDog {
 export interface IpcSession {
 	set(name: string, value: any): Promise<void>
 	get(name: string): Promise<any>
+	/** Host >= 2.6.22: safeStorage-wrapped values that survive quitting the app */
+	setPersistent?(name: string, value: string): Promise<boolean>
+	getPersistent?(name: string): Promise<string | undefined>
+	clearPersistent?(name: string): Promise<void>
 }
 
 export interface FileData {
@@ -108,6 +112,9 @@ export interface IpcOs {
 	setAutoStart(enabled: boolean): Promise<void>
 	getAutoStart(): Promise<boolean>
 	rules(): Promise<PlatformRules>
+	/** Host >= 2.6.22, macOS only */
+	canPromptTouchId?(): Promise<boolean>
+	promptTouchId?(reason: string): Promise<boolean>
 }
 
 export interface IpcApi {

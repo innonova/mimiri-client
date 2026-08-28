@@ -109,7 +109,8 @@
 		"reason1": "Du hast das Passwort auf einem anderen Gerät geändert",
 		"reason2": "Du hast von einer Version vor 2.5.0 aktualisiert",
 		"reason3": "Etwas Unerwartetes ist schiefgelaufen",
-		"quitHint": "Wenn du das Fenster schließt, bleibst du angemeldet; wenn du die App beendest, wirst du abgemeldet."
+		"quitHint": "Wenn du das Fenster schließt, bleibst du angemeldet; wenn du die App beendest, wirst du abgemeldet.",
+		"quitHintTouchId": " Du kannst unter Einstellungen › Allgemein mit Touch ID angemeldet bleiben."
 	},
 	"passwordDialog": {
 		"title": "Identität bestätigen",
@@ -348,6 +349,8 @@
 		"keepTrayVisibleTooltip": "Verhindert, dass das Systray-Symbol im Überlaufbereich ausgeblendet wird",
 		"quitOnClose": "Beim Schließen des Programmfensters beenden",
 		"quitOnCloseTooltip": "Anwendung vollständig beenden, anstatt sie beim Schließen des Fensters in den Infobereich der Taskleiste zu minimieren",
+		"staySignedIn": "Mit Touch ID angemeldet bleiben",
+		"staySignedInTooltip": "Speichert deine Anmeldung im macOS-Schlüsselbund, damit du nach dem Beenden der App nicht erneut nach dem Passwort gefragt wirst; zum Wiederherstellen ist Touch ID erforderlich.",
 		"useChevrons": "Chevrons in der Baumansicht verwenden",
 		"useChevronsTooltip": "Chevrons statt Plus-/Minus-Symbole im Baum anzeigen, um erweiterbare Elemente anzuzeigen",
 		"showVerticalGuides": "Vertikale Führungslinien anzeigen",
@@ -830,5 +833,8 @@
 		"menuEdit": "Bearbeiten",
 		"menuView": "Ansicht",
 		"menuHelp": "Hilfe"
+	},
+	"touchId": {
+		"reason": "deine Notizen zu entsperren"
 	}
 }

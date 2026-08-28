@@ -69,6 +69,9 @@
 					data-testid="quit-hint"
 				>
 					{{ $t('loginDialog.quitHint') }}
+					<span v-if="staySignedInAvailable && !settingsManager.staySignedIn">{{
+						$t('loginDialog.quitHintTouchId')
+					}}</span>
 				</div>
 				<div v-if="neededForServer" class="mx-1 mt-4 mb-1 max-w-72 font-bold">
 					{{ $t('loginDialog.whySeeingThis') }}
@@ -89,6 +92,8 @@ import { computed, ref } from 'vue'
 import DialogTitle from '../elements/DialogTitle.vue'
 import LoadingIcon from '../../icons/loading.vue'
 import { ipcClient, loginRequiredToGoOnline, noteManager, updateManager } from '../../global'
+import { settingsManager } from '../../services/settings-manager'
+import { mimiriPlatform } from '../../services/mimiri-platform'
 
 const dialog = ref(null)
 const username = ref('')
@@ -100,6 +105,9 @@ const longTime = ref(false)
 const showVersion = ref(false)
 const capsLockOn = ref(false)
 const neededForServer = ref(false)
+const staySignedInAvailable = computed(
+	() => mimiriPlatform.isMacApp && ipcClient.session.supportsPersistent && mimiriPlatform.supportsBiometry,
+)
 const isOpen = ref(false)
 const usernameInput = ref(null)
 

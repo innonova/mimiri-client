@@ -354,8 +354,19 @@ export class SessionManager {
 		}
 	}
 
-	public async logout(_userInitiated: boolean = false, clearData: boolean = false): Promise<void> {
-		await this.authManager.logout(clearData)
+	/** Re-persists the current login (e.g. after "stay signed in" was switched on). */
+	public async persistLogin(): Promise<void> {
+		if (this.state.isLoggedIn) {
+			await this.authManager.persistLogin()
+		}
+	}
+
+	public async clearPersistedLogin(): Promise<void> {
+		await this.authManager.clearPersistedLogin()
+	}
+
+	public async logout(userInitiated: boolean = false, clearData: boolean = false): Promise<void> {
+		await this.authManager.logout(clearData, userInitiated)
 		await this.api.logout()
 		await this.localStateManager.logout()
 		this.cryptoManager.clearKeys()

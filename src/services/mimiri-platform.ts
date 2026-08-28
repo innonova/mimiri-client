@@ -1,7 +1,7 @@
 import { Capacitor, registerPlugin } from '@capacitor/core'
 import { Keyboard } from '@capacitor/keyboard'
 import { reactive } from 'vue'
-import { debug, env } from '../global'
+import { $t, debug, env } from '../global'
 import { delay } from './helpers'
 
 interface PlatformInfo {
@@ -78,6 +78,22 @@ class MimiriPlatform {
 			this._isTarGz = (window as any).mimiri.isTarGz
 			this._isFlatHub = (window as any).mimiri.isFlatHub
 			this._isSnapStore = (window as any).mimiri.isSnapStore
+			if (this._isMac) {
+				// Touch ID through the host (>= 2.6.22): lets the biometry-gated
+				// login restore and lock screen work like on iOS/Android. In DEV
+				// biometry is reported available so the flow can be exercised
+				// on Macs without Touch ID (verifyBiometry short-circuits there).
+				const os = (window as any).mimiri.os
+				this._nativePlatform = {
+					info: async () => ({
+						mode: 'pc',
+						biometrics: env.DEV || (typeof os?.canPromptTouchId === 'function' && (await os.canPromptTouchId())),
+					}),
+					verifyBiometry: async () => ({
+						verified: typeof os?.promptTouchId === 'function' && (await os.promptTouchId($t('touchId.reason'))),
+					}),
+				}
+			}
 		} else {
 			if (navigator.userAgent.includes('iPhone OS')) {
 				this._isIos = true
@@ -144,6 +160,13 @@ class MimiriPlatform {
 		if (result.verified) {
 			debug.log('Biometric verification succeeded (initial)')
 			return true
+		}
+
+		if (!this._isCapacitor) {
+			// Touch ID via the Electron host: a failure here is the user cancelling
+			// the prompt (or no sensor), not a transient error - don't prompt twice.
+			debug.log('Biometric verification failed')
+			return false
 		}
 
 		debug.log('Biometric verification failed (initial), retrying in 1s')

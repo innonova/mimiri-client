@@ -55,6 +55,12 @@
 					{{ $t('settingsGeneral.keepTrayVisible') }}
 				</label>
 			</div>
+			<div v-if="staySignedInAvailable" class="p-1 pt-2 m-auto text-left">
+				<label :title="$t('settingsGeneral.staySignedInTooltip')">
+					<input type="checkbox" v-model="staySignedIn" class="mr-1 relative top-0.5" data-testid="stay-signed-in" />
+					{{ $t('settingsGeneral.staySignedIn') }}
+				</label>
+			</div>
 			<div v-if="mimiriPlatform.isElectron" class="p-1 pt-2 m-auto text-left">
 				<label :title="$t('settingsGeneral.quitOnCloseTooltip')">
 					<input type="checkbox" v-model="closeOnX" class="mr-1 relative top-0.5" />
@@ -102,7 +108,7 @@ import { computed, onMounted, ref } from 'vue'
 import { settingsManager } from '../../services/settings-manager'
 import { mimiriPlatform } from '../../services/mimiri-platform'
 import TabBar from '../elements/TabBar.vue'
-import { env, localization, noteManager } from '../../global'
+import { env, ipcClient, localization, noteManager } from '../../global'
 
 const language = ref('en')
 const theme = ref('default')
@@ -110,6 +116,11 @@ const openAtLogin = ref(false)
 const showInTaskBar = ref(false)
 const keepTrayIconVisible = ref(false)
 const closeOnX = ref(false)
+const staySignedIn = ref(false)
+// macOS with Touch ID on a host that can keep the login in the keychain-wrapped store
+const staySignedInAvailable = computed(
+	() => mimiriPlatform.isMacApp && ipcClient.session.supportsPersistent && mimiriPlatform.supportsBiometry,
+)
 const trayIcon = ref('system')
 const disableDevBlog = ref(false)
 const useChevrons = ref(false)
@@ -125,6 +136,7 @@ const canSave = computed(
 		showInTaskBar.value !== settingsManager.showInTaskBar ||
 		openAtLogin.value !== settingsManager.openAtLogin ||
 		closeOnX.value !== settingsManager.closeOnX ||
+		staySignedIn.value !== settingsManager.staySignedIn ||
 		trayIcon.value !== settingsManager.trayIcon ||
 		disableDevBlog.value !== settingsManager.disableDevBlog ||
 		useChevrons.value !== settingsManager.useChevrons ||
@@ -141,6 +153,7 @@ onMounted(() => {
 	showInTaskBar.value = settingsManager.showInTaskBar
 	openAtLogin.value = settingsManager.openAtLogin
 	closeOnX.value = settingsManager.closeOnX
+	staySignedIn.value = settingsManager.staySignedIn
 	trayIcon.value = settingsManager.trayIcon
 	disableDevBlog.value = settingsManager.disableDevBlog
 	useChevrons.value = settingsManager.useChevrons
@@ -160,6 +173,14 @@ const save = async () => {
 	settingsManager.showInTaskBar = showInTaskBar.value
 	settingsManager.openAtLogin = openAtLogin.value
 	settingsManager.closeOnX = closeOnX.value
+	if (staySignedIn.value !== settingsManager.staySignedIn) {
+		settingsManager.staySignedIn = staySignedIn.value
+		if (staySignedIn.value) {
+			await noteManager.session.persistLogin()
+		} else {
+			await noteManager.session.clearPersistedLogin()
+		}
+	}
 	settingsManager.trayIcon = trayIcon.value
 	const reload = settingsManager.disableDevBlog !== disableDevBlog.value
 	settingsManager.disableDevBlog = disableDevBlog.value
