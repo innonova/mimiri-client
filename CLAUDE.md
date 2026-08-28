@@ -52,6 +52,7 @@ npm run sync / sync-dev   # build + cap sync;  npm run ios / android opens the I
 - **Every PR bumps the patch version**: `npm version patch --no-git-tag-version` (updates `package.json` + `package-lock.json`; do not use `set-version increment`, it rewrites the committed `src/version.ts` placeholder). Include the bump in the PR. **Merging a version bump to `main` automatically deploys that version to the `canary` channel** (triggered outside this repo's workflows), so doc-only/CI-only changes should not bump.
 - **Releases**: `package.json.version` is the bundle version; `minElectronVersion*`/`minIos`/`minAndroid` gate hosts; `base-version.json` + `bundle-info.json` pin the bundle baked into store builds. Don't bump these casually — see [docs/release.md](docs/release.md).
 - `.env*` files must never be edited or committed (`.cursorban`); `.env.example` documents the variables.
+- **Verifying on macOS/Windows**: this repo has no way to run the Electron app on those platforms itself. Portable requirements (TCC, keychain over SSH, no Touch ID in VMs) are in `../mimiri-e2e/docs/test-machines.md`; which test machines exist on the current box, if any, is in the user-level `~/.claude/CLAUDE.md`.
 
 ## Style
 
