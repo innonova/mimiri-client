@@ -44,7 +44,7 @@ npm run sync / sync-dev   # build + cap sync;  npm run ios / android opens the I
 - **Platform checks**: prefer `ipcClient.isAvailable` / `ipcClient.<sub>.isAvailable` over `mimiriPlatform.isX` for feature gating.
 - **The tree lives in note metadata** (`metadata.notes[]`); every mutating op in `note-operations-manager.ts` must end with `queueSync()`. `state.isOnline` is derived solely from the SignalR connection.
 - **Notes are plain text.** Changing the text syntax (headings, lists/checkboxes, password marks, code fences, conflict markers) requires updating the ProseMirror deserializer *and* serializer *and* the matching Monaco plugin.
-- **Localization**: a new string goes in `src/lang/en.json` **and** a translator note at the same path in `src/lang/context.json`. Use `$t('ns.key')`. Don't hand-edit other locales' `_accepted.json`; that is the review script's output.
+- **Localization**: a new string goes in `src/lang/en.json` **and** a translator note at the same path in `src/lang/context.json`, **and** a translation in each of `da.json`, `de.json`, `zh.json`, `zh-hant.json` (runtime falls back to English, but PRs ship all locales). Use `$t('ns.key')`. Don't hand-edit other locales' `_accepted.json`; that is the review script's output.
 - **Theming**: Tailwind v4 configured in CSS. A new color token goes in both `src/assets/colors-light.css` and `colors-dark.css`, then use `bg-foo`/`text-foo`.
 - **Icons**: edit `src/icons.json` and run `npm run icons-import`; don't hand-write `src/icons/*.vue`.
 - **e2e selectors** are `data-testid` via `playwright/selectors.ts`; keep existing ids stable.
