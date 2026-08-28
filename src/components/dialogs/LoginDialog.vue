@@ -1,6 +1,6 @@
 <template>
 	<dialog
-		class="modal bg-dialog text-text desktop:border border-solid border-dialog-border backdrop-grayscale"
+		class="modal bg-dialog text-text desktop:border border-solid border-dialog-border backdrop-grayscale overflow-visible"
 		ref="dialog"
 		data-testid="login-dialog"
 		@close="isOpen = false"
@@ -63,16 +63,6 @@
 						{{ $t('loginDialog.cancel') }}
 					</button>
 				</div>
-				<div
-					v-if="!neededForServer && ipcClient.isAvailable"
-					class="mx-1 mt-4 mb-1 max-w-72 text-text-secondary text-sm"
-					data-testid="quit-hint"
-				>
-					{{ $t('loginDialog.quitHint') }}
-					<span v-if="staySignedInAvailable && !settingsManager.staySignedIn">{{
-						$t('loginDialog.quitHintTouchId')
-					}}</span>
-				</div>
 				<div v-if="neededForServer" class="mx-1 mt-4 mb-1 max-w-72 font-bold">
 					{{ $t('loginDialog.whySeeingThis') }}
 				</div>
@@ -82,6 +72,15 @@
 					<li>{{ $t('loginDialog.reason3') }}</li>
 				</div>
 			</form>
+		</div>
+		<!-- Desktop-only note, positioned below the dialog's box so its width cannot stretch the form -->
+		<div
+			v-if="isOpen && !neededForServer && ipcClient.isAvailable"
+			class="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-max max-w-xl px-3 py-2 rounded-sm bg-dialog text-center text-text-secondary text-sm"
+			data-testid="quit-hint"
+		>
+			{{ $t('loginDialog.quitHint') }}
+			<span v-if="staySignedInAvailable && !settingsManager.staySignedIn">{{ $t('loginDialog.quitHintTouchId') }}</span>
 		</div>
 	</dialog>
 	<div v-if="showVersion" class="fixed bottom-4 right-4">v {{ updateManager.currentVersion }}</div>
