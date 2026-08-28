@@ -162,6 +162,13 @@ class MimiriPlatform {
 			return true
 		}
 
+		if (!this._isCapacitor) {
+			// Touch ID via the Electron host: a failure here is the user cancelling
+			// the prompt (or no sensor), not a transient error - don't prompt twice.
+			debug.log('Biometric verification failed')
+			return false
+		}
+
 		debug.log('Biometric verification failed (initial), retrying in 1s')
 
 		// Wait 1s and try again for transient failures
