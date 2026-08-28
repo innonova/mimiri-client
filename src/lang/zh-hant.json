@@ -109,7 +109,8 @@
 		"reason1": "您在其他裝置上變更了密碼",
 		"reason2": "您從 2.5.0 之前的版本升級",
 		"reason3": "發生了意外錯誤",
-		"quitHint": "關閉視窗後您仍保持登入狀態；結束應用程式則會登出。"
+		"quitHint": "關閉視窗後您仍保持登入狀態；結束應用程式則會登出。",
+		"quitHintTouchId": " 您可以在「設定 › 一般」中使用 Touch ID 保持登入。"
 	},
 	"passwordDialog": {
 		"title": "驗證您的身分",
@@ -348,6 +349,8 @@
 		"keepTrayVisibleTooltip": "防止系統匣圖示被隱藏到溢位區域",
 		"quitOnClose": "關閉應用程式視窗時結束",
 		"quitOnCloseTooltip": "關閉視窗時完全結束應用程式，而不是最小化到系統匣",
+		"staySignedIn": "使用 Touch ID 保持登入",
+		"staySignedInTooltip": "將您的登入資訊儲存在 macOS 鑰匙圈中，結束應用程式後不必再次輸入密碼；恢復登入需要 Touch ID。",
 		"useChevrons": "在樹狀檢視中使用箭頭圖示",
 		"useChevronsTooltip": "在樹狀檢視中使用箭頭圖示代替加減號圖示來表示可展開項目",
 		"showVerticalGuides": "顯示垂直參考線",
@@ -830,5 +833,8 @@
 		"menuEdit": "編輯",
 		"menuView": "檢視",
 		"menuHelp": "說明"
+	},
+	"touchId": {
+		"reason": "解鎖您的筆記"
 	}
 }

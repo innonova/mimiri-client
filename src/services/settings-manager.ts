@@ -23,6 +23,8 @@ export enum UpdateMode {
 
 export interface MimerConfiguration {
 	openAtLogin: boolean
+	/** macOS: keep the login in the keychain-wrapped host store and restore it behind Touch ID */
+	staySignedIn: boolean
 	allowScreenSharing: boolean
 	theme: string
 	editorTheme: string | undefined
@@ -67,6 +69,7 @@ class SettingsManager {
 
 	public state: MimerConfiguration = reactive({
 		openAtLogin: true,
+		staySignedIn: false,
 		allowScreenSharing: false,
 		theme: 'default',
 		editorTheme: undefined,
@@ -243,6 +246,15 @@ class SettingsManager {
 
 	public get openAtLogin() {
 		return this.state.openAtLogin
+	}
+
+	public get staySignedIn() {
+		return !!this.state.staySignedIn
+	}
+
+	public set staySignedIn(value: boolean) {
+		this.state.staySignedIn = value
+		void this.save()
 	}
 
 	public set openAtLogin(value: boolean) {

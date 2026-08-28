@@ -109,7 +109,8 @@
 		"reason1": "Du har ændret adgangskode på en anden enhed",
 		"reason2": "Du har opdateret fra en version før 2.5.0",
 		"reason3": "Noget uventet gik galt",
-		"quitHint": "Lukker du vinduet, forbliver du logget ind; afslutter du appen, bliver du logget ud."
+		"quitHint": "Lukker du vinduet, forbliver du logget ind; afslutter du appen, bliver du logget ud.",
+		"quitHintTouchId": " Du kan forblive logget ind med Touch ID under Indstillinger › Generelt."
 	},
 	"passwordDialog": {
 		"title": "Bekræft, at det er dig",
@@ -348,6 +349,8 @@
 		"keepTrayVisibleTooltip": "Forhindr, at systembakkeikonet skjules i overflow-området",
 		"quitOnClose": "Afslut ved lukning af programvinduet",
 		"quitOnCloseTooltip": "Afslut programmet helt i stedet for at minimere til systembakken, når vinduet lukkes",
+		"staySignedIn": "Forbliv logget ind med Touch ID",
+		"staySignedInTooltip": "Gemmer dit login i macOS-nøgleringen, så du ikke bliver bedt om din adgangskode, efter du har afsluttet appen; Touch ID kræves for at gendanne det.",
 		"useChevrons": "Brug pile i trævisning",
 		"useChevronsTooltip": "Vis pile i træet i stedet for plus/minus-ikoner for at angive elementer, der kan udvides",
 		"showVerticalGuides": "Vis lodrette hjælpelinjer",
@@ -830,5 +833,8 @@
 		"menuEdit": "Rediger",
 		"menuView": "Vis",
 		"menuHelp": "Hjælp"
+	},
+	"touchId": {
+		"reason": "låse dine noter op"
 	}
 }

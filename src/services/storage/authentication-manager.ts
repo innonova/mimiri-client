@@ -2,6 +2,7 @@ import { blogManager, debug, env, ipcClient, loginRequiredToGoOnline } from '../
 import { CryptSignature } from '../crypt-signature'
 import { fromBase64, toBase64, toHex } from '../hex-base64'
 import { mimiriPlatform } from '../mimiri-platform'
+import { settingsManager } from '../settings-manager'
 import { SymmetricCrypt } from '../symmetric-crypt'
 import { emptyGuid, newGuid } from '../types/guid'
 import { AccountType, type InitializationData, type SharedState, type UserData } from './type'
@@ -73,9 +74,12 @@ export class AuthenticationManager {
 		return str
 	}
 
-	private async clearLoginData() {
+	private async clearLoginData(includePersisted: boolean) {
 		if (ipcClient.isAvailable && ipcClient.session.isAvailable) {
 			await ipcClient.session.set('mimiri-login-data', undefined)
+			if (includePersisted) {
+				await ipcClient.session.clearPersistent('mimiri-login-data')
+			}
 		} else if (mimiriPlatform.isIosApp || mimiriPlatform.isAndroidApp) {
 			localStorage.removeItem('mimiri-login-data')
 		} else {
@@ -126,6 +130,9 @@ export class AuthenticationManager {
 			const str = toBase64(zipped)
 			if (ipcClient.isAvailable && ipcClient.session.isAvailable) {
 				await ipcClient.session.set('mimiri-login-data', str)
+				if (settingsManager.staySignedIn && mimiriPlatform.supportsBiometry) {
+					await ipcClient.session.setPersistent('mimiri-login-data', str)
+				}
 			} else if (mimiriPlatform.isIosApp || mimiriPlatform.isAndroidApp) {
 				localStorage.setItem('mimiri-login-data', str)
 			} else {
@@ -144,6 +151,18 @@ export class AuthenticationManager {
 				let str
 				if (ipcClient.isAvailable && ipcClient.session.isAvailable) {
 					str = await ipcClient.session.get('mimiri-login-data')
+					if (!str && settingsManager.staySignedIn && mimiriPlatform.supportsBiometry) {
+						// Opted in ("stay signed in"): the host kept the login in its
+						// keychain-wrapped store across the quit; hand it out only
+						// behind Touch ID, exactly like the mobile apps do.
+						const persisted = await ipcClient.session.getPersistent('mimiri-login-data')
+						if (persisted) {
+							if (!(await mimiriPlatform.verifyBiometry())) {
+								return false
+							}
+							str = persisted
+						}
+					}
 				} else if (mimiriPlatform.isIosApp || mimiriPlatform.isAndroidApp) {
 					const localStr = localStorage.getItem('mimiri-login-data')
 					if (!localStr || (mimiriPlatform.supportsBiometry && !(await mimiriPlatform.verifyBiometry()))) {
@@ -778,8 +797,17 @@ export class AuthenticationManager {
 		}
 	}
 
-	public async logout(deleteDatabase: boolean = false): Promise<void> {
-		await this.clearLoginData()
+	/** Drops the keychain-wrapped copy of the login (the "stay signed in" store). */
+	public async clearPersistedLogin(): Promise<void> {
+		if (ipcClient.isAvailable && ipcClient.session.isAvailable) {
+			await ipcClient.session.clearPersistent('mimiri-login-data')
+		}
+	}
+
+	public async logout(deleteDatabase: boolean = false, userInitiated: boolean = false): Promise<void> {
+		// A failed restore or the login dialog's pre-login logout must not
+		// wipe the persisted login; only the user (or deleting local data) does.
+		await this.clearLoginData(deleteDatabase || userInitiated)
 		if (deleteDatabase) {
 			persistedState.clear()
 		}

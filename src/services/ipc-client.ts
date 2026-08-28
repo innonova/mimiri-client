@@ -157,6 +157,31 @@ export class ElectronSession {
 	public set(name: string, value: any) {
 		return this.api.session.set(name, value)
 	}
+
+	/** Host >= 2.6.22 can keep a value across app restarts, wrapped by the OS keychain (safeStorage). */
+	public get supportsPersistent() {
+		return typeof this.api.session?.setPersistent === 'function'
+	}
+
+	public async setPersistent(name: string, value: string): Promise<boolean> {
+		if (!this.supportsPersistent) {
+			return false
+		}
+		return this.api.session.setPersistent(name, value)
+	}
+
+	public async getPersistent(name: string): Promise<string | undefined> {
+		if (!this.supportsPersistent) {
+			return undefined
+		}
+		return this.api.session.getPersistent(name)
+	}
+
+	public async clearPersistent(name: string): Promise<void> {
+		if (this.supportsPersistent) {
+			await this.api.session.clearPersistent(name)
+		}
+	}
 }
 
 export class FileSystem {
@@ -203,6 +228,18 @@ export class Os {
 	}
 	public rules(): Promise<PlatformRules> {
 		return this.api.os?.rules()
+	}
+	public async canPromptTouchId(): Promise<boolean> {
+		if (typeof this.api.os?.canPromptTouchId !== 'function') {
+			return false
+		}
+		return this.api.os.canPromptTouchId()
+	}
+	public async promptTouchId(reason: string): Promise<boolean> {
+		if (typeof this.api.os?.promptTouchId !== 'function') {
+			return false
+		}
+		return this.api.os.promptTouchId(reason)
 	}
 }
 

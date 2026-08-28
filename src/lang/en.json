@@ -109,7 +109,8 @@
 		"reason1": "You changed password on another device",
 		"reason2": "You updated from a version prior to 2.5.0",
 		"reason3": "Something unexpected went wrong",
-		"quitHint": "Closing the window keeps you signed in; quitting the app signs you out."
+		"quitHint": "Closing the window keeps you signed in; quitting the app signs you out.",
+		"quitHintTouchId": " You can stay signed in with Touch ID under Settings › General."
 	},
 	"passwordDialog": {
 		"title": "Verify that it is you",
@@ -348,6 +349,8 @@
 		"keepTrayVisibleTooltip": "Prevent the system tray icon from being hidden in the overflow area",
 		"quitOnClose": "Quit when closing application window",
 		"quitOnCloseTooltip": "Fully quit the application instead of minimizing to the system tray when closing the window",
+		"staySignedIn": "Stay signed in with Touch ID",
+		"staySignedInTooltip": "Keeps your login in the macOS keychain so you are not asked for your password after quitting the app; Touch ID is required to restore it.",
 		"useChevrons": "Use chevrons in tree view",
 		"useChevronsTooltip": "Show chevrons in the tree instead of plus/minus icons to indicate expandable items",
 		"showVerticalGuides": "Show vertical guides",
@@ -830,5 +833,8 @@
 		"menuEdit": "Edit",
 		"menuView": "View",
 		"menuHelp": "Help"
+	},
+	"touchId": {
+		"reason": "unlock your notes"
 	}
 }

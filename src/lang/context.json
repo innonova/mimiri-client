@@ -118,7 +118,8 @@
 		"reason1": "Bullet point: password changed on another device.",
 		"reason2": "Bullet point: upgraded from an old version.",
 		"reason3": "Bullet point: catch-all for unexpected errors.",
-		"quitHint": "Small muted note shown on the desktop (Electron) login screen only. Explains that closing the window merely hides the app to the tray and keeps the session, whereas quitting the app ends the session and requires logging in again."
+		"quitHint": "Small muted note shown on the desktop (Electron) login screen only. Explains that closing the window merely hides the app to the tray and keeps the session, whereas quitting the app ends the session and requires logging in again.",
+		"quitHintTouchId": "Appended to quitHint on Macs with Touch ID when the option is off; leading space is intentional. Points at Settings › General."
 	},
 	"passwordDialog": {
 		"_context": "Dialog that asks the user to confirm their current password before a sensitive action (e.g. changing password, deleting account).",
@@ -375,6 +376,8 @@
 		"keepTrayVisibleTooltip": "Tooltip for keepTrayVisible. 'Tray Icon' refers to the Windows System Tray (systray) icon.",
 		"quitOnClose": "Toggle label: fully quit instead of minimise to tray when closing.",
 		"quitOnCloseTooltip": "Tooltip for quitOnClose.",
+		"staySignedIn": "Checkbox label, macOS only, shown when the Mac has Touch ID. Opt-in to keep the login across quitting the app.",
+		"staySignedInTooltip": "Tooltip for that checkbox: the login is stored in the macOS keychain and restoring it requires Touch ID.",
 		"useChevrons": "Toggle label: show > chevron icons instead of +/- in the note tree.",
 		"useChevronsTooltip": "Tooltip for useChevrons.",
 		"showVerticalGuides": "Toggle label: show vertical indent guide lines in the tree.",
@@ -873,5 +876,9 @@
 		"menuEdit": "OS menu bar: Edit menu name.",
 		"menuView": "OS menu bar: View menu name.",
 		"menuHelp": "OS menu bar: Help menu name."
+	},
+	"touchId": {
+		"_context": "macOS Touch ID prompt. macOS renders it as \"Mimiri Notes is trying to <reason>\" (localized by the OS), so the value must read as a verb phrase completing that sentence, lowercase, no trailing period.",
+		"reason": "Verb phrase, e.g. 'unlock your notes'."
 	}
 }
