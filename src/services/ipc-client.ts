@@ -46,6 +46,11 @@ export class MimerMenu {
 		this.api.menu.showDevTools()
 	}
 
+	/** Hosts from 2.6.21 accept Electron `role` entries in setAppMenu (shipped together with nativeAction). */
+	public get supportsRoles(): boolean {
+		return typeof this.api.menu.nativeAction === 'function'
+	}
+
 	/** Ask the host to perform a native edit action on the focused element. Returns false on hosts that predate it. */
 	public nativeAction(action: 'cut' | 'copy' | 'paste' | 'select-all'): boolean {
 		if (typeof this.api.menu.nativeAction !== 'function') {
