@@ -1014,10 +1014,29 @@ class MenuManager {
 
 	public updateAppMenu() {
 		if (ipcClient.isAvailable && mimiriPlatform.isMacApp) {
+			// Standard macOS application-menu entries (Services, Hide, Hide Others, Show All) and the Window
+			// menu are provided by the OS via Electron roles. Older hosts would render role-only entries as
+			// blank items, so they are only sent when the host understands them.
+			const roles = ipcClient.menu.supportsRoles
+			const appleItems = this.toItems(this.appleMenu).map(item =>
+				item.id === 'quit' ? { ...item, shortcut: 'Ctrl+Q' } : item,
+			)
+			const quitIndex = appleItems.findIndex(item => item.id === 'quit')
+			const standardAppleItems = roles
+				? [
+						{ type: 'separator' },
+						{ role: 'services' },
+						{ type: 'separator' },
+						{ role: 'hide' },
+						{ role: 'hideOthers' },
+						{ role: 'unhide' },
+						{ type: 'separator' },
+					]
+				: []
 			ipcClient.menu.setAppMenu([
 				{
 					title: $t('contextMenu.menuMimiriNotes'),
-					submenu: this.toItems(this.appleMenu),
+					submenu: [...appleItems.slice(0, quitIndex), ...standardAppleItems, ...appleItems.slice(quitIndex)],
 				},
 				{
 					title: $t('contextMenu.menuFile'),
@@ -1035,6 +1054,7 @@ class MenuManager {
 					title: $t('contextMenu.menuView'),
 					submenu: this.toItems(this.viewMenu),
 				},
+				...(roles ? [{ role: 'windowMenu' }] : []),
 				{
 					title: $t('contextMenu.menuHelp'),
 					submenu: this.toItems(this.helpMenu),
