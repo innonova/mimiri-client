@@ -109,8 +109,7 @@
 		"reason1": "Du har ændret adgangskode på en anden enhed",
 		"reason2": "Du har opdateret fra en version før 2.5.0",
 		"reason3": "Noget uventet gik galt",
-		"quitHint": "Lukker du vinduet, forbliver du logget ind; afslutter du appen, bliver du logget ud.",
-		"quitHintTouchId": " Du kan forblive logget ind med Touch ID under Indstillinger › Generelt."
+		"quitHint": "Lukker du vinduet, forbliver du logget ind; afslutter du appen, bliver du logget ud."
 	},
 	"passwordDialog": {
 		"title": "Bekræft, at det er dig",

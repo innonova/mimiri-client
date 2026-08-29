@@ -38,6 +38,10 @@
 					/>
 					<div v-if="capsLockOn" />
 					<div v-if="capsLockOn" class="ml-2">{{ $t('loginDialog.capsLock') }}</div>
+					<label v-if="showStaySignedIn" class="col-span-2 mt-1 flex items-center gap-1.5 text-sm">
+						<input type="checkbox" v-model="staySignedIn" data-testid="stay-signed-in-login" />
+						{{ $t('settingsGeneral.staySignedIn') }}
+					</label>
 				</div>
 				<div class="text-right pr-1" v-if="error" data-testid="login-error">
 					<div class="text-error text-right">{{ $t('loginDialog.incorrectCredentials') }}</div>
@@ -73,14 +77,14 @@
 				</div>
 			</form>
 		</div>
-		<!-- Desktop-only note, positioned below the dialog's box so its width cannot stretch the form -->
+		<!-- Desktop-only note, positioned below the dialog's box so its width cannot stretch the form.
+		     Goes away once "stay signed in" is ticked: quitting no longer signs out. -->
 		<div
-			v-if="isOpen && !neededForServer && ipcClient.isAvailable"
-			class="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-max max-w-xl px-3 py-2 rounded-sm bg-dialog text-center text-text-secondary text-sm"
+			v-if="isOpen && !neededForServer && ipcClient.isAvailable && !(showStaySignedIn && staySignedIn)"
+			class="absolute top-full left-1/2 -translate-x-1/2 mt-4 w-max max-w-xl px-5 py-3 rounded-md bg-dialog text-center text-text-secondary text-sm"
 			data-testid="quit-hint"
 		>
 			{{ $t('loginDialog.quitHint') }}
-			<span v-if="staySignedInAvailable && !settingsManager.staySignedIn">{{ $t('loginDialog.quitHintTouchId') }}</span>
 		</div>
 	</dialog>
 	<div v-if="showVersion" class="fixed bottom-4 right-4">v {{ updateManager.currentVersion }}</div>
@@ -107,6 +111,9 @@ const neededForServer = ref(false)
 const staySignedInAvailable = computed(
 	() => mimiriPlatform.isMacApp && ipcClient.session.supportsPersistent && mimiriPlatform.supportsBiometry,
 )
+// The opt-in lives here as well as in Settings › General: same flag, decided at the moment it matters.
+const showStaySignedIn = computed(() => staySignedInAvailable.value && !neededForServer.value)
+const staySignedIn = ref(false)
 const isOpen = ref(false)
 const usernameInput = ref(null)
 
@@ -114,6 +121,7 @@ const canLogin = computed(() => !!username.value?.trim() && !!password.value)
 
 const show = (neededForServerOnly: boolean = false) => {
 	neededForServer.value = neededForServerOnly
+	staySignedIn.value = settingsManager.staySignedIn
 	if (neededForServerOnly) {
 		username.value = noteManager.state.username
 	}
@@ -140,6 +148,13 @@ const login = async () => {
 	error.value = false
 	await noteManager.session.logout()
 	try {
+		if (showStaySignedIn.value && staySignedIn.value !== settingsManager.staySignedIn) {
+			// Written before login() so its persistLogin() honours the choice; unticking also drops the stored login.
+			settingsManager.staySignedIn = staySignedIn.value
+			if (!staySignedIn.value) {
+				await noteManager.session.clearPersistedLogin()
+			}
+		}
 		let loginUsername = username.value?.trim()
 		// Allow users to enter username@mimiri.io and strip the suffix
 		if (loginUsername?.toLowerCase().endsWith('@mimiri.io')) {

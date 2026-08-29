@@ -118,8 +118,7 @@
 		"reason1": "Bullet point: password changed on another device.",
 		"reason2": "Bullet point: upgraded from an old version.",
 		"reason3": "Bullet point: catch-all for unexpected errors.",
-		"quitHint": "Small muted note shown on the desktop (Electron) login screen only. Explains that closing the window merely hides the app to the tray and keeps the session, whereas quitting the app ends the session and requires logging in again.",
-		"quitHintTouchId": "Appended to quitHint on Macs with Touch ID when the option is off; leading space is intentional. Points at Settings › General."
+		"quitHint": "Small muted note shown on the desktop (Electron) login screen only. Explains that closing the window merely hides the app to the tray and keeps the session, whereas quitting the app ends the session and requires logging in again."
 	},
 	"passwordDialog": {
 		"_context": "Dialog that asks the user to confirm their current password before a sensitive action (e.g. changing password, deleting account).",
