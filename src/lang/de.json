@@ -109,8 +109,7 @@
 		"reason1": "Du hast das Passwort auf einem anderen Gerät geändert",
 		"reason2": "Du hast von einer Version vor 2.5.0 aktualisiert",
 		"reason3": "Etwas Unerwartetes ist schiefgelaufen",
-		"quitHint": "Wenn du das Fenster schließt, bleibst du angemeldet; wenn du die App beendest, wirst du abgemeldet.",
-		"quitHintTouchId": " Du kannst unter Einstellungen › Allgemein mit Touch ID angemeldet bleiben."
+		"quitHint": "Wenn du das Fenster schließt, bleibst du angemeldet; wenn du die App beendest, wirst du abgemeldet."
 	},
 	"passwordDialog": {
 		"title": "Identität bestätigen",
