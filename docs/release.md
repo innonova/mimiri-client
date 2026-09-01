@@ -39,6 +39,12 @@ This updates `package.json` and `package-lock.json` only. Do **not** use `npm ru
 
 Signing keys: `npm run create-key` (`scripts/create-key.js`) generates an RSA-3072 pair into gitignored `certs/<YYYYMMDD><8hex>.{key,pub}`. The current key name is `VITE_UPDATE_NAME` (`2024101797F6C918`); the public key is baked into the client as `VITE_UPDATE_PUBLIC_KEY` / `VITE_UPDATE_ALGORITHM`. `global.ts` builds `updateKeys` from these; multiple keys are supported for rotation (a bundle signed by a non-`current` key fails with `old-key`, an unknown signer with `key-not-found`).
 
+## GitHub bundle build (migration in progress)
+
+`.github/workflows/bundle.yml` runs the *unsigned* half of the pipeline on every push to `main`: `npm ci` → public build config (`.github/production-build.env`, containing only values that are baked into the shipped bundle anyway) → `set-version` → `build` → `npm run pack-bundle -- <keyName>` (`scripts/pack-bundle.js`, the packaging half of `make-bundle` — it emits `bundles/<key>.<version>.unsigned.json`, the exact byte payload the signature is computed over, plus a `.meta.json` with the min-host fields) → `tar` of `dist/` for app.mimiri.io. Both artifacts get sigstore build-provenance attestations (public Rekor log; verify with `gh attestation verify`) and are uploaded as the `bundle` workflow artifact.
+
+Signing stays on-prem: the signer downloads the artifact, verifies the attestation, signs the unsigned payload with `certs/<key>.key`, appends `signatures`, and derives `info.json`/channel pointers from the meta file. Until that side exists, the legacy webhook-triggered `build-all-linux.sh` flow remains the production path.
+
 ## Runtime updater (`src/services/update-manager.ts`)
 
 Only active when `ipcClient.isAvailable` (never on plain web).

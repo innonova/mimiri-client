@@ -1,0 +1,66 @@
+# Builds the SPA and packs the unsigned update bundle, then attests both with
+# sigstore provenance (public Rekor transparency log). Signing and publishing
+# happen on-prem, against these attested artifacts only — the private bundle
+# key never leaves the premises. Third parties can verify any published bundle
+# by stripping `signatures` and checking the digest with `gh attestation verify`.
+#
+# Actions are pinned by commit SHA: this workflow's output ends up signed with
+# the update root key, so its inputs should not be movable via a tag.
+name: Bundle
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+  attestations: write
+
+jobs:
+  bundle:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Apply public production build config
+        run: cp .github/production-build.env .env
+
+      - name: Stamp version
+        run: npm run set-version
+
+      - name: Build
+        run: npm run build
+
+      - name: Pack unsigned bundle
+        run: npm run pack-bundle -- 2024101797F6C918
+
+      - name: Pack SPA
+        run: tar -czf spa-dist.tar.gz -C dist .
+
+      - name: Attest build provenance
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-path: |
+            bundles/*.unsigned.json
+            spa-dist.tar.gz
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: bundle
+          path: |
+            bundles/
+            spa-dist.tar.gz
+          if-no-files-found: error
