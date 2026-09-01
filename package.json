@@ -37,6 +37,7 @@
 		"update-version-info": "node scripts/update-version-info.js",
 		"set-version": "node ./scripts/set-version",
 		"make-bundle": "node ./scripts/make-bundle",
+		"pack-bundle": "node ./scripts/pack-bundle",
 		"create-key": "node ./scripts/create-key",
 		"deploy-web": "node ./scripts/deploy-web",
 		"demo": "npx playwright test -c playwright.demo.config.ts",
