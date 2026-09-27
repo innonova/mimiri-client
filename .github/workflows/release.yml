@@ -1,0 +1,42 @@
+# On a version tag: build the SPA exactly as bundle.yml does on main, pack
+# dist, sign the tarball keyless with cosign (Sigstore) under this workflow's
+# identity, and publish it as a GitHub release. The estate's nginx hosts
+# (innonova/iac, a site of kind release) verify the bundle against this
+# repository and workflow at the tag before serving it: app.mimiri.io pinned
+# to a tag, canary-app.mimiri.io following the newest. The update bundle for
+# the desktop clients stays with bundle.yml and on-prem signing.
+#
+# Actions pinned by commit SHA, as in bundle.yml.
+name: release
+on:
+  push:
+    tags: ["v*"]
+permissions:
+  contents: write   # create the release
+  id-token: write   # keyless signing
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Apply public production build config
+        run: cp .github/production-build.env .env
+      - name: Stamp version
+        run: npm run set-version
+      - name: Build
+        run: npm run build
+      - name: Pack SPA
+        run: |
+          tar -czf spa-dist.tar.gz -C dist .
+          sha256sum spa-dist.tar.gz > spa-dist.tar.gz.sha256
+      - uses: sigstore/cosign-installer@v3
+      - name: Sign
+        run: cosign sign-blob --yes --bundle spa-dist.tar.gz.sigstore.json spa-dist.tar.gz
+      - name: Release
+        env: { GH_TOKEN: "${{ github.token }}" }
+        run: gh release create "$GITHUB_REF_NAME" --title "$GITHUB_REF_NAME" --notes "web client $GITHUB_REF_NAME" spa-dist.tar.gz spa-dist.tar.gz.sha256 spa-dist.tar.gz.sigstore.json
