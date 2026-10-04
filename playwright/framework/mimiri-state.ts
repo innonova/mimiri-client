@@ -6,7 +6,7 @@ import test, {
 	type BrowserContext,
 	type Page,
 } from '@playwright/test'
-import { MailPitClient } from './mailpit-client'
+import { MailServerClient } from './mail-server-client'
 import { OrchestrationClient } from './orchestration-client'
 import 'dotenv/config'
 import { Guid } from './guid'
@@ -55,7 +55,7 @@ export class MimiriState {
 		postalCode: '8600',
 		address: 'Kriesbachstrasse 24',
 	}
-	private _mailClient: MailPitClient
+	private _mailClient: MailServerClient
 	private _orchestrationClient: OrchestrationClient
 	orch: any
 
@@ -63,7 +63,7 @@ export class MimiriState {
 		this._config.testId = createId()
 		this._config.username = `auto_test_${this._config.testId}`
 		this._customer.email = `max+${this._config.testId}@testmail.mimiri.io`
-		this._mailClient = new MailPitClient(this._config.testId)
+		this._mailClient = new MailServerClient(this._customer.email)
 		this._orchestrationClient = new OrchestrationClient()
 		this._usernames.push(this._config.username)
 	}
@@ -72,7 +72,7 @@ export class MimiriState {
 		const newState = new MimiriState()
 		newState._config = { ...this._config }
 		newState._customer = { ...this._customer }
-		newState._mailClient = new MailPitClient(this._config.testId)
+		newState._mailClient = new MailServerClient(newState._customer.email)
 		newState._orchestrationClient = new OrchestrationClient()
 		return newState
 	}

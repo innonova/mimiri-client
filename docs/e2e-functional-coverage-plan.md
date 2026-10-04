@@ -339,7 +339,7 @@ repaired 2026-07-03 after being wholesale-skipped since February:
   recovery after failed renewal from home and from invoices; no-reaction expiry; cancel + re-subscribe.
 - ✅ Payment abort paths: failed payment, cancelled payment, navigating away mid-payment.
 - ✅ Currencies: CHF, EUR, USD.
-- ✅ Email verification on customer data via Mailpit round-trip (send → click link → verified badge;
+- ✅ Email verification on customer data via mail round-trip (the mail-server's sandbox since 2026-10) (send → click link → verified badge;
   note: the backend flag propagates asynchronously, the helper polls by re-mounting the page).
 - ✅ Account deletion cleans up billing objects server-side; invoices/transactions retained for legal bookkeeping
   (`deletion/checks.ts`).
@@ -509,7 +509,7 @@ opt in explicitly via `ensureEditorMode('code')` (`playwright/editor/mode.ts`).
 ✅ = exists today · ➕ = to build · n/a = feature gated off on that platform
 
 Test infrastructure already available to build on: `playwright/framework/` (fixtures, mimiri-context with
-multi-instance cloning for multi-device tests, orchestration client for multi-user scenarios, Mailpit client
+multi-instance cloning for multi-device tests, orchestration client for multi-user scenarios, mail-server sandbox client
 for email verification), shared action/check libraries in `playwright/core`,
 `playwright/notes`, `playwright/subscription`, `playwright/deletion` (billing-cleanup checks), and
 `data-testid` attributes throughout the components.
